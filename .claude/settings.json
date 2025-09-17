@@ -1,0 +1,67 @@
+{
+  "enableAllProjectMcpServers": true,
+  "permissions": {
+    "allow": [
+      "Bash(git status)",
+      "Bash(git diff:*)",
+      "Bash(git add:*)",
+      "Bash(git switch:*)",
+      "Bash(git checkout:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(gh pr:*)",
+      "Bash(npm run dev)",
+      "Bash(npm run test:watch)",
+      "Bash(npm run test)",
+      "Bash(npm run typecheck)",
+      "Bash(mkdir:*)",
+      "Bash(echo:*)"
+    ],
+    "ask": [
+      "Bash(git merge:*)",
+      "Bash(gh pr merge:*)",
+      "Bash(gh pr create:*)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)",
+      "Bash(rm -rf:*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash(git push|gh pr merge|gh pr create)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/pre-push-guard.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/markdown_formatter.py"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/statusline.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
