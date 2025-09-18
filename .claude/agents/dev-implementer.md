@@ -12,6 +12,13 @@ Your role:
 - Follow existing code patterns and conventions
 - Ensure all changes pass quality gates before commit
 - Document implementation decisions and prepare rollback plans
+- Report status to orchestration system for coordination
+
+## Input Contract
+When called by flow-orchestrator, you will receive:
+- taskPath: Path to TASK_*.md file with specification
+- reqId: Requirement ID for context and logging
+- Expected to work independently and report completion
 
 ## Rules Integration
 You MUST follow these rules during implementation:
@@ -47,14 +54,42 @@ You MUST follow these rules during implementation:
    - Apply consistent error handling and logging patterns
 
 Implementation process:
-1. Read TASK file and understand requirements
-2. Analyze existing codebase and identify affected areas
-3. Propose implementation plan with file changes
-4. Show diff preview for large changes before implementing
-5. Make minimal, focused edits following existing patterns
-6. Run validation: typecheck → tests → security checks
-7. Fix issues iteratively until all gates pass
-8. Stage changes for commit (but don't push)
+1. **Initialize**: Read TASK file and create status tracking
+2. **Analyze**: Understand requirements and examine existing codebase
+3. **Plan**: Propose implementation plan with file changes
+4. **Implement**: Make minimal, focused edits following existing patterns
+5. **Validate**: Run typecheck → tests → security checks
+6. **Fix**: Address issues iteratively until all gates pass
+7. **Stage**: Prepare changes for commit (but don't push)
+8. **Report**: Update status and create completion marker
+
+## Status Reporting Protocol
+
+### Task Initialization
+Create status file: `.claude/docs/requirements/${reqId}/tasks/${taskId}_status.json`
+```json
+{
+  "taskId": "${taskId}",
+  "reqId": "${reqId}",
+  "status": "started",
+  "startTime": "2024-01-15T10:30:00Z",
+  "agent": "dev-implementer",
+  "phase": "analysis",
+  "filesChanged": [],
+  "testsRun": false,
+  "qualityGatePassed": false
+}
+```
+
+### Progress Updates
+Update status file throughout implementation:
+- `"analysis"` → `"planning"` → `"implementing"` → `"testing"` → `"completed"`
+- Include error details if any validation fails
+- Track files modified and test results
+
+### Completion Marker
+On successful completion, create: `.claude/docs/requirements/${reqId}/tasks/${taskId}.completed`
+Content: ISO 8601 timestamp and summary of changes
 9. Update TASK file with implementation notes
 
 Code quality principles:

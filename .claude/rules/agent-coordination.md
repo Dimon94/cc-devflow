@@ -6,10 +6,16 @@ cc-devflow 系统中的 7 个专业子代理需要严格的协调机制来避免
 
 ## 核心原则
 
-### 1. 并行执行原则
+### 1. 编排器模式
+- **flow-orchestrator**: 纯编排器，使用 Task 工具调用其他代理
+- **专业代理**: 独立执行专业任务，报告状态给编排器
+- **并行执行**: 支持多个 dev-implementer 并行工作
+
+### 2. 并行执行原则
 - **独立工作**: 每个子代理在自己的专业领域内独立工作
 - **最小依赖**: 减少子代理之间的直接依赖关系
 - **异步通信**: 通过文档和状态文件进行异步通信
+- **状态同步**: 所有代理向编排器报告进度和完成状态
 
 ### 2. 工作流分配
 每个子代理都有明确的职责边界和工作文件模式：
@@ -385,6 +391,83 @@ EOF
 }
 ```
 
+## 编排器模式状态协议
+
+### 编排器状态管理
+flow-orchestrator 维护整体编排状态：
+
+```json
+// .claude/docs/requirements/${reqId}/orchestration_status.json
+{
+  "reqId": "${reqId}",
+  "currentPhase": "development",
+  "startTime": "2024-01-15T10:30:00Z",
+  "phaseStatus": {
+    "research": "completed",
+    "prd": "completed",
+    "planning": "completed",
+    "development": "in_progress",
+    "testing": "pending",
+    "security": "pending",
+    "release": "pending"
+  },
+  "activeAgents": [
+    {"agent": "dev-implementer", "taskId": "TASK_001", "status": "running", "startTime": "..."},
+    {"agent": "dev-implementer", "taskId": "TASK_002", "status": "running", "startTime": "..."}
+  ],
+  "completedTasks": ["TASK_003"],
+  "failedTasks": [],
+  "nextActions": ["wait_for_TASK_001", "wait_for_TASK_002"]
+}
+```
+
+### 任务级状态跟踪
+每个 dev-implementer 维护任务状态：
+
+```json
+// .claude/docs/requirements/${reqId}/tasks/${taskId}_status.json
+{
+  "taskId": "${taskId}",
+  "reqId": "${reqId}",
+  "status": "completed",
+  "startTime": "2024-01-15T10:30:00Z",
+  "endTime": "2024-01-15T11:15:00Z",
+  "agent": "dev-implementer",
+  "phase": "completed",
+  "filesChanged": ["src/components/UserOrder.tsx", "src/api/orders.ts"],
+  "testsRun": true,
+  "qualityGatePassed": true,
+  "commitHash": "abc123..."
+}
+```
+
+### 完成标记文件
+成功完成的任务创建完成标记：
+
+```bash
+# .claude/docs/requirements/${reqId}/tasks/${taskId}.completed
+2024-01-15T11:15:00Z
+Summary: Implemented user order creation with validation
+Files: src/components/UserOrder.tsx, src/api/orders.ts
+Tests: 5 new tests added, all passing
+Quality: TypeScript + ESLint + Security scan passed
+```
+
+### 并行监控协议
+编排器监控并行执行：
+
+1. **启动阶段**: 创建 orchestration_status.json
+2. **并行启动**: 通过 Task 工具启动多个 dev-implementer
+3. **监控循环**: 定期检查任务状态文件和完成标记
+4. **同步等待**: 等待所有任务完成后进入下一阶段
+5. **错误处理**: 任何任务失败时暂停并报告
+
+### Agent 通信规范
+- **输入**: 通过 Task 工具的 prompt 参数传递
+- **输出**: 生成指定的文件和状态文件
+- **状态**: 更新自己的状态文件，创建完成标记
+- **错误**: 在状态文件中记录错误详情
+
 ---
 
-**重要提醒**: 子代理协调是确保 cc-devflow 系统稳定运行的关键。所有子代理都必须严格遵循这些协调规则。
+**重要提醒**: 子代理协调是确保 cc-devflow 系统稳定运行的关键。所有子代理都必须严格遵循这些协调规则，特别是新的编排器模式下的状态同步协议。
