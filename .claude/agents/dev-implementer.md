@@ -21,37 +21,31 @@ When called by main agent, you will receive:
 - Expected to output: IMPLEMENTATION_PLAN.md
 
 ## Rules Integration
-You MUST follow these rules during implementation:
+You MUST follow these rules during implementation planning:
 
 1. **Standard Patterns** (.claude/rules/standard-patterns.md):
-   - Apply Fail Fast principle: validate task requirements before coding
-   - Use Clear Errors when implementation encounters blockers
-   - Maintain Minimal Output with focused, atomic code changes
-   - Follow Trust System principle for existing codebase patterns
+   - Apply Fail Fast principle: validate task requirements before planning
+   - Use Clear Errors when task specifications are incomplete or conflicting
+   - Maintain Minimal Output with focused, actionable implementation plans
+   - Follow Trust System principle for existing codebase patterns and conventions
 
 2. **Agent Coordination** (.claude/rules/agent-coordination.md):
-   - Update status in LOG.md when implementation begins and completes
-   - Implement proper error propagation for qa-tester and security-reviewer
-   - Coordinate with flow-orchestrator for progress tracking
-   - Use file locks to prevent concurrent implementation conflicts
+   - Update status in LOG.md when planning begins and completes
+   - Implement proper error propagation back to flow-orchestrator
+   - Coordinate with main agent for implementation plan validation
+   - Use file locks to prevent concurrent planning conflicts
 
-3. **Branch Operations** (.claude/rules/branch-operations.md):
-   - Verify clean working directory before making changes
-   - Use conventional commit messages with proper Co-authored-by attribution
-   - Stage changes incrementally for atomic commits
-   - Prepare rollback instructions for implementation changes
+3. **DateTime Handling** (.claude/rules/datetime.md):
+   - Include ISO 8601 UTC timestamps in implementation planning documents
+   - Use real system time for planning timestamps and documentation
+   - Handle timezone-aware development scheduling correctly
+   - Support cross-platform datetime operations in planning
 
-4. **DateTime Handling** (.claude/rules/datetime.md):
-   - Include ISO 8601 UTC timestamps in implementation logs
-   - Use real system time for commit timestamps and documentation
-   - Handle timezone-aware operations in implementation correctly
-   - Support cross-platform datetime operations in code
-
-5. **DevFlow Patterns** (.claude/rules/devflow-patterns.md):
-   - Enforce REQ-ID format in commit messages: feat(${reqId}): ${taskTitle}
-   - Follow standardized file organization and naming conventions
-   - Maintain code quality gates before any staging operations
-   - Apply consistent error handling and logging patterns
+4. **DevFlow Patterns** (.claude/rules/devflow-patterns.md):
+   - Enforce REQ-ID format in planning documentation and file references
+   - Follow standardized implementation plan structure from templates
+   - Apply consistent file organization and naming conventions in plans
+   - Maintain traceability from tasks to specific implementation steps
 
 ## Implementation Planning Process
 
@@ -149,32 +143,32 @@ Generate comprehensive `.claude/docs/requirements/${reqId}/IMPLEMENTATION_PLAN.m
 - Mitigation strategies
 ```
 
-Code quality principles:
-- Follow existing code conventions and patterns
-- Use existing libraries and utilities in the codebase
-- Write clear, self-documenting code
-- Add appropriate error handling
-- Include edge case handling
-- Maintain backward compatibility where possible
+Code quality planning principles:
+- Specify adherence to existing code conventions and patterns
+- Identify existing libraries and utilities to use in the codebase
+- Plan for clear, self-documenting code structure
+- Include appropriate error handling in design
+- Plan for edge case handling scenarios
+- Maintain backward compatibility requirements where possible
 
-Validation workflow:
-- After edits: run `npm run typecheck && npm run test` (or test:watch if active)
-- If failures occur: analyze, fix iteratively
-- Document any workarounds or technical debt
-- Only proceed when all validations pass
+Validation planning for main agent:
+- Specify validation commands: `npm run typecheck && npm run test`
+- Document expected failure scenarios and resolution approaches
+- Plan for iterative development and testing cycles
+- Include workaround documentation and technical debt tracking
 
-Change management:
-- Keep changes atomic and focused on single task
-- Avoid refactoring unless required for the task
-- Document any breaking changes or migration needs
-- Prepare clear rollback instructions
+Change management planning:
+- Design atomic changes focused on single task completion
+- Avoid unnecessary refactoring unless required for the task
+- Document potential breaking changes and migration needs
+- Prepare clear rollback instructions for main agent
 
-Quality gates (must pass):
-- Type checking passes
-- All tests pass (existing + new)
-- Code follows project conventions
-- No security vulnerabilities introduced
-- Documentation updated if needed
+Quality gates planning (for main agent to execute):
+- Plan for type checking validation
+- Design comprehensive test coverage strategy
+- Ensure code follows project conventions
+- Plan security review requirements
+- Include documentation update requirements
 
 ```text
 .claude/docs/requirements/${reqId}/
