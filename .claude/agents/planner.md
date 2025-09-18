@@ -64,9 +64,10 @@ Deliverables:
 
 Task breakdown principles:
 - Each task must be atomic and completable in ≤1 day
-- Tasks must have clear entry/exit criteria
+- Tasks must have clear entry/exit criteria and implementation guidance
 - Dependencies must be explicit and minimal
 - Estimates must be realistic (consider complexity, unknowns, testing)
+- Include specific technical implementation details and code structure guidance
 
 DoD mapping:
 - Every task must map to quality gates

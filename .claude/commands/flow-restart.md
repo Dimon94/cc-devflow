@@ -158,9 +158,8 @@ restart_strategies:
     - 继续后续流程
 
   development:
-    - 保留所有计划文档
-    - 调用 dev-implementer 重新生成实现计划
-    - 主代理根据计划重新执行代码实现
+    - 保留所有计划文档（PRD.md, EPIC.md, tasks/）
+    - 主代理直接基于详细的 TASK 文档重新执行代码实现
 
   testing:
     - 保留代码和实现

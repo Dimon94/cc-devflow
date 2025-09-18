@@ -49,19 +49,25 @@ git checkout -b "feature/${reqId}-${slug(title)}"
 mkdir -p ".claude/docs/requirements/${reqId}"/{research,tasks}
 ```
 
-#### 3.3 调用研究型子代理序列
+#### 3.3 规划阶段 - 调用研究型子代理
 1. **prd-writer**: 研究需求，生成 PRD.md
-2. **planner**: 分析PRD，生成 EPIC.md 和 tasks/TASK_*.md
-3. **dev-implementer**: 研究代码库，生成 IMPLEMENTATION_PLAN.md
-4. **qa-tester**: 分析代码，生成测试计划
-5. **security-reviewer**: 安全分析，生成安全报告
+2. **planner**: 分析PRD，生成 EPIC.md 和详细的 tasks/TASK_*.md（包含实现指导）
+3. **qa-tester**: 基于需求生成测试计划 TEST_PLAN.md
+4. **security-reviewer**: 基于需求生成安全评估计划 SECURITY_PLAN.md
 
-#### 3.4 主代理执行实际工作
-根据子代理输出的计划和策略，主代理执行:
-- 根据 IMPLEMENTATION_PLAN.md 编写代码
-- 根据测试计划生成和运行测试
-- 根据安全报告修复安全问题
-- 创建PR并合并代码
+#### 3.4 实施阶段 - 主代理执行代码实现
+- 根据详细的 TASK 文档直接编写代码
+- 遵循现有项目模式和约定
+- 实施所有 TASK 的功能要求
+
+#### 3.5 验证阶段 - 质量检查和报告
+5. **qa-tester**: 分析实现的代码，生成 TEST_REPORT.md
+6. **security-reviewer**: 分析实现的代码，生成 SECURITY_REPORT.md
+7. **release-manager**: 基于质量报告，生成 RELEASE_PLAN.md
+
+#### 3.6 发布阶段 - 主代理执行发布
+- 根据质量报告修复发现的问题
+- 创建PR并处理合并流程
 
 ### 4. 后台进程启动
 启动开发和测试监控进程:
@@ -77,10 +83,12 @@ npm run test:watch &
 - ✅ Git 分支创建: feature/REQ-123-支持用户下单
 - ✅ prd-writer 完成: PRD.md 已生成
 - ✅ planner 完成: EPIC.md 和 tasks/ 已生成
-- ✅ dev-implementer 完成: IMPLEMENTATION_PLAN.md 已生成
+- ✅ qa-tester 完成: TEST_PLAN.md 已生成
+- ✅ security-reviewer 完成: SECURITY_PLAN.md 已生成
 - 🔄 主代理执行代码实现中...
-- 🔄 qa-tester 生成测试计划中...
-- ⏳ 主代理执行测试和质量检查...
+- 🔄 qa-tester 分析代码，生成 TEST_REPORT.md 中...
+- 🔄 security-reviewer 分析代码，生成 SECURITY_REPORT.md 中...
+- ⏳ 主代理执行质量修复和发布流程...
 
 ### 6. 质量闸控制
 在关键节点要求用户确认:
@@ -98,13 +106,15 @@ npm run test:watch &
 │   └── ${reqId}_2.md
 ├── PRD.md               # 产品需求文档 (prd-writer 输出)
 ├── EPIC.md              # Epic 规划 (planner 输出)
-├── IMPLEMENTATION_PLAN.md # 实现计划 (dev-implementer 输出)
-├── tasks/               # 任务分解 (planner 输出)
+├── tasks/               # 任务分解 (planner 输出，包含实现指导)
 │   ├── TASK_001.md
 │   ├── TASK_002.md
 │   └── ...
-├── TEST_REPORT.md       # 测试报告 (qa-tester 输出)
-├── SECURITY_REPORT.md   # 安全报告 (security-reviewer 输出)
+├── TEST_PLAN.md         # 测试计划 (qa-tester 代码实现前输出)
+├── SECURITY_PLAN.md     # 安全计划 (security-reviewer 代码实现前输出)
+├── TEST_REPORT.md       # 测试报告 (qa-tester 代码实现后输出)
+├── SECURITY_REPORT.md   # 安全报告 (security-reviewer 代码实现后输出)
+├── RELEASE_PLAN.md      # 发布计划 (release-manager 输出)
 └── EXECUTION_LOG.md     # 执行日志 (主代理维护)
 ```
 

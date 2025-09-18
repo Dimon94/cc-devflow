@@ -154,7 +154,7 @@ REQ-127: 支付集成 (开发中)
 ├── 文档状态:
 │   ✅ PRD.md (prd-writer 完成)
 │   ✅ EPIC.md (planner 完成)
-│   ✅ IMPLEMENTATION_PLAN.md (dev-implementer 完成)
+│   ✅ tasks/ (planner 完成详细任务分解)
 │   🔄 TEST_REPORT.md (qa-tester 分析中)
 ├── 开发进度:
 │   ✅ TASK_001: 支付接口设计 (主代理完成)

@@ -7,9 +7,9 @@ cc-devflow 系统中的 7 个专业子代理需要严格的协调机制来避免
 ## 核心原则
 
 ### 1. 编排器模式
-- **flow-orchestrator**: 纯编排器，使用 Task 工具调用其他代理
-- **专业代理**: 独立执行专业任务，报告状态给编排器
-- **并行执行**: 支持多个 dev-implementer 并行工作
+- **flow-orchestrator**: 工作流指导文档，主代理按其标准操作程序执行
+- **研究型代理**: 独立分析专业任务，输出文档和计划给主代理
+- **主代理执行**: 主代理基于所有计划文档直接执行代码实现
 
 ### 2. 并行执行原则
 - **独立工作**: 每个子代理在自己的专业领域内独立工作
@@ -35,11 +35,7 @@ agent_workstreams:
       - ".claude/docs/requirements/*/EPIC.md"
       - ".claude/docs/requirements/*/tasks/TASK_*.md"
       - "SPRINT.md"
-    responsibility: "需求规划和任务分解"
-
-  dev-implementer:
-    files: ["src/**/*", "*.ts", "*.js", "*.json", "package.json"]
-    responsibility: "代码实现和开发"
+    responsibility: "需求规划和详细任务分解（包含实现指导）"
 
   qa-tester:
     files:
@@ -108,7 +104,7 @@ release_file_lock() {
 workflow_status:
   current_stage: "development"
   completed_stages: ["planning", "prd"]
-  active_agents: ["dev-implementer", "qa-tester"]
+  active_agents: ["qa-tester", "security-reviewer"]
 
 agent_status:
   prd-writer:
@@ -121,14 +117,14 @@ agent_status:
     output_files: ["EPIC.md", "tasks/TASK_001.md", "tasks/TASK_002.md"]
     completion_time: "2024-01-24T11:15:00Z"
 
-  dev-implementer:
+  main_agent:
     status: "in_progress"
     current_task: "TASK_001"
     progress: "60%"
 
   qa-tester:
     status: "waiting"
-    depends_on: ["dev-implementer"]
+    depends_on: ["main_agent"]
 ```
 
 #### 进度报告
@@ -166,18 +162,18 @@ dependencies:
 
   planner:
     depends_on: ["prd-writer"]
-    blocks: ["dev-implementer", "qa-tester"]
+    blocks: ["main_agent", "qa-tester"]
 
-  dev-implementer:
+  main_agent:
     depends_on: ["planner"]
     blocks: ["security-reviewer", "release-manager"]
 
   qa-tester:
-    depends_on: ["dev-implementer"]
+    depends_on: ["main_agent"]
     blocks: ["release-manager"]
 
   security-reviewer:
-    depends_on: ["dev-implementer"]
+    depends_on: ["main_agent"]
     blocks: ["release-manager"]
 
   release-manager:
@@ -332,11 +328,11 @@ coordinate_requirement_flow() {
     checkpoint_sync "$req_id" "planning-completed"
 
     # 3. 并行启动开发相关子代理
-    start_agent "dev-implementer" "$req_id" &
+    start_agent "main_agent" "$req_id" &
     start_agent "qa-tester" "$req_id" &
 
     # 4. 监控和协调
-    monitor_parallel_execution "$req_id" "dev-implementer" "qa-tester"
+    monitor_parallel_execution "$req_id" "main_agent" "qa-tester"
 
     # 5. 最终阶段
     start_agent "security-reviewer" "$req_id"
@@ -412,8 +408,8 @@ flow-orchestrator 维护整体编排状态：
     "release": "pending"
   },
   "activeAgents": [
-    {"agent": "dev-implementer", "taskId": "TASK_001", "status": "running", "startTime": "..."},
-    {"agent": "dev-implementer", "taskId": "TASK_002", "status": "running", "startTime": "..."}
+    {"agent": "main_agent", "taskId": "TASK_001", "status": "running", "startTime": "..."},
+    {"agent": "main_agent", "taskId": "TASK_002", "status": "running", "startTime": "..."}
   ],
   "completedTasks": ["TASK_003"],
   "failedTasks": [],
@@ -422,7 +418,7 @@ flow-orchestrator 维护整体编排状态：
 ```
 
 ### 任务级状态跟踪
-每个 dev-implementer 维护任务状态：
+每个 main_agent 维护任务状态：
 
 ```json
 // .claude/docs/requirements/${reqId}/tasks/${taskId}_status.json
@@ -432,7 +428,7 @@ flow-orchestrator 维护整体编排状态：
   "status": "completed",
   "startTime": "2024-01-15T10:30:00Z",
   "endTime": "2024-01-15T11:15:00Z",
-  "agent": "dev-implementer",
+  "agent": "main_agent",
   "phase": "completed",
   "filesChanged": ["src/components/UserOrder.tsx", "src/api/orders.ts"],
   "testsRun": true,
@@ -452,15 +448,6 @@ Files: src/components/UserOrder.tsx, src/api/orders.ts
 Tests: 5 new tests added, all passing
 Quality: TypeScript + ESLint + Security scan passed
 ```
-
-### 并行监控协议
-编排器监控并行执行：
-
-1. **启动阶段**: 创建 orchestration_status.json
-2. **并行启动**: 通过 Task 工具启动多个 dev-implementer
-3. **监控循环**: 定期检查任务状态文件和完成标记
-4. **同步等待**: 等待所有任务完成后进入下一阶段
-5. **错误处理**: 任何任务失败时暂停并报告
 
 ### Agent 通信规范
 - **输入**: 通过 Task 工具的 prompt 参数传递

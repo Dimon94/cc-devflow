@@ -94,12 +94,17 @@ def find_current_task(req_id):
 def analyze_code_progress(req_id, task_id):
     """分析代码进度"""
 
-    # 读取实现计划
-    impl_plan_path = f".claude/docs/requirements/{req_id}/IMPLEMENTATION_PLAN.md"
-    if not os.path.exists(impl_plan_path):
+    # 读取任务目录
+    tasks_dir_path = f".claude/docs/requirements/{req_id}/tasks"
+    if not os.path.exists(tasks_dir_path):
         return None
 
-    with open(impl_plan_path, 'r', encoding='utf-8') as f:
+    # 读取特定任务文件
+    task_file_path = f"{tasks_dir_path}/{task_id}.md"
+    if not os.path.exists(task_file_path):
+        return None
+
+    with open(task_file_path, 'r', encoding='utf-8') as f:
         impl_plan = f.read()
 
     # 提取任务相关的文件列表

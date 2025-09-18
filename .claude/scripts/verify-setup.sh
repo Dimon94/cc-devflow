@@ -69,7 +69,7 @@ echo "─────────────────"
 # 核心文件检查
 check_item "flow-orchestrator" "test -f .claude/agents/flow-orchestrator.md" "true"
 check_item "prd-writer" "test -f .claude/agents/prd-writer.md" "true"
-check_item "dev-implementer" "test -f .claude/agents/dev-implementer.md" "true"
+# dev-implementer agent removed - functionality merged into planner
 check_item "qa-tester" "test -f .claude/agents/qa-tester.md" "true"
 
 echo ""

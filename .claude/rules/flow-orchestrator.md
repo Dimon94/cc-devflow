@@ -104,61 +104,70 @@ Steps:
    - planner 输出: `EPIC.md` 和 `tasks/TASK_*.md`
    - 主 Agent 审查规划合理性
 
-### 阶段2: 实施计划制定
-3. **技术实施计划**
+### 阶段2: 实施准备
+3. **测试计划**（代码实现前）
    ```bash
-   Task: dev-implementer "Create detailed implementation plan for ${reqId} based on all tasks"
-   ```
-
-   - dev-implementer 输出: `IMPLEMENTATION_PLAN.md`
-   - 包含: 文件清单、代码结构、实施步骤、技术细节
-
-4. **测试计划**
-   ```bash
-   Task: qa-tester "Create comprehensive test plan for ${reqId}"
+   Task: qa-tester "Create comprehensive test plan for ${reqId} based on EPIC and tasks"
    ```
 
    - qa-tester 输出: `TEST_PLAN.md`
    - 包含: 测试策略、用例设计、覆盖率要求
+   - **触发词**: 包含 "test plan" 的提示词
 
-5. **安全评估计划**
+4. **安全评估计划**（代码实现前）
    ```bash
-   Task: security-reviewer "Create security assessment plan for ${reqId}"
+   Task: security-reviewer "Create comprehensive security plan for ${reqId} based on requirements"
    ```
 
    - security-reviewer 输出: `SECURITY_PLAN.md`
    - 包含: 安全检查点、风险评估、缓解措施
+   - **触发词**: 包含 "security plan" 的提示词
 
-6. **发布计划**
+### 阶段3: 主 Agent 代码实施
+5. **代码实施**
+   - 主 Agent 基于详细的 TASK 文档直接编写代码
+   - 遵循现有项目模式和约定
+   - 实施所有 TASK 的功能要求
+
+### 阶段4: 质量验证（代码实现后）
+6. **测试执行和报告**
    ```bash
-   Task: release-manager "Create release plan for ${reqId}"
+   Task: qa-tester "Analyze implemented code and generate comprehensive test report for ${reqId}"
+   ```
+
+   - 主 Agent 基于 TEST_PLAN.md 编写和执行测试
+   - qa-tester 分析测试结果，输出: `TEST_REPORT.md`
+   - 包含: 覆盖率分析、测试结果、质量评估
+   - **触发词**: 包含 "test report" 的提示词
+
+7. **安全检查和报告**
+   ```bash
+   Task: security-reviewer "Analyze implemented code and generate comprehensive security report for ${reqId}"
+   ```
+
+   - security-reviewer 分析实际代码，输出: `SECURITY_REPORT.md`
+   - 包含: 漏洞扫描、安全风险、修复建议
+   - **触发词**: 包含 "security report" 的提示词
+
+8. **发布准备**
+   ```bash
+   Task: release-manager "Create release plan for ${reqId} based on quality reports"
    ```
 
    - release-manager 输出: `RELEASE_PLAN.md`
    - 包含: 发布流程、回滚计划、部署策略
 
-### 阶段3: 主 Agent 实施执行
-7. **代码实施**
-   - 主 Agent 基于 IMPLEMENTATION_PLAN.md 直接编写代码
-   - 遵循现有项目模式和约定
-   - 实施所有 TASK 的功能要求
-
-8. **测试执行**
-   - 主 Agent 基于 TEST_PLAN.md 编写和执行测试
-   - 确保测试覆盖率达到要求
-   - 验证所有功能正常工作
-
-9. **安全检查**
-   - 主 Agent 基于 SECURITY_PLAN.md 进行安全检查
-   - 修复发现的安全问题
-   - 确保代码安全标准
+### 阶段5: 发布执行
+9. **质量闸检查**
+   - 主 Agent 确保所有质量要求满足
+   - 修复 TEST_REPORT.md 和 SECURITY_REPORT.md 中发现的问题
 
 10. **发布和合并**
     - 主 Agent 基于 RELEASE_PLAN.md 创建 PR
-    - 执行质量闸检查
+    - 执行最终质量闸检查
     - 处理代码合并流程
 
-### 阶段4: 总结和归档
+### 阶段6: 总结和归档
 11. **文档更新**
     - 更新项目文档和说明
     - 记录实施过程和决策
@@ -203,9 +212,8 @@ Create and maintain status files for coordination:
     "release": "pending"
   },
   "activeAgents": [
-    {"agent": "dev-implementer", "taskId": "TASK_001", "status": "running", "startTime": "..."},
-    {"agent": "dev-implementer", "taskId": "TASK_002", "status": "running", "startTime": "..."},
-    {"agent": "dev-implementer", "taskId": "TASK_003", "status": "completed", "endTime": "..."}
+    {"agent": "qa-tester", "phase": "test_analysis", "status": "running", "startTime": "..."},
+    {"agent": "security-reviewer", "phase": "security_analysis", "status": "running", "startTime": "..."}
   ],
   "completedTasks": ["TASK_003"],
   "failedTasks": [],
@@ -213,16 +221,16 @@ Create and maintain status files for coordination:
 }
 ```
 
-### Parallel Execution Pattern
-When launching multiple dev-implementer agents:
+### Sequential Execution Pattern
+When coordinating research agents:
 1. **Pre-Launch**: Create orchestration_status.json
-2. **Launch**: Start all agents with Task tool in single message
-3. **Monitor**: Periodically check agent completion via file system
-4. **Synchronize**: Wait for all agents before proceeding to next phase
-5. **Verify**: Ensure all outputs meet quality standards
+2. **Sequential Launch**: Start agents one by one based on dependencies
+3. **Monitor**: Check agent completion via file system
+4. **Quality Check**: Validate each agent's output before proceeding
+5. **Main Agent Execution**: Execute code implementation based on all plans
 
 ### Error Handling
-- If any dev-implementer fails, pause and report
+- If any research agent fails, pause and report
 - Allow manual intervention or retry
 - Update status file with failure details
 - Provide recovery options
@@ -237,4 +245,4 @@ Be conservative with privileges. Ask when performing push/merge. Persist everyth
 
 ## Key Implementation Notes
 
-**REMEMBER**: You are an orchestrator, not an implementer. Every step should use Task tool to delegate to appropriate agents. Never write code, generate documents, or execute git commands yourself - always delegate to the specialist agents.
+**REMEMBER**: This is a workflow guide for the main agent. The main agent should call research-type sub-agents using Task tool for analysis and planning, then execute all actual code implementation, testing, and git operations directly based on the plans received from sub-agents.

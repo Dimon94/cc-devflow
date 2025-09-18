@@ -64,7 +64,7 @@ def create_test_environment():
 - `UserList` - 用户列表展示
 """
 
-    with open(".claude/docs/requirements/REQ-001/IMPLEMENTATION_PLAN.md", "w", encoding="utf-8") as f:
+    with open(".claude/docs/requirements/REQ-001/tasks/TASK_001.md", "w", encoding="utf-8") as f:
         f.write(impl_plan)
 
     # 创建任务文件

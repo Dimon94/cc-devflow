@@ -124,12 +124,12 @@ Co-authored-by: Claude <claude@anthropic.com>
 
 ### 调用顺序
 ```text
-flow-orchestrator
+flow-orchestrator (工作流指导)
 ├── prd-writer (PRD生成)
-├── planner (Epic和Task规划)
-├── dev-implementer (代码实现)
-├── qa-tester (质量测试)
-├── security-reviewer (安全检查)
+├── planner (Epic和Task规划，包含实现指导)
+├── main-agent (代码实现，基于详细任务)
+├── qa-tester (质量测试分析)
+├── security-reviewer (安全检查分析)
 └── release-manager (发布管理)
 ```
 

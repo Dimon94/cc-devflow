@@ -356,7 +356,7 @@ class ProgressMonitor:
         """分析任务进度"""
         try:
             # 读取实现计划
-            impl_plan_path = f".claude/docs/requirements/{req_id}/IMPLEMENTATION_PLAN.md"
+            impl_plan_path = f".claude/docs/requirements/{req_id}/tasks/"
             if not os.path.exists(impl_plan_path):
                 return None
 
@@ -742,7 +742,7 @@ class CodeChangeHandler(FileSystemEventHandler):
         """查找文件相关的需求和任务"""
         # 遍历活跃需求，查找包含该文件的实现计划
         for req_id in self.monitor.active_requirements:
-            impl_plan_path = f".claude/docs/requirements/{req_id}/IMPLEMENTATION_PLAN.md"
+            impl_plan_path = f".claude/docs/requirements/{req_id}/tasks/"
 
             if os.path.exists(impl_plan_path):
                 try:

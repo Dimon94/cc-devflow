@@ -289,7 +289,12 @@ src/components/auth/
 - TASK_002 → TASK_003
 """
 
-        with open(f"{req_dir}/IMPLEMENTATION_PLAN.md", "w", encoding="utf-8") as f:
+        # 创建任务目录
+        tasks_dir = f"{req_dir}/tasks"
+        os.makedirs(tasks_dir, exist_ok=True)
+
+        # 创建示例任务文件
+        with open(f"{tasks_dir}/TASK_001.md", "w", encoding="utf-8") as f:
             f.write(impl_plan)
 
         self.print_success(f"创建了需求文档结构: {req_dir}")

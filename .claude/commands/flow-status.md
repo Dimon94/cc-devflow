@@ -62,8 +62,7 @@ status_types:
   NOT_STARTED: "未开始"
   RESEARCH: "研究阶段 (prd-writer工作中)"
   PRD_COMPLETED: "PRD完成 (planner工作中)"
-  PLANNING_COMPLETED: "规划完成 (dev-implementer分析中)"
-  PLAN_READY: "实现计划就绪 (主代理开发中)"
+  PLANNING_COMPLETED: "规划完成 (主代理准备开发)"
   DEVELOPMENT: "开发阶段 (主代理执行中)"
   DEV_COMPLETED: "开发完成 (qa-tester分析中)"
   TESTING: "测试阶段 (主代理执行测试)"
@@ -91,12 +90,8 @@ documents:
     generator: "planner 子代理"
   tasks/:
     required: true
-    weight: 15
-    generator: "planner 子代理"
-  IMPLEMENTATION_PLAN.md:
-    required: true
-    weight: 20
-    generator: "dev-implementer 子代理"
+    weight: 30
+    generator: "planner 子代理 (包含详细实现指导)"
   TEST_REPORT.md:
     required: false
     weight: 15
@@ -156,8 +151,7 @@ documents:
 ✅ research/ (100%) - 主代理抓取完成
 ✅ PRD.md (100%) - prd-writer 2024-01-14 10:15:00
 ✅ EPIC.md (100%) - planner 2024-01-14 11:20:00
-✅ tasks/ (100%) - planner 3个任务已创建
-✅ IMPLEMENTATION_PLAN.md (100%) - dev-implementer 2024-01-14 12:30:00
+✅ tasks/ (100%) - planner 3个详细任务已创建 (包含实现指导)
 🔄 TEST_REPORT.md (0%) - 待qa-tester生成
 ❌ SECURITY_REPORT.md (0%) - 未开始
 
@@ -184,10 +178,10 @@ Git状态:
 - 风险评估: 低风险
 
 最近日志:
-- 2024-01-15 10:30:00: 主代理根据实现计划开始 TASK_003
+- 2024-01-15 10:30:00: 主代理根据详细 TASK 开始 TASK_003
 - 2024-01-15 09:45:00: 主代理完成 TASK_002，通过质量检查
 - 2024-01-15 08:20:00: 主代理开始前端组件开发
-- 2024-01-14 12:30:00: dev-implementer 完成实现计划生成
+- 2024-01-14 12:30:00: planner 完成详细任务分解和实现指导
 ```
 
 ### 分支状态模式
