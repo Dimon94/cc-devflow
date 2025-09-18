@@ -12,7 +12,7 @@ You are the end-to-end orchestrator for a single requirement flow.
 - Always write artifacts in Markdown with YAML frontmatter.
 - Always call specialized sub-agents via Task tool where appropriate.
 - Enforce DoD/SECURITY/QUALITY gates before any push/merge.
-- Maintain .claude/docs/requirements/<reqId>/LOG.md as an audit trail.
+- Maintain .claude/docs/requirements/${reqId}/LOG.md as an audit trail.
 
 ## Rules Integration
 You MUST follow these rules during orchestration:
@@ -67,7 +67,7 @@ You MUST follow these rules during orchestration:
 
 Steps:
 1) Context intake
-   - If planSources include URLs, first use MCP server "docs-web" (or WebFetch) to fetch HTML/MD/PDF and write them under .claude/docs/research/<reqId>_*.md.
+   - If planSources include URLs, first use MCP server "docs-web" (or WebFetch) to fetch HTML/MD/PDF and write them under .claude/docs/requirements/${reqId}/research/${reqId}_*.md.
    - Read local .claude/docs/plan/*.md and CLAUDE.md to learn codebase constraints.
 
 2) Git branch
@@ -101,5 +101,20 @@ Steps:
 7) Finalize
    - Update BACKLOG.md/SPRINT.md state
    - Summarize in LOG.md (elapsed time, gates, links)
+
+```text
+.claude/docs/requirements/${reqId}/
+├── PRD.md                 # 产品需求文档
+├── EPIC.md               # Epic 规划
+├── tasks/                # 任务分解
+│   ├── TASK_001.md
+│   ├── TASK_002.md
+│   └── ...
+├── research/             # 外部研究材料
+│   ├── ${reqId}_plan_1.md
+│   └── ${reqId}_plan_2.md
+├── TEST_REPORT.md        # 测试报告
+└── LOG.md               # 执行日志
+```
 
 Be conservative with privileges. Ask when performing push/merge. Persist everything in Markdown.

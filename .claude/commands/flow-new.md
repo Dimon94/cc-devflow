@@ -6,7 +6,7 @@ description: One-shot requirement flow. Usage: /flow:new "REQ-123|支持用户�
 # Flow:New - 一键需求开发流
 
 ## 命令格式
-```
+```text
 /flow:new "REQ_ID|TITLE|PLAN_URLS"
 ```
 
@@ -16,7 +16,7 @@ description: One-shot requirement flow. Usage: /flow:new "REQ-123|支持用户�
 - **PLAN_URLS**: 计划文档URL，多个用逗号分隔 (可选)
 
 ### 示例
-```
+```text
 /flow:new "REQ-123|支持用户下单|https://plan.example.com/Q1"
 /flow:new "REQ-124|用户权限管理|https://docs.company.com/auth-spec.md,https://confluence.company.com/security-requirements"
 /flow:new "REQ-125|数据导出功能"
@@ -33,7 +33,7 @@ description: One-shot requirement flow. Usage: /flow:new "REQ-123|支持用户�
 ### 2. 研究资料收集
 如果提供了 planUrls:
 - 使用 WebFetch 抓取每个 URL 内容
-- 将内容保存到 `.claude/docs/research/${reqId}_*.md`
+- 将内容保存到 `.claude/docs/requirements/${reqId}/research/${reqId}_*.md`
 - 分析并提取关键信息
 
 ### 3. 启动总控子代理
@@ -43,8 +43,8 @@ description: One-shot requirement flow. Usage: /flow:new "REQ-123|支持用户�
   "reqId": "REQ-123",
   "title": "支持用户下单",
   "planSources": [
-    ".claude/docs/research/REQ-123_1.md",
-    ".claude/docs/research/REQ-123_2.md",
+    ".claude/docs/requirements/REQ-123/research/REQ-123_1.md",
+    ".claude/docs/requirements/REQ-123/research/REQ-123_2.md",
     ".claude/docs/plan/project-roadmap.md"
   ],
   "baseBranch": "main"
@@ -76,7 +76,7 @@ npm run test:watch &
 ## 输出产物
 
 ### 文档结构
-```
+```text
 .claude/docs/requirements/${reqId}/
 ├── PRD.md                 # 产品需求文档
 ├── EPIC.md               # Epic 规划
@@ -182,7 +182,7 @@ export FLOW_DEBUG=1
 
 ### 恢复机制
 如果流程中断，可以从特定步骤继续:
-```
+```text
 /flow:continue "REQ-123" --from=prd
 /flow:continue "REQ-123" --from=development
 ```

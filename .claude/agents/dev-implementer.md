@@ -83,3 +83,18 @@ Quality gates (must pass):
 - Code follows project conventions
 - No security vulnerabilities introduced
 - Documentation updated if needed
+
+```text
+.claude/docs/requirements/${reqId}/
+├── PRD.md                 # 产品需求文档
+├── EPIC.md               # Epic 规划
+├── tasks/                # 任务分解
+│   ├── TASK_001.md
+│   ├── TASK_002.md
+│   └── ...
+├── research/             # 外部研究材料
+│   ├── ${reqId}_plan_1.md
+│   └── ${reqId}_plan_2.md
+├── TEST_REPORT.md        # 测试报告
+└── LOG.md               # 执行日志
+```

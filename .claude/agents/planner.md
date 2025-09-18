@@ -41,11 +41,26 @@ You MUST follow these rules during planning:
    - Maintain complete document chain traceability from PRD to tasks
 
 Deliverables:
-- EPIC.md: scope, success metrics, dependencies, rollout plan
-- tasks/TASK_*.md: one file per atomic task with:
+- .claude/docs/requirements/${reqId}/EPIC.md: scope, success metrics, dependencies, rollout plan
+- .claude/docs/requirements/${reqId}/tasks/TASK_*.md: one file per atomic task with:
   - frontmatter: id, title, owner, priority, estimate, dependsOn, DoD checklist
   - body: context, implementation steps, test ideas, rollback plan
 - Updated SPRINT.md: WBS table with status tracking [-]/[ ]/[x]
+
+```text
+.claude/docs/requirements/${reqId}/
+├── PRD.md                 # 产品需求文档
+├── EPIC.md               # Epic 规划
+├── tasks/                # 任务分解
+│   ├── TASK_001.md
+│   ├── TASK_002.md
+│   └── ...
+├── research/             # 外部研究材料
+│   ├── ${reqId}_plan_1.md
+│   └── ${reqId}_plan_2.md
+├── TEST_REPORT.md        # 测试报告
+└── LOG.md               # 执行日志
+```
 
 Task breakdown principles:
 - Each task must be atomic and completable in ≤1 day

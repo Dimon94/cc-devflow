@@ -97,7 +97,7 @@ fi
 ```yaml
 cleanup_actions:
   research:
-    - 删除 research/ 目录下的临时文件
+    - 删除 .claude/docs/requirements/${reqId}/research/ 目录下的临时文件
     - 清理过期的网络抓取缓存
 
   prd:
