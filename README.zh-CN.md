@@ -16,6 +16,7 @@
 - **🔗 GitHub 集成**: 自动化 PR 创建、分支管理和规范化提交
 - **📊 进度跟踪**: 实时状态监控和智能重启点
 - **🌐 MCP 集成**: 无缝外部内容获取和 API 集成
+- **⚡ 自动进度更新**: 基于代码变更和Git提交的智能进度检测
 
 ## 🚀 快速开始
 
@@ -38,6 +39,22 @@ cp -r cc-devflow-main/.claude .claude
 rm -rf cc-devflow.zip cc-devflow-main
 ```
 
+### 验证安装
+
+**检查安装是否成功:**
+```bash
+.claude/scripts/verify-setup.sh
+```
+这个脚本会验证所有必需的文件和配置。
+
+### 快速体验
+
+**运行交互式演示:**
+```bash
+python3 .claude/scripts/demo.py
+```
+这个演示将引导您体验完整的开发流程，包括自动进度更新。
+
 ### 使用方法
 
 1. **启动新的需求流程:**
@@ -56,6 +73,12 @@ rm -rf cc-devflow.zip cc-devflow-main
    ```bash
    /flow:restart "REQ-123"                    # 自动检测重启点
    /flow:restart "REQ-123" --from=development # 从特定阶段重启
+   ```
+
+4. **启动自动监控:**
+   ```bash
+   .claude/scripts/start-monitor.sh start     # 启动后台监控
+   .claude/scripts/start-monitor.sh status   # 查看监控状态
    ```
 
 ## 🏗️ 系统架构
@@ -99,6 +122,8 @@ flow-orchestrator (主控制器)
 | `/flow:new` | 启动新需求开发 | `/flow:new "REQ-123\|标题\|URLs"` |
 | `/flow:status` | 查询开发进度 | `/flow:status [REQ-ID] [--detailed]` |
 | `/flow:restart` | 恢复中断的开发 | `/flow:restart "REQ-ID" [--from=STAGE]` |
+| `/flow:update` | 更新任务进度 | `/flow:update "REQ-ID" "TASK-ID" [OPTIONS]` |
+| `/flow:sprint` | 冲刺管理 | `/flow:sprint [ACTION] [OPTIONS]` |
 
 ### 状态查询选项
 ```bash
@@ -136,6 +161,11 @@ flow-orchestrator (主控制器)
       "command": "npx",
       "args": ["-y", "@anthropic/web-scraper-mcp@latest"]
     }
+  },
+  "progressMonitor": {
+    "enabled": true,
+    "autoUpdateThreshold": 0.05,
+    "confidenceThreshold": 0.7
   }
 }
 ```
@@ -204,6 +234,29 @@ cc-devflow 遵循全面的规则系统，确保一致性和质量：
 - **MCP 集成**: 外部内容获取和安全验证
 
 ## 🔍 监控和调试
+
+### 自动进度更新
+系统会自动检测代码变更并更新任务进度：
+
+```bash
+# 启动后台监控服务
+.claude/scripts/start-monitor.sh start
+
+# 查看监控状态
+.claude/scripts/start-monitor.sh status
+
+# 手动更新任务进度
+/flow:update "REQ-123" "TASK_001" --auto
+
+# 测试自动更新机制
+python3 .claude/scripts/test-auto-update.py
+```
+
+**自动触发条件**:
+- 编辑代码文件 (Edit, Write, MultiEdit)
+- Git 提交操作
+- 测试运行完成
+- 文件系统变更检测
 
 ### 状态监控
 ```bash

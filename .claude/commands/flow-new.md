@@ -36,20 +36,32 @@ description: One-shot requirement flow. Usage: /flow:new "REQ-123|支持用户�
 - 将内容保存到 `.claude/docs/requirements/${reqId}/research/${reqId}_*.md`
 - 分析并提取关键信息
 
-### 3. 启动总控子代理
-调用 flow-orchestrator 子代理，传递参数:
-```json
-{
-  "reqId": "REQ-123",
-  "title": "支持用户下单",
-  "planSources": [
-    ".claude/docs/requirements/REQ-123/research/REQ-123_1.md",
-    ".claude/docs/requirements/REQ-123/research/REQ-123_2.md",
-    ".claude/docs/plan/project-roadmap.md"
-  ],
-  "baseBranch": "main"
-}
+### 3. 按工作流指导执行
+根据 flow-orchestrator 工作流指导文档，主代理按以下标准流程操作:
+
+#### 3.1 创建Git分支
+```bash
+git checkout -b "feature/${reqId}-${slug(title)}"
 ```
+
+#### 3.2 初始化需求目录
+```bash
+mkdir -p ".claude/docs/requirements/${reqId}"/{research,tasks}
+```
+
+#### 3.3 调用研究型子代理序列
+1. **prd-writer**: 研究需求，生成 PRD.md
+2. **planner**: 分析PRD，生成 EPIC.md 和 tasks/TASK_*.md
+3. **dev-implementer**: 研究代码库，生成 IMPLEMENTATION_PLAN.md
+4. **qa-tester**: 分析代码，生成测试计划
+5. **security-reviewer**: 安全分析，生成安全报告
+
+#### 3.4 主代理执行实际工作
+根据子代理输出的计划和策略，主代理执行:
+- 根据 IMPLEMENTATION_PLAN.md 编写代码
+- 根据测试计划生成和运行测试
+- 根据安全报告修复安全问题
+- 创建PR并合并代码
 
 ### 4. 后台进程启动
 启动开发和测试监控进程:
@@ -63,9 +75,12 @@ npm run test:watch &
 实时显示流程进度:
 - ✅ 研究资料收集完成
 - ✅ Git 分支创建: feature/REQ-123-支持用户下单
-- 🔄 PRD 生成中...
-- 🔄 Epic 和任务规划中...
-- ⏳ 开发实施中...
+- ✅ prd-writer 完成: PRD.md 已生成
+- ✅ planner 完成: EPIC.md 和 tasks/ 已生成
+- ✅ dev-implementer 完成: IMPLEMENTATION_PLAN.md 已生成
+- 🔄 主代理执行代码实现中...
+- 🔄 qa-tester 生成测试计划中...
+- ⏳ 主代理执行测试和质量检查...
 
 ### 6. 质量闸控制
 在关键节点要求用户确认:
@@ -78,14 +93,19 @@ npm run test:watch &
 ### 文档结构
 ```text
 .claude/docs/requirements/${reqId}/
-├── PRD.md                 # 产品需求文档
-├── EPIC.md               # Epic 规划
-├── tasks/                # 任务分解
+├── research/             # 研究资料
+│   ├── ${reqId}_1.md
+│   └── ${reqId}_2.md
+├── PRD.md               # 产品需求文档 (prd-writer 输出)
+├── EPIC.md              # Epic 规划 (planner 输出)
+├── IMPLEMENTATION_PLAN.md # 实现计划 (dev-implementer 输出)
+├── tasks/               # 任务分解 (planner 输出)
 │   ├── TASK_001.md
 │   ├── TASK_002.md
 │   └── ...
-├── TEST_REPORT.md        # 测试报告
-└── LOG.md               # 执行日志
+├── TEST_REPORT.md       # 测试报告 (qa-tester 输出)
+├── SECURITY_REPORT.md   # 安全报告 (security-reviewer 输出)
+└── EXECUTION_LOG.md     # 执行日志 (主代理维护)
 ```
 
 ### Git 分支

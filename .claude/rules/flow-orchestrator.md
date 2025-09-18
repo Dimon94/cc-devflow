@@ -1,26 +1,30 @@
 ---
-name: flow-orchestrator
-description: One-shot demand flow orchestrator. From plan capture → PRD → EPIC → TASK → Dev/QA/Sec → Commit/PR/Merge. Must be used by /flow:new.
-tools: Task, Read, Write, Edit, Grep, Glob, Bash, WebFetch, WebSearch
-model: inherit
+name: flow-orchestrator-guide
+description: Standard Operating Procedure for main agent when executing /flow:new command. Not an executable agent, but workflow guidance.
+type: workflow-guide
 ---
 
-You are the end-to-end orchestrator for a single requirement flow.
+# 需求开发流程标准作业程序
 
-## Contract
-- Input: { reqId, title, planSources[], baseBranch, settings }
-- **CRITICAL**: You are a PURE ORCHESTRATOR - do NOT implement tasks yourself
-- Always delegate work to specialized sub-agents via Task tool
-- Monitor and coordinate sub-agent execution and status
-- Enforce DoD/SECURITY/QUALITY gates before any push/merge
-- Maintain .claude/docs/requirements/${reqId}/LOG.md as an audit trail
+当用户执行 `/flow:new "REQ-ID|TITLE|PLAN_URLS"` 时，主 Agent (Claude 本身) 应按以下标准流程操作：
 
-## Orchestration Principles
-1. **Delegate, Don't Execute**: Call other agents via Task tool, never do their work
-2. **Parallel When Possible**: Run independent dev-implementer agents simultaneously
-3. **Sequential When Required**: Wait for dependencies (PRD → Planning → Development)
-4. **Monitor and Verify**: Check each agent's output before proceeding
-5. **Handle Failures**: Retry or escalate when sub-agents fail
+## 核心原则 (遵循 Claude Code 最佳实践)
+
+### 主 Agent 职责
+- **完整上下文管理**: 主 Agent 拥有项目全貌，负责所有代码实施
+- **Sub-agent 协调**: 调用研究型 sub-agents 收集专业信息和制定计划
+- **最终实施**: 基于所有研究报告和计划，主 Agent 直接执行代码修改
+
+### Sub-agent 定位
+- **研究员角色**: 仅提供研究报告、分析文档、实施计划
+- **无代码执行**: 不直接修改项目文件，只输出 Markdown 文档
+- **专业分工**: 各自在专业领域提供深度分析和建议
+
+### 工作流原则
+1. **顺序执行**: 避免并行代码修改，确保一致性
+2. **上下文保持**: 主 Agent 保持完整项目上下文
+3. **计划先行**: 充分规划后再执行实施
+4. **质量保证**: 每个阶段都有相应的质量检查
 
 ## Rules Integration
 You MUST follow these rules during orchestration:
@@ -81,54 +85,88 @@ Steps:
 2) Git branch
    - git switch -c feature/${reqId}-${slug(title)}
 
-3) PRD Generation
-   - Use Task tool to call prd-writer agent with prompt:
-     "Generate PRD for ${reqId}: ${title}. Use research sources: ${planSources}. Output to .claude/docs/requirements/${reqId}/PRD.md"
-   - Wait for prd-writer completion
-   - Verify PRD.md was created and update LOG.md
+## 标准作业流程
 
-4) Epic/Tasks Planning
-   - Use Task tool to call planner agent with prompt:
-     "Create Epic and Tasks for ${reqId} based on PRD at .claude/docs/requirements/${reqId}/PRD.md. Output EPIC.md and tasks/ directory"
-   - Wait for planner completion
-   - Verify EPIC.md and tasks/*.md were created
-   - Read task list for next phase
+### 阶段1: 需求研究和分析
+1. **外部资料研究**
+   ```bash
+   Task: prd-writer "Analyze ${planSources} and generate comprehensive PRD for ${reqId}: ${title}"
+   ```
 
-5) Parallel Development Implementation
-   - Read all TASK_*.md files from .claude/docs/requirements/${reqId}/tasks/
-   - Create status tracking file: .claude/docs/requirements/${reqId}/dev_status.json
-   - Launch dev-implementer agents in parallel using Task tool:
-     ```
-     # Example: Launch 3 tasks in parallel
-     Task 1: dev-implementer "Implement TASK_001 for ${reqId}. Read specification from .claude/docs/requirements/${reqId}/tasks/TASK_001.md"
-     Task 2: dev-implementer "Implement TASK_002 for ${reqId}. Read specification from .claude/docs/requirements/${reqId}/tasks/TASK_002.md"
-     Task 3: dev-implementer "Implement TASK_003 for ${reqId}. Read specification from .claude/docs/requirements/${reqId}/tasks/TASK_003.md"
-     ```
-   - Monitor parallel execution by checking task completion status
-   - Wait for ALL dev-implementer agents to complete before proceeding
-   - Verify all implementations and update LOG.md with results
+   - prd-writer 输出: `.claude/docs/requirements/${reqId}/PRD.md`
+   - 主 Agent 读取并理解需求
 
-6) Quality Assurance
-   - Use Task tool to call qa-tester agent with prompt:
-     "Test all implementations for ${reqId}. Generate TEST_REPORT.md with coverage ≥80%"
-   - Wait for qa-tester completion
-   - Verify TEST_REPORT.md and all tests pass
+2. **规划和分解**
+   ```bash
+   Task: planner "Based on PRD, create Epic and detailed task breakdown for ${reqId}"
+   ```
 
-7) Security Review
-   - Use Task tool to call security-reviewer agent with prompt:
-     "Security scan for ${reqId}. Fix critical/high issues. Document in security scan results"
-   - Wait for security-reviewer completion
-   - Verify no high-risk vulnerabilities remain
+   - planner 输出: `EPIC.md` 和 `tasks/TASK_*.md`
+   - 主 Agent 审查规划合理性
 
-8) Release Management
-   - Use Task tool to call release-manager agent with prompt:
-     "Create PR for ${reqId}. Handle merge process with quality gates validation"
-   - Wait for release-manager completion
-   - Verify PR created and merged successfully
+### 阶段2: 实施计划制定
+3. **技术实施计划**
+   ```bash
+   Task: dev-implementer "Create detailed implementation plan for ${reqId} based on all tasks"
+   ```
 
-9) Finalization
-   - Update BACKLOG.md/SPRINT.md status
-   - Summarize results in LOG.md (total time, agents called, final status)
+   - dev-implementer 输出: `IMPLEMENTATION_PLAN.md`
+   - 包含: 文件清单、代码结构、实施步骤、技术细节
+
+4. **测试计划**
+   ```bash
+   Task: qa-tester "Create comprehensive test plan for ${reqId}"
+   ```
+
+   - qa-tester 输出: `TEST_PLAN.md`
+   - 包含: 测试策略、用例设计、覆盖率要求
+
+5. **安全评估计划**
+   ```bash
+   Task: security-reviewer "Create security assessment plan for ${reqId}"
+   ```
+
+   - security-reviewer 输出: `SECURITY_PLAN.md`
+   - 包含: 安全检查点、风险评估、缓解措施
+
+6. **发布计划**
+   ```bash
+   Task: release-manager "Create release plan for ${reqId}"
+   ```
+
+   - release-manager 输出: `RELEASE_PLAN.md`
+   - 包含: 发布流程、回滚计划、部署策略
+
+### 阶段3: 主 Agent 实施执行
+7. **代码实施**
+   - 主 Agent 基于 IMPLEMENTATION_PLAN.md 直接编写代码
+   - 遵循现有项目模式和约定
+   - 实施所有 TASK 的功能要求
+
+8. **测试执行**
+   - 主 Agent 基于 TEST_PLAN.md 编写和执行测试
+   - 确保测试覆盖率达到要求
+   - 验证所有功能正常工作
+
+9. **安全检查**
+   - 主 Agent 基于 SECURITY_PLAN.md 进行安全检查
+   - 修复发现的安全问题
+   - 确保代码安全标准
+
+10. **发布和合并**
+    - 主 Agent 基于 RELEASE_PLAN.md 创建 PR
+    - 执行质量闸检查
+    - 处理代码合并流程
+
+### 阶段4: 总结和归档
+11. **文档更新**
+    - 更新项目文档和说明
+    - 记录实施过程和决策
+    - 更新 BACKLOG.md/SPRINT.md 状态
+
+12. **执行日志**
+    - 在 LOG.md 中记录完整执行过程
+    - 包含时间线、决策点、问题解决
 
 ```text
 .claude/docs/requirements/${reqId}/

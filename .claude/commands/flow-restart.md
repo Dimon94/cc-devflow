@@ -137,20 +137,39 @@ cleanup_actions:
 - 准备后续阶段的输入数据
 
 ### 5. 流程重启
-调用 flow-orchestrator 从指定阶段继续：
-```json
-{
-  "reqId": "REQ-123",
-  "title": "[从日志恢复]",
-  "restartFrom": "development",
-  "preserveData": {
-    "prd": ".claude/docs/requirements/REQ-123/PRD.md",
-    "epic": ".claude/docs/requirements/REQ-123/EPIC.md",
-    "tasks": ".claude/docs/requirements/REQ-123/tasks/"
-  },
-  "baseBranch": "main"
-}
+根据 flow-orchestrator 工作流指导文档，主代理从指定阶段继续执行：
+
+#### 5.1 阶段重启策略
+```yaml
+restart_strategies:
+  research:
+    - 清理research目录
+    - 重新抓取计划文档
+    - 调用 prd-writer 重新开始
+
+  prd:
+    - 备份现有PRD.md
+    - 调用 prd-writer 重新生成PRD
+    - 继续后续流程
+
+  planning:
+    - 保留PRD.md
+    - 调用 planner 重新生成EPIC和tasks
+    - 继续后续流程
+
+  development:
+    - 保留所有计划文档
+    - 调用 dev-implementer 重新生成实现计划
+    - 主代理根据计划重新执行代码实现
+
+  testing:
+    - 保留代码和实现
+    - 调用 qa-tester 重新生成测试计划
+    - 主代理重新执行测试
 ```
+
+#### 5.2 执行序列
+根据重启阶段，主代理按工作流指导执行相应的子代理调用和实际工作。
 
 ## 错误处理和恢复
 

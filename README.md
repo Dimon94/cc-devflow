@@ -16,6 +16,7 @@ A comprehensive development workflow system built on Claude Code's official sub-
 - **🔗 GitHub Integration**: Automated PR creation, branch management, and conventional commits
 - **📊 Progress Tracking**: Real-time status monitoring and intelligent restart points
 - **🌐 MCP Integration**: Seamless external content fetching and API integration
+- **⚡ Auto Progress Updates**: Intelligent progress detection based on code changes and Git commits
 
 ## 🚀 Quick Start
 
@@ -37,6 +38,22 @@ unzip cc-devflow.zip
 cp -r cc-devflow-main/.claude .claude
 rm -rf cc-devflow.zip cc-devflow-main
 ```
+
+### Verify Installation
+
+**Check if installation was successful:**
+```bash
+.claude/scripts/verify-setup.sh
+```
+This script will verify all required files and configurations.
+
+### Quick Experience
+
+**Run the interactive demo:**
+```bash
+python3 .claude/scripts/demo.py
+```
+This demo will guide you through the complete development flow, including automatic progress updates.
 
 ### Usage
 
