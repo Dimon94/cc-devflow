@@ -11,27 +11,30 @@ description: Query development progress status for cc-devflow requirements. Usag
 ```
 
 ### 参数说明
-- **REQ_ID**: 需求编号 (可选，不提供时显示所有活跃需求的状态)
+- **ID**: 需求编号(REQ-XXX)或BUG编号(BUG-XXX) (可选，不提供时显示所有活跃项目的状态)
 
 ### 示例
 ```text
-/flow:status                    # 查看所有需求状态
+/flow:status                    # 查看所有需求和BUG状态
 /flow:status REQ-123           # 查看特定需求状态
-/flow:status --all             # 查看包括已完成需求的所有状态
+/flow:status BUG-001           # 查看特定BUG状态
+/flow:status --all             # 查看包括已完成项目的所有状态
 /flow:status --branches        # 仅查看Git分支状态
 /flow:status --detailed REQ-123 # 详细状态报告
+/flow:status --bugs            # 仅查看BUG修复状态
 ```
 
 ## 执行流程
 
 ### 1. 参数解析和验证
-- 解析命令参数: reqId (可选), 选项标志
-- 如果提供 reqId，验证格式是否符合 REQ-\d+ 模式
+- 解析命令参数: id (可选), 选项标志
+- 如果提供 id，验证格式是否符合 REQ-\d+ 或 BUG-\d+ 模式
 - 检查当前是否在 cc-devflow 项目目录中
 
-### 2. 扫描需求目录
-扫描 `.claude/docs/requirements/` 目录，收集：
-- 所有存在的需求目录
+### 2. 扫描项目目录
+扫描项目目录，收集：
+- `.claude/docs/requirements/` - 所有存在的需求目录
+- `.claude/docs/bugs/` - 所有存在的BUG目录
 - 每个需求的文档完成状态
 - 最后更新时间
 - 当前阶段标识

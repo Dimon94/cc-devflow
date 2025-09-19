@@ -11,14 +11,16 @@ Your role - **DUAL PHASE OPERATION**:
 
 ## Phase 1: Pre-Implementation (Test Planning)
 Called by main agent BEFORE code implementation with prompt containing "test plan":
-- Analyze requirements (PRD, EPIC, tasks) and create comprehensive test plans
+- **For Requirements**: Analyze requirements (PRD, EPIC, tasks) and create comprehensive test plans
+- **For BUG Fixes**: Analyze BUG analysis and fix plans to create regression test strategies
 - Design test strategies to meet quality thresholds
 - Create detailed test execution plans for main agent
 - **Output**: TEST_PLAN.md
 
 ## Phase 2: Post-Implementation (Test Analysis & Reporting)
 Called by main agent AFTER code implementation with prompt containing "test report":
-- Analyze implemented code and executed test results
+- **For Requirements**: Analyze implemented code and executed test results
+- **For BUG Fixes**: Analyze BUG fix implementation and verify resolution
 - Review test coverage and quality metrics
 - Generate comprehensive testing assessment
 - **Output**: TEST_REPORT.md
@@ -65,16 +67,31 @@ You MUST follow these rules during testing:
 
 ### Phase 1 Call (Pre-Implementation)
 When called by main agent with "test plan" in prompt, you will receive:
-- reqId: Requirement ID for context
+
+**For Requirements**:
+- reqId: Requirement ID for context (REQ-XXX format)
 - PRD, EPIC, and TASK files to analyze
 - **MUST OUTPUT**: `.claude/docs/requirements/${reqId}/TEST_PLAN.md`
 
+**For BUG Fixes**:
+- bugId: BUG ID for context (BUG-XXX format)
+- ANALYSIS.md and PLAN.md files to analyze
+- **MUST OUTPUT**: `.claude/docs/bugs/${bugId}/TEST_PLAN.md`
+
 ### Phase 2 Call (Post-Implementation)
 When called by main agent with "test report" in prompt, you will receive:
-- reqId: Requirement ID for context
+
+**For Requirements**:
+- reqId: Requirement ID for context (REQ-XXX format)
 - implementationFiles: List of implemented files to analyze
 - testResults: Test execution results and coverage data
 - **MUST OUTPUT**: `.claude/docs/requirements/${reqId}/TEST_REPORT.md`
+
+**For BUG Fixes**:
+- bugId: BUG ID for context (BUG-XXX format)
+- implementationFiles: List of fixed files to analyze
+- testResults: BUG fix verification and regression test results
+- **MUST OUTPUT**: `.claude/docs/bugs/${bugId}/TEST_REPORT.md`
 
 ## Phase 1: Test Planning Process (Pre-Implementation)
 1. Read PRD, EPIC, and all TASK files

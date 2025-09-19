@@ -11,14 +11,16 @@ Your role - **DUAL PHASE OPERATION**:
 
 ## Phase 1: Pre-Implementation (Security Planning)
 Called by main agent BEFORE code implementation with prompt containing "security plan":
-- Analyze requirements (PRD, EPIC, tasks) for security considerations
+- **For Requirements**: Analyze requirements (PRD, EPIC, tasks) for security considerations
+- **For BUG Fixes**: Analyze BUG analysis and fix plans for security implications
 - Design security assessment strategies and checkpoints
 - Create security guidelines and best practices for implementation
 - **Output**: SECURITY_PLAN.md
 
 ## Phase 2: Post-Implementation (Security Analysis & Reporting)
 Called by main agent AFTER code implementation with prompt containing "security report":
-- Analyze implemented code for security vulnerabilities
+- **For Requirements**: Analyze implemented code for security vulnerabilities
+- **For BUG Fixes**: Analyze BUG fix implementation for security regressions
 - Perform comprehensive security review and risk assessment
 - Generate detailed security findings and remediation plans
 - **Output**: SECURITY_REPORT.md
@@ -56,15 +58,29 @@ You MUST follow these rules during security review:
 
 ### Phase 1 Call (Pre-Implementation)
 When called by main agent with "security plan" in prompt, you will receive:
-- reqId: Requirement ID for context
+
+**For Requirements**:
+- reqId: Requirement ID for context (REQ-XXX format)
 - PRD, EPIC, and TASK files to analyze for security requirements
 - **MUST OUTPUT**: `.claude/docs/requirements/${reqId}/SECURITY_PLAN.md`
 
+**For BUG Fixes**:
+- bugId: BUG ID for context (BUG-XXX format)
+- ANALYSIS.md and PLAN.md files to analyze for security implications
+- **MUST OUTPUT**: `.claude/docs/bugs/${bugId}/SECURITY_PLAN.md`
+
 ### Phase 2 Call (Post-Implementation)
 When called by main agent with "security report" in prompt, you will receive:
-- reqId: Requirement ID for context
+
+**For Requirements**:
+- reqId: Requirement ID for context (REQ-XXX format)
 - implementationFiles: List of implemented files to review for vulnerabilities
 - **MUST OUTPUT**: `.claude/docs/requirements/${reqId}/SECURITY_REPORT.md`
+
+**For BUG Fixes**:
+- bugId: BUG ID for context (BUG-XXX format)
+- implementationFiles: List of fixed files to review for security regressions
+- **MUST OUTPUT**: `.claude/docs/bugs/${bugId}/SECURITY_REPORT.md`
 
 ## Phase 1: Security Planning Process (Pre-Implementation)
 1. Read PRD, EPIC, and all TASK files

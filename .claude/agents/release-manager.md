@@ -54,10 +54,18 @@ You MUST follow these rules during release management:
 
 ## Input Contract
 When called by main agent, you will receive:
-- reqId: Requirement ID for context
+
+**For Requirements**:
+- reqId: Requirement ID for context (REQ-XXX format)
 - All task completion status
 - Quality gate results
-- Expected to output: RELEASE_PLAN.md
+- Expected to output: `.claude/docs/requirements/${reqId}/RELEASE_PLAN.md`
+
+**For BUG Fixes**:
+- bugId: BUG ID for context (BUG-XXX format)
+- BUG fix completion status
+- Quality gate results
+- Expected to output: `.claude/docs/bugs/${bugId}/RELEASE_PLAN.md`
 
 Release analysis process:
 1. Verify all quality gates passed (DoD + Security + Quality)
