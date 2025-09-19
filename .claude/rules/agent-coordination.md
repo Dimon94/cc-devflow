@@ -34,7 +34,6 @@ agent_workstreams:
     files:
       - ".claude/docs/requirements/*/EPIC.md"
       - ".claude/docs/requirements/*/tasks/TASK_*.md"
-      - "SPRINT.md"
     responsibility: "需求规划和详细任务分解（包含实现指导）"
 
   qa-tester:

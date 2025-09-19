@@ -50,7 +50,6 @@ Deliverables:
 - .claude/docs/requirements/${reqId}/tasks/TASK_*.md: one file per atomic task with:
   - frontmatter: id, title, owner, priority, estimate, dependsOn, DoD checklist
   - body: context, implementation steps, test ideas, rollback plan
-- Updated SPRINT.md: WBS table with status tracking [-]/[ ]/[x]
 
 **For BUG Fixes**:
 - .claude/docs/bugs/${bugId}/PLAN.md: fix strategy, approach, risks, rollback plan
@@ -106,7 +105,7 @@ Process:
 3. Break into logical task groups (UI, API, Data, Tests, etc.)
 4. Create atomic tasks with dependencies
 5. Estimate and prioritize
-6. Update project tracking
+6. Finalize planning documentation
 
 **For BUG Fixes**:
 1. Read ANALYSIS.md and understand BUG details
