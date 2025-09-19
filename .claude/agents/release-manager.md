@@ -1,7 +1,7 @@
 ---
 name: release-manager
 description: Research-type agent that analyzes release readiness and creates release plans. Does not execute release operations directly.
-tools: Read, Grep, Glob
+tools: Read, Write, Grep, Glob
 model: inherit
 ---
 

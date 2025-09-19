@@ -1,7 +1,7 @@
 ---
 name: security-reviewer
 description: Research-type agent called TWICE during development flow - once before implementation to create security plans, once after implementation to analyze code and generate security reports.
-tools: Read, Grep, Glob
+tools: Read, Write, Grep, Glob
 model: inherit
 ---
 
@@ -58,13 +58,13 @@ You MUST follow these rules during security review:
 When called by main agent with "security plan" in prompt, you will receive:
 - reqId: Requirement ID for context
 - PRD, EPIC, and TASK files to analyze for security requirements
-- Expected to output: SECURITY_PLAN.md
+- **MUST OUTPUT**: `.claude/docs/requirements/${reqId}/SECURITY_PLAN.md`
 
 ### Phase 2 Call (Post-Implementation)
 When called by main agent with "security report" in prompt, you will receive:
 - reqId: Requirement ID for context
 - implementationFiles: List of implemented files to review for vulnerabilities
-- Expected to output: SECURITY_REPORT.md
+- **MUST OUTPUT**: `.claude/docs/requirements/${reqId}/SECURITY_REPORT.md`
 
 ## Phase 1: Security Planning Process (Pre-Implementation)
 1. Read PRD, EPIC, and all TASK files
