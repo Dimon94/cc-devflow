@@ -1,13 +1,13 @@
 ---
-name: flow:fix
-description: One-shot BUG fix flow. Usage: /flow:fix "用户登录时出现500错误"
+name: flow-fix
+description: One-shot BUG fix flow. Usage: /flow-fix "用户登录时出现500错误"
 ---
 
-# Flow:Fix - 一键BUG修复流
+# flow-fix - 一键BUG修复流
 
 ## 命令格式
 ```text
-/flow:fix "BUG描述"
+/flow-fix "BUG描述"
 ```
 
 ### 参数说明
@@ -15,9 +15,9 @@ description: One-shot BUG fix flow. Usage: /flow:fix "用户登录时出现500�
 
 ### 示例
 ```text
-/flow:fix "用户登录时出现500错误"
-/flow:fix "购物车数量计算错误导致订单金额不正确"
-/flow:fix "文件上传功能在Safari浏览器中失败"
+/flow-fix "用户登录时出现500错误"
+/flow-fix "购物车数量计算错误导致订单金额不正确"
+/flow-fix "文件上传功能在Safari浏览器中失败"
 ```
 
 ## 执行流程
@@ -192,7 +192,7 @@ mkdir -p ".claude/docs/bugs/${bugId}"/{tasks}
 设置环境变量启用详细日志:
 ```bash
 export BUG_DEBUG=1
-/flow:fix "测试BUG"
+/flow-fix "测试BUG"
 ```
 
 ### 日志位置

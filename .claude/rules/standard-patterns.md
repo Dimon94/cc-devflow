@@ -77,7 +77,7 @@ validate_requirement_id() {
 
     if [ -z "$req_id" ]; then
         echo "❌ 需求ID不能为空"
-        echo "   用法: /flow:new \"REQ-123|标题|URL\""
+        echo "   用法: /flow-new \"REQ-123|标题|URL\""
         return 1
     fi
 

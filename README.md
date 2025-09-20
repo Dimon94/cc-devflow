@@ -8,9 +8,9 @@ A comprehensive development workflow system built on Claude Code's official sub-
 
 ## ✨ Features
 
-- **🎯 One-Command Flow**: Start complete requirement development with `/flow:new "REQ-123|Feature Title|Plan URLs"`
+- **🎯 One-Command Flow**: Start complete requirement development with `/flow-new "REQ-123|Feature Title|Plan URLs"`
 - **📋 Document-Driven**: Automatic PRD → EPIC → TASKS → Implementation chain
-- **🔄 Smart Recovery**: Resume interrupted development with `/flow:restart` and monitor progress with `/flow:status`
+- **🔄 Smart Recovery**: Resume interrupted development with `/flow-restart` and monitor progress with `/flow-status`
 - **🛡️ Quality Gates**: Automated TypeScript checking, testing, linting, and security scanning
 - **🤖 Sub-Agent Orchestration**: 7 specialized agents for different development phases
 - **🔗 GitHub Integration**: Automated PR creation, branch management, and conventional commits
@@ -59,20 +59,20 @@ This demo will guide you through the complete development flow, including automa
 
 1. **Start a new requirement flow:**
    ```bash
-   /flow:new "REQ-123|User Order Support|https://docs.example.com/orders-spec"
+   /flow-new "REQ-123|User Order Support|https://docs.example.com/orders-spec"
    ```
 
 2. **Check development progress:**
    ```bash
-   /flow:status                 # All requirements
-   /flow:status REQ-123        # Specific requirement
-   /flow:status --detailed REQ-123  # Detailed report
+   /flow-status                 # All requirements
+   /flow-status REQ-123        # Specific requirement
+   /flow-status --detailed REQ-123  # Detailed report
    ```
 
 3. **Resume interrupted development:**
    ```bash
-   /flow:restart "REQ-123"                    # Auto-detect restart point
-   /flow:restart "REQ-123" --from=development # Restart from specific stage
+   /flow-restart "REQ-123"                    # Auto-detect restart point
+   /flow-restart "REQ-123" --from=development # Restart from specific stage
    ```
 
 ## 🏗️ Architecture
@@ -113,25 +113,25 @@ flow-orchestrator (Master Controller)
 
 | Command | Description | Usage |
 |---------|-------------|-------|
-| `/flow:new` | Start new requirement development | `/flow:new "REQ-123\|Title\|URLs"` |
-| `/flow:status` | Query development progress | `/flow:status [REQ-ID] [--detailed]` |
-| `/flow:restart` | Resume interrupted development | `/flow:restart "REQ-ID" [--from=STAGE]` |
+| `/flow-new` | Start new requirement development | `/flow-new "REQ-123\|Title\|URLs"` |
+| `/flow-status` | Query development progress | `/flow-status [REQ-ID] [--detailed]` |
+| `/flow-restart` | Resume interrupted development | `/flow-restart "REQ-ID" [--from=STAGE]` |
 
 ### Status Query Options
 ```bash
-/flow:status                    # Overview of all requirements
-/flow:status REQ-123           # Specific requirement status
-/flow:status --all             # Include completed requirements
-/flow:status --branches        # Git branch status only
-/flow:status --detailed REQ-123 # Comprehensive status report
+/flow-status                    # Overview of all requirements
+/flow-status REQ-123           # Specific requirement status
+/flow-status --all             # Include completed requirements
+/flow-status --branches        # Git branch status only
+/flow-status --detailed REQ-123 # Comprehensive status report
 ```
 
 ### Restart Options
 ```bash
-/flow:restart "REQ-123"                    # Auto-detect restart point
-/flow:restart "REQ-123" --from=prd         # Restart from PRD stage
-/flow:restart "REQ-123" --from=development # Restart from development
-/flow:restart "REQ-123" --force --backup   # Force restart with backup
+/flow-restart "REQ-123"                    # Auto-detect restart point
+/flow-restart "REQ-123" --from=prd         # Restart from PRD stage
+/flow-restart "REQ-123" --from=development # Restart from development
+/flow-restart "REQ-123" --force --backup   # Force restart with backup
 ```
 
 ## ⚙️ Configuration
@@ -225,20 +225,20 @@ cc-devflow follows a comprehensive rules system ensuring consistency and quality
 ### Status Monitoring
 ```bash
 # Real-time progress tracking
-/flow:status --detailed REQ-123
+/flow-status --detailed REQ-123
 
 # Git branch overview
-/flow:status --branches
+/flow-status --branches
 
 # JSON output for automation
-/flow:status REQ-123 --json | jq '.progress'
+/flow-status REQ-123 --json | jq '.progress'
 ```
 
 ### Debug Mode
 ```bash
 # Enable verbose logging
 export FLOW_DEBUG=1
-/flow:new "REQ-123|Debug Test"
+/flow-new "REQ-123|Debug Test"
 
 # Check execution logs
 tail -f .claude/logs/flow-*.log
@@ -274,7 +274,7 @@ cp -r .claude /path/to/your/test/project/
 
 # Test the installation
 cd /path/to/your/test/project
-/flow:new "REQ-001|Test Feature|"
+/flow-new "REQ-001|Test Feature|"
 ```
 
 ## 📄 License

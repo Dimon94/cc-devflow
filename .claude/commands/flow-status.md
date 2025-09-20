@@ -1,13 +1,13 @@
 ---
-name: flow:status
-description: Query development progress status for cc-devflow requirements. Usage: /flow:status [REQ-ID]
+name: flow-status
+description: Query development progress status for cc-devflow requirements. Usage: /flow-status [REQ-ID]
 ---
 
-# Flow:Status - 开发进度查询命令
+# flow-status - 开发进度查询命令
 
 ## 命令格式
 ```text
-/flow:status [REQ_ID]
+/flow-status [REQ_ID]
 ```
 
 ### 参数说明
@@ -15,13 +15,13 @@ description: Query development progress status for cc-devflow requirements. Usag
 
 ### 示例
 ```text
-/flow:status                    # 查看所有需求和BUG状态
-/flow:status REQ-123           # 查看特定需求状态
-/flow:status BUG-001           # 查看特定BUG状态
-/flow:status --all             # 查看包括已完成项目的所有状态
-/flow:status --branches        # 仅查看Git分支状态
-/flow:status --detailed REQ-123 # 详细状态报告
-/flow:status --bugs            # 仅查看BUG修复状态
+/flow-status                    # 查看所有需求和BUG状态
+/flow-status REQ-123           # 查看特定需求状态
+/flow-status BUG-001           # 查看特定BUG状态
+/flow-status --all             # 查看包括已完成项目的所有状态
+/flow-status --branches        # 仅查看Git分支状态
+/flow-status --detailed REQ-123 # 详细状态报告
+/flow-status --bugs            # 仅查看BUG修复状态
 ```
 
 ## 执行流程
@@ -211,7 +211,7 @@ Git状态:
 ### 常见场景
 1. **目录不存在**
    - 检查是否在正确的项目目录中
-   - 提示运行 `/flow:new` 创建第一个需求
+   - 提示运行 `/flow-new` 创建第一个需求
 
 2. **权限问题**
    - 检查文件读取权限
@@ -230,7 +230,7 @@ Git状态:
 ---
 error_type: git_repository_error
 timestamp: 2024-01-15T10:30:00Z
-command: flow:status
+command: flow-status
 req_id: REQ-123
 ---
 
@@ -244,7 +244,7 @@ Git仓库状态异常：分支 feature/REQ-123-user-order 不存在
 
 ## 建议解决方案
 1. 运行 `git fetch --all` 同步远程分支
-2. 使用 `/flow:restart REQ-123` 重新创建分支
+2. 使用 `/flow-restart REQ-123` 重新创建分支
 3. 检查 EXECUTION_LOG.md 中的分支历史
 ```
 
@@ -360,22 +360,22 @@ export FLOW_STATUS_DATETIME_FORMAT=relative # 时间显示格式
 ### 与其他命令协作
 ```bash
 # 与 flow:new 协作
-/flow:new "REQ-126|新功能"  # 创建需求
-/flow:status REQ-126        # 立即查看状态
+/flow-new "REQ-126|新功能"  # 创建需求
+/flow-status REQ-126        # 立即查看状态
 
-# 与 flow:restart 协作
-/flow:status --failed       # 查看失败的需求
-/flow:restart REQ-125       # 重启失败的需求
+# 与 flow-restart 协作
+/flow-status --failed       # 查看失败的需求
+/flow-restart REQ-125       # 重启失败的需求
 
 # 与开发工具集成
-/flow:status --json | jq '.requirements[] | select(.status == "DEVELOPMENT")'
+/flow-status --json | jq '.requirements[] | select(.status == "DEVELOPMENT")'
 ```
 
 ### IDE集成
 ```javascript
 // VS Code 扩展集成示例
 const getFlowStatus = async (reqId) => {
-  const { stdout } = await exec(`claude /flow:status ${reqId} --json`);
+  const { stdout } = await exec(`claude /flow-status ${reqId} --json`);
   return JSON.parse(stdout);
 };
 ```
@@ -383,7 +383,7 @@ const getFlowStatus = async (reqId) => {
 ## 最佳实践
 
 ### 使用建议
-1. **定期检查**: 每日开始工作前运行 `/flow:status`
+1. **定期检查**: 每日开始工作前运行 `/flow-status`
 2. **分阶段查看**: 使用 `--detailed` 深入了解问题
 3. **团队协作**: 结合 `--json` 输出进行状态共享
 4. **性能监控**: 关注平均完成时间趋势
@@ -392,18 +392,18 @@ const getFlowStatus = async (reqId) => {
 ```bash
 # 调试模式
 export FLOW_DEBUG=1
-/flow:status REQ-123
+/flow-status REQ-123
 
 # 清除缓存
 rm -rf .claude/cache/status
 
 # 重建索引
-/flow:status --rebuild-index
+/flow-status --rebuild-index
 
 # 验证数据完整性
-/flow:status --validate REQ-123
+/flow-status --validate REQ-123
 ```
 
 ---
 
-**注意**: flow:status 命令设计为只读操作，不会修改任何项目文件或Git状态。所有状态信息基于现有文档和Git历史分析得出。
+**注意**: flow-status 命令设计为只读操作，不会修改任何项目文件或Git状态。所有状态信息基于现有文档和Git历史分析得出。

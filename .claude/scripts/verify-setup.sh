@@ -77,9 +77,9 @@ echo "命令文件检查:"
 echo "─────────────────"
 
 check_item "flow:new" "test -f .claude/commands/flow-new.md" "true"
-check_item "flow:status" "test -f .claude/commands/flow-status.md" "true"
-check_item "flow:restart" "test -f .claude/commands/flow-restart.md" "true"
-check_item "flow:update" "test -f .claude/commands/flow-update.md" "true"
+check_item "flow-status" "test -f .claude/commands/flow-status.md" "true"
+check_item "flow-restart" "test -f .claude/commands/flow-restart.md" "true"
+check_item "flow-update" "test -f .claude/commands/flow-update.md" "true"
 
 echo ""
 echo "钩子和脚本检查:"
@@ -135,8 +135,8 @@ if [ $passed_checks -eq $total_checks ]; then
     echo "✅ CC-DevFlow 已正确安装并配置"
     echo "🚀 您可以开始使用以下命令:"
     echo "   • python3 .claude/scripts/demo.py  # 运行演示"
-    echo "   • /flow:new \"REQ-001|测试需求\"       # 创建需求"
-    echo "   • /flow:status                      # 查看状态"
+    echo "   • /flow-new \"REQ-001|测试需求\"       # 创建需求"
+    echo "   • /flow-status                      # 查看状态"
     echo ""
     exit 0
 else

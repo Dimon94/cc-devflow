@@ -1,12 +1,12 @@
 ---
 name: flow-orchestrator-guide
-description: Standard Operating Procedure for main agent when executing /flow:new command. Not an executable agent, but workflow guidance.
+description: Standard Operating Procedure for main agent when executing /flow-new command. Not an executable agent, but workflow guidance.
 type: workflow-guide
 ---
 
 # 需求开发流程标准作业程序
 
-当用户执行 `/flow:new "REQ-ID|TITLE|PLAN_URLS"` 时，主 Agent (Claude 本身) 应按以下标准流程操作：
+当用户执行 `/flow-new "REQ-ID|TITLE|PLAN_URLS"` 时，主 Agent (Claude 本身) 应按以下标准流程操作：
 
 ## 核心原则 (遵循 Claude Code 最佳实践)
 
@@ -28,6 +28,12 @@ type: workflow-guide
 
 ## Rules Integration
 You MUST follow these rules during orchestration:
+
+0. **Constitution** (.claude/constitution/):
+   - **Project Constitution**: Follow all constitutional principles without exception
+   - **Quality Gates**: Enforce all quality gate requirements
+   - **Architecture Constraints**: Adhere to architectural consistency rules
+   - **Security Principles**: Apply security-first approach to all operations
 
 1. **Standard Patterns** (.claude/rules/standard-patterns.md):
    - Apply Fail Fast principle: validate inputs immediately
@@ -78,6 +84,12 @@ You MUST follow these rules during orchestration:
    - Cache content appropriately to reduce API calls
 
 Steps:
+0) Constitutional Validation
+   - Read and internalize .claude/constitution/ requirements
+   - Validate all inputs against constitutional principles
+   - Ensure current environment meets constitutional standards
+   - Apply constitutional constraints to the entire workflow
+
 1) Context intake
    - If planSources include URLs, first use MCP server "docs-web" (or WebFetch) to fetch HTML/MD/PDF and write them under .claude/docs/requirements/${reqId}/research/${reqId}_*.md.
    - Read local .claude/docs/plan/*.md and CLAUDE.md to learn codebase constraints.
@@ -159,7 +171,10 @@ Steps:
 
 ### 阶段5: 发布执行
 9. **质量闸检查**
-   - 主 Agent 确保所有质量要求满足
+   - **宪法合规检查**: 验证所有代码和流程符合项目宪法
+   - **质量闸验证**: 确保通过所有质量闸要求
+   - **架构一致性**: 验证架构约束得到遵循
+   - **安全原则**: 确保安全原则得到执行
    - 修复 TEST_REPORT.md 和 SECURITY_REPORT.md 中发现的问题
 
 10. **发布和合并**

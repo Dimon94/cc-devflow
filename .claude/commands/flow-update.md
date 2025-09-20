@@ -1,13 +1,13 @@
 ---
-name: flow:update
-description: Update task development progress for cc-devflow requirements. Usage: /flow:update "REQ-ID" "TASK-ID" [OPTIONS]
+name: flow-update
+description: Update task development progress for cc-devflow requirements. Usage: /flow-update "REQ-ID" "TASK-ID" [OPTIONS]
 ---
 
-# Flow:Update - 任务进度更新命令
+# flow-update - 任务进度更新命令
 
 ## 命令格式
 ```text
-/flow:update "REQ_ID" "TASK_ID" [OPTIONS]
+/flow-update "REQ_ID" "TASK_ID" [OPTIONS]
 ```
 
 ### 参数说明
@@ -26,11 +26,11 @@ description: Update task development progress for cc-devflow requirements. Usage
 
 ### 示例
 ```text
-/flow:update "REQ-123" "TASK_001" --status=completed       # 标记任务完成
-/flow:update "REQ-123" "TASK_002" --progress=75             # 更新进度到75%
-/flow:update "REQ-123" "TASK_003" --status=blocked --comment="等待API文档"
-/flow:update "REQ-124" "TASK_001" --auto --commit          # 自动检测并提交
-/flow:update "REQ-123" "TASK_002" --test --progress=90     # 运行测试并更新进度
+/flow-update "REQ-123" "TASK_001" --status=completed       # 标记任务完成
+/flow-update "REQ-123" "TASK_002" --progress=75             # 更新进度到75%
+/flow-update "REQ-123" "TASK_003" --status=blocked --comment="等待API文档"
+/flow-update "REQ-124" "TASK_001" --auto --commit          # 自动检测并提交
+/flow-update "REQ-123" "TASK_002" --test --progress=90     # 运行测试并更新进度
 ```
 
 ## 执行流程
@@ -464,7 +464,7 @@ const FlowUpdateExtension = {
         const taskId = detectTaskId(document.fileName);
 
         if (reqId && taskId) {
-            await exec(`claude /flow:update "${reqId}" "${taskId}" --auto`);
+            await exec(`claude /flow-update "${reqId}" "${taskId}" --auto`);
             showProgressNotification(reqId, taskId);
         }
     },
@@ -571,4 +571,4 @@ export FLOW_UPDATE_SLACK_WEBHOOK="https://..."
 
 ---
 
-**注意**: flow:update 命令是 cc-devflow 系统的核心进度管理工具，与其他命令紧密集成，确保项目进度的可见性和可控性。建议结合自动化工具使用以提高效率。
+**注意**: flow-update 命令是 cc-devflow 系统的核心进度管理工具，与其他命令紧密集成，确保项目进度的可见性和可控性。建议结合自动化工具使用以提高效率。

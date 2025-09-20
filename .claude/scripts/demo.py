@@ -89,13 +89,13 @@ class CCDevFlowDemo:
 
     def demonstrate_flow_new(self):
         """演示 flow:new 命令"""
-        self.print_step(2, "启动新需求流程", f"使用 /flow:new 创建需求 {self.demo_req_id}")
+        self.print_step(2, "启动新需求流程", f"使用 /flow-new 创建需求 {self.demo_req_id}")
 
         # 模拟 flow:new 命令的效果
         self.simulate_flow_new()
 
         self.print_info("在实际使用中，您会运行:")
-        print(f'   /flow:new "{self.demo_req_id}|{self.demo_title}|{self.demo_urls}"')
+        print(f'   /flow-new "{self.demo_req_id}|{self.demo_title}|{self.demo_urls}"')
 
         self.wait_for_user("查看创建的文档结构")
 
@@ -483,13 +483,13 @@ module.exports = new AuthController();
                 self.print_warning(f"   读取状态失败: {e}")
 
     def demonstrate_flow_status(self):
-        """演示 flow:status 命令"""
-        self.print_step(4, "进度查询演示", "使用 /flow:status 查看开发进度")
+        """演示 flow-status 命令"""
+        self.print_step(4, "进度查询演示", "使用 /flow-status 查看开发进度")
 
         self.print_info("在实际使用中，您可以运行:")
-        print("   /flow:status                 # 查看所有需求")
-        print(f"   /flow:status {self.demo_req_id}         # 查看特定需求")
-        print(f"   /flow:status --detailed {self.demo_req_id} # 详细报告")
+        print("   /flow-status                 # 查看所有需求")
+        print(f"   /flow-status {self.demo_req_id}         # 查看特定需求")
+        print(f"   /flow-status --detailed {self.demo_req_id} # 详细报告")
 
         # 模拟状态输出
         self.simulate_status_output()
@@ -544,10 +544,10 @@ module.exports = new AuthController();
         self.print_step(6, "命令总览", "cc-devflow 所有可用命令")
 
         commands = [
-            ("/flow:new", "启动新需求开发流程", 'REQ-123|标题|URL'),
-            ("/flow:status", "查看开发进度状态", '[REQ-ID] [--detailed]'),
-            ("/flow:restart", "重启中断的开发流程", 'REQ-ID [--from=STAGE]'),
-            ("/flow:update", "手动更新任务进度", 'REQ-ID TASK-ID [OPTIONS]'),
+            ("/flow-new", "启动新需求开发流程", 'REQ-123|标题|URL'),
+            ("/flow-status", "查看开发进度状态", '[REQ-ID] [--detailed]'),
+            ("/flow-restart", "重启中断的开发流程", 'REQ-ID [--from=STAGE]'),
+            ("/flow-update", "手动更新任务进度", 'REQ-ID TASK-ID [OPTIONS]'),
             ("/flow:sprint", "冲刺管理和跟踪", '[ACTION] [OPTIONS]'),
         ]
 
@@ -607,9 +607,9 @@ module.exports = new AuthController();
         print("="*70)
 
         print("✅ 演示完成的功能:")
-        print("   1. 需求流程创建 (/flow:new)")
+        print("   1. 需求流程创建 (/flow-new)")
         print("   2. 自动进度更新 (基于代码变更)")
-        print("   3. 进度查询 (/flow:status)")
+        print("   3. 进度查询 (/flow-status)")
         print("   4. 监控服务 (后台自动化)")
         print("   5. 命令系统 (完整工具链)")
 

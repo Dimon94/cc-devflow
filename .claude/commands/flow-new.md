@@ -1,13 +1,13 @@
 ---
-name: flow:new
-description: One-shot requirement flow. Usage: /flow:new "REQ-123|支持用户下单|https://plan.example.com/Q1"
+name: flow-new
+description: One-shot requirement flow. Usage: /flow-new "REQ-123|支持用户下单|https://plan.example.com/Q1"
 ---
 
-# Flow:New - 一键需求开发流
+# Flow-New - 一键需求开发流
 
 ## 命令格式
 ```text
-/flow:new "REQ_ID|TITLE|PLAN_URLS"
+/flow-new "REQ_ID|TITLE|PLAN_URLS"
 ```
 
 ### 参数说明
@@ -17,9 +17,9 @@ description: One-shot requirement flow. Usage: /flow:new "REQ-123|支持用户�
 
 ### 示例
 ```text
-/flow:new "REQ-123|支持用户下单|https://plan.example.com/Q1"
-/flow:new "REQ-124|用户权限管理|https://docs.company.com/auth-spec.md,https://confluence.company.com/security-requirements"
-/flow:new "REQ-125|数据导出功能"
+/flow-new "REQ-123|支持用户下单|https://plan.example.com/Q1"
+/flow-new "REQ-124|用户权限管理|https://docs.company.com/auth-spec.md,https://confluence.company.com/security-requirements"
+/flow-new "REQ-125|数据导出功能"
 ```
 
 ## 执行流程
@@ -202,7 +202,7 @@ npm run --silent
 设置环境变量启用详细日志:
 ```bash
 export FLOW_DEBUG=1
-/flow:new "REQ-123|测试需求"
+/flow-new "REQ-123|测试需求"
 ```
 
 ### 日志位置

@@ -7,17 +7,17 @@ cc-devflow 是一个基于 Claude Code 的一体化需求开发流程系统，�
 ## 核心原则
 
 ### 1. 一键启动原则
-所有开发流程必须通过 `/flow:new` 命令一键启动，不允许分步骤手动操作。
+所有开发流程必须通过 `/flow-new` 命令一键启动，不允许分步骤手动操作。
 
 ```bash
 # 标准格式
-/flow:new "REQ-123|支持用户下单|https://plan.example.com/Q1"
+/flow-new "REQ-123|支持用户下单|https://plan.example.com/Q1"
 
 # 多文档格式
-/flow:new "REQ-124|权限管理|https://spec.doc,https://api.doc"
+/flow-new "REQ-124|权限管理|https://spec.doc,https://api.doc"
 
 # 无外部文档
-/flow:new "REQ-125|数据导出"
+/flow-new "REQ-125|数据导出"
 ```
 
 ### 2. 强制文档驱动
@@ -168,7 +168,7 @@ step: parameter_parsing
 参数格式不正确：缺少标题部分
 
 ## 解决方案
-请使用正确格式：/flow:new "REQ-123|需求标题|计划URL"
+请使用正确格式：/flow-new "REQ-123|需求标题|计划URL"
 ```
 
 ## 质量标准
@@ -249,7 +249,7 @@ tail -f .claude/logs/flow-*.log
 ### 调试模式
 ```bash
 export FLOW_DEBUG=1
-/flow:new "REQ-123|测试需求"
+/flow-new "REQ-123|测试需求"
 ```
 
 ---

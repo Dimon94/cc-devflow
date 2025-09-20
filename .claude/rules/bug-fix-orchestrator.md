@@ -1,12 +1,12 @@
 ---
 name: bug-fix-orchestrator-guide
-description: Standard Operating Procedure for main agent when executing /flow:fix command. Not an executable agent, but workflow guidance.
+description: Standard Operating Procedure for main agent when executing /flow-fix command. Not an executable agent, but workflow guidance.
 type: workflow-guide
 ---
 
 # BUG修复流程标准作业程序
 
-当用户执行 `/flow:fix "BUG描述"` 时，主 Agent (Claude 本身) 应按以下标准流程操作：
+当用户执行 `/flow-fix "BUG描述"` 时，主 Agent (Claude 本身) 应按以下标准流程操作：
 
 ## 核心原则 (遵循 Claude Code 最佳实践)
 

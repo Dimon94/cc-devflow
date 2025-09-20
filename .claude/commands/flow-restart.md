@@ -1,13 +1,13 @@
 ---
-name: flow:restart
-description: Restart interrupted cc-devflow requirement development. Usage: /flow:restart "REQ-ID" [--from=STAGE]
+name: flow-restart
+description: Restart interrupted cc-devflow requirement development. Usage: /flow-restart "REQ-ID" [--from=STAGE]
 ---
 
-# Flow:Restart - 中断恢复命令
+# flow-restart - 中断恢复命令
 
 ## 命令格式
 ```text
-/flow:restart "REQ_ID" [OPTIONS]
+/flow-restart "REQ_ID" [OPTIONS]
 ```
 
 ### 参数说明
@@ -18,11 +18,11 @@ description: Restart interrupted cc-devflow requirement development. Usage: /flo
 
 ### 示例
 ```text
-/flow:restart "REQ-123"                    # 从中断点自动恢复
-/flow:restart "REQ-123" --from=prd         # 从PRD阶段重新开始
-/flow:restart "REQ-123" --from=development # 从开发阶段重新开始
-/flow:restart "REQ-123" --force --backup   # 强制重启并备份
-/flow:restart "REQ-124" --from=testing     # 从测试阶段重新开始
+/flow-restart "REQ-123"                    # 从中断点自动恢复
+/flow-restart "REQ-123" --from=prd         # 从PRD阶段重新开始
+/flow-restart "REQ-123" --from=development # 从开发阶段重新开始
+/flow-restart "REQ-123" --force --backup   # 强制重启并备份
+/flow-restart "REQ-124" --from=testing     # 从测试阶段重新开始
 ```
 
 ## 可重启阶段
@@ -522,12 +522,12 @@ export FLOW_RESTART_CACHE_VALIDATION=true
 ### 故障排除指南
 ```bash
 # 常见问题诊断
-/flow:restart "REQ-123" --validate        # 验证重启条件
-/flow:restart "REQ-123" --dry-run         # 模拟重启过程
-/flow:restart "REQ-123" --debug           # 启用调试输出
+/flow-restart "REQ-123" --validate        # 验证重启条件
+/flow-restart "REQ-123" --dry-run         # 模拟重启过程
+/flow-restart "REQ-123" --debug           # 启用调试输出
 
 # 强制重启（谨慎使用）
-/flow:restart "REQ-123" --force --from=research
+/flow-restart "REQ-123" --force --from=research
 
 # 恢复备份
 cd .claude/backups/restart_REQ-123_[timestamp]
@@ -536,4 +536,4 @@ cd .claude/backups/restart_REQ-123_[timestamp]
 
 ---
 
-**重要提示**: flow:restart 是一个有破坏性的操作，会重置部分开发进度。使用前请确保理解其影响，并在必要时创建备份。对于简单的问题，建议先尝试手动修复而不是完全重启。
+**重要提示**: flow-restart 是一个有破坏性的操作，会重置部分开发进度。使用前请确保理解其影响，并在必要时创建备份。对于简单的问题，建议先尝试手动修复而不是完全重启。

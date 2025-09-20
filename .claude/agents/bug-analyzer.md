@@ -280,7 +280,7 @@ ${rollbackPlan}
 ## Process Integration
 
 This agent integrates with the BUG fix workflow:
-1. **Input**: BUG description from /flow:fix command
+1. **Input**: BUG description from /flow-fix command
 2. **Output**: Detailed technical analysis in ANALYSIS.md
 3. **Next**: planner agent uses analysis to create PLAN.md
 4. **Flow**: Feeds into testing and security analysis phases

@@ -8,9 +8,9 @@
 
 ## ✨ 核心特性
 
-- **🎯 一键启动流程**: 使用 `/flow:new "REQ-123|功能标题|计划URLs"` 启动完整的需求开发
+- **🎯 一键启动流程**: 使用 `/flow-new "REQ-123|功能标题|计划URLs"` 启动完整的需求开发
 - **📋 文档驱动**: 自动化 PRD → EPIC → TASKS → 实现链条
-- **🔄 智能恢复**: 使用 `/flow:restart` 恢复中断的开发，用 `/flow:status` 监控进度
+- **🔄 智能恢复**: 使用 `/flow-restart` 恢复中断的开发，用 `/flow-status` 监控进度
 - **🛡️ 质量闸**: 自动化 TypeScript 检查、测试、代码检查和安全扫描
 - **🤖 子代理编排**: 7 个专业代理负责不同开发阶段
 - **🔗 GitHub 集成**: 自动化 PR 创建、分支管理和规范化提交
@@ -59,20 +59,20 @@ python3 .claude/scripts/demo.py
 
 1. **启动新的需求流程:**
    ```bash
-   /flow:new "REQ-123|用户下单支持|https://docs.example.com/orders-spec"
+   /flow-new "REQ-123|用户下单支持|https://docs.example.com/orders-spec"
    ```
 
 2. **检查开发进度:**
    ```bash
-   /flow:status                 # 所有需求
-   /flow:status REQ-123        # 特定需求
-   /flow:status --detailed REQ-123  # 详细报告
+   /flow-status                 # 所有需求
+   /flow-status REQ-123        # 特定需求
+   /flow-status --detailed REQ-123  # 详细报告
    ```
 
 3. **恢复中断的开发:**
    ```bash
-   /flow:restart "REQ-123"                    # 自动检测重启点
-   /flow:restart "REQ-123" --from=development # 从特定阶段重启
+   /flow-restart "REQ-123"                    # 自动检测重启点
+   /flow-restart "REQ-123" --from=development # 从特定阶段重启
    ```
 
 4. **启动自动监控:**
@@ -119,27 +119,27 @@ flow-orchestrator (主控制器)
 
 | 命令 | 描述 | 用法 |
 |---------|-------------|-------|
-| `/flow:new` | 启动新需求开发 | `/flow:new "REQ-123\|标题\|URLs"` |
-| `/flow:status` | 查询开发进度 | `/flow:status [REQ-ID] [--detailed]` |
-| `/flow:restart` | 恢复中断的开发 | `/flow:restart "REQ-ID" [--from=STAGE]` |
-| `/flow:update` | 更新任务进度 | `/flow:update "REQ-ID" "TASK-ID" [OPTIONS]` |
+| `/flow-new` | 启动新需求开发 | `/flow-new "REQ-123\|标题\|URLs"` |
+| `/flow-status` | 查询开发进度 | `/flow-status [REQ-ID] [--detailed]` |
+| `/flow-restart` | 恢复中断的开发 | `/flow-restart "REQ-ID" [--from=STAGE]` |
+| `/flow-update` | 更新任务进度 | `/flow-update "REQ-ID" "TASK-ID" [OPTIONS]` |
 | `/flow:sprint` | 冲刺管理 | `/flow:sprint [ACTION] [OPTIONS]` |
 
 ### 状态查询选项
 ```bash
-/flow:status                    # 所有需求概览
-/flow:status REQ-123           # 特定需求状态
-/flow:status --all             # 包括已完成需求
-/flow:status --branches        # 仅 Git 分支状态
-/flow:status --detailed REQ-123 # 综合状态报告
+/flow-status                    # 所有需求概览
+/flow-status REQ-123           # 特定需求状态
+/flow-status --all             # 包括已完成需求
+/flow-status --branches        # 仅 Git 分支状态
+/flow-status --detailed REQ-123 # 综合状态报告
 ```
 
 ### 重启选项
 ```bash
-/flow:restart "REQ-123"                    # 自动检测重启点
-/flow:restart "REQ-123" --from=prd         # 从 PRD 阶段重启
-/flow:restart "REQ-123" --from=development # 从开发阶段重启
-/flow:restart "REQ-123" --force --backup   # 强制重启并备份
+/flow-restart "REQ-123"                    # 自动检测重启点
+/flow-restart "REQ-123" --from=prd         # 从 PRD 阶段重启
+/flow-restart "REQ-123" --from=development # 从开发阶段重启
+/flow-restart "REQ-123" --force --backup   # 强制重启并备份
 ```
 
 ## ⚙️ 配置
@@ -246,7 +246,7 @@ cc-devflow 遵循全面的规则系统，确保一致性和质量：
 .claude/scripts/start-monitor.sh status
 
 # 手动更新任务进度
-/flow:update "REQ-123" "TASK_001" --auto
+/flow-update "REQ-123" "TASK_001" --auto
 
 # 测试自动更新机制
 python3 .claude/scripts/test-auto-update.py
@@ -261,20 +261,20 @@ python3 .claude/scripts/test-auto-update.py
 ### 状态监控
 ```bash
 # 实时进度跟踪
-/flow:status --detailed REQ-123
+/flow-status --detailed REQ-123
 
 # Git 分支概览
-/flow:status --branches
+/flow-status --branches
 
 # 自动化的 JSON 输出
-/flow:status REQ-123 --json | jq '.progress'
+/flow-status REQ-123 --json | jq '.progress'
 ```
 
 ### 调试模式
 ```bash
 # 启用详细日志
 export FLOW_DEBUG=1
-/flow:new "REQ-123|调试测试"
+/flow-new "REQ-123|调试测试"
 
 # 检查执行日志
 tail -f .claude/logs/flow-*.log
@@ -310,7 +310,7 @@ cp -r .claude /path/to/your/test/project/
 
 # 测试安装
 cd /path/to/your/test/project
-/flow:new "REQ-001|测试功能|"
+/flow-new "REQ-001|测试功能|"
 ```
 
 ## 📄 许可证
