@@ -28,53 +28,5 @@
       "Read(./secrets/**)",
       "Bash(rm -rf:*)"
     ]
-  },
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash(git push|gh pr merge|gh pr create)",
-        "hooks": [
-          {
-            "type": "command",
-            "command": ".claude/hooks/pre-push-guard.sh"
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit|MultiEdit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": ".claude/hooks/markdown_formatter.py"
-          },
-          {
-            "type": "command",
-            "command": "python3 .claude/hooks/auto-progress-update.py"
-          }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 .claude/hooks/auto-progress-update.py"
-          }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": ".claude/hooks/statusline.sh"
-          }
-        ]
-      }
-    ]
   }
 }
