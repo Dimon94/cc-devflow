@@ -12,11 +12,12 @@ A comprehensive development workflow system built on Claude Code's official sub-
 - **📋 Document-Driven**: Automatic PRD → EPIC → TASKS → Implementation chain
 - **🔄 Smart Recovery**: Resume interrupted development with `/flow-restart` and monitor progress with `/flow-status`
 - **🛡️ Quality Gates**: Automated TypeScript checking, testing, linting, and security scanning
-- **🤖 Sub-Agent Orchestration**: 7 specialized agents for different development phases
+- **🤖 Sub-Agent Orchestration**: 10 specialized agents for different development phases
 - **🔗 GitHub Integration**: Automated PR creation, branch management, and conventional commits
 - **📊 Progress Tracking**: Real-time status monitoring and intelligent restart points
 - **🌐 MCP Integration**: Seamless external content fetching and API integration
 - **⚡ Auto Progress Updates**: Intelligent progress detection based on code changes and Git commits
+- **🔍 Consistency Verification**: Enterprise-grade consistency checking with intelligent conflict detection and auto-fix suggestions
 
 ## 🚀 Quick Start
 
@@ -75,6 +76,14 @@ This demo will guide you through the complete development flow, including automa
    /flow-restart "REQ-123" --from=development # Restart from specific stage
    ```
 
+4. **Verify consistency across documents:**
+   ```bash
+   /flow-verify "REQ-123"                     # Comprehensive consistency check
+   /flow-verify "REQ-123" --detailed          # Detailed analysis report
+   /flow-verify "REQ-123" --fix-auto          # Auto-fix resolvable issues
+   /flow-verify --all                         # Batch verify all requirements
+   ```
+
 ## 🏗️ Architecture
 
 ### Sub-Agents Workflow
@@ -85,13 +94,17 @@ flow-orchestrator (Master Controller)
 ├── dev-implementer     → Code implementation
 ├── qa-tester           → Quality assurance and testing
 ├── security-reviewer   → Security scanning and fixes
-└── release-manager     → PR creation and merge management
+├── release-manager     → PR creation and merge management
+├── impact-analyzer     → PRD change impact analysis
+├── compatibility-checker → Version compatibility analysis
+└── consistency-checker → Enterprise-grade consistency verification
 ```
 
 ### Quality Gates
 - **Pre-push Guard**: TypeScript, tests, linting, security, build validation
 - **Markdown Formatter**: Automatic documentation formatting and language detection
 - **Conventional Commits**: Standardized commit message format enforcement
+- **Consistency Verification**: Cross-document consistency checking and conflict detection
 
 ### Document Structure
 ```text
@@ -116,6 +129,7 @@ flow-orchestrator (Master Controller)
 | `/flow-new` | Start new requirement development | `/flow-new "REQ-123\|Title\|URLs"` |
 | `/flow-status` | Query development progress | `/flow-status [REQ-ID] [--detailed]` |
 | `/flow-restart` | Resume interrupted development | `/flow-restart "REQ-ID" [--from=STAGE]` |
+| `/flow-verify` | Verify consistency across documents | `/flow-verify "REQ-ID" [--detailed] [--fix-auto]` |
 
 ### Status Query Options
 ```bash

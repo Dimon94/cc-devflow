@@ -12,11 +12,12 @@
 - **📋 文档驱动**: 自动化 PRD → EPIC → TASKS → 实现链条
 - **🔄 智能恢复**: 使用 `/flow-restart` 恢复中断的开发，用 `/flow-status` 监控进度
 - **🛡️ 质量闸**: 自动化 TypeScript 检查、测试、代码检查和安全扫描
-- **🤖 子代理编排**: 7 个专业代理负责不同开发阶段
+- **🤖 子代理编排**: 10 个专业代理负责不同开发阶段
 - **🔗 GitHub 集成**: 自动化 PR 创建、分支管理和规范化提交
 - **📊 进度跟踪**: 实时状态监控和智能重启点
 - **🌐 MCP 集成**: 无缝外部内容获取和 API 集成
 - **⚡ 自动进度更新**: 基于代码变更和Git提交的智能进度检测
+- **🔍 一致性验证**: 企业级一致性检查，智能冲突检测和自动修复建议
 
 ## 🚀 快速开始
 
@@ -75,7 +76,15 @@ python3 .claude/scripts/demo.py
    /flow-restart "REQ-123" --from=development # 从特定阶段重启
    ```
 
-4. **启动自动监控:**
+4. **验证文档一致性:**
+   ```bash
+   /flow-verify "REQ-123"                     # 全面一致性检查
+   /flow-verify "REQ-123" --detailed          # 详细分析报告
+   /flow-verify "REQ-123" --fix-auto          # 自动修复可解决问题
+   /flow-verify --all                         # 批量验证所有需求
+   ```
+
+5. **启动自动监控:**
    ```bash
    .claude/scripts/start-monitor.sh start     # 启动后台监控
    .claude/scripts/start-monitor.sh status   # 查看监控状态
@@ -91,13 +100,17 @@ flow-orchestrator (主控制器)
 ├── dev-implementer     → 代码实现
 ├── qa-tester           → 质量保证和测试
 ├── security-reviewer   → 安全扫描和修复
-└── release-manager     → PR 创建和合并管理
+├── release-manager     → PR 创建和合并管理
+├── impact-analyzer     → PRD 变更影响分析
+├── compatibility-checker → 版本兼容性分析
+└── consistency-checker → 企业级一致性验证
 ```
 
 ### 质量闸
 - **推送前保护**: TypeScript、测试、代码检查、安全、构建验证
 - **Markdown 格式化器**: 自动文档格式化和语言检测
 - **规范化提交**: 标准化提交消息格式强制执行
+- **一致性验证**: 跨文档一致性检查和冲突检测
 
 ### 文档结构
 ```text
@@ -122,6 +135,7 @@ flow-orchestrator (主控制器)
 | `/flow-new` | 启动新需求开发 | `/flow-new "REQ-123\|标题\|URLs"` |
 | `/flow-status` | 查询开发进度 | `/flow-status [REQ-ID] [--detailed]` |
 | `/flow-restart` | 恢复中断的开发 | `/flow-restart "REQ-ID" [--from=STAGE]` |
+| `/flow-verify` | 验证文档一致性 | `/flow-verify "REQ-ID" [--detailed] [--fix-auto]` |
 | `/flow-update` | 更新任务进度 | `/flow-update "REQ-ID" "TASK-ID" [OPTIONS]` |
 | `/flow:sprint` | 冲刺管理 | `/flow:sprint [ACTION] [OPTIONS]` |
 
