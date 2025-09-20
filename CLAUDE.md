@@ -56,7 +56,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 子代理架构
 
-### 研究型子代理 (9个)
+### 研究型子代理 (10个)
 1. **flow-orchestrator**: 工作流指导文档，定义标准操作程序
 2. **prd-writer**: 研究需求，输出结构化产品需求文档 (增强版，支持Intent-driven澄清)
 3. **planner**: 分析PRD，输出Epic和任务分解计划
@@ -66,6 +66,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 7. **release-manager**: 发布分析，输出发布计划和PR策略
 8. **impact-analyzer**: PRD变更影响分析，输出影响评估和迁移策略 (新增)
 9. **compatibility-checker**: 版本兼容性分析，输出兼容性报告和风险评估 (新增)
+10. **consistency-checker**: 全链路一致性验证，输出一致性分析和冲突检测报告 (新增)
 
 ### 执行机制
 - **主代理**: Claude 本身，拥有完整上下文，执行所有代码操作
@@ -143,6 +144,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `/flow-upgrade "REQ-123" --version="2.0" --reason="添加移动端支持"` - 执行版本升级
 - `/flow-upgrade "REQ-123" --rollback="v1.2"` - 回滚到指定版本
 - `/flow-upgrade "REQ-123" --compatibility --target="v2.0"` - 兼容性检查
+
+#### 一致性验证命令 (新增)
+- `/flow-verify "REQ-123"` - 全面一致性检查和冲突检测
+- `/flow-verify "REQ-123" --detailed` - 详细一致性分析报告
+- `/flow-verify "REQ-123" --fix-auto` - 自动修复可修复的一致性问题
+- `/flow-verify --all` - 批量验证所有需求的一致性
 
 #### 传统精确命令
 - `/flow-new "REQ-123|支持用户下单|https://plan.example.com/spec"` - 启动完整需求开发流程

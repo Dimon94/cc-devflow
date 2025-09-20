@@ -117,7 +117,16 @@ Steps:
    - 主 Agent 审查规划合理性
 
 ### 阶段2: 实施准备
-3. **测试计划**（代码实现前）
+3. **一致性初步验证**（计划阶段）
+   ```bash
+   Task: consistency-checker "Verify document consistency and requirement traceability for ${reqId}"
+   ```
+
+   - consistency-checker 输出: `CONSISTENCY_ANALYSIS.md`
+   - 包含: 文档一致性检查、需求可追溯性验证、潜在冲突识别
+   - **触发条件**: PRD 和 EPIC 生成完成后自动执行
+
+4. **测试计划**（代码实现前）
    ```bash
    Task: qa-tester "Create comprehensive test plan for ${reqId} based on EPIC and tasks"
    ```
@@ -126,7 +135,7 @@ Steps:
    - 包含: 测试策略、用例设计、覆盖率要求
    - **触发词**: 包含 "test plan" 的提示词
 
-4. **安全评估计划**（代码实现前）
+5. **安全评估计划**（代码实现前）
    ```bash
    Task: security-reviewer "Create comprehensive security plan for ${reqId} based on requirements"
    ```
@@ -161,7 +170,16 @@ Steps:
    - 包含: 漏洞扫描、安全风险、修复建议
    - **触发词**: 包含 "security report" 的提示词
 
-8. **发布准备**
+8. **最终一致性验证**（实施完成后）
+   ```bash
+   Task: consistency-checker "Perform comprehensive consistency verification for completed ${reqId}"
+   ```
+
+   - consistency-checker 输出: `FINAL_CONSISTENCY_REPORT.md`
+   - 包含: 实现与规格一致性、测试覆盖完整性、文档同步状态
+   - **触发条件**: 代码实现和质量报告完成后执行
+
+9. **发布准备**
    ```bash
    Task: release-manager "Create release plan for ${reqId} based on quality reports"
    ```
@@ -170,7 +188,7 @@ Steps:
    - 包含: 发布流程、回滚计划、部署策略
 
 ### 阶段5: 发布执行
-9. **质量闸检查**
+10. **质量闸检查**
    - **宪法合规检查**: 验证所有代码和流程符合项目宪法
    - **质量闸验证**: 确保通过所有质量闸要求
    - **架构一致性**: 验证架构约束得到遵循
