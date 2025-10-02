@@ -24,6 +24,57 @@ description: Query development progress status for cc-devflow requirements. Usag
 /flow-status --bugs            # 仅查看BUG修复状态
 ```
 
+## Rules Integration
+
+本命令遵循以下规则体系：
+
+1. **Standard Patterns** (.claude/rules/standard-patterns.md):
+   - Fail Fast: 无效 ID 格式立即报错
+   - Clear Errors: 明确的状态解释和建议
+   - Minimal Output: 简洁的状态汇总（默认）
+   - Structured Output: 结构化的状态报告
+
+2. **Agent Coordination** (.claude/rules/agent-coordination.md):
+   - 读取 orchestration_status.json 状态文件
+   - 识别 .completed 完成标记
+   - 只读命令，不修改任何状态
+
+3. **DateTime Handling** (.claude/rules/datetime.md):
+   - 显示 ISO 8601 UTC 时间戳
+   - 计算准确的时间差（已用时间、预计剩余）
+   - 支持时区感知的时间显示
+
+4. **DevFlow Patterns** (.claude/rules/devflow-patterns.md):
+   - 支持 REQ-ID 和 BUG-ID 格式
+   - 使用标准化状态枚举
+   - 提供清晰的进度百分比
+
+## Constitution Compliance
+
+**注意**: flow-status 是只读查询命令，不涉及代码修改，因此 Constitution 检查主要用于状态报告的完整性和准确性。
+
+### 查询原则
+- **Quality First**: 确保状态报告准确完整
+- **无误导信息**: 状态展示必须真实反映当前进度
+- **可追溯性**: 提供从状态到文档的链接
+
+### 报告质量
+- **文档完整度**: 准确计算各阶段文档完成度
+- **时间估算**: 基于实际进度的合理时间预测
+- **状态一致性**: Git 状态与文档状态一致性检查
+
+## Prerequisites Validation
+
+**注意**: flow-status 是只读查询命令，通常不需要严格的前置验证。
+
+基本验证：
+```bash
+# 简单的环境检查（可选）
+# - 确认在 cc-devflow 项目目录中
+# - 验证 .claude/docs/ 目录存在
+# - 如果提供 ID，验证格式正确性
+```
+
 ## 执行流程
 
 ### 1. 参数解析和验证
@@ -46,13 +97,15 @@ description: Query development progress status for cc-devflow requirements. Usag
 - 分支的提交历史和状态
 - 未推送的更改
 
-### 4. 执行日志分析
-分析每个需求的 `EXECUTION_LOG.md`：
+### 4. 状态文件分析
+分析每个需求的 `orchestration_status.json` (标准化状态文件)：
 - 当前执行阶段 (研究型子代理输出 vs 主代理执行)
 - 完成的子代理调用列表
 - 完成的主代理工作项
 - 遇到的错误或警告
 - 预估剩余时间
+
+同时读取 `EXECUTION_LOG.md` 提供详细的执行历史。
 
 ### 5. 状态汇总展示
 根据参数显示不同级别的状态信息

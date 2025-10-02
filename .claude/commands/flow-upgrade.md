@@ -32,12 +32,83 @@ description: PRD version management and upgrade workflow. Usage: /flow-upgrade "
 /flow-upgrade "REQ-123" --compatibility --baseline="v1.0"
 ```
 
+## Rules Integration
+
+本命令遵循以下规则体系：
+
+1. **Standard Patterns** (.claude/rules/standard-patterns.md):
+   - Fail Fast: 版本格式验证失败立即停止
+   - Clear Errors: 明确的版本冲突和变更问题
+   - Minimal Output: 简洁的版本操作确认
+   - Structured Output: 结构化的变更日志和影响报告
+
+2. **Agent Coordination** (.claude/rules/agent-coordination.md):
+   - 调用 impact-analyzer 分析变更影响
+   - 调用 compatibility-checker 检查兼容性
+   - 创建版本 .completed 标记
+
+3. **DateTime Handling** (.claude/rules/datetime.md):
+   - 使用 ISO 8601 UTC 时间戳
+   - 记录版本创建时间、升级时间
+   - 支持时区感知的版本历史
+
+4. **DevFlow Patterns** (.claude/rules/devflow-patterns.md):
+   - 强制 REQ-ID 和版本号格式验证
+   - 使用标准化版本管理模板
+   - 一致的 SemVer 语义版本规范
+   - 完整的版本可追溯性
+
+## Constitution Compliance
+
+本命令强制执行 CC-DevFlow Constitution (.claude/constitution/project-constitution.md) 原则：
+
+### 升级前验证
+- **Quality First**: 确保变更有充分理由和完整描述
+- **Security First**: 识别版本变更的安全影响
+
+### 升级过程检查
+1. **NO PARTIAL UPGRADE**: 完整版本升级或明确标记部分升级
+2. **向后兼容性**: 评估破坏性变更的影响和迁移路径
+3. **NO DATA LOSS**: 保存所有历史版本快照
+4. **架构一致性**: 新版本需求符合架构约束
+5. **性能影响**: 评估版本变更的性能影响
+
+### 升级后验证
+- **版本完整性**: 确保版本快照和元数据完整
+- **迁移指南**: 提供清晰的版本迁移说明
+- **兼容性矩阵**: 更新版本兼容性记录
+
+## Prerequisites Validation
+
+升级前，必须验证前置条件（Fail Fast 原则）：
+
+```bash
+# 设置需求 ID 环境变量
+export DEVFLOW_REQ_ID="${reqId}"
+
+# 运行前置条件检查
+bash .claude/scripts/check-prerequisites.sh --json
+
+# 验证项:
+# - REQ-ID 格式验证 (REQ-\d+)
+# - 版本号格式验证 (SemVer)
+# - PRD 文档存在性和有效性
+# - Git 仓库状态验证（无未提交变更）
+# - 版本冲突检查（新版本号未被占用）
+```
+
+**如果前置检查失败，立即停止（Fail Fast），不进行后续升级。**
+
 ## 执行流程
 
 ### 1. 分析模式 (`--analyze`)
 
 #### 1.1 版本检测和变更分析
 ```bash
+# 执行前置条件验证
+run_prerequisites_validation()
+
+# 调用 impact-analyzer 子代理
 Task: impact-analyzer "Analyze PRD changes for ${reqId}"
 ```
 
@@ -196,7 +267,13 @@ Task: impact-analyzer "Analyze rollback impact for ${reqId} to ${target_version}
 
 ### 4. 兼容性检查模式 (`--compatibility`)
 
-#### 4.1 兼容性分析框架
+#### 4.1 兼容性分析执行
+```bash
+# 调用 compatibility-checker 子代理
+Task: compatibility-checker "Analyze compatibility between versions for ${reqId}"
+```
+
+#### 4.2 兼容性分析框架
 ```yaml
 检查维度:
   api_compatibility:

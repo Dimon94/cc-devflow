@@ -33,22 +33,94 @@ description: Update task development progress for cc-devflow requirements. Usage
 /flow-update "REQ-123" "TASK_002" --test --progress=90     # 运行测试并更新进度
 ```
 
+## Rules Integration
+
+本命令遵循以下规则体系：
+
+1. **Standard Patterns** (.claude/rules/standard-patterns.md):
+   - Fail Fast: 参数验证和前置条件检查失败立即停止
+   - Clear Errors: 明确的错误提示和修复建议
+   - Minimal Output: 简洁的进度更新确认
+   - Structured Output: 结构化的进度报告和分析
+
+2. **Agent Coordination** (.claude/rules/agent-coordination.md):
+   - 更新 orchestration_status.json 状态文件
+   - 创建任务 .completed 标记
+   - 与 qa-tester 协调测试状态更新
+
+3. **DateTime Handling** (.claude/rules/datetime.md):
+   - 使用 ISO 8601 UTC 时间戳
+   - 记录任务开始、更新、完成时间
+   - 支持时区感知的时间跟踪
+
+4. **DevFlow Patterns** (.claude/rules/devflow-patterns.md):
+   - 强制 REQ-ID 和 TASK-ID 格式验证
+   - 使用标准化进度跟踪模板
+   - 一致的进度评分方法
+   - 可追溯性链接（Task → Code → Test）
+
+## Constitution Compliance
+
+本命令强制执行 CC-DevFlow Constitution (.claude/constitution/project-constitution.md) 原则：
+
+### 执行前验证
+- **Quality First**: 进度更新必须基于真实完成度
+- **NO PARTIAL IMPLEMENTATION**: 检测部分实现并明确标记
+
+### 更新过程检查
+1. **代码质量验证**: 已完成代码通过质量检查
+2. **测试覆盖检查**: 完成度 ≥ 80% 时必须有测试覆盖
+3. **NO CODE DUPLICATION**: 代码变更遵循现有模式
+4. **NO HARDCODED SECRETS**: 检测并阻止硬编码机密
+5. **NO RESOURCE LEAKS**: 资源正确管理和释放
+6. **NO DEAD CODE**: 检测调试代码和无用注释
+
+### 更新后验证
+- **质量门禁**: 100% 完成时必须通过所有质量检查
+- **文档一致性**: 确保文档与代码同步更新
+- **可追溯性**: 保持任务和代码的双向可追溯
+
+## Prerequisites Validation
+
+进度更新前，必须验证前置条件（Fail Fast 原则）：
+
+```bash
+# 设置需求 ID 环境变量
+export DEVFLOW_REQ_ID="${reqId}"
+
+# 运行前置条件检查
+bash .claude/scripts/check-prerequisites.sh --json
+
+# 验证项:
+# - REQ-ID 格式验证 (REQ-\d+)
+# - TASK-ID 格式验证 (TASK_\d+)
+# - 需求目录结构检查
+# - 任务文件存在性验证
+# - Git 仓库状态验证
+# - 开发分支检查 (feature/REQ-*)
+```
+
+**如果前置检查失败，立即停止（Fail Fast），不进行后续更新。**
+
 ## 执行流程
 
 ### 1. 参数验证和环境检查
 ```bash
-# 1.1 验证参数格式
+# 1.1 执行前置条件验证（见 Prerequisites Validation 章节）
+run_prerequisites_validation()
+
+# 1.2 验证参数格式
 validate_req_id_format()
 validate_task_id_format()
 validate_status_enum()
 validate_progress_range()
 
-# 1.2 检查文件存在性
+# 1.3 检查文件存在性
 check_requirement_exists()
 check_task_file_exists()
 check_implementation_plan()
 
-# 1.3 Git状态检查
+# 1.4 Git状态检查
 verify_feature_branch()
 check_working_directory_clean()
 ```
@@ -128,47 +200,52 @@ def analyze_code_changes(req_id, task_id):
 
 #### 3.1 任务状态文件更新
 ```yaml
-# .claude/docs/requirements/${reqId}/tasks/${taskId}_status.json
+# .claude/docs/requirements/${reqId}/orchestration_status.json (标准化状态文件)
 {
-  "taskId": "TASK_001",
   "reqId": "REQ-123",
-  "title": "用户模型设计",
-  "status": "in_progress",
-  "progress": 75,
-  "estimatedHours": 8,
-  "actualHours": 6,
-  "remainingHours": 2,
-  "lastUpdated": "2024-01-15T14:30:00Z",
-  "updatedBy": "main_agent",
-  "updateMethod": "auto_detection",
-  "milestones": [
-    {
-      "timestamp": "2024-01-15T10:00:00Z",
-      "status": "planning",
-      "progress": 0,
-      "comment": "任务开始"
-    },
-    {
-      "timestamp": "2024-01-15T12:30:00Z",
-      "status": "in_progress",
-      "progress": 40,
-      "comment": "完成数据模型设计"
-    },
-    {
-      "timestamp": "2024-01-15T14:30:00Z",
+  "overallProgress": 75,
+  "tasks": {
+    "TASK_001": {
+      "taskId": "TASK_001",
+      "title": "用户模型设计",
       "status": "in_progress",
       "progress": 75,
-      "comment": "API接口实现完成"
+      "estimatedHours": 8,
+      "actualHours": 6,
+      "remainingHours": 2,
+      "lastUpdated": "2024-01-15T14:30:00Z",
+      "updatedBy": "main_agent",
+      "updateMethod": "auto_detection",
+      "milestones": [
+        {
+          "timestamp": "2024-01-15T10:00:00Z",
+          "status": "planning",
+          "progress": 0,
+          "comment": "任务开始"
+        },
+        {
+          "timestamp": "2024-01-15T12:30:00Z",
+          "status": "in_progress",
+          "progress": 40,
+          "comment": "完成数据模型设计"
+        },
+        {
+          "timestamp": "2024-01-15T14:30:00Z",
+          "status": "in_progress",
+          "progress": 75,
+          "comment": "API接口实现完成"
+        }
+      ],
+      "codeMetrics": {
+        "filesModified": 3,
+        "linesAdded": 156,
+        "functionsImplemented": 5,
+        "testCoverage": 85
+      },
+      "blockers": [],
+      "nextSteps": ["完成单元测试", "更新文档"]
     }
-  ],
-  "codeMetrics": {
-    "filesModified": 3,
-    "linesAdded": 156,
-    "functionsImplemented": 5,
-    "testCoverage": 85
-  },
-  "blockers": [],
-  "nextSteps": ["完成单元测试", "更新文档"]
+  }
 }
 ```
 

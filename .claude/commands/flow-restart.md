@@ -65,21 +65,91 @@ def detect_restart_stage(req_id):
         return "merge"
 ```
 
+## Rules Integration
+
+本命令遵循以下规则体系：
+
+1. **Standard Patterns** (.claude/rules/standard-patterns.md):
+   - Fail Fast: 前置条件验证失败立即停止
+   - Clear Errors: 明确的中断原因和恢复建议
+   - Minimal Output: 简洁的恢复进度输出
+   - Structured Output: 结构化的恢复日志
+
+2. **Agent Coordination** (.claude/rules/agent-coordination.md):
+   - 更新 orchestration_status.json 恢复状态
+   - 创建 .restart 恢复标记
+   - 协调多个子代理重新执行
+
+3. **DateTime Handling** (.claude/rules/datetime.md):
+   - 使用 ISO 8601 UTC 时间戳
+   - 记录中断时间、恢复时间
+   - 支持时区感知的恢复跟踪
+
+4. **DevFlow Patterns** (.claude/rules/devflow-patterns.md):
+   - 强制 REQ-ID 格式验证
+   - 使用标准化恢复模板
+   - 一致的状态恢复方法
+   - 可追溯性链接（中断 → 恢复 → 完成）
+
+## Constitution Compliance
+
+本命令强制执行 CC-DevFlow Constitution (.claude/constitution/project-constitution.md) 原则：
+
+### 恢复前验证
+- **Quality First**: 确保恢复不丢失已完成的工作
+- **Security First**: 验证备份数据的安全性
+
+### 恢复过程检查
+1. **NO PARTIAL RECOVERY**: 完整恢复或明确标记部分恢复
+2. **NO DATA LOSS**: 备份所有现有数据再清理
+3. **NO CODE DUPLICATION**: 恢复代码遵循现有模式
+4. **NO HARDCODED SECRETS**: 不在恢复日志中暴露机密
+5. **NO RESOURCE LEAKS**: 清理中断遗留的资源
+
+### 恢复后验证
+- **状态一致性**: 确保恢复后状态与预期一致
+- **文档完整性**: 验证所有文档正确恢复
+- **Git 状态**: 确保 Git 仓库状态干净
+
+## Prerequisites Validation
+
+恢复前，必须验证前置条件（Fail Fast 原则）：
+
+```bash
+# 设置需求 ID 环境变量
+export DEVFLOW_REQ_ID="${reqId}"
+
+# 运行前置条件检查
+bash .claude/scripts/check-prerequisites.sh --json
+
+# 验证项:
+# - REQ-ID 格式验证 (REQ-\d+)
+# - 需求目录存在性检查
+# - Git 仓库状态验证
+# - 中断点文档完整性验证
+# - 备份数据有效性检查（如果 --backup）
+```
+
+**如果前置检查失败，立即停止（Fail Fast），不进行后续恢复。**
+
 ## 执行流程
 
 ### 1. 验证和准备阶段
 ```bash
-# 1.1 参数验证
+# 1.1 执行前置条件验证（见 Prerequisites Validation 章节）
+run_prerequisites_validation()
+
+# 1.2 参数验证
 validate_req_id_format()
 check_project_directory()
 verify_git_repository()
 
-# 1.2 状态检查
+# 1.3 状态检查
 check_existing_requirement()
 analyze_current_state()
 detect_restart_point()
 
-# 1.3 备份处理
+# 1.4 备份处理
 if [ "$BACKUP" = true ]; then
     create_state_backup()
 fi
@@ -149,12 +219,12 @@ restart_strategies:
 
   prd:
     - 备份现有PRD.md
-    - 调用 prd-writer 重新生成PRD
+    - Task: prd-writer "重新生成产品需求文档"
     - 继续后续流程
 
   planning:
     - 保留PRD.md
-    - 调用 planner 重新生成EPIC和tasks
+    - Task: planner "重新生成EPIC和任务分解"
     - 继续后续流程
 
   development:
@@ -163,7 +233,7 @@ restart_strategies:
 
   testing:
     - 保留代码和实现
-    - 调用 qa-tester 重新生成测试计划
+    - Task: qa-tester "重新生成测试计划和执行测试"
     - 主代理重新执行测试
 ```
 

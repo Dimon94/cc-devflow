@@ -35,21 +35,92 @@ description: Comprehensive consistency verification across documents and impleme
 /flow-verify "REQ-123" --tests-only
 ```
 
+## Rules Integration
+
+本命令遵循以下规则体系：
+
+1. **Standard Patterns** (.claude/rules/standard-patterns.md):
+   - Fail Fast: 前置条件验证失败立即停止
+   - Clear Errors: 明确的不一致问题和修复建议
+   - Minimal Output: 简洁的验证结果汇总
+   - Structured Output: 结构化的一致性报告
+
+2. **Agent Coordination** (.claude/rules/agent-coordination.md):
+   - 调用 consistency-checker 子代理执行分析
+   - 创建 .verified 验证标记
+   - 与 qa-tester 协调测试覆盖验证
+
+3. **DateTime Handling** (.claude/rules/datetime.md):
+   - 使用 ISO 8601 UTC 时间戳
+   - 记录验证时间、文档修改时间
+   - 支持时区感知的增量验证
+
+4. **DevFlow Patterns** (.claude/rules/devflow-patterns.md):
+   - 强制 REQ-ID 格式验证
+   - 使用标准化一致性报告模板
+   - 一致的评分方法论
+   - 完整的双向可追溯性
+
+## Constitution Compliance
+
+本命令强制执行 CC-DevFlow Constitution (.claude/constitution/project-constitution.md) 原则：
+
+### 验证前检查
+- **Quality First**: 确保验证覆盖所有质量维度
+- **NO PARTIAL VERIFICATION**: 完整验证或明确标记部分验证
+
+### 验证过程原则
+1. **质量至上**: 100% 可追溯性覆盖，证据化不一致发现
+2. **架构一致性**: 验证架构决策一致性，检测 CODE DUPLICATION
+3. **安全优先**: 验证安全需求传播，检测 HARDCODED SECRETS
+4. **性能责任**: 验证性能需求一致性，检测 RESOURCE LEAKS
+5. **可维护性**: 检测 DEAD CODE，验证关注点分离
+
+### 验证后行动
+- **问题优先级**: 按严重程度排序不一致问题
+- **修复建议**: 提供可操作的修复步骤
+- **质量报告**: 生成完整的一致性分析报告
+
+## Prerequisites Validation
+
+验证前，必须验证前置条件（Fail Fast 原则）：
+
+```bash
+# 设置需求 ID 环境变量
+export DEVFLOW_REQ_ID="${reqId}"
+
+# 运行前置条件检查
+bash .claude/scripts/check-prerequisites.sh --json
+
+# 验证项:
+# - REQ-ID 格式验证 (REQ-\d+)
+# - 所有必需文档存在性（PRD, EPIC, TASKS）
+# - 文档格式合规性
+# - Git 仓库状态验证
+# - 实现代码存在性检查
+```
+
+**如果前置检查失败，立即停止（Fail Fast），不进行后续验证。**
+
 ## 执行流程
 
 ### 1. 验证模式选择
 
 #### 1.1 完整验证模式 (默认)
 ```bash
+# 执行前置条件验证
+run_prerequisites_validation()
+
+# 调用 consistency-checker 子代理
 Task: consistency-checker "Perform comprehensive consistency analysis for ${reqId}"
 ```
 
 **验证范围**:
 - 文档结构和格式验证
-- 需求可追溯性检查
+- 需求可追溯性检查（正向+反向）
 - 实现一致性验证
 - 测试覆盖率分析
-- Constitution 合规性检查
+- Constitution 合规性检查（5大原则）
 
 #### 1.2 快速验证模式 (`--summary`)
 ```yaml
