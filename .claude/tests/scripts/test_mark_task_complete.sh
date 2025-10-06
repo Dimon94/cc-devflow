@@ -42,7 +42,7 @@ create_test_common() {
 # 创建带有任务的需求环境
 setup_requirement_with_tasks() {
     local req_id="$1"
-    local req_dir="$TEST_TMP_DIR/.claude/docs/requirements/$req_id"
+    local req_dir="$TEST_TMP_DIR/devflow/requirements/$req_id"
 
     mkdir -p "$req_dir"
 
@@ -359,7 +359,7 @@ test_missing_tasks_file() {
 
     # Arrange - 使用独特的REQ_ID以避免与之前测试冲突
     local req_id="REQ-999"
-    local req_dir="$TEST_TMP_DIR/.claude/docs/requirements/$req_id"
+    local req_dir="$TEST_TMP_DIR/devflow/requirements/$req_id"
     mkdir -p "$req_dir"
     # 不创建 TASKS.md
 

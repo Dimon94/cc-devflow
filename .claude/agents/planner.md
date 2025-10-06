@@ -46,8 +46,8 @@ You MUST follow these rules during planning:
 Deliverables:
 
 **For Requirements**:
-- .claude/docs/requirements/${reqId}/EPIC.md: scope, success metrics, dependencies, rollout plan
-- .claude/docs/requirements/${reqId}/TASKS.md: **single unified document** with all tasks following TDD order:
+- devflow/requirements/${reqId}/EPIC.md: scope, success metrics, dependencies, rollout plan
+- devflow/requirements/${reqId}/TASKS.md: **single unified document** with all tasks following TDD order:
   - Phase 1: Setup tasks
   - Phase 2: Tests First (TDD) - all tests MUST be written before implementation
   - Phase 3: Core Implementation - make tests pass
@@ -60,8 +60,8 @@ Deliverables:
   - Include Parallel Execution examples
 
 **For BUG Fixes**:
-- .claude/docs/bugs/${bugId}/PLAN.md: fix strategy, approach, risks, rollback plan
-- .claude/docs/bugs/${bugId}/TASKS.md: **single unified document** with all fix tasks:
+- devflow/bugs/${bugId}/PLAN.md: fix strategy, approach, risks, rollback plan
+- devflow/bugs/${bugId}/TASKS.md: **single unified document** with all fix tasks:
   - Phase 1: Root Cause Analysis
   - Phase 2: Test Reproduction (write test that fails)
   - Phase 3: Fix Implementation (make test pass)
@@ -70,7 +70,7 @@ Deliverables:
 
 ```text
 # Requirements Structure
-.claude/docs/requirements/${reqId}/
+devflow/requirements/${reqId}/
 ├── PRD.md                 # 产品需求文档
 ├── EPIC.md               # Epic 规划
 ├── TASKS.md              # 任务列表 (单一文档，TDD 顺序)
@@ -85,7 +85,7 @@ Deliverables:
 └── orchestration_status.json  # 状态跟踪
 
 # BUG Fix Structure
-.claude/docs/bugs/${bugId}/
+devflow/bugs/${bugId}/
 ├── ANALYSIS.md           # BUG分析报告
 ├── PLAN.md               # 修复计划
 ├── TASKS.md              # 修复任务列表 (单一文档)

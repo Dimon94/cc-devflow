@@ -128,7 +128,7 @@ type: workflow-guide
 ## 文档结构
 
 ```text
-.claude/docs/bugs/${bugId}/
+devflow/bugs/${bugId}/
 ├── ANALYSIS.md           # BUG分析报告
 ├── PLAN.md               # 修复计划
 ├── tasks/                # 修复任务分解
@@ -174,7 +174,7 @@ type: workflow-guide
 
 ### BUG Status Management
 ```json
-// .claude/docs/bugs/${bugId}/status.json
+// devflow/bugs/${bugId}/status.json
 {
   "bugId": "${bugId}",
   "description": "${description}",

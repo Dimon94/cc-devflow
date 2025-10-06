@@ -105,7 +105,7 @@ fi
 
 # 获取需求目录
 REPO_ROOT=$(get_repo_root)
-REQUIREMENTS_DIR="$REPO_ROOT/.claude/docs/requirements"
+REQUIREMENTS_DIR="$REPO_ROOT/devflow/requirements"
 
 if [[ ! -d "$REQUIREMENTS_DIR" ]]; then
     echo "错误: 需求目录不存在: $REQUIREMENTS_DIR" >&2

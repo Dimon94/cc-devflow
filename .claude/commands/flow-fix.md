@@ -106,7 +106,7 @@ git checkout -b "bugfix/${bugId}-${slug(description)}"
 
 #### 2.2 初始化BUG目录
 ```bash
-mkdir -p ".claude/docs/bugs/${bugId}"/{tasks}
+mkdir -p "devflow/bugs/${bugId}"/{tasks}
 ```
 
 #### 2.3 分析阶段 - 调用研究型子代理
@@ -154,7 +154,7 @@ mkdir -p ".claude/docs/bugs/${bugId}"/{tasks}
 
 ### 文档结构
 ```text
-.claude/docs/bugs/${bugId}/
+devflow/bugs/${bugId}/
 ├── ANALYSIS.md          # BUG分析报告 (bug-analyzer 输出)
 ├── PLAN.md              # 修复计划 (planner 输出)
 ├── tasks/               # 修复任务分解 (planner 输出)
@@ -264,7 +264,7 @@ export BUG_DEBUG=1
 ```
 
 ### 日志位置
-- 执行日志: `.claude/docs/bugs/${bugId}/LOG.md`
+- 执行日志: `devflow/bugs/${bugId}/LOG.md`
 - 错误日志: `.claude/logs/bugfix-${bugId}.log`
 - 调试信息: 控制台输出
 

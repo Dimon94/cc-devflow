@@ -25,8 +25,9 @@ get_current_req_id() {
     # Then check git branch if available
     if git rev-parse --abbrev-ref HEAD >/dev/null 2>&1; then
         local branch=$(git rev-parse --abbrev-ref HEAD)
-        # Extract REQ-XXX or BUG-XXX from branch name like feature/REQ-123-title
-        if [[ "$branch" =~ (REQ-[0-9]+|BUG-[0-9]+) ]]; then
+        # Extract REQ-XXX or BUG-XXX from branch name like feature/REQ-123-title or feature/REQ-20251006-001-title
+        # Support formats: REQ-123, REQ-20251006-001, BUG-456, etc.
+        if [[ "$branch" =~ (REQ-[0-9]+-[0-9]+|REQ-[0-9]+|BUG-[0-9]+-[0-9]+|BUG-[0-9]+) ]]; then
             echo "${BASH_REMATCH[1]}"
             return
         fi
@@ -34,7 +35,7 @@ get_current_req_id() {
 
     # For non-git repos, try to find the latest requirement directory
     local repo_root=$(get_repo_root)
-    local req_dir="$repo_root/.claude/docs/requirements"
+    local req_dir="$repo_root/devflow/requirements"
 
     if [[ -d "$req_dir" ]]; then
         local latest_req=""
@@ -43,13 +44,18 @@ get_current_req_id() {
         for dir in "$req_dir"/REQ-* "$req_dir"/BUG-*; do
             if [[ -d "$dir" ]]; then
                 local dirname=$(basename "$dir")
-                if [[ "$dirname" =~ (REQ|BUG)-([0-9]+) ]]; then
-                    local prefix="${BASH_REMATCH[1]}"
-                    local number="${BASH_REMATCH[2]}"
-                    number=$((10#$number))
-                    if [[ "$number" -gt "$highest" ]]; then
-                        highest=$number
-                        latest_req="$prefix-$number"
+                # Match full requirement ID including extended formats like REQ-20251006-001
+                if [[ "$dirname" =~ ^(REQ-[0-9]+-[0-9]+|REQ-[0-9]+|BUG-[0-9]+-[0-9]+|BUG-[0-9]+) ]]; then
+                    local full_id="${BASH_REMATCH[1]}"
+                    # Extract the first number for comparison
+                    if [[ "$full_id" =~ (REQ|BUG)-([0-9]+) ]]; then
+                        local prefix="${BASH_REMATCH[1]}"
+                        local number="${BASH_REMATCH[2]}"
+                        number=$((10#$number))
+                        if [[ "$number" -gt "$highest" ]]; then
+                            highest=$number
+                            latest_req="$full_id"
+                        fi
                     fi
                 fi
             fi
@@ -80,9 +86,10 @@ validate_req_id() {
         return 1
     fi
 
-    if [[ ! "$req_id" =~ ^(REQ|BUG)-[0-9]+$ ]]; then
+    # Support both simple (REQ-123) and extended (REQ-20251006-001) formats
+    if [[ ! "$req_id" =~ ^(REQ|BUG)-[0-9]+(-[0-9]+)?$ ]]; then
         echo "ERROR: Invalid requirement ID format: $req_id" >&2
-        echo "Expected format: REQ-XXX or BUG-XXX (e.g., REQ-123 or BUG-456)" >&2
+        echo "Expected format: REQ-XXX or REQ-YYYYMMDD-XXX (e.g., REQ-123 or REQ-20251006-001)" >&2
         return 1
     fi
 
@@ -103,6 +110,18 @@ get_req_type() {
     fi
 }
 
+# Ensure devflow directory structure exists
+# Args: $1 - repo root
+ensure_devflow_dir() {
+    local repo_root="$1"
+    local devflow_dir="$repo_root/devflow"
+
+    if [[ ! -d "$devflow_dir" ]]; then
+        mkdir -p "$devflow_dir/requirements"
+        mkdir -p "$devflow_dir/bugs"
+    fi
+}
+
 # Get requirement directory path
 # Args: $1 - repo root, $2 - requirement ID
 get_req_dir() {
@@ -110,10 +129,13 @@ get_req_dir() {
     local req_id="$2"
     local req_type=$(get_req_type "$req_id")
 
+    # Ensure devflow directory exists
+    ensure_devflow_dir "$repo_root"
+
     if [[ "$req_type" == "bug" ]]; then
-        echo "$repo_root/.claude/docs/bugs/$req_id"
+        echo "$repo_root/devflow/bugs/$req_id"
     else
-        echo "$repo_root/.claude/docs/requirements/$req_id"
+        echo "$repo_root/devflow/requirements/$req_id"
     fi
 }
 

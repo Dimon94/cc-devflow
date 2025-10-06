@@ -91,7 +91,7 @@ Steps:
    - Apply constitutional constraints to the entire workflow
 
 1) Context intake
-   - If planSources include URLs, first use MCP server "docs-web" (or WebFetch) to fetch HTML/MD/PDF and write them under .claude/docs/requirements/${reqId}/research/${reqId}_*.md.
+   - If planSources include URLs, first use MCP server "docs-web" (or WebFetch) to fetch HTML/MD/PDF and write them under devflow/requirements/${reqId}/research/${reqId}_*.md.
    - Read local .claude/docs/plan/*.md and CLAUDE.md to learn codebase constraints.
 
 2) Git branch
@@ -105,7 +105,7 @@ Steps:
    Task: prd-writer "Analyze ${planSources} and generate comprehensive PRD for ${reqId}: ${title}"
    ```
 
-   - prd-writer 输出: `.claude/docs/requirements/${reqId}/PRD.md`
+   - prd-writer 输出: `devflow/requirements/${reqId}/PRD.md`
    - 主 Agent 读取并理解需求
 
 2. **规划和分解**
@@ -211,7 +211,7 @@ Steps:
     - 包含时间线、决策点、问题解决
 
 ```text
-.claude/docs/requirements/${reqId}/
+devflow/requirements/${reqId}/
 ├── PRD.md                 # 产品需求文档
 ├── EPIC.md               # Epic 规划
 ├── tasks/                # 任务分解
@@ -230,7 +230,7 @@ Steps:
 ### Status Management
 Create and maintain status files for coordination:
 ```json
-// .claude/docs/requirements/${reqId}/orchestration_status.json
+// devflow/requirements/${reqId}/orchestration_status.json
 {
   "reqId": "${reqId}",
   "currentPhase": "development",

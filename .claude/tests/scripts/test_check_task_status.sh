@@ -42,7 +42,7 @@ create_test_common() {
 # 创建带有不同阶段任务的需求环境
 setup_requirement_with_phased_tasks() {
     local req_id="$1"
-    local req_dir="$TEST_TMP_DIR/.claude/docs/requirements/$req_id"
+    local req_dir="$TEST_TMP_DIR/devflow/requirements/$req_id"
 
     mkdir -p "$req_dir"
 
@@ -73,7 +73,7 @@ EOF
 # 创建简单任务列表
 setup_requirement_with_simple_tasks() {
     local req_id="$1"
-    local req_dir="$TEST_TMP_DIR/.claude/docs/requirements/$req_id"
+    local req_dir="$TEST_TMP_DIR/devflow/requirements/$req_id"
 
     mkdir -p "$req_dir"
 
@@ -358,7 +358,7 @@ test_all_tasks_complete() {
 
     # Arrange - 创建全部完成的任务
     local req_id="REQ-003"
-    local req_dir="$TEST_TMP_DIR/.claude/docs/requirements/$req_id"
+    local req_dir="$TEST_TMP_DIR/devflow/requirements/$req_id"
     mkdir -p "$req_dir"
 
     cat > "$req_dir/TASKS.md" << 'EOF'
@@ -404,7 +404,7 @@ test_missing_tasks_file() {
 
     # Arrange - 创建需求目录但不创建 TASKS.md
     local req_id="REQ-004"
-    local req_dir="$TEST_TMP_DIR/.claude/docs/requirements/$req_id"
+    local req_dir="$TEST_TMP_DIR/devflow/requirements/$req_id"
     mkdir -p "$req_dir"
 
     # Act - Use temp file pattern to capture exit code

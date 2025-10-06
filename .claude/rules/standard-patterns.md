@@ -112,7 +112,7 @@ create_prd() {
     # 验证格式
     # 保存文件
 
-    echo "✅ PRD 已生成: .claude/docs/requirements/${req_id}/PRD.md"
+    echo "✅ PRD 已生成: devflow/requirements/${req_id}/PRD.md"
 }
 
 # ❌ 错误做法 - 冗余的输出
@@ -381,7 +381,7 @@ generate_prd_from_template() {
 
     process_template \
         ".claude/docs/templates/PRD_TEMPLATE.md" \
-        ".claude/docs/requirements/${req_id}/PRD.md" \
+        "devflow/requirements/${req_id}/PRD.md" \
         "REQ_ID=${req_id}" \
         "TITLE=${title}" \
         "OWNER=${owner}" \

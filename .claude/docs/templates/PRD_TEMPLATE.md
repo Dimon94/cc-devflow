@@ -5,7 +5,7 @@
 **Owner**: {{OWNER}}
 **Type**: Requirement
 
-**Input**: 用户需求描述、研究材料 from `.claude/docs/requirements/{{REQ_ID}}/research/`
+**Input**: 用户需求描述、研究材料 from `devflow/requirements/{{REQ_ID}}/research/`
 **Prerequisites**: 需求 ID 已创建，初始需求信息已提供
 
 ## Execution Flow (PRD 生成流程)

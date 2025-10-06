@@ -200,7 +200,7 @@ def analyze_code_changes(req_id, task_id):
 
 #### 3.1 任务状态文件更新
 ```yaml
-# .claude/docs/requirements/${reqId}/orchestration_status.json (标准化状态文件)
+# devflow/requirements/${reqId}/orchestration_status.json (标准化状态文件)
 {
   "reqId": "REQ-123",
   "overallProgress": 75,

@@ -84,8 +84,8 @@ description: Query development progress status for cc-devflow requirements. Usag
 
 ### 2. 扫描项目目录
 扫描项目目录，收集：
-- `.claude/docs/requirements/` - 所有存在的需求目录
-- `.claude/docs/bugs/` - 所有存在的BUG目录
+- `devflow/requirements/` - 所有存在的需求目录
+- `devflow/bugs/` - 所有存在的BUG目录
 - 每个需求的文档完成状态
 - 最后更新时间
 - 当前阶段标识

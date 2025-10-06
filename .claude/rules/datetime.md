@@ -339,7 +339,7 @@ get_commit_timestamp() {
 # 分析提交历史时间
 analyze_commit_timeline() {
     local req_id="$1"
-    local output_file=".claude/docs/requirements/${req_id}/timeline.md"
+    local output_file="devflow/requirements/${req_id}/timeline.md"
 
     cat > "$output_file" << EOF
 # 需求开发时间线

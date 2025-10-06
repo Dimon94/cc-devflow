@@ -33,7 +33,7 @@ setup_requirement_with_status() {
     local status="$2"
     local phase="$3"
 
-    local req_dir="$TEST_TMP_DIR/.claude/docs/requirements/$req_id"
+    local req_dir="$TEST_TMP_DIR/devflow/requirements/$req_id"
     mkdir -p "$req_dir"/{research,tasks}
 
     # 创建状态文件
@@ -262,7 +262,7 @@ test_missing_status_file() {
 
     # Arrange - 创建目录但不创建状态文件
     local req_id="REQ-009"
-    local req_dir="$TEST_TMP_DIR/.claude/docs/requirements/$req_id"
+    local req_dir="$TEST_TMP_DIR/devflow/requirements/$req_id"
     mkdir -p "$req_dir"
     echo "# PRD" > "$req_dir/PRD.md"
 

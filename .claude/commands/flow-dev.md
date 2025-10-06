@@ -416,7 +416,7 @@ This command enforces Constitution during development:
 **1. TASKS.md not found**
 ```
 ERROR: TASKS.md not found for requirement REQ-123
-Expected: .claude/docs/requirements/REQ-123/TASKS.md
+Expected: devflow/requirements/REQ-123/TASKS.md
 Run /flow-epic "REQ-123" first to generate task breakdown.
 ```
 

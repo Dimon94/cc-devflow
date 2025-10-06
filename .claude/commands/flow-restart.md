@@ -44,7 +44,7 @@ restart_stages:
 ```python
 def detect_restart_stage(req_id):
     """自动检测适合的重启阶段"""
-    req_dir = f".claude/docs/requirements/{req_id}"
+    req_dir = f"devflow/requirements/{req_id}"
 
     # 检查文档完成状态
     if not os.path.exists(f"{req_dir}/PRD.md"):
@@ -167,7 +167,7 @@ fi
 ```yaml
 cleanup_actions:
   research:
-    - 删除 .claude/docs/requirements/${reqId}/research/ 目录下的临时文件
+    - 删除 devflow/requirements/${reqId}/research/ 目录下的临时文件
     - 清理过期的网络抓取缓存
 
   prd:
@@ -305,8 +305,8 @@ create_restart_backup() {
     mkdir -p "$backup_dir"
 
     # 备份需求文档
-    if [ -d ".claude/docs/requirements/$req_id" ]; then
-        cp -r ".claude/docs/requirements/$req_id" "$backup_dir/documents/"
+    if [ -d "devflow/requirements/$req_id" ]; then
+        cp -r "devflow/requirements/$req_id" "$backup_dir/documents/"
     fi
 
     # 备份Git状态
@@ -325,7 +325,7 @@ create_restart_backup() {
 echo "恢复 $req_id 的备份状态..."
 
 # 恢复文档
-cp -r "$backup_dir/documents/$req_id" ".claude/docs/requirements/"
+cp -r "$backup_dir/documents/$req_id" "devflow/requirements/"
 
 # 恢复Git状态
 if [ -f "$backup_dir/git_state.txt" ]; then

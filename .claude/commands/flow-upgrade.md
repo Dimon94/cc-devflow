@@ -114,8 +114,8 @@ Task: impact-analyzer "Analyze PRD changes for ${reqId}"
 
 **执行步骤**:
 1. **读取 PRD 版本**
-   - 当前版本: `.claude/docs/requirements/${reqId}/PRD.md`
-   - 历史版本: `.claude/docs/requirements/${reqId}/versions/`
+   - 当前版本: `devflow/requirements/${reqId}/PRD.md`
+   - 历史版本: `devflow/requirements/${reqId}/versions/`
 
 2. **变更检测**
    - 用户故事变更 (新增/修改/删除)
@@ -129,7 +129,7 @@ Task: impact-analyzer "Analyze PRD changes for ${reqId}"
 
 4. **输出分析报告**
    ```text
-   .claude/docs/requirements/${reqId}/analysis/
+   devflow/requirements/${reqId}/analysis/
    ├── change_detection_${timestamp}.md
    ├── impact_assessment_${timestamp}.md
    └── upgrade_recommendation_${timestamp}.md
@@ -201,14 +201,14 @@ Phase 4 - 后续处理:
 
 #### 2.2 版本目录结构创建
 ```bash
-mkdir -p ".claude/docs/requirements/${reqId}/versions/v${version}"
-mkdir -p ".claude/docs/requirements/${reqId}/analysis"
-mkdir -p ".claude/docs/requirements/${reqId}/upgrade"
+mkdir -p "devflow/requirements/${reqId}/versions/v${version}"
+mkdir -p "devflow/requirements/${reqId}/analysis"
+mkdir -p "devflow/requirements/${reqId}/upgrade"
 ```
 
 **创建文件**:
 ```text
-.claude/docs/requirements/${reqId}/versions/v${version}/
+devflow/requirements/${reqId}/versions/v${version}/
 ├── PRD.md                    # PRD 快照
 ├── CHANGELOG.md             # 变更日志
 ├── IMPACT_ANALYSIS.md       # 影响分析报告

@@ -107,12 +107,12 @@ When called by main agent with "test plan" in prompt, you will receive:
 **For Requirements**:
 - reqId: Requirement ID for context (REQ-XXX format)
 - PRD, EPIC, and TASK files to analyze
-- **MUST OUTPUT**: `.claude/docs/requirements/${reqId}/TEST_PLAN.md`
+- **MUST OUTPUT**: `devflow/requirements/${reqId}/TEST_PLAN.md`
 
 **For BUG Fixes**:
 - bugId: BUG ID for context (BUG-XXX format)
 - ANALYSIS.md and PLAN.md files to analyze
-- **MUST OUTPUT**: `.claude/docs/bugs/${bugId}/TEST_PLAN.md`
+- **MUST OUTPUT**: `devflow/bugs/${bugId}/TEST_PLAN.md`
 
 ### Phase 2 Call (Post-Implementation)
 When called by main agent with "test report" in prompt, you will receive:
@@ -121,13 +121,13 @@ When called by main agent with "test report" in prompt, you will receive:
 - reqId: Requirement ID for context (REQ-XXX format)
 - implementationFiles: List of implemented files to analyze
 - testResults: Test execution results and coverage data
-- **MUST OUTPUT**: `.claude/docs/requirements/${reqId}/TEST_REPORT.md`
+- **MUST OUTPUT**: `devflow/requirements/${reqId}/TEST_REPORT.md`
 
 **For BUG Fixes**:
 - bugId: BUG ID for context (BUG-XXX format)
 - implementationFiles: List of fixed files to analyze
 - testResults: BUG fix verification and regression test results
-- **MUST OUTPUT**: `.claude/docs/bugs/${bugId}/TEST_REPORT.md`
+- **MUST OUTPUT**: `devflow/bugs/${bugId}/TEST_REPORT.md`
 
 ## Phase 1: Test Planning Process (Pre-Implementation)
 1. **Run Prerequisites Check**: `.claude/scripts/check-prerequisites.sh --json --require-epic --require-tasks`
@@ -195,7 +195,7 @@ Test generation guidelines:
 ## Output Generation
 Generate comprehensive testing documentation:
 
-### 1. Test Plan (`.claude/docs/requirements/${reqId}/TEST_PLAN.md`)
+### 1. Test Plan (`devflow/requirements/${reqId}/TEST_PLAN.md`)
 ```markdown
 # Test Plan for ${reqId} - ${taskId}
 
@@ -268,7 +268,7 @@ describe('${functionName}', () => {
 - Run all tests: `npm test`
 ```bash
 
-### 2. Test Report Template (`.claude/docs/requirements/${reqId}/TEST_REPORT.md`)
+### 2. Test Report Template (`devflow/requirements/${reqId}/TEST_REPORT.md`)
 Template for main agent to fill after test execution:
 
 ```markdown

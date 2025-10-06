@@ -127,7 +127,7 @@ create_branch_info() {
     local title="$2"
     local branch_name="$3"
 
-    local branch_info_file=".claude/docs/requirements/${req_id}/branch-info.yml"
+    local branch_info_file="devflow/requirements/${req_id}/branch-info.yml"
     mkdir -p "$(dirname "$branch_info_file")"
 
     cat > "$branch_info_file" << EOF
@@ -214,7 +214,7 @@ update_branch_commits() {
     local req_id="$1"
     local commit_msg="$2"
 
-    local branch_info_file=".claude/docs/requirements/${req_id}/branch-info.yml"
+    local branch_info_file="devflow/requirements/${req_id}/branch-info.yml"
 
     if [ -f "$branch_info_file" ]; then
         # 获取最新提交信息
@@ -266,7 +266,7 @@ sync_with_main() {
 # 生成冲突报告
 generate_conflict_report() {
     local req_id="$1"
-    local report_file=".claude/docs/requirements/${req_id}/conflict-report.md"
+    local report_file="devflow/requirements/${req_id}/conflict-report.md"
 
     cat > "$report_file" << EOF
 # Git 冲突报告
@@ -318,9 +318,9 @@ pre_merge_check() {
 
     # 检查必要文件是否存在
     local required_files=(
-        ".claude/docs/requirements/${req_id}/PRD.md"
-        ".claude/docs/requirements/${req_id}/EPIC.md"
-        ".claude/docs/requirements/${req_id}/LOG.md"
+        "devflow/requirements/${req_id}/PRD.md"
+        "devflow/requirements/${req_id}/EPIC.md"
+        "devflow/requirements/${req_id}/LOG.md"
     )
 
     for file in "${required_files[@]}"; do
@@ -387,9 +387,9 @@ generate_pr_body() {
 需求ID: REQ-${req_id}
 
 ## 相关文档
-- [PRD](.claude/docs/requirements/${req_id}/PRD.md)
-- [Epic](.claude/docs/requirements/${req_id}/EPIC.md)
-- [执行日志](.claude/docs/requirements/${req_id}/LOG.md)
+- [PRD](devflow/requirements/${req_id}/PRD.md)
+- [Epic](devflow/requirements/${req_id}/EPIC.md)
+- [执行日志](devflow/requirements/${req_id}/LOG.md)
 
 ## 变更内容
 $(git log --oneline main..HEAD | sed 's/^/- /')
@@ -401,7 +401,7 @@ $(git log --oneline main..HEAD | sed 's/^/- /')
 - [x] 代码审查完成
 
 ## 测试说明
-详见 [测试报告](.claude/docs/requirements/${req_id}/TEST_REPORT.md)
+详见 [测试报告](devflow/requirements/${req_id}/TEST_REPORT.md)
 
 ---
 🤖 此PR由 cc-devflow 系统自动生成
@@ -492,7 +492,7 @@ update_branch_status() {
     local req_id="$1"
     local status="$2"
 
-    local branch_info_file=".claude/docs/requirements/${req_id}/branch-info.yml"
+    local branch_info_file="devflow/requirements/${req_id}/branch-info.yml"
 
     if [ -f "$branch_info_file" ]; then
         yq eval ".branch_info.status = \"$status\"" -i "$branch_info_file"
@@ -507,7 +507,7 @@ update_branch_status() {
 
 ### 状态文件格式
 ```yaml
-# .claude/docs/requirements/REQ-123/branch-info.yml
+# devflow/requirements/REQ-123/branch-info.yml
 branch_info:
   req_id: "REQ-123"
   title: "支持用户下单"

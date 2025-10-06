@@ -101,13 +101,13 @@ When called by main agent, you will receive:
 - reqId: Requirement ID for context (REQ-XXX format)
 - All task completion status
 - Quality gate results
-- Expected to output: `.claude/docs/requirements/${reqId}/RELEASE_PLAN.md`
+- Expected to output: `devflow/requirements/${reqId}/RELEASE_PLAN.md`
 
 **For BUG Fixes**:
 - bugId: BUG ID for context (BUG-XXX format)
 - BUG fix completion status
 - Quality gate results
-- Expected to output: `.claude/docs/bugs/${bugId}/RELEASE_PLAN.md`
+- Expected to output: `devflow/bugs/${bugId}/RELEASE_PLAN.md`
 
 Release analysis process:
 1. **Run Prerequisites Check**: `.claude/scripts/check-prerequisites.sh --json --include-tasks`
@@ -157,7 +157,7 @@ Merge strategy:
 - Follow conventional commit message format
 
 ## Output Generation
-Generate comprehensive `.claude/docs/requirements/${reqId}/RELEASE_PLAN.md` containing:
+Generate comprehensive `devflow/requirements/${reqId}/RELEASE_PLAN.md` containing:
 
 ```markdown
 # Release Plan for ${reqId}
@@ -207,7 +207,7 @@ ${deploymentNotes}
 npm run test && npm run typecheck && npm run security-scan
 
 # 2. Create pull request
-gh pr create --title "${prTitle}" --body-file .claude/docs/requirements/${reqId}/pr_description.md
+gh pr create --title "${prTitle}" --body-file devflow/requirements/${reqId}/pr_description.md
 
 # 3. After approval, merge with squash
 gh pr merge --squash --delete-branch

@@ -97,13 +97,13 @@ EXAMPLES:
 
 STRUCTURE CREATED:
   Requirements (REQ-XXX):
-    .claude/docs/requirements/REQ-XXX/
+    devflow/requirements/REQ-XXX/
     ├── research/              # External research materials
     ├── EXECUTION_LOG.md       # Event log
     └── orchestration_status.json  # Status tracking
 
   BUG Fixes (BUG-XXX):
-    .claude/docs/bugs/BUG-XXX/
+    devflow/bugs/BUG-XXX/
     ├── EXECUTION_LOG.md
     └── status.json
 

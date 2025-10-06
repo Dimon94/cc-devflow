@@ -110,7 +110,7 @@ check_external_services() {
 execute_tests_with_verbose_output() {
     local test_target="$1"
     local req_id="$2"
-    local output_file=".claude/docs/requirements/${req_id}/test-output.log"
+    local output_file="devflow/requirements/${req_id}/test-output.log"
 
     echo "🧪 执行测试: $test_target"
 
@@ -388,7 +388,7 @@ generate_test_report() {
     local exit_code="$3"
     local duration="$4"
 
-    local report_file=".claude/docs/requirements/${req_id}/TEST_REPORT.md"
+    local report_file="devflow/requirements/${req_id}/TEST_REPORT.md"
 
     cat > "$report_file" << EOF
 # 测试报告

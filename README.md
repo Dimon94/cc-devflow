@@ -168,7 +168,7 @@ All agents and commands use standardized scripts:
 
 ### Document Structure
 ```text
-.claude/docs/requirements/${REQ-ID}/
+devflow/requirements/${REQ-ID}/
 ├── orchestration_status.json  # State management (stage, progress, timestamps)
 ├── EXECUTION_LOG.md           # Complete audit trail
 ├── PRD.md                     # Product Requirements Document (from PRD_TEMPLATE)

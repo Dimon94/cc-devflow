@@ -199,7 +199,7 @@ test_log_event_creates_entry() {
 
     # Arrange
     local req_id="REQ-123"
-    local log_dir="$TEST_TMP_DIR/.claude/docs/requirements/$req_id"
+    local log_dir="$TEST_TMP_DIR/devflow/requirements/$req_id"
     mkdir -p "$log_dir"
     local log_file="$log_dir/EXECUTION_LOG.md"
     touch "$log_file"

@@ -20,7 +20,7 @@ dod:
 
 # Task: {{TITLE}}
 
-**Input**: EPIC.md, PRD.md from `.claude/docs/requirements/{{REQ_ID}}/`
+**Input**: EPIC.md, PRD.md from `devflow/requirements/{{REQ_ID}}/`
 **Prerequisites**: 依赖任务 [{{DEPENDENCIES}}] 已完成
 
 ## Execution Flow (任务执行流程)
@@ -331,8 +331,8 @@ dod:
 
 ## 相关链接
 
-- **Epic**: `.claude/docs/requirements/{{REQ_ID}}/EPIC.md`
-- **PRD**: `.claude/docs/requirements/{{REQ_ID}}/PRD.md`
+- **Epic**: `devflow/requirements/{{REQ_ID}}/EPIC.md`
+- **PRD**: `devflow/requirements/{{REQ_ID}}/PRD.md`
 - **依赖任务**: {{DEPENDENCY_TASK_LINKS}}
 
 ---

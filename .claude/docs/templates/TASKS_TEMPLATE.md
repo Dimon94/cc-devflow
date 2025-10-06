@@ -1,6 +1,6 @@
 # Tasks: {{REQ_ID}} - {{TITLE}}
 
-**Input**: PRD.md, EPIC.md from `.claude/docs/requirements/{{REQ_ID}}/`
+**Input**: PRD.md, EPIC.md from `devflow/requirements/{{REQ_ID}}/`
 **Prerequisites**: PRD.md (required), EPIC.md (required), research/ (optional)
 
 ## Execution Flow (任务生成主流程)
@@ -513,7 +513,7 @@ feat({{REQ_ID}}): Complete T001 - Create project structure
 
 ## 相关文档
 
-- **PRD**: `.claude/docs/requirements/{{REQ_ID}}/PRD.md`
-- **EPIC**: `.claude/docs/requirements/{{REQ_ID}}/EPIC.md`
+- **PRD**: `devflow/requirements/{{REQ_ID}}/PRD.md`
+- **EPIC**: `devflow/requirements/{{REQ_ID}}/EPIC.md`
 - **Constitution**: `.claude/constitution/project-constitution.md`
-- **Execution Log**: `.claude/docs/requirements/{{REQ_ID}}/EXECUTION_LOG.md`
+- **Execution Log**: `devflow/requirements/{{REQ_ID}}/EXECUTION_LOG.md`

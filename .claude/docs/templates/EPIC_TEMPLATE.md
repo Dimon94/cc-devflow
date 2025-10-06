@@ -5,7 +5,7 @@
 **Owner**: {{OWNER}}
 **Type**: Epic
 
-**Input**: PRD.md from `.claude/docs/requirements/{{REQ_ID}}/PRD.md`
+**Input**: PRD.md from `devflow/requirements/{{REQ_ID}}/PRD.md`
 **Prerequisites**: PRD.md 已完成并通过 Constitution Check
 
 ## Execution Flow (Epic 生成流程)

@@ -47,8 +47,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **效果**: 提供详细技术方案，主代理负责实际实现
 
 ##### 3. 状态管理简化
-- **统一状态文件**: `.claude/docs/requirements/${reqId}/orchestration_status.json`
-- **任务完成标记**: `.claude/docs/requirements/${reqId}/tasks/${taskId}.completed`
+- **统一状态文件**: `devflow/requirements/${reqId}/orchestration_status.json`
+- **任务完成标记**: `devflow/requirements/${reqId}/tasks/${taskId}.completed`
 - **消除文件锁机制**: 不再需要复杂的并发控制
 
 #### 技术优势
@@ -319,7 +319,7 @@ CC-DevFlow 采用**自执行模板 (Self-Executable Templates)** 架构，每个
 /flow-init "REQ-123|支持用户下单|https://plan.example.com/spec"
 ```
 **功能**:
-- 创建需求目录结构 (`.claude/docs/requirements/REQ-123/`)
+- 创建需求目录结构 (`devflow/requirements/REQ-123/`)
 - 创建Git功能分支 (`feature/REQ-123-支持用户下单`)
 - 初始化状态管理文件 (`orchestration_status.json`)
 - 可选：抓取外部需求文档到 `research/` 目录
@@ -615,7 +615,7 @@ Phase 5: Git提交并标记任务完成
 
 ### 需求文档结构
 ```text
-.claude/docs/requirements/${reqId}/
+devflow/requirements/${reqId}/
 ├── research/                    # 外部研究材料 (MCP抓取或手动添加)
 ├── orchestration_status.json   # 状态管理文件 (阶段、进度、时间戳)
 ├── EXECUTION_LOG.md            # 执行日志 (所有操作的时间序列记录)

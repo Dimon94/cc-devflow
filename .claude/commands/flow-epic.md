@@ -469,7 +469,7 @@ This command enforces Constitution and TDD principles:
 **1. PRD not found**
 ```
 ERROR: PRD not found for requirement REQ-123
-Expected: .claude/docs/requirements/REQ-123/PRD.md
+Expected: devflow/requirements/REQ-123/PRD.md
 Run /flow-prd "REQ-123" first to generate the PRD.
 ```
 

@@ -355,7 +355,7 @@ Run /flow-init "REQ-123|Title" first to create the requirement structure.
 ```
 ERROR: Requirement REQ-123 not in correct phase for PRD generation
 Current phase: epic_planning (expected: planning)
-PRD already exists: .claude/docs/requirements/REQ-123/PRD.md
+PRD already exists: devflow/requirements/REQ-123/PRD.md
 ```
 
 **3. Research materials fetch failed**

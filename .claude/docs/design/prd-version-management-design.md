@@ -31,7 +31,7 @@
 
 ### 文件结构
 ```text
-.claude/docs/requirements/${reqId}/
+devflow/requirements/${reqId}/
 ├── PRD.md                           # 当前版本 PRD
 ├── versions/                        # 版本历史
 │   ├── v1.0/
@@ -381,7 +381,7 @@ fi
 name: PRD Version Management
 on:
   pull_request:
-    paths: ['.claude/docs/requirements/**/PRD.md']
+    paths: ['devflow/requirements/**/PRD.md']
 
 jobs:
   version-check:

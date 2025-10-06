@@ -39,8 +39,8 @@ description: Initialize requirement structure. Usage: /flow-init "REQ-123|User A
    → If invalid: ERROR "Invalid format. Expected: REQ-123 or BUG-456"
 
 3. Check if REQ_ID already exists
-   → Run: ls .claude/docs/requirements/${REQ_ID} 2>/dev/null
-   → Run: ls .claude/docs/bugs/${REQ_ID} 2>/dev/null
+   → Run: ls devflow/requirements/${REQ_ID} 2>/dev/null
+   → Run: ls devflow/bugs/${REQ_ID} 2>/dev/null
    → If exists: ERROR "Requirement ${REQ_ID} already exists. Use /flow-restart to continue."
 
 4. Verify git status (if git repo)
@@ -167,13 +167,13 @@ Files created:
 
 ### 文档结构
 ```text
-.claude/docs/requirements/${REQ_ID}/     # For requirements
+devflow/requirements/${REQ_ID}/     # For requirements
 ├── README.md                            # Workflow guide and checklist
 ├── research/                            # Empty, ready for research materials
 ├── EXECUTION_LOG.md                     # Event log with initialization entry
 └── orchestration_status.json            # Status: "initialized", phase: "planning"
 
-.claude/docs/bugs/${BUG_ID}/             # For bug fixes
+devflow/bugs/${BUG_ID}/             # For bug fixes
 ├── README.md
 ├── EXECUTION_LOG.md
 └── status.json                          # BUG-specific status tracking
@@ -261,7 +261,7 @@ Expected format: REQ-XXX or BUG-XXX (e.g., REQ-123 or BUG-456)
 
 **2. REQ_ID already exists**
 ```
-ERROR: Requirement directory already exists: .claude/docs/requirements/REQ-123
+ERROR: Requirement directory already exists: devflow/requirements/REQ-123
 Use /flow-restart "REQ-123" to continue an existing requirement.
 Or choose a different requirement ID.
 ```
@@ -277,7 +277,7 @@ Options:
 
 **4. Permission denied**
 ```
-ERROR: Failed to create directory: .claude/docs/requirements/REQ-123
+ERROR: Failed to create directory: devflow/requirements/REQ-123
 Reason: Permission denied
 Solution: Check file system permissions for .claude/docs/ directory
 ```
@@ -288,7 +288,7 @@ If initialization fails partway:
 1. Check EXECUTION_LOG.md for last successful step
 2. Manually clean up partial structure:
    ```bash
-   rm -rf .claude/docs/requirements/REQ-123  # If needed
+   rm -rf devflow/requirements/REQ-123  # If needed
    git branch -D feature/REQ-123-title       # If branch created
    ```
 3. Re-run /flow-init

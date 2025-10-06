@@ -42,7 +42,7 @@ create_test_common() {
 # 创建完整的需求环境（带 PRD.md）
 setup_requirement_with_prd() {
     local req_id="$1"
-    local req_dir="$TEST_TMP_DIR/.claude/docs/requirements/$req_id"
+    local req_dir="$TEST_TMP_DIR/devflow/requirements/$req_id"
 
     mkdir -p "$req_dir"/{research,tasks}
 
@@ -218,7 +218,7 @@ test_missing_prd_file() {
 
     # Arrange - 创建目录但不创建 PRD.md
     local req_id="REQ-998"
-    local req_dir="$TEST_TMP_DIR/.claude/docs/requirements/$req_id"
+    local req_dir="$TEST_TMP_DIR/devflow/requirements/$req_id"
     mkdir -p "$req_dir"
 
     # 创建测试脚本环境

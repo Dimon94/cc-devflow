@@ -56,7 +56,7 @@ description: One-shot requirement flow. Usage: /flow-new "REQ-123|支持用户�
 
 输出:
   ✅ Git分支: feature/REQ-123-支持用户下单
-  ✅ 需求目录: .claude/docs/requirements/REQ-123/
+  ✅ 需求目录: devflow/requirements/REQ-123/
   ✅ 状态文件: orchestration_status.json (status: initialized)
   ✅ 研究材料: research/*.md (如果有)
 
@@ -246,7 +246,7 @@ Exit Gate检查:
 
 ### 文档结构
 ```text
-.claude/docs/requirements/${reqId}/
+devflow/requirements/${reqId}/
 ├── research/                    # 研究资料 (MCP抓取或手动添加)
 │   ├── ${reqId}_1.md
 │   └── ${reqId}_2.md
@@ -456,7 +456,7 @@ export FLOW_DEBUG=1
 ```
 
 ### 日志位置
-- 执行日志: `.claude/docs/requirements/${reqId}/LOG.md`
+- 执行日志: `devflow/requirements/${reqId}/LOG.md`
 - 错误日志: `.claude/logs/flow-${reqId}.log`
 - 调试信息: 控制台输出
 

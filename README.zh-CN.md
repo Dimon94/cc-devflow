@@ -174,7 +174,7 @@ python3 .claude/scripts/demo.py
 
 ### 文档结构
 ```text
-.claude/docs/requirements/${REQ-ID}/
+devflow/requirements/${REQ-ID}/
 ├── orchestration_status.json  # 状态管理 (阶段、进度、时间戳)
 ├── EXECUTION_LOG.md           # 完整审计轨迹
 ├── PRD.md                     # 产品需求文档 (来自 PRD_TEMPLATE)

@@ -1,0 +1,31 @@
+# CC-DevFlow 工作目录
+# 所有需求开发的输出文件都在这个目录中
+devflow/
+
+# Node modules
+node_modules/
+
+# 构建输出
+dist/
+build/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 测试临时文件
+.tmp/
+tmp/
+
+# 环境变量
+.env
+.env.local
+.env.*.local

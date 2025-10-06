@@ -266,7 +266,7 @@ Once you provide these answers, I'll generate more specific questions about功�
 
 ### 最终需求结构
 ```text
-.claude/docs/requirements/${auto_generated_req_id}/
+devflow/requirements/${auto_generated_req_id}/
 ├── INTENT_ANALYSIS.md          # 意图分析和澄清过程
 ├── PRD.md                      # 标准产品需求文档
 ├── EPIC.md                     # Epic 规划

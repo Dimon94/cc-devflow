@@ -112,7 +112,7 @@ fi
 
 # 获取仓库根目录和需求目录
 REPO_ROOT=$(get_repo_root)
-REQ_DIR="$REPO_ROOT/.claude/docs/requirements/$REQ_ID"
+REQ_DIR=$(get_req_dir "$REPO_ROOT" "$REQ_ID")
 STATUS_FILE="$REQ_DIR/orchestration_status.json"
 
 # ============================================================================

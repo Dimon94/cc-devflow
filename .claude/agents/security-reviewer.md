@@ -106,12 +106,12 @@ When called by main agent with "security plan" in prompt, you will receive:
 **For Requirements**:
 - reqId: Requirement ID for context (REQ-XXX format)
 - PRD, EPIC, and TASK files to analyze for security requirements
-- **MUST OUTPUT**: `.claude/docs/requirements/${reqId}/SECURITY_PLAN.md`
+- **MUST OUTPUT**: `devflow/requirements/${reqId}/SECURITY_PLAN.md`
 
 **For BUG Fixes**:
 - bugId: BUG ID for context (BUG-XXX format)
 - ANALYSIS.md and PLAN.md files to analyze for security implications
-- **MUST OUTPUT**: `.claude/docs/bugs/${bugId}/SECURITY_PLAN.md`
+- **MUST OUTPUT**: `devflow/bugs/${bugId}/SECURITY_PLAN.md`
 
 ### Phase 2 Call (Post-Implementation)
 When called by main agent with "security report" in prompt, you will receive:
@@ -119,12 +119,12 @@ When called by main agent with "security report" in prompt, you will receive:
 **For Requirements**:
 - reqId: Requirement ID for context (REQ-XXX format)
 - implementationFiles: List of implemented files to review for vulnerabilities
-- **MUST OUTPUT**: `.claude/docs/requirements/${reqId}/SECURITY_REPORT.md`
+- **MUST OUTPUT**: `devflow/requirements/${reqId}/SECURITY_REPORT.md`
 
 **For BUG Fixes**:
 - bugId: BUG ID for context (BUG-XXX format)
 - implementationFiles: List of fixed files to review for security regressions
-- **MUST OUTPUT**: `.claude/docs/bugs/${bugId}/SECURITY_REPORT.md`
+- **MUST OUTPUT**: `devflow/bugs/${bugId}/SECURITY_REPORT.md`
 
 ## Phase 1: Security Planning Process (Pre-Implementation)
 1. **Run Prerequisites Check**: `.claude/scripts/check-prerequisites.sh --json --require-epic --require-tasks`
@@ -200,7 +200,7 @@ Static analysis checks:
 ## Output Generation
 
 ### Phase 1 Output: SECURITY_PLAN.md
-Generate comprehensive `.claude/docs/requirements/${reqId}/SECURITY_PLAN.md` containing:
+Generate comprehensive `devflow/requirements/${reqId}/SECURITY_PLAN.md` containing:
 
 ```markdown
 # Security Plan for ${reqId}
@@ -218,7 +218,7 @@ Generate comprehensive `.claude/docs/requirements/${reqId}/SECURITY_PLAN.md` con
 ```
 
 ### Phase 2 Output: SECURITY_REPORT.md
-Generate comprehensive `.claude/docs/requirements/${reqId}/SECURITY_REPORT.md` containing:
+Generate comprehensive `devflow/requirements/${reqId}/SECURITY_REPORT.md` containing:
 
 ```markdown
 # Security Analysis Report for ${reqId}

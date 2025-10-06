@@ -72,7 +72,7 @@ You MUST adhere to CC-DevFlow Constitution (.claude/constitution/project-constit
 When called by main agent for BUG analysis, you will receive:
 - bugId: BUG ID for context (BUG-XXX format)
 - description: BUG description and symptoms
-- **MUST OUTPUT**: `.claude/docs/bugs/${bugId}/ANALYSIS.md`
+- **MUST OUTPUT**: `devflow/bugs/${bugId}/ANALYSIS.md`
 
 ## Prerequisites Validation
 Before starting analysis, validate prerequisites using check-prerequisites.sh:
@@ -128,10 +128,10 @@ If prerequisites fail, report error and stop analysis immediately (Fail Fast pri
 
 ## Output Structure
 
-Generate comprehensive `.claude/docs/bugs/${bugId}/ANALYSIS.md` containing:
+Generate comprehensive `devflow/bugs/${bugId}/ANALYSIS.md` containing:
 
 ### JSON Output Support
-When `--json` flag is requested, also generate `.claude/docs/bugs/${bugId}/ANALYSIS.json`:
+When `--json` flag is requested, also generate `devflow/bugs/${bugId}/ANALYSIS.json`:
 
 ```json
 {

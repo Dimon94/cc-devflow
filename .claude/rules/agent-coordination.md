@@ -23,23 +23,23 @@ cc-devflow 系统中的 7 个专业子代理需要严格的协调机制来避免
 ```yaml
 agent_workstreams:
   flow-orchestrator:
-    files: [".claude/docs/requirements/*/LOG.md"]
+    files: ["devflow/requirements/*/LOG.md"]
     responsibility: "总控协调和流程管理"
 
   prd-writer:
-    files: [".claude/docs/requirements/*/PRD.md"]
+    files: ["devflow/requirements/*/PRD.md"]
     responsibility: "产品需求文档生成"
 
   planner:
     files:
-      - ".claude/docs/requirements/*/EPIC.md"
-      - ".claude/docs/requirements/*/tasks/TASK_*.md"
+      - "devflow/requirements/*/EPIC.md"
+      - "devflow/requirements/*/tasks/TASK_*.md"
     responsibility: "需求规划和详细任务分解（包含实现指导）"
 
   qa-tester:
     files:
       - "tests/**/*"
-      - ".claude/docs/requirements/*/TEST_REPORT.md"
+      - "devflow/requirements/*/TEST_REPORT.md"
     responsibility: "测试生成和质量验证"
 
   security-reviewer:
@@ -99,7 +99,7 @@ release_file_lock() {
 使用状态文件进行子代理间的状态同步：
 
 ```yaml
-# .claude/docs/requirements/REQ-123/status.yml
+# devflow/requirements/REQ-123/status.yml
 workflow_status:
   current_stage: "development"
   completed_stages: ["planning", "prd"]
@@ -137,7 +137,7 @@ update_agent_status() {
     local status="$3"
     local output_files="$4"
 
-    local status_file=".claude/docs/requirements/${req_id}/status.yml"
+    local status_file="devflow/requirements/${req_id}/status.yml"
     local timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
     # 更新状态文件
@@ -190,7 +190,7 @@ detect_file_conflicts() {
     local conflicts=()
 
     # 检查是否有多个代理试图修改同一文件
-    for file in .claude/docs/requirements/${req_id}/*.md; do
+    for file in devflow/requirements/${req_id}/*.md; do
         local locks=$(find "${file%.*}*.lock" 2>/dev/null | wc -l)
         if [ "$locks" -gt 1 ]; then
             conflicts+=("$file")
@@ -227,7 +227,7 @@ resolve_conflicts() {
 
     # 3. 标记需要人工干预
     echo "❌ 需要人工解决冲突，请检查并手动合并文件"
-    echo "   备份位置: .claude/docs/requirements/${req_id}/.backup/"
+    echo "   备份位置: devflow/requirements/${req_id}/.backup/"
 
     # 4. 生成冲突报告
     generate_conflict_report "$req_id"
@@ -266,7 +266,7 @@ checkpoint_sync() {
 periodic_sync() {
     local req_id="$1"
 
-    while [ -f ".claude/docs/requirements/${req_id}/.active" ]; do
+    while [ -f "devflow/requirements/${req_id}/.active" ]; do
         # 收集所有子代理状态
         collect_agent_states "$req_id"
 
@@ -351,9 +351,9 @@ query_agent_status() {
     local agent="${2:-all}"
 
     if [ "$agent" = "all" ]; then
-        yq eval '.agent_status' ".claude/docs/requirements/${req_id}/status.yml"
+        yq eval '.agent_status' "devflow/requirements/${req_id}/status.yml"
     else
-        yq eval ".agent_status.${agent}" ".claude/docs/requirements/${req_id}/status.yml"
+        yq eval ".agent_status.${agent}" "devflow/requirements/${req_id}/status.yml"
     fi
 }
 ```
@@ -363,7 +363,7 @@ query_agent_status() {
 # 生成协调报告
 generate_coordination_report() {
     local req_id="$1"
-    local report_file=".claude/docs/requirements/${req_id}/coordination-report.md"
+    local report_file="devflow/requirements/${req_id}/coordination-report.md"
 
     cat > "$report_file" << EOF
 # 子代理协调报告
@@ -373,10 +373,10 @@ generate_coordination_report() {
 - 生成时间: $(date -u +%Y-%m-%dT%H:%M:%SZ)
 
 ## 子代理状态
-$(yq eval '.agent_status' ".claude/docs/requirements/${req_id}/status.yml")
+$(yq eval '.agent_status' "devflow/requirements/${req_id}/status.yml")
 
 ## 文件锁状态
-$(find ".claude/docs/requirements/${req_id}" -name "*.lock" -exec ls -la {} \;)
+$(find "devflow/requirements/${req_id}" -name "*.lock" -exec ls -la {} \;)
 
 ## 潜在问题
 $(detect_potential_issues "$req_id")
@@ -392,7 +392,7 @@ EOF
 flow-orchestrator 维护整体编排状态：
 
 ```json
-// .claude/docs/requirements/${reqId}/orchestration_status.json
+// devflow/requirements/${reqId}/orchestration_status.json
 {
   "reqId": "${reqId}",
   "currentPhase": "development",
@@ -420,7 +420,7 @@ flow-orchestrator 维护整体编排状态：
 每个 main_agent 维护任务状态：
 
 ```json
-// .claude/docs/requirements/${reqId}/tasks/${taskId}_status.json
+// devflow/requirements/${reqId}/tasks/${taskId}_status.json
 {
   "taskId": "${taskId}",
   "reqId": "${reqId}",
@@ -440,7 +440,7 @@ flow-orchestrator 维护整体编排状态：
 成功完成的任务创建完成标记：
 
 ```bash
-# .claude/docs/requirements/${reqId}/tasks/${taskId}.completed
+# devflow/requirements/${reqId}/tasks/${taskId}.completed
 2024-01-15T11:15:00Z
 Summary: Implemented user order creation with validation
 Files: src/components/UserOrder.tsx, src/api/orders.ts

@@ -22,7 +22,7 @@ cc-devflow 是一个基于 Claude Code 的一体化需求开发流程系统，�
 
 ### 2. 强制文档驱动
 - 每个需求必须生成完整的文档链：PRD → EPIC → TASKS
-- 所有文档存储在 `.claude/docs/requirements/${reqId}/` 下
+- 所有文档存储在 `devflow/requirements/${reqId}/` 下
 - 使用 YAML frontmatter 进行结构化元数据管理
 
 ### 3. 质量闸强制检查
@@ -56,7 +56,7 @@ const parseFlowCommand = (input) => {
 
 ### 目录结构
 ```text
-.claude/docs/requirements/${reqId}/
+devflow/requirements/${reqId}/
 ├── PRD.md                 # 产品需求文档
 ├── EPIC.md               # Epic 规划
 ├── tasks/                # 任务分解

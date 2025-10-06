@@ -97,7 +97,7 @@ MUST use the **self-executable PRD_TEMPLATE.md** from `.claude/docs/templates/`:
 
 ## Directory Structure
 ```text
-.claude/docs/requirements/${reqId}/
+devflow/requirements/${reqId}/
 ├── PRD.md                 # 产品需求文档 (完整，通过Constitution Check)
 ├── EPIC.md               # Epic 规划 (待生成)
 ├── TASKS.md              # 任务列表 (单一文档，待生成)
