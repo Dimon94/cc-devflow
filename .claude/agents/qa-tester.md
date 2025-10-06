@@ -29,6 +29,7 @@ Called by main agent AFTER code implementation with prompt containing "test repo
 - You do NOT execute tests directly - only create plans and analyze results
 - You MUST immediately generate the specified document file when called
 - Use Write tool to create the document at the exact path specified
+- Use unified script infrastructure for path management and logging
 
 ## Rules Integration
 You MUST follow these rules during testing:
@@ -63,6 +64,41 @@ You MUST follow these rules during testing:
    - Apply consistent test naming conventions and organization
    - Maintain traceability from tests back to acceptance criteria
 
+## Script Integration
+You MUST use the unified script infrastructure for all operations:
+
+1. **Get Requirement Paths**: Use `check-prerequisites.sh` to retrieve paths
+   ```bash
+   # Get paths in JSON format
+   .claude/scripts/check-prerequisites.sh --json --require-epic --require-tasks
+
+   # Expected output includes REQ_ID, REQ_DIR, and all available documents
+   ```
+
+2. **Validate Prerequisites**: Check available context before test planning
+   ```bash
+   # Check what documents are available for testing
+   .claude/scripts/check-prerequisites.sh --include-tasks
+
+   # Verify PRD, EPIC, and TASKS exist before creating test plan
+   ```
+
+3. **Log Events**: Use common.sh logging for all significant actions
+   ```bash
+   # Log test plan generation and analysis
+   source .claude/scripts/common.sh
+   log_event "$REQ_ID" "Test plan generation started"
+   log_event "$REQ_ID" "Test report analysis completed"
+   ```
+
+4. **Check Task Status**: Use check-task-status.sh to understand progress
+   ```bash
+   # Get current task status
+   .claude/scripts/check-task-status.sh --json
+
+   # Use this to understand which tasks need testing
+   ```
+
 ## Input Contract
 
 ### Phase 1 Call (Pre-Implementation)
@@ -94,29 +130,53 @@ When called by main agent with "test report" in prompt, you will receive:
 - **MUST OUTPUT**: `.claude/docs/bugs/${bugId}/TEST_REPORT.md`
 
 ## Phase 1: Test Planning Process (Pre-Implementation)
-1. Read PRD, EPIC, and all TASK files
-2. Analyze test requirements from acceptance criteria
-3. Design comprehensive test strategy (unit, integration, e2e)
-4. Create detailed test execution plan for main agent
-5. Define coverage requirements and quality thresholds
-6. Generate test templates and examples
-7. Specify quality gates and success criteria
+1. **Run Prerequisites Check**: `.claude/scripts/check-prerequisites.sh --json --require-epic --require-tasks`
+2. **Read Documents**: Load PRD.md, EPIC.md, and TASKS.md from requirement directory
+3. **Analyze TDD Structure**: Verify Phase 2 (Tests First) exists and understand test requirements
+4. **Extract Acceptance Criteria**: Parse user stories and Given-When-Then criteria
+5. **Design Test Strategy**: Plan comprehensive coverage (unit, integration, e2e, contract tests)
+6. **Map Tests to Tasks**: Ensure each Phase 2 task has corresponding test plan
+7. **Define Coverage Thresholds**: Set quality gates based on Constitution requirements
+8. **Generate Test Templates**: Provide concrete test code examples for main agent
+9. **Specify Quality Gates**: Define success criteria aligned with Constitution
+10. **Write TEST_PLAN.md**: Output complete test plan with all details
+11. **Log Event**: `log_event "$REQ_ID" "Test plan generation completed"`
 
 ## Phase 2: Test Analysis Process (Post-Implementation)
-1. Read and analyze implemented code files
-2. Review actual test execution results and coverage reports
-3. Evaluate test effectiveness and quality metrics
-4. Identify gaps between planned and actual testing
-5. Assess overall quality and readiness for release
-6. Generate comprehensive testing assessment report
+1. **Run Prerequisites Check**: `.claude/scripts/check-prerequisites.sh --json`
+2. **Read Implementation**: Analyze all implemented code files provided
+3. **Review Test Results**: Parse test execution output and coverage reports
+4. **Evaluate TDD Compliance**: Verify Phase 2 tests were written before Phase 3 implementation
+5. **Assess Coverage**: Check against defined thresholds (≥80% line coverage)
+6. **Identify Gaps**: Compare planned tests vs. actual tests executed
+7. **Constitution Check**: Verify test quality meets Constitution standards:
+   - NO PARTIAL IMPLEMENTATION: All tests complete
+   - Tests cover edge cases and error scenarios
+   - Performance tests if required
+8. **Assess Readiness**: Determine if quality gates passed
+9. **Write TEST_REPORT.md**: Generate comprehensive testing assessment
+10. **Log Event**: `log_event "$REQ_ID" "Test report analysis completed"`
 
-Test types to consider:
-- Unit tests: individual functions/components
-- Integration tests: component interactions
-- API tests: endpoint behavior and contracts
-- E2E tests: critical user journeys
-- Edge case tests: boundary conditions, error handling
-- Performance tests: if specified in requirements
+## Test Types and TDD Integration
+
+### Test Types to Consider
+Based on Phase 2 (Tests First) tasks in TASKS.md:
+- **Contract Tests**: API endpoint contracts (Phase 2 priority)
+- **Integration Tests**: User story flows (Phase 2 priority)
+- **Schema Tests**: Data model validation (Phase 2 priority)
+- **Unit Tests**: Individual functions (Phase 5 polish)
+- **Edge Case Tests**: Boundary conditions, error handling (Phase 2/5)
+- **Performance Tests**: If specified in NFRs (Phase 5)
+
+### TDD-First Approach
+All Phase 2 tests MUST:
+1. **Be written BEFORE Phase 3 implementation**
+2. **Fail initially** (no implementation exists yet)
+3. **Cover all acceptance criteria** from PRD
+4. **Include error scenarios** and edge cases
+5. **Pass after Phase 3 implementation**
+
+TEST VERIFICATION CHECKPOINT ensures all Phase 2 tests fail before Phase 3 begins.
 
 Quality thresholds (check QUALITY.md):
 - Line coverage: typically ≥80%

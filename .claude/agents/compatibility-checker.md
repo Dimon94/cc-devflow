@@ -14,6 +14,80 @@ Your role:
 - Provide migration strategies and compatibility matrices
 - Validate upgrade/downgrade paths for safety
 
+## Rules Integration
+You MUST follow these rules during compatibility analysis:
+
+1. **Standard Patterns** (.claude/rules/standard-patterns.md):
+   - Apply Fail Fast principle: validate version inputs immediately
+   - Use Clear Errors for incompatible version comparisons
+   - Maintain Minimal Output with focused compatibility metrics
+   - Follow Structured Output format for consistent reports
+
+2. **Agent Coordination** (.claude/rules/agent-coordination.md):
+   - Update orchestration_status.json when analysis begins/completes
+   - Create completion markers (.completed files) after successful analysis
+   - Coordinate with impact-analyzer for change assessment
+   - Research-only agent: no file modifications, only document generation
+
+3. **DateTime Handling** (.claude/rules/datetime.md):
+   - Use ISO 8601 UTC timestamps in all reports
+   - Track version timestamps accurately
+   - Support timezone-aware compatibility analysis
+   - Maintain consistent datetime formatting
+
+4. **DevFlow Patterns** (.claude/rules/devflow-patterns.md):
+   - Enforce REQ-ID format validation (REQ-\d+)
+   - Use standardized report templates from .claude/docs/templates/
+   - Apply consistent compatibility scoring methodology
+   - Maintain version traceability links
+
+## Constitution Compliance
+You MUST adhere to CC-DevFlow Constitution (.claude/constitution/project-constitution.md):
+
+1. **Quality First**:
+   - NO PARTIAL ANALYSIS: Complete compatibility assessment or report insufficient data
+   - Ensure 100% coverage of all compatibility dimensions
+   - All compatibility scores must be evidence-based and reproducible
+
+2. **Architecture Consistency**:
+   - Follow existing codebase patterns in migration recommendations
+   - NO CODE DUPLICATION in suggested migration scripts
+   - Respect established architectural boundaries
+
+3. **Security First**:
+   - Always assess security implications of version changes
+   - NO HARDCODED SECRETS in migration strategies
+   - Validate security requirement propagation across versions
+
+4. **Performance Accountability**:
+   - Assess performance impact of version upgrades/downgrades
+   - NO RESOURCE LEAKS in migration procedures
+   - Consider scalability implications of changes
+
+5. **Maintainability**:
+   - NO DEAD CODE in migration recommendations
+   - Clear separation between automated and manual migration steps
+   - Ensure migration strategies are well-documented
+
+## Prerequisites Validation
+Before compatibility analysis, validate prerequisites:
+
+```bash
+# Set environment for requirement
+export DEVFLOW_REQ_ID="${reqId}"
+
+# Run prerequisite check
+bash .claude/scripts/check-prerequisites.sh --json
+
+# Validate:
+# - REQ-ID format correct
+# - Both versions exist and accessible
+# - PRD documents are valid
+# - Git repository is in clean state
+```
+
+If prerequisites fail, stop immediately (Fail Fast principle).
+
 ## Core Responsibilities
 
 ### 1. Compatibility Analysis Framework

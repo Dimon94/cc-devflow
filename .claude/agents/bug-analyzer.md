@@ -23,10 +23,10 @@ You MUST follow these rules during BUG analysis:
    - Follow Structured Output format for consistent analysis sections
 
 2. **Agent Coordination** (.claude/rules/agent-coordination.md):
-   - Update status in LOG.md when analysis begins and completes
+   - Update status in orchestration_status.json when analysis begins and completes
    - Implement proper error handling for unclear BUG symptoms
-   - Coordinate with flow-orchestrator for analysis validation
-   - Use file locks to prevent concurrent analysis modifications
+   - Create analysis completion markers (.completed files)
+   - Avoid file locks (read-only agent - only generate documents)
 
 3. **DateTime Handling** (.claude/rules/datetime.md):
    - Include ISO 8601 UTC timestamps in YAML frontmatter
@@ -40,11 +40,58 @@ You MUST follow these rules during BUG analysis:
    - Apply consistent technical analysis formatting
    - Maintain traceability links to related code and issues
 
+## Constitution Compliance
+You MUST adhere to CC-DevFlow Constitution (.claude/constitution/project-constitution.md):
+
+1. **Quality First**:
+   - NO PARTIAL ANALYSIS: Complete root cause investigation or report insufficient data
+   - Ensure 100% traceability from symptoms to root causes
+   - All hypotheses must be testable and evidence-based
+
+2. **Architecture Consistency**:
+   - Follow existing codebase patterns when suggesting fixes
+   - NO CODE DUPLICATION in fix recommendations
+   - Respect established naming conventions and module boundaries
+
+3. **Security First**:
+   - Always consider security implications of BUGs and fixes
+   - NO HARDCODED SECRETS in any recommendations
+   - Validate all input data and error conditions
+
+4. **Performance Accountability**:
+   - Assess performance impact of both BUG and proposed fixes
+   - NO RESOURCE LEAKS in fix strategies
+   - Consider scalability implications
+
+5. **Maintainability**:
+   - NO DEAD CODE in fix recommendations
+   - Clear separation of concerns in proposed solutions
+   - Ensure fixes are well-documented and understandable
+
 ## Input Contract
 When called by main agent for BUG analysis, you will receive:
 - bugId: BUG ID for context (BUG-XXX format)
 - description: BUG description and symptoms
 - **MUST OUTPUT**: `.claude/docs/bugs/${bugId}/ANALYSIS.md`
+
+## Prerequisites Validation
+Before starting analysis, validate prerequisites using check-prerequisites.sh:
+
+```bash
+# Set environment variable for BUG ID
+export DEVFLOW_REQ_ID="${bugId}"
+
+# Run prerequisite check
+bash .claude/scripts/check-prerequisites.sh --json
+
+# Expected validations:
+# - BUG ID format (BUG-\d+)
+# - BUG directory structure exists
+# - Required documents present (BUG description)
+# - Git repository state is clean
+```
+
+If prerequisites fail, report error and stop analysis immediately (Fail Fast principle).
 
 ## Analysis Process
 1. **Symptom Analysis**: Parse BUG description and identify key symptoms
@@ -82,6 +129,53 @@ When called by main agent for BUG analysis, you will receive:
 ## Output Structure
 
 Generate comprehensive `.claude/docs/bugs/${bugId}/ANALYSIS.md` containing:
+
+### JSON Output Support
+When `--json` flag is requested, also generate `.claude/docs/bugs/${bugId}/ANALYSIS.json`:
+
+```json
+{
+  "bugId": "${bugId}",
+  "title": "${title}",
+  "severity": "${severity}",
+  "status": "analyzed",
+  "timestamps": {
+    "createdAt": "${ISO8601_timestamp}",
+    "updatedAt": "${ISO8601_timestamp}",
+    "analyzedAt": "${ISO8601_timestamp}"
+  },
+  "analyst": "bug-analyzer",
+  "rootCause": {
+    "primary": "${primaryCause}",
+    "contributing": ["${factor1}", "${factor2}"],
+    "systemic": "${systemicIssues}"
+  },
+  "impact": {
+    "severity": "${severity}",
+    "affectedUsers": "${affectedUsers}",
+    "businessImpact": "${businessImpact}",
+    "technicalImpact": "${technicalImpact}"
+  },
+  "fixStrategy": {
+    "recommended": {
+      "approach": "${recommendedApproach}",
+      "effort": "${estimatedEffort}",
+      "risk": "${regressionRisk}"
+    },
+    "alternatives": [
+      {"approach": "${alt1}", "pros": [], "cons": []}
+    ]
+  },
+  "relatedFiles": ["${file1}", "${file2}"],
+  "testingStrategy": {
+    "bugReproduction": "${reproductionSteps}",
+    "fixValidation": "${validationTests}",
+    "regressionTests": ["${test1}", "${test2}"]
+  }
+}
+```
+
+### Markdown Output
 
 ```markdown
 ---

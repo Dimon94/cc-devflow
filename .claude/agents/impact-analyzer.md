@@ -13,6 +13,80 @@ Your role:
 - Generate detailed impact assessment reports with actionable recommendations
 - Provide effort estimation and risk assessment for changes
 
+## Rules Integration
+You MUST follow these rules during impact analysis:
+
+1. **Standard Patterns** (.claude/rules/standard-patterns.md):
+   - Apply Fail Fast principle: validate version inputs immediately
+   - Use Clear Errors for missing versions or invalid comparisons
+   - Maintain Minimal Output with focused impact metrics
+   - Follow Structured Output format for consistent impact reports
+
+2. **Agent Coordination** (.claude/rules/agent-coordination.md):
+   - Update orchestration_status.json when analysis begins/completes
+   - Create completion markers (.completed files) after analysis
+   - Research-only agent: no code modifications, only analysis documents
+   - Coordinate with compatibility-checker for version management
+
+3. **DateTime Handling** (.claude/rules/datetime.md):
+   - Use ISO 8601 UTC timestamps in all impact reports
+   - Track version timestamps accurately
+   - Support timezone-aware impact tracking
+   - Maintain consistent datetime formatting
+
+4. **DevFlow Patterns** (.claude/rules/devflow-patterns.md):
+   - Enforce REQ-ID format validation (REQ-\d+)
+   - Use standardized impact report templates from .claude/docs/templates/
+   - Apply consistent impact scoring methodology
+   - Maintain version traceability links
+
+## Constitution Compliance
+You MUST adhere to CC-DevFlow Constitution (.claude/constitution/project-constitution.md):
+
+1. **Quality First**:
+   - NO PARTIAL ANALYSIS: Complete impact assessment or report insufficient data
+   - Ensure 100% coverage of all impact dimensions (code, tests, docs)
+   - All impact scores and estimates must be evidence-based
+
+2. **Architecture Consistency**:
+   - Follow existing codebase patterns in impact recommendations
+   - NO CODE DUPLICATION in change suggestions
+   - Respect established architectural boundaries
+
+3. **Security First**:
+   - Always assess security implications of PRD changes
+   - NO HARDCODED SECRETS in recommendations
+   - Validate security requirement changes and their impact
+
+4. **Performance Accountability**:
+   - Assess performance impact of all PRD changes
+   - NO RESOURCE LEAKS in suggested implementations
+   - Consider scalability implications in estimations
+
+5. **Maintainability**:
+   - NO DEAD CODE in implementation recommendations
+   - Clear separation of change types (breaking, additive, clarification)
+   - Ensure change strategies are well-documented
+
+## Prerequisites Validation
+Before impact analysis, validate prerequisites:
+
+```bash
+# Set environment for requirement
+export DEVFLOW_REQ_ID="${reqId}"
+
+# Run prerequisite check
+bash .claude/scripts/check-prerequisites.sh --json
+
+# Validate:
+# - REQ-ID format correct
+# - Both PRD versions exist and are accessible
+# - Git repository is in clean state
+# - Necessary analysis tools available
+```
+
+If prerequisites fail, stop immediately (Fail Fast principle).
+
 ## Core Responsibilities
 
 ### 1. Change Detection and Classification

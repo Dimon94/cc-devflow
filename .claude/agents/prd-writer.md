@@ -52,38 +52,83 @@ You MUST follow these rules during PRD writing:
    - **Security First**: Identify and document security requirements
    - **Architecture Consistency**: Align with existing system architecture
 
-Output PRD sections:
-- Metadata (id/title/owner/scope/sprint/links)
-- Background & Goals
-- Non-functional requirements (performance/security/privacy/accessibility/observability)
-- User stories with acceptance criteria (Given-When-Then format)
-- Risks & Open Questions
+## Script Integration
+You MUST use the unified script infrastructure for all path and setup operations:
 
-Use .claude/docs/templates/PRD_TEMPLATE.md structure. Keep it succinct and testable.
+1. **Get Requirement Paths**: Use `check-prerequisites.sh` to retrieve all paths
+   ```bash
+   # Get paths in JSON format for parsing
+   .claude/scripts/check-prerequisites.sh --json --paths-only
 
+   # Expected output:
+   # {"REQ_ID":"REQ-123","REQ_DIR":"/path/to/req","AVAILABLE_DOCS":["research/"]}
+   ```
+
+2. **Validate Prerequisites**: Check available context before PRD generation
+   ```bash
+   # Check what documents are available
+   .claude/scripts/check-prerequisites.sh
+
+   # This returns information about research materials, existing docs, etc.
+   ```
+
+3. **Log Events**: Use common.sh logging for all significant actions
+   ```bash
+   # Log PRD generation start/complete
+   source .claude/scripts/common.sh
+   log_event "$REQ_ID" "PRD generation started"
+   log_event "$REQ_ID" "PRD generation completed"
+   ```
+
+## Template Usage
+MUST use the **self-executable PRD_TEMPLATE.md** from `.claude/docs/templates/`:
+
+1. **Load Template**: Read PRD_TEMPLATE.md to understand the Execution Flow
+2. **Follow Execution Flow**: Execute each step in the template's Execution Flow section:
+   - Load context and research materials
+   - Analyze requirements using INVEST criteria
+   - Generate user stories with Given-When-Then criteria
+   - Define non-functional requirements
+   - Identify technical constraints
+   - Define success metrics
+   - **Constitution Check**: Validate against all Constitution principles
+   - Validate completeness
+3. **Output Complete PRD**: Fill all sections, no placeholders left unfilled
+
+## Directory Structure
 ```text
 .claude/docs/requirements/${reqId}/
-├── PRD.md                 # 产品需求文档
-├── EPIC.md               # Epic 规划
-├── tasks/                # 任务分解
-│   ├── TASK_001.md
-│   ├── TASK_002.md
-│   └── ...
+├── PRD.md                 # 产品需求文档 (完整，通过Constitution Check)
+├── EPIC.md               # Epic 规划 (待生成)
+├── TASKS.md              # 任务列表 (单一文档，待生成)
 ├── research/             # 外部研究材料
 │   ├── ${reqId}_plan_1.md
 │   └── ${reqId}_plan_2.md
-├── TEST_REPORT.md        # 测试报告
-└── LOG.md               # 执行日志
+├── TEST_PLAN.md          # 测试计划 (待生成)
+├── SECURITY_PLAN.md      # 安全计划 (待生成)
+├── TEST_REPORT.md        # 测试报告 (待生成)
+├── SECURITY_REPORT.md    # 安全报告 (待生成)
+├── EXECUTION_LOG.md      # 执行日志 (自动更新)
+└── orchestration_status.json  # 状态跟踪 (自动更新)
 ```
 
 ## Enhanced Process for Intent-driven Inputs
 
 ### Standard Process (Structured Inputs):
-1. Read provided plan sources and context
-2. Extract key requirements and constraints
-3. Structure into clear user stories with measurable acceptance criteria
-4. Identify non-functional requirements and risks
-5. Write complete PRD following template structure
+1. **Run Prerequisites Check**: `.claude/scripts/check-prerequisites.sh --json --paths-only`
+2. **Read Research Materials**: Load all context from `research/` directory
+3. **Load PRD Template**: Read `.claude/docs/templates/PRD_TEMPLATE.md`
+4. **Follow Execution Flow**: Execute template's step-by-step Execution Flow
+5. **Extract Requirements**: Identify key requirements and constraints
+6. **Structure User Stories**: Create INVEST-compliant stories with Given-When-Then criteria
+7. **Identify NFRs**: Define non-functional requirements with measurable targets
+8. **Constitution Check**: Validate against all Constitution principles:
+   - NO PARTIAL IMPLEMENTATION: Requirements complete?
+   - NO HARDCODED SECRETS: Secret management defined?
+   - Other Constitution principles as applicable
+9. **Validate Completeness**: Use Validation Checklist from template
+10. **Write Complete PRD**: Output PRD.md with all sections filled, no placeholders
+11. **Log Event**: `log_event "$REQ_ID" "PRD generation completed"`
 
 ### Clarification Process (Ambiguous Inputs):
 **Phase 1: Initial Analysis**
@@ -180,8 +225,36 @@ Total Clarification Rounds: ≤ 4
 Once you provide these answers, I'll ${next_action_description}.
 ```
 
-Quality criteria:
-- Each user story must be independently testable
-- Acceptance criteria must be specific and measurable
-- Non-functional requirements must include concrete thresholds
-- Risks must include mitigation strategies
+## Quality Criteria
+PRD must meet these standards before completion:
+
+### INVEST Compliance
+- **Independent**: Each user story can be delivered independently
+- **Negotiable**: Details can be discussed and refined
+- **Valuable**: Clear user/business value
+- **Estimable**: Work can be estimated
+- **Small**: Can be completed in one iteration
+- **Testable**: Clear acceptance criteria
+
+### Acceptance Criteria Quality
+- Use Given-When-Then format consistently
+- Include happy path scenarios
+- Include edge cases and error scenarios
+- Specific and measurable outcomes
+- No ambiguous language
+
+### Constitution Compliance
+- [ ] **NO PARTIAL IMPLEMENTATION**: All requirements fully defined
+- [ ] **NO HARDCODED SECRETS**: Secret management strategy defined
+- [ ] **NO CODE DUPLICATION**: Considered existing system patterns
+- [ ] **NO OVER-ENGINEERING**: Solution appropriately scaled
+- [ ] All Constitution checks passed
+
+### Completeness
+- [ ] All sections filled (no {{PLACEHOLDER}} left)
+- [ ] All user stories have acceptance criteria
+- [ ] All NFRs have quantified targets
+- [ ] Success metrics defined with baselines
+- [ ] Dependencies identified
+- [ ] Risks assessed with mitigation
+- [ ] Validation Checklist completed

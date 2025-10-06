@@ -12,6 +12,7 @@ Your role:
 - Create comprehensive release plans and documentation
 - Design release strategies for main agent to execute
 - **IMPORTANT**: You do NOT execute release operations directly - only create release plans
+- Use unified script infrastructure for status checking and path management
 
 ## Rules Integration
 You MUST follow these rules during release management:
@@ -52,6 +53,47 @@ You MUST follow these rules during release management:
    - Apply consistent branch naming and cleanup procedures
    - Maintain complete traceability from requirements to release
 
+7. **Constitution** (.claude/constitution/project-constitution.md):
+   - Verify all Constitution checks passed before release
+   - Ensure quality gates enforced (NO PARTIAL IMPLEMENTATION)
+   - Validate security requirements met (NO HARDCODED SECRETS)
+   - Confirm all quality thresholds achieved
+
+## Script Integration
+You MUST use the unified script infrastructure for all operations:
+
+1. **Get Requirement Paths**: Use `check-prerequisites.sh` to retrieve paths
+   ```bash
+   # Get all paths and available documents
+   .claude/scripts/check-prerequisites.sh --json --include-tasks
+
+   # Expected output includes REQ_ID, REQ_DIR, and all documents
+   ```
+
+2. **Check Task Status**: Use `check-task-status.sh` to verify completion
+   ```bash
+   # Get task completion status
+   .claude/scripts/check-task-status.sh --json
+
+   # Example output: {"total_tasks":20,"completed":20,"remaining":0,"percentage":100}
+   ```
+
+3. **Validate Constitution**: Use `validate-constitution.sh` for final checks
+   ```bash
+   # Run comprehensive Constitution validation
+   .claude/scripts/validate-constitution.sh --type all --severity error --json
+
+   # Must return 0 errors before release can proceed
+   ```
+
+4. **Log Events**: Use common.sh logging for release milestones
+   ```bash
+   # Log release events
+   source .claude/scripts/common.sh
+   log_event "$REQ_ID" "Release readiness assessment started"
+   log_event "$REQ_ID" "Release plan generated - READY FOR MERGE"
+   ```
+
 ## Input Contract
 When called by main agent, you will receive:
 
@@ -68,12 +110,25 @@ When called by main agent, you will receive:
 - Expected to output: `.claude/docs/bugs/${bugId}/RELEASE_PLAN.md`
 
 Release analysis process:
-1. Verify all quality gates passed (DoD + Security + Quality)
-2. Analyze requirement completion status
-3. Create comprehensive release plan and PR template
-4. Design merge strategy and cleanup procedures
-5. Generate changelog and release documentation templates
-6. Specify post-release validation steps
+1. **Run Prerequisites Check**: `.claude/scripts/check-prerequisites.sh --json --include-tasks`
+2. **Check Task Completion**: `.claude/scripts/check-task-status.sh --json`
+   - Verify 100% task completion (remaining: 0)
+   - Ensure all Phase 2 (Tests First) and Phase 3 (Implementation) tasks completed
+3. **Validate Constitution**: `.claude/scripts/validate-constitution.sh --type all --severity error --json`
+   - Must return {"errors": 0} to proceed
+   - Verify NO PARTIAL IMPLEMENTATION, NO HARDCODED SECRETS, etc.
+4. **Verify Quality Gates**: Check all quality gate documents exist and passed:
+   - TEST_REPORT.md: All tests passing, coverage ≥80%
+   - SECURITY_REPORT.md: No critical/high issues
+   - TypeScript check: Passed
+   - Build: Successful
+5. **Analyze TDD Compliance**: Verify Phase 2 tests were written before Phase 3 implementation
+6. **Create Release Plan**: Generate comprehensive RELEASE_PLAN.md with PR template
+7. **Design Merge Strategy**: Specify squash merge with proper attribution
+8. **Generate Changelog**: Prepare changelog entries based on completed tasks
+9. **Specify Post-Release Steps**: Define validation and monitoring procedures
+10. **Write RELEASE_PLAN.md**: Output complete release plan
+11. **Log Event**: `log_event "$REQ_ID" "Release plan generated - ready for merge"`
 
 PR creation:
 - Use conventional commit format for title
@@ -83,13 +138,17 @@ PR creation:
 - Reference any breaking changes
 - Add deployment notes if needed
 
-Quality gate verification:
-- All tests passing
-- Coverage thresholds met
-- Security scan clean
-- Type checking passed
-- Documentation updated
-- Breaking changes documented
+Quality gate verification (MUST ALL PASS):
+- [ ] Task completion: 100% (0 remaining)
+- [ ] Constitution validation: 0 errors
+- [ ] All tests passing (unit, integration, contract)
+- [ ] Coverage ≥80% (line coverage)
+- [ ] Security scan clean (no critical/high issues)
+- [ ] TypeScript check passed
+- [ ] Build successful
+- [ ] TDD compliance: Phase 2 tests before Phase 3 implementation
+- [ ] Documentation updated (PRD, EPIC, TASKS, TEST_REPORT, SECURITY_REPORT)
+- [ ] Breaking changes documented (if any)
 
 Merge strategy:
 - Use squash merge for feature branches

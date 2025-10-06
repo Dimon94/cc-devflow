@@ -1,0 +1,441 @@
+#!/usr/bin/env bash
+# test_mark_task_complete.sh - 测试 mark-task-complete.sh
+
+# 加载测试框架
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/../test-framework.sh"
+
+# 脚本路径
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+MARK_TASK_SCRIPT="$REPO_ROOT/scripts/mark-task-complete.sh"
+
+# ============================================================================
+# 辅助函数
+# ============================================================================
+
+# 创建测试专用的 common.sh
+create_test_common() {
+    local test_common="$TEST_TMP_DIR/scripts/common.sh"
+    mkdir -p "$(dirname "$test_common")"
+
+    # Use awk instead of sed for proper variable substitution
+    awk -v tmpdir="$TEST_TMP_DIR" '
+    /^get_repo_root\(\)/ {
+        print "get_repo_root() {"
+        print "    echo \"" tmpdir "\""
+        print "}"
+        in_function = 1
+        next
+    }
+    in_function && /^}/ {
+        in_function = 0
+        next
+    }
+    !in_function {
+        print
+    }
+    ' "$REPO_ROOT/scripts/common.sh" > "$test_common.tmp"
+
+    mv "$test_common.tmp" "$test_common"
+}
+
+# 创建带有任务的需求环境
+setup_requirement_with_tasks() {
+    local req_id="$1"
+    local req_dir="$TEST_TMP_DIR/.claude/docs/requirements/$req_id"
+
+    mkdir -p "$req_dir"
+
+    # 创建 TASKS.md
+    cat > "$req_dir/TASKS.md" << 'EOF'
+# Tasks for REQ-001
+
+## Task List
+
+- [ ] **T001**: Implement user authentication
+- [ ] **T002**: Add password validation
+- [x] **T003**: Setup database schema
+- [ ] **T004**: Create API endpoints
+EOF
+
+    # 创建 EXECUTION_LOG.md
+    echo "# Execution Log" > "$req_dir/EXECUTION_LOG.md"
+
+    echo "$req_dir"
+}
+
+# 运行 mark-task-complete.sh
+run_mark_task() {
+    local task_id="$1"
+    shift
+    local args=("$@")
+
+    # 设置环境
+    export DEVFLOW_REQ_ID="REQ-001"
+
+    # 创建测试专用的脚本副本
+    local test_scripts_dir="$TEST_TMP_DIR/scripts"
+    mkdir -p "$test_scripts_dir"
+
+    # 创建测试专用的 common.sh
+    create_test_common
+
+    # 复制 mark-task-complete.sh 到测试目录
+    cp "$MARK_TASK_SCRIPT" "$test_scripts_dir/"
+
+    # 在测试目录中运行脚本
+    (
+        cd "$TEST_TMP_DIR"
+        bash "$test_scripts_dir/mark-task-complete.sh" "$task_id" "${args[@]}" 2>&1
+    )
+}
+
+# ============================================================================
+# 测试帮助信息
+# ============================================================================
+
+test_help_flag() {
+    describe "Should show help with --help"
+
+    # Arrange
+    local test_scripts_dir="$TEST_TMP_DIR/scripts"
+    mkdir -p "$test_scripts_dir"
+    create_test_common
+    cp "$MARK_TASK_SCRIPT" "$test_scripts_dir/"
+
+    # Act
+    local output=$(
+        cd "$TEST_TMP_DIR"
+        bash "$test_scripts_dir/mark-task-complete.sh" --help 2>&1
+    )
+
+    # Assert
+    assert_contains "$output" "Usage:" "Should show usage"
+    assert_contains "$output" "mark-task-complete.sh" "Should mention script name"
+    assert_contains "$output" "TASK_ID" "Should document TASK_ID argument"
+}
+
+# ============================================================================
+# 测试参数验证
+# ============================================================================
+
+test_no_task_id() {
+    describe "Should fail when TASK_ID not provided"
+
+    # Arrange
+    local test_scripts_dir="$TEST_TMP_DIR/scripts"
+    mkdir -p "$test_scripts_dir"
+    create_test_common
+    cp "$MARK_TASK_SCRIPT" "$test_scripts_dir/"
+
+    # Act - Use temp file pattern to capture exit code
+    local output_file="$TEST_TMP_DIR/output.txt"
+    local exit_code_file="$TEST_TMP_DIR/exitcode.txt"
+
+    (
+        cd "$TEST_TMP_DIR"
+        export DEVFLOW_REQ_ID="REQ-001"
+        bash "$test_scripts_dir/mark-task-complete.sh" > "$output_file" 2>&1
+        echo $? > "$exit_code_file"
+    )
+
+    local output=$(cat "$output_file")
+    local exit_code=$(cat "$exit_code_file")
+
+    # Assert
+    assert_not_equals "$exit_code" "0" "Should fail without TASK_ID"
+    assert_contains "$output" "Task ID is required" "Should mention missing TASK_ID"
+}
+
+test_invalid_task_id_format() {
+    describe "Should fail on invalid TASK_ID format"
+
+    # Arrange
+    setup_requirement_with_tasks "REQ-001"
+
+    # Act - Use temp file pattern to capture exit code
+    local output_file="$TEST_TMP_DIR/output.txt"
+    local exit_code_file="$TEST_TMP_DIR/exitcode.txt"
+
+    (
+        run_mark_task "INVALID" > "$output_file" 2>&1
+        echo $? > "$exit_code_file"
+    )
+
+    local output=$(cat "$output_file")
+    local exit_code=$(cat "$exit_code_file")
+
+    # Assert
+    assert_not_equals "$exit_code" "0" "Should fail on invalid format"
+    assert_contains "$output" "Invalid task ID format" "Should mention format error"
+}
+
+test_normalize_task_id_case() {
+    describe "Should normalize task ID to uppercase"
+
+    # Arrange
+    local req_dir=$(setup_requirement_with_tasks "REQ-001")
+
+    # Act - use lowercase task id
+    local output=$(run_mark_task "t001" --json 2>&1)
+    local exit_code=$?
+
+    # Assert
+    assert_equals "$exit_code" "0" "Should succeed with lowercase"
+    assert_contains "$output" "T001" "Should normalize to T001"
+
+    # Verify checkbox was marked
+    local tasks_content=$(cat "$req_dir/TASKS.md")
+    assert_contains "$tasks_content" "[x] **T001**" "Should mark T001 as complete"
+}
+
+# ============================================================================
+# 测试任务标记
+# ============================================================================
+
+test_mark_task_complete() {
+    describe "Should mark task as complete"
+
+    # Arrange
+    local req_dir=$(setup_requirement_with_tasks "REQ-001")
+
+    # Act
+    local output=$(run_mark_task "T001" 2>&1)
+    local exit_code=$?
+
+    # Assert
+    assert_equals "$exit_code" "0" "Should succeed"
+    assert_contains "$output" "✅" "Should show success message"
+
+    # Verify TASKS.md was updated
+    local tasks_content=$(cat "$req_dir/TASKS.md")
+    assert_contains "$tasks_content" "[x] **T001**" "Task should be marked complete"
+    assert_not_contains "$tasks_content" "[ ] **T001**" "Incomplete checkbox should be removed"
+}
+
+test_already_complete_task() {
+    describe "Should handle already complete task gracefully"
+
+    # Arrange
+    setup_requirement_with_tasks "REQ-001"
+
+    # Act - T003 is already marked as complete
+    local output=$(run_mark_task "T003" 2>&1)
+    local exit_code=$?
+
+    # Assert
+    assert_equals "$exit_code" "0" "Should succeed"
+    assert_contains "$output" "already" "Should mention already complete"
+}
+
+test_task_not_found() {
+    describe "Should fail when task doesn't exist"
+
+    # Arrange
+    setup_requirement_with_tasks "REQ-001"
+
+    # Act - Use temp file pattern to capture exit code
+    local output_file="$TEST_TMP_DIR/output.txt"
+    local exit_code_file="$TEST_TMP_DIR/exitcode.txt"
+
+    (
+        run_mark_task "T999" > "$output_file" 2>&1
+        echo $? > "$exit_code_file"
+    )
+
+    local output=$(cat "$output_file")
+    local exit_code=$(cat "$exit_code_file")
+
+    # Assert
+    assert_not_equals "$exit_code" "0" "Should fail"
+    assert_contains "$output" "not found" "Should mention task not found"
+}
+
+# ============================================================================
+# 测试日志功能
+# ============================================================================
+
+test_log_to_execution_log() {
+    describe "Should log to EXECUTION_LOG.md by default"
+
+    # Arrange
+    local req_dir=$(setup_requirement_with_tasks "REQ-001")
+
+    # Act
+    run_mark_task "T002" 2>&1
+
+    # Assert
+    local log_content=$(cat "$req_dir/EXECUTION_LOG.md")
+    assert_contains "$log_content" "T002" "Should log task ID"
+    assert_contains "$log_content" "complete" "Should log completion"
+}
+
+test_no_log_option() {
+    describe "Should skip logging with --no-log"
+
+    # Arrange
+    local req_dir=$(setup_requirement_with_tasks "REQ-001")
+    local initial_log=$(cat "$req_dir/EXECUTION_LOG.md")
+
+    # Act
+    run_mark_task "T004" --no-log 2>&1
+
+    # Assert
+    local final_log=$(cat "$req_dir/EXECUTION_LOG.md")
+    assert_equals "$initial_log" "$final_log" "Log should not change"
+}
+
+# ============================================================================
+# 测试 JSON 输出
+# ============================================================================
+
+test_json_output() {
+    describe "Should output valid JSON with --json"
+
+    # Arrange
+    setup_requirement_with_tasks "REQ-001"
+
+    # Act
+    local output=$(run_mark_task "T001" --json 2>&1)
+
+    # Assert
+    assert_json_valid "$output" "Should be valid JSON"
+}
+
+test_json_output_fields() {
+    describe "JSON should include required fields"
+
+    # Arrange
+    setup_requirement_with_tasks "REQ-001"
+
+    # Act
+    local output=$(run_mark_task "T002" --json 2>&1)
+
+    # Assert
+    assert_contains "$output" "\"status\"" "Should have status field"
+    assert_contains "$output" "\"task_id\"" "Should have task_id field"
+    assert_contains "$output" "\"T002\"" "Should have correct task ID"
+}
+
+test_json_already_complete() {
+    describe "JSON should indicate already complete status"
+
+    # Arrange
+    setup_requirement_with_tasks "REQ-001"
+
+    # Act
+    local output=$(run_mark_task "T003" --json 2>&1)
+
+    # Assert
+    assert_json_valid "$output" "Should be valid JSON"
+    assert_contains "$output" "already_complete" "Should have already_complete status"
+}
+
+# ============================================================================
+# 测试进度统计
+# ============================================================================
+
+test_show_progress() {
+    describe "Should show task progress in text mode"
+
+    # Arrange
+    setup_requirement_with_tasks "REQ-001"
+
+    # Act
+    local output=$(run_mark_task "T001" 2>&1)
+
+    # Assert
+    assert_contains "$output" "Progress:" "Should show progress"
+    assert_contains "$output" "completed" "Should show completed count"
+    assert_contains "$output" "remaining" "Should show remaining count"
+}
+
+# ============================================================================
+# 测试缺失文件错误
+# ============================================================================
+
+test_missing_tasks_file() {
+    describe "Should fail when TASKS.md doesn't exist"
+
+    # Arrange - 使用独特的REQ_ID以避免与之前测试冲突
+    local req_id="REQ-999"
+    local req_dir="$TEST_TMP_DIR/.claude/docs/requirements/$req_id"
+    mkdir -p "$req_dir"
+    # 不创建 TASKS.md
+
+    # 创建测试脚本环境
+    local test_scripts_dir="$TEST_TMP_DIR/scripts"
+    mkdir -p "$test_scripts_dir"
+    create_test_common
+    cp "$MARK_TASK_SCRIPT" "$test_scripts_dir/"
+
+    # Act - Use temp file pattern to capture exit code
+    local output_file="$TEST_TMP_DIR/output.txt"
+    local exit_code_file="$TEST_TMP_DIR/exitcode.txt"
+
+    (
+        cd "$TEST_TMP_DIR"
+        export DEVFLOW_REQ_ID="$req_id"
+        bash "$test_scripts_dir/mark-task-complete.sh" "T001" > "$output_file" 2>&1
+        echo $? > "$exit_code_file"
+    )
+
+    local output=$(cat "$output_file")
+    local exit_code=$(cat "$exit_code_file")
+
+    # Assert
+    assert_not_equals "$exit_code" "0" "Should fail when TASKS.md missing"
+    assert_contains "$output" "TASKS.md not found" "Should mention missing TASKS.md"
+}
+
+# ============================================================================
+# 测试错误处理
+# ============================================================================
+
+test_invalid_option() {
+    describe "Should reject invalid options"
+
+    # Arrange
+    local test_scripts_dir="$TEST_TMP_DIR/scripts"
+    mkdir -p "$test_scripts_dir"
+    create_test_common
+    cp "$MARK_TASK_SCRIPT" "$test_scripts_dir/"
+
+    # Act - Use temp file pattern to capture exit code
+    local output_file="$TEST_TMP_DIR/output.txt"
+    local exit_code_file="$TEST_TMP_DIR/exitcode.txt"
+
+    (
+        cd "$TEST_TMP_DIR"
+        bash "$test_scripts_dir/mark-task-complete.sh" T001 --invalid-option > "$output_file" 2>&1
+        echo $? > "$exit_code_file"
+    )
+
+    local output=$(cat "$output_file")
+    local exit_code=$(cat "$exit_code_file")
+
+    # Assert
+    assert_not_equals "$exit_code" "0" "Should fail on invalid option"
+    assert_contains "$output" "Unknown option" "Should mention unknown option"
+}
+
+# ============================================================================
+# 运行所有测试
+# ============================================================================
+
+run_tests \
+    test_help_flag \
+    test_no_task_id \
+    test_invalid_task_id_format \
+    test_normalize_task_id_case \
+    test_mark_task_complete \
+    test_already_complete_task \
+    test_task_not_found \
+    test_log_to_execution_log \
+    test_no_log_option \
+    test_json_output \
+    test_json_output_fields \
+    test_json_already_complete \
+    test_show_progress \
+    test_missing_tasks_file \
+    test_invalid_option

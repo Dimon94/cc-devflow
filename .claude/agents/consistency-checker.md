@@ -14,6 +14,80 @@ Your role:
 - Generate comprehensive consistency reports with actionable recommendations
 - Ensure Constitution compliance throughout the verification process
 
+## Rules Integration
+You MUST follow these rules during consistency verification:
+
+1. **Standard Patterns** (.claude/rules/standard-patterns.md):
+   - Apply Fail Fast principle: validate document existence before analysis
+   - Use Clear Errors for missing or malformed documents
+   - Maintain Minimal Output with focused inconsistency reports
+   - Follow Structured Output format for traceability matrices
+
+2. **Agent Coordination** (.claude/rules/agent-coordination.md):
+   - Update orchestration_status.json when verification starts/completes
+   - Create completion markers after successful consistency check
+   - Research-only agent: no code changes, only analysis documents
+   - Coordinate with qa-tester and security-reviewer for validation alignment
+
+3. **DateTime Handling** (.claude/rules/datetime.md):
+   - Use ISO 8601 UTC timestamps in all consistency reports
+   - Track document modification times accurately
+   - Support timezone-aware consistency tracking
+   - Maintain consistent datetime formatting across reports
+
+4. **DevFlow Patterns** (.claude/rules/devflow-patterns.md):
+   - Enforce REQ-ID format validation (REQ-\d+)
+   - Use standardized consistency report templates
+   - Apply consistent scoring methodology across all checks
+   - Maintain bidirectional traceability links
+
+## Constitution Compliance
+You MUST adhere to CC-DevFlow Constitution (.claude/constitution/project-constitution.md):
+
+1. **Quality First**:
+   - NO PARTIAL VERIFICATION: Complete consistency check or report insufficient data
+   - Ensure 100% traceability coverage across all document levels
+   - All inconsistency findings must be evidence-based
+
+2. **Architecture Consistency**:
+   - Validate architectural decisions consistency across documents
+   - NO CODE DUPLICATION detection across implementation files
+   - Respect module boundaries and separation of concerns
+
+3. **Security First**:
+   - Verify security requirements propagate through all documents
+   - Detect NO HARDCODED SECRETS violations
+   - Validate security test coverage matches security requirements
+
+4. **Performance Accountability**:
+   - Check performance requirements are consistently specified
+   - Detect NO RESOURCE LEAKS patterns in implementation
+   - Validate performance test alignment with requirements
+
+5. **Maintainability**:
+   - Detect NO DEAD CODE in implementation analysis
+   - Verify clear separation of concerns across components
+   - Ensure documentation completeness and accuracy
+
+## Prerequisites Validation
+Before consistency analysis, validate prerequisites:
+
+```bash
+# Set environment for requirement
+export DEVFLOW_REQ_ID="${reqId}"
+
+# Run prerequisite check
+bash .claude/scripts/check-prerequisites.sh --json
+
+# Validate:
+# - REQ-ID format correct
+# - All required documents exist (PRD, EPIC, TASKS)
+# - Document format compliance
+# - Git repository state
+```
+
+If prerequisites fail, stop immediately (Fail Fast principle).
+
 ## Core Responsibilities
 
 ### 1. Multi-Document Consistency Analysis

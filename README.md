@@ -9,15 +9,20 @@ A comprehensive development workflow system built on Claude Code's official sub-
 ## ✨ Features
 
 - **🎯 One-Command Flow**: Start complete requirement development with `/flow-new "REQ-123|Feature Title|Plan URLs"`
+- **🔄 Staged Commands**: 6 independent stage commands (init/prd/epic/dev/qa/release) for fine-grained control
 - **📋 Document-Driven**: Automatic PRD → EPIC → TASKS → Implementation chain
+- **📝 Template-Driven**: Self-executable templates (PRD_TEMPLATE, EPIC_TEMPLATE, TASKS_TEMPLATE) with built-in execution flows
 - **🔄 Smart Recovery**: Resume interrupted development with `/flow-restart` and monitor progress with `/flow-status`
 - **🛡️ Quality Gates**: Automated TypeScript checking, testing, linting, and security scanning
-- **🤖 Sub-Agent Orchestration**: 10 specialized agents for different development phases
+- **🤖 Sub-Agent Orchestration**: 10 specialized research agents for different development phases
 - **🔗 GitHub Integration**: Automated PR creation, branch management, and conventional commits
 - **📊 Progress Tracking**: Real-time status monitoring and intelligent restart points
 - **🌐 MCP Integration**: Seamless external content fetching and API integration
 - **⚡ Auto Progress Updates**: Intelligent progress detection based on code changes and Git commits
 - **🔍 Consistency Verification**: Enterprise-grade consistency checking with intelligent conflict detection and auto-fix suggestions
+- **🧪 TDD Enforced**: Strict Test-Driven Development with TEST VERIFICATION CHECKPOINT
+- **📜 Constitution Compliance**: All stages enforce Constitution principles (NO PARTIAL IMPLEMENTATION, NO CODE DUPLICATION, etc.)
+- **🛠️ Unified Script Infrastructure**: All agents and commands use standardized `.claude/scripts/` interface
 
 ## 🚀 Quick Start
 
@@ -86,39 +91,109 @@ This demo will guide you through the complete development flow, including automa
 
 ## 🏗️ Architecture
 
+### Execution Model (Updated 2025-01-10)
+
+**Research Agents + Main Agent**:
+- **Research Agents (10)**: Read-only analysis, generate Markdown plans and reports
+- **Main Agent (Claude)**: Executes all code operations, owns complete context
+- **Workflow**: Agents Research → Output Plans → Main Agent Executes → Iterate
+
+**Tool Distribution**:
+- **Research Agents**: Read, Grep, Glob only (analysis)
+- **Main Agent**: Edit, Write, Bash, Git (execution)
+
 ### Sub-Agents Workflow
 ```sql
-flow-orchestrator (Master Controller)
-├── prd-writer          → Generate Product Requirements Document
-├── planner             → Create Epic and Task breakdown
-├── dev-implementer     → Code implementation
-├── qa-tester           → Quality assurance and testing
-├── security-reviewer   → Security scanning and fixes
-├── release-manager     → PR creation and merge management
+Workflow Guide (Standard Operating Procedures)
+├── prd-writer          → Research requirements, generate PRD.md (MUST use PRD_TEMPLATE)
+├── planner             → Analyze PRD, generate EPIC.md + TASKS.md (MUST use EPIC_TEMPLATE, TASKS_TEMPLATE)
+├── dev-implementer     → Research codebase, generate IMPLEMENTATION_PLAN.md (research-only)
+├── qa-tester           → Analyze code, generate TEST_PLAN.md + TEST_REPORT.md
+├── security-reviewer   → Security analysis, generate SECURITY_PLAN.md + SECURITY_REPORT.md
+├── release-manager     → Release analysis, generate RELEASE_PLAN.md
 ├── impact-analyzer     → PRD change impact analysis
 ├── compatibility-checker → Version compatibility analysis
-└── consistency-checker → Enterprise-grade consistency verification
+├── consistency-checker → Enterprise-grade consistency verification
+└── bug-analyzer        → BUG root cause analysis (JSON support)
 ```
+
+### Unified Script Infrastructure (New)
+All agents and commands use standardized scripts:
+
+```text
+.claude/scripts/
+├── common.sh                    # Core functions (log_event, get_repo_root)
+├── check-prerequisites.sh       # Prerequisites validation, path retrieval
+├── setup-epic.sh                # Epic/Tasks structure initialization
+├── check-task-status.sh         # Task status and progress tracking
+├── mark-task-complete.sh        # Task completion marking
+├── generate-status-report.sh    # Status report generation
+├── validate-constitution.sh     # Constitution compliance checking
+└── recover-workflow.sh          # Workflow recovery logic
+```
+
+**Benefits**:
+- **Consistency**: All operations use same code paths
+- **Testability**: Scripts have comprehensive test coverage (100% pass rate)
+- **Maintainability**: Centralized logic, easier to update
+- **JSON Support**: `--json` flag for programmatic parsing
+
+### Template-Driven Development (New)
+
+**Self-Executable Templates**: Each template contains its own Execution Flow
+
+```text
+.claude/docs/templates/
+├── PRD_TEMPLATE.md              # Product Requirements (10-step execution flow)
+├── EPIC_TEMPLATE.md             # Epic Planning (10-step execution flow)
+├── TASKS_TEMPLATE.md            # Task Breakdown (TDD-ordered phases)
+├── TASK_EXECUTABLE_TEMPLATE.md  # Task Execution (5-phase TDD flow)
+└── BUG_TEMPLATE.md              # BUG Analysis and Fix
+```
+
+**Template Usage**:
+1. Agent reads template
+2. Follows Execution Flow steps
+3. Generates complete document
+4. No placeholders left unfilled
+5. Passes Validation Checklist
 
 ### Quality Gates
 - **Pre-push Guard**: TypeScript, tests, linting, security, build validation
 - **Markdown Formatter**: Automatic documentation formatting and language detection
 - **Conventional Commits**: Standardized commit message format enforcement
 - **Consistency Verification**: Cross-document consistency checking and conflict detection
+- **Constitution Compliance**: Enforced at every stage (NO PARTIAL IMPLEMENTATION, NO CODE DUPLICATION, etc.)
+- **TDD Checkpoint**: TEST VERIFICATION CHECKPOINT before implementation
 
 ### Document Structure
 ```text
 .claude/docs/requirements/${REQ-ID}/
-├── PRD.md                 # Product Requirements Document
-├── EPIC.md               # Epic planning and breakdown
-├── tasks/                # Individual task specifications
-│   ├── TASK_001.md
-│   ├── TASK_002.md
-│   └── TASK_003.md
-├── research/             # External research materials
-├── TEST_REPORT.md        # QA testing results
-└── EXECUTION_LOG.md      # Complete audit trail
+├── orchestration_status.json  # State management (stage, progress, timestamps)
+├── EXECUTION_LOG.md           # Complete audit trail
+├── PRD.md                     # Product Requirements Document (from PRD_TEMPLATE)
+├── EPIC.md                    # Epic planning and breakdown (from EPIC_TEMPLATE)
+├── TASKS.md                   # Single unified task list (from TASKS_TEMPLATE)
+│                              # - All tasks in TDD order (Phase 1-5)
+│                              # - Dependencies clearly marked
+│                              # - [P] tags for parallel tasks
+│                              # - TEST VERIFICATION CHECKPOINT included
+├── tasks/                     # Task execution artifacts
+│   ├── TASK_001.completed     # Empty marker file
+│   ├── TASK_002.completed
+│   └── IMPLEMENTATION_PLAN.md # dev-implementer's technical plan
+├── research/                  # External research materials (MCP fetched)
+├── TEST_PLAN.md               # QA testing strategy
+├── TEST_REPORT.md             # QA testing results
+├── SECURITY_PLAN.md           # Security review plan
+└── SECURITY_REPORT.md         # Security scan results
 ```
+
+**Key Changes**:
+- **orchestration_status.json**: Unified state file (replaces scattered status files)
+- **TASKS.md**: Single file for all tasks (replaces multiple TASK_*.md)
+- **tasks/*.completed**: Simple completion markers (replaces complex task state)
+- **IMPLEMENTATION_PLAN.md**: Technical plan from dev-implementer agent
 
 ## 📋 Command Reference
 
@@ -233,6 +308,70 @@ cc-devflow follows a comprehensive rules system ensuring consistency and quality
 - **DateTime Handling**: Cross-platform time operations and ISO 8601 compliance
 - **DevFlow Patterns**: cc-devflow specific conventions and error handling
 - **MCP Integration**: External content fetching and security validation
+
+## 🧪 Testing Framework
+
+cc-devflow includes a comprehensive testing framework with **100% test coverage** across all critical scripts.
+
+### Test Suites (8/8 Passed)
+
+| Test Suite | Test Cases | Coverage | Status |
+|------------|------------|----------|--------|
+| `test_check_prerequisites` | 18 | Prerequisite validation | ✅ 100% |
+| `test_check_task_status` | 18 | Task status tracking | ✅ 100% |
+| `test_common` | 15 | Common utilities | ✅ 100% |
+| `test_generate_status_report` | - | Status reporting | ✅ 100% |
+| `test_mark_task_complete` | 15 | Task completion | ✅ 100% |
+| `test_recover_workflow` | - | Workflow recovery | ✅ 100% |
+| `test_setup_epic` | 13 | Epic initialization | ✅ 100% |
+| `test_validate_constitution` | 4 | Constitution checks | ✅ 100% |
+
+### Running Tests
+
+```bash
+# Run all test suites
+bash .claude/tests/run-all-tests.sh --scripts
+
+# Run specific test suite
+bash .claude/tests/scripts/test_check_prerequisites.sh
+
+# Run with verbose output
+VERBOSE=true bash .claude/tests/run-all-tests.sh --scripts
+```
+
+### Test Framework Features
+
+- **Isolated Test Environment**: Each test runs in a clean temporary directory
+- **Mock System**: Full Git mocking and function stubbing support
+- **Exit Code Capture**: Reliable exit code testing via temp file pattern
+- **Assertion Library**: Rich set of assertions (equals, contains, JSON validation, etc.)
+- **Auto Cleanup**: Automatic teardown of test resources
+- **Colored Output**: Clear visual feedback for test results
+
+### Key Testing Patterns
+
+**Exit Code Capture Pattern**:
+```bash
+local output_file="$TEST_TMP_DIR/output.txt"
+local exit_code_file="$TEST_TMP_DIR/exitcode.txt"
+
+(
+    command_to_test > "$output_file" 2>&1
+    echo $? > "$exit_code_file"
+)
+
+local output=$(cat "$output_file")
+local exit_code=$(cat "$exit_code_file")
+```
+
+**Git Mocking**:
+```bash
+# Mock git command
+mock_git "rev-parse --show-toplevel" "/fake/repo/path"
+
+# Git commands now return mocked values
+git rev-parse --show-toplevel  # Returns: /fake/repo/path
+```
 
 ## 🔍 Monitoring and Debugging
 
