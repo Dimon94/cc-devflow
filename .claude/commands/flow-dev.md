@@ -38,6 +38,23 @@ description: Execute development tasks following TDD order. Usage: /flow-dev "RE
   - 开发任务（写代码）必须在主代理线程上执行
   - 并行写代码会导致上下文冲突和文件冲突
 
+## ⚠️ 重要提醒：任务完成标记
+
+**每完成一个任务后，必须立即执行：**
+```bash
+bash .claude/scripts/mark-task-complete.sh T001
+```
+
+**为什么这很重要：**
+- ✅ 更新 TASKS.md 中的待办事项复选框 ([ ] → [x])
+- ✅ 避免重复执行已完成的任务
+- ✅ 正确追踪进度和剩余工作量
+- ✅ 生成准确的状态报告
+
+**不要手动编辑 TASKS.md** - 使用脚本确保格式正确和日志记录
+
+---
+
 ## 执行流程
 
 ### 阶段 1: 前置条件检查 (Entry Gate)
@@ -114,7 +131,7 @@ Phase 4 & 5: Integration and Polish
   → 标记完成
 ```
 
-**Task Execution Loop**:
+**Task Execution Loop** (每个任务必须执行完整的5步循环):
 ```
 For each task in TASKS.md (following order):
 
@@ -123,6 +140,15 @@ For each task in TASKS.md (following order):
    → Parse: task_id, parallel_flag, description, file_path
    → Check: Is task already completed? ([x])
    → If completed: Skip to next task
+
+   Example task line:
+   - [ ] **T001** [P] 初始化项目结构 `project-init.ts`
+
+   Parsed values:
+   - task_id: T001
+   - parallel_flag: [P]
+   - description: 初始化项目结构
+   - file_path: project-init.ts
 
 2. Display task information
    → Show: Task ID, Description, File path
@@ -164,11 +190,20 @@ For each task in TASKS.md (following order):
      - [ ] No syntax errors
      - [ ] Follows coding standards
 
-5. Mark task as complete
-   → Run: mark-task-complete.sh ${task_id}
-   → Updates: TASKS.md (- [ ] → - [x])
-   → Updates: orchestration_status.json (completedTasks++)
+5. Mark task as complete ⚠️ MANDATORY
+   → MUST RUN: .claude/scripts/mark-task-complete.sh ${task_id}
+   → This updates: TASKS.md (- [ ] → - [x])
+   → DO NOT manually edit TASKS.md
+   → DO NOT skip this step
    → Log: "Task ${task_id} completed"
+
+   Example:
+   bash .claude/scripts/mark-task-complete.sh T001
+
+   Verify completion:
+   - Check output shows "✅ Task T001 marked as complete"
+   - Check TASKS.md line changed from [ ] to [x]
+   - If error: Stop and fix before next task
 
 6. Check for checkpoint gates
    → If just completed last Phase 2 task:
@@ -264,10 +299,17 @@ When all Phase 2 (Tests First) tasks are completed:
 
 **Exit Gate Validation**:
 ```
-1. Verify all tasks completed
-   → Run: check-task-status.sh --json
+1. Verify all tasks completed ⚠️ CRITICAL
+   → Run: bash .claude/scripts/check-task-status.sh --json
    → Check: remaining == 0, percentage == 100
+   → Check: All tasks in TASKS.md marked as [x]
    → If incomplete: ERROR "Not all tasks completed"
+
+   Common issue: Tasks executed but not marked
+   - Symptom: Code exists but TASKS.md shows [ ] not [x]
+   - Root cause: mark-task-complete.sh was not called
+   - Fix: Manually run mark-task-complete.sh for each task
+   - Prevention: Always call mark-task-complete.sh in step 5 of loop
 
 2. Run complete test suite
    → Execute: npm test
