@@ -28,7 +28,7 @@ description: Query development progress status for cc-devflow requirements. Usag
 
 本命令遵循以下规则体系：
 
-1. **Standard Patterns** (.claude/rules/standard-patterns.md):
+1. **Standard Patterns** (.claude/rules/core-patterns.md):
    - Fail Fast: 无效 ID 格式立即报错
    - Clear Errors: 明确的状态解释和建议
    - Minimal Output: 简洁的状态汇总（默认）
@@ -44,7 +44,7 @@ description: Query development progress status for cc-devflow requirements. Usag
    - 计算准确的时间差（已用时间、预计剩余）
    - 支持时区感知的时间显示
 
-4. **DevFlow Patterns** (.claude/rules/devflow-patterns.md):
+4. **DevFlow Patterns** (.claude/rules/devflow-conventions.md):
    - 支持 REQ-ID 和 BUG-ID 格式
    - 使用标准化状态枚举
    - 提供清晰的进度百分比

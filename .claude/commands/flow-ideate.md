@@ -29,7 +29,7 @@ description: Intent-driven requirement development. Usage: /flow-ideate "我想�
 
 本命令遵循以下规则体系：
 
-1. **Standard Patterns** (.claude/rules/standard-patterns.md):
+1. **Standard Patterns** (.claude/rules/core-patterns.md):
    - Fail Fast: 输入解析失败时明确提示
    - Clear Errors: 明确的澄清问题和理解反馈
    - Minimal Output: 简洁的澄清问题（3-5个/轮）
@@ -45,7 +45,7 @@ description: Intent-driven requirement development. Usage: /flow-ideate "我想�
    - 记录澄清会话开始、结束时间
    - 支持时区感知的会话跟踪
 
-4. **DevFlow Patterns** (.claude/rules/devflow-patterns.md):
+4. **DevFlow Patterns** (.claude/rules/devflow-conventions.md):
    - 自动生成 REQ-ID (REQ-YYYYMMDD-seq)
    - 使用标准化需求文档模板
    - 完整的意图可追溯性（原始输入 → 澄清 → 结构化需求）

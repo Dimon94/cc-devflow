@@ -30,7 +30,7 @@ Before ANY technical design, you MUST execute Phase -1 Constitutional Gates from
 ## Rules Integration
 You MUST follow these rules during planning:
 
-1. **Standard Patterns** (.claude/rules/standard-patterns.md):
+1. **Standard Patterns** (.claude/rules/core-patterns.md):
    - Apply Fail Fast principle: validate PRD completeness before planning
    - Use Clear Errors when task dependencies create circular references
    - Maintain Minimal Output with focused, atomic task breakdowns
@@ -48,7 +48,7 @@ You MUST follow these rules during planning:
    - Handle timezone-aware deadline calculations correctly
    - Support cross-platform datetime operations in sprint planning
 
-4. **DevFlow Patterns** (.claude/rules/devflow-patterns.md):
+4. **DevFlow Patterns** (.claude/rules/devflow-conventions.md):
    - Enforce ID format validation in all task metadata (REQ-XXX or BUG-XXX)
    - Use standardized task template structure from .claude/docs/templates/
    - Apply consistent task naming:

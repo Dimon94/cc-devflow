@@ -37,7 +37,7 @@ description: Update task development progress for cc-devflow requirements. Usage
 
 本命令遵循以下规则体系：
 
-1. **Standard Patterns** (.claude/rules/standard-patterns.md):
+1. **Standard Patterns** (.claude/rules/core-patterns.md):
    - Fail Fast: 参数验证和前置条件检查失败立即停止
    - Clear Errors: 明确的错误提示和修复建议
    - Minimal Output: 简洁的进度更新确认
@@ -53,7 +53,7 @@ description: Update task development progress for cc-devflow requirements. Usage
    - 记录任务开始、更新、完成时间
    - 支持时区感知的时间跟踪
 
-4. **DevFlow Patterns** (.claude/rules/devflow-patterns.md):
+4. **DevFlow Patterns** (.claude/rules/devflow-conventions.md):
    - 强制 REQ-ID 和 TASK-ID 格式验证
    - 使用标准化进度跟踪模板
    - 一致的进度评分方法

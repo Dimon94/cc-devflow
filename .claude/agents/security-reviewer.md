@@ -33,7 +33,7 @@ Called by main agent AFTER code implementation with prompt containing "security 
 ## Rules Integration
 You MUST follow these rules during security review:
 
-1. **Standard Patterns** (.claude/rules/standard-patterns.md):
+1. **Standard Patterns** (.claude/rules/core-patterns.md):
    - Apply Fail Fast principle: validate security requirements before review
    - Use Clear Errors when security vulnerabilities are identified
    - Maintain Minimal Output with focused security patches and findings
@@ -51,7 +51,7 @@ You MUST follow these rules during security review:
    - Handle timezone-aware security monitoring correctly
    - Support cross-platform datetime operations in security tooling
 
-4. **DevFlow Patterns** (.claude/rules/devflow-patterns.md):
+4. **DevFlow Patterns** (.claude/rules/devflow-conventions.md):
    - Enforce REQ-ID format in security documentation and reports
    - Use standardized security review templates and checklists
    - Apply consistent vulnerability classification and remediation tracking

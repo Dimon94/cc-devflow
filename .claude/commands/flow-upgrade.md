@@ -36,7 +36,7 @@ description: PRD version management and upgrade workflow. Usage: /flow-upgrade "
 
 本命令遵循以下规则体系：
 
-1. **Standard Patterns** (.claude/rules/standard-patterns.md):
+1. **Standard Patterns** (.claude/rules/core-patterns.md):
    - Fail Fast: 版本格式验证失败立即停止
    - Clear Errors: 明确的版本冲突和变更问题
    - Minimal Output: 简洁的版本操作确认
@@ -52,7 +52,7 @@ description: PRD version management and upgrade workflow. Usage: /flow-upgrade "
    - 记录版本创建时间、升级时间
    - 支持时区感知的版本历史
 
-4. **DevFlow Patterns** (.claude/rules/devflow-patterns.md):
+4. **DevFlow Patterns** (.claude/rules/devflow-conventions.md):
    - 强制 REQ-ID 和版本号格式验证
    - 使用标准化版本管理模板
    - 一致的 SemVer 语义版本规范

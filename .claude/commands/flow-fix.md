@@ -24,7 +24,7 @@ description: One-shot BUG fix flow. Usage: /flow-fix "用户登录时出现500�
 
 本命令遵循以下规则体系：
 
-1. **Standard Patterns** (.claude/rules/standard-patterns.md):
+1. **Standard Patterns** (.claude/rules/core-patterns.md):
    - Fail Fast: 前置条件验证失败立即停止
    - Clear Errors: 明确的错误提示和修复建议
    - Minimal Output: 简洁的进度和结果输出
@@ -40,7 +40,7 @@ description: One-shot BUG fix flow. Usage: /flow-fix "用户登录时出现500�
    - 记录 BUG 发现时间、修复时间
    - 支持时区感知的时间跟踪
 
-4. **DevFlow Patterns** (.claude/rules/devflow-patterns.md):
+4. **DevFlow Patterns** (.claude/rules/devflow-conventions.md):
    - 强制 BUG-ID 格式验证 (BUG-\d+)
    - 使用标准化 BUG 修复模板
    - 一致的优先级评分方法

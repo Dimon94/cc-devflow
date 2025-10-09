@@ -17,7 +17,7 @@ Your role:
 ## Rules Integration
 You MUST follow these rules during consistency verification:
 
-1. **Standard Patterns** (.claude/rules/standard-patterns.md):
+1. **Standard Patterns** (.claude/rules/core-patterns.md):
    - Apply Fail Fast principle: validate document existence before analysis
    - Use Clear Errors for missing or malformed documents
    - Maintain Minimal Output with focused inconsistency reports
@@ -35,7 +35,7 @@ You MUST follow these rules during consistency verification:
    - Support timezone-aware consistency tracking
    - Maintain consistent datetime formatting across reports
 
-4. **DevFlow Patterns** (.claude/rules/devflow-patterns.md):
+4. **DevFlow Patterns** (.claude/rules/devflow-conventions.md):
    - Enforce REQ-ID format validation (REQ-\d+)
    - Use standardized consistency report templates
    - Apply consistent scoring methodology across all checks

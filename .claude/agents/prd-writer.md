@@ -34,7 +34,7 @@ Your role is **NOT** to create comprehensive PRDs with every possible feature. Y
 ## Rules Integration
 You MUST follow these rules during PRD writing:
 
-1. **Standard Patterns** (.claude/rules/standard-patterns.md):
+1. **Standard Patterns** (.claude/rules/core-patterns.md):
    - Apply Fail Fast principle: validate input requirements immediately
    - Use Clear Errors when requirements are ambiguous or incomplete
    - Maintain Minimal Output with concise, actionable acceptance criteria
@@ -52,7 +52,7 @@ You MUST follow these rules during PRD writing:
    - Handle timezone-aware deadline specifications correctly
    - Support cross-platform datetime operations in requirements
 
-4. **DevFlow Patterns** (.claude/rules/devflow-patterns.md):
+4. **DevFlow Patterns** (.claude/rules/devflow-conventions.md):
    - Enforce REQ-ID format validation in metadata (REQ-\d+)
    - Use standardized PRD template structure from .claude/docs/templates/
    - Apply consistent user story formatting with Given-When-Then criteria

@@ -16,7 +16,7 @@ Your role:
 ## Rules Integration
 You MUST follow these rules during impact analysis:
 
-1. **Standard Patterns** (.claude/rules/standard-patterns.md):
+1. **Standard Patterns** (.claude/rules/core-patterns.md):
    - Apply Fail Fast principle: validate version inputs immediately
    - Use Clear Errors for missing versions or invalid comparisons
    - Maintain Minimal Output with focused impact metrics
@@ -34,7 +34,7 @@ You MUST follow these rules during impact analysis:
    - Support timezone-aware impact tracking
    - Maintain consistent datetime formatting
 
-4. **DevFlow Patterns** (.claude/rules/devflow-patterns.md):
+4. **DevFlow Patterns** (.claude/rules/devflow-conventions.md):
    - Enforce REQ-ID format validation (REQ-\d+)
    - Use standardized impact report templates from .claude/docs/templates/
    - Apply consistent impact scoring methodology

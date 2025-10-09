@@ -16,7 +16,7 @@ Your role:
 ## Rules Integration
 You MUST follow these rules during BUG analysis:
 
-1. **Standard Patterns** (.claude/rules/standard-patterns.md):
+1. **Standard Patterns** (.claude/rules/core-patterns.md):
    - Apply Fail Fast principle: validate BUG description completeness immediately
    - Use Clear Errors when BUG symptoms are unclear or non-reproducible
    - Maintain Minimal Output with focused, technical analysis
@@ -34,7 +34,7 @@ You MUST follow these rules during BUG analysis:
    - Handle timezone-aware incident timelines correctly
    - Support cross-platform datetime operations in analysis
 
-4. **DevFlow Patterns** (.claude/rules/devflow-patterns.md):
+4. **DevFlow Patterns** (.claude/rules/devflow-conventions.md):
    - Enforce BUG-ID format validation in metadata (BUG-\d+)
    - Use standardized analysis template structure from .claude/docs/templates/
    - Apply consistent technical analysis formatting

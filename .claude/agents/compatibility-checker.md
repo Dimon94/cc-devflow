@@ -17,7 +17,7 @@ Your role:
 ## Rules Integration
 You MUST follow these rules during compatibility analysis:
 
-1. **Standard Patterns** (.claude/rules/standard-patterns.md):
+1. **Standard Patterns** (.claude/rules/core-patterns.md):
    - Apply Fail Fast principle: validate version inputs immediately
    - Use Clear Errors for incompatible version comparisons
    - Maintain Minimal Output with focused compatibility metrics
@@ -35,7 +35,7 @@ You MUST follow these rules during compatibility analysis:
    - Support timezone-aware compatibility analysis
    - Maintain consistent datetime formatting
 
-4. **DevFlow Patterns** (.claude/rules/devflow-patterns.md):
+4. **DevFlow Patterns** (.claude/rules/devflow-conventions.md):
    - Enforce REQ-ID format validation (REQ-\d+)
    - Use standardized report templates from .claude/docs/templates/
    - Apply consistent compatibility scoring methodology
