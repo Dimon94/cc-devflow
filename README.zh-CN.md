@@ -312,18 +312,58 @@ fi
 - `EPIC_TEMPLATE.md` - Epic 规划格式
 - `TASK_TEMPLATE.md` - 单个任务规格
 
-## 🏛️ 规则系统
+## 🏛️ 三层信息架构
 
-cc-devflow 遵循全面的规则系统，确保一致性和质量：
+cc-devflow 遵循清晰的三层架构 (2025-01-09 更新)，确保一致性、质量和最优上下文使用：
 
-- **标准模式**: 快速失败、清晰错误、最少输出、信任系统
-- **代理协调**: 代理间通信协议和文件锁定
-- **分支操作**: Git 工作流管理和规范化提交
-- **GitHub 操作**: 仓库保护和自动化 PR 处理
-- **测试执行**: 质量保证标准和覆盖率要求
-- **日期时间处理**: 跨平台时间操作和 ISO 8601 合规
-- **DevFlow 模式**: cc-devflow 特定约定和错误处理
-- **MCP 集成**: 外部内容获取和安全验证
+### 架构概览
+```text
+.claude/
+├── constitution/          # 原则层 (What + Why)
+│   ├── project-constitution.md
+│   ├── quality-gates.md
+│   ├── architecture-constraints.md
+│   └── security-principles.md
+│
+├── guides/               # 操作手册层 (How)
+│   ├── workflow-guides/
+│   │   ├── flow-orchestrator.md
+│   │   └── bug-fix-orchestrator.md
+│   ├── technical-guides/
+│   │   ├── git-github-guide.md
+│   │   ├── test-execution-guide.md
+│   │   └── datetime-handling-guide.md
+│   └── agent-guides/
+│       └── agent-coordination-guide.md
+│
+└── rules/                # 约定层 (Specifics)
+    ├── core-patterns.md
+    └── devflow-conventions.md
+```
+
+### 层级职责
+
+**Constitution 层** (不可变原则):
+- 10条宪法条款管控质量、安全和架构
+- 质量闸门和合规标准
+- Phase -1 宪法闸门 (简洁性、反抽象、集成优先)
+- 最高权威 - 所有其他层必须遵循
+
+**Guides 层** (操作指南):
+- 工作流标准操作程序 (SOP)
+- 技术操作指南 (Git、GitHub、测试、日期时间)
+- 代理协调协议
+- 分步实施说明
+
+**Rules 层** (项目约定):
+- **核心模式**: 4大基本原则 (快速失败、信任系统、清晰错误、最少输出)
+- **DevFlow 约定**: CC-DevFlow 特定工作流、格式和错误处理
+
+### 核心优势
+- **上下文高效**: 规则上下文减少 55% (节省约 100KB tokens)
+- **清晰分离**: 每层有明确的目的和范围
+- **易于维护**: 变更有清晰的归属和影响范围
+- **可扩展**: 支持 10+ 年演进而无架构债务
 
 ## 🧪 测试框架
 

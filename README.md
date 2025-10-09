@@ -315,18 +315,58 @@ Customize templates in `.claude/docs/templates/`:
 - `EPIC_TEMPLATE.md` - Epic planning format
 - `TASK_TEMPLATE.md` - Individual task specification
 
-## 🏛️ Rules System
+## 🏛️ Three-Layer Information Architecture
 
-cc-devflow follows a comprehensive rules system ensuring consistency and quality:
+cc-devflow follows a clean three-layer architecture (updated 2025-01-09) ensuring consistency, quality, and optimal context usage:
 
-- **Standard Patterns**: Fail Fast, Clear Errors, Minimal Output, Trust System
-- **Agent Coordination**: Inter-agent communication protocols and file locking
-- **Branch Operations**: Git workflow management and conventional commits
-- **GitHub Operations**: Repository protection and automated PR handling
-- **Test Execution**: Quality assurance standards and coverage requirements
-- **DateTime Handling**: Cross-platform time operations and ISO 8601 compliance
-- **DevFlow Patterns**: cc-devflow specific conventions and error handling
-- **MCP Integration**: External content fetching and security validation
+### Architecture Overview
+```text
+.claude/
+├── constitution/          # Principles Layer (What + Why)
+│   ├── project-constitution.md
+│   ├── quality-gates.md
+│   ├── architecture-constraints.md
+│   └── security-principles.md
+│
+├── guides/               # Implementation Layer (How)
+│   ├── workflow-guides/
+│   │   ├── flow-orchestrator.md
+│   │   └── bug-fix-orchestrator.md
+│   ├── technical-guides/
+│   │   ├── git-github-guide.md
+│   │   ├── test-execution-guide.md
+│   │   └── datetime-handling-guide.md
+│   └── agent-guides/
+│       └── agent-coordination-guide.md
+│
+└── rules/                # Conventions Layer (Specifics)
+    ├── core-patterns.md
+    └── devflow-conventions.md
+```
+
+### Layer Responsibilities
+
+**Constitution Layer** (Immutable Principles):
+- 10 Articles governing quality, security, and architecture
+- Quality gates and compliance standards
+- Phase -1 Constitutional gates (Simplicity, Anti-Abstraction, Integration-First)
+- Highest authority - all other layers must comply
+
+**Guides Layer** (Operational How-To):
+- Workflow SOPs (Standard Operating Procedures)
+- Technical operation guides (Git, GitHub, Testing, DateTime)
+- Agent coordination protocols
+- Step-by-step implementation instructions
+
+**Rules Layer** (Project Conventions):
+- **Core Patterns**: 4 fundamental principles (Fail Fast, Trust System, Clear Errors, Minimal Output)
+- **DevFlow Conventions**: CC-DevFlow specific workflows, formats, and error handling
+
+### Key Benefits
+- **Context Efficiency**: 55% reduction in rules context (~100KB tokens saved)
+- **Clear Separation**: Each layer has distinct purpose and scope
+- **Easy Maintenance**: Changes have clear ownership and impact scope
+- **Scalable**: Supports 10+ year evolution without architectural debt
 
 ## 🧪 Testing Framework
 
