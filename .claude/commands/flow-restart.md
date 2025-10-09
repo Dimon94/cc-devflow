@@ -69,7 +69,7 @@ def detect_restart_stage(req_id):
 
 本命令遵循以下规则体系：
 
-1. **Standard Patterns** (.claude/rules/standard-patterns.md):
+1. **Standard Patterns** (.claude/rules/core-patterns.md):
    - Fail Fast: 前置条件验证失败立即停止
    - Clear Errors: 明确的中断原因和恢复建议
    - Minimal Output: 简洁的恢复进度输出
@@ -85,7 +85,7 @@ def detect_restart_stage(req_id):
    - 记录中断时间、恢复时间
    - 支持时区感知的恢复跟踪
 
-4. **DevFlow Patterns** (.claude/rules/devflow-patterns.md):
+4. **DevFlow Patterns** (.claude/rules/devflow-conventions.md):
    - 强制 REQ-ID 格式验证
    - 使用标准化恢复模板
    - 一致的状态恢复方法

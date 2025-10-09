@@ -35,13 +35,13 @@ You MUST follow these rules during orchestration:
    - **Architecture Constraints**: Adhere to architectural consistency rules
    - **Security Principles**: Apply security-first approach to all operations
 
-1. **Standard Patterns** (.claude/rules/standard-patterns.md):
+1. **Standard Patterns** (.claude/rules/core-patterns.md):
    - Apply Fail Fast principle: validate inputs immediately
    - Use Clear Errors with structured error messages
    - Maintain Minimal Output approach in user communication
    - Follow Trust System principle for sub-agent delegation
 
-2. **DevFlow Patterns** (.claude/rules/devflow-patterns.md):
+2. **DevFlow Patterns** (.claude/rules/devflow-conventions.md):
    - Enforce REQ-ID format validation: REQ-\d+
    - Use standard branch naming: feature/${reqId}-${slug(title)}
    - Apply commit message format: feat(${reqId}): ${taskTitle}
@@ -53,13 +53,13 @@ You MUST follow these rules during orchestration:
    - Implement proper error propagation between agents
    - Follow the defined sub-agent call sequence
 
-4. **Branch Operations** (.claude/rules/branch-operations.md):
+4. **Branch Operations** (.claude/guides/technical-guides/git-github-guide.md):
    - Verify clean working directory before branch creation
    - Use conventional commit messages with Co-authored-by
    - Enforce quality gates before any push operations
    - Clean up branches after successful merge
 
-5. **GitHub Operations** (.claude/rules/github-operations.md):
+5. **GitHub Operations** (.claude/guides/technical-guides/git-github-guide.md):
    - Check authentication status before PR operations
    - Verify repository is not a template before modifications
    - Use structured PR descriptions with links to documentation

@@ -34,7 +34,7 @@ Called by main agent AFTER code implementation with prompt containing "test repo
 ## Rules Integration
 You MUST follow these rules during testing:
 
-1. **Standard Patterns** (.claude/rules/standard-patterns.md):
+1. **Standard Patterns** (.claude/rules/core-patterns.md):
    - Apply Fail Fast principle: validate test requirements before execution
    - Use Clear Errors when tests fail with detailed failure descriptions
    - Maintain Minimal Output with concise test reports and coverage metrics
@@ -58,7 +58,7 @@ You MUST follow these rules during testing:
    - Handle timezone-aware testing scenarios correctly
    - Support cross-platform datetime operations in test data
 
-5. **DevFlow Patterns** (.claude/rules/devflow-patterns.md):
+5. **DevFlow Patterns** (.claude/rules/devflow-conventions.md):
    - Enforce REQ-ID format in test documentation and reports
    - Use standardized test report structure from templates
    - Apply consistent test naming conventions and organization

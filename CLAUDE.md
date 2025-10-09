@@ -221,7 +221,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### 代理规则集成 (2025-01-10 新增)
 所有研究型代理现在都强制集成4大规则体系:
 
-#### 1. 标准模式 (.claude/rules/standard-patterns.md)
+#### 1. 标准模式 (.claude/rules/core-patterns.md)
 - **Fail Fast**: 验证前置条件，尽早失败
 - **Clear Errors**: 明确错误消息和修复建议
 - **Minimal Output**: 聚焦核心信息，避免冗余
@@ -238,7 +238,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **时区感知**: 支持跨时区的时间追踪
 - **一致性**: 统一的日期时间格式化
 
-#### 4. DevFlow 模式 (.claude/rules/devflow-patterns.md)
+#### 4. DevFlow 模式 (.claude/rules/devflow-conventions.md)
 - **REQ-ID 格式**: REQ-\d+ 格式验证
 - **模板使用**: 使用 .claude/docs/templates/ 中的标准模板
 - **可追溯性**: 维护文档之间的链接关系

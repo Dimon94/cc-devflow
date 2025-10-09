@@ -39,7 +39,7 @@ description: Comprehensive consistency verification across documents and impleme
 
 本命令遵循以下规则体系：
 
-1. **Standard Patterns** (.claude/rules/standard-patterns.md):
+1. **Standard Patterns** (.claude/rules/core-patterns.md):
    - Fail Fast: 前置条件验证失败立即停止
    - Clear Errors: 明确的不一致问题和修复建议
    - Minimal Output: 简洁的验证结果汇总
@@ -55,7 +55,7 @@ description: Comprehensive consistency verification across documents and impleme
    - 记录验证时间、文档修改时间
    - 支持时区感知的增量验证
 
-4. **DevFlow Patterns** (.claude/rules/devflow-patterns.md):
+4. **DevFlow Patterns** (.claude/rules/devflow-conventions.md):
    - 强制 REQ-ID 格式验证
    - 使用标准化一致性报告模板
    - 一致的评分方法论

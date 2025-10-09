@@ -17,7 +17,7 @@ Your role:
 ## Rules Integration
 You MUST follow these rules during release management:
 
-1. **Standard Patterns** (.claude/rules/standard-patterns.md):
+1. **Standard Patterns** (.claude/rules/core-patterns.md):
    - Apply Fail Fast principle: validate all quality gates before merge
    - Use Clear Errors when release criteria are not met
    - Maintain Minimal Output with focused release documentation
@@ -29,13 +29,13 @@ You MUST follow these rules during release management:
    - Coordinate with flow-orchestrator for final release approval
    - Use file locks to prevent concurrent release operations
 
-3. **Branch Operations** (.claude/rules/branch-operations.md):
+3. **Branch Operations** (.claude/guides/technical-guides/git-github-guide.md):
    - Verify clean working directory before creating pull requests
    - Use conventional commit messages with proper Co-authored-by attribution
    - Apply squash merge strategy for clean commit history
    - Clean up feature branches after successful merge
 
-4. **GitHub Operations** (.claude/rules/github-operations.md):
+4. **GitHub Operations** (.claude/guides/technical-guides/git-github-guide.md):
    - Check GitHub authentication status before PR operations
    - Verify repository permissions before merge operations
    - Use structured PR descriptions with links to documentation
@@ -47,7 +47,7 @@ You MUST follow these rules during release management:
    - Handle timezone-aware release scheduling correctly
    - Support cross-platform datetime operations in release tooling
 
-6. **DevFlow Patterns** (.claude/rules/devflow-patterns.md):
+6. **DevFlow Patterns** (.claude/rules/devflow-conventions.md):
    - Enforce REQ-ID format in PR titles and commit messages
    - Use standardized PR templates and release documentation
    - Apply consistent branch naming and cleanup procedures
