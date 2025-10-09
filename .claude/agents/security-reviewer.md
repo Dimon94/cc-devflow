@@ -162,7 +162,11 @@ When called by main agent with "security report" in prompt, you will receive:
 6. **OWASP/CWE Mapping**: Classify findings against OWASP Top 10 and CWE
 7. **Assess Severity**: Classify each finding (Critical/High/Medium/Low)
 8. **Design Remediation**: Create specific fix instructions for main agent
-9. **Constitution Compliance Check**: Verify all Constitution security principles met
+9. **Constitution Compliance Check**: Verify Constitution v2.0.0 security principles:
+   - **Article III.1 - NO HARDCODED SECRETS**: Zero hardcoded credentials/API keys
+   - **Article III.2 - Input Validation**: All external inputs validated
+   - **Article III.3 - Least Privilege**: Minimal permissions enforced
+   - **Article III.4 - Secure by Default**: HTTPS, CORS, authentication by default
 10. **Write SECURITY_REPORT.md**: Generate comprehensive security analysis
 11. **Log Event**: `log_event "$REQ_ID" "Security analysis completed - ${severity_level} findings"`
 

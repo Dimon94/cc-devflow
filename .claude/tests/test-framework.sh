@@ -295,6 +295,105 @@ assert_failure() {
     fi
 }
 
+# 断言非空
+assert_not_empty() {
+    local value="$1"
+    local message="${2:-Value should not be empty}"
+
+    if [[ -n "$value" ]]; then
+        return 0
+    else
+        test_fail "$message"
+        echo -e "${RED}    Value is empty${NC}"
+        return 1
+    fi
+}
+
+# 断言匹配正则表达式
+assert_matches() {
+    local value="$1"
+    local pattern="$2"
+    local message="${3:-Value should match pattern}"
+
+    if [[ "$value" =~ $pattern ]]; then
+        return 0
+    else
+        test_fail "$message"
+        echo -e "${RED}    Value: '$value'${NC}"
+        echo -e "${RED}    Pattern: '$pattern'${NC}"
+        return 1
+    fi
+}
+
+# 断言大于等于
+assert_gte() {
+    local actual="$1"
+    local expected="$2"
+    local message="${3:-Value should be >= expected}"
+
+    if [[ "$actual" -ge "$expected" ]]; then
+        return 0
+    else
+        test_fail "$message"
+        echo -e "${RED}    Expected: >= $expected${NC}"
+        echo -e "${RED}    Actual:   $actual${NC}"
+        return 1
+    fi
+}
+
+# 断言大于
+assert_gt() {
+    local actual="$1"
+    local expected="$2"
+    local message="${3:-Value should be > expected}"
+
+    if [[ "$actual" -gt "$expected" ]]; then
+        return 0
+    else
+        test_fail "$message"
+        echo -e "${RED}    Expected: > $expected${NC}"
+        echo -e "${RED}    Actual:   $actual${NC}"
+        return 1
+    fi
+}
+
+# 断言文件可执行
+assert_file_executable() {
+    local file="$1"
+    local message="${2:-File should be executable}"
+
+    if [[ -x "$file" ]]; then
+        return 0
+    else
+        test_fail "$message"
+        echo -e "${RED}    File: '$file'${NC}"
+        echo -e "${RED}    Not executable or does not exist${NC}"
+        return 1
+    fi
+}
+
+# 断言文件包含内容
+assert_file_contains() {
+    local file="$1"
+    local pattern="$2"
+    local message="${3:-File should contain pattern}"
+
+    if [[ ! -f "$file" ]]; then
+        test_fail "$message"
+        echo -e "${RED}    File not found: '$file'${NC}"
+        return 1
+    fi
+
+    if grep -qE "$pattern" "$file"; then
+        return 0
+    else
+        test_fail "$message"
+        echo -e "${RED}    File: '$file'${NC}"
+        echo -e "${RED}    Pattern not found: '$pattern'${NC}"
+        return 1
+    fi
+}
+
 # ============================================================================
 # Mock 系统
 # ============================================================================

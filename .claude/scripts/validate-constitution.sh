@@ -2,8 +2,21 @@
 
 # Validate Constitution compliance for cc-devflow
 #
-# This script checks code and documentation against CC-DevFlow Constitution principles.
+# This script checks code and documentation against CC-DevFlow Constitution v2.0.0.
+# Validates all 10 Constitutional Articles (Article I-X).
 # Inspired by spec-kit's quality gate philosophy.
+#
+# Constitution Reference: .claude/constitution/project-constitution.md
+# Article I: Quality First
+# Article II: Architectural Consistency
+# Article III: Security First
+# Article IV: Performance Accountability
+# Article V: Maintainability
+# Article VI: Test-First Development
+# Article VII: Simplicity Gate
+# Article VIII: Anti-Abstraction
+# Article IX: Integration-First Testing
+# Article X: Requirement Boundary
 #
 # Usage: ./validate-constitution.sh [TARGET] [OPTIONS]
 #

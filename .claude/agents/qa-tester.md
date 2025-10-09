@@ -149,10 +149,11 @@ When called by main agent with "test report" in prompt, you will receive:
 4. **Evaluate TDD Compliance**: Verify Phase 2 tests were written before Phase 3 implementation
 5. **Assess Coverage**: Check against defined thresholds (≥80% line coverage)
 6. **Identify Gaps**: Compare planned tests vs. actual tests executed
-7. **Constitution Check**: Verify test quality meets Constitution standards:
-   - NO PARTIAL IMPLEMENTATION: All tests complete
-   - Tests cover edge cases and error scenarios
-   - Performance tests if required
+7. **Constitution Check**: Verify test quality meets Constitution v2.0.0 standards:
+   - **Article I - Quality First**: All tests complete, coverage ≥80%
+   - **Article VI - Test-First Development**: TDD sequence followed correctly
+   - **Article VI.3 - Meaningful Tests**: Tests cover edge cases and error scenarios, no "cheater tests"
+   - **Article IV - Performance**: Performance tests if required by NFRs
 8. **Assess Readiness**: Determine if quality gates passed
 9. **Write TEST_REPORT.md**: Generate comprehensive testing assessment
 10. **Log Event**: `log_event "$REQ_ID" "Test report analysis completed"`

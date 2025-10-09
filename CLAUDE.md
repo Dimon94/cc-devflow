@@ -20,6 +20,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **统一脚本基础设施**: 所有代理和命令使用统一的 `.claude/scripts/` 脚本
 - **Constitution 集成**: 所有阶段强制执行 Constitution 检查
 - **MCP 集成**: 支持远程网页抓取和外部工具集成
+- **⚠️ 需求不扩散机制**: 基于 Spec-Kit 的三层防御体系，防止需求蔓延 (2025-01-10 新增)
 
 ## 架构优化总结
 
@@ -57,6 +58,141 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 3. **提高代码一致性**: 统一的代码风格和架构决策
 4. **简化错误处理**: 集中化的错误管理和恢复
 5. **增强调试能力**: 完整的执行轨迹和状态可见性
+
+### 2025-01-10 需求不扩散机制集成
+
+基于 GitHub Spec-Kit 项目的最佳实践，完成了"需求不扩散"三层防御体系的移植：
+
+#### 核心问题
+传统 AI 代理在生成 PRD、Epic、Tasks 时容易出现"需求蔓延":
+- **功能性扩散**: AI 添加用户未提及的"可能需要"功能
+- **过早优化**: AI 添加"未来可能需要"的架构复杂度
+- **过度抽象**: AI 添加"企业级"抽象层和设计模式
+- **任务爆炸**: 1个功能被AI扩展成20个任务
+
+#### 三层防御体系
+
+##### Layer 1: 模板约束 (Template Constraints)
+
+**PRD_TEMPLATE.md 增强**:
+- **CRITICAL ANTI-EXPANSION RULES** 注释块
+- **强制澄清机制**: `[NEEDS CLARIFICATION: 具体问题]` 标记
+- **用户故事优先级**: 所有故事必须有 P1, P2, P3 优先级
+- **Independent Test 标准**: 每个故事必须独立可测试
+- **禁止技术细节**: 只描述 WHAT 和 WHY，不描述 HOW
+- **需求不扩散验证清单**: 强制验证无推测、无技术细节
+
+**EPIC_TEMPLATE.md 增强**:
+- **Phase -1 宪法闸门**: 在技术设计前执行
+  - Simplicity Gate: ≤3 项目、无未来优化、最小依赖
+  - Anti-Abstraction Gate: 直接用框架、单一模型、无不必要接口
+  - Integration-First Gate: 契约优先、真实环境测试
+- **Complexity Tracking 表格**: 强制记录所有违规和证明
+
+**TASKS_TEMPLATE.md 重构**:
+- **按用户故事组织**: Phase 3+ 每个用户故事一个阶段
+- **[US#] 标签强制**: 所有任务必须标记所属用户故事
+- **Foundational Phase 隔离**: 明确共享前置条件
+- **Independent Test + Checkpoint**: 每个故事独立验证
+
+##### Layer 2: 代理约束 (Agent Constraints)
+
+**prd-writer 代理增强**:
+```markdown
+## ⚠️ CRITICAL: ANTI-EXPANSION ENFORCEMENT
+
+### Hard Rules (MUST ENFORCE)
+1. NO SPECULATION: If user didn't mention it → Mark [NEEDS CLARIFICATION]
+2. NO TECH DETAILS: Focus on WHAT and WHY, not HOW
+3. STORY INDEPENDENCE: Every story must have Independent Test
+4. PRIORITY MANDATORY: All stories MUST have P1, P2, P3
+5. MVP IDENTIFICATION: P1 stories must be deliverable as standalone MVP
+
+### Anti-Expansion Validation Checklist
+- [ ] NO SPECULATION: Every feature traces to user request
+- [ ] ALL UNCLEAR MARKED: Every ambiguity has [NEEDS CLARIFICATION]
+- [ ] NO TECH DETAILS: No API, DB, framework choices
+- [ ] PRIORITIES ASSIGNED: All stories have priorities
+- [ ] INDEPENDENT TEST: All stories have test criteria
+- [ ] MVP IDENTIFIED: P1 stories clearly marked
+```
+
+**planner 代理增强**:
+```markdown
+## ⚠️ CRITICAL: PHASE -1 GATES (Pre-Implementation)
+
+### Gate Enforcement Sequence
+1. Load PRD: Extract user stories, requirements, constraints
+2. Execute Phase -1 Gates: BEFORE designing architecture
+   - Simplicity Gate (Article VII)
+   - Anti-Abstraction Gate (Article VIII)
+   - Integration-First Gate (Article IX)
+3. Complexity Tracking: Document violations with justification
+4. Proceed ONLY if gates pass or violations justified
+
+### User Story Organization
+- Break tasks by USER STORY (not technical phases)
+- Mandatory [US#] labels (US1, US2, US3...)
+- Each story independently testable
+```
+
+##### Layer 3: 验证脚本 (Validation Scripts)
+
+**validate-scope-boundary.sh**:
+```bash
+# PRD 验证
+- [NEEDS CLARIFICATION] 标记是否已解决
+- 用户故事是否有优先级 (P1, P2, P3)
+- 用户故事是否有 Independent Test 标准
+- 是否包含技术实现细节 (API, database, framework)
+
+# EPIC 验证
+- Phase -1 闸门是否执行
+- Simplicity/Anti-Abstraction/Integration-First Gates
+- Complexity Tracking 表格是否填写
+
+# TASKS 验证
+- 任务是否按用户故事组织 (Phase 3+)
+- 任务是否有 [US#] 标签
+- 是否有 Foundational Phase
+- 是否有 Checkpoint 验证点
+```
+
+#### 使用方式
+
+**验证需求边界合规性**:
+```bash
+# 验证单个需求
+.claude/scripts/validate-scope-boundary.sh REQ-123
+
+# 验证所有需求
+.claude/scripts/validate-scope-boundary.sh --all
+
+# 严格模式 (失败则退出码1)
+.claude/scripts/validate-scope-boundary.sh REQ-123 --strict
+```
+
+**代理自动执行**:
+- prd-writer: 生成 PRD 前验证无推测、无技术细节
+- planner: 生成 EPIC 前执行 Phase -1 Gates
+- planner: 生成 TASKS 时强制按用户故事组织
+
+#### 关键原则
+
+1. **强制澄清 > 猜测**: AI 不能猜，必须标记 `[NEEDS CLARIFICATION]`
+2. **用户故事边界**: 每个故事独立可测试、独立交付
+3. **宪法闸门**: Phase -1 在设计前阻止过度复杂度
+4. **复杂度证明**: 任何违规都必须在 Complexity Tracking 表中证明
+5. **任务归属**: 所有任务必须有 [US#] 标签，明确属于哪个用户故事
+
+#### 防御效果
+
+| 反模式 | 传统AI行为 | 防御机制 | 效果 |
+|--------|-----------|---------|------|
+| Feature Creep | "登录需要双因素认证、社交登录..." | `[NEEDS CLARIFICATION]` 强制澄清 | 只实现明确要求 |
+| Premature Optimization | "需要缓存层、读写分离..." | Simplicity Gate (≤3 projects) | 拒绝未来优化 |
+| Abstraction Overload | "BaseController, ServiceLayer..." | Anti-Abstraction Gate | 直接用框架 |
+| Task Explosion | "1个功能→20个任务" | [US#] 标签 + 故事边界 | 任务明确归属 |
 
 ## 子代理架构
 
@@ -141,33 +277,186 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **错误处理**: 遵循脚本的退出码约定
 - **JSON 输出**: 支持 --json 标志用于程序化解析
 
-## Constitution 宪法体系
+## Constitution 宪法体系 (v2.0.0)
 
 ### 最高行为准则
-基于 GitHub spec-kit 理念建立的**不可变约束体系**，确保所有开发活动的质量、安全性和一致性：
+基于 GitHub spec-kit 理念建立的**不可变约束体系**，确保所有开发活动的质量、安全性和一致性。
 
-#### 五大核心原则
-1. **质量至上**: NO PARTIAL IMPLEMENTATION，完整实现或不实现
-2. **架构一致性**: NO CODE DUPLICATION，遵循现有模式和约定
-3. **安全优先**: NO HARDCODED SECRETS，安全考虑优先于功能
-4. **性能责任**: NO RESOURCE LEAKS，主动优化和资源管理
-5. **可维护性**: NO DEAD CODE，代码必须便于理解和修改
+**当前版本**: v2.0.0 (2025-01-10)
+**文档位置**: `.claude/constitution/project-constitution.md`
+**管理命令**: `/flow-constitution`
 
-#### 宪法文档结构
+### 十大宪法条款 (Article I-X)
+
+#### 核心原则 (Article I-V)
+1. **Article I - Quality First (质量至上)**
+   - I.1: Complete Implementation Mandate - 禁止部分实现
+   - I.2: Testing Mandate - 测试覆盖率 ≥80%
+   - I.3: No Simplification Clause - 禁止"暂时简化"
+   - I.4: Quality Gates - 类型检查、Linting、安全扫描
+
+2. **Article II - Architectural Consistency (架构一致性)**
+   - II.1: No Code Duplication - 禁止重复代码
+   - II.2: Consistent Naming - 遵循现有命名模式
+   - II.3: Anti-Over-Engineering - 禁止过度工程化
+   - II.4: Single Responsibility - 单一职责原则
+
+3. **Article III - Security First (安全优先)**
+   - III.1: No Hardcoded Secrets - 禁止硬编码密钥
+   - III.2: Input Validation - 所有外部输入必须验证
+   - III.3: Principle of Least Privilege - 最小权限原则
+   - III.4: Secure by Default - 默认安全配置
+
+4. **Article IV - Performance Accountability (性能责任)**
+   - IV.1: No Resource Leaks - 禁止资源泄露
+   - IV.2: Algorithm Efficiency - 算法效率优化
+   - IV.3: Lazy Loading - 按需加载
+   - IV.4: Caching Strategy - 智能缓存策略
+
+5. **Article V - Maintainability (可维护性)**
+   - V.1: No Dead Code - 禁止死代码
+   - V.2: Separation of Concerns - 关注点分离
+   - V.3: Documentation - 复杂逻辑必须有文档
+   - V.4: File Size Limits - 单文件≤500行，单函数≤50行
+
+#### 测试与设计原则 (Article VI-IX)
+6. **Article VI - Test-First Development (测试优先开发)**
+   - VI.1: TDD Mandate (NON-NEGOTIABLE) - 强制TDD顺序
+   - VI.2: Test Independence - 测试隔离
+   - VI.3: Meaningful Tests - 禁止"作弊测试"
+
+7. **Article VII - Simplicity Gate (简单性闸门)**
+   - VII.1: Project Count Limit - 最多3个项目/模块
+   - VII.2: No Future-Proofing - 禁止"未来预留"
+
+8. **Article VIII - Anti-Abstraction (反抽象)**
+   - VIII.1: Direct Framework Usage - 直接使用框架，禁止封装
+   - VIII.2: Single Model Representation - 单一数据模型
+
+9. **Article IX - Integration-First Testing (集成优先测试)**
+   - IX.1: Contract-First - 契约优先定义
+   - IX.2: Real Environment Testing - 使用真实环境测试
+
+#### 需求边界控制 (Article X)
+10. **Article X - Requirement Boundary (需求边界)** - **新增**
+    - X.1: Forced Clarification - 强制使用 [NEEDS CLARIFICATION] 标记
+    - X.2: No Speculative Features - 禁止推测性功能
+    - X.3: User Story Independence - 用户故事独立性和优先级
+
+### 四层强制执行机制
+
 ```text
-.claude/constitution/
-├── project-constitution.md      # 项目总宪法（五大原则）
-├── quality-gates.md            # 质量闸原则（5类质量检查）
-├── architecture-constraints.md  # 架构约束（6层架构+模块化）
-├── security-principles.md      # 安全原则（5个安全维度）
-└── README.md                   # 宪法体系说明
+Layer 1: Template Hard Constraints (模板硬约束)
+  ├─ PRD_TEMPLATE.md
+  │  ├─ Article I, III, X (质量、安全、需求边界)
+  │  └─ ANTI-EXPANSION RULES 强制执行
+  ├─ EPIC_TEMPLATE.md
+  │  ├─ Article I-V (核心原则)
+  │  ├─ Phase -1 Gates (Articles VII, VIII, IX)
+  │  └─ Complexity Tracking 复杂度追踪表
+  └─ TASKS_TEMPLATE.md
+     ├─ Article VI (TDD 强制执行)
+     └─ Article I-X 全覆盖检查
+
+Layer 2: Command-Level Enforcement (命令层执行)
+  ├─ /flow-constitution - Constitution 修订和传播
+  ├─ /flow-verify - 一致性验证
+  └─ 所有 /flow-* 命令都验证 Constitution 合规性
+
+Layer 3: Agent-Level Constraints (代理层约束)
+  ├─ prd-writer → 执行 Article I, III, X
+  ├─ planner → 执行 Article VII, VIII, IX (Phase -1 Gates)
+  ├─ dev-implementer → 执行 Article VI (TDD 顺序)
+  ├─ qa-tester → 执行 Article I, VI (质量和测试)
+  └─ security-reviewer → 执行 Article III (安全)
+
+Layer 4: Validation Scripts (验证脚本)
+  ├─ validate-constitution.sh - 自动化 Article I-X 检查
+  ├─ validate-scope-boundary.sh - Article X 专项验证
+  └─ pre-push-guard.sh - Git 推送前质量闸
 ```
 
-#### 集成方式
-- **0级规则**: Constitution 作为最高优先级规则
-- **工作流集成**: 每个 `/flow-new` 开始前进行宪法验证
-- **质量闸集成**: 所有质量检查都基于宪法标准
-- **代理约束**: 所有代理（主代理+子代理）都必须遵循宪法
+### Amendment Process (修正案流程)
+
+**版本语义化** (Semantic Versioning):
+- **MAJOR (1.0.0 → 2.0.0)**: 破坏性变更，删除/重命名 Article
+- **MINOR (2.0.0 → 2.1.0)**: 新增 Article，非破坏性增强
+- **PATCH (2.1.0 → 2.1.1)**: 修正错误，文档改进
+
+**修正案流程**:
+```bash
+# 1. 提议修正案
+/flow-constitution --amend --proposal amendments/add-new-article.md
+
+# 2. 影响分析 (自动调用 impact-analyzer)
+# 3. 兼容性检查 (自动调用 compatibility-checker)
+# 4. 社区讨论 (至少7天)
+
+# 5. 应用修正案
+/flow-constitution --apply --version MINOR
+
+# 6. 自动传播到所有模板、代理、脚本
+# 7. 生成 Amendment Sync Report
+# 8. 创建专门的 Git Commit
+```
+
+**一致性传播** (Consistency Propagation):
+- Constitution 修订后，自动更新所有引用文件
+- 包括: 模板、代理指令、验证脚本、钩子、主文档
+- 确保所有文件引用相同 Constitution 版本
+
+### 宪法文档结构
+
+```text
+.claude/constitution/
+└── project-constitution.md  # 统一宪法文档 (Article I-X)
+    ├─ Preamble (前言)
+    ├─ Article I-X (十大条款)
+    ├─ Immutable Constraints (不可变约束)
+    ├─ Constitutional Violations (违宪后果)
+    ├─ Amendment Process (修正案流程)
+    ├─ Four-Layer Defense System (四层防御体系)
+    ├─ Compliance Checklist (合规检查清单)
+    └─ Version History (版本历史)
+```
+
+### 集成方式
+
+- **最高优先级**: Constitution 优先级高于所有其他规则
+- **工作流集成**: 每个 `/flow-*` 阶段都验证 Constitution 合规性
+- **Entry/Exit Gates**: 每个阶段的入口和出口都有 Constitution 检查
+- **代理约束**: 所有代理（主代理+子代理）都必须遵循 Constitution
+- **验证命令**: `/flow-constitution --verify` 检查全局一致性
+
+### 合规性检查
+
+**命令行工具**:
+```bash
+# 自动化 Constitution 合规性检查
+bash .claude/scripts/validate-constitution.sh
+
+# Scope 边界合规性检查 (Article X)
+bash .claude/scripts/validate-scope-boundary.sh
+
+# 预推送质量闸
+bash .claude/hooks/pre-push-guard.sh
+
+# Constitution 一致性验证
+/flow-constitution --verify
+```
+
+**检查点**:
+- **代码提交前**: validate-constitution.sh (Articles I-V)
+- **PRD生成后**: Article I, III, X 验证
+- **Epic生成后**: Phase -1 Gates (Articles VII, VIII, IX)
+- **开发执行中**: Article VI (TDD顺序) 强制执行
+- **QA阶段**: Article I, VI (质量和测试覆盖)
+- **发布前**: 全面 Constitution 复审
+
+### Version History
+
+- **v2.0.0 (2025-01-10)**: Article 编号体系，Phase -1 Gates，需求边界控制，四层执行机制
+- **v1.0.0 (2025-01-20)**: 初始版本，五大核心原则
 
 ## Intent-driven 增强能力
 

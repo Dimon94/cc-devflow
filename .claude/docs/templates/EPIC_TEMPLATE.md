@@ -49,12 +49,14 @@
    → Performance benchmarks
    → Documentation requirements
 
-7. Constitution Check
-   → NO PARTIAL IMPLEMENTATION: Scope complete?
-   → NO CODE DUPLICATION: Reusing existing components?
-   → NO OVER-ENGINEERING: Appropriately scaled solution?
-   → NO HARDCODED SECRETS: Secret management planned?
-   → Document violations with justification
+7. Constitution Check (验证 Article I-V 核心原则)
+   → Article I - Quality First: Scope complete? No partial implementation?
+   → Article II - Architectural Consistency: Reusing existing components? No duplication?
+   → Article II - Anti-Over-Engineering: Appropriately scaled solution?
+   → Article III - Security First: Secret management planned? No hardcoded secrets?
+   → Article IV - Performance: Resource management considered?
+   → Article V - Maintainability: Clear separation of concerns?
+   → Document violations with justification in Complexity Tracking table
 
 8. Plan rollout strategy
    → Deployment approach (blue-green, canary, rolling)
@@ -128,6 +130,69 @@
 - **Epic 目标**: {{EPIC_OBJECTIVE_3}}
 - **实现阶段**: Phase {{PHASE_NUMBER}}
 - **优先级**: {{HIGH|MEDIUM|LOW}}
+
+---
+
+## Phase -1: 宪法闸门检查 (Pre-Implementation Gates) ⚠️
+
+<!--
+  ======================================================================
+  CRITICAL: 这些闸门必须在技术方案设计前通过
+  任何违规都必须在 Complexity Tracking 表中证明和记录
+  ======================================================================
+-->
+
+### Simplicity Gate (简单性闸门) - Constitution Article VII
+
+- [ ] **项目数量**: 使用 ≤3 个项目/模块？
+  - 如果 >3: 必须在 Complexity Tracking 中证明必要性
+
+- [ ] **NO FUTURE-PROOFING**: 没有为"未来可能需要"的功能做准备？
+  - ❌ 禁止: "预留接口"、"扩展点"、"通用框架"
+  - ✅ 允许: 只实现当前需求的最简单方案
+
+- [ ] **Minimal Dependencies**: 只使用必需的依赖库？
+  - 检查每个依赖: 是当前需求必需还是"可能有用"
+
+### Anti-Abstraction Gate (反抽象闸门) - Constitution Article VIII
+
+- [ ] **Framework Trust**: 直接使用框架功能，没有封装？
+  - ❌ 禁止: BaseController, ServiceLayer, Repository Pattern
+  - ✅ 允许: 直接使用 FastAPI, Express, Flask 等
+
+- [ ] **Single Model Representation**: 实体只有一种数据表示？
+  - ❌ 禁止: DTO ↔ Entity ↔ ViewModel 多层转换
+  - ✅ 允许: 单一数据模型贯穿各层
+
+- [ ] **No Unnecessary Interfaces**: 没有单一实现的接口？
+  - ❌ 禁止: 只有一个实现类的 IUserService 接口
+  - ✅ 允许: 有多个实现时才抽象接口
+
+### Integration-First Gate (集成优先闸门) - Constitution Article IX
+
+- [ ] **Contracts Defined First**: API contracts 在实现前定义？
+  - 必须: 定义 OpenAPI/Swagger 规范或类似契约
+
+- [ ] **Contract Tests Planned**: Contract tests 在 Phase 2 计划？
+  - 必须: 每个 endpoint 都有对应的 contract test
+
+- [ ] **Real Environment**: 使用真实数据库而非 mocks？
+  - ✅ 优先: PostgreSQL testcontainer, SQLite in-memory
+  - ⚠️ 谨慎: Mocks 仅用于外部服务
+
+### Complexity Tracking (复杂度追踪表)
+
+*仅在违反上述闸门时填写*
+
+| 违规项 | 为何需要 | 更简单方案为何不够 | 缓解措施 |
+|--------|---------|-------------------|----------|
+| {{VIOLATION}} | {{JUSTIFICATION}} | {{WHY_SIMPLE_NOT_ENOUGH}} | {{MITIGATION}} |
+
+**示例**:
+| 违规项 | 为何需要 | 更简单方案为何不够 | 缓解措施 |
+|--------|---------|-------------------|----------|
+| 4个项目 | 前端、后端、移动端、管理后台 | 3个项目无法满足多端需求 | 管理后台复用前端组件库 |
+| Repository Pattern | 需要支持 PostgreSQL 和 MongoDB | 直接使用 ORM 会导致业务逻辑耦合数据库 | 只抽象数据访问层，不做过度封装 |
 
 ---
 
@@ -386,44 +451,67 @@ User ─(1:N)─ Post ─(1:N)─ Comment
 
 *GATE: 必须在任务生成前通过*
 
-### 质量原则
-- [ ] **NO PARTIAL IMPLEMENTATION**: Epic 范围完整且明确？
-- [ ] **NO SIMPLIFICATION**: 避免简化占位符？
-- [ ] TDD 流程明确定义？
-- [ ] 所有验收标准可测试？
+**Reference**: `.claude/constitution/project-constitution.md` (v2.0.0)
 
-### 架构原则
-- [ ] **NO CODE DUPLICATION**: 识别可复用组件？
-- [ ] **NO OVER-ENGINEERING**: 架构适合问题规模？
-- [ ] **NO INCONSISTENT NAMING**: 命名约定统一？
-- [ ] **NO MIXED CONCERNS**: 关注点正确分离？
-- [ ] 清晰的模块边界？
+### Article I: Quality First (质量至上)
+- [ ] **I.1 - NO PARTIAL IMPLEMENTATION**: Epic 范围完整且明确？无占位符？
+- [ ] **I.2 - Testing Mandate**: TDD 流程明确定义？测试覆盖率 ≥80%？
+- [ ] **I.3 - No Simplification**: 避免"暂时简化"的做法？
+- [ ] **I.4 - Quality Gates**: 所有验收标准可测试且明确？
 
-### 安全原则
-- [ ] **NO HARDCODED SECRETS**: 密钥管理方案明确？
-- [ ] 认证/授权机制设计完整？
-- [ ] 输入验证策略定义？
-- [ ] 数据加密方案明确？
-- [ ] 审计日志设计？
+### Article II: Architectural Consistency (架构一致性)
+- [ ] **II.1 - NO CODE DUPLICATION**: 识别并计划复用现有组件？
+- [ ] **II.2 - Consistent Naming**: 命名约定遵循现有代码库模式？
+- [ ] **II.3 - Anti-Over-Engineering**: 架构适合问题规模？无过度设计？
+- [ ] **II.4 - Single Responsibility**: 关注点正确分离？模块边界清晰？
 
-### 性能原则
-- [ ] **NO RESOURCE LEAKS**: 资源管理考虑？
-- [ ] 性能基准明确？
-- [ ] 监控指标定义？
-- [ ] 优化策略规划？
+### Article III: Security First (安全优先)
+- [ ] **III.1 - NO HARDCODED SECRETS**: 密钥管理方案明确（环境变量/密钥服务）？
+- [ ] **III.2 - Input Validation**: 输入验证策略定义？
+- [ ] **III.3 - Least Privilege**: 认证/授权机制设计完整？
+- [ ] **III.4 - Secure by Default**: 数据加密方案明确？审计日志设计？
 
-### 可维护性原则
-- [ ] **NO DEAD CODE**: 避免不必要功能？
-- [ ] 代码组织清晰？
-- [ ] 文档完整？
-- [ ] 测试覆盖充分？
+### Article IV: Performance Accountability (性能责任)
+- [ ] **IV.1 - NO RESOURCE LEAKS**: 资源管理考虑（连接池、文件句柄等）？
+- [ ] **IV.2 - Algorithm Efficiency**: 性能基准明确？算法复杂度合理？
+- [ ] **IV.3 - Lazy Loading**: 按需加载策略规划？
+- [ ] **IV.4 - Caching Strategy**: 监控指标和缓存策略定义？
 
-### 违规与理由
+### Article V: Maintainability (可维护性)
+- [ ] **V.1 - NO DEAD CODE**: 避免不必要功能？无冗余代码？
+- [ ] **V.2 - Separation of Concerns**: 代码组织清晰？层次分离明确？
+- [ ] **V.3 - Documentation**: 文档完整（架构、API、配置）？
+- [ ] **V.4 - File Size Limits**: 单文件 ≤500行？单函数 ≤50行？
+
+### Article VI: Test-First Development (测试优先开发)
+- [ ] **VI.1 - TDD Mandate**: Phase 2 测试优先顺序强制执行？
+- [ ] **VI.2 - Test Independence**: 测试隔离策略定义？
+- [ ] **VI.3 - Meaningful Tests**: 测试质量标准明确（真实场景、错误处理）？
+
+### Article VII-IX: Phase -1 Gates (已在上方检查)
+- [ ] **Article VII - Simplicity Gate**: ≤3 个项目/模块？无未来预留？
+- [ ] **Article VIII - Anti-Abstraction Gate**: 直接使用框架？无过度封装？
+- [ ] **Article IX - Integration-First Gate**: Contracts 优先？真实环境测试？
+
+### Article X: Requirement Boundary (需求边界)
+- [ ] **X.1 - Forced Clarification**: 所有不明确之处已标记 [NEEDS CLARIFICATION]？
+- [ ] **X.2 - No Speculative Features**: 无推测性功能？仅实现明确需求？
+- [ ] **X.3 - User Story Independence**: 每个故事独立可测试？优先级明确？
+
+### Constitutional Violations (宪法违规记录)
 *仅在有需要说明的宪法违规时填写*
 
-| 违规项 | 为何需要 | 如何缓解 |
-|--------|---------|----------|
-| {{VIOLATION}} | {{JUSTIFICATION}} | {{MITIGATION}} |
+**重要**: 任何违规都必须有充分理由和缓解措施，否则 EPIC 不通过
+
+| 违规的 Article | 具体违规内容 | 为何必须违规 | 缓解措施 | 责任人 |
+|----------------|-------------|-------------|----------|--------|
+| {{ARTICLE_NUM}} | {{VIOLATION_DETAIL}} | {{JUSTIFICATION}} | {{MITIGATION}} | {{OWNER}} |
+
+**示例**:
+| 违规的 Article | 具体违规内容 | 为何必须违规 | 缓解措施 | 责任人 |
+|----------------|-------------|-------------|----------|--------|
+| Article VII.1 | 使用4个项目（超过3个限制） | 需要支持Web、iOS、Android、Admin四端 | Admin复用Web组件库，减少重复代码 | Tech Lead |
+| Article VIII.1 | 引入 Repository Pattern | 需要同时支持 PostgreSQL 和 MongoDB | 仅抽象数据访问层，不做过度封装 | Backend Lead |
 
 ---
 
