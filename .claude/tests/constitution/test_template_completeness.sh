@@ -41,7 +41,7 @@ test_tasks_template_has_constitution_alignment() {
     local template="$REPO_ROOT/.claude/docs/templates/TASKS_TEMPLATE.md"
 
     assert_file_exists "$template" "TASKS_TEMPLATE.md should exist"
-    assert_file_contains "$template" "Constitution Alignment\|Constitution Compliance" "TASKS template should have Constitution section"
+    assert_file_contains "$template" "Constitution Alignment|Constitution Compliance" "TASKS template should have Constitution section"
     assert_file_contains "$template" ".claude/constitution/project-constitution.md" "TASKS template should reference Constitution file"
 }
 
@@ -58,7 +58,7 @@ test_epic_template_has_phase_minus_one_gates() {
     local template="$REPO_ROOT/.claude/docs/templates/EPIC_TEMPLATE.md"
 
     # EPIC 应该有 Phase -1 Gates
-    assert_file_contains "$template" "Phase -1.*Gate\|Phase -1.*Constitutional" "EPIC template should have Phase -1 Gates"
+    assert_file_contains "$template" "Phase -1.*Gate|Phase -1.*Constitutional" "EPIC template should have Phase -1 Gates"
     assert_file_contains "$template" "Article VII" "EPIC template should reference Article VII (Simplicity Gate)"
     assert_file_contains "$template" "Article VIII" "EPIC template should reference Article VIII (Anti-Abstraction)"
     assert_file_contains "$template" "Article IX" "EPIC template should reference Article IX (Integration-First)"
@@ -69,7 +69,7 @@ test_tasks_template_has_tdd_enforcement() {
 
     # TASKS 应该强制执行 TDD (Article VI)
     assert_file_contains "$template" "Article VI" "TASKS template should reference Article VI (TDD)"
-    assert_file_contains "$template" "Test.*First\|TDD" "TASKS template should mention Test-First or TDD"
+    assert_file_contains "$template" "Test.*First|TDD" "TASKS template should mention Test-First or TDD"
 }
 
 test_epic_template_has_complexity_tracking() {
@@ -77,7 +77,7 @@ test_epic_template_has_complexity_tracking() {
 
     # EPIC 应该有 Complexity Tracking 表格
     assert_file_contains "$template" "Complexity Tracking" "EPIC template should have Complexity Tracking section"
-    assert_file_contains "$template" "Constitutional Violations\|违规" "EPIC template should have violations table"
+    assert_file_contains "$template" "Constitutional Violations|违规" "EPIC template should have violations table"
 }
 
 test_all_templates_reference_current_version() {
@@ -91,8 +91,11 @@ test_all_templates_reference_current_version() {
 
     for template in "${templates[@]}"; do
         if grep -q "Constitution.*v" "$template"; then
-            local template_version=$(grep -o "Constitution.*v[0-9.]*" "$template" | head -1 | sed 's/.*v\([0-9.]*\).*/\1/')
-            assert_equals "$template_version" "$constitution_version" "$(basename "$template") should reference v$constitution_version"
+            # 使用精确的版本号匹配（v数字.数字.数字）
+            local template_version=$(grep -o "Constitution.*v[0-9]\+\.[0-9]\+\.[0-9]\+" "$template" | head -1 | grep -o "v[0-9]\+\.[0-9]\+\.[0-9]\+" | sed 's/v//')
+            if [[ -n "$template_version" ]]; then
+                assert_equals "$template_version" "$constitution_version" "$(basename "$template") should reference v$constitution_version"
+            fi
         fi
     done
 }
@@ -105,9 +108,9 @@ test_templates_have_validation_checklists() {
 
     for template in "${templates[@]}"; do
         # 检查是否有 checklist 格式的 Constitution checks
-        if grep -q "Constitution Check\|Constitution Compliance" "$template"; then
-            # 使用 grep -c 并确保结果是单行数字
-            local checklist_count=$(grep -c "^- \[ \].*Article" "$template" 2>/dev/null || echo "0")
+        if grep -qE "Constitution Check|Constitution Compliance" "$template"; then
+            # 检查是否有 Article 相关的 checklist（罗马数字格式: I., II., III. 等）
+            local checklist_count=$(grep -cE "^- \[ \] \*\*(I{1,3}|IV|V|VI{0,3}|IX|X)\." "$template" 2>/dev/null || echo "0")
             # 去除可能的空白字符和换行
             checklist_count=$(echo "$checklist_count" | tr -d ' \n\r')
             assert_gt "$checklist_count" "0" "$(basename "$template") should have Article checklist items"

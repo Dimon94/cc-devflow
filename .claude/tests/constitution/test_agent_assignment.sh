@@ -92,7 +92,7 @@ test_security_reviewer_checks_hardcoded_secrets() {
     # security-reviewer 应该明确检查 NO HARDCODED SECRETS (Article III.1)
     local agent="$REPO_ROOT/.claude/agents/security-reviewer.md"
 
-    assert_file_contains "$agent" "NO HARDCODED SECRETS\|Article III.1" "security-reviewer should check for hardcoded secrets"
+    assert_file_contains "$agent" "NO HARDCODED SECRETS|Article III.1" "security-reviewer should check for hardcoded secrets"
 }
 
 test_all_agents_reference_constitution() {
@@ -151,8 +151,11 @@ test_agents_reference_current_version() {
 
     for agent in "${agents[@]}"; do
         if grep -q "Constitution.*v" "$agent"; then
-            local agent_version=$(grep -o "Constitution.*v[0-9.]*" "$agent" | head -1 | sed 's/.*v\([0-9.]*\).*/\1/')
-            assert_equals "$agent_version" "$constitution_version" "$(basename "$agent") should reference v$constitution_version"
+            # 使用精确的版本号匹配（v数字.数字.数字）
+            local agent_version=$(grep -o "Constitution.*v[0-9]\+\.[0-9]\+\.[0-9]\+" "$agent" | head -1 | grep -o "v[0-9]\+\.[0-9]\+\.[0-9]\+" | sed 's/v//')
+            if [[ -n "$agent_version" ]]; then
+                assert_equals "$agent_version" "$constitution_version" "$(basename "$agent") should reference v$constitution_version"
+            fi
         fi
     done
 }

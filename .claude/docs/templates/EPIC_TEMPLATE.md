@@ -447,6 +447,65 @@ User ─(1:N)─ Post ─(1:N)─ Comment
 
 ---
 
+## Phase -1 Constitutional Gates (宪法前置闸)
+
+**Critical**: 这些闸门必须在架构设计之前通过，防止过度设计和复杂性蔓延
+
+**Reference**: `.claude/constitution/project-constitution.md` (v2.0.0)
+
+### Gate 1: Simplicity Gate (Article VII)
+**原则**: ≤3 Projects/Modules, No Future-Proofing
+
+**检查项**:
+- [ ] **项目数量限制**: 本Epic产生的独立项目/模块 ≤3 个？
+- [ ] **无未来预留**: 无"未来可能需要"的抽象层或接口？
+- [ ] **最小可行方案**: 选择最简单的可工作方案（不是最灵活）？
+- [ ] **直接实现**: 优先直接实现而非通用框架？
+
+**违规示例**:
+- ❌ "设计一个插件系统，未来可以..."
+- ❌ "创建一个通用的数据访问层支持多种数据库"
+- ✅ "直接使用 PostgreSQL 实现用户存储"
+
+### Gate 2: Anti-Abstraction Gate (Article VIII)
+**原则**: Direct Framework Usage, No Extra Wrappers
+
+**检查项**:
+- [ ] **直接使用框架**: 直接使用 Express/Next.js/Django 等，无自定义封装？
+- [ ] **避免工厂模式**: 无不必要的 Factory/Builder/Abstract Factory？
+- [ ] **避免中间件层**: 无自定义中间件层（除非有明确性能需求）？
+- [ ] **拒绝过度抽象**: 具体实现优先于抽象接口？
+
+**违规示例**:
+- ❌ "创建 DatabaseFactory 支持切换 MySQL/PostgreSQL/MongoDB"
+- ❌ "封装 Express 为 CustomHttpServer 类"
+- ✅ "使用 express.Router() 直接定义路由"
+
+### Gate 3: Integration-First Gate (Article IX)
+**原则**: Contracts First, Test in Real Environment
+
+**检查项**:
+- [ ] **Contract 优先**: API Contract/Schema 在实现前定义？
+- [ ] **真实环境测试**: 集成测试使用真实数据库/服务（Docker）？
+- [ ] **端到端优先**: E2E 测试优先于单元测试（先验证整体流程）？
+- [ ] **避免 Mock**: 最小化 Mock 使用，优先真实依赖？
+
+**违规示例**:
+- ❌ "先实现功能，后面再定义 API"
+- ❌ "集成测试全部 Mock 外部依赖"
+- ✅ "先定义 OpenAPI Schema，再实现 handlers"
+
+### Phase -1 Gate 决策记录
+*必填*: 记录 Phase -1 Gates 的通过情况和任何例外
+
+| Gate | Status | 决策 | 理由（如有例外） |
+|------|--------|------|------------------|
+| Simplicity Gate (VII) | ✅/❌ | {{DECISION}} | {{JUSTIFICATION}} |
+| Anti-Abstraction Gate (VIII) | ✅/❌ | {{DECISION}} | {{JUSTIFICATION}} |
+| Integration-First Gate (IX) | ✅/❌ | {{DECISION}} | {{JUSTIFICATION}} |
+
+---
+
 ## Constitution Check (宪法符合性检查)
 
 *GATE: 必须在任务生成前通过*
