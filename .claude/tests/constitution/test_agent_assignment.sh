@@ -114,6 +114,12 @@ test_all_agents_reference_constitution() {
         "release-manager.md"
     )
 
+    # 检查数组是否为空（安全处理）
+    if [[ ${#agents_without_constitution[@]} -eq 0 ]]; then
+        # 所有代理都引用了 Constitution，测试通过
+        return 0
+    fi
+
     for agent_name in "${agents_without_constitution[@]}"; do
         local is_allowed=false
         for allowed in "${allowed_without[@]}"; do
@@ -129,7 +135,8 @@ test_all_agents_reference_constitution() {
         fi
     done
 
-    assert_success "All required agents reference Constitution"
+    # 所有未引用 Constitution 的代理都在允许列表中
+    return 0
 }
 
 test_agents_reference_current_version() {

@@ -106,7 +106,10 @@ test_templates_have_validation_checklists() {
     for template in "${templates[@]}"; do
         # 检查是否有 checklist 格式的 Constitution checks
         if grep -q "Constitution Check\|Constitution Compliance" "$template"; then
-            local checklist_count=$(grep -c "^- \[ \].*Article" "$template" || echo "0")
+            # 使用 grep -c 并确保结果是单行数字
+            local checklist_count=$(grep -c "^- \[ \].*Article" "$template" 2>/dev/null || echo "0")
+            # 去除可能的空白字符和换行
+            checklist_count=$(echo "$checklist_count" | tr -d ' \n\r')
             assert_gt "$checklist_count" "0" "$(basename "$template") should have Article checklist items"
         fi
     done
@@ -115,15 +118,16 @@ test_templates_have_validation_checklists() {
 test_no_orphaned_old_templates() {
     # 检查是否有旧版模板文件（如 v2.1.1 的 TASKS_TEMPLATE_OLD.md）
     local templates_dir="$REPO_ROOT/.claude/docs/templates"
-    local old_templates=$(find "$templates_dir" -name "*_OLD.md" -o -name "*_old.md" -o -name "*.backup.md" 2>/dev/null || true)
+    local old_templates=$(find "$templates_dir" -name "*_OLD.md" -o -name "*_old.md" -o -name "*.backup.md" 2>/dev/null || echo "")
 
     if [[ -n "$old_templates" ]]; then
         log_warning "Found old template files: $old_templates"
         log_warning "Consider cleaning up old templates to avoid version confusion"
+        return 1
     fi
 
-    # 这不是失败条件，只是警告
-    assert_success "Old template check completed"
+    # 如果没有旧模板，测试通过
+    return 0
 }
 
 # ============================================================================

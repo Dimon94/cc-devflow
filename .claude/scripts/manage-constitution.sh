@@ -398,8 +398,8 @@ verify_consistency() {
 
                 # 检查文件是否包含 Constitution 版本引用
                 if grep -q "Constitution\|project-constitution.md" "$file"; then
-                    # 提取文件中的版本号
-                    local file_version=$(grep -o "Constitution.*v[0-9.]*\|project-constitution.md.*v[0-9.]*" "$file" | head -1 | grep -o "v[0-9.]*" | sed 's/v//')
+                    # 提取文件中的版本号 (精确匹配 "v数字.数字.数字" 格式)
+                    local file_version=$(grep -o "Constitution.*v[0-9]\+\.[0-9]\+\.[0-9]\+\|project-constitution.md.*v[0-9]\+\.[0-9]\+\.[0-9]\+" "$file" | head -1 | grep -o "v[0-9]\+\.[0-9]\+\.[0-9]\+" | sed 's/v//')
 
                     if [[ -n "$file_version" ]]; then
                         if [[ "$file_version" == "$constitution_version" ]]; then

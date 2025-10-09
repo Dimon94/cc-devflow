@@ -143,11 +143,15 @@ if $REQUIRE_EPIC && [[ ! -f "$EPIC_FILE" ]]; then
     exit 1
 fi
 
-# Check for tasks/ if required
-if $REQUIRE_TASKS && [[ ! -d "$TASKS_DIR" || -z "$(ls -A "$TASKS_DIR" 2>/dev/null)" ]]; then
-    echo "ERROR: tasks/ directory not found or empty in $REQ_DIR" >&2
-    echo "Run planner agent first to create the task breakdown." >&2
-    exit 1
+# Check for tasks/ or TASKS.md if required
+# Support both tasks/ directory (old format) and TASKS.md file (new format)
+if $REQUIRE_TASKS; then
+    TASKS_FILE="$REQ_DIR/TASKS.md"
+    if [[ ! -d "$TASKS_DIR" || -z "$(ls -A "$TASKS_DIR" 2>/dev/null)" ]] && [[ ! -f "$TASKS_FILE" ]]; then
+        echo "ERROR: Neither tasks/ directory nor TASKS.md file found in $REQ_DIR" >&2
+        echo "Run planner agent first to create the task breakdown." >&2
+        exit 1
+    fi
 fi
 
 # Build list of available documents
@@ -162,9 +166,15 @@ docs=()
 [[ -f "$RELEASE_PLAN_FILE" ]] && docs+=("RELEASE_PLAN.md")
 [[ -f "$LOG_FILE" ]] && docs+=("EXECUTION_LOG.md")
 
-# Include tasks/ if requested and it exists
-if $INCLUDE_TASKS && [[ -d "$TASKS_DIR" && -n "$(ls -A "$TASKS_DIR" 2>/dev/null)" ]]; then
-    docs+=("tasks/")
+# Include tasks/ or TASKS.md if requested and it exists
+# Support both tasks/ directory (old format) and TASKS.md file (new format)
+if $INCLUDE_TASKS; then
+    TASKS_FILE="$REQ_DIR/TASKS.md"
+    if [[ -d "$TASKS_DIR" && -n "$(ls -A "$TASKS_DIR" 2>/dev/null)" ]]; then
+        docs+=("tasks/")
+    elif [[ -f "$TASKS_FILE" ]]; then
+        docs+=("TASKS.md")
+    fi
 fi
 
 # For BUG type, check BUG-specific files
@@ -205,7 +215,13 @@ else
     check_file "$LOG_FILE" "EXECUTION_LOG.md"
 
     if $INCLUDE_TASKS; then
-        check_dir "$TASKS_DIR" "tasks/"
+        TASKS_FILE="$REQ_DIR/TASKS.md"
+        # Check for tasks/ directory first, fallback to TASKS.md
+        if [[ -d "$TASKS_DIR" && -n "$(ls -A "$TASKS_DIR" 2>/dev/null)" ]]; then
+            check_dir "$TASKS_DIR" "tasks/"
+        else
+            check_file "$TASKS_FILE" "TASKS.md"
+        fi
     fi
 
     # BUG-specific files

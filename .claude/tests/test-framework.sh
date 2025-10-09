@@ -681,11 +681,46 @@ generate_coverage_report() {
 }
 
 # ============================================================================
+# 日志函数 (用于测试输出)
+# ============================================================================
+
+# 成功日志
+log_success() {
+    local message="$1"
+    if [[ "$QUIET" != "true" ]]; then
+        echo -e "${GREEN}✓${NC} $message"
+    fi
+}
+
+# 错误日志
+log_error() {
+    local message="$1"
+    echo -e "${RED}✗${NC} $message" >&2
+}
+
+# 警告日志
+log_warning() {
+    local message="$1"
+    if [[ "$QUIET" != "true" ]]; then
+        echo -e "${YELLOW}⚠${NC} $message"
+    fi
+}
+
+# 信息日志
+log_info() {
+    local message="$1"
+    if [[ "$QUIET" != "true" ]]; then
+        echo -e "${BLUE}ℹ${NC} $message"
+    fi
+}
+
+# ============================================================================
 # 导出函数
 # ============================================================================
 
 # 使函数可用于调用此框架的脚本
 export -f test_start test_pass test_fail
+export -f log_success log_error log_warning log_info
 export -f assert_equals assert_not_equals assert_contains assert_not_contains
 export -f assert_file_exists assert_file_not_exists
 export -f assert_dir_exists assert_dir_not_exists

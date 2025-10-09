@@ -96,11 +96,11 @@ test_claude_md_references_current_version() {
     fi
 }
 
-test_validate_constitution_script_consistency() {
-    local script="$REPO_ROOT/.claude/scripts/validate-constitution.sh"
+test_manage_constitution_script_consistency() {
+    local script="$REPO_ROOT/.claude/scripts/manage-constitution.sh"
 
-    assert_file_exists "$script" "validate-constitution.sh should exist"
-    assert_file_executable "$script" "validate-constitution.sh should be executable"
+    assert_file_exists "$script" "manage-constitution.sh should exist"
+    assert_file_executable "$script" "manage-constitution.sh should be executable"
 
     # 运行脚本的 verify 命令（可能会失败，但应该返回有意义的输出）
     local output=$(bash "$script" verify 2>&1 || true)
@@ -117,4 +117,4 @@ run_tests \
     test_all_templates_reference_same_version \
     test_all_agents_reference_same_version \
     test_claude_md_references_current_version \
-    test_validate_constitution_script_consistency
+    test_manage_constitution_script_consistency
