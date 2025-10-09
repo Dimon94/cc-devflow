@@ -21,7 +21,10 @@ A comprehensive development workflow system built on Claude Code's official sub-
 - **⚡ Auto Progress Updates**: Intelligent progress detection based on code changes and Git commits
 - **🔍 Consistency Verification**: Enterprise-grade consistency checking with intelligent conflict detection and auto-fix suggestions
 - **🧪 TDD Enforced**: Strict Test-Driven Development with TEST VERIFICATION CHECKPOINT
-- **📜 Constitution Compliance**: All stages enforce Constitution principles (NO PARTIAL IMPLEMENTATION, NO CODE DUPLICATION, etc.)
+- **📜 Constitution System v2.0.0**: 10 Articles governing quality, security, and architecture (100% test coverage)
+  - **Phase -1 Constitutional Gates**: Pre-implementation gates preventing over-engineering
+  - **Automated Compliance**: Constitution checks at every workflow stage
+  - **Amendment Process**: Formal versioning and change management with auto-propagation
 - **🛠️ Unified Script Infrastructure**: All agents and commands use standardized `.claude/scripts/` interface
 
 ## 🚀 Quick Start
@@ -205,6 +208,7 @@ devflow/requirements/${REQ-ID}/
 | `/flow-status` | Query development progress | `/flow-status [REQ-ID] [--detailed]` |
 | `/flow-restart` | Resume interrupted development | `/flow-restart "REQ-ID" [--from=STAGE]` |
 | `/flow-verify` | Verify consistency across documents | `/flow-verify "REQ-ID" [--detailed] [--fix-auto]` |
+| `/flow-constitution` | Manage Constitution compliance | `/flow-constitution [--verify] [--article ARTICLE]` |
 
 ### Status Query Options
 ```bash
@@ -222,6 +226,21 @@ devflow/requirements/${REQ-ID}/
 /flow-restart "REQ-123" --from=development # Restart from development
 /flow-restart "REQ-123" --force --backup   # Force restart with backup
 ```
+
+### Constitution Management
+```bash
+/flow-constitution                         # Show Constitution overview
+/flow-constitution --verify                # Verify consistency across all files
+/flow-constitution --article I             # Show specific Article details
+/flow-constitution --amend --proposal FILE # Propose Constitution amendment
+/flow-constitution --apply --version PATCH # Apply and propagate changes
+```
+
+**Constitution v2.0.0 Features**:
+- **10 Articles**: From Quality First to Requirement Boundary
+- **Phase -1 Gates**: Simplicity, Anti-Abstraction, Integration-First
+- **Auto-propagation**: Changes sync to all templates, agents, and docs
+- **Test Coverage**: 100% (38/38 tests passed)
 
 ## ⚙️ Configuration
 
@@ -311,9 +330,9 @@ cc-devflow follows a comprehensive rules system ensuring consistency and quality
 
 ## 🧪 Testing Framework
 
-cc-devflow includes a comprehensive testing framework with **100% test coverage** across all critical scripts.
+cc-devflow includes a comprehensive testing framework with **100% test coverage** across all critical scripts and Constitution compliance.
 
-### Test Suites (8/8 Passed)
+### Script Test Suites (8/8 Passed - 100%)
 
 | Test Suite | Test Cases | Coverage | Status |
 |------------|------------|----------|--------|
@@ -326,14 +345,29 @@ cc-devflow includes a comprehensive testing framework with **100% test coverage*
 | `test_setup_epic` | 13 | Epic initialization | ✅ 100% |
 | `test_validate_constitution` | 4 | Constitution checks | ✅ 100% |
 
+### Constitution Test Suites (4/4 Passed - 100%) 🎉
+
+| Test Suite | Test Cases | Focus Area | Status |
+|------------|------------|------------|--------|
+| `test_version_consistency` | 5 | Constitution v2.0.0 alignment across files | ✅ 100% |
+| `test_article_coverage` | 10 | All 10 Articles have enforcement points | ✅ 100% |
+| `test_template_completeness` | 10 | Templates contain required Constitution sections | ✅ 100% |
+| `test_agent_assignment` | 13 | Agents enforce assigned Articles correctly | ✅ 100% |
+
+**Total Constitution Coverage**: 38/38 tests passed ✅
+
 ### Running Tests
 
 ```bash
-# Run all test suites
+# Run all script test suites
 bash .claude/tests/run-all-tests.sh --scripts
+
+# Run Constitution test suites
+bash .claude/tests/constitution/run_all_constitution_tests.sh
 
 # Run specific test suite
 bash .claude/tests/scripts/test_check_prerequisites.sh
+bash .claude/tests/constitution/test_version_consistency.sh
 
 # Run with verbose output
 VERBOSE=true bash .claude/tests/run-all-tests.sh --scripts
