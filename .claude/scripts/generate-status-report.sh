@@ -232,7 +232,7 @@ output_text() {
     echo -e "${BOLD}${CYAN}          CC-DevFlow 需求开发状态报告${NC}"
     echo -e "${BOLD}${CYAN}═══════════════════════════════════════════════════════════════${NC}"
     echo ""
-    echo -e "生成时间: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo -e "生成时间: $(get_beijing_time_full)"
     echo -e "需求总数: ${BOLD}$total${NC}"
     echo ""
 
@@ -325,7 +325,7 @@ output_markdown() {
 
     echo "# CC-DevFlow 需求开发状态报告"
     echo ""
-    echo "**生成时间**: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo "**生成时间**: $(get_beijing_time_full)"
     echo ""
     echo "**需求总数**: $total"
     echo ""
@@ -424,7 +424,7 @@ output_json() {
     local requirements=("$@")
 
     echo "{"
-    echo "  \"generated_at\": \"$(date -u '+%Y-%m-%dT%H:%M:%SZ')\","
+    echo "  \"generated_at\": \"$(get_beijing_time_iso)\","
     echo "  \"total_requirements\": ${#requirements[@]},"
     echo "  \"requirements\": ["
 

@@ -2,6 +2,29 @@
 # Common functions and variables for cc-devflow scripts
 # Based on spec-kit principles with cc-devflow enhancements
 
+# =============================================================================
+# Beijing Time Functions (统一北京时间格式)
+# =============================================================================
+
+# Get current Beijing time in standard format (YYYY-MM-DD HH:MM:SS)
+# Returns: 2025-01-10 14:30:25 (周五)
+get_beijing_time() {
+    # Convert UTC to Beijing time (UTC+8)
+    TZ='Asia/Shanghai' date '+%Y-%m-%d %H:%M:%S (%a)'
+}
+
+# Get Beijing time in ISO format (for JSON/log files)
+# Returns: 2025-01-10T14:30:25+08:00
+get_beijing_time_iso() {
+    TZ='Asia/Shanghai' date '+%Y-%m-%dT%H:%M:%S+08:00'
+}
+
+# Get Beijing time with Chinese day of week
+# Returns: 2025年1月10日 星期五 14:30:25
+get_beijing_time_full() {
+    TZ='Asia/Shanghai' date '+%Y年%m月%d日 星期%u %H:%M:%S' | sed 's/星期1/星期一/' | sed 's/星期2/星期二/' | sed 's/星期3/星期三/' | sed 's/星期4/星期四/' | sed 's/星期5/星期五/' | sed 's/星期6/星期六/' | sed 's/星期7/星期日/'
+}
+
 # Get repository root, with fallback for non-git repositories
 get_repo_root() {
     if git rev-parse --show-toplevel >/dev/null 2>&1; then
@@ -219,7 +242,7 @@ create_req_structure() {
 # Execution Log: $req_id
 
 ## Created
-$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+$(get_beijing_time_full)
 
 ## Events
 EOF
@@ -232,8 +255,8 @@ EOF
   "reqId": "$req_id",
   "status": "initialized",
   "phase": "planning",
-  "createdAt": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-  "updatedAt": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+  "createdAt": "$(get_beijing_time_iso)",
+  "updatedAt": "$(get_beijing_time_iso)"
 }
 EOF
     fi
@@ -252,7 +275,7 @@ log_event() {
 
     if [[ -f "$log_file" ]]; then
         echo "" >> "$log_file"
-        echo "### $(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> "$log_file"
+        echo "### $(get_beijing_time)" >> "$log_file"
         echo "$message" >> "$log_file"
     fi
 }

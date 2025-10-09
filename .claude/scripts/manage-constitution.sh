@@ -25,6 +25,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+source "$SCRIPT_DIR/common.sh"
 CONSTITUTION_FILE="$REPO_ROOT/.claude/constitution/project-constitution.md"
 AMENDMENT_DIR="$REPO_ROOT/.claude/constitution/amendments"
 
@@ -256,7 +257,7 @@ apply_amendment() {
 update_constitution_version() {
     local old_version="$1"
     local new_version="$2"
-    local current_date=$(date -u +"%Y-%m-%d")
+    local current_date=$(TZ='Asia/Shanghai' date '+%Y-%m-%d')
 
     # 更新版本号行
     sed -i.bak "s/\*\*Version\*\*: v$old_version/\*\*Version\*\*: v$new_version/g" "$CONSTITUTION_FILE"
@@ -307,7 +308,7 @@ generate_sync_report() {
     local old_version="$1"
     local new_version="$2"
     local report_file="$AMENDMENT_DIR/sync-report-v$new_version.md"
-    local current_date=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
+    local current_date=$(get_beijing_time_full)
 
     # 创建 amendments 目录（如果不存在）
     mkdir -p "$AMENDMENT_DIR"
@@ -442,7 +443,7 @@ generate_impact_report() {
     echo ""
 
     local current_version=$(get_current_version)
-    local current_date=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
+    local current_date=$(get_beijing_time_full)
 
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "Constitution Impact Report"

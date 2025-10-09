@@ -207,7 +207,7 @@ cat > "$REQ_DIR/EXECUTION_LOG.md" <<EOF
 
 **Title**: ${TITLE:-"To be defined"}
 **Type**: $REQ_TYPE
-**Created**: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+**Created**: $(get_beijing_time_full)
 
 EOF
 
@@ -234,8 +234,8 @@ if [[ "$REQ_TYPE" == "bug" ]]; then
   "status": "initialized",
   "phase": "analysis",
   "severity": "unknown",
-  "createdAt": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-  "updatedAt": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+  "createdAt": "$(get_beijing_time_iso)",
+  "updatedAt": "$(get_beijing_time_iso)"
 }
 EOF
 else
@@ -246,8 +246,8 @@ else
   "title": "${TITLE:-"To be defined"}",
   "status": "initialized",
   "phase": "planning",
-  "createdAt": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-  "updatedAt": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+  "createdAt": "$(get_beijing_time_iso)",
+  "updatedAt": "$(get_beijing_time_iso)"
 }
 EOF
 fi
@@ -258,7 +258,7 @@ cat > "$REQ_DIR/README.md" <<EOF
 
 **Status**: Initialized
 **Type**: $REQ_TYPE
-**Created**: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+**Created**: $(get_beijing_time_full)
 
 EOF
 
@@ -361,7 +361,7 @@ if $JSON_MODE; then
         "$REQ_DIR" \
         "${TITLE:-""}" \
         "${GIT_BRANCH:-""}" \
-        "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+        "$(get_beijing_time_iso)"
 else
     # Human-readable output
     echo ""

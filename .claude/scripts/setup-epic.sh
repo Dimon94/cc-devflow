@@ -103,7 +103,7 @@ if [[ ! -f "$EPIC_FILE" ]]; then
 # Epic: $REQ_ID
 
 **Status**: Draft
-**Created**: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+**Created**: $(get_beijing_time_full)
 
 ## Overview
 
@@ -139,7 +139,7 @@ if [[ ! -f "$TASKS_FILE" ]]; then
 # Tasks: $REQ_ID
 
 **Status**: Draft
-**Created**: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+**Created**: $(get_beijing_time_full)
 
 ## Tasks
 

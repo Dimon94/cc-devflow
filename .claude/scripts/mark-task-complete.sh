@@ -162,14 +162,14 @@ if grep -q "\\[x\\] .*$TASK_ID" "$TMP_FILE"; then
 
     # Log the event
     if ! $NO_LOG; then
-        TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+        TIMESTAMP=$(get_beijing_time_iso)
         log_event "$REQ_ID" "✅ Task $TASK_ID marked as complete"
     fi
 
     # Output success
     if $JSON_MODE; then
         printf '{"status":"success","task_id":"%s","message":"Task %s marked as complete","timestamp":"%s"}\n' \
-            "$TASK_ID" "$TASK_ID" "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+            "$TASK_ID" "$TASK_ID" "$(get_beijing_time_iso)"
     else
         echo "✅ Task $TASK_ID marked as complete"
     fi
