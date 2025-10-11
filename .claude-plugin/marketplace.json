@@ -20,32 +20,32 @@
       "keywords": ["wrapper", "automation", "workflow"],
       "strict": false,
       "commands": [
-        ".claude/commands/flow-constitution.md",
-        ".claude/commands/flow-dev.md",
-        ".claude/commands/flow-epic.md",
-        ".claude/commands/flow-fix.md",
-        ".claude/commands/flow-ideate.md",
-        ".claude/commands/flow-init.md",
-        ".claude/commands/flow-new.md",
-        ".claude/commands/flow-prd.md",
-        ".claude/commands/flow-qa.md",
-        ".claude/commands/flow-release.md",
-        ".claude/commands/flow-restart.md",
-        ".claude/commands/flow-status.md",
-        ".claude/commands/flow-update.md",
-        ".claude/commands/flow-upgrade.md",
-        ".claude/commands/flow-verify.md"
+        "./.claude/commands/flow-constitution.md",
+        "./.claude/commands/flow-dev.md",
+        "./.claude/commands/flow-epic.md",
+        "./.claude/commands/flow-fix.md",
+        "./.claude/commands/flow-ideate.md",
+        "./.claude/commands/flow-init.md",
+        "./.claude/commands/flow-new.md",
+        "./.claude/commands/flow-prd.md",
+        "./.claude/commands/flow-qa.md",
+        "./.claude/commands/flow-release.md",
+        "./.claude/commands/flow-restart.md",
+        "./.claude/commands/flow-status.md",
+        "./.claude/commands/flow-update.md",
+        "./.claude/commands/flow-upgrade.md",
+        "./.claude/commands/flow-verify.md"
       ],
       "agents": [
-        ".claude/agents/bug-analyzer.md",
-        ".claude/agents/compatibility-checker.md",
-        ".claude/agents/consistency-checker.md",
-        ".claude/agents/impact-analyzer.md",
-        ".claude/agents/planner.md",
-        ".claude/agents/prd-writer.md",
-        ".claude/agents/qa-tester.md",
-        ".claude/agents/release-manager.md",
-        ".claude/agents/security-reviewer.md"
+        "./.claude/agents/bug-analyzer.md",
+        "./.claude/agents/compatibility-checker.md",
+        "./.claude/agents/consistency-checker.md",
+        "./.claude/agents/impact-analyzer.md",
+        "./.claude/agents/planner.md",
+        "./.claude/agents/prd-writer.md",
+        "./.claude/agents/qa-tester.md",
+        "./.claude/agents/release-manager.md",
+        "./.claude/agents/security-reviewer.md"
       ]
     },
     {
@@ -58,7 +58,7 @@
       "keywords": ["init", "requirement", "git"],
       "strict": false,
       "commands": [
-        ".claude/commands/flow-init.md"
+        "./.claude/commands/flow-init.md"
       ],
       "agents": []
     },
@@ -72,10 +72,10 @@
       "keywords": ["prd", "requirements", "document"],
       "strict": false,
       "commands": [
-        ".claude/commands/flow-prd.md"
+        "./.claude/commands/flow-prd.md"
       ],
       "agents": [
-        ".claude/agents/prd-writer.md"
+        "./.claude/agents/prd-writer.md"
       ]
     },
     {
@@ -88,10 +88,10 @@
       "keywords": ["epic", "planning", "tasks"],
       "strict": false,
       "commands": [
-        ".claude/commands/flow-epic.md"
+        "./.claude/commands/flow-epic.md"
       ],
       "agents": [
-        ".claude/agents/planner.md"
+        "./.claude/agents/planner.md"
       ]
     },
     {
@@ -104,7 +104,7 @@
       "keywords": ["development", "tdd", "implementation"],
       "strict": false,
       "commands": [
-        ".claude/commands/flow-dev.md"
+        "./.claude/commands/flow-dev.md"
       ],
       "agents": []
     },
@@ -118,11 +118,11 @@
       "keywords": ["qa", "testing", "security"],
       "strict": false,
       "commands": [
-        ".claude/commands/flow-qa.md"
+        "./.claude/commands/flow-qa.md"
       ],
       "agents": [
-        ".claude/agents/qa-tester.md",
-        ".claude/agents/security-reviewer.md"
+        "./.claude/agents/qa-tester.md",
+        "./.claude/agents/security-reviewer.md"
       ]
     },
     {
@@ -135,10 +135,10 @@
       "keywords": ["release", "pr", "deployment"],
       "strict": false,
       "commands": [
-        ".claude/commands/flow-release.md"
+        "./.claude/commands/flow-release.md"
       ],
       "agents": [
-        ".claude/agents/release-manager.md"
+        "./.claude/agents/release-manager.md"
       ]
     },
     {
@@ -151,7 +151,7 @@
       "keywords": ["status", "progress", "report"],
       "strict": false,
       "commands": [
-        ".claude/commands/flow-status.md"
+        "./.claude/commands/flow-status.md"
       ],
       "agents": []
     },
@@ -165,7 +165,7 @@
       "keywords": ["update", "tasks", "progress"],
       "strict": false,
       "commands": [
-        ".claude/commands/flow-update.md"
+        "./.claude/commands/flow-update.md"
       ],
       "agents": []
     },
@@ -179,7 +179,7 @@
       "keywords": ["restart", "recovery", "workflow"],
       "strict": false,
       "commands": [
-        ".claude/commands/flow-restart.md"
+        "./.claude/commands/flow-restart.md"
       ],
       "agents": []
     },
@@ -193,10 +193,10 @@
       "keywords": ["consistency", "verification", "analysis"],
       "strict": false,
       "commands": [
-        ".claude/commands/flow-verify.md"
+        "./.claude/commands/flow-verify.md"
       ],
       "agents": [
-        ".claude/agents/consistency-checker.md"
+        "./.claude/agents/consistency-checker.md"
       ]
     },
     {
@@ -209,11 +209,11 @@
       "keywords": ["upgrade", "compatibility", "impact"],
       "strict": false,
       "commands": [
-        ".claude/commands/flow-upgrade.md"
+        "./.claude/commands/flow-upgrade.md"
       ],
       "agents": [
-        ".claude/agents/compatibility-checker.md",
-        ".claude/agents/impact-analyzer.md"
+        "./.claude/agents/compatibility-checker.md",
+        "./.claude/agents/impact-analyzer.md"
       ]
     },
     {
@@ -226,7 +226,7 @@
       "keywords": ["constitution", "compliance", "quality"],
       "strict": false,
       "commands": [
-        ".claude/commands/flow-constitution.md"
+        "./.claude/commands/flow-constitution.md"
       ],
       "agents": []
     },
@@ -240,7 +240,7 @@
       "keywords": ["ideation", "clarification", "requirements"],
       "strict": false,
       "commands": [
-        ".claude/commands/flow-ideate.md"
+        "./.claude/commands/flow-ideate.md"
       ],
       "agents": []
     },
@@ -254,10 +254,10 @@
       "keywords": ["bug", "fix", "analysis"],
       "strict": false,
       "commands": [
-        ".claude/commands/flow-fix.md"
+        "./.claude/commands/flow-fix.md"
       ],
       "agents": [
-        ".claude/agents/bug-analyzer.md"
+        "./.claude/agents/bug-analyzer.md"
       ]
     }
   ]
