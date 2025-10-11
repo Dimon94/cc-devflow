@@ -1,0 +1,27 @@
+{
+  "name": "ai-workflow-marketplace",
+  "owner": {
+    "name": "Dimon.ai",
+    "email": "lovedaih@gmail.com"
+  },
+  "metadata": {
+    "description": "Plugins for AI Workflow System",
+    "version": "0.1.0",
+    "pluginRoot": "."
+  },
+  "plugins": [
+    {
+      "name": "cc-devflow",
+      "source": "./",
+      "description": "One-command requirement development flow for Claude Code",
+      "version": "0.1.0",
+      "author": { "name": "Dimon" },
+      "homepage": "https://github.com/Dimon94/cc-devflow",
+      "repository": "https://github.com/Dimon94/cc-devflow",
+      "license": "MIT",
+      "keywords": ["workflow", "productivity", "devflow"],
+      "category": "workflow",
+      "tags": ["claude-code", "plugins", "cc-devflow"]
+    }
+  ]
+}

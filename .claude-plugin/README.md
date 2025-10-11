@@ -39,3 +39,35 @@ plugin enable cc-devflow@local
 ## 参考
 
 - Claude Code 插件系统与团队插件配置参考：官方文档（Plugins - Claude Docs）
+
+## 插件市场
+
+你可以使用本仓库内的 `/.claude-plugin/marketplace.json` 作为自定义插件市场来分发 `CC DevFlow`：
+
+- 添加本地市场（推荐指向仓库根目录，包含 `.claude-plugin/marketplace.json`）
+
+```text
+plugin marketplace add .
+```
+
+或直接指定市场文件路径：
+
+```text
+plugin marketplace add ./.claude-plugin/marketplace.json
+```
+
+- 从市场安装并启用插件：
+
+```text
+plugin install cc-devflow@ai-workflow-marketplace
+plugin enable cc-devflow@ai-workflow-marketplace
+```
+
+- 验证：
+
+```text
+/help
+/flow-init "REQ-001|测试功能|"
+```
+
+如需团队分发，可将该 `marketplace.json` 托管在 Git 或 GitHub 仓库，并在团队项目中通过 `plugin marketplace add <repo or url>` 统一接入，随后在项目级 `.claude/settings.json` 中维护需要启用的插件清单。
