@@ -167,6 +167,13 @@ For each task in TASKS.md (following order):
        * Implement functionality
        * Run related tests to verify they pass
        * Check related Phase 2 test now passes
+       * If frontend task and UI_PROTOTYPE.html exists:
+         - Read UI_PROTOTYPE.html to understand design
+         - Extract page structure and components
+         - Extract CSS variables from design system
+         - Implement responsive design (mobile/tablet/desktop)
+         - Implement interactive states (hover/active/disabled)
+         - Use inline images from prototype as reference
      - For integration tasks (Phase 4):
        * Wire up components
        * Run integration tests

@@ -115,8 +115,19 @@ Prompt:
   1. Run .claude/scripts/setup-epic.sh --json
      This initializes EPIC.md and TASKS.md structure
   2. Read PRD.md from ${PRD_FILE}
-  3. Read EPIC_TEMPLATE.md and TASKS_TEMPLATE.md
-  4. Follow Execution Flow in EPIC_TEMPLATE.md:
+  3. Check for UI prototype (conditional):
+     → Check if UI_PROTOTYPE.html exists in REQ_DIR
+     → If exists:
+       • Read UI_PROTOTYPE.html HTML comments section
+       • Extract page structure (pages list)
+       • Extract component inventory (component list)
+       • Extract design system (CSS variables)
+       • Extract responsive breakpoints (320px/768px/1024px)
+       • Store UI context for use in EPIC and TASKS
+     → If not exists:
+       • Continue without UI context (backend-only or manual UI)
+  4. Read EPIC_TEMPLATE.md and TASKS_TEMPLATE.md
+  5. Follow Execution Flow in EPIC_TEMPLATE.md:
      - Load and analyze PRD
      - Define Epic scope and success criteria
      - Design technical approach (data model, API contracts)
@@ -130,6 +141,12 @@ Prompt:
      - Phase 2 (Tests First): ALL contract tests, integration tests BEFORE implementation
      - TEST VERIFICATION CHECKPOINT: Ensure tests will fail before Phase 3
      - Phase 3 (Core Implementation): Make tests pass
+     - If UI_PROTOTYPE.html exists:
+       • Add Phase 3 frontend tasks for each page in UI prototype
+       • Each frontend task should reference UI_PROTOTYPE.html
+       • Include tasks for responsive implementation (mobile/tablet/desktop)
+       • Include tasks for interactive states (hover/active/disabled)
+       • Reference design system CSS variables from prototype
      - Apply [P] tags for parallel tasks (different files only)
      - Include exact file paths for each task
      - Add Dependencies section

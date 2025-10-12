@@ -14,6 +14,11 @@
    → research/: Extract technology decisions → setup tasks
    → data-model section in EPIC: Extract entities → map to user stories
    → API contracts in EPIC: Each endpoint → map to user stories
+   → UI_PROTOTYPE.html (if exists): Extract pages/components → map to user stories
+     • Check for UI_PROTOTYPE.html existence
+     • If exists: Extract page list, component inventory, design system
+     • Map each page to corresponding user story
+     • Generate frontend implementation tasks with UI prototype references
 
 3. Generate tasks organized by USER STORY (NEW STRUCTURE):
    → Phase 1 Setup: shared infrastructure needed by ALL stories
@@ -149,7 +154,71 @@
 
 ---
 
-## Phase 5: User Story 3 - {{STORY_3_TITLE}} (Priority: P3)
+## Phase 5: User Story X - {{STORY_UI_TITLE}} (Priority: PX) - Frontend UI Implementation ⚡️
+
+**Note**: 此阶段仅在存在 UI_PROTOTYPE.html 时生成
+
+**Goal**: {{STORY_UI_GOAL}}
+<!-- 示例: Display order list and details with responsive design -->
+
+**Independent Test**: {{STORY_UI_INDEPENDENT_TEST}}
+<!-- 示例: User can view orders on mobile/tablet/desktop with consistent styling -->
+
+**UI Prototype Reference**: `devflow/requirements/{{REQ_ID}}/UI_PROTOTYPE.html`
+
+### Implementation for User Story X (Frontend UI)
+
+**Phase 3 任务前置条件**:
+- [ ] 确认 UI_PROTOTYPE.html 存在
+- [ ] 读取 UI_PROTOTYPE.html 提取设计系统和页面结构
+
+#### Frontend Setup (如需要)
+- [ ] **TXXX** [P] [USX] Setup frontend framework ({{React|Vue|Vanilla}}) in `frontend/`
+- [ ] **TXXX** [P] [USX] Configure CSS solution ({{CSS Modules|Styled Components|Tailwind}})
+- [ ] **TXXX** [USX] Extract design system variables from UI_PROTOTYPE.html to `src/styles/design-system.css`
+
+#### Page Components (Based on UI_PROTOTYPE.html)
+- [ ] **TXXX** [P] [USX] Implement {{Page1}} page component in `src/pages/{{Page1}}.{{jsx|vue}}`
+  - **UI Prototype Ref**: See UI_PROTOTYPE.html `#page-{{page1}}`
+  - **Design System**: Use CSS variables from `--primary-color`, `--spacing-md`, etc.
+  - **Responsive**: Implement 320px (mobile), 768px (tablet), 1024px (desktop) breakpoints
+  - **Interactive States**: Implement hover/active/disabled states
+
+- [ ] **TXXX** [P] [USX] Implement {{Page2}} page component in `src/pages/{{Page2}}.{{jsx|vue}}`
+  - **UI Prototype Ref**: See UI_PROTOTYPE.html `#page-{{page2}}`
+
+#### Reusable Components (From UI_PROTOTYPE.html component inventory)
+- [ ] **TXXX** [P] [USX] Create {{Component1}} component in `src/components/{{Component1}}.{{jsx|vue}}`
+  - **UI Prototype Ref**: See UI_PROTOTYPE.html `<!-- Component: {{Component1}} -->`
+  - **Props**: Based on component usage in prototype
+  - **Styling**: Use design system variables
+
+- [ ] **TXXX** [P] [USX] Create {{Component2}} component in `src/components/{{Component2}}.{{jsx|vue}}`
+
+#### API Integration
+- [ ] **TXXX** [USX] Connect {{Page1}} to backend API endpoint {{/api/endpoint}}
+- [ ] **TXXX** [USX] Connect {{Page2}} to backend API endpoint {{/api/endpoint}}
+
+#### Responsive & Accessibility
+- [ ] **TXXX** [P] [USX] Test responsive design on mobile (320px-767px)
+- [ ] **TXXX** [P] [USX] Test responsive design on tablet (768px-1023px)
+- [ ] **TXXX** [P] [USX] Test responsive design on desktop (1024px+)
+- [ ] **TXXX** [USX] Add ARIA labels and accessibility attributes
+- [ ] **TXXX** [USX] Test keyboard navigation
+
+**Checkpoint**: At this point, UI should match prototype with responsive design working
+
+**Constitution Check (Frontend UI)**:
+- [ ] **Article I.1 - NO PARTIAL IMPLEMENTATION**: All pages and components fully implemented
+- [ ] **Article II.1 - NO CODE DUPLICATION**: Reusable components extracted
+- [ ] **Article V.4 - File Size Limits**: Single component ≤500 lines
+- [ ] **UI Prototype Alignment**: Visual design matches UI_PROTOTYPE.html
+- [ ] **Responsive Design**: All breakpoints tested and working
+- [ ] **Interactive States**: All hover/active/disabled states implemented
+
+---
+
+## Phase 6: User Story 3 - {{STORY_3_TITLE}} (Priority: P3)
 
 **Goal**: {{STORY_3_GOAL}}
 

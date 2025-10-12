@@ -17,6 +17,19 @@
    → Identify technical constraints
    → If PRD incomplete: ERROR "Complete PRD first"
 
+1.5 Check for UI prototype (条件检查)
+   → Check if UI_PROTOTYPE.html exists
+   → If UI_PROTOTYPE.html exists:
+     • Read UI_PROTOTYPE.html HTML comments section
+     • Extract page structure (pages列表)
+     • Extract component inventory (组件清单)
+     • Extract design system (CSS变量: 色彩/字体/间距)
+     • Extract responsive breakpoints (断点: 320px/768px/1024px)
+     • Store UI context for Phase 3 frontend tasks
+   → If no UI_PROTOTYPE.html:
+     • Log: "No UI prototype found, assuming backend-only or manual UI design"
+     • Continue without UI context
+
 2. Define Epic scope
    → Extract core objectives from PRD
    → Define clear boundaries (in-scope vs out-of-scope)
@@ -193,6 +206,86 @@
 |--------|---------|-------------------|----------|
 | 4个项目 | 前端、后端、移动端、管理后台 | 3个项目无法满足多端需求 | 管理后台复用前端组件库 |
 | Repository Pattern | 需要支持 PostgreSQL 和 MongoDB | 直接使用 ORM 会导致业务逻辑耦合数据库 | 只抽象数据访问层，不做过度封装 |
+
+---
+
+## UI 原型集成 (如有) ⚡️
+
+**Note**: 本章节仅在存在 UI_PROTOTYPE.html 时填写
+
+### UI 原型概览
+- **文件位置**: `devflow/requirements/{{REQ_ID}}/UI_PROTOTYPE.html`
+- **原型类型**: {{单页面|多页面SPA|静态原型}}
+- **设计风格**: {{从 ui_design_strategy.md 提取}}
+
+### 页面清单
+*从 UI_PROTOTYPE.html 提取*
+
+| 页面 | 路由 | 描述 | 关联用户故事 | 实现阶段 |
+|------|------|------|-------------|---------|
+| {{PAGE_1}} | {{ROUTE}} | {{DESCRIPTION}} | Story {{NUM}} | Phase {{NUM}} |
+| {{PAGE_2}} | {{ROUTE}} | {{DESCRIPTION}} | Story {{NUM}} | Phase {{NUM}} |
+
+**示例**:
+| 页面 | 路由 | 描述 | 关联用户故事 | 实现阶段 |
+|------|------|------|-------------|---------|
+| 订单列表 | /orders | 显示用户所有订单 | Story 1 | Phase 3 |
+| 订单详情 | /orders/:id | 显示订单详细信息 | Story 2 | Phase 3 |
+
+### 组件清单
+*从 UI_PROTOTYPE.html 提取*
+
+| 组件 | 类型 | 描述 | 复用性 | 优先级 |
+|------|------|------|--------|--------|
+| {{COMPONENT_1}} | {{TYPE}} | {{DESCRIPTION}} | {{HIGH|MEDIUM|LOW}} | {{P1|P2|P3}} |
+| {{COMPONENT_2}} | {{TYPE}} | {{DESCRIPTION}} | {{HIGH|MEDIUM|LOW}} | {{P1|P2|P3}} |
+
+**示例**:
+| 组件 | 类型 | 描述 | 复用性 | 优先级 |
+|------|------|------|--------|--------|
+| OrderCard | 展示组件 | 订单卡片 | HIGH (订单列表/详情共用) | P1 |
+| StatusBadge | UI组件 | 状态徽章 | HIGH (多处使用) | P1 |
+
+### 设计系统
+*从 UI_PROTOTYPE.html CSS Variables 提取*
+
+#### 色彩系统
+```css
+--primary-color: {{VALUE}};
+--secondary-color: {{VALUE}};
+--text-color: {{VALUE}};
+--bg-color: {{VALUE}};
+```
+
+#### 字体系统
+```css
+--font-primary: {{VALUE}};
+--font-secondary: {{VALUE}};
+--font-size-base: {{VALUE}};
+```
+
+#### 间距系统
+```css
+--spacing-xs: {{VALUE}};
+--spacing-sm: {{VALUE}};
+--spacing-md: {{VALUE}};
+--spacing-lg: {{VALUE}};
+```
+
+### 响应式断点
+*从 UI_PROTOTYPE.html 提取*
+- **Mobile**: 320px - 767px
+- **Tablet**: 768px - 1023px
+- **Desktop**: 1024px+
+
+### 前端技术约束
+**基于UI原型的技术要求**:
+- 框架: {{React|Vue|Angular|Vanilla JS}}
+- CSS方案: {{CSS Modules|Styled Components|Tailwind}}
+- 状态管理: {{Redux|Zustand|Context API}}
+- 路由: {{React Router|Vue Router|自定义}}
+
+**Note**: 这些约束将在 Phase 3 (前端实现) 任务中使用
 
 ---
 

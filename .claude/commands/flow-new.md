@@ -37,6 +37,7 @@ description: One-shot requirement flow. Usage: /flow-new "REQ-123|支持用户�
 /flow-new
   ├─> /flow-init    (阶段1: 初始化)
   ├─> /flow-prd     (阶段2: PRD生成)
+  ├─> /flow-ui      (阶段2.5: UI原型生成) ⚡️ 条件触发
   ├─> /flow-epic    (阶段3: Epic规划)
   ├─> /flow-dev     (阶段4: 开发执行)
   ├─> /flow-qa      (阶段5: 质量保证)
@@ -85,6 +86,68 @@ description: One-shot requirement flow. Usage: /flow-new "REQ-123|支持用户�
 错误处理:
   - 如果Constitution检查失败 → 显示违规项，询问是否继续
   - 如果PRD不完整 → 终止并提示手动修正
+```
+
+### 阶段 2.5: UI原型生成 (/flow-ui) ⚡️ 条件触发
+```text
+3.5 检测UI需求并生成原型 (如果适用)
+   → Step 1: 检测UI需求
+     • 读取PRD.md检测UI关键词:
+       - "用户界面", "前端", "Web页面", "UI", "界面设计", "交互"
+       - "页面", "表单", "按钮", "导航", "布局"
+     • 检测项目技术栈:
+       - package.json存在 (前端项目)
+       - src/components/目录存在 (组件化架构)
+       - public/或static/目录存在 (静态资源)
+
+   → Step 2: 如果检测到UI需求:
+     • 调用 /flow-ui "REQ_ID"
+     • ui-designer研究型代理执行:
+       Phase 1: 加载PRD和上下文
+       Phase 2: 智能设计灵感采样 (基于PRD风格提示)
+         - 如果PRD提到"现代/简约/专业" → 现代主义信息设计
+         - 如果PRD提到"科技感/创新/动态" → 生成艺术+建筑
+         - 如果PRD提到"典雅/艺术/文化" → 亚洲与当代艺术
+         - 可选: 使用WebSearch查找外部设计参考
+         - 保存设计策略到 research/ui_design_strategy.md
+       Phase 3: 定义设计系统 (色彩/字体/间距/组件)
+       Phase 4-9: 生成HTML原型
+       Phase 10: Constitution & Quality Check
+     • 生成 UI_PROTOTYPE.html (完整的单文件HTML原型)
+
+   → Step 3: 如果无UI需求:
+     • 跳过此阶段,直接进入Epic规划
+     • 记录日志: "No UI requirements detected, skipping UI prototype generation"
+
+输出:
+  ✅ UI_PROTOTYPE.html (如果有UI需求)
+     - 单文件HTML/CSS/JS原型
+     - 响应式设计 (320px/768px/1024px断点)
+     - 完整交互状态 (hover/active/disabled)
+     - 内联真实图片资源 (Picsum/Unsplash)
+     - SPA风格多页面路由 (hash-based)
+  ✅ research/ui_design_strategy.md (设计策略文档)
+     - PRD风格分析
+     - 采样的设计大师及转译规则
+     - 外部设计参考 (如有WebSearch)
+  ✅ 状态更新: ui_complete 或 ui_skipped
+
+条件触发逻辑:
+  触发条件 (任一满足):
+    - PRD包含UI关键词
+    - 项目包含package.json
+    - 项目包含src/components/目录
+    - 用户显式请求UI原型生成
+
+  跳过条件:
+    - PRD明确标注"纯后端/API项目"
+    - 无前端技术栈特征
+    - 用户显式请求跳过 (--skip-ui)
+
+错误处理:
+  - 如果设计灵感采样失败 → 使用默认现代主义风格
+  - 如果WebSearch超时 → 跳过外部参考,继续生成
+  - 如果HTML生成不完整 → 警告但继续,后续可手动完善
 ```
 
 ### 阶段 3: Epic规划 (/flow-epic)
@@ -200,31 +263,39 @@ Exit Gate检查:
 
 需求: REQ-123 | 支持用户下单
 
-[1/6] ✅ 初始化完成
+[1/7] ✅ 初始化完成
       → Git分支: feature/REQ-123-支持用户下单
       → 需求目录已创建
       → 研究材料已抓取: 2 个文件
 
-[2/6] ✅ PRD生成完成
+[2/7] ✅ PRD生成完成
       → PRD.md: 145 行
       → 用户故事: 5 个
       → Constitution检查: 通过
 
-[3/6] ✅ Epic规划完成
-      → EPIC.md 已生成
-      → TASKS.md: 8 个任务
-      → 逻辑独立任务: 3 个 [P]
+[2.5/7] ✅ UI原型生成完成 ⚡️
+        → UI需求检测: 通过 (检测到"页面"、"表单"关键词)
+        → 设计灵感采样: 3位大师 (Dieter Rams, Josef Müller-Brockmann, 原研哉)
+        → UI_PROTOTYPE.html: 单文件原型 (响应式设计)
+        → 设计策略文档: ui_design_strategy.md
 
-[4/6] 🔄 开发执行中...
-      → 任务进度: 3/8 已完成
-      → 当前任务: TASK_004 - 实现订单创建API
-      → Phase 2: 编写测试中...
+[3/7] ✅ Epic规划完成
+      → EPIC.md 已生成 (包含UI原型引用)
+      → TASKS.md: 12 个任务 (含4个前端页面开发任务)
+      → 逻辑独立任务: 5 个 [P]
 
-[5/6] ⏳ 等待质量保证...
+[4/7] 🔄 开发执行中...
+      → 任务进度: 5/12 已完成
+      → 当前任务: TASK_006 - 实现订单列表页面UI
+      → Phase 3: 根据UI_PROTOTYPE.html实现组件...
 
-[6/6] ⏳ 等待发布管理...
+[5/7] ⏳ 等待质量保证...
+
+[6/7] ⏳ 等待发布管理...
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+注: 阶段2.5 (UI原型生成) 为条件触发,纯后端项目自动跳过
 ```
 
 ### 中断与恢复
@@ -257,6 +328,13 @@ devflow/requirements/${reqId}/
 │                               # - 用户故事 + 验收标准
 │                               # - 非功能需求
 │                               # - Constitution检查结果
+│
+├── UI_PROTOTYPE.html           # UI原型文档 (/flow-ui 输出) ⚡️ 条件生成
+│                               # - 单文件HTML/CSS/JS原型
+│                               # - 响应式设计 (320px/768px/1024px)
+│                               # - 完整交互状态和真实图片
+│                               # - SPA风格多页面路由
+│                               # ⚠️ 仅在检测到UI需求时生成
 │
 ├── EPIC.md                     # Epic规划文档 (/flow-epic 输出)
 │                               # - Epic描述和目标
@@ -315,6 +393,17 @@ devflow/requirements/${reqId}/
 
    /flow-prd "REQ-123"
    → 等待完成，检查状态
+
+   ## 条件检测: UI需求判断
+   → 读取 PRD.md 内容
+   → 检测UI关键词: "用户界面", "前端", "页面", "表单", "按钮"等
+   → 检测项目技术栈: package.json, src/components/, public/
+   → 如果检测到UI需求:
+     /flow-ui "REQ-123"
+     → 等待完成，检查状态
+   → 如果无UI需求:
+     → 跳过UI原型生成
+     → 记录: "No UI requirements detected, skipping /flow-ui"
 
    /flow-epic "REQ-123"
    → 等待完成，检查状态
@@ -423,7 +512,7 @@ devflow/requirements/${reqId}/
 ### 问题1: 阶段命令未找到
 **症状**: `ERROR: Command /flow-init not found`
 **原因**: 阶段化命令文件缺失或未在settings.json中注册
-**解决**: 检查 `.claude/commands/` 目录是否包含所有6个命令文件
+**解决**: 检查 `.claude/commands/` 目录是否包含所有7个命令文件 (flow-init, flow-prd, flow-ui, flow-epic, flow-dev, flow-qa, flow-release)
 
 ### 问题2: 状态文件损坏
 **症状**: `ERROR: Invalid orchestration_status.json`

@@ -34,6 +34,7 @@
 ```text
 devflow/requirements/${reqId}/
 ├── PRD.md                      # 产品需求文档
+├── UI_PROTOTYPE.html           # UI原型 ⚡️ 条件生成 (仅UI需求)
 ├── EPIC.md                     # Epic 规划
 ├── TASKS.md                    # 任务分解 (单文件管理所有任务)
 ├── tasks/                      # 任务执行标记
@@ -42,7 +43,8 @@ devflow/requirements/${reqId}/
 │   └── IMPLEMENTATION_PLAN.md  # dev-implementer 输出
 ├── research/                   # 研究资料
 │   ├── ${reqId}_plan_1.md
-│   └── ${reqId}_plan_2.md
+│   ├── ${reqId}_plan_2.md
+│   └── ui_design_strategy.md   # UI设计策略 (可选)
 ├── TEST_PLAN.md                # 测试计划
 ├── TEST_REPORT.md              # 测试报告
 ├── SECURITY_PLAN.md            # 安全计划
@@ -110,17 +112,19 @@ Co-authored-by: Claude <claude@anthropic.com>
 
 ## 🤖 子代理调用约定
 
-### 调用顺序 (6个阶段)
+### 调用顺序 (7个阶段)
 ```text
 1. flow-init      → 初始化需求结构
    ↓
 2. flow-prd       → prd-writer (研究型) → PRD.md
    ↓
+2.5 flow-ui       → ui-designer (研究型) → UI_PROTOTYPE.html ⚡️ 条件触发
+   ↓              仅在检测到UI需求时自动执行
 3. flow-epic      → planner (研究型) → EPIC.md + TASKS.md
-   ↓
+   ↓              如存在UI_PROTOTYPE.html, 自动集成UI上下文
 4. flow-dev       → dev-implementer (研究型, 每个任务) → IMPLEMENTATION_PLAN.md
                   → main-agent (执行型) → 代码实现
-   ↓
+   ↓              前端任务会引用UI_PROTOTYPE.html
 5. flow-qa        → qa-tester (研究型) → TEST_PLAN.md
                   → security-reviewer (研究型) → SECURITY_PLAN.md
                   → main-agent (执行型) → 运行测试、安全扫描
