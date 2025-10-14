@@ -9,12 +9,13 @@
 ## ✨ 核心特性
 
 - **🎯 一键启动流程**: 使用 `/flow-new "REQ-123|功能标题|计划URLs"` 启动完整的需求开发
-- **🔄 阶段化命令**: 6个独立阶段命令 (init/prd/epic/dev/qa/release)，精细化控制
-- **📋 文档驱动**: 自动化 PRD → EPIC → TASKS → 实现链条
+- **🔄 阶段化命令**: 7个独立阶段命令 (init/prd/ui/epic/dev/qa/release)，精细化控制
+- **📋 文档驱动**: 自动化 PRD → UI原型(条件) → EPIC → TASKS → 实现链条
 - **📝 模板驱动**: 自执行模板 (PRD_TEMPLATE, EPIC_TEMPLATE, TASKS_TEMPLATE) 内置生成流程
 - **🔄 智能恢复**: 使用 `/flow-restart` 恢复中断的开发，用 `/flow-status` 监控进度
 - **🛡️ 质量闸**: 自动化 TypeScript 检查、测试、代码检查和安全扫描
-- **🤖 子代理编排**: 10 个专业研究型代理负责不同开发阶段
+- **🤖 子代理编排**: 11 个专业研究型代理负责不同开发阶段
+- **🎨 UI原型生成**: 条件触发的HTML原型自动生成，融合艺术设计灵感
 - **🔗 GitHub 集成**: 自动化 PR 创建、分支管理和规范化提交
 - **📊 进度跟踪**: 实时状态监控和智能重启点
 - **🌐 MCP 集成**: 无缝外部内容获取和 API 集成
@@ -103,7 +104,7 @@ python3 .claude/scripts/demo.py
 ### 执行模型 (2025-01-10 更新)
 
 **研究型代理 + 主代理**:
-- **研究型代理 (10个)**: 只读分析，生成 Markdown 计划和报告
+- **研究型代理 (11个)**: 只读分析，生成 Markdown 计划和报告
 - **主代理 (Claude)**: 执行所有代码操作，拥有完整上下文
 - **工作流程**: 代理研究 → 输出计划 → 主代理执行 → 迭代
 
@@ -115,6 +116,7 @@ python3 .claude/scripts/demo.py
 ```text
 工作流指导 (标准操作程序)
 ├── prd-writer          → 研究需求，生成 PRD.md (必须使用 PRD_TEMPLATE)
+├── ui-designer         → 分析PRD，生成 UI_PROTOTYPE.html ⚡️ 条件触发
 ├── planner             → 分析 PRD，生成 EPIC.md + TASKS.md (必须使用 EPIC_TEMPLATE, TASKS_TEMPLATE)
 ├── dev-implementer     → 研究代码库，生成 IMPLEMENTATION_PLAN.md (仅研究)
 ├── qa-tester           → 分析代码，生成 TEST_PLAN.md + TEST_REPORT.md
@@ -154,10 +156,10 @@ python3 .claude/scripts/demo.py
 ```text
 .claude/docs/templates/
 ├── PRD_TEMPLATE.md              # 产品需求 (10步执行流程)
+├── UI_PROTOTYPE_TEMPLATE.md     # UI原型 (艺术设计指导)
 ├── EPIC_TEMPLATE.md             # Epic 规划 (10步执行流程)
 ├── TASKS_TEMPLATE.md            # 任务分解 (TDD 顺序阶段)
-├── TASK_EXECUTABLE_TEMPLATE.md  # 任务执行 (5阶段 TDD 流程)
-└── BUG_TEMPLATE.md              # BUG 分析和修复
+└── INTENT_CLARIFICATION_TEMPLATE.md # Intent驱动澄清流程
 ```
 
 **模板使用**:
@@ -181,6 +183,12 @@ devflow/requirements/${REQ-ID}/
 ├── orchestration_status.json  # 状态管理 (阶段、进度、时间戳)
 ├── EXECUTION_LOG.md           # 完整审计轨迹
 ├── PRD.md                     # 产品需求文档 (来自 PRD_TEMPLATE)
+├── UI_PROTOTYPE.html          # UI原型 ⚡️ 条件生成 (来自 UI_PROTOTYPE_TEMPLATE)
+│                              # - 单文件HTML/CSS/JS原型
+│                              # - 响应式设计 (320px/768px/1024px)
+│                              # - 完整交互状态和真实图片
+│                              # - SPA风格多页面路由
+│                              # - 设计系统CSS变量
 ├── EPIC.md                    # Epic 规划和分解 (来自 EPIC_TEMPLATE)
 ├── TASKS.md                   # 单一统一任务列表 (来自 TASKS_TEMPLATE)
 │                              # - 所有任务按 TDD 顺序 (Phase 1-5)
@@ -200,6 +208,7 @@ devflow/requirements/${REQ-ID}/
 
 **关键变更**:
 - **orchestration_status.json**: 统一状态文件 (替代分散的状态文件)
+- **UI_PROTOTYPE.html**: 条件UI原型 (仅在检测到UI需求时生成)
 - **TASKS.md**: 所有任务的单一文件 (替代多个 TASK_*.md)
 - **tasks/*.completed**: 简单完成标记 (替代复杂任务状态)
 - **IMPLEMENTATION_PLAN.md**: dev-implementer 代理的技术计划
@@ -211,11 +220,11 @@ devflow/requirements/${REQ-ID}/
 | 命令 | 描述 | 用法 |
 |---------|-------------|-------|
 | `/flow-new` | 启动新需求开发 | `/flow-new "REQ-123\|标题\|URLs"` |
+| `/flow-ui` | 生成UI原型(条件) | `/flow-ui "REQ-123"` |
 | `/flow-status` | 查询开发进度 | `/flow-status [REQ-ID] [--detailed]` |
 | `/flow-restart` | 恢复中断的开发 | `/flow-restart "REQ-ID" [--from=STAGE]` |
 | `/flow-verify` | 验证文档一致性 | `/flow-verify "REQ-ID" [--detailed] [--fix-auto]` |
 | `/flow-update` | 更新任务进度 | `/flow-update "REQ-ID" "TASK-ID" [OPTIONS]` |
-| `/flow:sprint` | 冲刺管理 | `/flow:sprint [ACTION] [OPTIONS]` |
 
 ### 状态查询选项
 ```bash

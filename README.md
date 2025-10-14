@@ -9,12 +9,13 @@ A comprehensive development workflow system built on Claude Code's official sub-
 ## ✨ Features
 
 - **🎯 One-Command Flow**: Start complete requirement development with `/flow-new "REQ-123|Feature Title|Plan URLs"`
-- **🔄 Staged Commands**: 6 independent stage commands (init/prd/epic/dev/qa/release) for fine-grained control
-- **📋 Document-Driven**: Automatic PRD → EPIC → TASKS → Implementation chain
+- **🔄 Staged Commands**: 7 independent stage commands (init/prd/ui/epic/dev/qa/release) for fine-grained control
+- **📋 Document-Driven**: Automatic PRD → UI Prototype (conditional) → EPIC → TASKS → Implementation chain
 - **📝 Template-Driven**: Self-executable templates (PRD_TEMPLATE, EPIC_TEMPLATE, TASKS_TEMPLATE) with built-in execution flows
 - **🔄 Smart Recovery**: Resume interrupted development with `/flow-restart` and monitor progress with `/flow-status`
 - **🛡️ Quality Gates**: Automated TypeScript checking, testing, linting, and security scanning
-- **🤖 Sub-Agent Orchestration**: 10 specialized research agents for different development phases
+- **🤖 Sub-Agent Orchestration**: 11 specialized research agents for different development phases
+- **🎨 UI Prototype Generation**: Conditional automatic HTML prototype generation with artistic design inspiration
 - **🔗 GitHub Integration**: Automated PR creation, branch management, and conventional commits
 - **📊 Progress Tracking**: Real-time status monitoring and intelligent restart points
 - **🌐 MCP Integration**: Seamless external content fetching and API integration
@@ -97,7 +98,7 @@ This demo will guide you through the complete development flow, including automa
 ### Execution Model (Updated 2025-01-10)
 
 **Research Agents + Main Agent**:
-- **Research Agents (10)**: Read-only analysis, generate Markdown plans and reports
+- **Research Agents (11)**: Read-only analysis, generate Markdown plans and reports
 - **Main Agent (Claude)**: Executes all code operations, owns complete context
 - **Workflow**: Agents Research → Output Plans → Main Agent Executes → Iterate
 
@@ -109,6 +110,7 @@ This demo will guide you through the complete development flow, including automa
 ```sql
 Workflow Guide (Standard Operating Procedures)
 ├── prd-writer          → Research requirements, generate PRD.md (MUST use PRD_TEMPLATE)
+├── ui-designer         → Analyze PRD, generate UI_PROTOTYPE.html ⚡️ Conditional trigger
 ├── planner             → Analyze PRD, generate EPIC.md + TASKS.md (MUST use EPIC_TEMPLATE, TASKS_TEMPLATE)
 ├── dev-implementer     → Research codebase, generate IMPLEMENTATION_PLAN.md (research-only)
 ├── qa-tester           → Analyze code, generate TEST_PLAN.md + TEST_REPORT.md
@@ -148,10 +150,10 @@ All agents and commands use standardized scripts:
 ```text
 .claude/docs/templates/
 ├── PRD_TEMPLATE.md              # Product Requirements (10-step execution flow)
+├── UI_PROTOTYPE_TEMPLATE.md     # UI Prototype (Artistic design guidance)
 ├── EPIC_TEMPLATE.md             # Epic Planning (10-step execution flow)
 ├── TASKS_TEMPLATE.md            # Task Breakdown (TDD-ordered phases)
-├── TASK_EXECUTABLE_TEMPLATE.md  # Task Execution (5-phase TDD flow)
-└── BUG_TEMPLATE.md              # BUG Analysis and Fix
+└── INTENT_CLARIFICATION_TEMPLATE.md # Intent-driven clarification flow
 ```
 
 **Template Usage**:
@@ -175,6 +177,12 @@ devflow/requirements/${REQ-ID}/
 ├── orchestration_status.json  # State management (stage, progress, timestamps)
 ├── EXECUTION_LOG.md           # Complete audit trail
 ├── PRD.md                     # Product Requirements Document (from PRD_TEMPLATE)
+├── UI_PROTOTYPE.html          # UI Prototype ⚡️ Conditional (from UI_PROTOTYPE_TEMPLATE)
+│                              # - Single-file HTML/CSS/JS prototype
+│                              # - Responsive design (320px/768px/1024px)
+│                              # - Full interaction states and real images
+│                              # - SPA-style multi-page routing
+│                              # - Design system CSS variables
 ├── EPIC.md                    # Epic planning and breakdown (from EPIC_TEMPLATE)
 ├── TASKS.md                   # Single unified task list (from TASKS_TEMPLATE)
 │                              # - All tasks in TDD order (Phase 1-5)
@@ -194,6 +202,7 @@ devflow/requirements/${REQ-ID}/
 
 **Key Changes**:
 - **orchestration_status.json**: Unified state file (replaces scattered status files)
+- **UI_PROTOTYPE.html**: Conditional UI prototype (only generated when UI requirements detected)
 - **TASKS.md**: Single file for all tasks (replaces multiple TASK_*.md)
 - **tasks/*.completed**: Simple completion markers (replaces complex task state)
 - **IMPLEMENTATION_PLAN.md**: Technical plan from dev-implementer agent
@@ -205,6 +214,7 @@ devflow/requirements/${REQ-ID}/
 | Command | Description | Usage |
 |---------|-------------|-------|
 | `/flow-new` | Start new requirement development | `/flow-new "REQ-123\|Title\|URLs"` |
+| `/flow-ui` | Generate UI prototype (conditional) | `/flow-ui "REQ-123"` |
 | `/flow-status` | Query development progress | `/flow-status [REQ-ID] [--detailed]` |
 | `/flow-restart` | Resume interrupted development | `/flow-restart "REQ-ID" [--from=STAGE]` |
 | `/flow-verify` | Verify consistency across documents | `/flow-verify "REQ-ID" [--detailed] [--fix-auto]` |
