@@ -158,6 +158,7 @@ Process:
 7. Add Parallel Execution examples
 8. Add Constitution Check for each phase (refer to Constitution v2.0.0 Articles I-X)
 9. Validate completeness using Validation Checklist in template
+10. If `CHANGE_ID` exists: run `.claude/scripts/parse-delta.sh "$CHANGE_ID"`, `.claude/scripts/sync-task-progress.sh "$CHANGE_ID"`, and `.claude/scripts/check-dualtrack-conflicts.sh "$CHANGE_ID" --count-only`
 
 **For BUG Fixes**:
 1. Run `.claude/scripts/setup-epic.sh --json` to get paths (adapts for BUG type)
@@ -170,6 +171,21 @@ Process:
    - Phase 4: Regression Prevention (add additional tests)
 5. Estimate fix complexity and prioritize
 6. Update BUG tracking status in status.json
+
+## Dual-Track Integration
+- 通过 `STATUS_FILE="$REQ_DIR/orchestration_status.json"` 获取 `CHANGE_ID=$(jq -r '.change_id // empty' "$STATUS_FILE" 2>/dev/null)`
+- 如存在 `CHANGE_ID`：
+  - 阅读 `devflow/specs/<capability>/spec.md` 了解当前真实源
+  - 阅读 `devflow/changes/$CHANGE_ID/specs/<capability>/spec.md` 了解新增/修改/删除的 Delta
+  - 在 EPIC.md、TASKS.md 中引用 `Requirement` 或 `Scenario` 名称（例如 `[REQ:Payments.Capture]`），保持 Traceability
+  - 生成文档后执行：
+    ```bash
+    .claude/scripts/parse-delta.sh "$CHANGE_ID"
+    .claude/scripts/sync-task-progress.sh "$CHANGE_ID"
+    .claude/scripts/check-dualtrack-conflicts.sh "$CHANGE_ID" --count-only
+    ```
+    如冲突计数 > 0：在输出总结中 WARN，并提示运行完整命令查看详情
+- 若未找到 `CHANGE_ID`：提醒用户运行 `/flow-init` 或 `bootstrap-devflow-dualtrack.sh` 以初始化双轨结构
 
 Quality criteria:
 

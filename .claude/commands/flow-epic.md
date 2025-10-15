@@ -82,7 +82,9 @@ description: Generate Epic and Tasks breakdown. Usage: /flow-epic "REQ-123" or /
    → Read: PRD_FILE
    → Extract: User stories, acceptance criteria, NFRs
    → Count: Total user stories, API endpoints, data entities
-   → Log: "Loaded PRD with ${story_count} user stories"
+    → Log: "Loaded PRD with ${story_count} user stories"
+    → Determine CHANGE_ID: `CHANGE_ID=$(jq -r '.change_id // empty' "$REQ_DIR/orchestration_status.json")`
+    → If CHANGE_ID present: load `devflow/specs/` baseline + `devflow/changes/${CHANGE_ID}/specs/` pending deltas for context
 
 4. Update orchestration status
    → Set: status = "epic_generation_in_progress"
@@ -110,6 +112,7 @@ Prompt:
   - Requirement ID: ${REQ_ID}
   - PRD File: ${PRD_FILE}
   - User Stories: ${story_count} stories
+  - Change ID: ${CHANGE_ID:-"(none)"}
 
   Your task:
   1. Run .claude/scripts/setup-epic.sh --json
@@ -127,8 +130,10 @@ Prompt:
      → If not exists:
        • Continue without UI context (backend-only or manual UI)
   4. Read EPIC_TEMPLATE.md and TASKS_TEMPLATE.md
-  5. Follow Execution Flow in EPIC_TEMPLATE.md:
+5. Follow Execution Flow in EPIC_TEMPLATE.md:
      - Load and analyze PRD
+     - Review current specs in `devflow/specs/` for impacted capabilities
+     - Review pending delta specs in `devflow/changes/${CHANGE_ID}/specs/` (if available)
      - Define Epic scope and success criteria
      - Design technical approach (data model, API contracts)
      - Plan implementation phases (TDD: Phase 2 Tests, Phase 3 Implementation)
@@ -141,8 +146,9 @@ Prompt:
      - Phase 2 (Tests First): ALL contract tests, integration tests BEFORE implementation
      - TEST VERIFICATION CHECKPOINT: Ensure tests will fail before Phase 3
      - Phase 3 (Core Implementation): Make tests pass
+     - Reference delta requirements using `[REQ:<name>]` tags within tasks
      - If UI_PROTOTYPE.html exists:
-       • Add Phase 3 frontend tasks for each page in UI prototype
+        • Add Phase 3 frontend tasks for each page in UI prototype
        • Each frontend task should reference UI_PROTOTYPE.html
        • Include tasks for responsive implementation (mobile/tablet/desktop)
        • Include tasks for interactive states (hover/active/disabled)
@@ -154,6 +160,11 @@ Prompt:
   6. Write EPIC.md to ${EPIC_FILE}
   7. Write TASKS.md (SINGLE document) to ${TASKS_FILE}
   8. Log event: log_event "${REQ_ID}" "Epic and Tasks generation completed"
+  9. If CHANGE_ID set:
+        - `.claude/scripts/parse-delta.sh "$CHANGE_ID"`
+        - `.claude/scripts/sync-task-progress.sh "$CHANGE_ID"`
+        - `.claude/scripts/run-dualtrack-validation.sh "$CHANGE_ID"`
+        - `.claude/scripts/check-dualtrack-conflicts.sh "$CHANGE_ID" --count-only`
 
   Critical Requirements:
   - TASKS.md must be a SINGLE document with ALL tasks
@@ -226,6 +237,13 @@ Subagent: planner
    → Set: completedTasks = 0
    → Set: updatedAt = current timestamp
    → Write: orchestration_status.json
+
+8. Delta & 任务/冲突同步 (如 CHANGE_ID 存在)
+   → `.claude/scripts/parse-delta.sh "$CHANGE_ID"`
+   → `.claude/scripts/sync-task-progress.sh "$CHANGE_ID"`
+   → `.claude/scripts/run-dualtrack-validation.sh "$CHANGE_ID"`
+   → `.claude/scripts/check-dualtrack-conflicts.sh "$CHANGE_ID" --count-only`
+     - count > 0: WARN 并提示运行完整命令查看冲突详情
 
 *GATE CHECK: Epic and Tasks meet all quality and TDD criteria*
 ```

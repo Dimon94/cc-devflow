@@ -92,6 +92,8 @@ description: Create PR and manage release. Usage: /flow-release "REQ-123" or /fl
    → Read: TEST_REPORT.md (quality status)
    → Read: SECURITY_REPORT.md (security status)
    → Read: EXECUTION_LOG.md (development timeline)
+   → Determine CHANGE_ID: `CHANGE_ID=$(jq -r '.change_id // empty' "$REQ_DIR/orchestration_status.json")`
+   → If CHANGE_ID present: review `devflow/specs/` and `devflow/changes/${CHANGE_ID}` for final delta content
 
 3. Generate commit summary
    → Run: git log main...HEAD --oneline
@@ -121,6 +123,24 @@ description: Create PR and manage release. Usage: /flow-release "REQ-123" or /fl
       Agent: release-manager"
 ```
 
+### 阶段 2.5: Delta 审核关卡
+
+```
+1. 如果 CHANGE_ID 存在:
+   → `.claude/scripts/parse-delta.sh "$CHANGE_ID"`
+   → `.claude/scripts/sync-task-progress.sh "$CHANGE_ID"`
+   → `.claude/scripts/run-dualtrack-validation.sh "$CHANGE_ID" --strict`
+   → `.claude/scripts/check-dualtrack-conflicts.sh "$CHANGE_ID" --strict`
+
+2. 若任一步失败:
+   → 输出 "❌ Delta validation failed before release"
+   → log_event "$REQ_ID" "❌ Delta validation failed pre-release"
+   → exit 1 阻塞发布
+
+3. 验证通过:
+   → log_event "$REQ_ID" "✅ Delta validation passed pre-release"
+```
+
 ### 阶段 3: 调用 release-manager Agent
 
 **Agent Invocation**:
@@ -140,6 +160,7 @@ Prompt:
   - Test Coverage: ${coverage}%
   - Quality Gate: ${quality_gate}
   - Security Gate: ${security_gate}
+  - Change ID: ${CHANGE_ID:-"(none)"}
 
   Available Data:
   - PRD.md: Original requirements and success criteria
@@ -160,6 +181,7 @@ Prompt:
      → Read TEST_REPORT.md for quality evidence
      → Read SECURITY_REPORT.md for security evidence
      → Load git log for commit history
+     → If CHANGE_ID exists: summarize delta (`devflow/changes/${CHANGE_ID}`) and final specs (`devflow/specs/`)
 
   3. Verify task completion:
      → Run: check-task-status.sh --json
@@ -179,12 +201,13 @@ Prompt:
        * Coverage percentage
        * Critical issues count
      → Parse SECURITY_REPORT.md:
-       * Security Gate status
-       * CRITICAL issues count
-       * HIGH issues count
-     → If Quality Gate = FAIL: ERROR "Quality gate failed"
-     → If Security Gate = FAIL: ERROR "Security gate failed"
-     → If CRITICAL security issues > 0: ERROR "Critical security issues must be fixed"
+      * Security Gate status
+      * CRITICAL issues count
+      * HIGH issues count
+    → If Quality Gate = FAIL: ERROR "Quality gate failed"
+    → If Security Gate = FAIL: ERROR "Security gate failed"
+    → If CRITICAL security issues > 0: ERROR "Critical security issues must be fixed"
+     → Cross-check delta requirements to ensure quality/security evidence covers all impacted capabilities
 
   6. Generate PR title and description:
      → Title format: "${REQ_ID}: ${TITLE}"
@@ -231,7 +254,33 @@ Prompt:
 Subagent: release-manager
 ```
 
-### 阶段 4: 创建 Pull Request
+### 阶段 4: 双轨归档与摘要
+
+**Execution Flow**:
+```
+1. 读取 change_id
+   → CHANGE_ID=$(jq -r '.change_id // empty' "$REQ_DIR/orchestration_status.json")
+   → 若为空: ERROR "change_id missing. Run /flow-init or migrate scripts first."
+
+2. 归档待归档 Delta
+   → bash .claude/scripts/archive-change.sh "$CHANGE_ID"
+   → 若失败: ERROR "Archive failed. Review delta specs."
+
+3. 生成归档摘要与 Changelog
+   → bash .claude/scripts/generate-archive-summary.sh "$CHANGE_ID"
+     - 输出: devflow/changes/archive/$CHANGE_ID/summary.md
+   → bash .claude/scripts/generate-spec-changelog.sh "$CHANGE_ID"
+     - 更新: devflow/specs/<capability>/CHANGELOG.md
+
+4. 日志记录
+   → log_event "$REQ_ID" "Change $CHANGE_ID archived to devflow/specs/ (summary + changelog)"
+
+5. 提示回滚命令
+   → 若归档后发现问题，可运行:
+     `bash .claude/scripts/rollback-archive.sh "$CHANGE_ID"`
+```
+
+### 阶段 5: 创建 Pull Request
 
 **Execution Flow**:
 ```
@@ -279,7 +328,7 @@ Subagent: release-manager
       Base: main ← Head: ${BRANCH_NAME}"
 ```
 
-### 阶段 5: 发布完成确认 (Exit Gate)
+### 阶段 6: 发布完成确认 (Exit Gate)
 
 **Exit Gate Validation**:
 ```

@@ -97,6 +97,23 @@ You MUST use the unified script infrastructure for all path and setup operations
    log_event "$REQ_ID" "PRD generation completed"
    ```
 
+## Dual-Track Context Requirements
+- 读取 `orchestration_status.json` 获取 `CHANGE_ID`
+  ```bash
+  STATUS_FILE="$REQ_DIR/orchestration_status.json"
+  CHANGE_ID=$(jq -r '.change_id // empty' "$STATUS_FILE" 2>/dev/null)
+  ```
+- 如存在 `CHANGE_ID`:
+  - 先阅读 `devflow/specs/<capability>/spec.md`（系统真实源）
+  - 阅读 `devflow/changes/$CHANGE_ID/specs/<capability>/spec.md`（待归档 Delta）
+  - 在 PRD 中引用对应 Requirement/Scenario 名称，保持 Traceability
+- PRD 输出完成后：
+  ```bash
+  .claude/scripts/parse-delta.sh "$CHANGE_ID"
+  .claude/scripts/check-dualtrack-conflicts.sh "$CHANGE_ID" --count-only
+  ```
+  - 如冲突计数 > 0：在输出汇报 WARN，并提示运行无 `--count-only` 版本查看详情
+
 ## Template Usage
 MUST use the **self-executable PRD_TEMPLATE.md** from `.claude/docs/templates/`:
 
@@ -180,6 +197,10 @@ devflow/requirements/${reqId}/
 9. **Validate Completeness**: Use Validation Checklist from template
 10. **Write Complete PRD**: Output PRD.md with all sections filled, no placeholders
 11. **Log Event**: `log_event "$REQ_ID" "PRD generation completed"`
+12. **Delta & 冲突同步** (如 `CHANGE_ID` 存在):
+    - `.claude/scripts/parse-delta.sh "$CHANGE_ID"`
+    - `.claude/scripts/check-dualtrack-conflicts.sh "$CHANGE_ID" --count-only`
+    - `.claude/scripts/run-dualtrack-validation.sh "$CHANGE_ID"` (`--strict` 可选：如需在 PRD 阶段就设硬闸，请在输出中提示用户运行 `--strict`)
 
 ### Clarification Process (Ambiguous Inputs):
 **Phase 1: Initial Analysis**

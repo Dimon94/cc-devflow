@@ -194,3 +194,15 @@ if ! $JSON_MODE; then
         echo "Overall: $PERCENTAGE% complete"
     fi
 fi
+
+STATUS_FILE="$REQ_DIR/orchestration_status.json"
+if [[ -f "$STATUS_FILE" ]]; then
+    CHANGE_ID=$(jq -r '.change_id // empty' "$STATUS_FILE" 2>/dev/null || echo "")
+    if [[ -n "$CHANGE_ID" && -x "$SCRIPT_DIR/sync-task-progress.sh" ]]; then
+        if ! "$SCRIPT_DIR/sync-task-progress.sh" "$CHANGE_ID" >/dev/null 2>&1; then
+            echo "WARNING: Failed to sync task progress for change $CHANGE_ID" >&2
+        fi
+    fi
+fi
+
+exit 0

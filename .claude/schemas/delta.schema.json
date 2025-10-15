@@ -1,0 +1,123 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cc-devflow.claude/.claude/schemas/delta.schema.json",
+  "title": "Devflow Change Delta",
+  "type": "object",
+  "required": [
+    "changeId",
+    "relatedRequirements",
+    "requirements",
+    "capabilities",
+    "updatedAt",
+    "tasks",
+    "links"
+  ],
+  "properties": {
+    "changeId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "relatedRequirements": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "requirements": {
+      "type": "object",
+      "required": [
+        "added",
+        "modified",
+        "removed",
+        "renamed"
+      ],
+      "properties": {
+        "added": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/requirementRef"
+          }
+        },
+        "modified": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/requirementRef"
+          }
+        },
+        "removed": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/requirementRef"
+          }
+        },
+        "renamed": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "capability",
+              "from",
+              "to"
+            ],
+            "properties": {
+              "capability": {
+                "type": "string",
+                "minLength": 1
+              },
+              "from": {
+                "type": "string",
+                "minLength": 1
+              },
+              "to": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "updatedAt": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tasks": {
+      "type": "object"
+    },
+    "links": {
+      "type": "array"
+    }
+  },
+  "definitions": {
+    "requirementRef": {
+      "type": "object",
+      "required": [
+        "capability",
+        "name"
+      ],
+      "properties": {
+        "capability": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": true
+}

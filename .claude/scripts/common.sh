@@ -139,10 +139,212 @@ ensure_devflow_dir() {
     local repo_root="$1"
     local devflow_dir="$repo_root/devflow"
 
-    if [[ ! -d "$devflow_dir" ]]; then
-        mkdir -p "$devflow_dir/requirements"
-        mkdir -p "$devflow_dir/bugs"
+    mkdir -p "$devflow_dir/requirements"
+    mkdir -p "$devflow_dir/bugs"
+    mkdir -p "$devflow_dir/changes"
+    mkdir -p "$devflow_dir/specs"
+}
+
+# Convert arbitrary text to a lowercase slug suitable for change identifiers
+# Examples:
+#   slugify "Add User Login" => "add-user-login"
+#   slugify "SAML/OIDC" => "saml-oidc"
+slugify() {
+    local input="$1"
+    if [[ -z "$input" ]]; then
+        echo ""
+        return
     fi
+
+    # Convert to lowercase and replace non-alphanumeric characters with hyphen
+    local slug
+    slug=$(printf '%s' "$input" | tr '[:upper:]' '[:lower:]')
+    slug=$(printf '%s' "$slug" | sed 's/[^a-z0-9]/-/g')
+    # Collapse repeated hyphens and trim edges
+    slug=$(echo "$slug" | sed 's/-\{2,\}/-/g; s/^-//; s/-$//')
+
+    echo "$slug"
+}
+
+# Ensure change identifier is unique within devflow/changes
+ensure_unique_change_id() {
+    local changes_dir="$1"
+    local base_id="$2"
+    local candidate="$base_id"
+    local counter=2
+
+    while [[ -d "$changes_dir/$candidate" ]]; do
+        candidate="${base_id}-${counter}"
+        counter=$((counter + 1))
+    done
+
+    echo "$candidate"
+}
+
+# Generate a default change identifier for a requirement + title pair
+generate_change_id() {
+    local req_id="$1"
+    local title="$2"
+
+    local normalized_req=$(echo "$req_id" | tr '[:upper:]' '[:lower:]')
+    normalized_req=${normalized_req//_/-}
+
+    local slug=$(slugify "$title")
+    if [[ -z "$slug" ]]; then
+        slug=$(date '+%Y%m%d%H%M%S')
+    fi
+
+    echo "${normalized_req}-${slug}"
+}
+
+# Validate change identifier format (req-123-example)
+# Args: $1 - change identifier
+validate_change_id() {
+    local change_id="$1"
+
+    if [[ -z "$change_id" ]]; then
+        echo "ERROR: change-id cannot be empty" >&2
+        return 1
+    fi
+
+    # Accept req-123-foo, req-20240101-001-bar, bug-123-baz, bug-20240101-001-baz
+    if [[ ! "$change_id" =~ ^(req|bug)-[0-9]+(-[0-9]+)?-[a-z0-9-]+$ ]]; then
+        echo "ERROR: Invalid change-id format: $change_id" >&2
+        echo "Expected format: req-123-description or req-20240101-001-description" >&2
+        return 1
+    fi
+
+    return 0
+}
+
+# =============================================================================
+# JSON Schema 校验辅助 (轻量实现 draft-07 子集)
+# =============================================================================
+validate_json_schema() {
+    local json_path="$1"
+    local schema_path="$2"
+
+    python3 - "$json_path" "$schema_path" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+def fail(message: str) -> None:
+    print(f"ERROR: {message}", file=sys.stderr)
+    sys.exit(1)
+
+def ensure_type(target, expected: str, path: str) -> None:
+    mapping = {"object": dict, "array": list, "string": str}
+    python_type = mapping.get(expected)
+    if python_type is None:
+        return
+    if not isinstance(target, python_type):
+        fail(f"{path} must be {expected}")
+
+def validate_array(node, schema, path):
+    if "minItems" in schema and len(node) < schema["minItems"]:
+        fail(f"{path} must contain at least {schema['minItems']} items")
+    if schema.get("uniqueItems") and len(set(map(json.dumps, node))) != len(node):
+        fail(f"{path} must contain unique items")
+    item_schema = schema.get("items")
+    if item_schema:
+        for idx, item in enumerate(node):
+            validate_node(item, item_schema, f"{path}[{idx}]")
+
+def validate_object(node, schema, path):
+    properties = schema.get("properties", {})
+    required = schema.get("required", [])
+    additional = schema.get("additionalProperties", True)
+    for key in required:
+        if key not in node:
+            fail(f"{path}.{key} is required")
+    for key, value in node.items():
+        if key in properties:
+            validate_node(value, properties[key], f"{path}.{key}")
+        elif additional is False:
+            fail(f"{path}.{key} is not allowed")
+
+def validate_node(node, schema, path: str) -> None:
+    node_type = schema.get("type")
+    if node_type:
+        ensure_type(node, node_type, path)
+    if "enum" in schema and node not in schema["enum"]:
+        fail(f"{path} must be one of {schema['enum']}")
+    if isinstance(node, str) and "minLength" in schema and len(node) < schema["minLength"]:
+        fail(f"{path} length must be >= {schema['minLength']}")
+    if isinstance(node, list):
+        validate_array(node, schema, path)
+    if isinstance(node, dict):
+        validate_object(node, schema, path)
+
+json_path = Path(sys.argv[1])
+schema_path = Path(sys.argv[2])
+
+try:
+    data = json.loads(json_path.read_text(encoding="utf-8"))
+except Exception as exc:
+    fail(f"Failed to read {json_path}: {exc}")
+
+try:
+    schema = json.loads(schema_path.read_text(encoding="utf-8"))
+except Exception as exc:
+    fail(f"Failed to read schema {schema_path}: {exc}")
+
+validate_node(data, schema, "$")
+PY
+}
+
+# Return absolute path to change directory for a given repo + change id
+get_change_dir() {
+    local repo_root="$1"
+    local change_id="$2"
+    ensure_devflow_dir "$repo_root"
+    echo "$repo_root/devflow/changes/$change_id"
+}
+
+# Locate existing change directory (active or archived)
+# Args: $1 - repository root, $2 - change identifier
+# Output: absolute path if found; returns 1 otherwise
+locate_change_dir() {
+    local repo_root="$1"
+    local change_id="$2"
+    local active_dir="$repo_root/devflow/changes/$change_id"
+    local archive_dir="$repo_root/devflow/changes/archive/$change_id"
+
+    if [[ -d "$active_dir" ]]; then
+        echo "$active_dir"
+        return 0
+    fi
+
+    if [[ -d "$archive_dir" ]]; then
+        echo "$archive_dir"
+        return 0
+    fi
+
+    return 1
+}
+
+# Read change-id from requirement orchestration status file
+# Args: $1 - requirement directory path
+# Output: change id on stdout
+get_change_id() {
+    local req_dir="$1"
+    local status_file="$req_dir/orchestration_status.json"
+
+    if [[ ! -f "$status_file" ]]; then
+        echo "ERROR: orchestration_status.json not found in $req_dir" >&2
+        return 1
+    fi
+
+    local change_id
+    change_id=$(jq -r '.change_id // empty' "$status_file" 2>/dev/null || true)
+
+    if [[ -z "$change_id" || "$change_id" == "null" ]]; then
+        echo "ERROR: change_id not set in $status_file" >&2
+        return 1
+    fi
+
+    echo "$change_id"
 }
 
 # Get requirement directory path

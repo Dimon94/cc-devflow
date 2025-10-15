@@ -51,26 +51,34 @@ description: Initialize requirement structure. Usage: /flow-init "REQ-123|User A
 *GATE CHECK: All validations passed*
 ```
 
-### 阶段 2: 目录结构初始化
+### 阶段 2: 目录与双轨初始化
 
 **Execution Flow**:
 ```
-1. Run script to create directory structure
-   → Execute: .claude/scripts/create-requirement.sh "${REQ_ID}" --title "${TITLE}" --json
-   → Capture JSON output for paths
+1. Execute primary scaffold script
+   → Run: .claude/scripts/create-requirement.sh "${REQ_ID}" --title "${TITLE}" --json
+   → Script returns: req_dir, change_id, change_dir, git_branch
 
-2. Verify directory creation
-   → Check: REQ_DIR exists
-   → Check: research/ directory exists
-   → Check: EXECUTION_LOG.md created
-   → Check: orchestration_status.json created
-   → If any missing: ERROR "Directory creation failed"
+2. 自动触发双轨引导
+   → 内部调用 bootstrap-devflow-dualtrack.sh，确保生成：
+      - devflow/AGENTS.md（带 OPENSPEC 标记）
+      - devflow/project.md 项目上下文
+      - devflow/changes/${change_id}/ (proposal.md、tasks.md、design.md、specs/、delta.json 等)
+      - devflow/specs/ 目录存在（含 .gitkeep）
+   → 调用 link-change-id.sh 将 orchestration_status.json or status.json 更新为当前 change_id
 
-3. Log initialization event
+3. 校验初始化结果
+   → REQ_DIR、research/、EXECUTION_LOG.md、orchestration_status.json 均存在
+   → devflow/changes/${change_id}/proposal.md 存在
+   → devflow/changes/${change_id}/delta.json 初始化成功
+   → devflow/specs/ 目录存在，AGENTS.md 含 OPENSPEC 标记块
+
+4. 记录初始化事件
    → Append to EXECUTION_LOG.md:
      "### $(date -Iseconds)
       Requirement initialized via /flow-init
       Title: ${TITLE}
+      Change ID: ${change_id}
       Status: Ready for PRD generation"
 ```
 
@@ -93,7 +101,7 @@ description: Initialize requirement structure. Usage: /flow-init "REQ-123|User A
 
 4. Set environment variable
    → Export: DEVFLOW_REQ_ID="${REQ_ID}"
-   → This allows scripts to find requirement without branch parsing
+   → 脚本可在 branch 不可用时解析当前需求上下文
 
 5. Log branch creation
    → Append to EXECUTION_LOG.md:
@@ -128,15 +136,17 @@ description: Initialize requirement structure. Usage: /flow-init "REQ-123|User A
    - [ ] REQ_DIR/EXECUTION_LOG.md exists
    - [ ] REQ_DIR/orchestration_status.json exists
    - [ ] REQ_DIR/README.md exists
+   - [ ] devflow/changes/${change_id}/ (proposal.md, tasks.md, delta.json) exists
+   - [ ] devflow/specs/ directory present (global truth store)
 
 2. Verify git branch (if applicable):
    - [ ] Branch created successfully
    - [ ] Currently on feature/bugfix branch
-   - [ ] DEVFLOW_REQ_ID environment variable set
+   - [ ] DEVFLOW_REQ_ID environment variable set (if git branch not used)
 
 3. Verify status tracking:
-   - [ ] orchestration_status.json has "status": "initialized"
-   - [ ] EXECUTION_LOG.md has initialization entry
+   - [ ] orchestration_status.json/status.json 已包含 changeId/changePath
+   - [ ] EXECUTION_LOG.md 记录 changeId 初始化事件
 
 *GATE CHECK: All verifications passed*
 ```
@@ -150,11 +160,14 @@ Type:              ${REQ_TYPE} (requirement/bug)
 Directory:         ${REQ_DIR}
 Title:             ${TITLE}
 Git Branch:        ${BRANCH_NAME}
+Change ID:         ${change_id}
+Change Directory:  devflow/changes/${change_id}
 
 Next Steps:
   1. Add research materials to research/ directory (optional)
-  2. Run /flow-prd to generate Product Requirements Document
-  3. Or provide requirement details directly to prd-writer agent
+  2. Review devflow/changes/${change_id}/ proposal & delta placeholders
+  3. Run /flow-prd to generate Product Requirements Document
+  4. Provide requirement details directly to prd-writer agent
 
 Files created:
   - ${REQ_DIR}/README.md
@@ -173,10 +186,22 @@ devflow/requirements/${REQ_ID}/     # For requirements
 ├── EXECUTION_LOG.md                     # Event log with initialization entry
 └── orchestration_status.json            # Status: "initialized", phase: "planning"
 
+devflow/changes/${change_id}/        # Dual-track change scaffolding
+├── proposal.md                         # Why / What / Impact / Checklists
+├── tasks.md                            # Constitution-aware task breakdown
+├── design.md                           # Optional design notes
+├── specs/README.md                     # Delta authoring guide
+├── delta.json                          # Structured delta + requirement mapping
+├── constitution.json                   # Articles VII–X compliance tracking
+└── task-progress.json                  # Checkbox-derived progress snapshot
+
 devflow/bugs/${BUG_ID}/             # For bug fixes
 ├── README.md
 ├── EXECUTION_LOG.md
 └── status.json                          # BUG-specific status tracking
+
+devflow/specs/                      # System truth source (populated during archive)
+└── .gitkeep                           # Placeholder until first archive
 ```
 
 ### Git 分支
@@ -192,7 +217,12 @@ devflow/bugs/${BUG_ID}/             # For bug fixes
   "status": "initialized",
   "phase": "planning",
   "createdAt": "2025-09-30T12:34:56Z",
-  "updatedAt": "2025-09-30T12:34:56Z"
+  "updatedAt": "2025-09-30T12:34:56Z",
+  "changeId": "req-123-user-authentication",
+  "changePath": "devflow/changes/req-123-user-authentication",
+  "activeChangeIds": [
+    "req-123-user-authentication"
+  ]
 }
 ```
 
@@ -205,7 +235,12 @@ devflow/bugs/${BUG_ID}/             # For bug fixes
   "phase": "analysis",
   "severity": "unknown",
   "createdAt": "2025-09-30T12:34:56Z",
-  "updatedAt": "2025-09-30T12:34:56Z"
+  "updatedAt": "2025-09-30T12:34:56Z",
+  "changeId": "bug-456-login-timeout",
+  "changePath": "devflow/changes/bug-456-login-timeout",
+  "activeChangeIds": [
+    "bug-456-login-timeout"
+  ]
 }
 ```
 

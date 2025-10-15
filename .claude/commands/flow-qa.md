@@ -39,6 +39,8 @@ description: Execute quality assurance and security review. Usage: /flow-qa "REQ
    → Verify: orchestration_status.json exists
    → If missing: ERROR "Requirement not initialized. Run /flow-init first."
 
+   → Determine CHANGE_ID via `jq -r '.change_id // empty' "$REQ_DIR/orchestration_status.json"`
+
 3. Check orchestration status
    → Read: orchestration_status.json
    → Verify: status is "development_complete" or "qa_failed"
@@ -103,6 +105,29 @@ description: Execute quality assurance and security review. Usage: /flow-qa "REQ
       Agents: qa-tester, security-reviewer"
 ```
 
+### 阶段 2.5: Delta 完整性验证 (新增)
+
+**Execution Flow**:
+```
+1. 如果 CHANGE_ID 存在:
+     → 运行 `.claude/scripts/parse-delta.sh "$CHANGE_ID"`
+     → 运行 `.claude/scripts/sync-task-progress.sh "$CHANGE_ID"`
+     → 运行 `.claude/scripts/run-dualtrack-validation.sh "$CHANGE_ID" --strict`
+     - 检查 delta.json 是否存在且含有 requirements
+     - 检查 tasks.md 是否无占位符
+     - 检查 constitution.json 状态
+     → 运行 `.claude/scripts/check-dualtrack-conflicts.sh "$CHANGE_ID" --strict`
+       - 若发现冲突: ERROR "Delta conflicts detected. Resolve before QA."
+
+2. 验证失败时:
+     → 输出详细错误信息
+     → log_event "$REQ_ID" "❌ Delta validation failed before QA"
+     → exit 1 阻塞 QA 流程
+
+3. 验证通过时:
+     → log_event "$REQ_ID" "✅ Delta validation passed before QA"
+```
+
 ### 阶段 3: 调用 qa-tester Agent
 
 **Agent Invocation**:
@@ -118,6 +143,7 @@ Prompt:
   - Development Status: All ${totalTasks} tasks completed
   - Test Status: All tests passing
   - Current Coverage: ${coverage}%
+  - Change ID: ${CHANGE_ID:-"(none)"}
 
   Available Data:
   - PRD.md: User stories and acceptance criteria
@@ -135,6 +161,7 @@ Prompt:
      → Read EPIC.md for success criteria and DoD
      → Read TASKS.md for all task DoD requirements
      → Read test-results.json and test-output.txt
+     → If CHANGE_ID exists: review devflow/specs/ and devflow/changes/${CHANGE_ID}/specs/ for impacted requirements
 
   3. Analyze test coverage:
      → Check line coverage ≥ 80% (target)
@@ -142,6 +169,7 @@ Prompt:
      → Check function coverage ≥ 80%
      → Identify critical paths with low coverage
      → List uncovered files/functions
+      → Map uncovered areas back to delta requirements (if CHANGE_ID exists)
 
   4. Validate TDD compliance:
      → Verify Phase 2 tests exist for all Phase 3 implementations
@@ -154,6 +182,7 @@ Prompt:
        * Check corresponding integration test exists
        * Verify AC scenarios covered (Given-When-Then)
        * Identify gaps in acceptance criteria testing
+        * If CHANGE_ID exists: ensure each delta requirement/scenario has explicit test coverage
 
   6. Validate DoD criteria completion:
      → For each task in TASKS.md:

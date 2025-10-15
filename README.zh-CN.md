@@ -65,6 +65,45 @@ python3 .claude/scripts/demo.py
 ```
 这个演示将引导您体验完整的开发流程，包括自动进度更新。
 
+### 双轨运维工具集 (Spec 集成) 🆕
+
+**Bash/Python3 原生 Spec 实现** - 零外部依赖，80% 测试覆盖率，生产就绪。
+
+**快速开始**:
+```bash
+# 为现有需求引导双轨
+bash .claude/scripts/bootstrap-devflow-dualtrack.sh --req-id REQ-123 --title "用户认证" --change-id req-123-auth
+
+# 检查所有变更的冲突
+bash .claude/scripts/check-dualtrack-conflicts.sh --strict
+
+# 归档变更并合并到全局 specs/
+bash .claude/scripts/archive-change.sh req-123-auth
+
+# 生成归档摘要
+bash .claude/scripts/generate-archive-summary.sh req-123-auth
+
+# 从历史快照回滚
+bash .claude/scripts/rollback-archive.sh req-123-auth
+```
+
+**工具与命令**:
+- 📘 **培训资料**: [Dual-Track Training Guide](docs/DualTrack_Training_Guide.md) - 完整的双轨工作流培训
+- 📈 **度量脚本**: `bash .claude/scripts/generate-dualtrack-metrics.sh [--json]` - 双轨度量和统计
+- 🚚 **迁移脚本**: `bash .claude/scripts/migrate-all-requirements.sh [--force]` - 迁移现有需求
+- ✅ **测试**: `bash .claude/tests/scripts/run.sh` - 运行所有测试 (20/25 脚本，80% 覆盖率，19/20 通过)
+- 🔍 **冲突检测**: `bash .claude/scripts/check-dualtrack-conflicts.sh [--strict]` - 8场景冲突矩阵
+- 📦 **归档**: `bash .claude/scripts/archive-change.sh <change-id>` - 4阶段合并算法
+- 🔄 **验证**: `bash .claude/scripts/run-dualtrack-validation.sh` - 综合验证
+- 📊 **变更日志**: `bash .claude/scripts/generate-spec-changelog.sh <change-id>` - 自动生成变更日志
+
+**架构亮点**:
+- **4阶段归档算法**: RENAMED → REMOVED → MODIFIED → ADDED (保序事务)
+- **8场景冲突检测**: Map 查找，无特殊情况分支
+- **JSON Schema 验证**: 原生 Python3 验证器，支持 `$ref` 解析
+- **托管块机制**: 幂等模板插入
+- **Constitution 合规**: 100% 符合 cc-devflow Constitution v2.0.0
+
 ### 使用方法
 
 1. **启动新的需求流程:**
@@ -168,6 +207,64 @@ python3 .claude/scripts/demo.py
 3. 生成完整文档
 4. 无占位符未填充
 5. 通过验证清单
+
+### 双轨架构 (Spec 集成) 🆕
+
+**设计哲学**: 变更追踪与全局真相分离，支持安全并行开发。
+
+```text
+devflow/
+├── requirements/          # 传统工作流 (PRD/EPIC/TASKS)
+│   └── REQ-123/
+│       ├── PRD.md
+│       ├── EPIC.md
+│       └── TASKS.md
+│
+├── changes/              # 活跃变更 (Delta 追踪)
+│   └── req-123-login/
+│       ├── proposal.md
+│       ├── tasks.md
+│       ├── specs/
+│       │   └── auth/spec.md
+│       ├── delta.json          # ADDED/MODIFIED/REMOVED/RENAMED
+│       └── constitution.json   # 条款合规性追踪
+│
+├── changes/archive/      # 已归档变更 (归档后移动)
+│   └── req-123-login/    # 从 changes/ 自动移动
+│
+└── specs/                # 全局真相 (权威)
+    └── auth/
+        ├── spec.md             # 合并自所有变更
+        ├── CHANGELOG.md        # 自动生成
+        └── history/
+            └── 20251015T143000-req-123-login.md  # 快照
+```
+
+**核心算法**:
+
+1. **4阶段归档** (保序事务):
+   ```text
+   阶段 1: RENAMED  - 更新 Map 键 (from → to)
+   阶段 2: REMOVED  - 删除需求
+   阶段 3: MODIFIED - 替换现有 (带冲突检查)
+   阶段 4: ADDED    - 插入新增 (带冲突检查)
+   ```
+
+2. **8场景冲突检测** (Map 查找):
+   - ADDED vs ADDED (重复)
+   - ADDED vs REMOVED
+   - ADDED vs RENAMED_FROM
+   - ADDED vs RENAMED_TO
+   - MODIFIED vs REMOVED
+   - MODIFIED vs RENAMED_TO
+
+**核心特性**:
+- **零外部依赖**: 纯 Bash + Python3 + jq
+- **JSON Schema 验证**: 原生验证器，支持 `$ref` 解析
+- **托管块**: 幂等模板插入
+- **生命周期管理**: 归档 → 摘要 → 变更日志 → 回滚
+- **测试覆盖**: 80% (20/25 脚本，19/20 测试通过)
+- **macOS 兼容**: Bash 3.2 兼容 (无 Bash 4.x 特性)
 
 ### 质量闸
 - **推送前保护**: TypeScript、测试、代码检查、安全、构建验证

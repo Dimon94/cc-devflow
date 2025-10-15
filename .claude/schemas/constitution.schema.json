@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cc-devflow.claude/.claude/schemas/constitution.schema.json",
+  "title": "Devflow Constitution Tracking",
+  "type": "object",
+  "required": [
+    "articles"
+  ],
+  "properties": {
+    "articles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "article",
+          "status"
+        ],
+        "properties": {
+          "article": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "in_progress",
+              "approved",
+              "waived",
+              "rejected"
+            ]
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": true
+}
