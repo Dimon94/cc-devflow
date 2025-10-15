@@ -123,22 +123,22 @@ description: Create PR and manage release. Usage: /flow-release "REQ-123" or /fl
       Agent: release-manager"
 ```
 
-### 阶段 2.5: Delta 审核关卡
+### 阶段 2.5: Delta 审核与归档关卡
 
 ```
 1. 如果 CHANGE_ID 存在:
-   → `.claude/scripts/parse-delta.sh "$CHANGE_ID"`
-   → `.claude/scripts/sync-task-progress.sh "$CHANGE_ID"`
-   → `.claude/scripts/run-dualtrack-validation.sh "$CHANGE_ID" --strict`
-   → `.claude/scripts/check-dualtrack-conflicts.sh "$CHANGE_ID" --strict`
+   → `.claude/scripts/finalize-dualtrack-release.sh "$CHANGE_ID"`
+     - 串联 QA 审核 (`qa-guard-dualtrack.sh`) 并在失败时阻断流程
+     - 执行 `archive-change.sh`，移动 change 目录到 archive/
+     - 生成 `summary.md`、刷新 `devflow/specs/<cap>/spec.md`、更新 CHANGELOG
 
-2. 若任一步失败:
-   → 输出 "❌ Delta validation failed before release"
-   → log_event "$REQ_ID" "❌ Delta validation failed pre-release"
-   → exit 1 阻塞发布
+2. 可选参数 `--skip-qa` 仅在必要时使用（例如 QA 已重复执行）：
+   → `.claude/scripts/finalize-dualtrack-release.sh "$CHANGE_ID" --skip-qa"`
+   → 仍会归档并生成 summary/changelog；任一步失败都会以非零状态退出
 
-3. 验证通过:
-   → log_event "$REQ_ID" "✅ Delta validation passed pre-release"
+3. 归档成功:
+   → log_event "$REQ_ID" "✅ Dual-track release gate passed"
+   → Release 阶段将引用 `devflow/changes/archive/${CHANGE_ID}` 中的 summary，以及更新后的 specs/
 ```
 
 ### 阶段 3: 调用 release-manager Agent
@@ -181,7 +181,7 @@ Prompt:
      → Read TEST_REPORT.md for quality evidence
      → Read SECURITY_REPORT.md for security evidence
      → Load git log for commit history
-     → If CHANGE_ID exists: summarize delta (`devflow/changes/${CHANGE_ID}`) and final specs (`devflow/specs/`)
+     → If CHANGE_ID exists: 使用 `.claude/scripts/common.sh` 提供的 locate_change_dir 寻找变更目录（可能在 archive/ 下），总结 delta 与 `devflow/specs/` 最终内容
 
   3. Verify task completion:
      → Run: check-task-status.sh --json

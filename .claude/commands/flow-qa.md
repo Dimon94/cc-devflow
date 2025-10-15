@@ -109,23 +109,17 @@ description: Execute quality assurance and security review. Usage: /flow-qa "REQ
 
 **Execution Flow**:
 ```
-1. 如果 CHANGE_ID 存在:
-     → 运行 `.claude/scripts/parse-delta.sh "$CHANGE_ID"`
-     → 运行 `.claude/scripts/sync-task-progress.sh "$CHANGE_ID"`
-     → 运行 `.claude/scripts/run-dualtrack-validation.sh "$CHANGE_ID" --strict`
-     - 检查 delta.json 是否存在且含有 requirements
-     - 检查 tasks.md 是否无占位符
-     - 检查 constitution.json 状态
-     → 运行 `.claude/scripts/check-dualtrack-conflicts.sh "$CHANGE_ID" --strict`
-       - 若发现冲突: ERROR "Delta conflicts detected. Resolve before QA."
+1. 如果 CHANGE_ID 存在（/flow-epic 已生成）:
+     → 执行 `.claude/scripts/qa-guard-dualtrack.sh "$CHANGE_ID"`
+        - 内部自动运行 parse-delta → run-dualtrack-validation --strict → check-dualtrack-conflicts --strict
+        - 任一环节失败即中止 QA，按脚本提示修复 Delta/任务/宪法状态/冲突
 
-2. 验证失败时:
-     → 输出详细错误信息
-     → log_event "$REQ_ID" "❌ Delta validation failed before QA"
-     → exit 1 阻塞 QA 流程
+2. 如需刷新任务完成度，可追加运行：
+     → `.claude/scripts/sync-task-progress.sh "$CHANGE_ID"`
 
-3. 验证通过时:
-     → log_event "$REQ_ID" "✅ Delta validation passed before QA"
+3. QA 审核继续之前，必须确保 qa-guard 成功（脚本输出 ✅ QA gate passed）
+     → 成功后 log_event "$REQ_ID" "✅ Delta validation passed before QA"
+     → 失败时 log_event "$REQ_ID" "❌ Delta validation failed before QA" 并 exit 1
 ```
 
 ### 阶段 3: 调用 qa-tester Agent

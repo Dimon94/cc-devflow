@@ -70,6 +70,21 @@
 
 ---
 
+## Delta Mapping (规范变更草案)
+
+请列出此需求引入的规范变更，用于生成 `devflow/changes/<change-id>/specs/` 草稿以及后续的 Delta 校验。**Operation** 取值限定为 `ADDED`、`MODIFIED`、`REMOVED`、`RENAMED`。若为重命名，请使用 `旧名称 -> 新名称` 的格式。
+
+| Capability | Operation | Requirement | Summary |
+| ---------- | --------- | ----------- | ------- |
+| Auth | ADDED | Session Audit Trail | 记录会话审计日志（含用户、过期时间） |
+| Auth | MODIFIED | Session Enforcement | 更新过期策略，默认 30 分钟无操作失效 |
+| Billing | REMOVED | Legacy Discount Flow | 删除旧折扣流程，统一走新优惠体系 |
+| Reports | RENAMED | Legacy Report -> Compliance Report | 对齐合规术语 |
+
+> ⚠️ 所有行都必须填写完整。若暂未识别变更，请写 `_TBD_` 并在 /flow-epic 阶段补全，否则无法生成 Delta 模板。
+
+---
+
 ## 背景与目标
 
 ### 业务背景

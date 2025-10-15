@@ -82,6 +82,47 @@ description: Initialize requirement structure. Usage: /flow-init "REQ-123|User A
       Status: Ready for PRD generation"
 ```
 
+### 阶段 2.5: 研究材料采集（MCP 强制流程）
+
+在 PRD 阶段之前，就要把“真材实料”准备好。每次 /flow-init 执行完目录搭建后，立即走以下研究脚本，所有步骤均使用 MCP 服务完成。
+
+**Execution Flow**:
+```
+📦 任务 1: 建立基础学习资料（根据需求主题自定义关键词）
+
+> 保存路径统一放在需求目录，便于纳入版本控制：  
+> 设定 `RESEARCH_ROOT="${REQ_DIR}/research/mcp/$(date +%Y%m%d)"`（按执行当天日期组织）  
+> 子目录分别为 `official/`、`guides/`、`tutorials/`、`examples/`。
+
+1️⃣ 获取官方/标准文档 (Context7)
+   - 结合 ${TITLE} 与技术栈推导关键词（如 "Next.js dynamic routing"、"Stripe billing API"）
+   - 调用: resolve-library-id("<核心关键词>")
+   - 调用: get-library-docs(${library_id}, topic="<更具体子主题>", tokens=5000)
+   - 保存为: ${RESEARCH_ROOT}/official/${library_id}-docs.md
+
+2️⃣ 搜索领域教程与最佳实践 (Web Search)
+   - 搜索: "<核心主题> tutorial site:<权威域名1> OR site:<权威域名2>"
+   - 整理结果（标题、来源、链接、适用场景）
+   - 保存索引到: ${RESEARCH_ROOT}/guides/resources.md
+
+3️⃣ 下载/抓取核心资料 (WebFetch)
+   - 从步骤 2 中挑选 2~3 篇高价值文章
+   - 使用 WebFetch 转成 Markdown
+   - 保存为: ${RESEARCH_ROOT}/tutorials/${slug(source)}.md
+
+4️⃣ 搜集实践案例或代码样例 (Web Search + WebFetch)
+   - 搜索: "<关键能力> example OR case study site:github.com OR site:<官方示例库>"
+   - 抓取 README / 示例说明，必要时附代码片段与引用链接
+   - 保存为: ${RESEARCH_ROOT}/examples/${slug(source)}.md
+
+5️⃣ 摘要与可执行建议
+   - 在 ${REQ_DIR}/research/ 中创建 research-summary.md
+   - 汇总上述资料的结论，标注 MCP 任务 ID、核心洞察与推荐用法
+   - 将研究目录与摘要路径写入 EXECUTION_LOG.md，供后续 /flow-prd、/flow-epic、/flow-dev 快速引用
+```
+
+> **Note**: 若主题涉及多个领域（前端 + 后端），可以针对不同关键词重复上述流程。所有 MCP 任务输出的原始 Markdown 请保留原样，并在 research-summary.md 中给出“如何使用这些资源”的指引。
+
 ### 阶段 3: Git 分支创建 (if git repo)
 
 **Execution Flow**:

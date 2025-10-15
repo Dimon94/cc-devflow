@@ -129,30 +129,48 @@ Prompt:
   1. Run .claude/scripts/check-prerequisites.sh --json --paths-only
      to get requirement paths
   2. Read PRD_TEMPLATE.md from .claude/docs/templates/
-3. Follow the Execution Flow in the template step-by-step:
-     - Load context and research materials
-     - Load relevant specs from `devflow/specs/` (baseline truth)
-     - Load pending deltas under `devflow/changes/${CHANGE_ID}/specs/` (if CHANGE_ID present)
-     - Analyze requirements using INVEST criteria
-     - Generate user stories with Given-When-Then criteria
-     - Define non-functional requirements
-     - Identify technical constraints
-     - Define success metrics
-     - Constitution Check (NO PARTIAL IMPLEMENTATION, NO HARDCODED SECRETS)
-     - Validate completeness
+  3. Follow the Execution Flow in the template step-by-step:
+       - Load context and research materials
+       - Load relevant specs from `devflow/specs/` (baseline truth)
+       - Load pending deltas under `devflow/changes/${CHANGE_ID}/specs/` (if CHANGE_ID present)
+       - Analyze requirements using INVEST criteria
+       - Generate user stories with Given-When-Then criteria
+       - Define non-functional requirements
+       - Identify technical constraints
+       - Define success metrics
+       - Constitution Check (NO PARTIAL IMPLEMENTATION, NO HARDCODED SECRETS)
+       - Validate completeness
+       - **Populate `## Delta Mapping` table with Capability / Operation / Requirement / Summary entries**
   4. Write complete PRD.md to ${PRD_FILE}
-     - Fill all sections, no {{PLACEHOLDER}} left
-     - Include Constitution Check section
-     - Include Validation Checklist
- 5. Log event: log_event "${REQ_ID}" "PRD generation completed"
+       - Fill all sections, no {{PLACEHOLDER}} left
+       - Include Constitution Check section
+       - Include Validation Checklist
+  5. Log event: log_event "${REQ_ID}" "PRD generation completed"
   6. If change_id detected in orchestration_status.json:
-     - Run `.claude/scripts/parse-delta.sh "$CHANGE_ID"`
-     - Run `.claude/scripts/check-dualtrack-conflicts.sh "$CHANGE_ID" --count-only`
-       (if >0, surface warning and provide follow-up command for full details)
+       - Include Delta Mapping table output for downstream scripts (seed-delta-from-prd.sh)
 
   Output: Complete PRD.md file at ${PRD_FILE}
 
 Subagent: prd-writer
+```
+
+### 阶段 4.5: Delta 草稿生成
+
+**Execution Flow**:
+```
+1. Seed delta specs from PRD mapping
+   → Run: .claude/scripts/seed-delta-from-prd.sh "${REQ_ID}" --change-id "${CHANGE_ID}"
+   → 功能：解析 PRD 的 Delta Mapping 表，生成 devflow/changes/${CHANGE_ID}/specs/<cap>/spec.md 草稿，并更新 delta.json
+   → 若脚本报错：检查表格是否完整（Capability / Operation / Requirement / Summary 均已填写，Operation 仅限 ADDED/MODIFIED/REMOVED/RENAMED）
+
+2. Review generated specs
+   → 打开 devflow/changes/${CHANGE_ID}/specs/*/spec.md
+   → 根据 PRD 补充 TODO 占位的规范细节与场景描述
+   → 为后续 /flow-epic 的 TDD 分解做好准备
+
+3. (Optional) Quick conflict scan
+   → Run: .claude/scripts/check-dualtrack-conflicts.sh "${CHANGE_ID}" --count-only
+   → 若 count > 0，记录冲突摘要，供 /flow-epic 或 /flow-qa 阶段处理
 ```
 
 ### 阶段 5: PRD 验证 (Exit Gate)
@@ -190,15 +208,14 @@ Subagent: prd-writer
    → Set: updatedAt = current timestamp
    → Write: orchestration_status.json
 
-6. 更新 Delta 与冲突提示 (if change_id exists)
-   → Run `.claude/scripts/parse-delta.sh "$CHANGE_ID"`
-     - 若失败: WARN 并提示手动修复 specs/
+6. 更新 Delta 质量提示 (if change_id exists)
+   → Run `.claude/scripts/seed-delta-from-prd.sh "$REQ_ID" --change-id "$CHANGE_ID"`
+     - 若脚本失败: ERROR 并提示补齐 Delta Mapping 表
    → Run `.claude/scripts/check-dualtrack-conflicts.sh "$CHANGE_ID" --count-only`
      - count > 0: WARN 并提示运行不带 `--count-only` 查看详情
    → Run `.claude/scripts/run-dualtrack-validation.sh "$CHANGE_ID"`
      - 结果仅作为提醒（非阻塞）
-     - 如需强制闸门，可手动执行 `run-dualtrack-validation.sh "$CHANGE_ID" --strict`（可选）
-     - 将命令与执行结果写入 PRD 输出摘要，便于后续阶段知晓是否已启用严格模式
+     - 如需强制闸门，可手动执行 `run-dualtrack-validation.sh "$CHANGE_ID" --strict`
 
 *GATE CHECK: PRD meets all quality criteria*
 ```
