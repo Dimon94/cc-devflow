@@ -176,4 +176,6 @@ $1
 - Output follows the provided report skeleton (markdown text only).
 </success_criteria>
 
+最后要输出 CodeReview 的分析报告的.md 文件
+
 <reminder>DON'T CODE YET.</reminder>
