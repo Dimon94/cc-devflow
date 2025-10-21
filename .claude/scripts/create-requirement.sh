@@ -41,6 +41,7 @@ DESCRIPTION=""
 SKIP_GIT=false
 INTERACTIVE=false
 JSON_MODE=false
+AUTO_ID=false
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -64,6 +65,10 @@ while [[ $# -gt 0 ]]; do
             JSON_MODE=true
             shift
             ;;
+        --auto-id)
+            AUTO_ID=true
+            shift
+            ;;
         --help|-h)
             cat << 'EOF'
 Usage: create-requirement.sh [REQ_ID] [OPTIONS]
@@ -80,6 +85,7 @@ OPTIONS:
   --skip-git          Skip git branch creation
   --interactive, -i   Interactive mode (prompts for inputs)
   --json              Output results in JSON format
+  --auto-id           Auto-select next available REQ-ID when missing or duplicated
   --help, -h          Show this help message
 
 EXAMPLES:
@@ -133,6 +139,7 @@ done
 # Source common functions
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
+REPO_ROOT=$(get_repo_root)
 
 TEMP_FILES=()
 cleanup() {
@@ -153,8 +160,15 @@ if $INTERACTIVE; then
 
     # Prompt for requirement ID if not provided
     if [[ -z "$REQ_ID" ]]; then
-        read -p "Requirement ID (REQ-XXX or BUG-XXX): " REQ_ID
-        REQ_ID=$(echo "$REQ_ID" | tr '[:lower:]' '[:upper:]')
+        suggested_req_id=$(next_available_req_id "$REPO_ROOT")
+        read -p "Requirement ID (REQ-XXX or BUG-XXX) [${suggested_req_id}]: " input_req_id
+        input_req_id=$(echo "${input_req_id}" | tr '[:lower:]' '[:upper:]')
+        if [[ -z "$input_req_id" ]]; then
+            AUTO_ID=true
+            REQ_ID="$suggested_req_id"
+        else
+            REQ_ID="$input_req_id"
+        fi
     fi
 
     # Prompt for title if not provided
@@ -176,11 +190,17 @@ if $INTERACTIVE; then
     fi
 fi
 
-# Validate requirement ID is provided
+# Ensure requirement ID is set, auto-select when allowed
 if [[ -z "$REQ_ID" ]]; then
-    echo "ERROR: Requirement ID is required" >&2
-    echo "Use --interactive mode or provide REQ_ID as argument" >&2
-    exit 1
+    AUTO_ID=true
+    REQ_ID=$(next_available_req_id "$REPO_ROOT")
+    if [[ -z "$REQ_ID" ]]; then
+        echo "ERROR: Unable to determine next requirement ID" >&2
+        exit 1
+    fi
+    if ! $JSON_MODE; then
+        echo "Auto-selected requirement ID: $REQ_ID" >&2
+    fi
 fi
 
 # Normalize requirement ID to uppercase
@@ -189,8 +209,30 @@ REQ_ID=$(echo "$REQ_ID" | tr '[:lower:]' '[:upper:]')
 # Validate requirement ID format
 validate_req_id "$REQ_ID" || exit 1
 
-# Get repository root
-REPO_ROOT=$(get_repo_root)
+# Resolve conflicts when requirement ID already exists
+if req_id_in_use "$REPO_ROOT" "$REQ_ID"; then
+    if $AUTO_ID; then
+        original_req_id="$REQ_ID"
+        while req_id_in_use "$REPO_ROOT" "$REQ_ID"; do
+            next_candidate=$(next_available_req_id "$REPO_ROOT")
+            if [[ "$next_candidate" == "$REQ_ID" ]]; then
+                next_candidate="REQ-$(date +%Y%m%d%H%M%S)"
+            fi
+            REQ_ID="$next_candidate"
+        done
+        if [[ "$REQ_ID" != "$original_req_id" ]] && ! $JSON_MODE; then
+            echo "Requirement ID in use; switched to $REQ_ID" >&2
+        fi
+    else
+        suggested_req_id=$(next_available_req_id "$REPO_ROOT")
+        conflict_dir=$(get_req_dir "$REPO_ROOT" "$REQ_ID")
+        echo "ERROR: Requirement directory already exists: $conflict_dir" >&2
+        if [[ "$suggested_req_id" != "$REQ_ID" ]]; then
+            echo "Suggested next available ID: $suggested_req_id" >&2
+        fi
+        exit 1
+    fi
+fi
 
 # Get requirement type and directory
 REQ_TYPE=$(get_req_type "$REQ_ID")
@@ -200,13 +242,6 @@ REQ_DIR=$(get_req_dir "$REPO_ROOT" "$REQ_ID")
 DEFAULT_CHANGE_ID=$(generate_change_id "$REQ_ID" "$TITLE")
 CHANGE_ID=""
 CHANGE_DIR=""
-
-# Check if requirement already exists
-if [[ -d "$REQ_DIR" ]]; then
-    echo "ERROR: Requirement directory already exists: $REQ_DIR" >&2
-    echo "Use a different requirement ID or remove existing directory first." >&2
-    exit 1
-fi
 
 # Create directory structure
 if ! $JSON_MODE; then

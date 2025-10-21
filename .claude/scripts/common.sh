@@ -93,6 +93,36 @@ get_current_req_id() {
     echo ""  # No requirement ID found
 }
 
+next_available_req_id() {
+    local repo_root="${1:-$(get_repo_root)}"
+    ensure_devflow_dir "$repo_root"
+    local requirements_dir="$repo_root/devflow/requirements"
+    local used_numbers="" width=3 candidate=1
+    local nullglob_state
+    nullglob_state=$(shopt -p nullglob)
+    shopt -s nullglob
+    for path in "$requirements_dir"/REQ-*; do
+        [[ -d "$path" ]] || continue
+        local name=$(basename "$path")
+        [[ "$name" =~ ^REQ-([0-9]+)$ ]] || continue
+        local value=$((10#${BASH_REMATCH[1]}))
+        used_numbers+=" $value"
+    done
+    eval "$nullglob_state"
+    while [[ " $used_numbers " == *" $candidate "* ]]; do
+        candidate=$((candidate + 1))
+    done
+    printf "REQ-%0*d\n" "$width" "$candidate"
+}
+
+req_id_in_use() {
+    local repo_root="$1"
+    local req_id="$2"
+    local req_dir
+    req_dir=$(get_req_dir "$repo_root" "$req_id")
+    [[ -d "$req_dir" ]]
+}
+
 # Check if we have git available
 has_git() {
     git rev-parse --show-toplevel >/dev/null 2>&1
