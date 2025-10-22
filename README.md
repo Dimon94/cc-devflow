@@ -65,44 +65,27 @@ python3 .claude/scripts/demo.py
 ```
 This demo will guide you through the complete development flow, including automatic progress updates.
 
-### Dual-Track Ops Toolkit (Spec Integration) 🆕
-
-**Native Spec implementation in Bash/Python3** - Zero external dependencies, 80% test coverage, production-ready.
+### Single-Track Workflow Essentials
 
 **Quick Start**:
 ```bash
-# Bootstrap dual-track for existing requirement
-bash .claude/scripts/bootstrap-devflow-dualtrack.sh --req-id REQ-123 --title "User Auth" --change-id req-123-auth
+# Create a new requirement scaffold with optional title
+bash .claude/scripts/create-requirement.sh REQ-123 --title "User Auth"
 
-# Check conflicts across all changes
-bash .claude/scripts/check-dualtrack-conflicts.sh --strict
-
-# Archive change and merge to global specs/
-bash .claude/scripts/archive-change.sh req-123-auth
-
-# Generate archive summary
-bash .claude/scripts/generate-archive-summary.sh req-123-auth
-
-# Rollback from history snapshot
-bash .claude/scripts/rollback-archive.sh req-123-auth
+# Or interactively choose the next available ID
+bash .claude/scripts/create-requirement.sh --interactive
 ```
 
-**Tools & Commands**:
-- 📘 **Training**: [Dual-Track Training Guide](docs/DualTrack_Training_Guide.md) - Complete dual-track workflow training
-- 📈 **Metrics**: `bash .claude/scripts/generate-dualtrack-metrics.sh [--json]` - Dual-track metrics and statistics
-- 🚚 **Migration**: `bash .claude/scripts/migrate-all-requirements.sh [--force]` - Migrate existing requirements
-- ✅ **Tests**: `bash .claude/tests/scripts/run.sh` - Run all tests (20/25 scripts, 80% coverage, 19/20 passing)
-- 🔍 **Conflict Detection**: `bash .claude/scripts/check-dualtrack-conflicts.sh [--strict]` - 8-scenario conflict matrix
-- 📦 **Archive**: `bash .claude/scripts/archive-change.sh <change-id>` - 4-phase merge algorithm
-- 🔄 **Validation**: `bash .claude/scripts/run-dualtrack-validation.sh` - Comprehensive validation
-- 📊 **Changelog**: `bash .claude/scripts/generate-spec-changelog.sh <change-id>` - Auto-generate changelog
+**Core Scripts**:
+- 🧭 `bash .claude/scripts/check-prerequisites.sh` — Verify environment and toolchain before kicking off
+- 📋 `bash .claude/scripts/check-task-status.sh --verbose` — Inspect TASKS.md progress and next actionable item
+- ✅ `bash .claude/scripts/mark-task-complete.sh T001` — Mark checklist items done while logging to EXECUTION_LOG.md
+- 🛰️ `bash .claude/scripts/generate-status-report.sh --format markdown` — Produce a summary for stand-ups or reviews
+- 🏛️ `bash .claude/scripts/manage-constitution.sh verify` — Keep Constitution compliance in lockstep with document updates
 
-**Architecture Highlights**:
-- **4-Phase Archive Algorithm**: RENAMED → REMOVED → MODIFIED → ADDED (order-preserving transaction)
-- **8-Scenario Conflict Detection**: Map-based lookup, no special-case branches
-- **JSON Schema Validation**: Native Python3 validator with `$ref` resolution
-- **Managed Block Mechanism**: Idempotent template insertion
-- **Constitution Compliance**: 100% aligned with cc-devflow Constitution v2.0.0
+**Testing**:
+- Run script suite: `bash .claude/tests/scripts/run.sh`
+- Focused checks: `bash .claude/tests/scripts/test_mark_task_complete.sh`
 
 ### Usage
 
@@ -202,63 +185,35 @@ All agents and commands use standardized scripts:
 4. No placeholders left unfilled
 5. Passes Validation Checklist
 
-### Dual-Track Architecture (Spec Integration) 🆕
+### Single-Track Architecture
 
-**Philosophy**: Separate change tracking from global truth, enable safe parallel development.
+**Philosophy**: Keep one canonical workspace per requirement. All planning, execution, and review artifacts live together so the flow reads like a story from intent to release.
 
 ```text
 devflow/
-├── requirements/          # Traditional workflow (PRD/EPIC/TASKS)
-│   └── REQ-123/
-│       ├── PRD.md
-│       ├── EPIC.md
-│       └── TASKS.md
-│
-├── changes/              # Active changes (Delta tracking)
-│   └── req-123-login/
-│       ├── proposal.md
-│       ├── tasks.md
-│       ├── specs/
-│       │   └── auth/spec.md
-│       ├── delta.json          # ADDED/MODIFIED/REMOVED/RENAMED
-│       └── constitution.json   # Article compliance tracking
-│
-├── changes/archive/      # Archived changes (moved after archive)
-│   └── req-123-login/    # Auto-moved from changes/
-│
-└── specs/                # Global truth (canonical)
-    └── auth/
-        ├── spec.md             # Merged from all changes
-        ├── CHANGELOG.md        # Auto-generated
-        └── history/
-            └── 20251015T143000-req-123-login.md  # Snapshot
+├── requirements/REQ-123/
+│   ├── PRD.md                # Product requirements
+│   ├── EPIC.md               # Epic breakdown
+│   ├── TASKS.md              # Unified task checklist
+│   ├── EXECUTION_LOG.md      # Timeline of decisions & progress
+│   ├── TEST_PLAN.md          # QA preparation
+│   ├── TEST_REPORT.md        # QA results
+│   ├── SECURITY_PLAN.md      # Security checklist
+│   ├── SECURITY_REPORT.md    # Security findings
+│   ├── RELEASE_PLAN.md       # Release checklist
+│   ├── research/             # External references
+│   └── tasks/                # Task artifacts & completion markers
+└── bugs/BUG-456/
+    ├── EXECUTION_LOG.md
+    ├── status.json
+    └── research/
 ```
 
-**Core Algorithms**:
-
-1. **4-Phase Archive** (Order-Preserving Transaction):
-   ```text
-   Phase 1: RENAMED  - Update Map keys (from → to)
-   Phase 2: REMOVED  - Delete requirements
-   Phase 3: MODIFIED - Replace existing (with conflict check)
-   Phase 4: ADDED    - Insert new (with conflict check)
-   ```
-
-2. **8-Scenario Conflict Detection** (Map-based lookup):
-   - ADDED vs ADDED (duplicate)
-   - ADDED vs REMOVED
-   - ADDED vs RENAMED_FROM
-   - ADDED vs RENAMED_TO
-   - MODIFIED vs REMOVED
-   - MODIFIED vs RENAMED_TO
-
-**Key Features**:
-- **Zero External Dependencies**: Pure Bash + Python3 + jq
-- **JSON Schema Validation**: Native validator with `$ref` resolution
-- **Managed Blocks**: Idempotent template insertion
-- **Lifecycle Management**: Archive → Summary → Changelog → Rollback
-- **Test Coverage**: 80% (20/25 scripts, 19/20 tests passing)
-- **macOS Compatible**: Bash 3.2 compatible (no Bash 4.x features)
+**Key Practices**:
+- Let the orchestrator status file (`orchestration_status.json`) drive automations and dashboards.
+- Append every decision to `EXECUTION_LOG.md`; it becomes the audit trail.
+- Keep `TASKS.md` as the single checklist—use `mark-task-complete.sh` rather than manual edits.
+- Prefer small, composable documents over extra directory layers; keep everything under the requirement root.
 
 ### Quality Gates
 - **Pre-push Guard**: TypeScript, tests, linting, security, build validation

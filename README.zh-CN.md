@@ -65,44 +65,27 @@ python3 .claude/scripts/demo.py
 ```
 这个演示将引导您体验完整的开发流程，包括自动进度更新。
 
-### 双轨运维工具集 (Spec 集成) 🆕
-
-**Bash/Python3 原生 Spec 实现** - 零外部依赖，80% 测试覆盖率，生产就绪。
+### 单轨工作流速览
 
 **快速开始**:
 ```bash
-# 为现有需求引导双轨
-bash .claude/scripts/bootstrap-devflow-dualtrack.sh --req-id REQ-123 --title "用户认证" --change-id req-123-auth
+# 初始化需求骨架并附带标题
+bash .claude/scripts/create-requirement.sh REQ-123 --title "用户认证"
 
-# 检查所有变更的冲突
-bash .claude/scripts/check-dualtrack-conflicts.sh --strict
-
-# 归档变更并合并到全局 specs/
-bash .claude/scripts/archive-change.sh req-123-auth
-
-# 生成归档摘要
-bash .claude/scripts/generate-archive-summary.sh req-123-auth
-
-# 从历史快照回滚
-bash .claude/scripts/rollback-archive.sh req-123-auth
+# 或进入交互模式自动选择 ID
+bash .claude/scripts/create-requirement.sh --interactive
 ```
 
-**工具与命令**:
-- 📘 **培训资料**: [Dual-Track Training Guide](docs/DualTrack_Training_Guide.md) - 完整的双轨工作流培训
-- 📈 **度量脚本**: `bash .claude/scripts/generate-dualtrack-metrics.sh [--json]` - 双轨度量和统计
-- 🚚 **迁移脚本**: `bash .claude/scripts/migrate-all-requirements.sh [--force]` - 迁移现有需求
-- ✅ **测试**: `bash .claude/tests/scripts/run.sh` - 运行所有测试 (20/25 脚本，80% 覆盖率，19/20 通过)
-- 🔍 **冲突检测**: `bash .claude/scripts/check-dualtrack-conflicts.sh [--strict]` - 8场景冲突矩阵
-- 📦 **归档**: `bash .claude/scripts/archive-change.sh <change-id>` - 4阶段合并算法
-- 🔄 **验证**: `bash .claude/scripts/run-dualtrack-validation.sh` - 综合验证
-- 📊 **变更日志**: `bash .claude/scripts/generate-spec-changelog.sh <change-id>` - 自动生成变更日志
+**核心脚本**:
+- 🧭 `bash .claude/scripts/check-prerequisites.sh` —— 启动前快速检查环境与依赖
+- 📋 `bash .claude/scripts/check-task-status.sh --verbose` —— 查看 TASKS.md 进度与下一步
+- ✅ `bash .claude/scripts/mark-task-complete.sh T001` —— 勾选任务并在 EXECUTION_LOG.md 留痕
+- 🛰️ `bash .claude/scripts/generate-status-report.sh --format markdown` —— 生成例会/周报可用的状态摘要
+- 🏛️ `bash .claude/scripts/manage-constitution.sh verify` —— 持续校验 Constitution 合规性
 
-**架构亮点**:
-- **4阶段归档算法**: RENAMED → REMOVED → MODIFIED → ADDED (保序事务)
-- **8场景冲突检测**: Map 查找，无特殊情况分支
-- **JSON Schema 验证**: 原生 Python3 验证器，支持 `$ref` 解析
-- **托管块机制**: 幂等模板插入
-- **Constitution 合规**: 100% 符合 cc-devflow Constitution v2.0.0
+**测试**:
+- 运行脚本套件：`bash .claude/tests/scripts/run.sh`
+- 针对性检查：`bash .claude/tests/scripts/test_mark_task_complete.sh`
 
 ### 使用方法
 
@@ -208,63 +191,35 @@ bash .claude/scripts/rollback-archive.sh req-123-auth
 4. 无占位符未填充
 5. 通过验证清单
 
-### 双轨架构 (Spec 集成) 🆕
+### 单轨架构
 
-**设计哲学**: 变更追踪与全局真相分离，支持安全并行开发。
+**设计哲学**: 围绕同一个需求目录保存所有上下游产物，让文档自然地呈现「从意图到上线」的叙事链条。
 
 ```text
 devflow/
-├── requirements/          # 传统工作流 (PRD/EPIC/TASKS)
-│   └── REQ-123/
-│       ├── PRD.md
-│       ├── EPIC.md
-│       └── TASKS.md
-│
-├── changes/              # 活跃变更 (Delta 追踪)
-│   └── req-123-login/
-│       ├── proposal.md
-│       ├── tasks.md
-│       ├── specs/
-│       │   └── auth/spec.md
-│       ├── delta.json          # ADDED/MODIFIED/REMOVED/RENAMED
-│       └── constitution.json   # 条款合规性追踪
-│
-├── changes/archive/      # 已归档变更 (归档后移动)
-│   └── req-123-login/    # 从 changes/ 自动移动
-│
-└── specs/                # 全局真相 (权威)
-    └── auth/
-        ├── spec.md             # 合并自所有变更
-        ├── CHANGELOG.md        # 自动生成
-        └── history/
-            └── 20251015T143000-req-123-login.md  # 快照
+├── requirements/REQ-123/
+│   ├── PRD.md                # 产品需求
+│   ├── EPIC.md               # Epic 拆解
+│   ├── TASKS.md              # 统一任务清单
+│   ├── EXECUTION_LOG.md      # 决策与进度日志
+│   ├── TEST_PLAN.md          # QA 计划
+│   ├── TEST_REPORT.md        # QA 报告
+│   ├── SECURITY_PLAN.md      # 安全检查清单
+│   ├── SECURITY_REPORT.md    # 安全评估结果
+│   ├── RELEASE_PLAN.md       # 发布 checklist
+│   ├── research/             # 外部调研材料
+│   └── tasks/                # 任务产物与完成标记
+└── bugs/BUG-456/
+    ├── EXECUTION_LOG.md
+    ├── status.json
+    └── research/
 ```
 
-**核心算法**:
-
-1. **4阶段归档** (保序事务):
-   ```text
-   阶段 1: RENAMED  - 更新 Map 键 (from → to)
-   阶段 2: REMOVED  - 删除需求
-   阶段 3: MODIFIED - 替换现有 (带冲突检查)
-   阶段 4: ADDED    - 插入新增 (带冲突检查)
-   ```
-
-2. **8场景冲突检测** (Map 查找):
-   - ADDED vs ADDED (重复)
-   - ADDED vs REMOVED
-   - ADDED vs RENAMED_FROM
-   - ADDED vs RENAMED_TO
-   - MODIFIED vs REMOVED
-   - MODIFIED vs RENAMED_TO
-
-**核心特性**:
-- **零外部依赖**: 纯 Bash + Python3 + jq
-- **JSON Schema 验证**: 原生验证器，支持 `$ref` 解析
-- **托管块**: 幂等模板插入
-- **生命周期管理**: 归档 → 摘要 → 变更日志 → 回滚
-- **测试覆盖**: 80% (20/25 脚本，19/20 测试通过)
-- **macOS 兼容**: Bash 3.2 兼容 (无 Bash 4.x 特性)
+**实践要点**:
+- `orchestration_status.json` 是唯一的状态源，用于自动化与可视化。
+- 把每次决策写进 `EXECUTION_LOG.md`，形成可追溯的事件时间线。
+- 勾任务请使用 `mark-task-complete.sh`，保持 TASKS.md 的一致性。
+- 控制目录平面结构，不再额外分层；所有资料集中在需求根目录。
 
 ### 质量闸
 - **推送前保护**: TypeScript、测试、代码检查、安全、构建验证

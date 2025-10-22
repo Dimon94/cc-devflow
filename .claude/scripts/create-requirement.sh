@@ -141,16 +141,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 REPO_ROOT=$(get_repo_root)
 
-TEMP_FILES=()
-cleanup() {
-    for tmp in "${TEMP_FILES[@]}"; do
-        if [[ -n "$tmp" && -f "$tmp" ]]; then
-            rm -f "$tmp"
-        fi
-    done
-}
-trap cleanup EXIT
-
 # Interactive mode
 if $INTERACTIVE; then
     if ! $JSON_MODE; then
@@ -237,11 +227,6 @@ fi
 # Get requirement type and directory
 REQ_TYPE=$(get_req_type "$REQ_ID")
 REQ_DIR=$(get_req_dir "$REPO_ROOT" "$REQ_ID")
-
-# Prepare initial change identifier for dual-track scaffolding
-DEFAULT_CHANGE_ID=$(generate_change_id "$REQ_ID" "$TITLE")
-CHANGE_ID=""
-CHANGE_DIR=""
 
 # Create directory structure
 if ! $JSON_MODE; then
@@ -364,63 +349,15 @@ if [[ -n "$DESCRIPTION" ]]; then
     log_event "$REQ_ID" "Description: $DESCRIPTION"
 fi
 
-# Prepare dual-track scaffolding
-BOOTSTRAP_JSON_PATH=$(mktemp)
-TEMP_FILES+=("$BOOTSTRAP_JSON_PATH")
-
-BOOTSTRAP_ARGS=(--req-id "$REQ_ID" --change-id "$DEFAULT_CHANGE_ID" --output-json "$BOOTSTRAP_JSON_PATH")
-if [[ -n "$TITLE" ]]; then
-    BOOTSTRAP_ARGS+=(--title "$TITLE")
-fi
-if $JSON_MODE; then
-    BOOTSTRAP_ARGS+=(--json)
-fi
-
-"$SCRIPT_DIR/bootstrap-devflow-dualtrack.sh" "${BOOTSTRAP_ARGS[@]}"
-
-mapfile -t BOOTSTRAP_INFO < <(python3 - <<'PY' "$BOOTSTRAP_JSON_PATH"
-import json
-import sys
-
-with open(sys.argv[1], encoding='utf-8') as fh:
-    data = json.load(fh)
-
-change_id = data.get('change_id') or data.get('changeId') or ''
-change_dir = data.get('change_dir') or data.get('changeDir') or ''
-
-print(change_id)
-print(change_dir)
-PY
-)
-
-CHANGE_ID="${BOOTSTRAP_INFO[0]}"
-CHANGE_DIR="${BOOTSTRAP_INFO[1]}"
-
-if [[ -z "$CHANGE_ID" ]]; then
-    echo "ERROR: Dual-track bootstrap did not return a changeId" >&2
-    exit 1
-fi
-
-if [[ -z "$CHANGE_DIR" ]]; then
-    CHANGE_DIR="$REPO_ROOT/devflow/changes/$CHANGE_ID"
-fi
-
-CHANGE_DIR_REL="devflow/changes/$CHANGE_ID"
-
-LINK_ARGS=(--req-id "$REQ_ID" --change-id "$CHANGE_ID")
-if $JSON_MODE; then
-    LINK_ARGS+=(--quiet)
-fi
-
-"$SCRIPT_DIR/link-change-id.sh" "${LINK_ARGS[@]}"
-
 # Create git branch if requested and available
 GIT_BRANCH=""
 if ! $SKIP_GIT && has_git; then
     # Generate branch name from title
     if [[ -n "$TITLE" ]]; then
-        # Convert title to kebab-case
-        BRANCH_SUFFIX=$(echo "$TITLE" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/--*/-/g' | sed 's/^-//;s/-$//')
+        BRANCH_SUFFIX=$(slugify "$TITLE")
+        if [[ -z "$BRANCH_SUFFIX" ]]; then
+            BRANCH_SUFFIX="new-requirement"
+        fi
     else
         BRANCH_SUFFIX="new-requirement"
     fi
@@ -454,18 +391,14 @@ fi
 
 # Output results
 if $JSON_MODE; then
-    # JSON output
-    printf '{"req_id":"%s","req_type":"%s","req_dir":"%s","title":"%s","git_branch":"%s","change_id":"%s","change_dir":"%s","created_at":"%s"}\n' \
+    printf '{"req_id":"%s","req_type":"%s","req_dir":"%s","title":"%s","git_branch":"%s","created_at":"%s"}\n' \
         "$REQ_ID" \
         "$REQ_TYPE" \
         "$REQ_DIR" \
         "${TITLE:-""}" \
         "${GIT_BRANCH:-""}" \
-        "$CHANGE_ID" \
-        "$CHANGE_DIR_REL" \
         "$(get_beijing_time_iso)"
 else
-    # Human-readable output
     echo ""
     echo "✅ Requirement structure created successfully!"
     echo ""
@@ -478,19 +411,16 @@ else
     if [[ -n "$GIT_BRANCH" ]]; then
         echo "Git Branch:        $GIT_BRANCH"
     fi
-    echo "Change ID:         $CHANGE_ID"
-    echo "Change Directory:  $CHANGE_DIR_REL"
     echo ""
     echo "Next Steps:"
     if [[ "$REQ_TYPE" == "bug" ]]; then
         echo "  1. Run bug-analyzer agent to analyze the BUG"
         echo "  2. Run /flow-fix to start BUG fix workflow"
-        echo "  3. Update $CHANGE_DIR_REL to track proposal, tasks, and deltas"
+        echo "  3. Keep EXECUTION_LOG.md updated during fixes"
     else
-        echo "  1. Add research materials to research/ directory (optional)"
-        echo "  2. Load $CHANGE_DIR_REL to draft proposal/tasks and delta"
-        echo "  3. Run prd-writer agent to create PRD.md"
-        echo "  4. Run /flow-new to start development workflow"
+        echo "  1. Add research materials to research/ (optional)"
+        echo "  2. Run prd-writer agent to create PRD.md"
+        echo "  3. Continue with planner and subsequent flow commands"
     fi
     echo ""
 fi

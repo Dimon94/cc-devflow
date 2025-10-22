@@ -171,11 +171,9 @@ ensure_devflow_dir() {
 
     mkdir -p "$devflow_dir/requirements"
     mkdir -p "$devflow_dir/bugs"
-    mkdir -p "$devflow_dir/changes"
-    mkdir -p "$devflow_dir/specs"
 }
 
-# Convert arbitrary text to a lowercase slug suitable for change identifiers
+# Convert arbitrary text to a lowercase slug (branch/task naming helper)
 # Examples:
 #   slugify "Add User Login" => "add-user-login"
 #   slugify "SAML/OIDC" => "saml-oidc"
@@ -194,57 +192,6 @@ slugify() {
     slug=$(echo "$slug" | sed 's/-\{2,\}/-/g; s/^-//; s/-$//')
 
     echo "$slug"
-}
-
-# Ensure change identifier is unique within devflow/changes
-ensure_unique_change_id() {
-    local changes_dir="$1"
-    local base_id="$2"
-    local candidate="$base_id"
-    local counter=2
-
-    while [[ -d "$changes_dir/$candidate" ]]; do
-        candidate="${base_id}-${counter}"
-        counter=$((counter + 1))
-    done
-
-    echo "$candidate"
-}
-
-# Generate a default change identifier for a requirement + title pair
-generate_change_id() {
-    local req_id="$1"
-    local title="$2"
-
-    local normalized_req=$(echo "$req_id" | tr '[:upper:]' '[:lower:]')
-    normalized_req=${normalized_req//_/-}
-
-    local slug=$(slugify "$title")
-    if [[ -z "$slug" ]]; then
-        slug=$(date '+%Y%m%d%H%M%S')
-    fi
-
-    echo "${normalized_req}-${slug}"
-}
-
-# Validate change identifier format (req-123-example)
-# Args: $1 - change identifier
-validate_change_id() {
-    local change_id="$1"
-
-    if [[ -z "$change_id" ]]; then
-        echo "ERROR: change-id cannot be empty" >&2
-        return 1
-    fi
-
-    # Accept req-123-foo, req-20240101-001-bar, bug-123-baz, bug-20240101-001-baz
-    if [[ ! "$change_id" =~ ^(req|bug)-[0-9]+(-[0-9]+)?-[a-z0-9-]+$ ]]; then
-        echo "ERROR: Invalid change-id format: $change_id" >&2
-        echo "Expected format: req-123-description or req-20240101-001-description" >&2
-        return 1
-    fi
-
-    return 0
 }
 
 # =============================================================================
@@ -322,59 +269,6 @@ except Exception as exc:
 
 validate_node(data, schema, "$")
 PY
-}
-
-# Return absolute path to change directory for a given repo + change id
-get_change_dir() {
-    local repo_root="$1"
-    local change_id="$2"
-    ensure_devflow_dir "$repo_root"
-    echo "$repo_root/devflow/changes/$change_id"
-}
-
-# Locate existing change directory (active or archived)
-# Args: $1 - repository root, $2 - change identifier
-# Output: absolute path if found; returns 1 otherwise
-locate_change_dir() {
-    local repo_root="$1"
-    local change_id="$2"
-    local active_dir="$repo_root/devflow/changes/$change_id"
-    local archive_dir="$repo_root/devflow/changes/archive/$change_id"
-
-    if [[ -d "$active_dir" ]]; then
-        echo "$active_dir"
-        return 0
-    fi
-
-    if [[ -d "$archive_dir" ]]; then
-        echo "$archive_dir"
-        return 0
-    fi
-
-    return 1
-}
-
-# Read change-id from requirement orchestration status file
-# Args: $1 - requirement directory path
-# Output: change id on stdout
-get_change_id() {
-    local req_dir="$1"
-    local status_file="$req_dir/orchestration_status.json"
-
-    if [[ ! -f "$status_file" ]]; then
-        echo "ERROR: orchestration_status.json not found in $req_dir" >&2
-        return 1
-    fi
-
-    local change_id
-    change_id=$(jq -r '.change_id // empty' "$status_file" 2>/dev/null || true)
-
-    if [[ -z "$change_id" || "$change_id" == "null" ]]; then
-        echo "ERROR: change_id not set in $status_file" >&2
-        return 1
-    fi
-
-    echo "$change_id"
 }
 
 # Get requirement directory path
