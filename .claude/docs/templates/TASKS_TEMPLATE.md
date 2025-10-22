@@ -28,6 +28,8 @@
       - Clear [US#] labels for each task
       - [P] markers for parallelizable tasks within story
       - Checkpoint after each story phase
+      - **新增**: 在每个阶段末尾插入 Code Review Checkpoint，指派 `/code-reviewer` 子代理生成审查报告
+      - **审查聚焦**: 所有 Code Review 必须对照 PRD.md 与 EPIC.md，禁止扩展需求，发现偏离需退回整改
    → Final Phase: Polish & cross-cutting concerns
 
 4. Apply task rules:
@@ -35,6 +37,7 @@
    → Same file = sequential (no [P])
    → Tests (if requested) ALWAYS before implementation (TDD principle)
    → Mark test verification checkpoint before implementation
+   → 确保每个阶段都包含唯一的 Code Review 任务，输出路径使用 `reviews/phase-*-*_code_review.md`
 
 5. Number tasks sequentially (T001, T002, T003...)
 
@@ -83,6 +86,9 @@
 - [ ] **Article VIII - Anti-Abstraction**: 避免不必要的抽象和封装
 - [ ] **Article II - Architectural Consistency**: 遵循项目现有的结构模式和命名约定
 
+### Code Review Checkpoint (Phase 1)
+- [ ] **T004** 触发 `/code-reviewer` 子代理生成 `reviews/phase-1-setup_code_review.md`（报告需返回 `Phase Gate Result: Pass` 且 `decision` ∈ {approve, comment} 方可进入下一阶段）
+
 ---
 
 ## Phase 2: Foundational (阻塞性前置条件)
@@ -92,14 +98,17 @@
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
 **Foundational 任务示例**（根据项目实际情况调整）:
-- [ ] **T004** Setup database schema and migrations framework
-- [ ] **T005** [P] Implement authentication/authorization framework
-- [ ] **T006** [P] Setup API routing and middleware structure
-- [ ] **T007** Create base models/entities that all stories depend on
-- [ ] **T008** Configure error handling and logging infrastructure
-- [ ] **T009** Setup environment configuration management
+- [ ] **T005** Setup database schema and migrations framework
+- [ ] **T006** [P] Implement authentication/authorization framework
+- [ ] **T007** [P] Setup API routing and middleware structure
+- [ ] **T008** Create base models/entities that all stories depend on
+- [ ] **T009** Configure error handling and logging infrastructure
+- [ ] **T010** Setup environment configuration management
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
+
+### Code Review Checkpoint (Phase 2)
+- [ ] **T011** 触发 `/code-reviewer` 子代理生成 `reviews/phase-2-foundational_code_review.md`（若 `Phase Gate Result: Fail` → 必须整改并重跑审查）
 
 ---
 
@@ -115,20 +124,23 @@
 
 **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] **T010** [P] [US1] Contract test for {{ENDPOINT_1}} in `tests/contract/test_{{NAME}}.{{EXT}}`
-- [ ] **T011** [P] [US1] Contract test for {{ENDPOINT_2}} in `tests/contract/test_{{NAME}}.{{EXT}}`
-- [ ] **T012** [P] [US1] Integration test for {{USER_JOURNEY}} in `tests/integration/test_{{NAME}}.{{EXT}}`
+- [ ] **T012** [P] [US1] Contract test for {{ENDPOINT_1}} in `tests/contract/test_{{NAME}}.{{EXT}}`
+- [ ] **T013** [P] [US1] Contract test for {{ENDPOINT_2}} in `tests/contract/test_{{NAME}}.{{EXT}}`
+- [ ] **T014** [P] [US1] Integration test for {{USER_JOURNEY}} in `tests/integration/test_{{NAME}}.{{EXT}}`
 
 ### Implementation for User Story 1
 
-- [ ] **T013** [P] [US1] Create {{Entity1}} model in `src/models/{{entity1}}.{{EXT}}`
-- [ ] **T014** [P] [US1] Create {{Entity2}} model in `src/models/{{entity2}}.{{EXT}}`
-- [ ] **T015** [US1] Implement {{Service}} in `src/services/{{service}}.{{EXT}}` (depends on T013, T014)
-- [ ] **T016** [US1] Implement {{endpoint/feature}} in `src/{{location}}/{{file}}.{{EXT}}`
-- [ ] **T017** [US1] Add validation and error handling
-- [ ] **T018** [US1] Add logging for user story 1 operations
+- [ ] **T015** [P] [US1] Create {{Entity1}} model in `src/models/{{entity1}}.{{EXT}}`
+- [ ] **T016** [P] [US1] Create {{Entity2}} model in `src/models/{{entity2}}.{{EXT}}`
+- [ ] **T017** [US1] Implement {{Service}} in `src/services/{{service}}.{{EXT}}` (depends on T015, T016)
+- [ ] **T018** [US1] Implement {{endpoint/feature}} in `src/{{location}}/{{file}}.{{EXT}}`
+- [ ] **T019** [US1] Add validation and error handling
+- [ ] **T020** [US1] Add logging for user story 1 operations
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
+
+### Code Review Checkpoint (Phase 3)
+- [ ] **T021** 触发 `/code-reviewer` 子代理生成 `reviews/phase-3-user-story-1_code_review.md`（任何整改项未关闭不得启动下一用户故事）
 
 ---
 
@@ -140,17 +152,20 @@
 
 ### Tests for User Story 2 (OPTIONAL - only if tests requested) ⚠️
 
-- [ ] **T019** [P] [US2] Contract test for {{ENDPOINT}} in `tests/contract/test_{{NAME}}.{{EXT}}`
-- [ ] **T020** [P] [US2] Integration test for {{USER_JOURNEY}} in `tests/integration/test_{{NAME}}.{{EXT}}`
+- [ ] **T022** [P] [US2] Contract test for {{ENDPOINT}} in `tests/contract/test_{{NAME}}.{{EXT}}`
+- [ ] **T023** [P] [US2] Integration test for {{USER_JOURNEY}} in `tests/integration/test_{{NAME}}.{{EXT}}`
 
 ### Implementation for User Story 2
 
-- [ ] **T021** [P] [US2] Create {{Entity}} model in `src/models/{{entity}}.{{EXT}}`
-- [ ] **T022** [US2] Implement {{Service}} in `src/services/{{service}}.{{EXT}}`
-- [ ] **T023** [US2] Implement {{endpoint/feature}} in `src/{{location}}/{{file}}.{{EXT}}`
-- [ ] **T024** [US2] Integrate with User Story 1 components (if needed)
+- [ ] **T024** [P] [US2] Create {{Entity}} model in `src/models/{{entity}}.{{EXT}}`
+- [ ] **T025** [US2] Implement {{Service}} in `src/services/{{service}}.{{EXT}}`
+- [ ] **T026** [US2] Implement {{endpoint/feature}} in `src/{{location}}/{{file}}.{{EXT}}`
+- [ ] **T027** [US2] Integrate with User Story 1 components (if needed)
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
+
+### Code Review Checkpoint (Phase 4)
+- [ ] **T028** 触发 `/code-reviewer` 子代理生成 `reviews/phase-4-user-story-2_code_review.md`（确保审查结果在 PRD/EPIC 范围内全部通过）
 
 ---
 
@@ -216,6 +231,9 @@
 - [ ] **Responsive Design**: All breakpoints tested and working
 - [ ] **Interactive States**: All hover/active/disabled states implemented
 
+### Code Review Checkpoint (Phase 5)
+- [ ] **TXXX** 触发 `/code-reviewer` 子代理生成 `reviews/phase-5-user-story-x_code_review.md`（继续前必须得到通过并确认无需求扩张）
+
 ---
 
 ## Phase 6: User Story 3 - {{STORY_3_TITLE}} (Priority: P3)
@@ -226,16 +244,19 @@
 
 ### Tests for User Story 3 (OPTIONAL - only if tests requested) ⚠️
 
-- [ ] **T025** [P] [US3] Contract test for {{ENDPOINT}} in `tests/contract/test_{{NAME}}.{{EXT}}`
-- [ ] **T026** [P] [US3] Integration test for {{USER_JOURNEY}} in `tests/integration/test_{{NAME}}.{{EXT}}`
+- [ ] **T029** [P] [US3] Contract test for {{ENDPOINT}} in `tests/contract/test_{{NAME}}.{{EXT}}`
+- [ ] **T030** [P] [US3] Integration test for {{USER_JOURNEY}} in `tests/integration/test_{{NAME}}.{{EXT}}`
 
 ### Implementation for User Story 3
 
-- [ ] **T027** [P] [US3] Create {{Entity}} model in `src/models/{{entity}}.{{EXT}}`
-- [ ] **T028** [US3] Implement {{Service}} in `src/services/{{service}}.{{EXT}}`
-- [ ] **T029** [US3] Implement {{endpoint/feature}} in `src/{{location}}/{{file}}.{{EXT}}`
+- [ ] **T031** [P] [US3] Create {{Entity}} model in `src/models/{{entity}}.{{EXT}}`
+- [ ] **T032** [US3] Implement {{Service}} in `src/services/{{service}}.{{EXT}}`
+- [ ] **T033** [US3] Implement {{endpoint/feature}} in `src/{{location}}/{{file}}.{{EXT}}`
 
 **Checkpoint**: All user stories should now be independently functional
+
+### Code Review Checkpoint (Phase 6)
+- [ ] **T034** 触发 `/code-reviewer` 子代理生成 `reviews/phase-6-user-story-3_code_review.md`（报告如含阻塞项，需完成整改再提交复审）
 
 ---
 
@@ -253,6 +274,9 @@
 - [ ] **TXXX** [P] Additional unit tests (if requested) in `tests/unit/`
 - [ ] **TXXX** Security hardening
 - [ ] **TXXX** Run quickstart.md validation
+
+### Code Review Checkpoint (Phase N)
+- [ ] **TXXX** 触发 `/code-reviewer` 子代理生成 `reviews/phase-n-polish_code_review.md`（必须 Pass 方可切换至 QA 流程）
 
 ---
 

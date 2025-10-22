@@ -87,6 +87,7 @@ bash .claude/scripts/mark-task-complete.sh T001
    → Check: Phase 2 (Tests First) exists
    → Check: Phase 3 (Core Implementation) exists
    → Check: TEST VERIFICATION CHECKPOINT exists
+   → Check: 每个阶段末尾存在 Code Review Checkpoint 任务（调用 `/code-reviewer`，输出路径在 `reviews/`）
    → Verify: Phase 2 comes before Phase 3
    → If structure wrong: ERROR "TASKS.md violates TDD order"
 
@@ -187,6 +188,13 @@ For each task in TASKS.md (following order):
        * Add unit tests for edge cases
        * Optimize performance
        * Update documentation
+     - For Code Review Checkpoint tasks:
+       * Run `mkdir -p devflow/requirements/${REQ_ID}/reviews`
+       * Aggregate completed task IDs for the current phase (read from TASKS.md section)
+       * Determine touched files via `git status --short` or supplied artifact list
+       * Invoke `/code-reviewer` sub代理，传入 `reqId`、`phaseId`、`phaseTasks`、`artifactPaths`、`changeId`
+       * Ensure review写入 `devflow/requirements/${reqId}/reviews/<phase-slug>_code_review.md` 并记录在 `EXECUTION_LOG.md`
+       * If report indicates `phaseStatus: blocked` 或 `decision` 为 `request_changes`/`blocker`，halt推进并回到实现阶段修复
 
 4. Verify task completion (DoD check)
    → For test tasks:
@@ -227,6 +235,7 @@ For each task in TASKS.md (following order):
    → If just completed last Phase 3 task:
      * Verify all Phase 2 tests now pass
      * Require confirmation to proceed to Phase 4
+   → 在移动到下一个阶段前，确认对应 Code Review Checkpoint 任务已完成、报告 `phaseStatus: ready_for_next_phase` 且 `decision` 为 `approve` 或 `comment`
 
 7. Continue to next task or stop
    → If all tasks complete: Proceed to Exit Gate
@@ -307,6 +316,10 @@ When all Phase 2 (Tests First) tasks are completed:
      * git commit -m "feat(${REQ_ID}): ${task_description}"
    → Maintains clean commit history
    → Easy to revert individual tasks if needed
+
+6. Code review archive verification
+   → After每个阶段的 Code Review 任务, 检查 `devflow/requirements/${REQ_ID}/reviews/` 下是否生成对应报告
+   → 缺失报告或 `decision` 指示 `request_changes`/`blocker` → 立即阻断流程并重新触发 `/code-reviewer`
 ```
 
 ### 阶段 5: 开发完成验证 (Exit Gate)
@@ -325,39 +338,44 @@ When all Phase 2 (Tests First) tasks are completed:
    - Fix: Manually run mark-task-complete.sh for each task
    - Prevention: Always call mark-task-complete.sh in step 5 of loop
 
-2. Run complete test suite
+2. Verify code review reports
+   → Inspect: `devflow/requirements/${REQ_ID}/reviews/`
+   → Ensure: 每个阶段的 `<phase-slug>_code_review.md` 存在，frontmatter `phaseStatus` 为 `ready_for_next_phase`，`decision` 为 `approve`/`comment`
+   → 如果缺失或状态阻塞/退回: ERROR "Phase code review missing or unresolved"
+
+3. Run complete test suite
    → Execute: npm test
    → Expected: ALL tests pass (100% pass rate)
    → Check: Coverage >= 80% (or configured threshold)
    → If failures: ERROR "Tests failing - development incomplete"
 
-3. Run Constitution validation
+4. Run Constitution validation
    → Execute: validate-constitution.sh --type all --severity error --json
    → Check: errors == 0
    → If violations: ERROR "Constitution violations must be fixed"
 
-4. Run type checking
+5. Run type checking
    → Execute: npm run typecheck
    → If errors: ERROR "Type errors must be fixed before QA"
 
-5. Run build
+6. Run build
    → Execute: npm run build
    → If build fails: ERROR "Build errors must be fixed"
 
-6. Verify TDD compliance
+7. Verify TDD compliance
    → Check: All Phase 2 tests exist and pass
    → Check: All Phase 3 implementations complete
    → Ratio: Implementation tasks should have made tests pass
    → If mismatch: WARN "Some tests may not be covered by implementation"
 
-7. Delta 同步与验证 (如 CHANGE_ID 存在)
+8. Delta 同步与验证 (如 CHANGE_ID 存在)
    → `.claude/scripts/parse-delta.sh "$CHANGE_ID"`
    → `.claude/scripts/sync-task-progress.sh "$CHANGE_ID"`
    → `.claude/scripts/run-dualtrack-validation.sh "$CHANGE_ID"`
    → 冲突检测: `count=$( .claude/scripts/check-dualtrack-conflicts.sh "$CHANGE_ID" --count-only)`
        • count > 0 → WARN 并提示在继续前解决冲突 (`check-dualtrack-conflicts.sh "$CHANGE_ID"`)
 
-8. Update orchestration status
+9. Update orchestration status
    → Set: status = "development_complete"
    → Set: phase = "quality_assurance"
    → Set: completedSteps = ["init", "prd", "epic", "development"]
