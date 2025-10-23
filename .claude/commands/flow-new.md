@@ -31,6 +31,7 @@ description: One-shot requirement flow. Usage: /flow-new "REQ-123|支持用户�
 - **标准化执行**: 底层调用标准阶段化命令，确保流程一致性
 - **透明化**: 清晰显示每个阶段的执行状态
 - **可恢复**: 任何阶段失败都可通过对应的阶段命令恢复
+- **单轨信息源**: 所有产物只写入 `devflow/requirements/${REQ_ID}/` 或 `devflow/bugs/${REQ_ID}/`，不再生成 changes/、specs/ 等辅助目录
 
 ### 与阶段化命令的关系
 ```text
@@ -49,22 +50,25 @@ description: One-shot requirement flow. Usage: /flow-new "REQ-123|支持用户�
 ### 阶段 1: 初始化 (/flow-init)
 ```text
 1. 解析输入参数: REQ_ID|TITLE|PLAN_URLS
-2. 调用 /flow-init "REQ_ID|TITLE|PLAN_URLS"
-   → 创建需求目录结构
+2. 调用 /flow-init "REQ_ID|TITLE"
+   → 创建需求目录结构（单轨）
    → 创建Git功能分支
    → 初始化状态文件
-   → 抓取研究材料 (如果提供PLAN_URLS)
+   → 触发调研工作流（必做）
+      • Phase A: 现有代码调研（输出 internal/codebase-overview.md）
+      • Phase B: 外部资料采集（MCP）——PLAN_URLS 作为优先抓取源；缺省时自动基于 TITLE 与技术栈推导关键词；所有远程抓取原件以 `.md` 原文保存
+   → 所有调研成果写入 devflow/requirements/${REQ_ID}/research/ 并记录 EXECUTION_LOG.md
 
 输出:
   ✅ Git分支: feature/REQ-123-支持用户下单
   ✅ 需求目录: devflow/requirements/REQ-123/
   ✅ 状态文件: orchestration_status.json (status: initialized)
-  ✅ 研究材料: research/*.md (如果有)
+  ✅ 研究材料: research/internal/ 与 research/mcp/ 下的调研成果
 
 错误处理:
   - 如果REQ_ID已存在 → 提示用户并终止
   - 如果Git状态不干净 → 提示清理工作区
-  - 如果PLAN_URLS抓取失败 → 警告但继续
+  - 如果外部资料抓取失败 → 警告并在 research-summary.md 中标注待补项（需求结构仍可用）
 ```
 
 ### 阶段 2: PRD生成 (/flow-prd)

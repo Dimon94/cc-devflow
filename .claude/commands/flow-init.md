@@ -51,44 +51,48 @@ description: Initialize requirement structure. Usage: /flow-init "REQ-123|User A
 *GATE CHECK: All validations passed*
 ```
 
-### 阶段 2: 目录与双轨初始化
+### 阶段 2: 目录初始化与基线文件落地
 
 **Execution Flow**:
 ```
-1. Execute primary scaffold script
+1. 执行主脚本生成骨架
    → Run: .claude/scripts/create-requirement.sh "${REQ_ID}" --title "${TITLE}" --json
-   → Script returns: req_dir, change_id, change_dir, git_branch
+   → Script returns: req_dir, req_type, git_branch (可选)
 
-2. 自动触发双轨引导
-   → 内部调用 bootstrap-devflow-dualtrack.sh，确保生成：
-      - devflow/AGENTS.md（带 OPENSPEC 标记）
-      - devflow/project.md 项目上下文
-      - devflow/changes/${change_id}/ (proposal.md、tasks.md、design.md、specs/、delta.json 等)
-      - devflow/specs/ 目录存在（含 .gitkeep）
-   → 调用 link-change-id.sh 将 orchestration_status.json or status.json 更新为当前 change_id
+2. 校验单轨目录结构
+   → Requirement: devflow/requirements/${REQ_ID}/
+      • README.md
+      • research/                (空目录，等待资料落地)
+      • EXECUTION_LOG.md
+      • orchestration_status.json
+   → Bug: devflow/bugs/${REQ_ID}/
+      • README.md
+      • EXECUTION_LOG.md
+      • status.json
+   → 没有任何 changes/ 或 specs/ 目录，需求树就是唯一真相
 
-3. 校验初始化结果
-   → REQ_DIR、research/、EXECUTION_LOG.md、orchestration_status.json 均存在
-   → devflow/changes/${change_id}/proposal.md 存在
-   → devflow/changes/${change_id}/delta.json 初始化成功
-   → devflow/specs/ 目录存在，AGENTS.md 含 OPENSPEC 标记块
-
-4. 记录初始化事件
-   → Append to EXECUTION_LOG.md:
-     "### $(date -Iseconds)
-      Requirement initialized via /flow-init
-      Title: ${TITLE}
-      Change ID: ${change_id}
-      Status: Ready for PRD generation"
+3. 确认初始化事件已写入日志
+   → EXECUTION_LOG.md 追加 "Requirement initialized via /flow-init"
+   → 若提供 TITLE / DESCRIPTION，同步写入事件条目
 ```
 
-### 阶段 2.5: 研究材料采集（MCP 强制流程）
+### 阶段 2.5: 代码与外部调研（MCP 强制流程）
 
-在 PRD 阶段之前，就要把“真材实料”准备好。每次 /flow-init 执行完目录搭建后，立即走以下研究脚本，所有步骤均使用 MCP 服务完成。
+在 PRD 阶段之前，就要把“真材实料”准备好。无论是否提供 PLAN_URLS，/flow-init 都必须立即执行调研流程，下列步骤全部为 **必选项**；如某一步暂不可完成，需在 EXECUTION_LOG.md 记录原因与后续补齐计划。
 
 **Execution Flow**:
 ```
-📦 任务 1: 建立基础学习资料（根据需求主题自定义关键词）
+🧭 S0: 现有代码调研（必做）
+   - 运行 `.claude/scripts/check-prerequisites.sh --json` 获取仓库基线信息（技术栈、可用脚本、目录结构）
+   - 建立 `${REQ_DIR}/research/internal/` 目录，确保内部调研与外部资料分层存放
+   - 浏览现有 README / ARCHITECTURE 文档，梳理可复用模块、核心接口、既有测试集
+   - 将调研结果写入 `${REQ_DIR}/research/internal/codebase-overview.md`，至少包含：
+     • 关键模块列表与职责
+     • 与本需求直接相关的入口文件或服务
+     • 现有测试覆盖情况与潜在扩展点
+   - 在 EXECUTION_LOG.md 记录完成时间与主要发现
+
+📦 任务 1: 建立外部学习资料（根据需求主题自定义关键词）
 
 > 保存路径统一放在需求目录，便于纳入版本控制：  
 > 设定 `RESEARCH_ROOT="${REQ_DIR}/research/mcp/$(date +%Y%m%d)"`（按执行当天日期组织）  
@@ -107,12 +111,13 @@ description: Initialize requirement structure. Usage: /flow-init "REQ-123|User A
 
 3️⃣ 下载/抓取核心资料 (WebFetch)
    - 从步骤 2 中挑选 2~3 篇高价值文章
-   - 使用 WebFetch 转成 Markdown
+   - 使用 WebFetch 转成 Markdown（保留原文，不做删改）
    - 保存为: ${RESEARCH_ROOT}/tutorials/${slug(source)}.md
 
 4️⃣ 搜集实践案例或代码样例 (Web Search + WebFetch)
    - 搜索: "<关键能力> example OR case study site:github.com OR site:<官方示例库>"
    - 抓取 README / 示例说明，必要时附代码片段与引用链接
+   - 使用 WebFetch 将原文转存为 Markdown，保持原始结构
    - 保存为: ${RESEARCH_ROOT}/examples/${slug(source)}.md
 
 5️⃣ 摘要与可执行建议
@@ -121,7 +126,11 @@ description: Initialize requirement structure. Usage: /flow-init "REQ-123|User A
    - 将研究目录与摘要路径写入 EXECUTION_LOG.md，供后续 /flow-prd、/flow-epic、/flow-dev 快速引用
 ```
 
-> **Note**: 若主题涉及多个领域（前端 + 后端），可以针对不同关键词重复上述流程。所有 MCP 任务输出的原始 Markdown 请保留原样，并在 research-summary.md 中给出“如何使用这些资源”的指引。
+> **Notes**:
+> - 若用户未提供 PLAN_URLS，由命令自动基于 `${TITLE}` 和仓库技术栈推导默认关键词（例如读取 package.json、go.mod 识别框架名称），确保外部调研仍可执行。
+> - 若主题涉及多个领域（前端 + 后端），可针对不同分支主题重复上述流程。所有 MCP 任务输出的原始 Markdown 请保留原样，并在 research-summary.md 中给出“如何使用这些资源”的指引。
+> - 所有远程抓取的原始资料必须以 `.md` 文件形式原样保存，任何摘要或批注请在 research-summary.md 中编写，避免修改原件。
+> - 如部分资源因网络或权限问题暂不可获取，请在 research-summary.md 的 `Pending` 小节注明补齐计划。
 
 ### 阶段 3: Git 分支创建 (if git repo)
 
@@ -174,11 +183,9 @@ description: Initialize requirement structure. Usage: /flow-init "REQ-123|User A
 1. Verify all required files created:
    - [ ] REQ_DIR/ directory exists
    - [ ] REQ_DIR/research/ directory exists
-   - [ ] REQ_DIR/EXECUTION_LOG.md exists
-   - [ ] REQ_DIR/orchestration_status.json exists
    - [ ] REQ_DIR/README.md exists
-   - [ ] devflow/changes/${change_id}/ (proposal.md, tasks.md, delta.json) exists
-   - [ ] devflow/specs/ directory present (global truth store)
+   - [ ] REQ_DIR/EXECUTION_LOG.md exists
+   - [ ] orchestration_status.json (requirements) 或 status.json (bugs) 存在
 
 2. Verify git branch (if applicable):
    - [ ] Branch created successfully
@@ -186,8 +193,9 @@ description: Initialize requirement structure. Usage: /flow-init "REQ-123|User A
    - [ ] DEVFLOW_REQ_ID environment variable set (if git branch not used)
 
 3. Verify status tracking:
-   - [ ] orchestration_status.json/status.json 已包含 changeId/changePath
-   - [ ] EXECUTION_LOG.md 记录 changeId 初始化事件
+   - [ ] orchestration_status.json/status.json → status === "initialized"
+   - [ ] orchestration_status.json/status.json → phase === "planning" (REQ) / "analysis" (BUG)
+   - [ ] EXECUTION_LOG.md 已记录初始化事件（含时间戳）
 
 *GATE CHECK: All verifications passed*
 ```
@@ -201,19 +209,17 @@ Type:              ${REQ_TYPE} (requirement/bug)
 Directory:         ${REQ_DIR}
 Title:             ${TITLE}
 Git Branch:        ${BRANCH_NAME}
-Change ID:         ${change_id}
-Change Directory:  devflow/changes/${change_id}
 
 Next Steps:
   1. Add research materials to research/ directory (optional)
-  2. Review devflow/changes/${change_id}/ proposal & delta placeholders
+  2. Review README.md checklist and plan next phase
   3. Run /flow-prd to generate Product Requirements Document
   4. Provide requirement details directly to prd-writer agent
 
 Files created:
   - ${REQ_DIR}/README.md
   - ${REQ_DIR}/EXECUTION_LOG.md
-  - ${REQ_DIR}/orchestration_status.json
+  - ${REQ_DIR}/orchestration_status.json 或 ${REQ_DIR}/status.json
   - ${REQ_DIR}/research/ (empty, ready for materials)
 ```
 
@@ -227,22 +233,10 @@ devflow/requirements/${REQ_ID}/     # For requirements
 ├── EXECUTION_LOG.md                     # Event log with initialization entry
 └── orchestration_status.json            # Status: "initialized", phase: "planning"
 
-devflow/changes/${change_id}/        # Dual-track change scaffolding
-├── proposal.md                         # Why / What / Impact / Checklists
-├── tasks.md                            # Constitution-aware task breakdown
-├── design.md                           # Optional design notes
-├── specs/README.md                     # Delta authoring guide
-├── delta.json                          # Structured delta + requirement mapping
-├── constitution.json                   # Articles VII–X compliance tracking
-└── task-progress.json                  # Checkbox-derived progress snapshot
-
 devflow/bugs/${BUG_ID}/             # For bug fixes
 ├── README.md
 ├── EXECUTION_LOG.md
 └── status.json                          # BUG-specific status tracking
-
-devflow/specs/                      # System truth source (populated during archive)
-└── .gitkeep                           # Placeholder until first archive
 ```
 
 ### Git 分支
@@ -258,12 +252,7 @@ devflow/specs/                      # System truth source (populated during arch
   "status": "initialized",
   "phase": "planning",
   "createdAt": "2025-09-30T12:34:56Z",
-  "updatedAt": "2025-09-30T12:34:56Z",
-  "changeId": "req-123-user-authentication",
-  "changePath": "devflow/changes/req-123-user-authentication",
-  "activeChangeIds": [
-    "req-123-user-authentication"
-  ]
+  "updatedAt": "2025-09-30T12:34:56Z"
 }
 ```
 
@@ -276,12 +265,7 @@ devflow/specs/                      # System truth source (populated during arch
   "phase": "analysis",
   "severity": "unknown",
   "createdAt": "2025-09-30T12:34:56Z",
-  "updatedAt": "2025-09-30T12:34:56Z",
-  "changeId": "bug-456-login-timeout",
-  "changePath": "devflow/changes/bug-456-login-timeout",
-  "activeChangeIds": [
-    "bug-456-login-timeout"
-  ]
+  "updatedAt": "2025-09-30T12:34:56Z"
 }
 ```
 
