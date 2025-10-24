@@ -241,7 +241,6 @@ Git状态:
 ```
 
 ## 附加工具
-- 运行 `bash .claude/scripts/generate-dualtrack-metrics.sh [--json]` 获取全局双轨覆盖率、归档率、冲突统计，可在查看个体状态之外辅助治理。
 
 ### 分支状态模式
 ```text

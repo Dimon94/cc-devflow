@@ -74,8 +74,6 @@ bash .claude/scripts/mark-task-complete.sh T001
    → Verify: TASKS.md exists
    → If missing: ERROR "Epic/Tasks not found. Run /flow-epic first."
 
-   → Determine CHANGE_ID via `jq -r '.change_id // empty' "$REQ_DIR/orchestration_status.json"`
-
 3. Check orchestration status
    → Read: orchestration_status.json
    → Verify: status is "epic_complete" or "development_in_progress"
@@ -106,10 +104,6 @@ bash .claude/scripts/mark-task-complete.sh T001
 **Development Strategy**:
 ```text
 主代理按照 TASKS.md 中定义的顺序执行任务：
-
-若存在 CHANGE_ID：
-  → 随时对照 devflow/specs/（真实源）与 devflow/changes/${CHANGE_ID}/specs/（Delta）
-  → 确保实现/测试任务映射到对应 Requirement/Scenario
 
 Phase 1: Setup (if not completed)
   → 执行基础设置任务
@@ -192,7 +186,7 @@ For each task in TASKS.md (following order):
        * Run `mkdir -p devflow/requirements/${REQ_ID}/reviews`
        * Aggregate completed task IDs for the current phase (read from TASKS.md section)
        * Determine touched files via `git status --short` or supplied artifact list
-       * Invoke `/code-reviewer` sub代理，传入 `reqId`、`phaseId`、`phaseTasks`、`artifactPaths`、`changeId`
+       * Invoke `/code-reviewer` sub代理，传入 `reqId`、`phaseId`、`phaseTasks`、`artifactPaths`
        * Ensure review写入 `devflow/requirements/${reqId}/reviews/<phase-slug>_code_review.md` 并记录在 `EXECUTION_LOG.md`
        * If report indicates `phaseStatus: blocked` 或 `decision` 为 `request_changes`/`blocker`，halt推进并回到实现阶段修复
 
@@ -217,7 +211,6 @@ For each task in TASKS.md (following order):
    → DO NOT manually edit TASKS.md
    → DO NOT skip this step
    → Log: "Task ${task_id} completed"
-   → (自动) `.claude/scripts/mark-task-complete.sh` 会触发 `.claude/scripts/sync-task-progress.sh "$CHANGE_ID"`（若存在）保持进度同步
 
    Example:
    bash .claude/scripts/mark-task-complete.sh T001
@@ -368,21 +361,14 @@ When all Phase 2 (Tests First) tasks are completed:
    → Ratio: Implementation tasks should have made tests pass
    → If mismatch: WARN "Some tests may not be covered by implementation"
 
-8. Delta 同步与验证 (如 CHANGE_ID 存在)
-   → `.claude/scripts/parse-delta.sh "$CHANGE_ID"`
-   → `.claude/scripts/sync-task-progress.sh "$CHANGE_ID"`
-   → `.claude/scripts/run-dualtrack-validation.sh "$CHANGE_ID"`
-   → 冲突检测: `count=$( .claude/scripts/check-dualtrack-conflicts.sh "$CHANGE_ID" --count-only)`
-       • count > 0 → WARN 并提示在继续前解决冲突 (`check-dualtrack-conflicts.sh "$CHANGE_ID"`)
-
-9. Update orchestration status
+8. Update orchestration status
    → Set: status = "development_complete"
    → Set: phase = "quality_assurance"
    → Set: completedSteps = ["init", "prd", "epic", "development"]
    → Set: updatedAt = current timestamp
    → Write: orchestration_status.json
 
-*GATE CHECK: All tasks complete, tests pass, Delta 状态同步、无 Constitution 违规*
+*GATE CHECK: All tasks complete, tests pass, no Constitution violations*
 ```
 
 **Success Output**:

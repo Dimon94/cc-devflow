@@ -92,8 +92,6 @@ description: Create PR and manage release. Usage: /flow-release "REQ-123" or /fl
    → Read: TEST_REPORT.md (quality status)
    → Read: SECURITY_REPORT.md (security status)
    → Read: EXECUTION_LOG.md (development timeline)
-   → Determine CHANGE_ID: `CHANGE_ID=$(jq -r '.change_id // empty' "$REQ_DIR/orchestration_status.json")`
-   → If CHANGE_ID present: review `devflow/specs/` and `devflow/changes/${CHANGE_ID}` for final delta content
 
 3. Generate commit summary
    → Run: git log main...HEAD --oneline
@@ -123,24 +121,6 @@ description: Create PR and manage release. Usage: /flow-release "REQ-123" or /fl
       Agent: release-manager"
 ```
 
-### 阶段 2.5: Delta 审核与归档关卡
-
-```
-1. 如果 CHANGE_ID 存在:
-   → `.claude/scripts/finalize-dualtrack-release.sh "$CHANGE_ID"`
-     - 串联 QA 审核 (`qa-guard-dualtrack.sh`) 并在失败时阻断流程
-     - 执行 `archive-change.sh`，移动 change 目录到 archive/
-     - 生成 `summary.md`、刷新 `devflow/specs/<cap>/spec.md`、更新 CHANGELOG
-
-2. 可选参数 `--skip-qa` 仅在必要时使用（例如 QA 已重复执行）：
-   → `.claude/scripts/finalize-dualtrack-release.sh "$CHANGE_ID" --skip-qa"`
-   → 仍会归档并生成 summary/changelog；任一步失败都会以非零状态退出
-
-3. 归档成功:
-   → log_event "$REQ_ID" "✅ Dual-track release gate passed"
-   → Release 阶段将引用 `devflow/changes/archive/${CHANGE_ID}` 中的 summary，以及更新后的 specs/
-```
-
 ### 阶段 3: 调用 release-manager Agent
 
 **Agent Invocation**:
@@ -160,7 +140,6 @@ Prompt:
   - Test Coverage: ${coverage}%
   - Quality Gate: ${quality_gate}
   - Security Gate: ${security_gate}
-  - Change ID: ${CHANGE_ID:-"(none)"}
 
   Available Data:
   - PRD.md: Original requirements and success criteria
@@ -181,7 +160,6 @@ Prompt:
      → Read TEST_REPORT.md for quality evidence
      → Read SECURITY_REPORT.md for security evidence
      → Load git log for commit history
-     → If CHANGE_ID exists: 使用 `.claude/scripts/common.sh` 提供的 locate_change_dir 寻找变更目录（可能在 archive/ 下），总结 delta 与 `devflow/specs/` 最终内容
 
   3. Verify task completion:
      → Run: check-task-status.sh --json
@@ -254,33 +232,7 @@ Prompt:
 Subagent: release-manager
 ```
 
-### 阶段 4: 双轨归档与摘要
-
-**Execution Flow**:
-```
-1. 读取 change_id
-   → CHANGE_ID=$(jq -r '.change_id // empty' "$REQ_DIR/orchestration_status.json")
-   → 若为空: ERROR "change_id missing. Run /flow-init or migrate scripts first."
-
-2. 归档待归档 Delta
-   → bash .claude/scripts/archive-change.sh "$CHANGE_ID"
-   → 若失败: ERROR "Archive failed. Review delta specs."
-
-3. 生成归档摘要与 Changelog
-   → bash .claude/scripts/generate-archive-summary.sh "$CHANGE_ID"
-     - 输出: devflow/changes/archive/$CHANGE_ID/summary.md
-   → bash .claude/scripts/generate-spec-changelog.sh "$CHANGE_ID"
-     - 更新: devflow/specs/<capability>/CHANGELOG.md
-
-4. 日志记录
-   → log_event "$REQ_ID" "Change $CHANGE_ID archived to devflow/specs/ (summary + changelog)"
-
-5. 提示回滚命令
-   → 若归档后发现问题，可运行:
-     `bash .claude/scripts/rollback-archive.sh "$CHANGE_ID"`
-```
-
-### 阶段 5: 创建 Pull Request
+### 阶段 4: 创建 Pull Request
 
 **Execution Flow**:
 ```

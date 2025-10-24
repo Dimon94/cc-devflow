@@ -83,8 +83,6 @@ description: Generate Epic and Tasks breakdown. Usage: /flow-epic "REQ-123" or /
     → Extract: User stories, acceptance criteria, NFRs
     → Count: Total user stories, API endpoints, data entities
     → Log: "Loaded PRD with ${story_count} user stories"
-    → Determine CHANGE_ID: `CHANGE_ID=$(jq -r '.change_id // empty' "$REQ_DIR/orchestration_status.json")`
-    → If CHANGE_ID present: load `devflow/specs/` baseline + `devflow/changes/${CHANGE_ID}/specs/` pending deltas for context
 
 4. Update orchestration status
    → Set: status = "epic_generation_in_progress"
@@ -100,25 +98,6 @@ description: Generate Epic and Tasks breakdown. Usage: /flow-epic "REQ-123" or /
       Agent: planner"
 ```
 
-### 阶段 2.5: Delta 脚手架准备（必做）
-
-**Execution Flow**:
-```
-1. 如 orchestration_status.json 中存在 CHANGE_ID:
-     → 解析 PRD 用户故事 / 模块，列出需要影响的能力列表（例如 auth、user-profile、billing）
-     → 执行：
-        .claude/scripts/ensure-change-delta.sh "$CHANGE_ID" --cap auth --cap user-profile ...
-       功能：
-        - 为每个能力生成 devflow/changes/${CHANGE_ID}/specs/<cap>/spec.md 骨架
-        - 将能力写入 delta.json 并立即运行 parse-delta.sh 校验结构
-     → 打开各 spec.md，依据 PRD 中的业务与接口细节补全 ADDED/MODIFIED/REMOVED/RENAMED 段落
-     → 如需新增能力，可再次运行 ensure-change-delta.sh 追加 --cap
-
-2. 骨架创建后：
-     → 若 delta.json 仍为空（无 Requirement），先补全再继续
-     → 记录待办：Epic/TASKS 输出时给出“规范补全”任务项，确保开发阶段同步维护 Delta
-```
-
 ### 阶段 3: 调用 planner Agent
 
 **Agent Invocation**:
@@ -131,7 +110,6 @@ Prompt:
   - Requirement ID: ${REQ_ID}
   - PRD File: ${PRD_FILE}
   - User Stories: ${story_count} stories
-  - Change ID: ${CHANGE_ID:-"(none)"}
 
   Your task:
   1. Run .claude/scripts/setup-epic.sh --json
@@ -151,8 +129,6 @@ Prompt:
   4. Read EPIC_TEMPLATE.md and TASKS_TEMPLATE.md
 5. Follow Execution Flow in EPIC_TEMPLATE.md:
      - Load and analyze PRD
-     - Review current specs in `devflow/specs/` for impacted capabilities
-     - Review pending delta specs in `devflow/changes/${CHANGE_ID}/specs/` (if available)
      - Define Epic scope and success criteria
      - Design technical approach (data model, API contracts)
      - Plan implementation phases (TDD: Phase 2 Tests, Phase 3 Implementation)
@@ -179,11 +155,6 @@ Prompt:
   6. Write EPIC.md to ${EPIC_FILE}
   7. Write TASKS.md (SINGLE document) to ${TASKS_FILE}
   8. Log event: log_event "${REQ_ID}" "Epic and Tasks generation completed"
-  9. If CHANGE_ID set:
-        - `.claude/scripts/parse-delta.sh "$CHANGE_ID"`
-        - `.claude/scripts/sync-task-progress.sh "$CHANGE_ID"`
-        - `.claude/scripts/qa-guard-dualtrack.sh "$CHANGE_ID"`（若仍在开发阶段可临时用 --skip-qa）
-        - `.claude/scripts/check-dualtrack-conflicts.sh "$CHANGE_ID" --count-only`
 
   Critical Requirements:
   - TASKS.md must be a SINGLE document with ALL tasks
@@ -256,13 +227,6 @@ Subagent: planner
    → Set: completedTasks = 0
    → Set: updatedAt = current timestamp
    → Write: orchestration_status.json
-
-8. Delta & 任务/冲突同步 (如 CHANGE_ID 存在)
-   → `.claude/scripts/parse-delta.sh "$CHANGE_ID"`
-   → `.claude/scripts/sync-task-progress.sh "$CHANGE_ID"`
-   → `.claude/scripts/run-dualtrack-validation.sh "$CHANGE_ID"`
-   → `.claude/scripts/check-dualtrack-conflicts.sh "$CHANGE_ID" --count-only`
-     - count > 0: WARN 并提示运行完整命令查看冲突详情
 
 *GATE CHECK: Epic and Tasks meet all quality and TDD criteria*
 ```

@@ -99,20 +99,10 @@ You MUST use the unified script infrastructure for all operations:
    # Use this to understand which tasks need testing
    ```
 
-## Dual-Track Integration
-- 读取 `STATUS_FILE="$REQ_DIR/orchestration_status.json"` 获取 `CHANGE_ID=$(jq -r '.change_id // empty' "$STATUS_FILE" 2>/dev/null)`
-- 如有 `CHANGE_ID`：
-  - 阅读 `devflow/specs/<capability>/spec.md` 和 `devflow/changes/$CHANGE_ID/specs/<capability>/spec.md`
-  - 在测试计划与报告中引用 Delta 中的 Requirement/Scenario，确保测试覆盖映射
-  - 在 QA 分析阶段执行：
-    ```bash
-    .claude/scripts/parse-delta.sh "$CHANGE_ID"
-    .claude/scripts/sync-task-progress.sh "$CHANGE_ID"
-    .claude/scripts/check-dualtrack-conflicts.sh "$CHANGE_ID" --count-only
-    .claude/scripts/run-dualtrack-validation.sh "$CHANGE_ID" --strict
-    ```
-    - 若冲突/验证失败：在输出中 WARN 或 ERROR，并提示运行严格模式命令查看详情
-- 若无 `CHANGE_ID`：提示用户运行 `/flow-init` 补全双轨结构
+## Context Requirements
+- 读取 `orchestration_status.json` 获取项目状态
+- 阅读现有的系统规格和测试约束条件
+- 确保测试计划与需求一致性
 
 ## Input Contract
 
@@ -171,8 +161,7 @@ When called by main agent with "test report" in prompt, you will receive:
    - **Article IV - Performance**: Performance tests if required by NFRs
 8. **Assess Readiness**: Determine if quality gates passed
 9. **Write TEST_REPORT.md**: Generate comprehensive testing assessment
-10. 如果 `CHANGE_ID` 存在：运行 `.claude/scripts/run-dualtrack-validation.sh "$CHANGE_ID" --strict`
-11. **Log Event**: `log_event "$REQ_ID" "Test report analysis completed"`
+10. **Log Event**: `log_event "$REQ_ID" "Test report analysis completed"`
 
 ## Test Types and TDD Integration
 

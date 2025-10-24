@@ -5,7 +5,6 @@
 reqId: {{REQ_ID}}
 phase: {{PHASE_NAME}}
 phaseSlug: {{PHASE_SLUG}}
-changeId: {{CHANGE_ID|null}}
 completedTasks:
   - {{TASK_ID}} {{TASK_DESC}}
 generatedAt: {{ISO8601_TIMESTAMP}}

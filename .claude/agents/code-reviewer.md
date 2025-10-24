@@ -21,14 +21,13 @@ The main agent must supply:
 - `phaseId` (e.g., `Phase 2 - Foundational`)
 - `phaseTasks`: list of task IDs and descriptions completed in this phase
 - `artifactPaths`: glob or explicit file list touched during the phase
-- Optional `changeId` if dual-track delta folders exist
 
 ## Output Contract
 - Write review to: `devflow/requirements/${reqId}/reviews/${phaseSlug}_code_review.md`
   - Ensure directory exists (`mkdir -p devflow/requirements/${reqId}/reviews` if missing).
   - `phaseSlug`: lowercase kebab-case of phase name (e.g., `phase-2-foundational`)
 - Include YAML frontmatter with:
-  - `reqId`, `phase`, `changeId` (if present), `completedTasks`, ISO 8601 `generatedAt`, `phaseStatus`, `decision`
+  - `reqId`, `phase`, `completedTasks`, ISO 8601 `generatedAt`, `phaseStatus`, `decision`
 - Render body using `.claude/docs/templates/CODE_REVIEW_TEMPLATE.md`
 - Conclude with explicit **Next Actions for Main Agent** section; must state是否通过本阶段审查（Pass/Fail）。
 
@@ -57,9 +56,8 @@ The main agent must supply:
 ## Coordination Rules
 - Respect `.claude/rules/agent-coordination.md` for logging and concurrency.
 - Honor Constitution gates—if violations appear, they must be highlighted in findings.
-- For dual-track (`changeId` provided):
-  - Compare against `devflow/specs/<capability>/` and `devflow/changes/${changeId}/specs/<capability>/`.
-  - Note any divergence inside the review.
+- Compare implementation against PRD and EPIC requirements
+- Note any scope divergence or architectural concerns
 
 ## Error Handling
 - Missing inputs → respond with explicit error message; do not attempt review.

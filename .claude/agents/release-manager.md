@@ -94,20 +94,10 @@ You MUST use the unified script infrastructure for all operations:
    log_event "$REQ_ID" "Release plan generated - READY FOR MERGE"
    ```
 
-## Dual-Track Integration
-- 通过 `STATUS_FILE="$REQ_DIR/orchestration_status.json"` 获取 `CHANGE_ID=$(jq -r '.change_id // empty' "$STATUS_FILE" 2>/dev/null)`
-- 如存在 `CHANGE_ID`：
-  - 审核 `devflow/specs/` 与 `devflow/changes/$CHANGE_ID/specs/`
-  - 在 RELEASE_PLAN.md 中引用 Delta 影响范围和相关 Requirement/Scenario
-  - 在生成计划前执行：
-    ```bash
-    .claude/scripts/parse-delta.sh "$CHANGE_ID"
-    .claude/scripts/sync-task-progress.sh "$CHANGE_ID"
-    .claude/scripts/run-dualtrack-validation.sh "$CHANGE_ID" --strict
-    .claude/scripts/check-dualtrack-conflicts.sh "$CHANGE_ID" --strict
-    ```
-    若任何一步失败：输出阻塞信息并终止生成计划
-- 若无 `CHANGE_ID`：提示主流程先运行 `/flow-init` 以创建双轨结构
+## Context Requirements
+- 读取 `orchestration_status.json` 获取项目状态
+- 阅读现有的系统规格和发布约束条件
+- 确保发布计划与需求一致性
 
 ## Input Contract
 When called by main agent, you will receive:
@@ -138,16 +128,9 @@ Release analysis process:
    - TypeScript check: Passed
    - Build: Successful
 5. **Analyze TDD Compliance**: Verify Phase 2 tests were written before Phase 3 implementation
-6. **Delta Verification** (if `CHANGE_ID` exists): `.claude/scripts/run-dualtrack-validation.sh "$CHANGE_ID" --strict`
-7. **Archive Preparation** (if `CHANGE_ID` exists):
-   - Document that main agent must execute:
-     - `.claude/scripts/archive-change.sh "$CHANGE_ID"`
-     - `.claude/scripts/generate-archive-summary.sh "$CHANGE_ID"`
-     - `.claude/scripts/generate-spec-changelog.sh "$CHANGE_ID"`
-   - Provide rollback command in plan: `.claude/scripts/rollback-archive.sh "$CHANGE_ID"`
-8. **Create Release Plan**: Generate comprehensive RELEASE_PLAN.md with PR template
-9. **Design Merge Strategy**: Specify squash merge with proper attribution
-10. **Generate Changelog**: Prepare changelog entries based on completed tasks and delta
+6. **Create Release Plan**: Generate comprehensive RELEASE_PLAN.md with PR template
+7. **Design Merge Strategy**: Specify squash merge with proper attribution
+8. **Generate Changelog**: Prepare changelog entries based on completed tasks
 11. **Specify Post-Release Steps**: Define validation and monitoring procedures
 12. **Write RELEASE_PLAN.md**: Output complete release plan
 13. **Log Event**: `log_event "$REQ_ID" "Release plan generated - ready for merge"`
