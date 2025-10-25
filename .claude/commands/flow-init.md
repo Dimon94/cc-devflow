@@ -373,17 +373,21 @@ OPTIONS:
 
 ### Workflow Integration
 ```text
-/flow-init     → Initialize structure
+/flow-init     → Initialize structure ← YOU ARE HERE
   ↓
 /flow-prd      → Generate PRD.md
   ↓
-/flow-epic     → Generate EPIC.md and TASKS.md
+/flow-ui       → Generate UI_PROTOTYPE.html ⚡️ (conditional: if UI requirements detected)
   ↓
-/flow-dev      → Implement tasks
+/flow-tech     → Generate TECH_DESIGN.md (technical solution + anti-tech-creep)
   ↓
-/flow-qa       → Quality assurance
+/flow-epic     → Generate EPIC.md and TASKS.md (uses TECH_DESIGN.md)
   ↓
-/flow-release  → Create PR and merge
+/flow-dev      → Implement tasks (TDD: Tests → Implementation)
+  ↓
+/flow-qa       → Quality assurance (tests + security)
+  ↓
+/flow-release  → Create PR and merge (update CLAUDE.md if needed)
 ```
 
 ### Backward Compatibility

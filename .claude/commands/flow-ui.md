@@ -648,15 +648,17 @@ If Constitution check fails:
   ↓
 /flow-prd      → Generate PRD.md ✅
   ↓
-/flow-ui       → Generate UI prototype ← YOU ARE HERE (条件触发)
+/flow-ui       → Generate UI_PROTOTYPE.html ← YOU ARE HERE ⚡️ (conditional)
   ↓
-/flow-epic     → Generate EPIC and TASKS (参考UI原型)
+/flow-tech     → Generate TECH_DESIGN.md (technical solution + anti-tech-creep)
   ↓
-/flow-dev      → Implement code (基于UI原型)
+/flow-epic     → Generate EPIC.md and TASKS.md (uses TECH_DESIGN.md + UI prototype)
   ↓
-/flow-qa       → Quality assurance
+/flow-dev      → Implement tasks (TDD: Tests → Implementation, reference UI prototype)
   ↓
-/flow-release  → Create PR
+/flow-qa       → Quality assurance (tests + security)
+  ↓
+/flow-release  → Create PR and merge (update CLAUDE.md if needed)
 ```
 
 ### Dependency on /flow-prd

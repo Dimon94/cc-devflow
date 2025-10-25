@@ -399,13 +399,17 @@ If PRD generation fails:
   ↓
 /flow-prd      → Generate PRD.md ← YOU ARE HERE
   ↓
-/flow-epic     → Generate EPIC.md and TASKS.md
+/flow-ui       → Generate UI_PROTOTYPE.html ⚡️ (conditional: if UI requirements detected)
   ↓
-/flow-dev      → Implement tasks
+/flow-tech     → Generate TECH_DESIGN.md (technical solution + anti-tech-creep)
   ↓
-/flow-qa       → Quality assurance
+/flow-epic     → Generate EPIC.md and TASKS.md (uses TECH_DESIGN.md)
   ↓
-/flow-release  → Create PR and merge
+/flow-dev      → Implement tasks (TDD: Tests → Implementation)
+  ↓
+/flow-qa       → Quality assurance (tests + security)
+  ↓
+/flow-release  → Create PR and merge (update CLAUDE.md if needed)
 ```
 
 ### Dependency on /flow-init

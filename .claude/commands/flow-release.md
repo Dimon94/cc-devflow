@@ -1033,9 +1033,21 @@ If release fails:
 
 ### Workflow Integration
 ```text
-/flow-qa       → Quality assurance ✅
+/flow-init     → Initialize structure ✅
   ↓
-/flow-release  → Create PR and merge ← YOU ARE HERE
+/flow-prd      → Generate PRD.md ✅
+  ↓
+/flow-ui       → Generate UI_PROTOTYPE.html ⚡️ (conditional: if UI requirements detected) ✅
+  ↓
+/flow-tech     → Generate TECH_DESIGN.md (technical solution + anti-tech-creep) ✅
+  ↓
+/flow-epic     → Generate EPIC.md and TASKS.md (uses TECH_DESIGN.md) ✅
+  ↓
+/flow-dev      → Implement tasks (TDD: Tests → Implementation) ✅
+  ↓
+/flow-qa       → Quality assurance (tests + security) ✅
+  ↓
+/flow-release  → Create PR and merge ← YOU ARE HERE (update CLAUDE.md if needed)
   ↓
 (Manual)       → Code review and approve PR
   ↓

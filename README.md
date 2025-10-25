@@ -9,12 +9,12 @@ A comprehensive development workflow system built on Claude Code's official sub-
 ## ✨ Features
 
 - **🎯 One-Command Flow**: Start complete requirement development with `/flow-new "REQ-123|Feature Title|Plan URLs"`
-- **🔄 Staged Commands**: 7 independent stage commands (init/prd/ui/epic/dev/qa/release) for fine-grained control
+- **🔄 Staged Commands**: 8 independent stage commands (init/prd/ui/tech/epic/dev/qa/release) for fine-grained control
 - **📋 Document-Driven**: Automatic PRD → UI Prototype (conditional) → EPIC → TASKS → Implementation chain
 - **📝 Template-Driven**: Self-executable templates (PRD_TEMPLATE, EPIC_TEMPLATE, TASKS_TEMPLATE) with built-in execution flows
 - **🔄 Smart Recovery**: Resume interrupted development with `/flow-restart` and monitor progress with `/flow-status`
 - **🛡️ Quality Gates**: Automated TypeScript checking, testing, linting, and security scanning
-- **🤖 Sub-Agent Orchestration**: 11 specialized research agents for different development phases
+- **🤖 Sub-Agent Orchestration**: 12 specialized research agents for different development phases
 - **🎨 UI Prototype Generation**: Conditional automatic HTML prototype generation with artistic design inspiration
 - **🔗 GitHub Integration**: Automated PR creation, branch management, and conventional commits
 - **📊 Progress Tracking**: Real-time status monitoring and intelligent restart points
@@ -133,7 +133,8 @@ bash .claude/scripts/create-requirement.sh --interactive
 Workflow Guide (Standard Operating Procedures)
 ├── prd-writer          → Research requirements, generate PRD.md (MUST use PRD_TEMPLATE)
 ├── ui-designer         → Analyze PRD, generate UI_PROTOTYPE.html ⚡️ Conditional trigger
-├── planner             → Analyze PRD, generate EPIC.md + TASKS.md (MUST use EPIC_TEMPLATE, TASKS_TEMPLATE)
+├── tech-architect      → Analyze PRD + codebase, generate TECH_DESIGN.md (Anti-Tech-Creep enforcement)
+├── planner             → Analyze PRD + TECH_DESIGN, generate EPIC.md + TASKS.md (MUST use EPIC_TEMPLATE, TASKS_TEMPLATE)
 ├── dev-implementer     → Research codebase, generate IMPLEMENTATION_PLAN.md (research-only)
 ├── qa-tester           → Analyze code, generate TEST_PLAN.md + TEST_REPORT.md
 ├── security-reviewer   → Security analysis, generate SECURITY_PLAN.md + SECURITY_REPORT.md
@@ -267,6 +268,7 @@ devflow/requirements/${REQ-ID}/
 |---------|-------------|-------|
 | `/flow-new` | Start new requirement development | `/flow-new "REQ-123\|Title\|URLs"` |
 | `/flow-ui` | Generate UI prototype (conditional) | `/flow-ui "REQ-123"` |
+| `/flow-tech` | Generate technical design (Anti-Tech-Creep) | `/flow-tech "REQ-123"` |
 | `/flow-status` | Query development progress | `/flow-status [REQ-ID] [--detailed]` |
 | `/flow-restart` | Resume interrupted development | `/flow-restart "REQ-ID" [--from=STAGE]` |
 | `/flow-verify` | Verify consistency across documents | `/flow-verify "REQ-ID" [--detailed] [--fix-auto]` |

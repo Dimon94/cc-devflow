@@ -11,11 +11,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## 核心理念
 
 - **一键启动**: 通过 `/flow-new "REQ-123|需求标题|计划URL"` 启动完整流程
-- **阶段化执行**: 6个独立阶段命令 (init/prd/epic/dev/qa/release)，可单独调用或组合
+- **阶段化执行**: 8个独立阶段命令 (init/prd/ui/tech/epic/dev/qa/release)，可单独调用或组合
 - **文档驱动**: 以 Markdown 文档为一等公民，记录全过程
 - **模板驱动**: 自执行模板 (PRD_TEMPLATE, EPIC_TEMPLATE, TASKS_TEMPLATE) 指导文档生成
 - **质量闸控**: 严格的 DoD/Security/Quality 检查机制
-- **研究型子代理**: 10个专业研究型子代理提供分析和计划
+- **研究型子代理**: 12个专业研究型子代理提供分析和计划
 - **主代理执行**: Claude 主代理负责所有实际代码执行
 - **统一脚本基础设施**: 所有代理和命令使用统一的 `.claude/scripts/` 脚本
 - **Constitution 集成**: 所有阶段强制执行 Constitution 检查
@@ -259,18 +259,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 子代理架构
 
-### 研究型子代理 (11个)
+### 研究型子代理 (12个)
 1. **flow-orchestrator**: 工作流指导文档，定义标准操作程序
 2. **prd-writer**: 研究需求，输出结构化产品需求文档 (增强版，支持Intent-driven澄清)
-3. **planner**: 分析PRD，输出Epic和任务分解计划
-4. **ui-designer**: 分析PRD和设计风格，生成HTML/CSS/JS原型 ⚡️ 条件触发 (新增)
-5. **dev-implementer**: 研究代码库，输出详细实现计划
-6. **qa-tester**: 分析代码，输出测试计划和策略
-7. **security-reviewer**: 安全分析，输出安全审查报告
-8. **release-manager**: 发布分析，输出发布计划和PR策略
-9. **impact-analyzer**: PRD变更影响分析，输出影响评估和迁移策略 (新增)
-10. **compatibility-checker**: 版本兼容性分析，输出兼容性报告和风险评估 (新增)
-11. **consistency-checker**: 全链路一致性验证，输出一致性分析和冲突检测报告 (新增)
+3. **ui-designer**: 分析PRD和设计风格，生成HTML/CSS/JS原型 ⚡️ 条件触发 (新增)
+4. **tech-architect**: 分析PRD和代码库，生成技术方案文档 TECH_DESIGN.md (Anti-Tech-Creep 强制执行) (新增)
+5. **planner**: 分析PRD和TECH_DESIGN，输出Epic和任务分解计划
+6. **dev-implementer**: 研究代码库，输出详细实现计划
+7. **qa-tester**: 分析代码，输出测试计划和策略
+8. **security-reviewer**: 安全分析，输出安全审查报告
+9. **release-manager**: 发布分析，输出发布计划和PR策略
+10. **impact-analyzer**: PRD变更影响分析，输出影响评估和迁移策略 (新增)
+11. **compatibility-checker**: 版本兼容性分析，输出兼容性报告和风险评估 (新增)
+12. **consistency-checker**: 全链路一致性验证，输出一致性分析和冲突检测报告 (新增)
 
 ### 执行机制
 - **主代理**: Claude 本身，拥有完整上下文，执行所有代码操作
@@ -661,7 +662,7 @@ CC-DevFlow 采用**自执行模板 (Self-Executable Templates)** 架构，每个
 
 ### 阶段化工作流命令 (核心)
 
-#### 完整需求开发流程 (7个阶段)
+#### 完整需求开发流程 (8个阶段)
 ```text
 /flow-init    → 初始化需求结构和Git分支
   ↓
@@ -669,13 +670,15 @@ CC-DevFlow 采用**自执行模板 (Self-Executable Templates)** 架构，每个
   ↓
 /flow-ui      → 生成UI原型 (UI_PROTOTYPE.html) ⚡️ 条件触发
   ↓
-/flow-epic    → 生成Epic规划和任务分解 (EPIC.md, TASKS.md)
+/flow-tech    → 生成技术方案 (TECH_DESIGN.md) + Anti-Tech-Creep 闸门
   ↓
-/flow-dev     → 执行开发任务 (TDD方式)
+/flow-epic    → 生成Epic规划和任务分解 (EPIC.md, TASKS.md，基于TECH_DESIGN)
   ↓
-/flow-qa      → 质量保证和测试验证
+/flow-dev     → 执行开发任务 (TDD方式: 测试优先→实现)
   ↓
-/flow-release → 创建PR并合并到主分支
+/flow-qa      → 质量保证和测试验证 (测试+安全)
+  ↓
+/flow-release → 创建PR并合并到主分支 (更新CLAUDE.md技术架构)
 ```
 
 #### 阶段命令详解

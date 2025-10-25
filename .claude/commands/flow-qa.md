@@ -950,11 +950,21 @@ If QA fails:
 
 ### Workflow Integration
 ```text
-/flow-dev      → Implement tasks ✅
+/flow-init     → Initialize structure ✅
   ↓
-/flow-qa       → Quality assurance ← YOU ARE HERE
+/flow-prd      → Generate PRD.md ✅
   ↓
-/flow-release  → Create PR and merge
+/flow-ui       → Generate UI_PROTOTYPE.html ⚡️ (conditional: if UI requirements detected) ✅
+  ↓
+/flow-tech     → Generate TECH_DESIGN.md (technical solution + anti-tech-creep) ✅
+  ↓
+/flow-epic     → Generate EPIC.md and TASKS.md (uses TECH_DESIGN.md) ✅
+  ↓
+/flow-dev      → Implement tasks (TDD: Tests → Implementation) ✅
+  ↓
+/flow-qa       → Quality assurance ← YOU ARE HERE (tests + security)
+  ↓
+/flow-release  → Create PR and merge (update CLAUDE.md if needed)
 ```
 
 ### Dependency on /flow-dev

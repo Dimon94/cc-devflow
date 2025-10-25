@@ -9,12 +9,12 @@
 ## ✨ 核心特性
 
 - **🎯 一键启动流程**: 使用 `/flow-new "REQ-123|功能标题|计划URLs"` 启动完整的需求开发
-- **🔄 阶段化命令**: 7个独立阶段命令 (init/prd/ui/epic/dev/qa/release)，精细化控制
+- **🔄 阶段化命令**: 8个独立阶段命令 (init/prd/ui/tech/epic/dev/qa/release)，精细化控制
 - **📋 文档驱动**: 自动化 PRD → UI原型(条件) → EPIC → TASKS → 实现链条
 - **📝 模板驱动**: 自执行模板 (PRD_TEMPLATE, EPIC_TEMPLATE, TASKS_TEMPLATE) 内置生成流程
 - **🔄 智能恢复**: 使用 `/flow-restart` 恢复中断的开发，用 `/flow-status` 监控进度
 - **🛡️ 质量闸**: 自动化 TypeScript 检查、测试、代码检查和安全扫描
-- **🤖 子代理编排**: 11 个专业研究型代理负责不同开发阶段
+- **🤖 子代理编排**: 12 个专业研究型代理负责不同开发阶段
 - **🎨 UI原型生成**: 条件触发的HTML原型自动生成，融合艺术设计灵感
 - **🔗 GitHub 集成**: 自动化 PR 创建、分支管理和规范化提交
 - **📊 进度跟踪**: 实时状态监控和智能重启点
@@ -139,7 +139,8 @@ bash .claude/scripts/create-requirement.sh --interactive
 工作流指导 (标准操作程序)
 ├── prd-writer          → 研究需求，生成 PRD.md (必须使用 PRD_TEMPLATE)
 ├── ui-designer         → 分析PRD，生成 UI_PROTOTYPE.html ⚡️ 条件触发
-├── planner             → 分析 PRD，生成 EPIC.md + TASKS.md (必须使用 EPIC_TEMPLATE, TASKS_TEMPLATE)
+├── tech-architect      → 分析PRD+代码库，生成 TECH_DESIGN.md (Anti-Tech-Creep 强制执行)
+├── planner             → 分析PRD+TECH_DESIGN，生成 EPIC.md + TASKS.md (必须使用 EPIC_TEMPLATE, TASKS_TEMPLATE)
 ├── dev-implementer     → 研究代码库，生成 IMPLEMENTATION_PLAN.md (仅研究)
 ├── qa-tester           → 分析代码，生成 TEST_PLAN.md + TEST_REPORT.md
 ├── security-reviewer   → 安全分析，生成 SECURITY_PLAN.md + SECURITY_REPORT.md
@@ -273,6 +274,7 @@ devflow/requirements/${REQ-ID}/
 |---------|-------------|-------|
 | `/flow-new` | 启动新需求开发 | `/flow-new "REQ-123\|标题\|URLs"` |
 | `/flow-ui` | 生成UI原型(条件) | `/flow-ui "REQ-123"` |
+| `/flow-tech` | 生成技术方案(Anti-Tech-Creep) | `/flow-tech "REQ-123"` |
 | `/flow-status` | 查询开发进度 | `/flow-status [REQ-ID] [--detailed]` |
 | `/flow-restart` | 恢复中断的开发 | `/flow-restart "REQ-ID" [--from=STAGE]` |
 | `/flow-verify` | 验证文档一致性 | `/flow-verify "REQ-ID" [--detailed] [--fix-auto]` |
