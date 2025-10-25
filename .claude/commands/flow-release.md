@@ -232,6 +232,123 @@ Prompt:
 Subagent: release-manager
 ```
 
+### 阶段 3.5: 更新 CLAUDE.md 技术架构文档
+
+**Purpose**: 记录本次需求引入的重要架构变更和技术决策到 CLAUDE.md（精炼原则性）
+
+**Execution Flow**:
+```
+1. 检查本次需求是否有架构级变更
+   → Read: TECH_DESIGN.md (Section 7.0: Baseline Deviation Check)
+   → Extract: "Deviations from Baseline" 表格
+   → If deviations exist: 标记为需要更新 CLAUDE.md
+   → If no deviations: Skip to Step 7 (no CLAUDE.md update needed)
+
+2. 分析架构变更类型
+   → Read: TECH_DESIGN.md (Section 2: Technology Stack)
+   → Identify significant changes:
+     - **新增基础设施组件**: Redis, Message Queue, CDN
+     - **新增架构层**: Caching Layer, API Gateway, Service Mesh
+     - **认证/授权机制变更**: JWT → OAuth2, RBAC → ABAC
+     - **数据库架构变更**: Single DB → Read Replicas, Sharding
+     - **性能优化策略**: Caching, CDN, Load Balancing
+   → Ignore minor changes:
+     - 新增普通 npm 包
+     - 测试工具变更
+     - 开发工具变更
+
+3. Read 当前 CLAUDE.md
+   → Locate: "## Technical Architecture" section
+   → If section missing: ERROR "CLAUDE.md missing tech architecture (should have been added by /flow-tech)"
+   → Extract: Current tech stack and architecture notes
+
+4. 生成精炼的架构更新内容 (精炼原则性 - MANDATORY)
+   → **Hard Requirements**:
+     - **Max 15-20 lines total** for entire section (hard limit)
+     - **Bullet points only** (no paragraphs, no prose)
+     - **Include versions** for all technologies
+     - **No implementation details** (e.g., "User model has fields X, Y, Z")
+     - **No verbose explanations** (e.g., "We chose Redis because...")
+     - **Only architecture-level changes** (Redis/OAuth2/Replicas, not npm packages)
+     - **REQ-ID references** for all new additions (Added: REQ-123)
+     - **Core Principles line** at end (≤1 sentence)
+   → Template:
+     ```markdown
+     ## Technical Architecture
+
+     ### Core Stack
+     - **Frontend**: React 18 with TypeScript 5.0
+     - **Backend**: Express 4.18 with TypeScript
+     - **Database**: PostgreSQL 15
+     - **ORM**: Prisma 5.0
+     - **Authentication**: JWT with bcrypt
+     - **Validation**: Zod 3.22
+     - **Testing**: Jest 29 with supertest
+
+     ### Infrastructure (Added: REQ-123)
+     - **Cache**: Redis 7.0 (API response caching, <500ms target)
+     - **Deployment**: Docker + Docker Compose
+
+     **Core Principles**: Direct framework usage, no unnecessary abstractions, reuse existing patterns.
+     ```
+
+5. 更新 CLAUDE.md (强制验证 - MANDATORY)
+   → Backup: Copy current "## Technical Architecture" section
+   → Replace: With updated content from Step 4
+   → **Mandatory Verifications** (MUST ALL PASS):
+     - [ ] Total section length ≤20 lines (including heading)
+     - [ ] All bullet points (no paragraphs)
+     - [ ] All technologies have versions (e.g., "Redis 7.0", not "Redis")
+     - [ ] No implementation details (check for model fields, API paths, etc.)
+     - [ ] No verbose explanations (check for "because", "in order to", etc.)
+     - [ ] Only architecture-level items (no dev tools, minor packages)
+     - [ ] All new items have REQ-ID reference (Added: REQ-123)
+     - [ ] "Core Principles" line exists and ≤1 sentence
+     - [ ] No redundant content (no repeated information)
+   → If any verification fails: ABORT and fix content before committing
+
+6. Commit CLAUDE.md 更新
+   → Run: git add CLAUDE.md
+   → Run: git commit -m "docs(${REQ_ID}): update technical architecture in CLAUDE.md
+
+   Added architectural changes from ${REQ_ID}:
+   ${brief_summary_of_changes}
+
+   🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+   Co-Authored-By: Claude <noreply@anthropic.com>"
+   → Log: "Updated CLAUDE.md with architectural changes from ${REQ_ID}"
+
+7. Log CLAUDE.md 更新状态
+   → Append to EXECUTION_LOG.md:
+     "### $(date -Iseconds)
+      CLAUDE.md updated (or skipped if no significant changes)
+      Architectural changes: ${changes_summary or "None"}
+      Commit: ${commit_hash or "N/A"}"
+
+**Examples of What to Record**:
+| Change Type | Example | Record in CLAUDE.md? | Format |
+|-------------|---------|---------------------|--------|
+| New infrastructure | Added Redis for caching | ✅ YES | `- **Cache**: Redis 7.0 (API caching, <500ms)` |
+| New auth mechanism | Implemented JWT auth | ✅ YES | `- **Authentication**: JWT with bcrypt` |
+| New architecture layer | Added API Gateway | ✅ YES | `- **API Gateway**: Express with rate limiting` |
+| Database scaling | Added read replicas | ✅ YES | `- **Database**: PostgreSQL 15 (primary + 2 replicas)` |
+| New npm package | Added lodash | ❌ NO | (Too granular, not architecture-level) |
+| Test tool change | Switched to Vitest | ❌ NO | (Development tooling, not architecture) |
+| Code refactoring | Refactored utils | ❌ NO | (Implementation detail, not architecture) |
+
+**Anti-Patterns to Avoid**:
+- ❌ Recording every dependency: "Added express-validator, joi, zod, class-validator..."
+- ❌ Implementation details: "User model has email, password, createdAt fields..."
+- ❌ Verbose explanations: "We chose Redis because it's fast and widely used..."
+- ✅ Correct format: "- **Cache**: Redis 7.0 (session storage, TTL 15min)"
+
+**Output**:
+- CLAUDE.md updated (if significant changes exist, 精炼原则性: ≤20行，architecture-level only)
+- Git commit created (if CLAUDE.md updated, with REQ-ID reference)
+- EXECUTION_LOG.md logged (update status recorded)
+```
+
 ### 阶段 4: 创建 Pull Request
 
 **Execution Flow**:

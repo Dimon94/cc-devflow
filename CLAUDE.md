@@ -227,7 +227,35 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Constitution First**: 仍由 manage-constitution.sh 统一维护条款版本。
 - **易于回溯**: EXECUTION_LOG.md + 状态文件提供全链路可追溯性。
 
-> 🎯 结论: 单人/小队开发无需额外目录负担,所有信息在一个需求树里闭环,更贴近“We don't do complicated things until we must”的品味准则。
+> 🎯 结论: 单人/小队开发无需额外目录负担,所有信息在一个需求树里闭环,更贴近"We don't do complicated things until we must"的品味准则。
+
+### 2025-10-25 CLAUDE.md 技术架构动态管理 (Anti-Tech-Creep)
+
+**核心问题**: 防止 AI 技术扩散（无理由重构/投机性新增）+ 确保架构文档同步更新
+
+**三阶段机制**:
+1. **Stage 0 (/flow-tech 开始)**: 检查/更新 CLAUDE.md "## Technical Architecture" 章节
+   - 缺失 → 生成（10-15行，≤20行硬限制，bullet points only）
+   - 有问题 → 修复（冗余/过时/不一致，强制精炼）
+   - 正常 → 提取为 Baseline Constraints
+
+2. **Stage 1 (/flow-tech 执行)**: 强制使用 Baseline 技术栈
+   - tech-architect 加载 CLAUDE.md baseline
+   - 新技术必须 PRD 证明 → 记录 TECH_DESIGN.md Section 7.0
+   - Constitution Check: Baseline Deviation 闸门
+
+3. **Stage 2 (/flow-release PR 前)**: 记录架构级变更到 CLAUDE.md
+   - 检测 TECH_DESIGN.md 偏离 → 更新（15-20行，≤20行硬限制）
+   - 只记录架构级（Redis/OAuth2/Read Replicas），不记录实现细节（npm包/工具）
+   - 独立 commit + REQ-ID 引用 + 9项强制验证
+
+**关键原则** (MANDATORY):
+- ❌ 拒绝: 无理由重构、投机性功能、不熟悉库
+- ✅ 批准: PRD 明确要求 + 充分证明
+- 精炼: 10-15行目标，≤20行硬限制，bullet points only，无段落/无冗余/无实现细节
+- 可追溯: REQ-ID 标记所有变更
+
+> 详细执行流程见: flow-tech.md (阶段0)、tech-architect.md、flow-release.md (阶段3.5)
 
 ## 子代理架构
 

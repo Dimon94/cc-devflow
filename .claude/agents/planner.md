@@ -21,11 +21,12 @@ Before ANY technical design, you MUST execute Phase -1 Constitutional Gates from
 4. **Proceed ONLY if gates pass or violations justified**
 
 ### Your Role
-- **For Requirements**: Convert PRD into EPIC with **Constitutional compliance**
+- **For Requirements**: Convert PRD + **TECH_DESIGN** into EPIC with **Constitutional compliance**
 - **For BUG Fixes**: Convert BUG ANALYSIS into detailed fix plan with resolution strategy
 - Break work into atomic tasks organized by **USER STORY** (not phases)
 - Define dependencies, estimates, and Definition of Done (DoD) criteria
 - **ENFORCE**: User story independence and task labeling ([US1], [US2]...)
+- **CRITICAL**: Use TECH_DESIGN.md to ensure TASKS.md covers ALL technical layers (no missing details)
 
 ## Rules Integration
 You MUST follow these rules during planning:
@@ -94,11 +95,13 @@ Deliverables:
 # Requirements Structure
 devflow/requirements/${reqId}/
 ├── PRD.md                 # 产品需求文档
+├── TECH_DESIGN.md         # 技术方案文档 (新增，EPIC/TASKS 的关键输入)
 ├── EPIC.md               # Epic 规划
 ├── TASKS.md              # 任务列表 (单一文档，TDD 顺序)
 ├── research/             # 外部研究材料
 │   ├── ${reqId}_plan_1.md
-│   └── ${reqId}_plan_2.md
+│   ├── ${reqId}_plan_2.md
+│   └── codebase-analysis.md  # 代码库分析报告
 ├── TEST_PLAN.md          # 测试计划
 ├── SECURITY_PLAN.md      # 安全计划
 ├── TEST_REPORT.md        # 测试报告
@@ -132,22 +135,45 @@ Process:
 
 **For Requirements**:
 1. Run `.claude/scripts/setup-epic.sh --json` to get paths and setup EPIC/TASKS structure
-2. Read PRD and understand scope, user stories, acceptance criteria
-3. Define EPIC with measurable success criteria and technical approach
-4. Generate TASKS.md following TDD order using TASKS_TEMPLATE.md:
+2. **Read TECH_DESIGN.md** (CRITICAL INPUT):
+   - Load: devflow/requirements/${reqId}/TECH_DESIGN.md
+   - Extract: System architecture, technology stack, data models, API contracts
+   - Extract: Security and performance strategies
+   - Verify: All sections complete (no {{PLACEHOLDER}})
+   - If missing: ERROR "TECH_DESIGN.md not found. Run /flow-tech first."
+3. Read PRD and understand scope, user stories, acceptance criteria
+4. Define EPIC with measurable success criteria and technical approach
+5. Generate TASKS.md following TDD order using TASKS_TEMPLATE.md and **TECH_DESIGN.md**:
    - Load TASKS_TEMPLATE.md as base
    - Execute Execution Flow to generate all tasks
    - Phase 1: Setup tasks (project init, dependencies, linting)
-   - Phase 2: Tests First (TDD) - generate all contract tests and integration tests
-     * Each API endpoint → contract test task [P]
+   - Phase 2: Tests First (TDD) - generate all contract tests and integration tests **based on TECH_DESIGN.md Section 4 (API Design)**
+     * Each API endpoint from TECH_DESIGN.md → contract test task [P]
      * Each user story → integration test task [P]
      * Mark with "⚠️ MUST COMPLETE BEFORE Phase 3"
    - TEST VERIFICATION CHECKPOINT - ensure all tests fail before Phase 3
-   - Phase 3: Core Implementation - make tests pass
-     * Each data entity → model task [P]
-     * Each service → service implementation task
-     * Each endpoint → endpoint implementation task
-   - Phase 4: Integration (DB, middleware, security)
+   - Phase 3: Core Implementation - make tests pass **based on TECH_DESIGN.md**
+     * **Data Models** (from TECH_DESIGN.md Section 3):
+       - Each database table → model/entity task [P]
+       - Database migrations → migration task
+       - Indexes and constraints → optimization task
+     * **API Endpoints** (from TECH_DESIGN.md Section 4):
+       - Each endpoint → controller/handler task
+       - Input validation (Zod/Joi) → validation task [P]
+       - Error handling → error handler task
+     * **Frontend** (if TECH_DESIGN.md Section 2.1 exists):
+       - Each UI component → component task [P]
+       - State management → store/context task
+       - API integration → service task
+   - Phase 4: Integration **based on TECH_DESIGN.md Sections 5 & 6**
+     * **Security** (from TECH_DESIGN.md Section 5):
+       - Authentication middleware → auth task
+       - Authorization → authz task
+       - Secret management (env vars) → config task
+       - Rate limiting → rate-limit task
+     * **Performance** (from TECH_DESIGN.md Section 6):
+       - Caching implementation → cache task
+       - Database connection pooling → db-pool task
    - Phase 5: Polish (unit tests, performance, docs)
 5. Apply task rules:
    - Different files = mark [P] for parallel
@@ -179,6 +205,12 @@ Process:
 Quality criteria:
 
 **For Requirements**:
+- **TECH_DESIGN Coverage** (CRITICAL):
+  - All database tables from TECH_DESIGN.md Section 3 → model/migration tasks
+  - All API endpoints from TECH_DESIGN.md Section 4 → contract test + implementation tasks
+  - All security measures from TECH_DESIGN.md Section 5 → security tasks
+  - All performance strategies from TECH_DESIGN.md Section 6 → optimization tasks
+  - All frontend components from TECH_DESIGN.md Section 2.1 (if exists) → component tasks
 - No task dependencies should create bottlenecks
 - All acceptance criteria from PRD covered by tasks
 - **TDD compliance**: All tests in Phase 2, all implementation in Phase 3

@@ -39,6 +39,7 @@ description: One-shot requirement flow. Usage: /flow-new "REQ-123|支持用户�
   ├─> /flow-init    (阶段1: 初始化)
   ├─> /flow-prd     (阶段2: PRD生成)
   ├─> /flow-ui      (阶段2.5: UI原型生成) ⚡️ 条件触发
+  ├─> /flow-tech    (阶段2.7: 技术方案设计) 🔧 新增
   ├─> /flow-epic    (阶段3: Epic规划)
   ├─> /flow-dev     (阶段4: 开发执行)
   ├─> /flow-qa      (阶段5: 质量保证)
@@ -154,24 +155,125 @@ description: One-shot requirement flow. Usage: /flow-new "REQ-123|支持用户�
   - 如果HTML生成不完整 → 警告但继续,后续可手动完善
 ```
 
+### 阶段 2.7: 技术方案设计 (/flow-tech) 🔧 新增
+```text
+2.7 生成技术方案文档 (MANDATORY FOR EPIC/TASKS)
+   → Step 1: 技术细化分析 (基于 flow-init 的概览分析)
+     • 复用: research/internal/codebase-overview.md (项目概览, from flow-init)
+     • 深度分析:
+       - 数据模型实现模式 (ORM, schema, validation, 示例代码)
+       - API实现模式 (routing, handling, error, 示例代码)
+       - 认证授权实现 (middleware, guards, tokens, 示例代码)
+       - 数据库连接和事务 (connection, pool, migration)
+       - 可复用组件和工具 (logger, validator, utils)
+       - 测试模式 (framework, mocks, fixtures)
+     • 生成: research/codebase-tech-analysis.md (技术细化分析报告)
+
+   → Step 2: 调用 /flow-tech "REQ_ID"
+     • tech-architect研究型代理执行:
+       Phase 1: 加载PRD和代码库分析
+       Phase 2: 设计系统架构
+         - 定义架构层次 (前端/API/服务/数据库)
+         - 创建架构图 (文本格式)
+         - 定义模块分解
+       Phase 3: 选择技术栈
+         - 前端技术 (框架, 状态管理, UI库) + 版本和理由
+         - 后端技术 (框架, ORM, 验证) + 版本和理由
+         - 数据库 (主库, 缓存) + 版本和理由
+         - 基础设施 (部署, CI/CD) + 理由
+       Phase 4: 定义数据模型
+         - 完整数据库表结构 (所有字段, 类型, 约束)
+         - 实体关系 (1:1, 1:N, N:M)
+         - 索引和性能优化
+       Phase 5: 设计API契约
+         - 所有API端点 (方法, 路径, 请求, 响应)
+         - 数据验证规则
+         - 错误处理
+       Phase 6: 安全方案
+         - 认证策略 (JWT/OAuth)
+         - 授权模型 (RBAC/ABAC)
+         - 密钥管理 (NO HARDCODED SECRETS)
+         - 输入验证和防护 (SQL注入, XSS, CSRF)
+       Phase 7: 性能方案
+         - 缓存策略 (Redis, TTL)
+         - 数据库优化 (索引, 连接池)
+         - 水平扩展
+       Phase 8: Phase -1 宪法闸门
+         - Simplicity Gate (Article VII)
+         - Anti-Abstraction Gate (Article VIII)
+         - Integration-First Gate (Article IX)
+       Phase 9: 验证完整性
+       Phase 10: 生成 TECH_DESIGN.md
+
+   → Step 3: 验证技术方案完整性
+     • 所有章节填写完整 (无 {{PLACEHOLDER}})
+     • 所有技术选型有版本号和理由
+     • 数据库表结构完整 (所有表, 字段, 关系, 索引)
+     • 所有API端点有请求/响应schema
+     • 安全方案完整 (NO HARDCODED SECRETS)
+     • 性能方案完整
+     • 宪法检查通过
+
+输出:
+  ✅ TECH_DESIGN.md (150+ 行完整技术方案)
+     - Section 1: 系统架构 (架构图, 模块分解, 数据流)
+     - Section 2: 技术栈 (前端, 后端, 数据库, 基础设施 + 版本和理由)
+     - Section 3: 数据模型设计 (表结构, 关系, 索引)
+     - Section 4: API设计 (所有端点, 请求/响应, 错误)
+     - Section 5: 安全设计 (认证, 授权, 密钥, 验证)
+     - Section 6: 性能设计 (缓存, 优化, 扩展)
+     - Section 7: Constitution检查 (Phase -1 Gates)
+     - Section 8: 验证清单
+  ✅ research/codebase-tech-analysis.md (技术细化分析报告, 新增)
+     - 数据模型模式 + 示例代码
+     - API实现模式 + 示例代码
+     - 认证授权实现 + 示例代码
+     - 数据库连接/事务模式
+     - 可复用组件和工具
+     - 测试模式和框架
+  ✅ 状态更新: tech_design_complete
+
+关键价值:
+  • 为 planner 提供完整技术上下文
+  • 确保 TASKS.md 覆盖所有技术层 (不漏细节)
+  • 提供具体技术选型和API契约
+  • 减少任务分解的歧义
+  • 明确数据库schema, 所有表和字段提前定义
+  • 所有API端点提前定义, 前后端对接无歧义
+
+错误处理:
+  - 如果TECH_DESIGN.md不完整 → 终止并提示手动修正
+  - 如果Constitution违规 → 显示违规项，要求修正
+  - 如果数据模型缺失 → 终止并提示补充
+  - 如果API契约不完整 → 终止并提示补充
+```
+
 ### 阶段 3: Epic规划 (/flow-epic)
 ```text
 4. 调用 /flow-epic "REQ_ID"
-   → planner 研究型代理分析PRD
+   → planner 研究型代理分析PRD + **TECH_DESIGN.md**
    → 分解Epic和原子级任务
    → 定义依赖关系和DoD
    → 标记逻辑独立任务 [P]
 
 输出:
   ✅ EPIC.md (Epic描述和技术方案)
-  ✅ TASKS.md (单文件管理所有任务)
+  ✅ TASKS.md (单文件管理所有任务, **基于TECH_DESIGN.md生成**)
      - 每个任务: ID、描述、类型、优先级、依赖、DoD
      - [P] 标记逻辑独立任务
+     - **覆盖TECH_DESIGN.md所有层**:
+       * 数据模型任务 (Section 3: 所有表, 迁移, 索引)
+       * API端点任务 (Section 4: 所有端点, 验证, 错误处理)
+       * 安全任务 (Section 5: 认证, 授权, 密钥管理, 验证)
+       * 性能任务 (Section 6: 缓存, 优化, 扩展)
+       * 前端任务 (Section 2.1: 组件, 状态管理, API集成, 如有)
   ✅ 状态更新: epic_complete
 
 错误处理:
+  - 如果TECH_DESIGN.md缺失 → 终止并提示先运行 /flow-tech
   - 如果任务依赖有循环 → 终止并提示修正
   - 如果任务粒度过大 → 警告但继续
+  - 如果TASKS未覆盖TECH_DESIGN所有层 → 警告并提示补充
 ```
 
 ### 阶段 4: 开发执行 (/flow-dev)
@@ -240,17 +342,25 @@ Exit Gate检查:
 ```text
 7. 调用 /flow-release "REQ_ID"
    → release-manager代理生成发布计划
+   → **更新 CLAUDE.md 技术架构**（如有重要架构变更）
+     • 检查 TECH_DESIGN.md 的 Baseline Deviation
+     • 如果有新增基础设施组件（Redis、Message Queue）或架构层变更
+     • 精炼地更新 CLAUDE.md 的 "## Technical Architecture" 章节
+     • 格式：bullet points (≤15行)，包含 REQ-ID 引用
+     • 提交独立 commit: "docs(REQ-123): update technical architecture"
    → 执行最终构建
-   → 创建GitHub Pull Request
+   → 创建GitHub Pull Request（包含更新后的 CLAUDE.md）
    → 记录PR URL
 
 输出:
   ✅ RELEASE_PLAN.md (发布计划和回滚策略)
+  ✅ CLAUDE.md (更新技术架构，如有重要变更)
   ✅ GitHub Pull Request (包含完整描述)
      - 需求摘要 (来自PRD)
      - 变更清单 (来自Git commits)
      - 测试结果 (来自TEST_REPORT)
      - 安全扫描 (来自SECURITY_REPORT)
+     - 技术架构更新 (来自CLAUDE.md，如有)
      - 检查清单
   ✅ 状态更新: release_complete
 
@@ -277,29 +387,47 @@ Exit Gate检查:
       → 用户故事: 5 个
       → Constitution检查: 通过
 
-[2.5/7] ✅ UI原型生成完成 ⚡️
+[2.5/8] ✅ UI原型生成完成 ⚡️
         → UI需求检测: 通过 (检测到"页面"、"表单"关键词)
         → 设计灵感采样: 3位大师 (Dieter Rams, Josef Müller-Brockmann, 原研哉)
         → UI_PROTOTYPE.html: 单文件原型 (响应式设计)
         → 设计策略文档: ui_design_strategy.md
 
-[3/7] ✅ Epic规划完成
-      → EPIC.md 已生成 (包含UI原型引用)
-      → TASKS.md: 12 个任务 (含4个前端页面开发任务)
-      → 逻辑独立任务: 5 个 [P]
+[2.7/8] ✅ 技术方案设计完成 🔧
+        → 代码库分析: 完成 (项目类型: Node.js/TypeScript)
+        → TECH_DESIGN.md: 180 行完整技术方案
+        → 系统架构: 前端(React) + API(Express) + DB(PostgreSQL) + Cache(Redis)
+        → 技术栈: 所有技术选型完成 (含版本和理由)
+        → 数据模型: 5 个表, 完整schema和关系
+        → API设计: 12 个端点, 完整契约
+        → 安全方案: JWT认证, RBAC授权, NO HARDCODED SECRETS
+        → 性能方案: Redis缓存, 数据库索引, 水平扩展
+        → Constitution检查: 通过
 
-[4/7] 🔄 开发执行中...
-      → 任务进度: 5/12 已完成
-      → 当前任务: TASK_006 - 实现订单列表页面UI
-      → Phase 3: 根据UI_PROTOTYPE.html实现组件...
+[3/8] ✅ Epic规划完成
+      → EPIC.md 已生成 (基于PRD + TECH_DESIGN)
+      → TASKS.md: 18 个任务 (基于TECH_DESIGN完整覆盖)
+        * 数据模型任务: 5 个 (所有表 + 迁移)
+        * API任务: 12 个 (所有端点 + 验证)
+        * 安全任务: 4 个 (认证 + 授权 + 验证)
+        * 性能任务: 2 个 (缓存 + 优化)
+        * 前端任务: 4 个 (组件 + 状态 + 集成)
+      → 逻辑独立任务: 8 个 [P]
 
-[5/7] ⏳ 等待质量保证...
+[4/8] 🔄 开发执行中...
+      → 任务进度: 8/18 已完成
+      → 当前任务: TASK_009 - 实现用户认证中间件 (基于TECH_DESIGN Section 5.1)
+      → Phase 3: 实现JWT验证逻辑...
 
-[6/7] ⏳ 等待发布管理...
+[5/8] ⏳ 等待质量保证...
+
+[6/8] ⏳ 等待发布管理...
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-注: 阶段2.5 (UI原型生成) 为条件触发,纯后端项目自动跳过
+注:
+- 阶段2.5 (UI原型生成) 为条件触发,纯后端项目自动跳过
+- 阶段2.7 (技术方案设计) 为MANDATORY,确保TASKS完整覆盖所有技术层
 ```
 
 ### 中断与恢复
@@ -312,6 +440,8 @@ Exit Gate检查:
 /flow-restart "REQ-123"
 
 # 或手动执行特定阶段
+/flow-tech "REQ-123"       # 重新生成技术方案
+/flow-epic "REQ-123"       # 重新生成Epic和Tasks
 /flow-dev "REQ-123" --resume
 /flow-qa "REQ-123"
 /flow-release "REQ-123"
@@ -322,9 +452,13 @@ Exit Gate检查:
 ### 文档结构
 ```text
 devflow/requirements/${reqId}/
-├── research/                    # 研究资料 (MCP抓取或手动添加)
-│   ├── ${reqId}_1.md
-│   └── ${reqId}_2.md
+├── research/                    # 研究资料
+│   ├── internal/               # 内部代码库分析 (flow-init 输出)
+│   │   └── codebase-overview.md  # 概览性分析 (项目类型, 技术栈, 模块)
+│   ├── mcp/                    # 外部资料 (MCP 抓取)
+│   │   ├── ${reqId}_1.md
+│   │   └── ${reqId}_2.md
+│   └── codebase-tech-analysis.md  # 技术细化分析 (flow-tech 输出)
 ├── orchestration_status.json   # 状态管理文件 (阶段、进度、时间戳)
 ├── EXECUTION_LOG.md            # 执行日志 (所有操作的时间序列记录)
 │
