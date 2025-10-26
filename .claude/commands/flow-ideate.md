@@ -1,203 +1,87 @@
----
 name: flow-ideate
 description: Intent-driven requirement development. Usage: /flow-ideate "我想做一个用户管理系统" or /flow-ideate "REQ-123|我想要一个数据分析的东西"
+scripts:
+  prereq: .claude/scripts/check-prerequisites.sh
+  create_requirement: .claude/scripts/create-requirement.sh
+  manage_constitution: .claude/scripts/manage-constitution.sh
+agent_scripts:
+  sh: .claude/scripts/update-agent-context.sh __AGENT__
+  ps: scripts/powershell/update-agent-context.ps1 -AgentType __AGENT__
 ---
 
 # Flow-Ideate - 意图驱动需求开发
 
-## 命令格式
+## User Input
+```text
+$ARGUMENTS = "REQ_ID?|IDEA|LINKS?"
+```
+允许纯自然语言、半结构化、“REQ|标题|链接”三种形式。缺省 REQ_ID 时会生成新的 ID。
 
-### 模糊想法模式
+## 命令格式
 ```text
 /flow-ideate "我想做一个用户管理系统"
-/flow-ideate "需要一个数据分析功能来帮助业务决策"
-/flow-ideate "希望优化当前的订单处理流程"
-```
-
-### 半结构化模式
-```text
 /flow-ideate "REQ-123|我想要一个用户管理的东西"
 /flow-ideate "|数据分析功能|一些想法和计划链接"
-```
-
-### 传统精确模式 (向后兼容)
-```text
 /flow-ideate "REQ-123|支持用户下单|https://plan.example.com/Q1"
-```
-
-## Rules Integration
-
-本命令遵循以下规则体系：
-
-1. **Standard Patterns** (.claude/rules/core-patterns.md):
-   - Fail Fast: 输入解析失败时明确提示
-   - Clear Errors: 明确的澄清问题和理解反馈
-   - Minimal Output: 简洁的澄清问题（3-5个/轮）
-   - Structured Output: 结构化的需求文档生成
-
-2. **Agent Coordination** (.claude/rules/agent-coordination.md):
-   - 调用 prd-writer 执行意图分析和澄清
-   - 创建会话 .completed 标记
-   - 最终集成到标准 flow-orchestrator 流程
-
-3. **DateTime Handling** (.claude/rules/datetime.md):
-   - 使用 ISO 8601 UTC 时间戳
-   - 记录澄清会话开始、结束时间
-   - 支持时区感知的会话跟踪
-
-4. **DevFlow Patterns** (.claude/rules/devflow-conventions.md):
-   - 自动生成 REQ-ID (REQ-YYYYMMDD-seq)
-   - 使用标准化需求文档模板
-   - 完整的意图可追溯性（原始输入 → 澄清 → 结构化需求）
-
-## Constitution Compliance
-
-本命令强制执行 CC-DevFlow Constitution (.claude/constitution/project-constitution.md) 原则：
-
-### 澄清阶段检查
-- **Quality First**: 澄清问题必须全面，不遗漏关键信息
-- **Security First**: 主动识别并询问安全相关需求
-
-### 结构化阶段检查
-- **完整性验证**: 生成的需求必须包含所有必要信息
-- **架构一致性**: 需求必须与现有系统架构兼容
-- **NO PARTIAL REQUIREMENTS**: 确保需求描述完整清晰
-
-### 流程集成检查
-- **无缝集成**: 确保 Intent-driven 需求进入标准开发流程
-- **质量保障**: 应用与精确模式相同的质量标准
-- **可追溯性**: 保持从原始想法到最终实现的完整链路
-
-## Prerequisites Validation
-
-**注意**: flow-ideate 是输入层命令，前置验证在意图澄清完成后、进入标准流程前执行。
-
-澄清完成后的验证：
-```bash
-# 意图澄清完成，生成 REQ-ID 后
-export DEVFLOW_REQ_ID="${generatedReqId}"
-
-# 运行标准前置条件检查
-bash .claude/scripts/check-prerequisites.sh --json
-
-# 验证项:
-# - 生成的 REQ-ID 格式正确
-# - 需求描述完整性
-# - Git 仓库状态
-# - 项目目录结构
 ```
 
 ## 执行流程
 
-### 1. 输入解析和模式识别
+### 阶段 1: 输入解析
+- 解析 `$ARGUMENTS`：
+  - 如果匹配 `REQ|TITLE|LINKS` → 跳转 `/flow-new`。
+  - 如果包含 `REQ-XXX` 且标题为空 → 视为已有需求再澄清。
+  - 纯自然语言 → 进入意图澄清模式。
+- 对于新需求生成候选 `REQ-${YYYYMMDD}-${seq}`。
 
-#### 模式检测算法
-```yaml
-解析步骤:
-  1. 格式检测:
-     - 检查管道符结构 (|)
-     - 识别 REQ-ID 模式 (REQ-\d+)
-     - 检测 URL 存在性
+### 阶段 2: 意图澄清（模糊/半结构化）
+```
+1. 调用 prd-writer agent:
+   → 输入原始描述、链接、历史上下文
+   → 输出澄清建议、初始理解、关键问题列表
 
-  2. 内容分析:
-     - 自然语言处理
-     - 关键词提取 (用户管理, 数据分析, 订单处理)
-     - 意图识别 (新建功能, 优化流程, 系统集成)
+2. 对话轮数最多 4 轮：
+   → 每轮 3-5 个关键问题
+   → 优先顺序：领域/目标 → 核心用户 → 功能范围 → 验收标准 → 约束
+   → 识别安全/合规/性能需求时必须追问
 
-  3. 模式判定:
-     - 精确模式: 完整 REQ-ID|TITLE|PLAN_URLS
-     - 半结构化: 部分结构 + 模糊描述
-     - 模糊模式: 纯自然语言描述
-
-  4. 路由处理:
-     - 精确模式 → 直接调用现有 flow:new 流程
-     - 半结构化 → 混合处理流程
-     - 模糊模式 → Intent-driven 澄清流程
+3. 会话产物:
+   → .claude/temp/intent-session-*.json (记录问答与提取信息)
+   → 置信度 ≥ 80% 且关键信息完整时结束澄清
 ```
 
-### 2. Intent-driven 澄清流程
-
-#### 2.1 初始分析阶段
-```bash
-Task: prd-writer "Analyze intent and generate clarification questions for: ${user_input}"
+### 阶段 3: 结构化与初始化
+```
+1. 生成最终 `REQ_ID|TITLE|PLAN_URLS` 字符串
+2. 调用 {SCRIPT:create_requirement} --title "${TITLE}"
+   → 创建 devflow/requirements/${REQ_ID}/
+3. 写入 README.md，附上原始描述与澄清纪要
+4. 调用 {SCRIPT:prereq} --json --paths-only 校验结构
+5. orchestration_status.json 初始化 status="initialized"
 ```
 
-**prd-writer 输出**: `.claude/temp/clarification-${session_id}.md`
-- 当前理解的需求概要
-- 识别的业务域和用户群体
-- 3-5个关键澄清问题
-- 置信度评估
+### 阶段 4: 标准流程对接
+- 对于模糊输入：推荐自动触发 `/flow-prd` 或提示用户继续。
+- 对于已有 REQ-ID：在 README 中记录追加需求并提示 `/flow-upgrade`。
+- 将澄清会话摘要写入 `research/intent-log.md` 供后续引用。
 
-#### 2.2 交互澄清阶段
-```yaml
-对话流程:
-  最大轮次: 4轮
-  每轮问题数: 3-5个
-  问题优先级: 核心定位 → 功能范围 → 技术约束 → 验收标准
+## 错误处理
+- 输入仅为链接或空字符串 → 提示提供最少“谁/做什么/目标”信息。
+- 澄清达到上限仍不完整 → 输出未决事项并建议人工介入。
+- 生成 REQ 目录失败 → 回滚已创建文件，提示用户检查权限/路径。
 
-退出条件:
-  - 置信度 ≥ 80%
-  - 核心信息完整 (业务域 + 目标用户 + 核心功能)
-  - 用户明确表示满意
-
-状态持久化:
-  文件: .claude/temp/intent-session-${timestamp}.json
-  内容: 对话历史、提取信息、当前状态
+## 输出
+```
+✅ 新需求目录 (若生成 REQ)
+✅ research/intent-log.md (记录澄清问题与回答)
+✅ README.md 更新（含最终意图总结）
+✅ orchestration_status.json 初始化
 ```
 
-#### 2.3 需求结构化阶段
-根据澄清结果，自动生成：
-- **REQ-ID**: 自动生成格式 `REQ-${YYYYMMDD}-${seq}`
-- **标题**: 基于核心功能和业务域组合
-- **描述**: 完整的需求描述文档
-
-### 3. 统一流程执行
-
-无论哪种输入模式，最终都会：
-1. 生成标准化的 `REQ-ID|TITLE|DESCRIPTION`
-2. 创建需求目录结构
-3. 调用标准的 flow-orchestrator 流程
-4. 执行完整的开发流程
-
-### 4. 标准流程集成
-
-意图澄清完成后，无缝集成到标准开发流程：
-```bash
-# 执行前置条件验证（见 Prerequisites Validation 章节）
-run_prerequisites_validation()
-
-# 调用标准 flow-orchestrator 流程
-# 执行完整的 PRD → EPIC → TASKS → 开发 → 测试 → 发布流程
-```
-
-## 交互式澄清示例
-
-### 示例1: 用户管理系统
-
-**用户输入**:
-```text
-/flow-ideate "我想做一个用户管理系统"
-```
-
-**系统澄清轮次1**:
-```markdown
-# Requirement Clarification for 用户管理系统
-
-## Current Understanding:
-- **Domain**: 用户管理/身份认证
-- **Users**: 待确认
-- **Core Function**: 用户信息管理
-- **Confidence**: 30%
-
-## Critical Questions (Please answer to proceed):
-
-### 1. 这个系统主要面向哪些用户？
-**Why this matters**: 不同用户类型需要不同的功能设计
-**Examples**: 内部员工、外部客户、管理员、普通用户
-
-### 2. 用户管理的核心功能是什么？
-**Why this matters**: 明确功能范围，避免范围蔓延
-**Examples**: 用户注册、登录认证、权限控制、个人信息管理
+## 下一步
+- 对新需求执行 `/flow-init "REQ_ID|TITLE"` 完成 Phase0 调研。
+- 若是已有需求的变更，使用 `/flow-upgrade` 创建版本升级。
+- 通过 `/flow-status REQ_ID --detailed` 查看澄清结果与推荐动作。
 
 ### 3. 这是新系统还是现有系统的改进？
 **Why this matters**: 影响技术方案和实施策略

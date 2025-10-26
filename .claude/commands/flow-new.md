@@ -1,9 +1,14 @@
----
 name: flow-new
 description: One-shot requirement flow. Usage: /flow-new "REQ-123|支持用户下单|https://plan.example.com/Q1"
 ---
 
 # Flow-New - 一键需求开发流
+
+## User Input
+```text
+$ARGUMENTS = "REQ_ID|TITLE|PLAN_URLS?"
+```
+REQ_ID 与 TITLE 必填，PLAN_URLS 可为空（多值用逗号分隔）。
 
 ## 命令格式
 ```text
@@ -58,13 +63,15 @@ description: One-shot requirement flow. Usage: /flow-new "REQ-123|支持用户�
    → 触发调研工作流（必做）
       • Phase A: 现有代码调研（输出 internal/codebase-overview.md）
       • Phase B: 外部资料采集（MCP）——PLAN_URLS 作为优先抓取源；缺省时自动基于 TITLE 与技术栈推导关键词；所有远程抓取原件以 `.md` 原文保存
-   → 所有调研成果写入 devflow/requirements/${REQ_ID}/research/ 并记录 EXECUTION_LOG.md
+      • Phase C: 研究任务派发（generate-research-tasks → research/tasks.json）
+      • Phase D: 决策整合（consolidate-research → research/research.md）
+      • 更新 orchestration_status.phase0_complete = true
 
 输出:
   ✅ Git分支: feature/REQ-123-支持用户下单
   ✅ 需求目录: devflow/requirements/REQ-123/
   ✅ 状态文件: orchestration_status.json (status: initialized)
-  ✅ 研究材料: research/internal/ 与 research/mcp/ 下的调研成果
+  ✅ 研究材料: research/internal/*、research/mcp/*、research/tasks.json、research/research.md
 
 错误处理:
   - 如果REQ_ID已存在 → 提示用户并终止
@@ -224,22 +231,20 @@ description: One-shot requirement flow. Usage: /flow-new "REQ-123|支持用户�
      - Section 6: 性能设计 (缓存, 优化, 扩展)
      - Section 7: Constitution检查 (Phase -1 Gates)
      - Section 8: 验证清单
-  ✅ research/codebase-tech-analysis.md (技术细化分析报告, 新增)
-     - 数据模型模式 + 示例代码
-     - API实现模式 + 示例代码
-     - 认证授权实现 + 示例代码
-     - 数据库连接/事务模式
-     - 可复用组件和工具
-     - 测试模式和框架
-  ✅ 状态更新: tech_design_complete
+  ✅ research/codebase-tech-analysis.md (技术细化分析报告)
+  ✅ data-model.md（实体、字段、关系、校验、状态机）
+  ✅ contracts/openapi.yaml（或 GraphQL schema）
+  ✅ quickstart.md（环境准备、测试命令、验证 checklist）
+  ✅ 状态更新: tech_design_complete，phase1_complete = true
 
 关键价值:
   • 为 planner 提供完整技术上下文
-  • 确保 TASKS.md 覆盖所有技术层 (不漏细节)
+  • 确保 TASKS.md 覆盖数据模型/API/安全/性能所有层
   • 提供具体技术选型和API契约
   • 减少任务分解的歧义
   • 明确数据库schema, 所有表和字段提前定义
   • 所有API端点提前定义, 前后端对接无歧义
+  • quickstart 为 QA/CI/TDD 提供统一入口
 
 错误处理:
   - 如果TECH_DESIGN.md不完整 → 终止并提示手动修正
@@ -251,14 +256,14 @@ description: One-shot requirement flow. Usage: /flow-new "REQ-123|支持用户�
 ### 阶段 3: Epic规划 (/flow-epic)
 ```text
 4. 调用 /flow-epic "REQ_ID"
-   → planner 研究型代理分析PRD + **TECH_DESIGN.md**
+   → planner 研究型代理分析 PRD + TECH_DESIGN + research/data-model/contracts/quickstart
    → 分解Epic和原子级任务
    → 定义依赖关系和DoD
    → 标记逻辑独立任务 [P]
 
 输出:
   ✅ EPIC.md (Epic描述和技术方案)
-  ✅ TASKS.md (单文件管理所有任务, **基于TECH_DESIGN.md生成**)
+  ✅ TASKS.md (单文件管理所有任务, 基于 data-model/ contracts / quickstart 生成)
      - 每个任务: ID、描述、类型、优先级、依赖、DoD
      - [P] 标记逻辑独立任务
      - **覆盖TECH_DESIGN.md所有层**:

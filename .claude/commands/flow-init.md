@@ -1,9 +1,19 @@
----
 name: flow-init
 description: Initialize requirement structure. Usage: /flow-init "REQ-123|User Authentication" or /flow-init --interactive
+scripts:
+  create: .claude/scripts/create-requirement.sh
+  prereq: .claude/scripts/check-prerequisites.sh
+  research_tasks: .claude/scripts/generate-research-tasks.sh
+  consolidate: .claude/scripts/consolidate-research.sh
 ---
 
 # Flow-Init - 需求初始化命令
+
+## User Input
+```text
+$ARGUMENTS = "REQ_ID|TITLE"
+```
+未使用 `--interactive` 时，必须解析 `$ARGUMENTS` 并在进入流程前完成参数校验。
 
 ## 命令格式
 ```text
@@ -30,8 +40,8 @@ description: Initialize requirement structure. Usage: /flow-init "REQ-123|User A
 **Execution Flow**:
 ```
 1. Parse command arguments
-   → If --interactive: Enter interactive mode
-   → If argument provided: Parse "REQ_ID|TITLE"
+   → If --interactive: enter interactive mode
+   → Else: split "$ARGUMENTS" into REQ_ID, TITLE
    → If missing: ERROR "Usage: /flow-init \"REQ-ID|Title\" or --interactive"
 
 2. Validate REQ_ID format
@@ -56,7 +66,7 @@ description: Initialize requirement structure. Usage: /flow-init "REQ-123|User A
 **Execution Flow**:
 ```
 1. 执行主脚本生成骨架
-   → Run: .claude/scripts/create-requirement.sh "${REQ_ID}" --title "${TITLE}" --json
+   → Run: {SCRIPT:create} "${REQ_ID}" --title "${TITLE}" --json
    → Script returns: req_dir, req_type, git_branch (可选)
 
 2. 校验单轨目录结构
@@ -83,7 +93,7 @@ description: Initialize requirement structure. Usage: /flow-init "REQ-123|User A
 **Execution Flow**:
 ```
 🧭 S0: 现有代码调研（必做）
-   - 运行 `.claude/scripts/check-prerequisites.sh --json` 获取仓库基线信息（技术栈、可用脚本、目录结构）
+   - 运行 `{SCRIPT:prereq} --json` 获取仓库基线信息（技术栈、可用脚本、目录结构）
    - 建立 `${REQ_DIR}/research/internal/` 目录，确保内部调研与外部资料分层存放
    - 浏览现有 README / ARCHITECTURE 文档，梳理可复用模块、核心接口、既有测试集
    - 将调研结果写入 `${REQ_DIR}/research/internal/codebase-overview.md`，至少包含：
@@ -131,6 +141,26 @@ description: Initialize requirement structure. Usage: /flow-init "REQ-123|User A
 > - 若主题涉及多个领域（前端 + 后端），可针对不同分支主题重复上述流程。所有 MCP 任务输出的原始 Markdown 请保留原样，并在 research-summary.md 中给出“如何使用这些资源”的指引。
 > - 所有远程抓取的原始资料必须以 `.md` 文件形式原样保存，任何摘要或批注请在 research-summary.md 中编写，避免修改原件。
 > - 如部分资源因网络或权限问题暂不可获取，请在 research-summary.md 的 `Pending` 小节注明补齐计划。
+
+### 阶段 2.6: 调研任务分派与决策整合
+
+```
+1. 生成研究任务
+   → Run: {SCRIPT:research_tasks} "${REQ_DIR}"
+   → 输出: research/tasks.json（记录 unknown、owner、状态）
+
+2. 整合研究结论
+   → Run: {SCRIPT:consolidate} "${REQ_DIR}"
+   → 输出: research/research.md，格式:
+     - Decision: ...
+     - Rationale: ...
+     - Alternatives considered: ...
+   → 标记未解决项为 NEEDS CLARIFICATION
+
+3. 更新状态
+   → orchestration_status.json.phase0_complete = true
+   → EXECUTION_LOG.md 记录 consolidate 时间与关键结论
+```
 
 ### 阶段 3: Git 分支创建 (if git repo)
 
@@ -186,6 +216,8 @@ description: Initialize requirement structure. Usage: /flow-init "REQ-123|User A
    - [ ] REQ_DIR/README.md exists
    - [ ] REQ_DIR/EXECUTION_LOG.md exists
    - [ ] orchestration_status.json (requirements) 或 status.json (bugs) 存在
+   - [ ] research/research.md exists
+   - [ ] research/tasks.json exists
 
 2. Verify git branch (if applicable):
    - [ ] Branch created successfully
@@ -195,6 +227,7 @@ description: Initialize requirement structure. Usage: /flow-init "REQ-123|User A
 3. Verify status tracking:
    - [ ] orchestration_status.json/status.json → status === "initialized"
    - [ ] orchestration_status.json/status.json → phase === "planning" (REQ) / "analysis" (BUG)
+   - [ ] orchestration_status.json.phase0_complete === true
    - [ ] EXECUTION_LOG.md 已记录初始化事件（含时间戳）
 
 *GATE CHECK: All verifications passed*
