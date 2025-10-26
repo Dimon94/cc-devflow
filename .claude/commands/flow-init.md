@@ -1,3 +1,4 @@
+---
 name: flow-init
 description: Initialize requirement structure. Usage: /flow-init "REQ-123|User Authentication" or /flow-init --interactive
 scripts:
