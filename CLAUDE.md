@@ -869,7 +869,8 @@ CC-DevFlow 采用**自执行模板 (Self-Executable Templates)** 架构，每个
   - `test_recover_workflow.sh` - 工作流恢复
   - `test_setup_epic.sh` - Epic设置 (13个测试)
   - `test_validate_constitution.sh` - Constitution验证 (4个测试)
-- **测试覆盖率**: 8/8 测试套件 100% 通过，超过80个测试用例
+  - `test_validate_research.sh` - Research.md 质量验证 (12个测试) ✅ 新增
+- **测试覆盖率**: 9/9 测试套件 100% 通过，超过90个测试用例
 
 ## 工作流程
 
@@ -1022,7 +1023,23 @@ Phase 5: Git提交并标记任务完成
 ### 需求文档结构
 ```text
 devflow/requirements/${reqId}/
-├── research/                    # 外部研究材料 (MCP抓取或手动添加)
+├── research/                    # 研究材料目录
+│   ├── research.md              # 研究摘要文档 ⭐ 核心研究输出
+│   │                            # - Decision/Rationale/Alternatives 格式
+│   │                            # - 记录所有技术选型决策
+│   │                            # - 必须符合 RESEARCH_TEMPLATE.md 格式
+│   │                            # - 禁止 TODO/PLACEHOLDER 占位符
+│   │                            # - 由 consolidate-research.sh 生成
+│   │                            # - 由 validate-research.sh 验证质量
+│   ├── tasks.json               # 研究任务列表 (JSON格式)
+│   │                            # - 由 generate-research-tasks.sh 生成
+│   │                            # - 包含 id, type, prompt, status, decision, rationale, alternatives
+│   ├── internal/                # 内部代码库调研材料
+│   │   └── codebase-overview.md
+│   ├── mcp/                     # MCP 抓取的外部文档
+│   │   └── YYYYMMDD/
+│   └── manual/                  # 手动添加的研究笔记
+│
 ├── orchestration_status.json   # 状态管理文件 (阶段、进度、时间戳)
 ├── EXECUTION_LOG.md            # 执行日志 (所有操作的时间序列记录)
 │
@@ -1040,7 +1057,34 @@ devflow/requirements/${reqId}/
 │                               # - 组件清单和页面结构 (HTML注释)
 │                               # ⚠️ 仅在检测到UI需求时生成
 │
-├── EPIC.md                     # Epic规划文档
+├── TECH_DESIGN.md              # 技术方案文档 (/flow-tech 输出)
+│                               # - 系统架构和组件划分
+│                               # - 技术栈选型和理由
+│                               # - 数据模型概览
+│                               # - API 设计原则
+│                               # - 安全策略和性能考虑
+│                               # - Anti-Tech-Creep 闸门检查结果
+│                               # - Constitution Gate 验证结果
+│
+├── data-model.md               # 数据模型文档 (/flow-tech 输出)
+│                               # - 实体定义 (Entity, Fields, Types)
+│                               # - 关系映射 (One-to-Many, Many-to-Many)
+│                               # - 验证规则 (Constraints, Indexes)
+│                               # - 状态机 (State Transitions)
+│                               # - 供 planner 和 DB 工具使用
+│
+├── contracts/                  # API 契约文档目录 (/flow-tech 输出)
+│   ├── openapi.yaml            # OpenAPI 3.0 规范文件
+│   ├── graphql.schema          # GraphQL Schema (可选)
+│   └── README.md               # 契约使用说明
+│
+├── quickstart.md               # 快速启动指南 (/flow-tech 输出)
+│                               # - 环境准备 (依赖安装、配置)
+│                               # - 测试命令 (单元测试、集成测试)
+│                               # - 验证步骤 (健康检查、冒烟测试)
+│                               # - 供 QA、Dev、CI 共享
+│
+├── EPIC.md                     # Epic规划文档 (/flow-epic 输出)
 │                               # - Epic描述和目标
 │                               # - 技术方案概览
 │                               # - 验收标准和DoD
@@ -1069,6 +1113,39 @@ devflow/requirements/${reqId}/
 ```
 
 **关键文件说明**:
+- **research/research.md**: 研究摘要文档 (Decision/Rationale/Alternatives 格式)
+  - 由 `consolidate-research.sh` 根据 `tasks.json` 自动生成
+  - 必须符合 `.claude/docs/templates/RESEARCH_TEMPLATE.md` 格式
+  - 通过 `validate-research.sh` 验证质量（5-Level 检查）
+  - 禁止包含 TODO/PLACEHOLDER 占位符
+  - 每个决策必须有明确的 Decision/Rationale/Alternatives 三部分
+  - 是 `/flow-prd` 阶段 prd-writer 的重要输入来源
+- **research/tasks.json**: 研究任务列表 (JSON 格式)
+  - 由 `generate-research-tasks.sh` 自动扫描 NEEDS CLARIFICATION 生成
+  - 包含字段: id, type, prompt, status, decision, rationale, alternatives, source
+  - status 状态: "open" (待研究) / "completed" (已完成)
+  - 至少 50% 任务完成才能通过 `flow-init` Exit Gate
+- **TECH_DESIGN.md**: 技术方案文档 (/flow-tech 输出)
+  - 由 `tech-architect` 代理根据 PRD.md 和 research.md 生成
+  - 包含系统架构、技术栈选型、数据模型、API设计、安全和性能考虑
+  - 执行 Anti-Tech-Creep 闸门检查，防止无理由技术扩散
+  - 是 `/flow-epic` 阶段 planner 的重要输入来源
+- **data-model.md**: 数据模型文档 (/flow-tech 输出)
+  - 由 `extract-data-model.sh` 从 TECH_DESIGN.md 提取生成
+  - 定义实体、字段、关系、验证规则、状态机
+  - 供 planner 生成任务和 dev-implementer 实现代码时参考
+- **contracts/**: API 契约文档目录 (/flow-tech 输出)
+  - 由 `export-contracts.sh` 生成 OpenAPI 或 GraphQL 规范
+  - 定义所有 API 端点的请求/响应 schema
+  - Integration-First Gate: 契约先于实现，测试基于契约
+- **quickstart.md**: 快速启动指南 (/flow-tech 输出)
+  - 由 `generate-quickstart.sh` 生成
+  - 包含环境准备、测试命令、验证步骤
+  - 供 `/flow-dev` 和 `/flow-qa` 阶段使用的标准操作手册
+- **research/codebase-tech-analysis.md**: 代码库技术分析 (/flow-tech 输出)
+  - 由 `generate-tech-analysis.sh` 生成
+  - 深度分析现有代码库的技术模式、API 模式、可复用组件
+  - 支撑 TECH_DESIGN.md 的技术决策
 - **orchestration_status.json**: 记录当前阶段、已完成步骤、时间戳
 - **TASKS.md**: 单文件管理所有任务 (替代旧版的多个 TASK_*.md)
 - **tasks/*.completed**: 空文件标记任务完成，避免重复执行
