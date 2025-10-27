@@ -3,6 +3,7 @@ name: flow-prd
 description: Generate Product Requirements Document. Usage: /flow-prd "REQ-123" or /flow-prd
 scripts:
   prereq: .claude/scripts/check-prerequisites.sh
+  validate_research: .claude/scripts/validate-research.sh
   validate_constitution: .claude/scripts/validate-constitution.sh
 ---
 
@@ -38,6 +39,25 @@ $ARGUMENTS = "REQ_ID?"
       • research/research.md
       • research/tasks.json
    → 缺少任何研究产物 → ERROR "Research artifacts missing. Run /flow-init consolidation."
+
+   **研究材料质量验证** (新增 - 2025-01-26):
+   → Run: {SCRIPT:validate_research} "${REQ_DIR}" --strict
+   → 验证 research.md 质量（5-Level 检查）:
+      • LEVEL 1: research.md 文件存在
+      • LEVEL 2: 必需章节完整 (Research Summary, Decisions)
+      • LEVEL 3: 无 TODO/PLACEHOLDER 占位符
+      • LEVEL 4: tasks.json 格式有效
+      • LEVEL 5: Constitution 合规
+   → 验证失败 → ERROR "research.md quality check failed. Fix issues before /flow-prd."
+
+   **CRITICAL**: 如果 research.md 包含 "TODO - fill decision outcome"，
+   说明 /flow-init 的研究任务未完成。prd-writer 无法使用不完整的研究材料。
+
+   **Fix Options**:
+     1. 手动填充 research/tasks.json 的 decision/rationale/alternatives 字段
+     2. 重新运行 consolidate-research.sh
+     3. 直接编辑 research/research.md 补充决策内容
+     4. 参考 .claude/docs/templates/RESEARCH_TEMPLATE.md 模板
 
 3. PRD 覆盖提示
    → 若 PRD.md 已存在 → WARN 并确认是否覆盖

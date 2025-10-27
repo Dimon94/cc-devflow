@@ -53,6 +53,29 @@ def detect_feature_title() -> str:
                 return line
     return req_dir.name
 
+def validate_task_completeness(tasks: list) -> tuple[int, int, list]:
+    """Validate tasks have decision/rationale/alternatives fields.
+
+    Returns:
+        (total_tasks, completed_tasks, incomplete_task_ids)
+    """
+    total = len(tasks)
+    completed = 0
+    incomplete = []
+
+    for task in tasks:
+        task_id = task.get("id", "???")
+        has_decision = bool(task.get("decision") and task.get("decision") != "TODO - fill decision outcome")
+        has_rationale = bool(task.get("rationale") and task.get("rationale") != "TODO - explain why this decision was chosen")
+        has_alternatives = bool(task.get("alternatives") and task.get("alternatives") != "TODO - list evaluated alternatives")
+
+        if has_decision and has_rationale and has_alternatives:
+            completed += 1
+        else:
+            incomplete.append(task_id)
+
+    return total, completed, incomplete
+
 feature_title = detect_feature_title()
 generated_at = datetime.now(timezone.utc).isoformat()
 
@@ -61,9 +84,23 @@ if tasks_path.exists():
     try:
         tasks_data = json.loads(tasks_path.read_text(encoding="utf-8"))
     except json.JSONDecodeError:
-        tasks_data = {}
+        print(f"ERROR: {tasks_path} is not valid JSON", file=sys.stderr)
+        sys.exit(1)
 
 tasks = tasks_data.get("tasks", [])
+
+# Validate task completion
+if tasks:
+    total, completed, incomplete = validate_task_completeness(tasks)
+    completion_rate = completed / total if total > 0 else 0
+
+    print(f"Research Tasks: {completed}/{total} completed ({completion_rate:.0%})", file=sys.stderr)
+
+    if completion_rate < 0.5:
+        print(f"WARNING: Research incomplete. Only {completed}/{total} tasks have decisions.", file=sys.stderr)
+        print(f"Incomplete tasks: {', '.join(incomplete)}", file=sys.stderr)
+        print(f"Generated research.md will contain TODO placeholders.", file=sys.stderr)
+        print(f"Fix: Add decision/rationale/alternatives fields to tasks.json", file=sys.stderr)
 
 sources = []
 for path in research_dir.rglob("*.md"):
@@ -106,5 +143,28 @@ else:
     lines.append("_No research source files detected yet._")
 
 summary_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
-print(f"Wrote research summary → {summary_path}")
+
+# Post-write validation: detect TODO placeholders
+content = summary_path.read_text(encoding="utf-8")
+todo_count = content.count("TODO")
+placeholder_count = content.count("{{") + content.count("}}")
+
+if todo_count > 0 or placeholder_count > 0:
+    print(f"⚠️  WARNING: Generated research.md contains quality issues:", file=sys.stderr)
+    if todo_count > 0:
+        print(f"   - {todo_count} TODO marker(s) found", file=sys.stderr)
+    if placeholder_count > 0:
+        print(f"   - Placeholder markers {{{{ }}}} found", file=sys.stderr)
+    print(f"", file=sys.stderr)
+    print(f"This will cause validate-research.sh to FAIL.", file=sys.stderr)
+    print(f"", file=sys.stderr)
+    print(f"Fix Options:", file=sys.stderr)
+    print(f"  1. Update tasks.json with actual decision/rationale/alternatives", file=sys.stderr)
+    print(f"  2. Manually edit {summary_path.relative_to(req_dir)}", file=sys.stderr)
+    print(f"  3. Use .claude/docs/templates/RESEARCH_TEMPLATE.md as reference", file=sys.stderr)
+    print(f"", file=sys.stderr)
+    print(f"Wrote research summary → {summary_path} (WITH WARNINGS)", file=sys.stderr)
+else:
+    print(f"✅ Wrote research summary → {summary_path}", file=sys.stderr)
+    print(f"   Quality check: No TODO/PLACEHOLDER markers detected", file=sys.stderr)
 PY

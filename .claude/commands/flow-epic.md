@@ -36,14 +36,18 @@ $ARGUMENTS = "REQ_ID?"
 2. 结构校验
    → 需求目录、EXECUTION_LOG.md、orchestration_status.json 必须存在
    → PRD.md 完整且无 {{PLACEHOLDER}}
-   → 技术产物：
-      • research/research.md
-      • research/tasks.json
-      • research/codebase-tech-analysis.md
-      • data-model.md
-      • contracts/ (至少 1 契约文件)
-      • quickstart.md
-   → orchestration_status.phase0_complete / phase1_complete 均为 true
+   → 研究产物（/flow-init 输出）：
+      • research/research.md (研究摘要，Decision/Rationale/Alternatives 格式)
+      • research/tasks.json (研究任务列表)
+   → 技术产物（/flow-tech 输出）：
+      • TECH_DESIGN.md (技术方案总纲) ⭐ planner 必读
+      • research/codebase-tech-analysis.md (代码库技术分析)
+      • data-model.md (数据模型定义)
+      • contracts/ (API 契约目录，至少 1 个文件)
+      • quickstart.md (快速启动指南)
+   → 状态校验：
+      • orchestration_status.phase0_complete == true (研究阶段完成)
+      • orchestration_status.phase1_complete == true (技术设计完成)
 
 3. 状态检查
    → status ∈ {tech_design_complete, epic_generation_failed}

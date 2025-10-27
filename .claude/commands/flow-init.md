@@ -6,6 +6,7 @@ scripts:
   prereq: .claude/scripts/check-prerequisites.sh
   research_tasks: .claude/scripts/generate-research-tasks.sh
   consolidate: .claude/scripts/consolidate-research.sh
+  validate_research: .claude/scripts/validate-research.sh
 ---
 
 # Flow-Init - 需求初始化命令
@@ -209,29 +210,121 @@ $ARGUMENTS = "REQ_ID|TITLE"
 
 ### 阶段 5: 完成确认 (Exit Gate)
 
-**Exit Gate Validation**:
-```
+**Exit Gate Validation** (5-Level Quality Check):
+
+```text
+✅ LEVEL 1: File Existence Check
+─────────────────────────────────────────────────────────────────────────────
 1. Verify all required files created:
    - [ ] REQ_DIR/ directory exists
    - [ ] REQ_DIR/research/ directory exists
+   - [ ] REQ_DIR/research/internal/ directory exists (内部调研)
    - [ ] REQ_DIR/README.md exists
    - [ ] REQ_DIR/EXECUTION_LOG.md exists
    - [ ] orchestration_status.json (requirements) 或 status.json (bugs) 存在
    - [ ] research/research.md exists
    - [ ] research/tasks.json exists
 
-2. Verify git branch (if applicable):
+✅ LEVEL 2: Research.md Structure Validation
+─────────────────────────────────────────────────────────────────────────────
+2. Run research.md structure validation:
+   → Run: {SCRIPT:validate_research} "${REQ_DIR}"
+
+   **Required Sections** (must all exist):
+   - [ ] "## Research Summary" heading
+   - [ ] "## Decisions" section
+   - [ ] At least 1 "### R00X —" decision block
+   - [ ] "## Source Library" section (可为空但必须存在)
+
+✅ LEVEL 3: Research.md Content Quality
+─────────────────────────────────────────────────────────────────────────────
+3. Validate content quality (via validate_research script):
+
+   **Content Quality Checks**:
+   - [ ] No TODO markers (检查: grep -c "TODO" == 0)
+   - [ ] No FIXME/XXX markers
+   - [ ] No {{PLACEHOLDER}} markers (检查: grep -c "{{.*}}" == 0)
+   - [ ] Each Decision block has all 3 parts:
+      • Decision: [actual choice]
+      • Rationale: [why chosen]
+      • Alternatives considered: [what else evaluated]
+
+   **CRITICAL**: 如果 research.md 包含 "TODO - fill decision outcome"，
+   说明 consolidate-research.sh 未正确执行或研究任务未完成。
+   → 必须终止流程并提示用户补充研究材料。
+
+✅ LEVEL 4: Research Tasks Validation
+─────────────────────────────────────────────────────────────────────────────
+4. Validate research/tasks.json:
+   → Run: jq empty research/tasks.json (验证 JSON 格式)
+   → Run: jq '.tasks | length' research/tasks.json
+
+   **Tasks File Checks**:
+   - [ ] Valid JSON format (可被 jq 解析)
+   - [ ] Contains "tasks" array
+   - [ ] Each task has: id, type, prompt, status
+   - [ ] At least 1 task status != "open" (说明有研究进展)
+      ⚠️  如果所有任务都是 "open"，说明研究未开始
+      → 可以继续，但在 /flow-prd 阶段会需要补充
+
+✅ LEVEL 5: Git & Status & Constitution
+─────────────────────────────────────────────────────────────────────────────
+5. Verify git branch (if applicable):
    - [ ] Branch created successfully
    - [ ] Currently on feature/bugfix branch
    - [ ] DEVFLOW_REQ_ID environment variable set (if git branch not used)
 
-3. Verify status tracking:
+6. Verify status tracking:
    - [ ] orchestration_status.json/status.json → status === "initialized"
    - [ ] orchestration_status.json/status.json → phase === "planning" (REQ) / "analysis" (BUG)
    - [ ] orchestration_status.json.phase0_complete === true
    - [ ] EXECUTION_LOG.md 已记录初始化事件（含时间戳）
+   - [ ] EXECUTION_LOG.md 包含 "Research consolidated: X decision(s)" 条目
 
-*GATE CHECK: All verifications passed*
+7. Constitution compliance (via validate_research):
+   - [ ] Article X.1 (Forced Clarification): NEEDS CLARIFICATION 已标记（如有）
+   - [ ] Article X.2 (No Speculation): 无推测性技术细节
+   - [ ] Article I.1 (Complete Implementation): 无"暂时/临时/简化版"标记
+
+*GATE CHECK: All 5 levels passed*
+─────────────────────────────────────────────────────────────────────────────
+```
+
+**Failure Actions** (任一级别失败时):
+```text
+❌ LEVEL 1 FAILED → ERROR "Missing required files. Re-run /flow-init."
+   Exit Code: 1
+
+❌ LEVEL 2 FAILED → ERROR "research.md structure invalid."
+   Fix: Ensure research.md has required sections (## Research Summary, ## Decisions)
+   Exit Code: 1
+
+❌ LEVEL 3 FAILED → ERROR "research.md contains TODO/PLACEHOLDER markers."
+   Fix Options:
+     1. 手动填充 research/tasks.json 的 decision/rationale/alternatives 字段
+     2. 重新运行 consolidate-research.sh 前先完成研究任务
+     3. 使用 RESEARCH_TEMPLATE.md 作为参考
+   Exit Code: 1
+
+❌ LEVEL 4 FAILED → ERROR "research/tasks.json invalid or empty."
+   Fix: Run generate-research-tasks.sh or create valid tasks.json
+   Exit Code: 1
+
+❌ LEVEL 5 FAILED → ERROR "Git/status/Constitution issue."
+   Check:
+     - Git branch exists and checked out
+     - orchestration_status.json correctly updated
+     - EXECUTION_LOG.md has all required entries
+   Exit Code: 1
+```
+
+**Validation Script Execution** (自动执行):
+```bash
+# 在 Exit Gate 阶段执行
+bash {SCRIPT:validate_research} "${REQ_DIR}" --strict
+
+# 脚本会自动运行 LEVEL 2-4 验证
+# 如果失败，返回退出码 1，终止 /flow-init
 ```
 
 **Success Output**:

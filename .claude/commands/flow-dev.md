@@ -25,9 +25,19 @@ $ARGUMENTS = "REQ_ID? [--task T###]"
    → Else: run {SCRIPT:prereq} --json --paths-only
 
 2. 校验资产
-   → 必须存在: EPIC.md, TASKS.md, TECH_DESIGN.md, data-model.md, contracts/, quickstart.md
-   → orchestration_status.status ∈ {"epic_complete", "development_in_progress"}
-   → phase1_complete == true
+   → 必须存在（/flow-tech 产物）:
+      • TECH_DESIGN.md (技术方案总纲)
+      • research/codebase-tech-analysis.md (代码库技术分析)
+      • data-model.md (数据模型定义)
+      • contracts/ (API 契约目录，至少 1 个文件)
+      • quickstart.md (快速启动指南)
+   → 必须存在（/flow-epic 产物）:
+      • EPIC.md (Epic 规划文档)
+      • TASKS.md (任务分解清单)
+   → 状态校验:
+      • orchestration_status.status ∈ {"epic_complete", "development_in_progress"}
+      • phase0_complete == true (研究阶段完成)
+      • phase1_complete == true (技术设计完成)
 
 3. TASKS 结构校验
    → Phase 顺序: Setup → Foundational → Phase 2 Tests First → ⚠️ Test Verification → Phase 3 Core Implementation → ...
