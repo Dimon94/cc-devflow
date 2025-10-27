@@ -5,6 +5,7 @@ scripts:
   create: .claude/scripts/create-requirement.sh
   prereq: .claude/scripts/check-prerequisites.sh
   research_tasks: .claude/scripts/generate-research-tasks.sh
+  populate_tasks: .claude/scripts/populate-research-tasks.sh
   consolidate: .claude/scripts/consolidate-research.sh
   validate_research: .claude/scripts/validate-research.sh
 ---
@@ -149,17 +150,25 @@ $ARGUMENTS = "REQ_ID|TITLE"
 ```
 1. 生成研究任务
    → Run: {SCRIPT:research_tasks} "${REQ_DIR}"
-   → 输出: research/tasks.json（记录 unknown、owner、状态）
+   → 输出: research/tasks.json（记录 id, type, prompt, status 基础字段）
 
-2. 整合研究结论
+2. 智能填充任务决策信息 ⭐ 新增步骤
+   → Run: {SCRIPT:populate_tasks} "${REQ_DIR}"
+   → 从 research-summary.md 提取决策信息
+   → 填充 tasks.json 的 decision/rationale/alternatives 字段
+   → 如果 research-summary.md 不存在，生成后备内容
+   → 目标: 确保 tasks.json 包含完整的决策信息
+
+3. 整合研究结论
    → Run: {SCRIPT:consolidate} "${REQ_DIR}"
    → 输出: research/research.md，格式:
      - Decision: ...
      - Rationale: ...
      - Alternatives considered: ...
    → 标记未解决项为 NEEDS CLARIFICATION
+   → ⚠️ 依赖步骤 2 完成，否则会生成 TODO 占位符
 
-3. 更新状态
+4. 更新状态
    → orchestration_status.json.phase0_complete = true
    → EXECUTION_LOG.md 记录 consolidate 时间与关键结论
 ```

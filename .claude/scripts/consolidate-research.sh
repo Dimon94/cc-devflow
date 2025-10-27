@@ -65,9 +65,14 @@ def validate_task_completeness(tasks: list) -> tuple[int, int, list]:
 
     for task in tasks:
         task_id = task.get("id", "???")
-        has_decision = bool(task.get("decision") and task.get("decision") != "TODO - fill decision outcome")
-        has_rationale = bool(task.get("rationale") and task.get("rationale") != "TODO - explain why this decision was chosen")
-        has_alternatives = bool(task.get("alternatives") and task.get("alternatives") != "TODO - list evaluated alternatives")
+        decision = task.get("decision", "")
+        rationale = task.get("rationale", "")
+        alternatives = task.get("alternatives", "")
+
+        # 字段完整的条件：非空 + 不是 TODO 占位符
+        has_decision = bool(decision and decision.strip() and decision != "TODO - fill decision outcome")
+        has_rationale = bool(rationale and rationale.strip() and rationale != "TODO - explain why this decision was chosen")
+        has_alternatives = bool(alternatives and alternatives.strip() and alternatives != "TODO - list evaluated alternatives")
 
         if has_decision and has_rationale and has_alternatives:
             completed += 1
@@ -123,9 +128,16 @@ else:
         task_id = task.get("id", "R???")
         prompt = task.get("prompt", "(unknown prompt)")
         lines.append(f"### {task_id} — {prompt}")
-        decision = task.get("decision", "TODO - fill decision outcome")
-        rationale = task.get("rationale", "TODO - explain why this decision was chosen")
-        alternatives = task.get("alternatives", "TODO - list evaluated alternatives")
+
+        # 处理空字符串，替换为 TODO 占位符
+        decision = task.get("decision", "")
+        rationale = task.get("rationale", "")
+        alternatives = task.get("alternatives", "")
+
+        decision = decision.strip() if decision.strip() else "TODO - fill decision outcome"
+        rationale = rationale.strip() if rationale.strip() else "TODO - explain why this decision was chosen"
+        alternatives = alternatives.strip() if alternatives.strip() else "TODO - list evaluated alternatives"
+
         lines.append(f"- Decision: {decision}")
         lines.append(f"- Rationale: {rationale}")
         lines.append(f"- Alternatives considered: {alternatives}")

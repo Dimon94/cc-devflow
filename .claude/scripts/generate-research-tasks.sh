@@ -120,6 +120,9 @@ for unknown in unknowns:
             "prompt": f"Research {unknown['topic']} for {feature_name}",
             "source": unknown["source"],
             "status": "open",
+            "decision": "",      # 新增: 空字段，等待填充
+            "rationale": "",     # 新增: 空字段，等待填充
+            "alternatives": "",  # 新增: 空字段，等待填充
         }
     )
 
@@ -135,6 +138,9 @@ for tech in technologies:
             "prompt": f"Find best practices for {prompt_value} in the context of {feature_name}",
             "source": f"Tech-Choice:{label}",
             "status": "open",
+            "decision": "",      # 新增: 空字段，等待填充
+            "rationale": "",     # 新增: 空字段，等待填充
+            "alternatives": "",  # 新增: 空字段，等待填充
         }
     )
 
