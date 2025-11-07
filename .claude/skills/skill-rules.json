@@ -1,0 +1,213 @@
+{
+    "version": "1.0",
+    "description": "Skill activation triggers for CC-DevFlow. Controls when skills automatically suggest or block actions.",
+    "skills": {
+        "skill-developer": {
+            "type": "domain",
+            "enforcement": "suggest",
+            "priority": "high",
+            "description": "Meta-skill for creating and managing Claude Code skills",
+            "promptTriggers": {
+                "keywords": [
+                    "skill system",
+                    "create skill",
+                    "add skill",
+                    "skill triggers",
+                    "skill rules",
+                    "hook system",
+                    "skill development",
+                    "skill-rules.json"
+                ],
+                "intentPatterns": [
+                    "(how do|how does|explain).*?skill",
+                    "(create|add|modify|build).*?skill",
+                    "skill.*?(work|trigger|activate|system)"
+                ]
+            }
+        },
+        "cc-devflow-orchestrator": {
+            "type": "domain",
+            "enforcement": "suggest",
+            "priority": "high",
+            "description": "CC-DevFlow workflow router and agent recommender. Routes users to correct commands/agents.",
+            "promptTriggers": {
+                "keywords": [
+                    "devflow",
+                    "requirement",
+                    "REQ-",
+                    "flow-init",
+                    "flow-prd",
+                    "flow-tech",
+                    "flow-ui",
+                    "flow-epic",
+                    "flow-dev",
+                    "flow-qa",
+                    "flow-release",
+                    "flow-verify",
+                    "how to write PRD",
+                    "how to design",
+                    "how to plan tasks",
+                    "create requirement",
+                    "start requirement",
+                    "workflow",
+                    "phase gate"
+                ],
+                "intentPatterns": [
+                    "(start|create|begin|init).*?(requirement|project|REQ)",
+                    "(run|execute).*?(flow|command)",
+                    "(how to|guide|explain).*?(PRD|EPIC|TASKS|design|prototype)",
+                    "what is.*?(phase gate|workflow|orchestration_status)",
+                    "(which|what).*?(command|flow|agent|next step)"
+                ]
+            },
+            "fileTriggers": {
+                "pathPatterns": [
+                    "devflow/requirements/**/*.md",
+                    "devflow/requirements/**/orchestration_status.json"
+                ]
+            }
+        },
+        "devflow-tdd-enforcer": {
+            "type": "guardrail",
+            "enforcement": "block",
+            "priority": "critical",
+            "description": "Enforces TDD order in TASKS.md - Tests MUST be marked complete before Implementation tasks",
+            "fileTriggers": {
+                "pathPatterns": [
+                    "devflow/requirements/**/TASKS.md"
+                ],
+                "contentPatterns": [
+                    "\\[x\\].*Implementation.*\\n.*\\[ \\].*Test",
+                    "\\[x\\].*\\[US\\d+\\].*Implement.*\\n.*\\[ \\].*\\[US\\d+\\].*Test"
+                ]
+            },
+            "blockMessage": "⚠️ BLOCKED - TDD Violation Detected\n\n📋 REQUIRED ACTION:\n1. Re-order TASKS.md to follow TDD sequence\n2. Mark test tasks [x] BEFORE implementation tasks\n3. Review Constitution Article VI - Test-First Development\n\nReason: CC-DevFlow enforces TDD (Tests First → Implementation)\nSource: planner agent mandate + Constitution Article VI\nFile: {file_path}\n\nCurrent Issue:\n  Implementation task marked complete\n  Test task NOT marked complete\n\n💡 SKIP: Add `@skip-tdd-check` comment or set SKIP_TDD_ENFORCER=1",
+            "skipConditions": {
+                "sessionSkillUsed": true,
+                "fileMarkers": [
+                    "@skip-tdd-check"
+                ],
+                "envOverride": "SKIP_TDD_ENFORCER"
+            }
+        },
+        "constitution-guardian": {
+            "type": "guardrail",
+            "enforcement": "block",
+            "priority": "critical",
+            "description": "Real-time Constitution compliance checker. Blocks partial implementations (Article I.1) and hardcoded secrets (Article III.1)",
+            "fileTriggers": {
+                "pathPatterns": [
+                    "devflow/requirements/**/PRD.md",
+                    "devflow/requirements/**/EPIC.md",
+                    "devflow/requirements/**/TASKS.md",
+                    "devflow/requirements/**/TECH_DESIGN.md",
+                    "devflow/requirements/**/contracts/**/*.yaml",
+                    "devflow/requirements/**/data-model.md"
+                ],
+                "contentPatterns": [
+                    "TODO.*later",
+                    "FIXME",
+                    "\\[placeholder\\]",
+                    "simplified for now",
+                    "defer to v\\d",
+                    "will complete in v\\d",
+                    "API_KEY\\s*=\\s*['\"]?[a-zA-Z0-9_-]{10,}",
+                    "SECRET\\s*=\\s*['\"]?[a-zA-Z0-9_-]+",
+                    "PASSWORD\\s*=\\s*['\"]?[^\\s]+",
+                    "TOKEN\\s*=\\s*['\"]?[a-zA-Z0-9_-]{10,}",
+                    "apiKey:\\s*['\"][^'\"]+['\"]",
+                    "password:\\s*['\"][^'\"]+['\"]",
+                    "secret:\\s*['\"][^'\"]+['\"]"
+                ]
+            },
+            "blockMessage": "⚠️ BLOCKED - Constitution Violation\n\nDetected:\n- Partial implementation (Article I.1 - NO PARTIAL IMPLEMENTATION)\n- OR Hardcoded secrets (Article III.1 - NO HARDCODED SECRETS)\n\n📋 ACTION:\n1. Complete all TODOs/FIXMEs before saving\n2. Move secrets to environment variables (.env, not committed)\n3. Review .claude/constitution/project-constitution.md v2.0.0\n4. Run /flow-verify for comprehensive check\n\nSource: Constitution Articles I.1, III.1\nFile: {file_path}\n\n💡 SKIP: Add `@constitution-verified` comment or set SKIP_CONSTITUTION_CHECK=1",
+            "skipConditions": {
+                "sessionSkillUsed": true,
+                "fileMarkers": [
+                    "@constitution-verified"
+                ],
+                "envOverride": "SKIP_CONSTITUTION_CHECK"
+            }
+        },
+        "devflow-file-standards": {
+            "type": "domain",
+            "enforcement": "suggest",
+            "priority": "medium",
+            "description": "File naming conventions, directory structure, and YAML frontmatter standards for CC-DevFlow",
+            "promptTriggers": {
+                "keywords": [
+                    "REQ-ID format",
+                    "requirement ID",
+                    "task ID",
+                    "directory structure",
+                    "file naming",
+                    "orchestration_status",
+                    "YAML frontmatter",
+                    "contract file",
+                    "where does PRD go",
+                    "file standards"
+                ],
+                "intentPatterns": [
+                    "what is.*?(format|pattern).*?(REQ|task|requirement|ID)",
+                    "where (does|should).*?(PRD|EPIC|TASKS|file|document)",
+                    "(how to|what is).*?(name|structure|organize).*?file",
+                    "what fields.*?(orchestration_status|frontmatter|YAML)"
+                ]
+            },
+            "fileTriggers": {
+                "pathPatterns": [
+                    "devflow/requirements/**/*.md",
+                    "devflow/requirements/**/orchestration_status.json",
+                    "devflow/requirements/**/contracts/**"
+                ]
+            }
+        },
+        "devflow-constitution-quick-ref": {
+            "type": "domain",
+            "enforcement": "suggest",
+            "priority": "medium",
+            "description": "Quick reference guide to CC-DevFlow Constitution v2.0.0 with links to full text",
+            "promptTriggers": {
+                "keywords": [
+                    "constitution",
+                    "constitutional",
+                    "article",
+                    "phase -1 gate",
+                    "simplicity gate",
+                    "anti-abstraction",
+                    "integration-first",
+                    "TDD mandate",
+                    "quality first",
+                    "security first",
+                    "no partial implementation",
+                    "no hardcoded secrets"
+                ],
+                "intentPatterns": [
+                    "what is.*?(constitution|article|phase -1|gate)",
+                    "(explain|show|tell me).*?(constitution|article)",
+                    "can I.*?(TODO|hardcode|BaseController|abstraction)",
+                    "should I.*?(test first|write implementation)"
+                ]
+            }
+        }
+    },
+    "notes": {
+        "enforcement_types": {
+            "suggest": "Skill suggestion appears but doesn't block execution",
+            "block": "Requires skill to be used before proceeding (guardrail)",
+            "warn": "Shows warning but allows proceeding"
+        },
+        "priority_levels": {
+            "critical": "Highest - Always trigger when matched, can block operations",
+            "high": "Important - Trigger for most matches",
+            "medium": "Moderate - Trigger for clear matches",
+            "low": "Optional - Trigger only for explicit matches"
+        },
+        "cc_devflow_customization": {
+            "pathPatterns": "All patterns match devflow/requirements/** structure",
+            "keywords": "CC-DevFlow specific terms (REQ-, flow-*, constitution, etc.)",
+            "guardra ils": "devflow-tdd-enforcer and constitution-guardian are critical guardrails",
+            "skip_conditions": "All guardrails support session skip, file markers, and env override"
+        }
+    }
+}

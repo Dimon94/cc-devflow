@@ -6,587 +6,389 @@
 
 [中文文档](./README.zh-CN.md) | [English](./README.md)
 
+---
+
+## 🎯 一句话介绍
+
+通过 `/flow-new "REQ-123|功能|URLs"` 一键从 PRD 生成到代码交付的完整自动化工作流。
+
+---
+
 ## ✨ 核心特性
 
-- **🎯 一键启动流程**: 使用 `/flow-new "REQ-123|功能标题|计划URLs"` 启动完整的需求开发
-- **🔄 阶段化命令**: 8个独立阶段命令 (init/prd/ui/tech/epic/dev/qa/release)，精细化控制
-- **📋 文档驱动**: 自动化 PRD → UI原型(条件) → EPIC → TASKS → 实现链条
-- **📝 模板驱动**: 自执行模板 (PRD_TEMPLATE, EPIC_TEMPLATE, TASKS_TEMPLATE) 内置生成流程
-- **🔄 智能恢复**: 使用 `/flow-restart` 恢复中断的开发，用 `/flow-status` 监控进度
-- **🛡️ 质量闸**: 自动化 TypeScript 检查、测试、代码检查和安全扫描
-- **🤖 子代理编排**: 12 个专业研究型代理负责不同开发阶段
-- **🎨 UI原型生成**: 条件触发的HTML原型自动生成，融合艺术设计灵感
-- **🔗 GitHub 集成**: 自动化 PR 创建、分支管理和规范化提交
-- **📊 进度跟踪**: 实时状态监控和智能重启点
-- **🌐 MCP 集成**: 无缝外部内容获取和 API 集成
-- **⚡ 自动进度更新**: 基于代码变更和Git提交的智能进度检测
-- **🔍 一致性验证**: 企业级一致性检查，智能冲突检测和自动修复建议
-- **🧪 TDD 强制执行**: 严格的测试驱动开发，TEST VERIFICATION CHECKPOINT
-- **📜 Constitution 宪法体系 v2.0.0**: 10条宪法条款管控质量、安全和架构 (100% 测试覆盖)
-  - **Phase -1 宪法闸门**: 实现前的闸门防止过度设计
-  - **自动化合规检查**: 每个工作流阶段的宪法检查
-  - **修正案流程**: 正式的版本控制和变更管理，自动传播
-- **🛠️ 统一脚本基础设施**: 所有代理和命令使用标准化 `.claude/scripts/` 接口
+- 🎯 **一键启动流程** - 单命令完成 PRD → 代码 → 测试 → 发布全流程
+- 🔄 **阶段化命令** - 8个独立阶段命令，精细化控制每个开发环节
+- 📋 **文档驱动** - 自动化 PRD → UI原型 → EPIC → TASKS → 实现链条
+- 📝 **模板驱动** - 自执行模板（PRD_TEMPLATE, EPIC_TEMPLATE, TASKS_TEMPLATE）
+- 🔄 **智能恢复** - `/flow-restart` 自动检测重启点，继续中断的开发
+- 🛡️ **质量闸** - 自动化 TypeScript 检查、测试、代码检查和安全扫描
+- 🤖 **子代理编排** - 12 个专业研究型代理负责不同开发阶段
+- 🎨 **UI原型生成** - 条件触发的HTML原型，融合艺术设计灵感
+- 🔗 **GitHub 集成** - 自动化 PR 创建、分支管理和规范化提交
+- 📊 **进度跟踪** - 实时状态监控和智能重启点
+- 🔍 **一致性验证** - 企业级一致性检查，智能冲突检测
+- 🧪 **TDD 强制执行** - 严格的测试驱动开发，TEST VERIFICATION CHECKPOINT
+- 📜 **Constitution** - 10条宪法条款管控质量、安全和架构
 
-## 🚀 快速开始
+---
 
-### 先决条件
+## 💡 核心概念
 
-- 已安装并配置 [Claude Code](https://claude.ai/code)
-- 已初始化 Git 仓库
-- Node.js 项目（可选，用于附加质量检查）
+### Hooks 系统
 
-### 安装
+实时质量守护，PreToolUse 阻止不合规操作，PostToolUse 自动记录变更。
 
-```bash
-# 将 .claude 配置克隆到您的项目
-npx tiged Dimon94/cc-devflow/.claude .claude
+<details>
+<summary>📖 Hooks 详解（点击展开）</summary>
 
-# 或手动下载并解压
-curl -L https://github.com/Dimon94/cc-devflow/archive/main.zip -o cc-devflow.zip
-unzip cc-devflow.zip
-cp -r cc-devflow-main/.claude .claude
-rm -rf cc-devflow.zip cc-devflow-main
+**Hook 类型**:
+
+| Hook | 触发时机 | 功能 |
+|------|---------|------|
+| **UserPromptSubmit** | 用户输入提交时 | 智能推荐相关 Skills |
+| **PreToolUse** | 工具使用前 | 阻止不合规操作（TDD 违规等） |
+| **PostToolUse** | 工具使用后 | 自动记录文件变更 |
+| **Stop** | 会话停止时 | 提供错误处理提示 |
+
+**Guardrail 工作流程**:
+```
+用户编辑文件 → PreToolUse Hook 触发
+  ↓ 路径归一化
+  ↓ 规则匹配
+  ↓ 内容检查
+  ↓ 违规？阻止操作 : 允许操作
 ```
 
-### 验证安装
-
-**检查安装是否成功:**
+**跳过 Guardrail**:
 ```bash
-.claude/scripts/verify-setup.sh
-```
-这个脚本会验证所有必需的文件和配置。
+# 方式 1: 文件标记
+echo "@skip-tdd-check" >> devflow/requirements/REQ-123/TASKS.md
 
-### 快速体验
-
-**运行交互式演示:**
-```bash
-python3 .claude/scripts/demo.py
-```
-这个演示将引导您体验完整的开发流程，包括自动进度更新。
-
-### 单轨工作流速览
-
-**快速开始**:
-```bash
-# 初始化需求骨架并附带标题
-bash .claude/scripts/create-requirement.sh REQ-123 --title "用户认证"
-
-# 或进入交互模式自动选择 ID
-bash .claude/scripts/create-requirement.sh --interactive
+# 方式 2: 环境变量
+export SKIP_TDD_ENFORCER=1
 ```
 
-**核心脚本**:
-- 🧭 `bash .claude/scripts/check-prerequisites.sh` —— 启动前快速检查环境与依赖
-- 📋 `bash .claude/scripts/check-task-status.sh --verbose` —— 查看 TASKS.md 进度与下一步
-- ✅ `bash .claude/scripts/mark-task-complete.sh T001` —— 勾选任务并在 EXECUTION_LOG.md 留痕
-- 🛰️ `bash .claude/scripts/generate-status-report.sh --format markdown` —— 生成例会/周报可用的状态摘要
-- 🏛️ `bash .claude/scripts/manage-constitution.sh verify` —— 持续校验 Constitution 合规性
+📚 [完整 Hooks 文档](docs/guides/hooks-system.zh-CN.md)
+</details>
 
-**测试**:
-- 运行脚本套件：`bash .claude/tests/scripts/run.sh`
-- 针对性检查：`bash .claude/tests/scripts/test_mark_task_complete.sh`
+### Skills 系统
 
-### 使用方法
+智能知识库激活，自动推荐相关领域知识。
 
-1. **启动新的需求流程:**
-   ```bash
-   /flow-new "REQ-123|用户下单支持|https://docs.example.com/orders-spec"
-   ```
+<details>
+<summary>📖 Skills 详解（点击展开）</summary>
 
-2. **检查开发进度:**
-   ```bash
-   /flow-status                 # 所有需求
-   /flow-status REQ-123        # 特定需求
-   /flow-status --detailed REQ-123  # 详细报告
-   ```
+**可用 Skills**:
 
-3. **恢复中断的开发:**
-   ```bash
-   /flow-restart "REQ-123"                    # 自动检测重启点
-   /flow-restart "REQ-123" --from=development # 从特定阶段重启
-   ```
+| Skill | 类型 | 触发场景 |
+|-------|------|----------|
+| `cc-devflow-orchestrator` | domain | 需求管理、流程指导 |
+| `devflow-tdd-enforcer` | guardrail | 编辑 TASKS.md |
+| `constitution-guardian` | guardrail | 编辑 PRD/EPIC/TASKS |
+| `devflow-file-standards` | domain | 文件命名、目录结构 |
+| `skill-developer` | domain | Skill 开发、Hook 系统 |
 
-4. **验证文档一致性:**
-   ```bash
-   /flow-verify "REQ-123"                     # 全面一致性检查
-   /flow-verify "REQ-123" --detailed          # 详细分析报告
-   /flow-verify "REQ-123" --fix-auto          # 自动修复可解决问题
-   /flow-verify --all                         # 批量验证所有需求
-   ```
+**触发机制**:
+1. **关键词触发** - 输入包含特定关键词
+2. **意图匹配** - 正则匹配用户意图
+3. **文件触发** - 编辑特定路径文件
+4. **内容匹配** - 文件内容匹配特定模式
 
-5. **启动自动监控:**
-   ```bash
-   .claude/scripts/start-monitor.sh start     # 启动后台监控
-   .claude/scripts/start-monitor.sh status   # 查看监控状态
-   ```
+📚 [完整 Skills 文档](docs/guides/skills-system.zh-CN.md)
+</details>
 
-## 🏗️ 系统架构
+### Agent Orchestration
 
-### 执行模型 (2025-01-10 更新)
+研究型代理（11个，只读分析）+ 主代理（执行）的双层执行模型。
 
-**研究型代理 + 主代理**:
-- **研究型代理 (11个)**: 只读分析，生成 Markdown 计划和报告
+<details>
+<summary>📖 代理编排详解（点击展开）</summary>
+
+**执行模型**:
+- **研究型代理**: 只读分析，生成 Markdown 计划和报告
 - **主代理 (Claude)**: 执行所有代码操作，拥有完整上下文
 - **工作流程**: 代理研究 → 输出计划 → 主代理执行 → 迭代
 
 **工具分配**:
-- **研究型代理**: 仅 Read, Grep, Glob (分析)
-- **主代理**: Edit, Write, Bash, Git (执行)
+- 研究型代理: Read, Grep, Glob（分析）
+- 主代理: Edit, Write, Bash, Git（执行）
+
+📚 [执行模型详解](docs/architecture/execution-model.zh-CN.md)
+</details>
+
+---
+
+## 🚀 快速开始
+
+### 安装
+
+```bash
+npx tiged Dimon94/cc-devflow/.claude .claude
+```
+
+### 验证安装
+
+```bash
+.claude/scripts/verify-setup.sh
+```
+
+### 第一个需求
+
+```bash
+/flow-new "REQ-001|用户认证|https://docs.example.com/auth"
+```
+
+<details>
+<summary>🔍 完整入门教程（点击展开）</summary>
+
+**交互式演示**:
+```bash
+python3 .claude/scripts/demo.py
+```
+
+**核心脚本**:
+```bash
+# 环境检查
+bash .claude/scripts/check-prerequisites.sh
+
+# 查看任务状态
+bash .claude/scripts/check-task-status.sh --verbose
+
+# 标记任务完成
+bash .claude/scripts/mark-task-complete.sh T001
+
+# 生成状态报告
+bash .claude/scripts/generate-status-report.sh --format markdown
+```
+
+**运行测试**:
+```bash
+# 运行所有测试
+bash .claude/tests/run-all-tests.sh --scripts
+
+# Constitution 测试
+bash .claude/tests/constitution/run_all_constitution_tests.sh
+```
+
+📚 [完整入门指南](docs/guides/getting-started.zh-CN.md)
+</details>
+
+---
+
+## 📋 命令速查表
+
+### 🏢 项目级命令（Project-Level）
+
+**用途**: 项目整体规划和架构设计，通常在项目初期执行一次
+
+| 命令 | 用途 | 快速示例 | 详细文档 |
+|------|------|----------|----------|
+| `/flow-roadmap` | 🗺️ 生成产品路线图 | `/flow-roadmap` | [→](docs/commands/flow-roadmap.zh-CN.md) |
+| `/flow-architecture` | 🏗️ 生成系统架构 | `/flow-architecture` | [→](docs/commands/flow-architecture.zh-CN.md) |
+| `/flow-guidelines` | 📘 生成项目规范 | `/flow-guidelines` | [→](docs/commands/flow-guidelines.zh-CN.md) |
+
+### 📦 需求级命令（Requirement-Level）
+
+**用途**: 具体需求开发，每个需求（REQ-XXX）执行一次
+
+| 命令 | 用途 | 快速示例 | 详细文档 |
+|------|------|----------|----------|
+| `/flow-new` | 🎯 启动新需求 | `/flow-new "REQ-123\|功能"` | [→](docs/commands/flow-new.zh-CN.md) |
+| `/flow-init` | 📦 初始化需求 | `/flow-init "REQ-123\|功能"` | [→](docs/commands/flow-init.zh-CN.md) |
+| `/flow-verify` | 🔍 验证一致性 | `/flow-verify "REQ-123"` | [→](docs/commands/flow-verify.zh-CN.md) |
+| `/flow-qa` | 🧪 质量保证 | `/flow-qa "REQ-123"` | [→](docs/commands/flow-qa.zh-CN.md) |
+| `/flow-release` | 🚢 创建发布 | `/flow-release "REQ-123"` | [→](docs/commands/flow-release.zh-CN.md) |
+
+📚 [完整命令参考](docs/commands/README.zh-CN.md)
+
+<details>
+<summary>🎯 我应该用哪个命令？（点击展开）</summary>
+
+```
+你的场景：
+├─ 规划产品方向？ → /flow-roadmap
+├─ 设计系统架构？ → /flow-architecture
+├─ 建立编码规范？ → /flow-guidelines
+├─ 启动全新功能开发？ → /flow-new "REQ-123|功能|URLs"
+├─ 仅创建需求目录？ → /flow-init "REQ-123|功能"
+├─ 开发中断需要继续？ → /flow-restart "REQ-123"
+├─ 检查开发进度？ → /flow-status REQ-123
+├─ 发现文档不一致？ → /flow-verify "REQ-123"
+├─ 开发完成需要测试？ → /flow-qa "REQ-123"
+├─ 修复生产 Bug？ → /flow-fix "BUG-001|描述"
+└─ 准备发布？ → /flow-release "REQ-123"
+```
+</details>
+
+---
+
+## 🏗️ 系统架构
+
+**执行模型**: 研究型代理（11个，只读）+ 主代理（执行）
+**文档结构**: 单轨架构，一个需求目录包含所有产物
+**质量保证**: Constitution v2.0.0 + TDD 强制执行 + 实时 Guardrail
+
+<details>
+<summary>📖 架构详解（点击展开）</summary>
 
 ### 子代理工作流
-```text
-工作流指导 (标准操作程序)
-├── prd-writer          → 研究需求，生成 PRD.md (必须使用 PRD_TEMPLATE)
-├── ui-designer         → 分析PRD，生成 UI_PROTOTYPE.html ⚡️ 条件触发
-├── tech-architect      → 分析PRD+代码库，生成 TECH_DESIGN.md (Anti-Tech-Creep 强制执行)
-├── planner             → 分析PRD+TECH_DESIGN，生成 EPIC.md + TASKS.md (必须使用 EPIC_TEMPLATE, TASKS_TEMPLATE)
-├── dev-implementer     → 研究代码库，生成 IMPLEMENTATION_PLAN.md (仅研究)
-├── qa-tester           → 分析代码，生成 TEST_PLAN.md + TEST_REPORT.md
-├── security-reviewer   → 安全分析，生成 SECURITY_PLAN.md + SECURITY_REPORT.md
-├── release-manager     → 发布分析，生成 RELEASE_PLAN.md
-├── impact-analyzer     → PRD 变更影响分析
-├── compatibility-checker → 版本兼容性分析
-├── consistency-checker → 企业级一致性验证
-└── bug-analyzer        → BUG 根因分析 (支持 JSON)
-```
-
-### 统一脚本基础设施 (新增)
-所有代理和命令使用标准化脚本:
 
 ```text
-.claude/scripts/
-├── common.sh                    # 核心函数 (log_event, get_repo_root)
-├── check-prerequisites.sh       # 前置条件验证，路径获取
-├── setup-epic.sh                # Epic/Tasks 结构初始化
-├── check-task-status.sh         # 任务状态和进度追踪
-├── mark-task-complete.sh        # 任务完成标记
-├── generate-status-report.sh    # 状态报告生成
-├── validate-constitution.sh     # Constitution 合规性检查
-└── recover-workflow.sh          # 工作流恢复逻辑
+prd-writer          → PRD 生成（必须使用 PRD_TEMPLATE）
+ui-designer         → UI 原型（条件触发）
+tech-architect      → 技术设计（Anti-Tech-Creep 强制执行）
+planner             → EPIC & TASKS（必须使用 EPIC_TEMPLATE, TASKS_TEMPLATE）
+dev-implementer     → 实现计划（仅研究）
+qa-tester           → 测试计划 + 测试报告
+security-reviewer   → 安全计划 + 安全报告
+release-manager     → 发布计划
 ```
-
-**优势**:
-- **一致性**: 所有操作使用相同代码路径
-- **可测试性**: 脚本有全面的测试覆盖 (100% 通过率)
-- **可维护性**: 集中化逻辑，更易更新
-- **JSON 支持**: `--json` 标志用于程序化解析
-
-### 模板驱动开发 (新增)
-
-**自执行模板**: 每个模板包含自己的执行流程
-
-```text
-.claude/docs/templates/
-├── PRD_TEMPLATE.md              # 产品需求 (10步执行流程)
-├── UI_PROTOTYPE_TEMPLATE.md     # UI原型 (艺术设计指导)
-├── EPIC_TEMPLATE.md             # Epic 规划 (10步执行流程)
-├── TASKS_TEMPLATE.md            # 任务分解 (TDD 顺序阶段)
-└── INTENT_CLARIFICATION_TEMPLATE.md # Intent驱动澄清流程
-```
-
-**模板使用**:
-1. 代理读取模板
-2. 遵循执行流程步骤
-3. 生成完整文档
-4. 无占位符未填充
-5. 通过验证清单
 
 ### 单轨架构
 
-**设计哲学**: 围绕同一个需求目录保存所有上下游产物，让文档自然地呈现「从意图到上线」的叙事链条。
-
 ```text
 devflow/
-├── requirements/REQ-123/
-│   ├── PRD.md                # 产品需求
-│   ├── EPIC.md               # Epic 拆解
-│   ├── TASKS.md              # 统一任务清单
-│   ├── EXECUTION_LOG.md      # 决策与进度日志
-│   ├── TEST_PLAN.md          # QA 计划
-│   ├── TEST_REPORT.md        # QA 报告
-│   ├── SECURITY_PLAN.md      # 安全检查清单
-│   ├── SECURITY_REPORT.md    # 安全评估结果
-│   ├── RELEASE_PLAN.md       # 发布 checklist
-│   ├── research/             # 外部调研材料
-│   └── tasks/                # 任务产物与完成标记
-└── bugs/BUG-456/
+├── ROADMAP.md               # 产品路线图
+├── ARCHITECTURE.md          # 系统架构设计
+├── BACKLOG.md               # 需求待办列表
+└── requirements/REQ-123/
+    ├── PRD.md
+    ├── EPIC.md
+    ├── TASKS.md
     ├── EXECUTION_LOG.md
-    ├── status.json
-    └── research/
+    ├── TEST_PLAN.md
+    ├── TEST_REPORT.md
+    ├── SECURITY_PLAN.md
+    ├── SECURITY_REPORT.md
+    └── RELEASE_PLAN.md
 ```
-
-**实践要点**:
-- `orchestration_status.json` 是唯一的状态源，用于自动化与可视化。
-- 把每次决策写进 `EXECUTION_LOG.md`，形成可追溯的事件时间线。
-- 勾任务请使用 `mark-task-complete.sh`，保持 TASKS.md 的一致性。
-- 控制目录平面结构，不再额外分层；所有资料集中在需求根目录。
 
 ### 质量闸
-- **推送前保护**: TypeScript、测试、代码检查、安全、构建验证
-- **Markdown 格式化器**: 自动文档格式化和语言检测
-- **规范化提交**: 标准化提交消息格式强制执行
-- **一致性验证**: 跨文档一致性检查和冲突检测
-- **Constitution 合规**: 每个阶段强制执行 (NO PARTIAL IMPLEMENTATION, NO CODE DUPLICATION 等)
-- **TDD 检查点**: 实现前的 TEST VERIFICATION CHECKPOINT
 
-### 文档结构
-```text
-devflow/requirements/${REQ-ID}/
-├── orchestration_status.json  # 状态管理 (阶段、进度、时间戳)
-├── EXECUTION_LOG.md           # 完整审计轨迹
-├── PRD.md                     # 产品需求文档 (来自 PRD_TEMPLATE)
-├── UI_PROTOTYPE.html          # UI原型 ⚡️ 条件生成 (来自 UI_PROTOTYPE_TEMPLATE)
-│                              # - 单文件HTML/CSS/JS原型
-│                              # - 响应式设计 (320px/768px/1024px)
-│                              # - 完整交互状态和真实图片
-│                              # - SPA风格多页面路由
-│                              # - 设计系统CSS变量
-├── EPIC.md                    # Epic 规划和分解 (来自 EPIC_TEMPLATE)
-├── TASKS.md                   # 单一统一任务列表 (来自 TASKS_TEMPLATE)
-│                              # - 所有任务按 TDD 顺序 (Phase 1-5)
-│                              # - 依赖关系清晰标记
-│                              # - [P] 标签表示并行任务
-│                              # - 包含 TEST VERIFICATION CHECKPOINT
-├── tasks/                     # 任务执行产物
-│   ├── TASK_001.completed     # 空标记文件
-│   ├── TASK_002.completed
-│   └── IMPLEMENTATION_PLAN.md # dev-implementer 的技术计划
-├── research/                  # 外部研究材料 (MCP 抓取)
-├── TEST_PLAN.md               # QA 测试策略
-├── TEST_REPORT.md             # QA 测试结果
-├── SECURITY_PLAN.md           # 安全审查计划
-└── SECURITY_REPORT.md         # 安全扫描结果
-```
+- Pre-push Guard（TypeScript、测试、代码检查、安全、构建）
+- Constitution Compliance（每个阶段强制执行）
+- TDD Checkpoint（TEST VERIFICATION CHECKPOINT）
+- Guardrail Hooks（PreToolUse 实时阻止不合规操作）
 
-**关键变更**:
-- **orchestration_status.json**: 统一状态文件 (替代分散的状态文件)
-- **UI_PROTOTYPE.html**: 条件UI原型 (仅在检测到UI需求时生成)
-- **TASKS.md**: 所有任务的单一文件 (替代多个 TASK_*.md)
-- **tasks/*.completed**: 简单完成标记 (替代复杂任务状态)
-- **IMPLEMENTATION_PLAN.md**: dev-implementer 代理的技术计划
+📚 [完整架构文档](docs/architecture/README.zh-CN.md)
+</details>
 
-## 📋 命令参考
-
-### 主要命令
-
-| 命令 | 描述 | 用法 |
-|---------|-------------|-------|
-| `/flow-new` | 启动新需求开发 | `/flow-new "REQ-123\|标题\|URLs"` |
-| `/flow-ui` | 生成UI原型(条件) | `/flow-ui "REQ-123"` |
-| `/flow-tech` | 生成技术方案(Anti-Tech-Creep) | `/flow-tech "REQ-123"` |
-| `/flow-status` | 查询开发进度 | `/flow-status [REQ-ID] [--detailed]` |
-| `/flow-restart` | 恢复中断的开发 | `/flow-restart "REQ-ID" [--from=STAGE]` |
-| `/flow-verify` | 验证文档一致性 | `/flow-verify "REQ-ID" [--detailed] [--fix-auto]` |
-| `/flow-update` | 更新任务进度 | `/flow-update "REQ-ID" "TASK-ID" [OPTIONS]` |
-
-### 状态查询选项
-```bash
-/flow-status                    # 所有需求概览
-/flow-status REQ-123           # 特定需求状态
-/flow-status --all             # 包括已完成需求
-/flow-status --branches        # 仅 Git 分支状态
-/flow-status --detailed REQ-123 # 综合状态报告
-```
-
-### 重启选项
-```bash
-/flow-restart "REQ-123"                    # 自动检测重启点
-/flow-restart "REQ-123" --from=prd         # 从 PRD 阶段重启
-/flow-restart "REQ-123" --from=development # 从开发阶段重启
-/flow-restart "REQ-123" --force --backup   # 强制重启并备份
-```
+---
 
 ## ⚙️ 配置
 
-### 设置 (.claude/settings.json)
+**最小配置** (`.claude/settings.json`):
+
 ```json
 {
   "permissions": {
     "allowGitOperations": true,
     "allowNetworkRequests": true,
     "allowSubprocesses": true
-  },
+  }
+}
+```
+
+<details>
+<parameter name="summary">🔧 完整配置选项（点击展开）</summary>
+
+### Hooks 配置
+
+```json
+{
   "hooks": {
-    "pre-push": ".claude/hooks/pre-push-guard.sh",
-    "post-tool-use": ".claude/hooks/markdown_formatter.py"
-  },
-  "mcpServers": {
-    "web-scraper": {
-      "command": "npx",
-      "args": ["-y", "@anthropic/web-scraper-mcp@latest"]
-    }
-  },
-  "progressMonitor": {
-    "enabled": true,
-    "autoUpdateThreshold": 0.05,
-    "confidenceThreshold": 0.7
+    "PreToolUse": [{
+      "matcher": "Edit|Write",
+      "hooks": [{"type": "command", "command": "..."}]
+    }]
   }
 }
 ```
 
 ### 环境变量
+
 ```bash
 # 流程行为
-export FLOW_AUTO_APPROVE=false          # 在质量闸要求手动批准
-export FLOW_SKIP_BACKGROUND=false       # 启动后台开发/测试进程
-export DEFAULT_BASE_BRANCH=main         # PR 的默认基础分支
+export FLOW_AUTO_APPROVE=false
+export MIN_TEST_COVERAGE=80
+export STRICT_TYPE_CHECKING=true
 
-# 质量闸
-export MIN_TEST_COVERAGE=80             # 最小测试覆盖率阈值
-export STRICT_TYPE_CHECKING=true       # 强制严格 TypeScript 检查
-
-# MCP 集成
-export WEBFETCH_TIMEOUT=30              # 网络请求超时
-export ALLOWED_DOMAINS=""               # 逗号分隔的允许域名
+# Guardrail 跳过
+export SKIP_TDD_ENFORCER=1
+export SKIP_CONSTITUTION_CHECK=1
 ```
 
-## 🔧 自定义
+📚 [完整配置指南](docs/guides/configuration.zh-CN.md)
+</details>
 
-### 添加自定义子代理
-在 `.claude/agents/` 中创建新代理：
-
-```markdown
----
-name: custom-agent
-description: 您的自定义开发阶段代理
-tools: Task, Read, Write, Edit
 ---
 
-您的代理实现在这里...
-```
+## 🧪 测试覆盖
 
-### 自定义质量闸
-扩展 `.claude/hooks/pre-push-guard.sh`：
-
-```bash
-# 添加您的自定义检查
-if command -v your-custom-tool >/dev/null 2>&1; then
-    echo "🔍 运行自定义检查..."
-    if ! your-custom-tool --validate; then
-        add_error "自定义验证失败"
-    fi
-fi
-```
-
-### 文档模板
-在 `.claude/docs/templates/` 中自定义模板：
-- `PRD_TEMPLATE.md` - 产品需求文档结构
-- `EPIC_TEMPLATE.md` - Epic 规划格式
-- `TASK_TEMPLATE.md` - 单个任务规格
-
-## 🏛️ 三层信息架构
-
-cc-devflow 遵循清晰的三层架构 (2025-01-09 更新)，确保一致性、质量和最优上下文使用：
-
-### 架构概览
-```text
-.claude/
-├── constitution/          # 原则层 (What + Why)
-│   ├── project-constitution.md
-│   ├── quality-gates.md
-│   ├── architecture-constraints.md
-│   └── security-principles.md
-│
-├── guides/               # 操作手册层 (How)
-│   ├── workflow-guides/
-│   │   ├── flow-orchestrator.md
-│   │   └── bug-fix-orchestrator.md
-│   ├── technical-guides/
-│   │   ├── git-github-guide.md
-│   │   ├── test-execution-guide.md
-│   │   └── datetime-handling-guide.md
-│   └── agent-guides/
-│       └── agent-coordination-guide.md
-│
-└── rules/                # 约定层 (Specifics)
-    ├── core-patterns.md
-    └── devflow-conventions.md
-```
-
-### 层级职责
-
-**Constitution 层** (不可变原则):
-- 10条宪法条款管控质量、安全和架构
-- 质量闸门和合规标准
-- Phase -1 宪法闸门 (简洁性、反抽象、集成优先)
-- 最高权威 - 所有其他层必须遵循
-
-**Guides 层** (操作指南):
-- 工作流标准操作程序 (SOP)
-- 技术操作指南 (Git、GitHub、测试、日期时间)
-- 代理协调协议
-- 分步实施说明
-
-**Rules 层** (项目约定):
-- **核心模式**: 4大基本原则 (快速失败、信任系统、清晰错误、最少输出)
-- **DevFlow 约定**: CC-DevFlow 特定工作流、格式和错误处理
-
-### 核心优势
-- **上下文高效**: 规则上下文减少 55% (节省约 100KB tokens)
-- **清晰分离**: 每层有明确的目的和范围
-- **易于维护**: 变更有清晰的归属和影响范围
-- **可扩展**: 支持 10+ 年演进而无架构债务
-
-## 🧪 测试框架
-
-cc-devflow 包含完整的测试框架，所有核心脚本均达到 **100% 测试覆盖率**。
-
-### 测试套件 (8/8 全部通过)
-
-| 测试套件 | 测试用例数 | 覆盖范围 | 状态 |
-|----------|-----------|---------|------|
-| `test_check_prerequisites` | 18 | 前置条件验证 | ✅ 100% |
-| `test_check_task_status` | 18 | 任务状态跟踪 | ✅ 100% |
-| `test_common` | 15 | 通用工具库 | ✅ 100% |
-| `test_generate_status_report` | - | 状态报告生成 | ✅ 100% |
-| `test_mark_task_complete` | 15 | 任务完成标记 | ✅ 100% |
-| `test_recover_workflow` | - | 工作流恢复 | ✅ 100% |
-| `test_setup_epic` | 13 | Epic 初始化 | ✅ 100% |
-| `test_validate_constitution` | 4 | Constitution 检查 | ✅ 100% |
-
-### 运行测试
+**脚本测试**: 8/8 通过 ✅ (100%)
+**Constitution 测试**: 38/38 通过 ✅ (100%)
 
 ```bash
-# 运行所有测试套件
+# 运行所有测试
 bash .claude/tests/run-all-tests.sh --scripts
-
-# 运行特定测试套件
-bash .claude/tests/scripts/test_check_prerequisites.sh
-
-# 详细输出模式
-VERBOSE=true bash .claude/tests/run-all-tests.sh --scripts
 ```
 
-### 测试框架特性
+<details>
+<summary>📊 测试框架详解（点击展开）</summary>
 
-- **隔离测试环境**: 每个测试在干净的临时目录中运行
-- **Mock 系统**: 完整的 Git mock 和函数 stub 支持
-- **Exit Code 捕获**: 通过 temp file 模式可靠捕获退出码
-- **断言库**: 丰富的断言集合（equals、contains、JSON 验证等）
-- **自动清理**: 自动清理测试资源
-- **彩色输出**: 清晰的可视化测试结果反馈
+### 测试套件
 
-### 关键测试模式
+| 测试套件 | 测试用例数 | 状态 |
+|----------|-----------|------|
+| `test_check_prerequisites` | 18 | ✅ 100% |
+| `test_check_task_status` | 18 | ✅ 100% |
+| `test_common` | 15 | ✅ 100% |
+| `test_mark_task_complete` | 15 | ✅ 100% |
+| `test_setup_epic` | 13 | ✅ 100% |
+| `test_validate_constitution` | 4 | ✅ 100% |
 
-**Exit Code 捕获模式**:
-```bash
-local output_file="$TEST_TMP_DIR/output.txt"
-local exit_code_file="$TEST_TMP_DIR/exitcode.txt"
+📚 [测试框架详解](docs/guides/testing-guide.zh-CN.md)
+</details>
 
-(
-    command_to_test > "$output_file" 2>&1
-    echo $? > "$exit_code_file"
-)
+---
 
-local output=$(cat "$output_file")
-local exit_code=$(cat "$exit_code_file")
-```
+## 📝 版本历史
 
-**Git Mock**:
-```bash
-# Mock git 命令
-mock_git "rev-parse --show-toplevel" "/fake/repo/path"
+### v2.1.0 (2025-11-07) - 最新版本
 
-# Git 命令现在返回 mock 值
-git rev-parse --show-toplevel  # 返回: /fake/repo/path
-```
+**🏢 核心突破：引入项目级命令（Project-Level Commands）**
 
-## 🔍 监控和调试
+v2.1.0 的核心突破是引入了**项目级命令**，与之前的**需求级命令**形成两层体系：
 
-### 自动进度更新
-系统会自动检测代码变更并更新任务进度：
+- **项目级命令** - 项目整体规划和架构设计（项目初期执行一次）
+  - `/flow-roadmap` - 交互式产品路线图生成（6阶段对话）
+  - `/flow-architecture` - 4种架构图生成（Mermaid格式）
+  - `/flow-guidelines` - 项目规范生成（前端/后端分离）
 
-```bash
-# 启动后台监控服务
-.claude/scripts/start-monitor.sh start
+- **需求级命令增强** - Stage 1.5 路线图与架构上下文加载（flow-init）
+  - 初始化需求时自动加载项目级上下文
+  - 需求与路线图自动映射（RM-ID, Milestone, Quarter）
+  - 架构上下文自动关联（Feature Layer, Tech Stack, Module）
 
-# 查看监控状态
-.claude/scripts/start-monitor.sh status
+**📚 文档改进**:
+- README 完全重构（完整目录 + 折叠 + 外部文档链接）
+- 新增 25+ 个详细文档
 
-# 手动更新任务进度
-/flow-update "REQ-123" "TASK_001" --auto
+📋 [完整变更日志](CHANGELOG.md)
 
-# 测试自动更新机制
-python3 .claude/scripts/test-auto-update.py
-```
+---
 
-**自动触发条件**:
-- 编辑代码文件 (Edit, Write, MultiEdit)
-- Git 提交操作
-- 测试运行完成
-- 文件系统变更检测
+## 🤝 贡献 & 支持
 
-### 状态监控
-```bash
-# 实时进度跟踪
-/flow-status --detailed REQ-123
+**贡献**: [贡献指南](CONTRIBUTING.md)
+**问题**: [GitHub Issues](https://github.com/Dimon94/cc-devflow/issues)
+**文档**: [完整文档](docs/)
 
-# Git 分支概览
-/flow-status --branches
-
-# 自动化的 JSON 输出
-/flow-status REQ-123 --json | jq '.progress'
-```
-
-### 调试模式
-```bash
-# 启用详细日志
-export FLOW_DEBUG=1
-/flow-new "REQ-123|调试测试"
-
-# 检查执行日志
-tail -f .claude/logs/flow-*.log
-
-# 验证系统健康状态
-.claude/scripts/check-mcp-health.sh
-```
-
-## 📈 性能
-
-- **并行处理**: 在可能的情况下并发执行子代理
-- **增量备份**: 在重启操作期间仅备份更改的文件
-- **智能缓存**: 具有可配置 TTL 的 WebFetch 内容缓存
-- **后台进程**: 可选的 `npm run dev` 和 `npm run test:watch` 自动化
-
-## 🤝 贡献
-
-我们欢迎贡献！请：
-
-1. Fork 仓库
-2. 创建功能分支: `git checkout -b feature/amazing-feature`
-3. 遵循我们的编码标准并运行质量闸
-4. 提交带有详细描述的 pull request
-
-### 开发设置
-```bash
-# 克隆仓库
-git clone https://github.com/Dimon94/cc-devflow.git
-cd cc-devflow
-
-# 复制到您的测试项目
-cp -r .claude /path/to/your/test/project/
-
-# 测试安装
-cd /path/to/your/test/project
-/flow-new "REQ-001|测试功能|"
-```
+---
 
 ## 📄 许可证
 
-本项目基于 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
-
-## 🙏 致谢
-
-- 基于 [Claude Code](https://claude.ai/code) 官方架构构建
-- 受现代 DevOps 和 CI/CD 最佳实践启发
-- 感谢 Claude AI 团队提供强大的开发平台
-
-## 📞 支持
-
-- **问题**: [GitHub Issues](https://github.com/Dimon94/cc-devflow/issues)
-- **文档**: 查看 `.claude/docs/` 获取详细规格
-- **社区**: 分享您的体验并从其他用户那里获得帮助
+MIT License - 查看 [LICENSE](LICENSE) 文件
 
 ---
 

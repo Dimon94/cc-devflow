@@ -64,6 +64,134 @@ $ARGUMENTS = "REQ_ID|TITLE"
 *GATE CHECK: All validations passed*
 ```
 
+### 阶段 1.5: 路线图与架构上下文加载 (Roadmap & Architecture Context)
+
+**目标**: 在初始化需求前，了解该需求在项目路线图和架构中的位置
+
+**Execution Flow**:
+```
+1. Check if ROADMAP.md exists
+   → Run: ls devflow/ROADMAP.md 2>/dev/null
+   → If not found:
+      INFO "No roadmap found. This is a standalone requirement."
+      "Run /flow-roadmap to create a project roadmap first (optional)."
+      → Skip to Stage 2
+
+2. Locate requirement in roadmap
+   → Run: .claude/scripts/locate-requirement-in-roadmap.sh "${REQ_ID}"
+   → Parse output for:
+      • RM-ID (Roadmap Item ID)
+      • Feature name
+      • Milestone (M{n}-Q{q}-{yyyy})
+      • Quarter (Q{n} {yyyy})
+      • Cluster (Feature group)
+      • Derived From (source)
+
+3. Display roadmap context
+   If requirement found in roadmap:
+   ```
+   ===================================================================
+   📍 Requirement Location in Roadmap
+   ===================================================================
+
+   📋 Requirement:    ${REQ_ID}
+   🎯 Roadmap Item:   ${RM_ID}
+   📝 Feature:        ${FEATURE_NAME}
+   📌 Derived From:   ${DERIVED_FROM}
+
+   📅 Timeline:
+      Quarter:        ${QUARTER}
+      Milestone:      ${MILESTONE}
+      Cluster:        ${CLUSTER}
+   ===================================================================
+   ```
+
+   If not found:
+   ```
+   ⚠️  Requirement ${REQ_ID} not found in roadmap
+
+   This requirement may be:
+     - Not yet added to the roadmap (ad-hoc requirement)
+     - Created before the roadmap was established
+     - Outside the current planning horizon
+
+   You can:
+     1. Continue initialization (this is OK for ad-hoc requirements)
+     2. Run /flow-roadmap to regenerate the roadmap
+     3. Manually add this requirement to ROADMAP.md later
+
+   Continue? (yes/no)
+   ```
+   → If user says 'no', exit
+   → If user says 'yes', continue
+
+4. Check if ARCHITECTURE.md exists
+   → Run: ls devflow/ARCHITECTURE.md 2>/dev/null
+   → If not found:
+      INFO "No architecture document found."
+      "Run /flow-architecture to generate architecture diagrams (optional)."
+      → Skip to Stage 2
+
+5. Load architecture context
+   → Read devflow/ARCHITECTURE.md
+   → Extract relevant sections:
+      • Feature Architecture diagram (identify related features)
+      • Technical Architecture diagram (identify relevant tech stack layers)
+      • Module Structure diagram (identify target modules)
+      • Requirement Dependency diagram (identify dependencies)
+
+6. Display architecture context
+   ```
+   ===================================================================
+   🏗️  Architecture Context
+   ===================================================================
+
+   🎯 Feature Architecture:
+      Layer: ${LAYER_NAME} (Core/Business/Support)
+      Related Features: ${RELATED_FEATURES}
+
+   🔧 Technical Architecture:
+      Tech Stack Layer: ${TECH_LAYER} (Presentation/Business/Data/Integration)
+      Key Technologies: ${TECH_STACK}
+
+   📦 Module Structure:
+      Target Modules: ${TARGET_MODULES}
+      Directory: ${TARGET_DIRECTORY}
+
+   🔗 Dependencies:
+      Depends On: ${PREREQUISITES}
+      Blocks: ${DEPENDENTS}
+   ===================================================================
+   ```
+
+   If no relevant context found:
+   ```
+   INFO "No specific architecture context found for ${REQ_ID}."
+   "Architecture diagrams will be updated after this requirement is implemented."
+   ```
+
+7. Summarize context for initialization
+   → Combine roadmap + architecture context
+   → Identify key information to pass to subsequent stages:
+      • Expected timeline (from roadmap)
+      • Related features and dependencies
+      • Target modules and tech stack
+      • Architecture patterns to follow
+
+   → Store context in temporary variable for use in README generation
+
+*CONTEXT LOADED: Ready for initialization with full project context*
+```
+
+**Why This Stage Matters**:
+- **Awareness**: Developer knows where this requirement fits in the big picture
+- **Dependencies**: Identifies what needs to be done first (blocking requirements)
+- **Guidance**: Provides architectural guidance (which modules to touch, which tech to use)
+- **Planning**: Helps estimate effort based on roadmap timeline
+- **Consistency**: Ensures implementation aligns with project architecture
+
+**Optional**: If ROADMAP.md and ARCHITECTURE.md both don't exist, this stage completes quickly with informational messages, so it doesn't block standalone requirements.
+
 ### 阶段 2: 目录初始化与基线文件落地
 
 **Execution Flow**:
@@ -150,14 +278,13 @@ $ARGUMENTS = "REQ_ID|TITLE"
 ```
 1. 生成研究任务
    → Run: {SCRIPT:research_tasks} "${REQ_DIR}"
-   → 输出: research/tasks.json（记录 id, type, prompt, status 基础字段）
+   → 输出: research/tasks.json（记录 unknown、owner、状态）
 
-2. 智能填充任务决策信息 ⭐ 新增步骤
+2. 填充研究决策
    → Run: {SCRIPT:populate_tasks} "${REQ_DIR}"
    → 从 research-summary.md 提取决策信息
-   → 填充 tasks.json 的 decision/rationale/alternatives 字段
-   → 如果 research-summary.md 不存在，生成后备内容
-   → 目标: 确保 tasks.json 包含完整的决策信息
+   → 填充 tasks.json 的 decision/rationale/alternatives
+   → 输出: 更新后的 research/tasks.json
 
 3. 整合研究结论
    → Run: {SCRIPT:consolidate} "${REQ_DIR}"
@@ -166,7 +293,6 @@ $ARGUMENTS = "REQ_ID|TITLE"
      - Rationale: ...
      - Alternatives considered: ...
    → 标记未解决项为 NEEDS CLARIFICATION
-   → ⚠️ 依赖步骤 2 完成，否则会生成 TODO 占位符
 
 4. 更新状态
    → orchestration_status.json.phase0_complete = true
