@@ -49,13 +49,31 @@ $ARGUMENTS = "REQ_ID? [--task T###]"
    → 记录下一任务 ID
 ```
 
-### 阶段 2: Quickstart 初始化
+### 阶段 2: Quickstart 与风格指南加载
 ```
 1. 读取 quickstart.md
    → 获取环境变量、依赖安装、测试命令
-2. 如果首次运行:
+
+2. 读取 STYLE.md（如存在）
+   → 检查 devflow/STYLE.md 文件
+   → 如存在:
+      • 加载设计风格指南（颜色、字体、间距、组件样式等）
+      • 所有前端代码生成必须遵循 STYLE.md 定义的风格
+      • 特别注意:
+        - 颜色使用（使用 CSS Variables 或 Tailwind classes 引用 STYLE.md 定义）
+        - 字体使用（字体族、字阶、行高、字重等必须符合 STYLE.md）
+        - 间距使用（padding, margin, gap 必须使用 STYLE.md 的间距系统）
+        - 组件结构（Button, Card, Input 等必须遵循 STYLE.md 的组件规范）
+        - 阴影、圆角、动画、透明度等（必须遵循 STYLE.md）
+      • 在 EXECUTION_LOG.md 记录 STYLE.md 版本和使用情况
+   → 如不存在:
+      • 使用项目现有的样式约定（如有）
+      • 建议用户运行 /flow-style 建立项目设计标准
+
+3. 如果首次运行:
    → 执行 quickstart 中的 setup 命令
-3. 在 EXECUTION_LOG.md 记录 quickstart 版本
+
+4. 在 EXECUTION_LOG.md 记录 quickstart 版本 + STYLE.md 版本（如有）
 ```
 
 ### 阶段 3: TDD 循环

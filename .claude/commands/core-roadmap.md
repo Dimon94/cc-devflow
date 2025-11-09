@@ -1,6 +1,6 @@
 ---
-name: flow-roadmap
-description: Generate product roadmap and architecture through 6-stage interactive dialogue. Usage: /flow-roadmap
+name: core-roadmap
+description: Generate product roadmap and architecture through 6-stage interactive dialogue. Usage: /core-roadmap
 scripts:
   calculate_quarter: .claude/scripts/calculate-quarter.sh
   sync_progress: .claude/scripts/sync-roadmap-progress.sh
@@ -10,8 +10,8 @@ scripts:
 
 ## 命令格式
 ```text
-/flow-roadmap              # Start 6-stage roadmap planning dialogue
-/flow-roadmap --regenerate # Regenerate existing roadmap with current data
+/core-roadmap              # Start 6-stage roadmap planning dialogue
+/core-roadmap --regenerate # Regenerate existing roadmap with current data
 ```
 
 ## 核心原则
@@ -23,7 +23,7 @@ scripts:
 ```
 用户
   ↓
-flow-roadmap (6-stage dialogue) ← 你在这里
+core-roadmap (6-stage dialogue) ← 你在这里
   ↓
   ├─→ roadmap-planner (research, no dialogue)
   │     ↓
@@ -571,8 +571,8 @@ For each quarter in timeline:
 "  4. 运行 /flow-init {RM-ID} 开始实现路线图项目"
 ""
 "💡 提示:"
-"  - 使用 /flow-roadmap --regenerate 可重新生成路线图"
-"  - 使用 /flow-architecture 可单独更新架构文档"
+"  - 使用 /core-roadmap --regenerate 可重新生成路线图"
+"  - 使用 /core-architecture 可单独更新架构文档"
 "  - ROADMAP.md 会自动同步需求进度 (via sync-roadmap-progress.sh)"
 ""
 "==================================================================="
@@ -586,7 +586,7 @@ For each quarter in timeline:
    ```
    在任何阶段用户输入 'cancel':
      → 保存当前 context 到 devflow/.roadmap-draft.json
-     → 提示: "规划已暂停，进度已保存。使用 /flow-roadmap --resume 继续。"
+     → 提示: "规划已暂停，进度已保存。使用 /core-roadmap --resume 继续。"
    ```
 
 2. **循环依赖**:
@@ -610,14 +610,14 @@ For each quarter in timeline:
    Stage 7 Agent 返回错误:
      → 保存 context 到 devflow/.roadmap-draft.json
      → ERROR: "Agent 调用失败: {error_message}"
-     → 提示: "上下文已保存，请检查错误后使用 /flow-roadmap --resume 重试"
+     → 提示: "上下文已保存，请检查错误后使用 /core-roadmap --resume 重试"
    ```
 
 ## 高级功能
 
 ### --regenerate 模式
 ```
-/flow-roadmap --regenerate
+/core-roadmap --regenerate
 
 流程:
 1. 读取现有 ROADMAP.md
@@ -629,7 +629,7 @@ For each quarter in timeline:
 
 ### --resume 模式
 ```
-/flow-roadmap --resume
+/core-roadmap --resume
 
 流程:
 1. 读取 devflow/.roadmap-draft.json
@@ -653,7 +653,7 @@ For each quarter in timeline:
 
 路线图创建后，用户可以:
 1. `/flow-init {RM-ID}` - 将路线图项目转为正式需求
-2. `/flow-architecture` - 单独更新架构文档
+2. `/core-architecture` - 单独更新架构文档
 3. 手动编辑 ROADMAP.md - 调整路线图内容
 4. 运行 `sync-roadmap-progress.sh` - 同步需求进度
 

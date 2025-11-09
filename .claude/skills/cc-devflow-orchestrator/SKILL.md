@@ -10,6 +10,17 @@ Guide users to the correct agent/command WITHOUT duplicating their detailed stan
 
 ## Workflow Map
 
+### 🏢 项目级工作流（Project-Level, 项目初期执行一次）
+
+```
+/core-roadmap → ROADMAP.md + BACKLOG.md (产品路线图)
+/core-architecture → ARCHITECTURE.md (系统架构设计)
+/core-guidelines → frontend-guidelines.md / backend-guidelines.md (项目规范)
+/core-style → STYLE.md (设计风格指南) ⭐ 新增
+```
+
+### 📦 需求级工作流（Requirement-Level, 每个需求执行一次）
+
 ```
 /flow-init → research.md + tasks.json (研究初始化)
      ↓
@@ -17,11 +28,11 @@ Guide users to the correct agent/command WITHOUT duplicating their detailed stan
      ↓
 /flow-tech → TECH_DESIGN.md + data-model + contracts (invoke tech-architect agent)
      ↓
-/flow-ui → UI_PROTOTYPE.html (invoke ui-designer agent, 可选)
+/flow-ui → UI_PROTOTYPE.html (invoke ui-designer agent, 可选, 引用 STYLE.md) ⭐ 变更
      ↓
 /flow-epic → EPIC.md + TASKS.md (invoke planner agent with PRD+TECH+UI)
      ↓
-/flow-dev → TASKS.md execution (TDD order enforced by guardrails)
+/flow-dev → TASKS.md execution (TDD order enforced, 引用 STYLE.md) ⭐ 变更
      ↓
 /flow-qa → QA reports (invoke qa-tester + security-reviewer agents)
      ↓
@@ -29,6 +40,11 @@ Guide users to the correct agent/command WITHOUT duplicating their detailed stan
      ↓
 /flow-verify → consistency check (invoke consistency-checker agent, 任意阶段可调用)
 ```
+
+**说明**:
+- 项目级命令建立全局标准（SSOT），需求级命令引用这些标准
+- `/flow-ui` 和 `/flow-dev` 自动加载 `devflow/STYLE.md`（如存在）
+- 项目级命令可按需执行，无严格顺序要求
 
 ## Agent Delegation Guide
 
@@ -44,11 +60,18 @@ Guide users to the correct agent/command WITHOUT duplicating their detailed stan
 - **Link**: See [.claude/agents/tech-architect.md](.claude/agents/tech-architect.md) for design details
 - **Outputs**: TECH_DESIGN.md, data-model.md, contracts/, quickstart.md
 
+### When User Asks About Design Style Guide
+- **DO**: Recommend `/core-style` command → invokes style-guide-generator agent
+- **DON'T**: Duplicate style guide standards (style-guide-generator agent has ~400 lines)
+- **Link**: See [.claude/agents/style-guide-generator.md](.claude/agents/style-guide-generator.md) for details
+- **Outputs**: STYLE.md (project-level SSOT for visual consistency)
+- **Level**: Project-level (execute once per project)
+
 ### When User Asks About UI Prototype
 - **DO**: Recommend `/flow-ui` command → invokes ui-designer agent
 - **DON'T**: Duplicate UI standards (ui-designer agent has ~485 lines)
 - **Link**: See [.claude/agents/ui-designer.md](.claude/agents/ui-designer.md) for UI details
-- **Features**: 80+ design masters sampling, responsive design, NO PLACEHOLDER
+- **Features**: 80+ design masters sampling, responsive design, NO PLACEHOLDER, references STYLE.md
 
 ### When User Asks About Task Planning
 - **DO**: Recommend `/flow-epic` command → invokes planner agent

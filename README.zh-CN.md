@@ -183,9 +183,10 @@ bash .claude/tests/constitution/run_all_constitution_tests.sh
 
 | 命令 | 用途 | 快速示例 | 详细文档 |
 |------|------|----------|----------|
-| `/flow-roadmap` | 🗺️ 生成产品路线图 | `/flow-roadmap` | [→](docs/commands/flow-roadmap.zh-CN.md) |
-| `/flow-architecture` | 🏗️ 生成系统架构 | `/flow-architecture` | [→](docs/commands/flow-architecture.zh-CN.md) |
-| `/flow-guidelines` | 📘 生成项目规范 | `/flow-guidelines` | [→](docs/commands/flow-guidelines.zh-CN.md) |
+| `/core-roadmap` | 🗺️ 生成产品路线图 | `/core-roadmap` | [→](docs/commands/core-roadmap.zh-CN.md) |
+| `/core-architecture` | 🏗️ 生成系统架构 | `/core-architecture` | [→](docs/commands/core-architecture.zh-CN.md) |
+| `/core-guidelines` | 📘 生成项目规范 | `/core-guidelines` | [→](docs/commands/core-guidelines.zh-CN.md) |
+| `/core-style` | 🎨 生成设计风格指南 | `/core-style` | [→](docs/commands/core-style.zh-CN.md) |
 
 ### 📦 需求级命令（Requirement-Level）
 
@@ -206,9 +207,10 @@ bash .claude/tests/constitution/run_all_constitution_tests.sh
 
 ```
 你的场景：
-├─ 规划产品方向？ → /flow-roadmap
-├─ 设计系统架构？ → /flow-architecture
-├─ 建立编码规范？ → /flow-guidelines
+├─ 规划产品方向？ → /core-roadmap
+├─ 设计系统架构？ → /core-architecture
+├─ 建立编码规范？ → /core-guidelines
+├─ 建立设计风格指南？ → /core-style
 ├─ 启动全新功能开发？ → /flow-new "REQ-123|功能|URLs"
 ├─ 仅创建需求目录？ → /flow-init "REQ-123|功能"
 ├─ 开发中断需要继续？ → /flow-restart "REQ-123"
@@ -361,9 +363,10 @@ bash .claude/tests/run-all-tests.sh --scripts
 v2.1.0 的核心突破是引入了**项目级命令**，与之前的**需求级命令**形成两层体系：
 
 - **项目级命令** - 项目整体规划和架构设计（项目初期执行一次）
-  - `/flow-roadmap` - 交互式产品路线图生成（6阶段对话）
-  - `/flow-architecture` - 4种架构图生成（Mermaid格式）
-  - `/flow-guidelines` - 项目规范生成（前端/后端分离）
+  - `/core-roadmap` - 交互式产品路线图生成（6阶段对话）
+  - `/core-architecture` - 4种架构图生成（Mermaid格式）
+  - `/core-guidelines` - 项目规范生成（前端/后端分离）
+  - `/core-style` - 项目设计风格指南生成（视觉一致性SSOT）
 
 - **需求级命令增强** - Stage 1.5 路线图与架构上下文加载（flow-init）
   - 初始化需求时自动加载项目级上下文

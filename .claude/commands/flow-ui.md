@@ -46,13 +46,23 @@ $ARGUMENTS = "REQ_ID?"
    → 如检测不到且用户拒绝继续 → 记录 EXECUTION_LOG "ui_skipped" 后退出
 ```
 
-### 阶段 2: 设计风格分析与灵感采样
+### 阶段 2: 设计风格加载与灵感采样
 ```
-1. 从 PRD 抽取风格线索
+1. 检查项目级 STYLE.md 是否存在
+   → 检查 devflow/STYLE.md 文件
+   → 如存在:
+      • 加载 STYLE.md 作为首要参考（优先级最高）
+      • 所有颜色、字体、间距、组件必须严格遵循 STYLE.md
+      • 在 EXECUTION_LOG.md 记录 STYLE.md 版本和使用情况
+   → 如不存在:
+      • 使用默认采样策略（80+ 设计大师）
+      • 建议用户先运行 /flow-style 建立项目设计标准
+
+2. 从 PRD 抽取风格线索（作为 STYLE.md 的补充或默认策略）
    → 背景/目标、用户画像、NFR 中的视觉/品牌要求
    → 关键词示例: 现代、简约、科技感、典雅、活泼、企业级、极简、暗色、明快
 
-2. 建立关键词 → 设计风格/大师映射（至少保留原规范的采样组合）
+3. 建立关键词 → 设计风格/大师映射（仅在无 STYLE.md 时使用完整策略）
    • 现代 / 简约 / 专业:
        - 现代主义信息设计 (Josef Müller-Brockmann, Massimo Vignelli)
        - 工业设计 (Dieter Rams, Jony Ive)
@@ -80,38 +90,64 @@ $ARGUMENTS = "REQ_ID?"
      ```
      # UI 设计策略 - ${REQ_ID}
 
+     ## 项目级风格指南引用（如存在）
+     - STYLE.md 路径: devflow/STYLE.md
+     - STYLE.md 版本: v1.0.0
+     - 必须遵循的设计元素:
+       • 颜色: 主色 #XXXXXX, 辅色 #XXXXXX, ...（来自 STYLE.md）
+       • 字体: Font Family, Weight, Size（来自 STYLE.md）
+       • 间距: 4px, 8px, 16px, ...（来自 STYLE.md）
+       • 组件风格: Button, Card, Input 样式（来自 STYLE.md）
+       • 阴影、圆角、动画等（来自 STYLE.md）
+     - STYLE.md 未覆盖的部分处理策略:
+       • 使用 PRD 风格线索 + 默认采样策略
+
      ## PRD 风格提取
      - 领域 / 用户画像 / 场景
      - 关键词列表
      - 明确要求 / 禁忌
 
-     ## 采样策略
+     ## 采样策略（仅在无 STYLE.md 或 STYLE.md 未覆盖部分）
      - 选定流派 1 （大师列表 + 采样理由）
      - 选定流派 2 （大师列表 + 采样理由）
      - 默认样式（无关键词时的 fallback）
 
      ## 色彩 / 字体 / 布局假设
      - 主/辅色、对比度、排版方向
+     - （如有 STYLE.md，此部分直接引用 STYLE.md）
 
      ## 交互与响应式要点
      - 核心动效、断点策略、可访问性注意事项
+     - （如有 STYLE.md，响应式断点、动画时长等引用 STYLE.md）
 
      ## 外部灵感 (如有)
      - 引用链接 + 摘要
      ```
-   → EXECUTION_LOG.md 记录策略生成与关键词
+   → EXECUTION_LOG.md 记录策略生成、STYLE.md 使用情况、关键词
 ```
 
 ### 阶段 3: 调用 ui-designer Agent
 ```
 Prompt 要求:
-  - 输入: PRD.md、ui_design_strategy.md、research 集合
+  - 输入:
+      • PRD.md
+      • ui_design_strategy.md
+      • research 集合
+      • devflow/STYLE.md（如存在，必须作为首要参考）
   - 输出: UI_PROTOTYPE.html
   - 遵循模板 (.claude/docs/templates/UI_PROTOTYPE_TEMPLATE.md):
       • 页面列表、组件清单、设计系统 (颜色/字体/间距)
       • 响应式断点 (320/768/1024)
       • 交互状态 (hover/active/disabled)
       • 文档内注释说明各部分映射的 PRD 验收标准
+  - STYLE.md 约束（如存在）:
+      • 所有颜色必须使用 STYLE.md 定义的色板（主色、辅色、语义色、中性色）
+      • 所有字体必须使用 STYLE.md 定义的字体系统（字体族、字阶）
+      • 所有间距必须使用 STYLE.md 定义的间距系统（spacing scale）
+      • 所有组件样式必须遵循 STYLE.md 定义的组件规范（Button, Card, Input 等）
+      • 阴影、圆角、动画、透明度等必须遵循 STYLE.md
+      • 响应式断点必须遵循 STYLE.md（如有定义）
+      • 仅在 STYLE.md 未覆盖的部分，才使用默认采样策略（80+ 设计大师）
   - Constitution: 禁止外链资源、禁止敏感数据硬编码
 ```
 

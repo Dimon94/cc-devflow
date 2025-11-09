@@ -1,5 +1,5 @@
 ---
-description: Generate project-specific development guidelines skills (frontend/backend separately). Usage: /flow-guidelines [--frontend|--backend|--new|--force]
+description: Generate project-specific development guidelines skills (frontend/backend separately). Usage: /core-guidelines [--frontend|--backend|--new|--force]
 ---
 
 # Generate Project Development Guidelines
@@ -16,22 +16,22 @@ description: Generate project-specific development guidelines skills (frontend/b
 
 ```bash
 # Auto-detect and generate (may create 1 or 2 skills)
-/flow-guidelines
+/core-guidelines
 
 # Generate frontend guidelines only
-/flow-guidelines --frontend
+/core-guidelines --frontend
 
 # Generate backend guidelines only
-/flow-guidelines --backend
+/core-guidelines --backend
 
 # New project - interactive tech stack setup
-/flow-guidelines --new
+/core-guidelines --new
 
 # Force regenerate existing guidelines
-/flow-guidelines --force
+/core-guidelines --force
 
 # Preview without writing files
-/flow-guidelines --dry-run
+/core-guidelines --dry-run
 ```
 
 ---
@@ -344,7 +344,7 @@ Activation Triggers:
    • Update examples with your code style
 
 4. Update when tech stack changes:
-   /flow-guidelines --force
+   /core-guidelines --force
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -455,17 +455,17 @@ Choice: [user input]
 
 | Flag | Description | Example |
 |------|-------------|---------|
-| `--frontend` | Generate frontend-guidelines only | `/flow-guidelines --frontend` |
-| `--backend` | Generate backend-guidelines only | `/flow-guidelines --backend` |
-| `--new` | Force interactive setup (ignore detection) | `/flow-guidelines --new` |
-| `--force` | Overwrite existing guidelines | `/flow-guidelines --force` |
-| `--dry-run` | Show what would be generated (no writes) | `/flow-guidelines --dry-run` |
+| `--frontend` | Generate frontend-guidelines only | `/core-guidelines --frontend` |
+| `--backend` | Generate backend-guidelines only | `/core-guidelines --backend` |
+| `--new` | Force interactive setup (ignore detection) | `/core-guidelines --new` |
+| `--force` | Overwrite existing guidelines | `/core-guidelines --force` |
+| `--dry-run` | Show what would be generated (no writes) | `/core-guidelines --dry-run` |
 
 ---
 
 ## Related Commands
 
-- `/flow-init` - Initialize new requirement (can call /flow-guidelines)
+- `/flow-init` - Initialize new requirement (can call /core-guidelines)
 - `/flow-tech` - Technical design (analyzes tech stack similarly)
 
 ---
