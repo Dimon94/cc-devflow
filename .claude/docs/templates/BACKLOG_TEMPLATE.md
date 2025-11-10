@@ -9,7 +9,7 @@
 - dependencies 依赖关系
 - timeline 时间线分配
 
-**Prerequisites**: roadmap-planner agent 正在基于 flow-roadmap 命令的上下文生成此文档
+**Prerequisites**: roadmap-planner agent 正在基于 core-roadmap 命令的上下文生成此文档
 
 ## Execution Flow (Backlog 生成流程)
 ```

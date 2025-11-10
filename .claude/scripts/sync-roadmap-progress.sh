@@ -255,7 +255,7 @@ main() {
     if [[ ! -f "$roadmap_file" ]]; then
         echo "⚠️  ROADMAP.md not found at: $roadmap_file"
         echo ""
-        echo "Please run /flow-roadmap to create a roadmap first."
+        echo "Please run /core-roadmap to create a roadmap first."
         exit 0
     fi
 

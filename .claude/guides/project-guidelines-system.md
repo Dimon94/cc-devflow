@@ -16,7 +16,7 @@
 ### 新项目
 
 ```bash
-/flow-guidelines
+/core-guidelines
 ```
 
 系统会询问你的技术栈选择，然后生成对应的指南。
@@ -24,7 +24,7 @@
 ### 现有项目
 
 ```bash
-/flow-guidelines
+/core-guidelines
 ```
 
 系统会自动检测你的技术栈，向你确认后生成指南。
@@ -32,8 +32,8 @@
 ### 只需前端或后端
 
 ```bash
-/flow-guidelines --frontend    # 只生成前端指南
-/flow-guidelines --backend     # 只生成后端指南
+/core-guidelines --frontend    # 只生成前端指南
+/core-guidelines --backend     # 只生成后端指南
 ```
 
 ## 架构设计
@@ -62,13 +62,13 @@
 │   └── project-guidelines-generator.md    # 生成逻辑
 │
 └── commands/
-    └── flow-guidelines.md                 # 用户接口
+    └── core-guidelines.md                 # 用户接口
 ```
 
 ### 职责划分
 
 ```
-/flow-guidelines (Command)
+/core-guidelines (Command)
 ├── 检测项目类型（新 vs 现有）
 ├── 新项目 → 询问技术栈
 ├── 现有项目 → 自动检测 + 确认
@@ -142,7 +142,7 @@ graph LR
 #### 场景 1：有 ARCHITECTURE.md 的项目
 
 ```bash
-$ /flow-guidelines
+$ /core-guidelines
 
 ✅ ARCHITECTURE.md found, parsing...
    Tech Stack: {"frontend":{"framework":"React 18",...}}
@@ -161,7 +161,7 @@ $ /flow-guidelines
 #### 场景 2：无 ARCHITECTURE.md 的项目
 
 ```bash
-$ /flow-guidelines
+$ /core-guidelines
 
 ⚠️  ARCHITECTURE.md not found, fallback to command prompt data
 
@@ -174,13 +174,13 @@ $ /flow-guidelines
 #### 场景 3：ARCHITECTURE.md 过期
 
 ```bash
-$ /flow-guidelines
+$ /core-guidelines
 
 ✅ ARCHITECTURE.md found, parsing...
 
 ⚠️  ARCHITECTURE.md may be outdated:
    - Directories exist but not in ARCHITECTURE.md: packages/
-     Recommendation: Run /flow-architecture to update
+     Recommendation: Run /core-architecture to update
 
 ⚠️  Proceeding with available data, but results may be inaccurate.
 ```
@@ -190,7 +190,7 @@ $ /flow-guidelines
 如果你的项目结构或技术栈发生变化，运行：
 
 ```bash
-/flow-architecture
+/core-architecture
 ```
 
 这会重新生成 `devflow/ARCHITECTURE.md`，包括最新的：
@@ -199,7 +199,7 @@ $ /flow-guidelines
 - 功能架构图
 - 需求依赖图
 
-然后重新运行 `/flow-guidelines --force` 更新 guidelines。
+然后重新运行 `/core-guidelines --force` 更新 guidelines。
 
 ---
 
@@ -231,7 +231,7 @@ $ /flow-guidelines
 ### 1. 新项目场景
 
 ```bash
-$ /flow-guidelines
+$ /core-guidelines
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🚀 NEW PROJECT SETUP
@@ -270,7 +270,7 @@ Generating...
 ### 2. 现有项目场景
 
 ```bash
-$ /flow-guidelines
+$ /core-guidelines
 
 Detected Frontend:
   ✓ React 18.2.0
@@ -355,13 +355,13 @@ server/routes/post.go
 
 ```bash
 # 技术栈更新后重新生成
-/flow-guidelines --force
+/core-guidelines --force
 
 # 只更新前端
-/flow-guidelines --frontend --force
+/core-guidelines --frontend --force
 
 # 只更新后端
-/flow-guidelines --backend --force
+/core-guidelines --backend --force
 ```
 
 ### 手动定制
@@ -418,22 +418,22 @@ A: 系统会尽力适配。如果 Context7 没有你的库，会使用通用模�
 
 A: 你可以：
 1. 编辑 resources/ 文件添加项目特定模式
-2. 重新运行 `/flow-guidelines --force` 尝试重新生成
+2. 重新运行 `/core-guidelines --force` 尝试重新生成
 3. 手动调整 SKILL.md 和 resources/ 的内容
 
 ### Q: 如何只生成前端或后端？
 
 A: 使用 `--frontend` 或 `--backend` 参数：
 ```bash
-/flow-guidelines --frontend
-/flow-guidelines --backend
+/core-guidelines --frontend
+/core-guidelines --backend
 ```
 
 ### Q: 生成的技能会覆盖现有技能吗？
 
 A: 默认不会。使用 `--force` 参数强制覆盖：
 ```bash
-/flow-guidelines --force
+/core-guidelines --force
 ```
 
 ### Q: 技能没有激活怎么办？
@@ -455,7 +455,7 @@ A: 检查：
 ## 相关文档
 
 - [参考实现 README](./../skills/_reference-implementations/README.md)
-- [flow-guidelines 命令文档](./../commands/flow-guidelines.md)
+- [core-guidelines 命令文档](./../commands/core-guidelines.md)
 - [project-guidelines-generator Agent](./../agents/project-guidelines-generator.md)
 
 ---

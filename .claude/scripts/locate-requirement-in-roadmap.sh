@@ -185,7 +185,7 @@ main() {
     if [[ ! -f "$roadmap_file" ]]; then
         echo "⚠️  ROADMAP.md not found at: $roadmap_file" >&2
         echo "" >&2
-        echo "Please run /flow-roadmap to create a roadmap first." >&2
+        echo "Please run /core-roadmap to create a roadmap first." >&2
         exit 1
     fi
 
@@ -201,7 +201,7 @@ main() {
         echo "  - Created before the roadmap was established" >&2
         echo "" >&2
         echo "You can:" >&2
-        echo "  1. Run /flow-roadmap to regenerate the roadmap" >&2
+        echo "  1. Run /core-roadmap to regenerate the roadmap" >&2
         echo "  2. Manually add this requirement to ROADMAP.md" >&2
         exit 1
     fi

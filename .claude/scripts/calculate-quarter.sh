@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Calculate current quarter and planning horizon for roadmap planning
-# Returns quarter info in KEY=VALUE format for use in flow-roadmap command
+# Returns quarter info in KEY=VALUE format for use in core-roadmap command
 # Usage: ./calculate-quarter.sh
 
 set -euo pipefail

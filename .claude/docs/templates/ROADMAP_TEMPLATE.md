@@ -11,7 +11,7 @@
 - devflow/requirements/ 已有需求分析
 - 用户愿景声明
 
-**Prerequisites**: flow-roadmap 命令已完成 6 阶段对话，收集完整上下文
+**Prerequisites**: core-roadmap 命令已完成 6 阶段对话，收集完整上下文
 
 ## Execution Flow (Roadmap 生成流程)
 ```

@@ -999,7 +999,7 @@ function generateKeywords({ target_skill, tech_stack, archData }) {
     "recommendations": [
         "Try editing src/components/App.tsx - skill should activate",
         "Customize resources/ with project-specific patterns",
-        "Run /flow-guidelines --force to regenerate if tech stack changes"
+        "Run /core-guidelines --force to regenerate if tech stack changes"
     ]
 }
 ```
@@ -1142,7 +1142,7 @@ async function detectOutdatedArchitecture(archData, project_root) {
         warnings.push({
             type: 'missing_in_architecture',
             message: `Directories exist but not in ARCHITECTURE.md: ${missingInArch.join(', ')}`,
-            recommendation: 'Run /flow-architecture to update ARCHITECTURE.md'
+            recommendation: 'Run /core-architecture to update ARCHITECTURE.md'
         });
     }
 

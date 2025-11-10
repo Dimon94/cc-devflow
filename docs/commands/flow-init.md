@@ -129,6 +129,6 @@ Stage 3: Git branch creation
 
 ## 🔗 Related Commands
 
-- [`/flow-roadmap`](./flow-roadmap.md) - Generate roadmap first
-- [`/flow-architecture`](./flow-architecture.md) - Generate architecture first
+- [`/core-roadmap`](./core-roadmap.md) - Generate roadmap first
+- [`/core-architecture`](./core-architecture.md) - Generate architecture first
 - [`/flow-new`](./flow-new.md) - Complete development flow

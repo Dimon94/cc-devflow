@@ -74,7 +74,7 @@ $ARGUMENTS = "REQ_ID|TITLE"
    → Run: ls devflow/ROADMAP.md 2>/dev/null
    → If not found:
       INFO "No roadmap found. This is a standalone requirement."
-      "Run /flow-roadmap to create a project roadmap first (optional)."
+      "Run /core-roadmap to create a project roadmap first (optional)."
       → Skip to Stage 2
 
 2. Locate requirement in roadmap
@@ -117,7 +117,7 @@ $ARGUMENTS = "REQ_ID|TITLE"
 
    You can:
      1. Continue initialization (this is OK for ad-hoc requirements)
-     2. Run /flow-roadmap to regenerate the roadmap
+     2. Run /core-roadmap to regenerate the roadmap
      3. Manually add this requirement to ROADMAP.md later
 
    Continue? (yes/no)
@@ -129,7 +129,7 @@ $ARGUMENTS = "REQ_ID|TITLE"
    → Run: ls devflow/ARCHITECTURE.md 2>/dev/null
    → If not found:
       INFO "No architecture document found."
-      "Run /flow-architecture to generate architecture diagrams (optional)."
+      "Run /core-architecture to generate architecture diagrams (optional)."
       → Skip to Stage 2
 
 5. Load architecture context

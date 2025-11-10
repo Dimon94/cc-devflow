@@ -1,4 +1,4 @@
-# `/flow-roadmap` - 生成产品路线图
+# `/core-roadmap` - 生成产品路线图
 
 ## 📋 概述
 
@@ -7,7 +7,7 @@
 ## 🎯 语法
 
 ```bash
-/flow-roadmap
+/core-roadmap
 ```
 
 ## 🎬 使用场景
@@ -91,7 +91,7 @@ User: 目标用户是开发团队的 Tech Lead 和高级工程师。
 
 ## 🔗 相关命令
 
-- [`/flow-architecture`](./flow-architecture.md) - 基于路线图生成架构
+- [`/core-architecture`](./core-architecture.md) - 基于路线图生成架构
 - [`/flow-init`](./flow-init.md) - 基于路线图初始化需求
 - `.claude/scripts/sync-roadmap-progress.sh` - 同步进度到路线图
 

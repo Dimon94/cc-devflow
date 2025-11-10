@@ -14,9 +14,9 @@
 
 | 命令 | 用途 | 快速示例 |
 |------|------|----------|
-| `/flow-roadmap` | 🗺️ 生成产品路线图 | `/flow-roadmap` → [详细文档](./flow-roadmap.md) |
-| `/flow-architecture` | 🏛️ 生成系统架构 | `/flow-architecture` → [详细文档](./flow-architecture.md) |
-| `/flow-guidelines` | 📘 生成项目规范 | `/flow-guidelines` → [详细文档](./flow-guidelines.md) |
+| `/core-roadmap` | 🗺️ 生成产品路线图 | `/core-roadmap` → [详细文档](./core-roadmap.md) |
+| `/core-architecture` | 🏛️ 生成系统架构 | `/core-architecture` → [详细文档](./core-architecture.md) |
+| `/core-guidelines` | 📘 生成项目规范 | `/core-guidelines` → [详细文档](./core-guidelines.md) |
 
 ## 🧪 质量保证命令
 
@@ -38,8 +38,8 @@
 ```
 你的场景：
 ├─ 启动全新功能？ → /flow-new "REQ-123|功能"
-├─ 规划产品方向？ → /flow-roadmap
-├─ 设计系统架构？ → /flow-architecture
+├─ 规划产品方向？ → /core-roadmap
+├─ 设计系统架构？ → /core-architecture
 ├─ 开发中断继续？ → /flow-restart "REQ-123"
 ├─ 检查开发进度？ → /flow-status REQ-123
 ├─ 发现文档冲突？ → /flow-verify "REQ-123"

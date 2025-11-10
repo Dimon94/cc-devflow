@@ -18,9 +18,9 @@
 
 | Command | Purpose | Quick Example | Detailed Docs |
 |---------|---------|---------------|---------------|
-| `/flow-roadmap` | 🗺️ Generate Product Roadmap | `/flow-roadmap` | [→](./flow-roadmap.md) |
-| `/flow-architecture` | 🏛️ Generate System Architecture | `/flow-architecture` | [→](./flow-architecture.md) |
-| `/flow-guidelines` | 📘 Generate Project Guidelines | `/flow-guidelines` | [→](./flow-guidelines.md) |
+| `/core-roadmap` | 🗺️ Generate Product Roadmap | `/core-roadmap` | [→](./core-roadmap.md) |
+| `/core-architecture` | 🏛️ Generate System Architecture | `/core-architecture` | [→](./core-architecture.md) |
+| `/core-guidelines` | 📘 Generate Project Guidelines | `/core-guidelines` | [→](./core-guidelines.md) |
 
 ## 🧪 Quality Assurance Commands
 
@@ -42,8 +42,8 @@
 ```
 Your Scenario:
 ├─ Start brand new feature? → /flow-new "REQ-123|Feature"
-├─ Plan product direction? → /flow-roadmap
-├─ Design system architecture? → /flow-architecture
+├─ Plan product direction? → /core-roadmap
+├─ Design system architecture? → /core-architecture
 ├─ Continue interrupted development? → /flow-restart "REQ-123"
 ├─ Check development progress? → /flow-status REQ-123
 ├─ Found document conflicts? → /flow-verify "REQ-123"

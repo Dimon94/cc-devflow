@@ -31,13 +31,13 @@
 
 ```bash
 # 生成前端指南
-/flow-guidelines --frontend
+/core-guidelines --frontend
 
 # 生成后端指南
-/flow-guidelines --backend
+/core-guidelines --backend
 
 # 自动检测并生成（可能生成 1 或 2 个）
-/flow-guidelines
+/core-guidelines
 ```
 
 ## 技术栈映射

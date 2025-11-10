@@ -135,8 +135,8 @@ devflow/requirements/REQ-123/
 ## 🔗 相关命令
 
 - [`/flow-new`](./flow-new.md) - 完整开发流程
-- [`/flow-roadmap`](./flow-roadmap.md) - 先生成路线图
-- [`/flow-architecture`](./flow-architecture.md) - 先生成架构
+- [`/core-roadmap`](./core-roadmap.md) - 先生成路线图
+- [`/core-architecture`](./core-architecture.md) - 先生成架构
 - [`/flow-status`](./flow-status.md) - 查看进度
 
 ## 🚨 常见问题
@@ -146,7 +146,7 @@ devflow/requirements/REQ-123/
 **A**: 检查以下条件：
 1. `devflow/ROADMAP.md` 文件是否存在
 2. ROADMAP.md 中是否有对应的 RM-ID 映射
-3. 使用 `/flow-roadmap` 先生成路线图
+3. 使用 `/core-roadmap` 先生成路线图
 
 ### Q: 如何手动定位需求到路线图？
 

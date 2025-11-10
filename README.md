@@ -183,9 +183,9 @@ bash .claude/tests/constitution/run_all_constitution_tests.sh
 
 | Command | Purpose | Quick Example | Detailed Docs |
 |---------|---------|---------------|---------------|
-| `/flow-roadmap` | 🗺️ Generate Product Roadmap | `/flow-roadmap` | [→](docs/commands/flow-roadmap.md) |
-| `/flow-architecture` | 🏗️ Generate System Architecture | `/flow-architecture` | [→](docs/commands/flow-architecture.md) |
-| `/flow-guidelines` | 📘 Generate Project Guidelines | `/flow-guidelines` | [→](docs/commands/flow-guidelines.md) |
+| `/core-roadmap` | 🗺️ Generate Product Roadmap | `/core-roadmap` | [→](docs/commands/core-roadmap.md) |
+| `/core-architecture` | 🏗️ Generate System Architecture | `/core-architecture` | [→](docs/commands/core-architecture.md) |
+| `/core-guidelines` | 📘 Generate Project Guidelines | `/core-guidelines` | [→](docs/commands/core-guidelines.md) |
 
 ### 📦 Requirement-Level Commands
 
@@ -206,9 +206,9 @@ bash .claude/tests/constitution/run_all_constitution_tests.sh
 
 ```
 Your Scenario:
-├─ Plan product direction? → /flow-roadmap
-├─ Design system architecture? → /flow-architecture
-├─ Establish coding standards? → /flow-guidelines
+├─ Plan product direction? → /core-roadmap
+├─ Design system architecture? → /core-architecture
+├─ Establish coding standards? → /core-guidelines
 ├─ Start brand new feature development? → /flow-new "REQ-123|Feature|URLs"
 ├─ Only create requirement directory? → /flow-init "REQ-123|Feature"
 ├─ Continue interrupted development? → /flow-restart "REQ-123"
@@ -361,9 +361,9 @@ bash .claude/tests/run-all-tests.sh --scripts
 v2.1.0's core breakthrough is the introduction of **Project-Level Commands**, forming a two-tier system with previous **Requirement-Level Commands**:
 
 - **Project-Level Commands** - Project-wide planning and architecture design (executed once per project at the beginning)
-  - `/flow-roadmap` - Interactive product roadmap generation (6-stage dialogue)
-  - `/flow-architecture` - 4 architecture diagram generation (Mermaid format)
-  - `/flow-guidelines` - Project guidelines generation (frontend/backend separation)
+  - `/core-roadmap` - Interactive product roadmap generation (6-stage dialogue)
+  - `/core-architecture` - 4 architecture diagram generation (Mermaid format)
+  - `/core-guidelines` - Project guidelines generation (frontend/backend separation)
 
 - **Requirement-Level Commands Enhancement** - Stage 1.5 Roadmap & Architecture context loading (flow-init)
   - Automatically load project-level context when initializing requirements
