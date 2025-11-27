@@ -230,38 +230,38 @@ bash .claude/tests/constitution/run_all_constitution_tests.sh
 
 ```mermaid
 graph TB
-    Start([项目启动]) --> ProjectLevel{项目级<br/>初始化}
+    Start([项目启动]) --> ProjectLevel{项目级初始化}
     
-    ProjectLevel --> CoreRoadmap[/core-roadmap<br/>ROADMAP.md + BACKLOG.md]
-    ProjectLevel --> CoreArch[/core-architecture<br/>ARCHITECTURE.md]
-    ProjectLevel --> CoreGuidelines[/core-guidelines<br/>前端/后端规范]
-    ProjectLevel --> CoreStyle[/core-style<br/>STYLE.md]
+    ProjectLevel --> CoreRoadmap["/core-roadmap<br/>ROADMAP.md & BACKLOG.md"]
+    ProjectLevel --> CoreArch["/core-architecture<br/>ARCHITECTURE.md"]
+    ProjectLevel --> CoreGuidelines["/core-guidelines<br/>前端/后端规范"]
+    ProjectLevel --> CoreStyle["/core-style<br/>STYLE.md"]
     
     CoreRoadmap --> ReqLevel
     CoreArch --> ReqLevel
     CoreGuidelines --> ReqLevel
     CoreStyle --> ReqLevel
     
-    ReqLevel([需求级<br/>开发流程]) --> FlowInit[/flow-init<br/>research.md + tasks.json]
+    ReqLevel([需求级开发流程]) --> FlowInit["/flow-init<br/>research.md & tasks.json"]
     
-    FlowInit --> FlowPRD[/flow-prd<br/>PRD.md]
-    FlowPRD --> FlowTech[/flow-tech<br/>TECH_DESIGN.md + 数据模型]
-    FlowPRD --> FlowUI[/flow-ui<br/>UI_PROTOTYPE.html<br/>可选]
+    FlowInit --> FlowPRD["/flow-prd<br/>PRD.md"]
+    FlowPRD --> FlowTech["/flow-tech<br/>TECH_DESIGN.md & 数据模型"]
+    FlowPRD --> FlowUI["/flow-ui<br/>UI_PROTOTYPE.html<br/>可选"]
     
-    FlowTech --> FlowEpic[/flow-epic<br/>EPIC.md + TASKS.md]
+    FlowTech --> FlowEpic["/flow-epic<br/>EPIC.md & TASKS.md"]
     FlowUI --> FlowEpic
     
-    FlowEpic --> FlowDev[/flow-dev<br/>TASKS.md 执行<br/>TDD 强制]
+    FlowEpic --> FlowDev["/flow-dev<br/>TASKS.md 执行<br/>TDD 强制"]
     
-    FlowDev --> FlowQA[/flow-qa<br/>QA 报告 + 安全审查]
+    FlowDev --> FlowQA["/flow-qa<br/>QA 报告 & 安全审查"]
     
-    FlowQA --> FlowRelease[/flow-release<br/>PR 创建 + 部署]
+    FlowQA --> FlowRelease["/flow-release<br/>PR 创建 & 部署"]
     
-    FlowRelease --> FlowVerify[/flow-verify<br/>一致性检查]
+    FlowRelease --> FlowVerify["/flow-verify<br/>一致性检查"]
     
     FlowVerify --> End([发布完成])
     
-    FlowVerify -.->|可在任意阶段<br/>调用| ReqLevel
+    FlowVerify -.->|可在任意阶段调用| ReqLevel
     
     style ProjectLevel fill:#e1f5ff
     style ReqLevel fill:#fff4e1

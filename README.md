@@ -228,38 +228,38 @@ The following Mermaid diagram illustrates the complete cc-devflow workflow, incl
 
 ```mermaid
 graph TB
-    Start([Start Project]) --> ProjectLevel{Project-Level<br/>Setup}
+    Start([Start Project]) --> ProjectLevel{Project-Level Setup}
     
-    ProjectLevel --> CoreRoadmap[/core-roadmap<br/>ROADMAP.md + BACKLOG.md]
-    ProjectLevel --> CoreArch[/core-architecture<br/>ARCHITECTURE.md]
-    ProjectLevel --> CoreGuidelines[/core-guidelines<br/>frontend/backend guidelines]
-    ProjectLevel --> CoreStyle[/core-style<br/>STYLE.md]
+    ProjectLevel --> CoreRoadmap["/core-roadmap<br/>ROADMAP.md & BACKLOG.md"]
+    ProjectLevel --> CoreArch["/core-architecture<br/>ARCHITECTURE.md"]
+    ProjectLevel --> CoreGuidelines["/core-guidelines<br/>frontend/backend guidelines"]
+    ProjectLevel --> CoreStyle["/core-style<br/>STYLE.md"]
     
     CoreRoadmap --> ReqLevel
     CoreArch --> ReqLevel
     CoreGuidelines --> ReqLevel
     CoreStyle --> ReqLevel
     
-    ReqLevel([Requirement-Level<br/>Development]) --> FlowInit[/flow-init<br/>research.md + tasks.json]
+    ReqLevel([Requirement-Level Development]) --> FlowInit["/flow-init<br/>research.md & tasks.json"]
     
-    FlowInit --> FlowPRD[/flow-prd<br/>PRD.md]
-    FlowPRD --> FlowTech[/flow-tech<br/>TECH_DESIGN.md + data-model]
-    FlowPRD --> FlowUI[/flow-ui<br/>UI_PROTOTYPE.html<br/>Optional]
+    FlowInit --> FlowPRD["/flow-prd<br/>PRD.md"]
+    FlowPRD --> FlowTech["/flow-tech<br/>TECH_DESIGN.md & data-model"]
+    FlowPRD --> FlowUI["/flow-ui<br/>UI_PROTOTYPE.html<br/>Optional"]
     
-    FlowTech --> FlowEpic[/flow-epic<br/>EPIC.md + TASKS.md]
+    FlowTech --> FlowEpic["/flow-epic<br/>EPIC.md & TASKS.md"]
     FlowUI --> FlowEpic
     
-    FlowEpic --> FlowDev[/flow-dev<br/>TASKS.md execution<br/>TDD enforced]
+    FlowEpic --> FlowDev["/flow-dev<br/>TASKS.md execution<br/>TDD enforced"]
     
-    FlowDev --> FlowQA[/flow-qa<br/>QA reports + Security]
+    FlowDev --> FlowQA["/flow-qa<br/>QA reports & Security"]
     
-    FlowQA --> FlowRelease[/flow-release<br/>PR creation + Deployment]
+    FlowQA --> FlowRelease["/flow-release<br/>PR creation & Deployment"]
     
-    FlowRelease --> FlowVerify[/flow-verify<br/>Consistency check]
+    FlowRelease --> FlowVerify["/flow-verify<br/>Consistency check"]
     
     FlowVerify --> End([Release Complete])
     
-    FlowVerify -.->|Can be called<br/>at any stage| ReqLevel
+    FlowVerify -.->|Can be called at any stage| ReqLevel
     
     style ProjectLevel fill:#e1f5ff
     style ReqLevel fill:#fff4e1
