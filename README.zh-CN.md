@@ -224,6 +224,68 @@ bash .claude/tests/constitution/run_all_constitution_tests.sh
 
 ---
 
+## 🔄 工作流程图
+
+以下 Mermaid 流程图展示了完整的 cc-devflow 工作流，包括项目级和需求级两个层面的流程：
+
+```mermaid
+graph TB
+    Start([项目启动]) --> ProjectLevel{项目级<br/>初始化}
+    
+    ProjectLevel --> CoreRoadmap[/core-roadmap<br/>ROADMAP.md + BACKLOG.md]
+    ProjectLevel --> CoreArch[/core-architecture<br/>ARCHITECTURE.md]
+    ProjectLevel --> CoreGuidelines[/core-guidelines<br/>前端/后端规范]
+    ProjectLevel --> CoreStyle[/core-style<br/>STYLE.md]
+    
+    CoreRoadmap --> ReqLevel
+    CoreArch --> ReqLevel
+    CoreGuidelines --> ReqLevel
+    CoreStyle --> ReqLevel
+    
+    ReqLevel([需求级<br/>开发流程]) --> FlowInit[/flow-init<br/>research.md + tasks.json]
+    
+    FlowInit --> FlowPRD[/flow-prd<br/>PRD.md]
+    FlowPRD --> FlowTech[/flow-tech<br/>TECH_DESIGN.md + 数据模型]
+    FlowPRD --> FlowUI[/flow-ui<br/>UI_PROTOTYPE.html<br/>可选]
+    
+    FlowTech --> FlowEpic[/flow-epic<br/>EPIC.md + TASKS.md]
+    FlowUI --> FlowEpic
+    
+    FlowEpic --> FlowDev[/flow-dev<br/>TASKS.md 执行<br/>TDD 强制]
+    
+    FlowDev --> FlowQA[/flow-qa<br/>QA 报告 + 安全审查]
+    
+    FlowQA --> FlowRelease[/flow-release<br/>PR 创建 + 部署]
+    
+    FlowRelease --> FlowVerify[/flow-verify<br/>一致性检查]
+    
+    FlowVerify --> End([发布完成])
+    
+    FlowVerify -.->|可在任意阶段<br/>调用| ReqLevel
+    
+    style ProjectLevel fill:#e1f5ff
+    style ReqLevel fill:#fff4e1
+    style FlowInit fill:#e8f5e9
+    style FlowPRD fill:#e8f5e9
+    style FlowTech fill:#e8f5e9
+    style FlowUI fill:#fff9c4
+    style FlowEpic fill:#e8f5e9
+    style FlowDev fill:#f3e5f5
+    style FlowQA fill:#fce4ec
+    style FlowRelease fill:#e0f2f1
+    style FlowVerify fill:#e3f2fd
+```
+
+**流程说明**:
+- **项目级命令**（浅蓝色）：项目初始化时执行一次，建立全局标准（SSOT）
+- **需求级命令**（浅橙色）：每个需求（REQ-XXX）执行一次
+- **可选步骤**（黄色）：`/flow-ui` 为可选步骤，可与 `/flow-tech` 并行执行
+- **质量闸门**：每个阶段都有入口/出口闸门，确保文档质量和 Constitution 合规性
+- **TDD 强制执行**：`/flow-dev` 严格强制执行测试驱动开发顺序
+- **一致性检查**：`/flow-verify` 可在任意阶段调用，确保文档一致性
+
+---
+
 ## 🏗️ 系统架构
 
 **执行模型**: 研究型代理（11个，只读）+ 主代理（执行）

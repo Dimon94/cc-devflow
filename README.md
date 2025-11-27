@@ -222,6 +222,68 @@ Your Scenario:
 
 ---
 
+## 🔄 Workflow Diagram
+
+The following Mermaid diagram illustrates the complete cc-devflow workflow, including both project-level and requirement-level processes:
+
+```mermaid
+graph TB
+    Start([Start Project]) --> ProjectLevel{Project-Level<br/>Setup}
+    
+    ProjectLevel --> CoreRoadmap[/core-roadmap<br/>ROADMAP.md + BACKLOG.md]
+    ProjectLevel --> CoreArch[/core-architecture<br/>ARCHITECTURE.md]
+    ProjectLevel --> CoreGuidelines[/core-guidelines<br/>frontend/backend guidelines]
+    ProjectLevel --> CoreStyle[/core-style<br/>STYLE.md]
+    
+    CoreRoadmap --> ReqLevel
+    CoreArch --> ReqLevel
+    CoreGuidelines --> ReqLevel
+    CoreStyle --> ReqLevel
+    
+    ReqLevel([Requirement-Level<br/>Development]) --> FlowInit[/flow-init<br/>research.md + tasks.json]
+    
+    FlowInit --> FlowPRD[/flow-prd<br/>PRD.md]
+    FlowPRD --> FlowTech[/flow-tech<br/>TECH_DESIGN.md + data-model]
+    FlowPRD --> FlowUI[/flow-ui<br/>UI_PROTOTYPE.html<br/>Optional]
+    
+    FlowTech --> FlowEpic[/flow-epic<br/>EPIC.md + TASKS.md]
+    FlowUI --> FlowEpic
+    
+    FlowEpic --> FlowDev[/flow-dev<br/>TASKS.md execution<br/>TDD enforced]
+    
+    FlowDev --> FlowQA[/flow-qa<br/>QA reports + Security]
+    
+    FlowQA --> FlowRelease[/flow-release<br/>PR creation + Deployment]
+    
+    FlowRelease --> FlowVerify[/flow-verify<br/>Consistency check]
+    
+    FlowVerify --> End([Release Complete])
+    
+    FlowVerify -.->|Can be called<br/>at any stage| ReqLevel
+    
+    style ProjectLevel fill:#e1f5ff
+    style ReqLevel fill:#fff4e1
+    style FlowInit fill:#e8f5e9
+    style FlowPRD fill:#e8f5e9
+    style FlowTech fill:#e8f5e9
+    style FlowUI fill:#fff9c4
+    style FlowEpic fill:#e8f5e9
+    style FlowDev fill:#f3e5f5
+    style FlowQA fill:#fce4ec
+    style FlowRelease fill:#e0f2f1
+    style FlowVerify fill:#e3f2fd
+```
+
+**Workflow Notes**:
+- **Project-Level Commands** (light blue): Execute once at project initialization, establish global standards (SSOT)
+- **Requirement-Level Commands** (light orange): Execute once per requirement (REQ-XXX)
+- **Optional Steps** (yellow): `/flow-ui` is optional and can run in parallel with `/flow-tech`
+- **Quality Gates**: Each stage has entry/exit gates ensuring document quality and Constitution compliance
+- **TDD Enforcement**: `/flow-dev` strictly enforces Test-Driven Development order
+- **Consistency Check**: `/flow-verify` can be called at any stage to ensure document consistency
+
+---
+
 ## 🏗️ System Architecture
 
 **Execution Model**: Research Agents (11, read-only) + Main Agent (execution)
