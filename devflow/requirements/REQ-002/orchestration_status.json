@@ -1,0 +1,19 @@
+{
+  "reqId": "REQ-002",
+  "title": "flow-checklist 需求质量检查命令",
+  "status": "initialized",
+  "phase": "planning",
+  "phase0_complete": true,
+  "roadmapItem": "RM-002",
+  "milestone": "M2 (Quality Gates)",
+  "quarter": "Q1-2026",
+  "dependencies": ["RM-001"],
+  "createdAt": "2025-12-15T21:52:17+08:00",
+  "updatedAt": "2025-12-15T21:55:00+08:00",
+  "research": {
+    "internalComplete": true,
+    "externalComplete": true,
+    "decisionsCount": 5,
+    "sourcesCount": 10
+  }
+}
