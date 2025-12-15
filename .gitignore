@@ -1,6 +1,5 @@
 # CC-DevFlow 工作目录
 # 所有需求开发的输出文件都在这个目录中
-devflow/
 
 # Node modules
 node_modules/
