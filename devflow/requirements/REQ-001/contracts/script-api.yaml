@@ -1,0 +1,368 @@
+# Script API Contracts: REQ-001 - /flow-clarify
+# Version: 1.0.0
+# Format: Custom YAML (not OpenAPI - CLI tool, not HTTP service)
+
+---
+metadata:
+  title: "/flow-clarify Script API Contracts"
+  version: "1.0.0"
+  description: "Internal script APIs for clarification workflow"
+  created: "2025-12-15"
+
+---
+# ============================================================================
+# run-clarify-scan.sh
+# ============================================================================
+scripts:
+  - name: "run-clarify-scan.sh"
+    purpose: "Execute parallel 11-dimension ambiguity scanning"
+    location: ".claude/scripts/"
+
+    input:
+      positional:
+        - name: "REQ_ID"
+          type: "string"
+          required: true
+          pattern: "^REQ-\\d{3}$"
+          example: "REQ-001"
+
+      flags:
+        - name: "--parallel"
+          type: "boolean"
+          default: true
+          description: "Run dimension scans in parallel"
+
+        - name: "--timeout"
+          type: "integer"
+          default: 20
+          unit: "seconds"
+          description: "Per-dimension timeout"
+
+        - name: "--dimension"
+          type: "string"
+          default: "all"
+          pattern: "^(all|[1-9]|1[01])$"
+          description: "Specific dimension to scan (1-11) or all"
+
+    output:
+      format: "JSON"
+      schema:
+        type: "object"
+        required: ["sessionId", "scanDurationMs", "dimensions"]
+        properties:
+          sessionId:
+            type: "string"
+            pattern: "^\\d{8}-\\d{6}-REQ-\\d{3}$"
+          scanDurationMs:
+            type: "integer"
+            minimum: 0
+          dimensions:
+            type: "array"
+            items:
+              $ref: "#/definitions/DimensionScanResult"
+            minItems: 11
+            maxItems: 11
+
+    exit_codes:
+      - code: 0
+        meaning: "All dimensions scanned successfully"
+      - code: 1
+        meaning: "Partial success (some dimensions timeout/skipped)"
+      - code: 2
+        meaning: "Fatal error (API unavailable, invalid input)"
+
+    examples:
+      - description: "Scan all dimensions with defaults"
+        command: "run-clarify-scan.sh REQ-001"
+
+      - description: "Scan single dimension"
+        command: "run-clarify-scan.sh REQ-001 --dimension 1"
+
+      - description: "Increase timeout for slow network"
+        command: "run-clarify-scan.sh REQ-001 --timeout 30"
+
+---
+# ============================================================================
+# generate-clarification-questions.sh
+# ============================================================================
+  - name: "generate-clarification-questions.sh"
+    purpose: "Generate prioritized clarification questions from scan results"
+    location: ".claude/scripts/"
+
+    input:
+      flags:
+        - name: "--input"
+          type: "string"
+          required: true
+          description: "Path to scan_result.json"
+
+        - name: "--max"
+          type: "integer"
+          default: 5
+          minimum: 1
+          maximum: 5
+          description: "Maximum number of questions to generate"
+
+    output:
+      format: "JSON"
+      schema:
+        type: "object"
+        required: ["questions"]
+        properties:
+          questions:
+            type: "array"
+            items:
+              $ref: "#/definitions/ClarificationQuestion"
+            maxItems: 5
+
+    exit_codes:
+      - code: 0
+        meaning: "Questions generated successfully"
+      - code: 1
+        meaning: "No high-priority issues found"
+      - code: 2
+        meaning: "Invalid input file"
+
+    examples:
+      - description: "Generate up to 5 questions"
+        command: "generate-clarification-questions.sh --input scan_result.json --max 5"
+
+      - description: "Generate only 3 questions"
+        command: "generate-clarification-questions.sh --input scan_result.json --max 3"
+
+---
+# ============================================================================
+# generate-clarification-report.sh
+# ============================================================================
+  - name: "generate-clarification-report.sh"
+    purpose: "Generate Markdown clarification report from session data"
+    location: ".claude/scripts/"
+
+    input:
+      flags:
+        - name: "--session"
+          type: "string"
+          required: true
+          description: "Path to .session.json"
+
+        - name: "--output"
+          type: "string"
+          default: "research/clarifications/"
+          description: "Output directory for report"
+
+    output:
+      format: "Markdown file"
+      filename_pattern: "[timestamp]-flow-clarify.md"
+      sections:
+        - "Metadata (date, duration, question count)"
+        - "Scan Summary (11 dimensions table)"
+        - "Clarification Session (Q&A details)"
+        - "Coverage Summary"
+        - "Next Command"
+
+    exit_codes:
+      - code: 0
+        meaning: "Report generated successfully"
+      - code: 1
+        meaning: "Invalid session file"
+      - code: 2
+        meaning: "Write permission denied"
+
+    examples:
+      - description: "Generate report with default output"
+        command: "generate-clarification-report.sh --session .session.json"
+
+      - description: "Specify custom output directory"
+        command: "generate-clarification-report.sh --session .session.json --output /tmp/reports/"
+
+---
+# ============================================================================
+# integrate-clarifications.sh (P2 Feature)
+# ============================================================================
+  - name: "integrate-clarifications.sh"
+    purpose: "Integrate clarification conclusions into research.md"
+    location: ".claude/scripts/"
+    priority: "P2"
+
+    input:
+      flags:
+        - name: "--report"
+          type: "string"
+          required: true
+          description: "Path to clarification report"
+
+        - name: "--target"
+          type: "string"
+          default: "research/research.md"
+          description: "Target research.md file"
+
+        - name: "--dry-run"
+          type: "boolean"
+          default: false
+          description: "Preview changes without writing"
+
+        - name: "--force"
+          type: "boolean"
+          default: false
+          description: "Overwrite conflicts"
+
+    output:
+      format: "Modified Markdown file"
+      side_effects:
+        - "Creates research.md.backup before modification"
+        - "Updates ## Decisions section with new entries"
+
+    exit_codes:
+      - code: 0
+        meaning: "Integration successful"
+      - code: 1
+        meaning: "Conflict detected (use --force to override)"
+      - code: 2
+        meaning: "Invalid report or target file"
+
+    examples:
+      - description: "Integrate with automatic backup"
+        command: "integrate-clarifications.sh --report clarifications/20251215.md --target research.md"
+
+      - description: "Preview changes"
+        command: "integrate-clarifications.sh --report clarifications/20251215.md --dry-run"
+
+---
+# ============================================================================
+# Type Definitions
+# ============================================================================
+definitions:
+  DimensionScanResult:
+    type: "object"
+    required: ["dimensionId", "name", "status", "scanTimeMs"]
+    properties:
+      dimensionId:
+        type: "integer"
+        minimum: 1
+        maximum: 11
+      name:
+        type: "string"
+        enum:
+          - "Functional Scope"
+          - "Data Model"
+          - "UX Flow"
+          - "Non-Functional Quality"
+          - "Integration & Dependencies"
+          - "Edge Cases"
+          - "Constraints & Tradeoffs"
+          - "Terminology"
+          - "Completion Signals"
+          - "Misc & Placeholders"
+          - "Security & Privacy"
+      status:
+        type: "string"
+        enum: ["clear", "ambiguous", "timeout", "skipped"]
+      issues:
+        type: "array"
+        items:
+          $ref: "#/definitions/AmbiguityIssue"
+      scanTimeMs:
+        type: "integer"
+        minimum: 0
+
+  AmbiguityIssue:
+    type: "object"
+    required: ["issueId", "description", "impact", "uncertainty"]
+    properties:
+      issueId:
+        type: "string"
+        pattern: "^dim-\\d{1,2}-issue-\\d+$"
+      description:
+        type: "string"
+      impact:
+        type: "integer"
+        minimum: 1
+        maximum: 10
+      uncertainty:
+        type: "integer"
+        minimum: 1
+        maximum: 10
+      priority:
+        type: "integer"
+        description: "Computed: impact × uncertainty"
+      sourceLineRef:
+        type: "string"
+        pattern: "^research\\.md:L\\d+$"
+
+  ClarificationQuestion:
+    type: "object"
+    required: ["questionId", "dimensionId", "text", "type"]
+    properties:
+      questionId:
+        type: "string"
+        pattern: "^Q[1-5]$"
+      dimensionId:
+        type: "integer"
+        minimum: 1
+        maximum: 11
+      text:
+        type: "string"
+      type:
+        type: "string"
+        enum: ["multiple_choice", "short_answer"]
+      options:
+        type: "array"
+        items:
+          $ref: "#/definitions/QuestionOption"
+      recommendedOption:
+        type: "string"
+        pattern: "^[A-E]$"
+      recommendedRationale:
+        type: "string"
+      answer:
+        type: "string"
+      answeredAt:
+        type: "string"
+        format: "date-time"
+      rationale:
+        type: "string"
+
+  QuestionOption:
+    type: "object"
+    required: ["optionId", "text"]
+    properties:
+      optionId:
+        type: "string"
+        pattern: "^[A-E]$"
+      text:
+        type: "string"
+      description:
+        type: "string"
+
+---
+# ============================================================================
+# Error Codes Reference
+# ============================================================================
+error_codes:
+  MISSING_RESEARCH:
+    http_equiv: 400
+    message: "research.md not found. Run /flow-init first."
+
+  INVALID_PHASE:
+    http_equiv: 400
+    message: "phase0_complete is not true. Complete research phase first."
+
+  SCAN_TIMEOUT:
+    http_equiv: 408
+    message: "Dimension scan timed out after {timeout} seconds."
+
+  API_ERROR:
+    http_equiv: 502
+    message: "Claude API error: {error_message}"
+
+  VALIDATION_ERROR:
+    http_equiv: 400
+    message: "Invalid answer: {validation_issue}"
+
+  SESSION_CORRUPT:
+    http_equiv: 500
+    message: ".session.json is corrupted or invalid."
+
+  PERMISSION_DENIED:
+    http_equiv: 403
+    message: "Cannot write to {path}. Check permissions."

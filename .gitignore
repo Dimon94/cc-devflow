@@ -28,3 +28,4 @@ tmp/
 .env
 .env.local
 .env.*.local
+spec-kit/
