@@ -1,9 +1,10 @@
 {
   "reqId": "REQ-001",
   "title": "/flow-clarify 需求澄清命令",
-  "status": "release_complete",
-  "phase": "released",
+  "status": "merged",
+  "phase": "complete",
   "prUrl": "https://github.com/Dimon94/cc-devflow/pull/4",
+  "mergedAt": "2025-12-15T16:55:00+08:00",
   "phase0_complete": true,
   "phase1_complete": true,
   "prd_complete": true,
