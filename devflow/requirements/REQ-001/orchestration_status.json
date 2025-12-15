@@ -1,8 +1,8 @@
 {
   "reqId": "REQ-001",
   "title": "/flow-clarify 需求澄清命令",
-  "status": "development_in_progress",
-  "phase": "development",
+  "status": "qa_complete",
+  "phase": "release_pending",
   "phase0_complete": true,
   "phase1_complete": true,
   "prd_complete": true,
@@ -22,6 +22,7 @@
     "total": "24/24"
   },
   "createdAt": "2025-12-15T13:42:35+08:00",
-  "updatedAt": "2025-12-15T15:05:00+08:00",
-  "completedSteps": ["research", "prd", "tech_design", "epic", "dev_mvp"]
+  "updatedAt": "2025-12-15T16:45:00+08:00",
+  "lastQaAt": "2025-12-15T16:45:00+08:00",
+  "completedSteps": ["research", "prd", "tech_design", "epic", "dev_mvp", "qa"]
 }
