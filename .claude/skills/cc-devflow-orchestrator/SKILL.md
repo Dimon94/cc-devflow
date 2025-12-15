@@ -24,6 +24,8 @@ Guide users to the correct agent/command WITHOUT duplicating their detailed stan
 ```
 /flow-init → research.md + tasks.json (研究初始化)
      ↓
+/flow-clarify → clarifications/*.md (11 维度歧义扫描, 可选) ⭐ 新增
+     ↓
 /flow-prd → PRD.md (invoke prd-writer agent)
      ↓
 /flow-tech → TECH_DESIGN.md + data-model + contracts (invoke tech-architect agent)
@@ -43,10 +45,18 @@ Guide users to the correct agent/command WITHOUT duplicating their detailed stan
 
 **说明**:
 - 项目级命令建立全局标准（SSOT），需求级命令引用这些标准
+- `/flow-clarify` 在 PRD 前可选执行，消除 research.md 中的歧义
 - `/flow-ui` 和 `/flow-dev` 自动加载 `devflow/STYLE.md`（如存在）
 - 项目级命令可按需执行，无严格顺序要求
 
 ## Agent Delegation Guide
+
+### When User Asks About Requirements Clarification
+- **DO**: Recommend `/flow-clarify` command → invokes clarify-analyst agent
+- **DON'T**: Duplicate clarification logic (flow-clarify.md has ~128 lines)
+- **Link**: See [.claude/commands/flow-clarify.md](.claude/commands/flow-clarify.md) for details
+- **Outputs**: clarifications/[timestamp]-flow-clarify.md (澄清报告)
+- **Features**: 11-dimension scan, ≤5 prioritized questions, session recovery
 
 ### When User Asks About PRD
 - **DO**: Recommend `/flow-prd` command → invokes prd-writer agent
@@ -87,7 +97,8 @@ Guide users to the correct agent/command WITHOUT duplicating their detailed stan
 ## Phase Gates (Quick Reference Only)
 
 ### Entry Gates
-- **flow-prd Entry**: research.md 无 TODO placeholder, phase0_complete == true
+- **flow-clarify Entry**: research.md 存在, phase0_complete == true
+- **flow-prd Entry**: research.md 无 TODO placeholder, phase0_complete == true (clarify 可选)
 - **flow-tech Entry**: PRD.md 必须完成
 - **flow-ui Entry**: PRD.md 必须完成（可与 tech 并行）
 - **flow-epic Entry**: PRD 完成，tech/ui 推荐但可选
@@ -96,6 +107,7 @@ Guide users to the correct agent/command WITHOUT duplicating their detailed stan
 
 ### Exit Gates
 - **flow-init Exit**: research.md 5-level quality check
+- **flow-clarify Exit**: clarification report 完整, orchestration_status.clarify_complete == true
 - **flow-prd Exit**: PRD.md 无 placeholder, Constitution 合规
 - **flow-tech Exit**: TECH_DESIGN.md + data-model + contracts 完整
 - **flow-epic Exit**: TASKS.md TDD 顺序正确, Phase -1 Gates 通过
@@ -110,6 +122,10 @@ Read `orchestration_status.json` to determine current phase:
 
 ```yaml
 status: "initialized"
+  → Recommend: /flow-clarify (optional, clarify ambiguities)
+  → Alternative: /flow-prd (skip clarification, generate PRD directly)
+
+status: "clarify_complete" OR "clarify_skipped"
   → Recommend: /flow-prd (generate PRD)
 
 status: "prd_complete"
@@ -144,6 +160,7 @@ status: "released"
 - **Script**: Run `.claude/scripts/generate-status-report.sh`
 
 ### Need detailed standards?
+- **Clarify**: See flow-clarify.md command + clarify-analyst agent
 - **PRD**: Consult prd-writer agent
 - **Tech**: Consult tech-architect agent
 - **UI**: Consult ui-designer agent

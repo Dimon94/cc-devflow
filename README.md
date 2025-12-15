@@ -195,6 +195,7 @@ bash .claude/tests/constitution/run_all_constitution_tests.sh
 |---------|---------|---------------|---------------|
 | `/flow-new` | 🎯 Start New Requirement | `/flow-new "REQ-123\|Feature"` | [→](docs/commands/flow-new.md) |
 | `/flow-init` | 📦 Initialize Requirement | `/flow-init "REQ-123\|Feature"` | [→](docs/commands/flow-init.md) |
+| `/flow-clarify` | 🔎 Clarify Ambiguities | `/flow-clarify "REQ-123"` | [→](.claude/commands/flow-clarify.md) |
 | `/flow-verify` | 🔍 Verify Consistency | `/flow-verify "REQ-123"` | [→](docs/commands/flow-verify.md) |
 | `/flow-qa` | 🧪 Quality Assurance | `/flow-qa "REQ-123"` | [→](docs/commands/flow-qa.md) |
 | `/flow-release` | 🚢 Create Release | `/flow-release "REQ-123"` | [→](docs/commands/flow-release.md) |
@@ -211,6 +212,7 @@ Your Scenario:
 ├─ Establish coding standards? → /core-guidelines
 ├─ Start brand new feature development? → /flow-new "REQ-123|Feature|URLs"
 ├─ Only create requirement directory? → /flow-init "REQ-123|Feature"
+├─ Clarify ambiguous requirements? → /flow-clarify "REQ-123"
 ├─ Continue interrupted development? → /flow-restart "REQ-123"
 ├─ Check development progress? → /flow-status REQ-123
 ├─ Found document inconsistencies? → /flow-verify "REQ-123"
@@ -242,7 +244,9 @@ graph TB
     
     ReqLevel([Requirement-Level Development]) --> FlowInit["/flow-init<br/>research.md & tasks.json"]
     
-    FlowInit --> FlowPRD["/flow-prd<br/>PRD.md"]
+    FlowInit --> FlowClarify["/flow-clarify<br/>clarifications/*.md<br/>Optional"]
+    FlowClarify --> FlowPRD["/flow-prd<br/>PRD.md"]
+    FlowInit -.->|Skip clarify| FlowPRD
     FlowPRD --> FlowTech["/flow-tech<br/>TECH_DESIGN.md & data-model"]
     FlowPRD --> FlowUI["/flow-ui<br/>UI_PROTOTYPE.html<br/>Optional"]
     
@@ -264,6 +268,7 @@ graph TB
     style ProjectLevel fill:#e1f5ff
     style ReqLevel fill:#fff4e1
     style FlowInit fill:#e8f5e9
+    style FlowClarify fill:#fff9c4
     style FlowPRD fill:#e8f5e9
     style FlowTech fill:#e8f5e9
     style FlowUI fill:#fff9c4
@@ -277,7 +282,7 @@ graph TB
 **Workflow Notes**:
 - **Project-Level Commands** (light blue): Execute once at project initialization, establish global standards (SSOT)
 - **Requirement-Level Commands** (light orange): Execute once per requirement (REQ-XXX)
-- **Optional Steps** (yellow): `/flow-ui` is optional and can run in parallel with `/flow-tech`
+- **Optional Steps** (yellow): `/flow-clarify` and `/flow-ui` are optional; clarify can be skipped if requirements are clear
 - **Quality Gates**: Each stage has entry/exit gates ensuring document quality and Constitution compliance
 - **TDD Enforcement**: `/flow-dev` strictly enforces Test-Driven Development order
 - **Consistency Check**: `/flow-verify` can be called at any stage to ensure document consistency
@@ -296,6 +301,7 @@ graph TB
 ### Sub-Agents Workflow
 
 ```text
+clarify-analyst     → Clarification questions (11-dimension scan) ⭐ NEW
 prd-writer          → PRD generation (must use PRD_TEMPLATE)
 ui-designer         → UI prototype (conditional trigger)
 tech-architect      → Technical design (Anti-Tech-Creep enforcement)
