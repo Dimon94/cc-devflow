@@ -1,0 +1,29 @@
+{
+  "reqId": "REQ-001",
+  "title": "/flow-clarify 需求澄清命令",
+  "status": "release_complete",
+  "phase": "released",
+  "prUrl": "https://github.com/Dimon94/cc-devflow/pull/4",
+  "phase0_complete": true,
+  "phase1_complete": true,
+  "prd_complete": true,
+  "tech_design_complete": true,
+  "epic_complete": true,
+  "clarify_complete": false,
+  "clarify_session_id": null,
+  "clarify_skipped": false,
+  "mvp_phase_complete": true,
+  "mvp_tasks_completed": 51,
+  "mvp_tasks_total": 75,
+  "test_results": {
+    "foundation": "3/3",
+    "unit": "10/10",
+    "integration": "5/5",
+    "contract": "6/6",
+    "total": "24/24"
+  },
+  "createdAt": "2025-12-15T13:42:35+08:00",
+  "updatedAt": "2025-12-15T16:45:00+08:00",
+  "lastQaAt": "2025-12-15T16:45:00+08:00",
+  "completedSteps": ["research", "prd", "tech_design", "epic", "dev_mvp", "qa", "release"]
+}

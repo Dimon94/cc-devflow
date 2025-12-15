@@ -1,0 +1,129 @@
+{
+  "reqId": "REQ-001",
+  "title": "/flow-clarify 需求澄清命令",
+  "researchDate": "2025-12-15T13:45:00+08:00",
+  "tasks": [
+    {
+      "id": "R001",
+      "type": "architecture",
+      "prompt": "Should we use Workflow pattern or pure Agent pattern for clarification flow?",
+      "status": "resolved",
+      "owner": "clarify-analyst",
+      "decision": "Workflow pattern with Orchestrator-Workers architecture",
+      "rationale": "Clarification has well-defined steps (scan → question → answer → integrate). Workflows offer predictability and validation gates at each phase. Anthropic guide recommends workflows for tasks with clear sequences.",
+      "alternatives": "Pure Agent pattern rejected due to unpredictability and difficulty in quality control."
+    },
+    {
+      "id": "R002",
+      "type": "architecture",
+      "prompt": "How should 11 dimension scanners be executed - sequentially or in parallel?",
+      "status": "resolved",
+      "owner": "clarify-analyst",
+      "decision": "Parallel execution using Parallelization pattern",
+      "rationale": "11 independent dimension scans can run simultaneously to reduce total execution time from ~55s (sequential) to ~5s (parallel). Each scanner is stateless and reads the same input.",
+      "alternatives": "Sequential execution rejected due to poor user experience (long wait time)."
+    },
+    {
+      "id": "R003",
+      "type": "model_selection",
+      "prompt": "Which Claude model should be used for dimension scanners vs orchestrator?",
+      "status": "resolved",
+      "owner": "clarify-analyst",
+      "decision": "Haiku for dimension scanners, Sonnet-4.5 for orchestrator and question generator",
+      "rationale": "Dimension scanning is pattern matching (low complexity) → haiku is cost-effective and fast. Question generation requires reasoning and best practice synthesis → sonnet-4.5 provides quality. Research shows larger models perform better for ambiguity detection.",
+      "alternatives": "Using sonnet for all rejected due to 11x cost increase with minimal quality gain for scanning."
+    },
+    {
+      "id": "R004",
+      "type": "ux_design",
+      "prompt": "How should questions be presented to users - all at once or sequentially?",
+      "status": "resolved",
+      "owner": "clarify-analyst",
+      "decision": "Sequential presentation (one question at a time)",
+      "rationale": "Spec-kit template uses sequential approach to avoid user overwhelm. Research shows interactive clarification benefits from focused attention. Allows adaptive follow-up questions based on previous answers.",
+      "alternatives": "Batch presentation rejected due to cognitive overload and loss of interactivity."
+    },
+    {
+      "id": "R005",
+      "type": "ux_design",
+      "prompt": "Should we provide recommended answers for clarification questions?",
+      "status": "resolved",
+      "owner": "clarify-analyst",
+      "decision": "Yes, provide AI-recommended answer based on best practices, with option to override",
+      "rationale": "Spec-kit template shows recommended options prominently. Research indicates LLMs can synthesize best practices effectively. Users appreciate guidance but need flexibility to override. Accelerates decision-making.",
+      "alternatives": "No recommendations rejected as it shifts burden entirely to user without leveraging AI capabilities."
+    },
+    {
+      "id": "R006",
+      "type": "quality_gate",
+      "prompt": "What should be the maximum number of clarification questions?",
+      "status": "resolved",
+      "owner": "clarify-analyst",
+      "decision": "Maximum 5 questions (strict quota)",
+      "rationale": "Spec-kit template enforces 5-question limit. Roadmap target is <5 min average clarification time. Research shows user engagement drops after 5 questions. Forces prioritization by (Impact × Uncertainty).",
+      "alternatives": "10 questions rejected as too time-consuming; 3 questions too restrictive."
+    },
+    {
+      "id": "R007",
+      "type": "integration",
+      "prompt": "Should clarification results be integrated incrementally or in batch?",
+      "status": "resolved",
+      "owner": "clarify-analyst",
+      "decision": "Incremental integration after each answer (Prompt Chaining pattern)",
+      "rationale": "Spec-kit template saves after each answer to prevent context loss. Anthropic guide recommends intermediate validation gates. Allows users to see immediate impact of their answers.",
+      "alternatives": "Batch integration at end rejected due to risk of losing all work if session terminates."
+    },
+    {
+      "id": "R008",
+      "type": "data_model",
+      "prompt": "Where should clarification reports be stored?",
+      "status": "resolved",
+      "owner": "clarify-analyst",
+      "decision": "research/clarifications/[timestamp]-[feature].md (new directory)",
+      "rationale": "Separate directory maintains clean separation from research.md. Timestamp ensures uniqueness and traceability. Feature slug improves readability. Aligns with CC-DevFlow file standards.",
+      "alternatives": "Modifying research.md directly (spec-kit approach) rejected to preserve original research materials."
+    },
+    {
+      "id": "R009",
+      "type": "quality_gate",
+      "prompt": "What validation checks should run before marking clarification complete?",
+      "status": "resolved",
+      "owner": "clarify-analyst",
+      "decision": "5-level validation: (1) File existence, (2) Structure, (3) Content quality (no TODOs), (4) Tasks valid JSON, (5) Git/status/Constitution",
+      "rationale": "Flow-init command already implements 5-level validation pattern. Constitution compliance is mandatory per Article I. Multi-level gates catch different error types (structural vs semantic).",
+      "alternatives": "Single-level validation rejected as insufficient for production quality."
+    },
+    {
+      "id": "R010",
+      "type": "technical_constraint",
+      "prompt": "Should clarification command use existing scripts or implement new ones?",
+      "status": "resolved",
+      "owner": "clarify-analyst",
+      "decision": "Reuse existing scripts (generate-research-tasks.sh, populate-research-tasks.sh, consolidate-research.sh) + add 3 new scripts (run-clarify-scan.sh, generate-clarification-report.sh, integrate-clarifications.sh)",
+      "rationale": "DRY principle - leverage existing research infrastructure. New scripts handle clarify-specific logic (11-dimension scanning, interactive dialog, incremental integration).",
+      "alternatives": "Reimplementing from scratch rejected as violating DRY and increasing maintenance burden."
+    },
+    {
+      "id": "R011",
+      "type": "scope",
+      "prompt": "Should clarification be mandatory or optional in the workflow?",
+      "status": "resolved",
+      "owner": "clarify-analyst",
+      "decision": "Optional command (non-blocking)",
+      "rationale": "Risk mitigation - don't disrupt existing workflow. Users can skip if research.md is already comprehensive. flow-prd can still proceed without clarification (will just use research.md as-is).",
+      "alternatives": "Mandatory gate rejected due to change management risk and potential user resistance."
+    }
+  ],
+  "summary": {
+    "total": 11,
+    "resolved": 11,
+    "open": 0,
+    "deferred": 0
+  },
+  "nextSteps": [
+    "Run consolidate-research.sh to generate research/research.md",
+    "Run 5-level exit gate validation",
+    "Update orchestration_status.json → phase0_complete = true",
+    "Proceed to /flow-prd"
+  ]
+}
