@@ -196,6 +196,7 @@ bash .claude/tests/constitution/run_all_constitution_tests.sh
 | `/flow-new` | 🎯 Start New Requirement | `/flow-new "REQ-123\|Feature"` | [→](docs/commands/flow-new.md) |
 | `/flow-init` | 📦 Initialize Requirement | `/flow-init "REQ-123\|Feature"` | [→](docs/commands/flow-init.md) |
 | `/flow-clarify` | 🔎 Clarify Ambiguities | `/flow-clarify "REQ-123"` | [→](.claude/commands/flow-clarify.md) |
+| `/flow-checklist` | ✅ Requirement Quality Check | `/flow-checklist --type ux` | [→](.claude/commands/flow-checklist.md) |
 | `/flow-verify` | 🔍 Verify Consistency | `/flow-verify "REQ-123"` | [→](docs/commands/flow-verify.md) |
 | `/flow-qa` | 🧪 Quality Assurance | `/flow-qa "REQ-123"` | [→](docs/commands/flow-qa.md) |
 | `/flow-release` | 🚢 Create Release | `/flow-release "REQ-123"` | [→](docs/commands/flow-release.md) |
@@ -213,6 +214,7 @@ Your Scenario:
 ├─ Start brand new feature development? → /flow-new "REQ-123|Feature|URLs"
 ├─ Only create requirement directory? → /flow-init "REQ-123|Feature"
 ├─ Clarify ambiguous requirements? → /flow-clarify "REQ-123"
+├─ Validate requirement quality? → /flow-checklist --type ux,api,security
 ├─ Continue interrupted development? → /flow-restart "REQ-123"
 ├─ Check development progress? → /flow-status REQ-123
 ├─ Found document inconsistencies? → /flow-verify "REQ-123"
@@ -247,9 +249,11 @@ graph TB
     FlowInit --> FlowClarify["/flow-clarify<br/>clarifications/*.md<br/>Optional"]
     FlowClarify --> FlowPRD["/flow-prd<br/>PRD.md"]
     FlowInit -.->|Skip clarify| FlowPRD
+    FlowPRD --> FlowChecklist["/flow-checklist<br/>checklists/*.md<br/>80% Gate"]
     FlowPRD --> FlowTech["/flow-tech<br/>TECH_DESIGN.md & data-model"]
     FlowPRD --> FlowUI["/flow-ui<br/>UI_PROTOTYPE.html<br/>Optional"]
-    
+
+    FlowChecklist --> FlowEpic
     FlowTech --> FlowEpic["/flow-epic<br/>EPIC.md & TASKS.md"]
     FlowUI --> FlowEpic
     
@@ -270,6 +274,7 @@ graph TB
     style FlowInit fill:#e8f5e9
     style FlowClarify fill:#fff9c4
     style FlowPRD fill:#e8f5e9
+    style FlowChecklist fill:#ffe0b2
     style FlowTech fill:#e8f5e9
     style FlowUI fill:#fff9c4
     style FlowEpic fill:#e8f5e9
@@ -283,6 +288,7 @@ graph TB
 - **Project-Level Commands** (light blue): Execute once at project initialization, establish global standards (SSOT)
 - **Requirement-Level Commands** (light orange): Execute once per requirement (REQ-XXX)
 - **Optional Steps** (yellow): `/flow-clarify` and `/flow-ui` are optional; clarify can be skipped if requirements are clear
+- **Quality Gate** (orange): `/flow-checklist` validates requirement quality with 80% completion threshold before `/flow-epic`
 - **Quality Gates**: Each stage has entry/exit gates ensuring document quality and Constitution compliance
 - **TDD Enforcement**: `/flow-dev` strictly enforces Test-Driven Development order
 - **Consistency Check**: `/flow-verify` can be called at any stage to ensure document consistency
@@ -301,8 +307,9 @@ graph TB
 ### Sub-Agents Workflow
 
 ```text
-clarify-analyst     → Clarification questions (11-dimension scan) ⭐ NEW
+clarify-analyst     → Clarification questions (11-dimension scan)
 prd-writer          → PRD generation (must use PRD_TEMPLATE)
+checklist-agent     → Requirement quality validation (5 dimensions, 6 types) ⭐ NEW
 ui-designer         → UI prototype (conditional trigger)
 tech-architect      → Technical design (Anti-Tech-Creep enforcement)
 planner             → EPIC & TASKS (must use EPIC_TEMPLATE, TASKS_TEMPLATE)
@@ -324,6 +331,10 @@ devflow/
     ├── EPIC.md
     ├── TASKS.md
     ├── EXECUTION_LOG.md
+    ├── checklists/          # Requirement quality checklists
+    │   ├── ux.md
+    │   ├── api.md
+    │   └── security.md
     ├── TEST_PLAN.md
     ├── TEST_REPORT.md
     ├── SECURITY_PLAN.md
@@ -334,6 +345,7 @@ devflow/
 ### Quality Gates
 
 - Pre-push Guard (TypeScript, tests, linting, security, build)
+- Checklist Gate (`/flow-checklist` 80% completion threshold before `/flow-epic`)
 - Constitution Compliance (enforced at every stage)
 - TDD Checkpoint (TEST VERIFICATION CHECKPOINT)
 - Guardrail Hooks (PreToolUse real-time blocking of non-compliant operations)

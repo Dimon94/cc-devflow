@@ -1,6 +1,6 @@
 # CC-DevFlow v2.x Backlog
 
-**Last Updated:** 2025-12-15 (RM-001 completed)
+**Last Updated:** 2025-12-16 (RM-002 completed)
 **Total Items:** 12
 **Estimated Effort:** 11.5 weeks
 
@@ -60,39 +60,46 @@
 
 ### RM-002: /flow-checklist 需求质量检查命令
 
-**Status:** 🔵 Planned
+**Status:** 🟢 Completed
 **Effort:** 2 weeks
 **Quarter:** Q1-2026
 **Milestone:** M2 (Quality Gates)
 **Dependencies:** RM-001
+**Merged:** 2025-12-16 (PR #5)
 
 **Description:**
 实现需求单元测试命令，在任务分解前对需求完整性和可测试性进行质量门禁检查。
 
 **Acceptance Criteria:**
-- [ ] 需求单元测试框架
-  - 测试用例自动生成
-  - 边界条件覆盖检查
-  - 异常场景覆盖检查
-- [ ] 质量检查清单引擎
-  - 可配置检查规则（YAML）
-  - 权重和评分机制
-  - 阻断阈值设置
-- [ ] 需求覆盖率分析
-  - 功能点覆盖率
-  - 场景覆盖率
-  - 可视化报告
-- [ ] 与 `/flow-epic`集成 （检查不通过则阻断）
+- [x] 需求单元测试框架
+  - 6 种 Checklist 类型 (ux, api, security, performance, data, general)
+  - 5 质量维度 (Completeness, Clarity, Consistency, Measurability, Coverage)
+  - Anti-Example 规则防止生成实现测试
+- [x] 质量检查清单引擎
+  - 可配置检查规则（YAML）: `.claude/config/quality-rules.yml`
+  - 权重和评分机制: 80% 门禁阈值
+  - 阻断阈值设置: 支持 `--skip-gate --reason` 跳过
+- [x] 需求覆盖率分析
+  - 完成度计算脚本: `calculate-checklist-completion.sh`
+  - 可视化报告: `--status` 表格输出
+  - JSON 格式输出: `--json` 参数
+- [x] 与 `/flow-epic` 集成 （检查不通过则阻断）
+  - Entry Gate 集成: `checklist-gate.js` Hook
+  - 审计日志: Gate 跳过记录到 EXECUTION_LOG.md
 
 **Technical Notes:**
-- 检查规则存储: `config/quality-rules.yml`
-- 覆盖率报告: `docs/coverage/[feature]-coverage.md`
-- 最低通过分数: 80/100
+- 检查规则存储: `.claude/config/quality-rules.yml`
+- Checklist 输出: `devflow/requirements/{REQ}/checklists/*.md`
+- 最低通过分数: 80% (可配置)
 
 **Related Files:**
-- `core/checklist.js` (new)
-- `config/quality-rules.yml` (new)
-- `lib/coverage-analyzer.js` (new)
+- `.claude/commands/flow-checklist.md` (new, 255 lines)
+- `.claude/agents/checklist-agent.md` (new, 175 lines)
+- `.claude/hooks/checklist-gate.js` (new, 397 lines)
+- `.claude/scripts/calculate-checklist-completion.sh` (new, 243 lines)
+- `.claude/config/quality-rules.yml` (new, 161 lines)
+- `.claude/docs/templates/CHECKLIST_TEMPLATE.md` (new, 52 lines)
+- `.claude/commands/flow-epic.md` (modified, Entry Gate)
 
 ---
 
@@ -496,17 +503,17 @@
 
 | Priority | Completed | In Progress | Planned | Total | Completion % |
 |----------|-----------|-------------|---------|-------|--------------|
-| P0       | 1         | 0           | 1       | 2     | 50%          |
+| P0       | 2         | 0           | 0       | 2     | 100%         |
 | P1       | 0         | 0           | 3       | 3     | 0%           |
 | P2       | 0         | 0           | 7       | 7     | 0%           |
-| **Total**| **1**     | **0**       | **11**  | **12**| **8.3%**     |
+| **Total**| **2**     | **0**       | **10**  | **12**| **16.7%**    |
 
 ### Milestone Progress
 
 | Milestone | Target       | Items | Completed | Status |
 |-----------|--------------|-------|-----------|--------|
 | M1        | Q4-2025 End  | 1     | 1/1       | 🟢 Completed |
-| M2        | Q1-2026 Mid  | 1     | 0/1       | 🔵 Not Started |
+| M2        | Q1-2026 Mid  | 1     | 1/1       | 🟢 Completed |
 | M3        | Q1-2026 End  | 4     | 0/4       | 🔵 Not Started |
 | M4        | Q2-2026 End  | 6     | 0/6       | 🔵 Not Started |
 

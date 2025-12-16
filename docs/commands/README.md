@@ -26,6 +26,7 @@
 
 | Command | Purpose | Quick Example | Detailed Docs |
 |---------|---------|---------------|---------------|
+| `/flow-checklist` | ✅ Requirement Quality Check | `/flow-checklist --type ux` | [→](../../.claude/commands/flow-checklist.md) |
 | `/flow-verify` | 🔍 Verify Document Consistency | `/flow-verify "REQ-123"` | [→](./flow-verify.md) |
 | `/flow-qa` | 🧪 Execute Quality Assurance | `/flow-qa "REQ-123"` | [→](./flow-qa.md) |
 | `/flow-constitution` | 📜 Constitution Compliance | `/flow-constitution --verify` | [→](./flow-constitution.md) |
@@ -44,6 +45,7 @@ Your Scenario:
 ├─ Start brand new feature? → /flow-new "REQ-123|Feature"
 ├─ Plan product direction? → /core-roadmap
 ├─ Design system architecture? → /core-architecture
+├─ Validate requirement quality? → /flow-checklist --type ux,api,security
 ├─ Continue interrupted development? → /flow-restart "REQ-123"
 ├─ Check development progress? → /flow-status REQ-123
 ├─ Found document conflicts? → /flow-verify "REQ-123"
