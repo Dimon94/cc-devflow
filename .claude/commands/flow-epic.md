@@ -56,6 +56,18 @@ $ARGUMENTS = "REQ_ID?"
 4. Constitution Gate
    → Run: {SCRIPT:validate_constitution} --type prd --severity error --json
    → 若有 ERROR 级违规 → 停止
+
+5. Checklist Gate (如果 checklists/ 存在)
+   → Run: node .claude/hooks/checklist-gate.js --req-id {REQ_ID} --json
+   → 若 status == "FAIL" 且无 --skip-gate:
+      • ERROR: 显示完成度不足提示
+      • 建议: "Run /flow-checklist --status to review incomplete items"
+   → 若 --skip-gate 提供:
+      • 验证 --reason 参数存在
+      • Run: node .claude/hooks/checklist-gate.js --req-id {REQ_ID} --skip --reason "{reason}"
+      • 审计日志记录到 EXECUTION_LOG.md
+   → 若 status == "PASS" 或 "SKIPPED": 继续
+   → 若 checklists/ 不存在: 跳过此检查 (Checklist 可选)
 ```
 
 ### 阶段 2: Epic/TASKS 初始化
