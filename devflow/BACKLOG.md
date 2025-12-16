@@ -82,7 +82,7 @@
   - 功能点覆盖率
   - 场景覆盖率
   - 可视化报告
-- [ ] 检验 `/flow-epic` （检查不通过则阻断）
+- [ ] 与 `/flow-epic`集成 （检查不通过则阻断）
 
 **Technical Notes:**
 - 检查规则存储: `config/quality-rules.yml`

@@ -1,0 +1,161 @@
+# ============================================================================
+# Quality Rules Configuration for /flow-checklist
+# ============================================================================
+# Version: 1.0.0
+# Purpose: Define checklist generation rules, gate thresholds, and quality
+#          dimensions for requirement quality validation.
+# Reference: TECH_DESIGN.md Section 3.2
+# ============================================================================
+
+# ============================================================================
+# Gate Thresholds
+# ============================================================================
+gate:
+  # Minimum completion percentage to pass Epic entry gate (0-100)
+  threshold: 80
+
+  # Allow --skip-gate to bypass gate check
+  allow_skip: true
+
+  # Require --reason when using --skip-gate
+  require_reason: true
+
+# ============================================================================
+# Checklist Types (6 Types - R001 Decision)
+# ============================================================================
+types:
+  ux:
+    name: "UX Requirements"
+    description: "User experience and interface requirements"
+    min_items: 15
+    max_items: 30
+    dimensions:
+      - Completeness
+      - Clarity
+      - Consistency
+      - Measurability
+      - Coverage
+
+  api:
+    name: "API Requirements"
+    description: "API endpoints and data contracts"
+    min_items: 15
+    max_items: 30
+    dimensions:
+      - Completeness
+      - Clarity
+      - Consistency
+      - Measurability
+      - Coverage
+
+  security:
+    name: "Security Requirements"
+    description: "Authentication, authorization, data protection"
+    min_items: 15
+    max_items: 30
+    dimensions:
+      - Completeness
+      - Clarity
+      - Consistency
+      - Measurability
+      - Coverage
+
+  performance:
+    name: "Performance Requirements"
+    description: "Response time, throughput, scalability"
+    min_items: 15
+    max_items: 30
+    dimensions:
+      - Completeness
+      - Clarity
+      - Consistency
+      - Measurability
+      - Coverage
+
+  data:
+    name: "Data Requirements"
+    description: "Data models, storage, validation"
+    min_items: 15
+    max_items: 30
+    dimensions:
+      - Completeness
+      - Clarity
+      - Consistency
+      - Measurability
+      - Coverage
+
+  general:
+    name: "General Requirements"
+    description: "Overall requirement quality"
+    min_items: 15
+    max_items: 30
+    dimensions:
+      - Completeness
+      - Clarity
+      - Consistency
+      - Measurability
+      - Coverage
+
+# ============================================================================
+# Quality Dimensions (5 Dimensions)
+# ============================================================================
+dimensions:
+  Completeness:
+    pattern: "Are .* defined|specified|documented"
+    anti_pattern: "Verify|Test|Check|Confirm"
+
+  Clarity:
+    pattern: "Is .* quantified|clarified with specific"
+    anti_pattern: "works|functions|renders"
+
+  Consistency:
+    pattern: "Are .* consistent between|across"
+    anti_pattern: "correctly|properly"
+
+  Measurability:
+    pattern: "Can .* be objectively measured|verified"
+    anti_pattern: "click|navigate|load"
+
+  Coverage:
+    pattern: "Are .* scenarios|cases addressed"
+    anti_pattern: "displays|shows|returns"
+
+# ============================================================================
+# Anti-Example Rules (R003 Decision)
+# ============================================================================
+# These patterns enforce "Unit Tests for English" - testing requirements
+# quality, NOT testing implementation behavior.
+# ============================================================================
+anti_example:
+  # Prohibited patterns (test implementation, not requirements)
+  prohibited:
+    - "^Verify"
+    - "^Test"
+    - "^Confirm"
+    - "^Check that"
+    - "works correctly"
+    - "functions properly"
+    - "displays correctly"
+    - "click|navigate|render|load|execute"
+
+  # Required patterns (test requirements quality)
+  required:
+    - "Are .* defined"
+    - "Are .* specified"
+    - "Are .* documented"
+    - "Is .* quantified"
+    - "Is .* clarified"
+    - "Can .* be measured"
+
+# ============================================================================
+# Output Formatting
+# ============================================================================
+output:
+  # Checklist item ID format (CHK + 3 digits)
+  id_format: "CHK{:03d}"
+
+  # Minimum dimension coverage (out of 5)
+  min_dimension_coverage: 4
+
+  # Traceability requirement (percentage of items with references)
+  min_traceability: 80

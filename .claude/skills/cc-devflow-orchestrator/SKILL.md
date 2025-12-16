@@ -28,6 +28,8 @@ Guide users to the correct agent/command WITHOUT duplicating their detailed stan
      ↓
 /flow-prd → PRD.md (invoke prd-writer agent)
      ↓
+/flow-checklist → checklists/*.md (需求质量检查, 可选) ⭐ 新增
+     ↓
 /flow-tech → TECH_DESIGN.md + data-model + contracts (invoke tech-architect agent)
      ↓
 /flow-ui → UI_PROTOTYPE.html (invoke ui-designer agent, 可选, 引用 STYLE.md) ⭐ 变更
@@ -64,6 +66,14 @@ Guide users to the correct agent/command WITHOUT duplicating their detailed stan
 - **Link**: See [.claude/agents/prd-writer.md](.claude/agents/prd-writer.md) for PRD details
 - **Standards**: INVEST principles, Anti-Expansion mandate, Given-When-Then criteria
 
+### When User Asks About Requirement Quality Checklist
+- **DO**: Recommend `/flow-checklist` command → invokes checklist-agent
+- **DON'T**: Duplicate checklist standards (checklist-agent has ~180 lines)
+- **Link**: See [.claude/commands/flow-checklist.md](.claude/commands/flow-checklist.md) for details
+- **Outputs**: checklists/*.md (ux, api, security, performance, data, general)
+- **Features**: 5 quality dimensions, Anti-Example rules, 80% gate threshold
+- **Level**: Requirement-level (optional, before /flow-epic)
+
 ### When User Asks About Tech Design
 - **DO**: Recommend `/flow-tech` command → invokes tech-architect agent
 - **DON'T**: Duplicate tech standards (tech-architect agent has ~516 lines)
@@ -99,9 +109,10 @@ Guide users to the correct agent/command WITHOUT duplicating their detailed stan
 ### Entry Gates
 - **flow-clarify Entry**: research.md 存在, phase0_complete == true
 - **flow-prd Entry**: research.md 无 TODO placeholder, phase0_complete == true (clarify 可选)
+- **flow-checklist Entry**: PRD.md 必须完成 (prd_complete == true)
 - **flow-tech Entry**: PRD.md 必须完成
 - **flow-ui Entry**: PRD.md 必须完成（可与 tech 并行）
-- **flow-epic Entry**: PRD 完成，tech/ui 推荐但可选
+- **flow-epic Entry**: PRD 完成，tech/ui 推荐但可选，Checklist Gate (如存在 checklists/)
 - **flow-dev Entry**: EPIC.md + TASKS.md 存在
 - **flow-qa Entry**: development_complete == true
 
