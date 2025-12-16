@@ -1,8 +1,8 @@
 {
   "reqId": "REQ-003",
   "title": "分支命名优化 (中文转拼音)",
-  "status": "release_in_progress",
-  "phase": "release",
+  "status": "release_complete",
+  "phase": "released",
   "phase0_complete": true,
   "phase1_complete": true,
   "clarify_complete": true,
@@ -26,9 +26,12 @@
     "backward_compat": "english-unchanged",
     "design_principle": "english-preferred-pinyin-fallback"
   },
-  "completedSteps": ["init", "clarify", "prd", "tech_design", "epic", "dev", "qa"],
+  "completedSteps": ["init", "clarify", "prd", "tech_design", "epic", "dev", "qa", "release"],
   "qa_complete": true,
   "lastQaAt": "2025-12-16T15:49:00+08:00",
+  "release_complete": true,
+  "prUrl": "https://github.com/Dimon94/cc-devflow/pull/6",
+  "releasedAt": "2025-12-16T15:55:00+08:00",
   "createdAt": "2025-12-16T00:00:00+08:00",
-  "updatedAt": "2025-12-16T15:49:00+08:00"
+  "updatedAt": "2025-12-16T15:55:00+08:00"
 }
