@@ -7,6 +7,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.2.0] - 2025-12-16
+
+### 🎯 里程碑 M2 完成：质量左移 (Quality Left-Shift)
+
+v2.2.0 完成了里程碑 M2，实现了完整的质量左移流程，在需求澄清后、任务分解前引入质量门禁检查。
+
+#### Added - 核心功能
+
+- **`/flow-checklist`** - 需求质量检查命令
+  - 6 种 Checklist 类型 (ux, api, security, performance, data, general)
+  - 5 质量维度评估 (Completeness, Clarity, Consistency, Measurability, Coverage)
+  - Anti-Example 规则防止生成实现测试
+  - 80% 门禁阈值与 `/flow-epic` Entry Gate 集成
+  - 完成度计算脚本 (`calculate-checklist-completion.sh`)
+  - 可视化报告 (`--status` 表格输出)
+  - JSON 格式输出 (`--json` 参数)
+
+#### Added - 新增文件
+
+- `.claude/commands/flow-checklist.md` - 命令定义 (255 lines)
+- `.claude/agents/checklist-agent.md` - 生成逻辑 (175 lines)
+- `.claude/hooks/checklist-gate.js` - 门禁验证 (397 lines)
+- `.claude/scripts/calculate-checklist-completion.sh` - 完成度计算 (243 lines)
+- `.claude/scripts/checklist-errors.sh` - 错误码定义 (131 lines)
+- `.claude/docs/templates/CHECKLIST_TEMPLATE.md` - 输出模板 (52 lines)
+- `.claude/config/quality-rules.yml` - 质量规则配置 (161 lines)
+
+#### Changed - 功能增强
+
+- **`/flow-epic`** - 添加 Entry Gate 集成
+  - Step 5 Checklist Gate 自动检查 PRD 质量
+  - 支持 `--skip-gate --reason` 跳过门禁（需提供原因）
+  - 审计日志记录所有门禁跳过操作
+
+- **`.claude/skills/cc-devflow-orchestrator/SKILL.md`** - 工作流路由更新
+  - 添加 `/flow-checklist` 命令路由
+  - 更新工作流依赖关系
+
+#### Quality Metrics
+
+- **测试覆盖率**: 90% (26/29 AC covered)
+- **安全评分**: 96.75/100 (0 Critical, 0 High issues)
+- **User Stories**: 6/6 (100% delivered, including P2/P3 stories)
+- **Constitution Compliance**: PASS
+
+#### Technical Details
+
+- 检查规则存储: `.claude/config/quality-rules.yml`
+- Checklist 输出: `devflow/requirements/{REQ}/checklists/*.md`
+- 最低通过分数: 80% (可配置)
+- 技术栈: Bash, Node.js 18+, Claude API, YAML, Markdown
+
+---
+
 ## [2.1.0] - 2025-11-07
 
 ### 🏢 核心突破：引入项目级命令（Project-Level Commands）
