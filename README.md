@@ -1,5 +1,8 @@
 # 🚀 cc-devflow
 
+[![Run in Smithery](https://smithery.ai/badge/skills/dimon94)](https://smithery.ai/skills?ns=dimon94&utm_source=github&utm_medium=badge)
+
+
 > One-Command Requirement Development Flow for Claude Code
 
 A comprehensive development workflow system built on Claude Code's official sub-agents, hooks, and settings mechanisms. Transform your requirements from planning to code delivery with a single command.
