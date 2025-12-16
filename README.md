@@ -126,6 +126,13 @@ Dual-layer execution model: Research Agents (11, read-only analysis) + Main Agen
 npx tiged Dimon94/cc-devflow/.claude .claude
 ```
 
+### Optional Dependencies
+
+```bash
+# Chinese branch naming support (converts Chinese to pinyin)
+pip install pypinyin
+```
+
 ### Verify Installation
 
 ```bash
