@@ -173,10 +173,71 @@ ensure_devflow_dir() {
     mkdir -p "$devflow_dir/bugs"
 }
 
+# =============================================================================
+# Chinese to Pinyin Conversion (REQ-003)
+# =============================================================================
+
+# Internal helper: Convert Chinese characters to pinyin using pypinyin
+# Args: $1 - input string containing Chinese characters
+# Returns: string with Chinese replaced by pinyin, other chars unchanged
+# Side effects: Outputs warning to stderr if pypinyin not installed
+_chinese_to_pinyin() {
+    local input="$1"
+
+    # Check pypinyin availability
+    if ! python3 -c "import pypinyin" 2>/dev/null; then
+        echo "Warning: pypinyin not installed. Chinese characters cannot be converted." >&2
+        echo "Install: pip install pypinyin" >&2
+        echo "$input"
+        return
+    fi
+
+    # Convert Chinese to pinyin, preserve other characters
+    # Use lazy_pinyin on full text for better polyphone handling (phrase-aware)
+    python3 -c "
+from pypinyin import lazy_pinyin
+import sys
+import re
+
+text = sys.argv[1]
+
+# Extract consecutive Chinese chunks and convert them together
+# This allows pypinyin to use phrase dictionary for polyphones
+result = []
+chinese_buffer = ''
+non_chinese_buffer = ''
+
+for char in text:
+    if re.match(r'[\u4e00-\u9fff]', char):
+        if non_chinese_buffer:
+            result.append(non_chinese_buffer)
+            non_chinese_buffer = ''
+        chinese_buffer += char
+    else:
+        if chinese_buffer:
+            # Convert accumulated Chinese as a phrase, space-separated
+            pinyin_list = lazy_pinyin(chinese_buffer)
+            result.append(' '.join(pinyin_list))
+            chinese_buffer = ''
+        non_chinese_buffer += char
+
+# Flush remaining buffers
+if chinese_buffer:
+    pinyin_list = lazy_pinyin(chinese_buffer)
+    result.append(' '.join(pinyin_list))
+if non_chinese_buffer:
+    result.append(non_chinese_buffer)
+
+# Join with space only between Chinese pinyin blocks and other content
+print(' '.join(result))
+" "$input"
+}
+
 # Convert arbitrary text to a lowercase slug (branch/task naming helper)
 # Examples:
 #   slugify "Add User Login" => "add-user-login"
 #   slugify "SAML/OIDC" => "saml-oidc"
+#   slugify "用户登录" => "yong-hu-deng-lu" (REQ-003: Chinese to pinyin)
 slugify() {
     local input="$1"
     if [[ -z "$input" ]]; then
@@ -184,9 +245,17 @@ slugify() {
         return
     fi
 
+    local result="$input"
+
+    # REQ-003: Check for Chinese characters (Unicode range \u4e00-\u9fff)
+    # Use Python for cross-platform compatibility (macOS grep lacks -P)
+    if python3 -c "import sys,re; sys.exit(0 if re.search(r'[\u4e00-\u9fff]', sys.argv[1]) else 1)" "$input" 2>/dev/null; then
+        result=$(_chinese_to_pinyin "$input")
+    fi
+
     # Convert to lowercase and replace non-alphanumeric characters with hyphen
     local slug
-    slug=$(printf '%s' "$input" | tr '[:upper:]' '[:lower:]')
+    slug=$(printf '%s' "$result" | tr '[:upper:]' '[:lower:]')
     slug=$(printf '%s' "$slug" | sed 's/[^a-z0-9]/-/g')
     # Collapse repeated hyphens and trim edges
     slug=$(echo "$slug" | sed 's/-\{2,\}/-/g; s/^-//; s/-$//')

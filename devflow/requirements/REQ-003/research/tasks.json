@@ -1,0 +1,47 @@
+{
+  "reqId": "REQ-003",
+  "title": "分支命名优化 (中文转拼音)",
+  "generatedAt": "2025-12-16T00:00:00+08:00",
+  "tasks": [
+    {
+      "id": "R001",
+      "type": "technical_decision",
+      "prompt": "选择中文转拼音的技术方案",
+      "status": "resolved",
+      "owner": "claude",
+      "decision": "Python + pypinyin",
+      "rationale": "项目已使用 Python3；pypinyin 是最成熟的拼音库；支持多音字智能处理",
+      "alternatives": ["Node.js + pinyin-pro (需要新运行时)", "纯 Bash + 映射表 (维护困难)"]
+    },
+    {
+      "id": "R002",
+      "type": "technical_decision",
+      "prompt": "多音字处理策略",
+      "status": "resolved",
+      "owner": "claude",
+      "decision": "使用 pypinyin 默认词典",
+      "rationale": "pypinyin 内置词组智能匹配，可正确处理大部分多音字场景",
+      "alternatives": ["自定义词典 (维护成本高)", "强制用户指定 (用户体验差)"]
+    },
+    {
+      "id": "R003",
+      "type": "scope_clarification",
+      "prompt": "是否需要支持繁体中文",
+      "status": "resolved",
+      "owner": "claude",
+      "decision": "暂不显式支持，但 pypinyin 默认可处理",
+      "rationale": "项目主要面向简体中文用户；pypinyin 默认支持繁体",
+      "alternatives": ["显式支持繁体 (增加测试范围)"]
+    },
+    {
+      "id": "R004",
+      "type": "integration",
+      "prompt": "pypinyin 依赖安装方式",
+      "status": "open",
+      "owner": "prd-writer",
+      "decision": null,
+      "rationale": null,
+      "alternatives": ["运行时检测并提示安装", "脚本启动时自动安装", "文档说明手动安装"]
+    }
+  ]
+}

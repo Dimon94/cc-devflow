@@ -98,7 +98,7 @@ For each remaining task (顺序严格遵循 TASKS.md):
    → 文件路径与任务描述一致
 
 4. 标记完成
-   → Run: {SCRIPT:mark_task} T###
+   → Run: {SCRIPT:.claude/scripts/mark-task-complete.sh} T###
    → Git 提交 (一任务一提交)
 ```
 
