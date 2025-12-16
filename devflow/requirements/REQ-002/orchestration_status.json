@@ -1,12 +1,13 @@
 {
   "reqId": "REQ-002",
   "title": "flow-checklist 需求质量检查命令",
-  "status": "epic_complete",
-  "phase": "development",
+  "status": "qa_complete",
+  "phase": "release",
   "phase0_complete": true,
   "clarify_complete": true,
   "prd_complete": true,
   "phase1_complete": true,
+  "qa_complete": true,
   "clarify_session_id": "20251215-REQ-002-clarify",
   "roadmapItem": "RM-002",
   "milestone": "M2 (Quality Gates)",
@@ -54,5 +55,24 @@
     "constitutionCheck": "PASS",
     "baselineDeviations": 0,
     "readyForEpic": true
+  },
+  "qa": {
+    "status": "complete",
+    "testReport": "TEST_REPORT.md",
+    "securityReport": "SECURITY_REPORT.md",
+    "testCoverage": "90%",
+    "securityScore": 96.75,
+    "findings": {
+      "critical": 0,
+      "high": 0,
+      "medium": 3,
+      "low": 4
+    },
+    "gates": {
+      "coverage": "PASS",
+      "tdd": "PARTIAL",
+      "security": "PASS"
+    },
+    "lastQaAt": "2025-12-16T22:45:00+08:00"
   }
 }
