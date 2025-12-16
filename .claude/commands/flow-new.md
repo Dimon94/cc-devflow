@@ -42,14 +42,16 @@ REQ_ID 与 TITLE 必填，PLAN_URLS 可为空（多值用逗号分隔）。
 ### 与阶段化命令的关系
 ```text
 /flow-new
-  ├─> /flow-init    (阶段1: 初始化)
-  ├─> /flow-prd     (阶段2: PRD生成)
-  ├─> /flow-ui      (阶段2.5: UI原型生成) ⚡️ 条件触发
-  ├─> /flow-tech    (阶段2.7: 技术方案设计) 🔧 新增
-  ├─> /flow-epic    (阶段3: Epic规划)
-  ├─> /flow-dev     (阶段4: 开发执行)
-  ├─> /flow-qa      (阶段5: 质量保证)
-  └─> /flow-release (阶段6: 发布管理)
+  ├─> /flow-init      (阶段1: 初始化)
+  ├─> /flow-clarify   (阶段1.5: 需求澄清) ⚡️ 可选
+  ├─> /flow-prd       (阶段2: PRD生成)
+  ├─> /flow-checklist (阶段2.3: 需求质量检查) ⚡️ 可选，80%门禁
+  ├─> /flow-ui        (阶段2.5: UI原型生成) ⚡️ 条件触发
+  ├─> /flow-tech      (阶段2.7: 技术方案设计)
+  ├─> /flow-epic      (阶段3: Epic规划)
+  ├─> /flow-dev       (阶段4: 开发执行)
+  ├─> /flow-qa        (阶段5: 质量保证)
+  └─> /flow-release   (阶段6: 发布管理)
 ```
 
 ## 执行流程

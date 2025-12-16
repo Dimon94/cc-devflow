@@ -196,6 +196,8 @@ bash .claude/tests/constitution/run_all_constitution_tests.sh
 |------|------|----------|----------|
 | `/flow-new` | 🎯 启动新需求 | `/flow-new "REQ-123\|功能"` | [→](docs/commands/flow-new.zh-CN.md) |
 | `/flow-init` | 📦 初始化需求 | `/flow-init "REQ-123\|功能"` | [→](docs/commands/flow-init.zh-CN.md) |
+| `/flow-clarify` | 🔎 澄清歧义 | `/flow-clarify "REQ-123"` | [→](.claude/commands/flow-clarify.md) |
+| `/flow-checklist` | ✅ 需求质量检查 | `/flow-checklist --type ux` | [→](.claude/commands/flow-checklist.md) |
 | `/flow-verify` | 🔍 验证一致性 | `/flow-verify "REQ-123"` | [→](docs/commands/flow-verify.zh-CN.md) |
 | `/flow-qa` | 🧪 质量保证 | `/flow-qa "REQ-123"` | [→](docs/commands/flow-qa.zh-CN.md) |
 | `/flow-release` | 🚢 创建发布 | `/flow-release "REQ-123"` | [→](docs/commands/flow-release.zh-CN.md) |
@@ -213,6 +215,8 @@ bash .claude/tests/constitution/run_all_constitution_tests.sh
 ├─ 建立设计风格指南？ → /core-style
 ├─ 启动全新功能开发？ → /flow-new "REQ-123|功能|URLs"
 ├─ 仅创建需求目录？ → /flow-init "REQ-123|功能"
+├─ 澄清模糊需求？ → /flow-clarify "REQ-123"
+├─ 验证需求质量？ → /flow-checklist --type ux,api,security
 ├─ 开发中断需要继续？ → /flow-restart "REQ-123"
 ├─ 检查开发进度？ → /flow-status REQ-123
 ├─ 发现文档不一致？ → /flow-verify "REQ-123"
@@ -244,10 +248,14 @@ graph TB
     
     ReqLevel([需求级开发流程]) --> FlowInit["/flow-init<br/>research.md & tasks.json"]
     
-    FlowInit --> FlowPRD["/flow-prd<br/>PRD.md"]
+    FlowInit --> FlowClarify["/flow-clarify<br/>clarifications/*.md<br/>可选"]
+    FlowClarify --> FlowPRD["/flow-prd<br/>PRD.md"]
+    FlowInit -.->|跳过澄清| FlowPRD
+    FlowPRD --> FlowChecklist["/flow-checklist<br/>checklists/*.md<br/>80%门禁"]
     FlowPRD --> FlowTech["/flow-tech<br/>TECH_DESIGN.md & 数据模型"]
     FlowPRD --> FlowUI["/flow-ui<br/>UI_PROTOTYPE.html<br/>可选"]
-    
+
+    FlowChecklist --> FlowEpic
     FlowTech --> FlowEpic["/flow-epic<br/>EPIC.md & TASKS.md"]
     FlowUI --> FlowEpic
     
@@ -266,7 +274,9 @@ graph TB
     style ProjectLevel fill:#e1f5ff
     style ReqLevel fill:#fff4e1
     style FlowInit fill:#e8f5e9
+    style FlowClarify fill:#fff9c4
     style FlowPRD fill:#e8f5e9
+    style FlowChecklist fill:#ffe0b2
     style FlowTech fill:#e8f5e9
     style FlowUI fill:#fff9c4
     style FlowEpic fill:#e8f5e9
@@ -279,7 +289,8 @@ graph TB
 **流程说明**:
 - **项目级命令**（浅蓝色）：项目初始化时执行一次，建立全局标准（SSOT）
 - **需求级命令**（浅橙色）：每个需求（REQ-XXX）执行一次
-- **可选步骤**（黄色）：`/flow-ui` 为可选步骤，可与 `/flow-tech` 并行执行
+- **可选步骤**（黄色）：`/flow-clarify` 和 `/flow-ui` 为可选步骤
+- **质量门禁**（橙色）：`/flow-checklist` 在 `/flow-epic` 前验证需求质量，80% 完成度阈值
 - **质量闸门**：每个阶段都有入口/出口闸门，确保文档质量和 Constitution 合规性
 - **TDD 强制执行**：`/flow-dev` 严格强制执行测试驱动开发顺序
 - **一致性检查**：`/flow-verify` 可在任意阶段调用，确保文档一致性
@@ -298,7 +309,9 @@ graph TB
 ### 子代理工作流
 
 ```text
+clarify-analyst     → 澄清问题（11 维度歧义扫描）
 prd-writer          → PRD 生成（必须使用 PRD_TEMPLATE）
+checklist-agent     → 需求质量验证（5 维度，6 类型）⭐ 新增
 ui-designer         → UI 原型（条件触发）
 tech-architect      → 技术设计（Anti-Tech-Creep 强制执行）
 planner             → EPIC & TASKS（必须使用 EPIC_TEMPLATE, TASKS_TEMPLATE）
@@ -320,6 +333,10 @@ devflow/
     ├── EPIC.md
     ├── TASKS.md
     ├── EXECUTION_LOG.md
+    ├── checklists/          # 需求质量检查清单
+    │   ├── ux.md
+    │   ├── api.md
+    │   └── security.md
     ├── TEST_PLAN.md
     ├── TEST_REPORT.md
     ├── SECURITY_PLAN.md
@@ -330,6 +347,7 @@ devflow/
 ### 质量闸
 
 - Pre-push Guard（TypeScript、测试、代码检查、安全、构建）
+- Checklist Gate（`/flow-checklist` 80% 完成度阈值，在 `/flow-epic` 前执行）
 - Constitution Compliance（每个阶段强制执行）
 - TDD Checkpoint（TEST VERIFICATION CHECKPOINT）
 - Guardrail Hooks（PreToolUse 实时阻止不合规操作）

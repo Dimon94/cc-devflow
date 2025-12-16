@@ -70,6 +70,12 @@ Stage 4: Technical Design (tech-architect agent)
   ├─ Generate TECH_DESIGN.md
   └─ Anti-Tech-Creep enforcement
   ↓
+Stage 4.5: Requirement Quality Check (checklist-agent, optional) ⭐ NEW
+  ├─ Generate type-specific checklists (ux, api, security, etc.)
+  ├─ Validate 5 quality dimensions
+  ├─ Calculate completion percentage
+  └─ 80% threshold gate before EPIC
+  ↓
 Stage 5: EPIC & TASKS Generation (planner agent)
   ├─ Analyze PRD + TECH_DESIGN
   ├─ Generate EPIC.md using EPIC_TEMPLATE
@@ -149,6 +155,10 @@ devflow/requirements/REQ-XXX/
 ├── PRD.md                       # Product Requirements Document
 ├── UI_PROTOTYPE.html            # UI Prototype (conditional generation)
 ├── TECH_DESIGN.md               # Technical Design Document
+├── checklists/                  # Requirement quality checklists ⭐ NEW
+│   ├── ux.md                    # UX checklist
+│   ├── api.md                   # API checklist
+│   └── security.md              # Security checklist
 ├── EPIC.md                      # Epic planning and breakdown
 ├── TASKS.md                     # Single unified task list
 ├── tasks/                       # Task execution artifacts
@@ -166,6 +176,7 @@ devflow/requirements/REQ-XXX/
 ## 🔗 Related Commands
 
 - [`/flow-init`](./flow-init.md) - Only initialize requirement structure (no subsequent stages)
+- [`/flow-checklist`](../../.claude/commands/flow-checklist.md) - Requirement quality check (80% gate before EPIC) ⭐ NEW
 - [`/flow-restart`](./flow-restart.md) - Resume interrupted development
 - [`/flow-status`](./flow-status.md) - View requirement development progress
 - [`/flow-verify`](./flow-verify.md) - Verify document consistency

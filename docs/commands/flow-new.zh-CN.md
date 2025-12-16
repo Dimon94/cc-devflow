@@ -66,6 +66,12 @@ Stage 4: 技术设计 (tech-architect 代理)
   ├─ 生成 TECH_DESIGN.md
   └─ Anti-Tech-Creep 强制执行
   ↓
+Stage 4.5: 需求质量检查 (checklist-agent，可选) ⭐ 新增
+  ├─ 生成类型特定检查清单 (ux, api, security 等)
+  ├─ 验证 5 个质量维度
+  ├─ 计算完成百分比
+  └─ 80% 门禁阈值（进入 EPIC 前）
+  ↓
 Stage 5: EPIC & TASKS 生成 (planner 代理)
   ├─ 分析 PRD + TECH_DESIGN
   ├─ 使用 EPIC_TEMPLATE 生成 EPIC.md
@@ -145,6 +151,10 @@ devflow/requirements/REQ-XXX/
 ├── PRD.md                       # 产品需求文档
 ├── UI_PROTOTYPE.html            # UI 原型（条件生成）
 ├── TECH_DESIGN.md               # 技术设计文档
+├── checklists/                  # 需求质量检查清单 ⭐ 新增
+│   ├── ux.md                    # UX 检查清单
+│   ├── api.md                   # API 检查清单
+│   └── security.md              # Security 检查清单
 ├── EPIC.md                      # Epic 规划和分解
 ├── TASKS.md                     # 单一统一任务列表
 ├── tasks/                       # 任务执行产物
@@ -162,6 +172,7 @@ devflow/requirements/REQ-XXX/
 ## 🔗 相关命令
 
 - [`/flow-init`](./flow-init.md) - 仅初始化需求结构（不执行后续阶段）
+- [`/flow-checklist`](../../.claude/commands/flow-checklist.md) - 需求质量检查（EPIC 前 80% 门禁）⭐ 新增
 - [`/flow-restart`](./flow-restart.md) - 恢复中断的开发
 - [`/flow-status`](./flow-status.md) - 查看需求开发进度
 - [`/flow-verify`](./flow-verify.md) - 验证文档一致性
