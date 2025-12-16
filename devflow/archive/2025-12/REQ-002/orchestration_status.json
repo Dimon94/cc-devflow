@@ -1,7 +1,11 @@
 {
   "reqId": "REQ-002",
   "title": "flow-checklist 需求质量检查命令",
-  "status": "release_complete",
+  "status": "archived",
+  "archivedReason": "completed",
+  "archivedAt": "2025-12-16T20:42:00+08:00",
+  "archiveLocation": "devflow/archive/2025-12/REQ-002",
+  "statusBeforeArchive": "release_complete",
   "phase": "released",
   "phase0_complete": true,
   "clarify_complete": true,

@@ -1,7 +1,11 @@
 {
   "reqId": "REQ-001",
   "title": "/flow-clarify 需求澄清命令",
-  "status": "merged",
+  "status": "archived",
+  "archivedReason": "completed",
+  "archivedAt": "2025-12-16T20:36:00+08:00",
+  "archiveLocation": "devflow/archive/2025-12/REQ-001",
+  "statusBeforeArchive": "merged",
   "phase": "complete",
   "prUrl": "https://github.com/Dimon94/cc-devflow/pull/4",
   "mergedAt": "2025-12-15T16:55:00+08:00",

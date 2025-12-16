@@ -323,3 +323,18 @@
 **Next Step**: Await code review and CI, then merge PR
 
 ---
+
+### 2025-12-16 20:34:52 (Tue)
+**需求归档**
+- 归档原因: completed
+- 归档位置: /Users/dimon/001Area/10-Repos/01-Active/DevTools/cc-devflow/devflow/archive/2025-12/REQ-003
+- 归档前状态: release_complete
+
+### 2025-12-16 20:35:16 (Tue)
+需求从归档恢复: /Users/dimon/001Area/10-Repos/01-Active/DevTools/cc-devflow/devflow/archive/2025-12/REQ-003 → /Users/dimon/001Area/10-Repos/01-Active/DevTools/cc-devflow/devflow/requirements/REQ-003
+
+### 2025-12-16 20:35:32 (Tue)
+**需求归档**
+- 归档原因: completed
+- 归档位置: /Users/dimon/001Area/10-Repos/01-Active/DevTools/cc-devflow/devflow/archive/2025-12/REQ-003
+- 归档前状态: release_complete

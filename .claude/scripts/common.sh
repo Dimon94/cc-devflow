@@ -475,6 +475,93 @@ log_event() {
     fi
 }
 
+# =============================================================================
+# Archive Functions (归档功能)
+# =============================================================================
+
+# Get archive directory path (按年月组织)
+# Args: $1 - repo root, $2 - year-month (YYYY-MM, optional, defaults to current)
+# Returns: archive directory path
+get_archive_dir() {
+    local repo_root="$1"
+    local year_month="${2:-$(TZ='Asia/Shanghai' date '+%Y-%m')}"
+    echo "$repo_root/devflow/archive/$year_month"
+}
+
+# Check if requirement is archived
+# Args: $1 - repo root, $2 - requirement ID
+# Returns: 0 if archived, 1 if not
+is_archived() {
+    local repo_root="$1"
+    local req_id="$2"
+    local archive_base="$repo_root/devflow/archive"
+
+    # 搜索所有归档月份目录
+    if [[ -d "$archive_base" ]]; then
+        for month_dir in "$archive_base"/*/; do
+            if [[ -d "${month_dir}${req_id}" ]]; then
+                return 0
+            fi
+        done
+    fi
+    return 1
+}
+
+# Find archived requirement location
+# Args: $1 - repo root, $2 - requirement ID
+# Returns: full path to archived requirement, or empty if not found
+find_archived_req() {
+    local repo_root="$1"
+    local req_id="$2"
+    local archive_base="$repo_root/devflow/archive"
+
+    if [[ -d "$archive_base" ]]; then
+        for month_dir in "$archive_base"/*/; do
+            if [[ -d "${month_dir}${req_id}" ]]; then
+                echo "${month_dir}${req_id}"
+                return 0
+            fi
+        done
+    fi
+    echo ""
+    return 1
+}
+
+# List all archived requirements
+# Args: $1 - repo root
+# Returns: list of archived requirement IDs with their archive dates
+list_archived_reqs() {
+    local repo_root="$1"
+    local archive_base="$repo_root/devflow/archive"
+
+    if [[ ! -d "$archive_base" ]]; then
+        echo "No archived requirements found."
+        return
+    fi
+
+    local found=false
+    for month_dir in "$archive_base"/*/; do
+        [[ -d "$month_dir" ]] || continue
+        local month=$(basename "$month_dir")
+        for req_dir in "$month_dir"*/; do
+            [[ -d "$req_dir" ]] || continue
+            local req_id=$(basename "$req_dir")
+            # 读取归档原因
+            local status_file="$req_dir/orchestration_status.json"
+            local reason="unknown"
+            if [[ -f "$status_file" ]]; then
+                reason=$(jq -r '.archivedReason // "completed"' "$status_file" 2>/dev/null)
+            fi
+            echo "$month | $req_id | $reason"
+            found=true
+        done
+    done
+
+    if [[ "$found" == "false" ]]; then
+        echo "No archived requirements found."
+    fi
+}
+
 # Color output helpers
 color_red() { echo -e "\033[0;31m$1\033[0m"; }
 color_green() { echo -e "\033[0;32m$1\033[0m"; }
