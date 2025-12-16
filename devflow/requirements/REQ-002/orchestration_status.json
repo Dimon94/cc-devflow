@@ -1,8 +1,8 @@
 {
   "reqId": "REQ-002",
   "title": "flow-checklist 需求质量检查命令",
-  "status": "qa_complete",
-  "phase": "release",
+  "status": "release_complete",
+  "phase": "released",
   "phase0_complete": true,
   "clarify_complete": true,
   "prd_complete": true,
@@ -74,5 +74,18 @@
       "security": "PASS"
     },
     "lastQaAt": "2025-12-16T22:45:00+08:00"
-  }
+  },
+  "release": {
+    "status": "complete",
+    "prNumber": 5,
+    "prUrl": "https://github.com/Dimon94/cc-devflow/pull/5",
+    "branch": "feature/REQ-002-flow-checklist",
+    "targetBranch": "main",
+    "commits": 6,
+    "filesChanged": 41,
+    "linesAdded": 8801,
+    "releasePlan": "RELEASE_PLAN.md",
+    "releasedAt": "2025-12-16T23:30:00+08:00"
+  },
+  "completedSteps": ["init", "research", "clarify", "prd", "tech_design", "epic", "dev", "qa", "release"]
 }
