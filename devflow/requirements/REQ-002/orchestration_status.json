@@ -76,7 +76,7 @@
     "lastQaAt": "2025-12-16T22:45:00+08:00"
   },
   "release": {
-    "status": "complete",
+    "status": "merged",
     "prNumber": 5,
     "prUrl": "https://github.com/Dimon94/cc-devflow/pull/5",
     "branch": "feature/REQ-002-flow-checklist",
@@ -85,7 +85,10 @@
     "filesChanged": 41,
     "linesAdded": 8801,
     "releasePlan": "RELEASE_PLAN.md",
-    "releasedAt": "2025-12-16T23:30:00+08:00"
+    "releasedAt": "2025-12-16T23:30:00+08:00",
+    "mergedAt": "2025-12-16T13:47:10+08:00",
+    "mergeCommit": "0fe6c8461b830392cbad6e75c218dde7a7155327",
+    "mergedBy": "Dimon94"
   },
-  "completedSteps": ["init", "research", "clarify", "prd", "tech_design", "epic", "dev", "qa", "release"]
+  "completedSteps": ["init", "research", "clarify", "prd", "tech_design", "epic", "dev", "qa", "release", "merged"]
 }
