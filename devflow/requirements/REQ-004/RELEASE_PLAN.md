@@ -85,7 +85,37 @@ Introducing the Agent Adapter Architecture to enable cc-devflow to run across mu
 
 ---
 
-## 7. Release Checklist
+## 7. Merge Blockers
+
+> [!IMPORTANT]
+> This PR is **BLOCKED** until the following requirements are complete.
+
+| Requirement | Status | Description |
+|-------------|--------|-------------|
+| RM-007 | Pending | TBD |
+| RM-008 | Pending | TBD |
+| RM-009 | Pending | TBD |
+
+### Branching Strategy
+
+Subsequent requirements should branch **FROM this branch**, not from `main`:
+
+```
+main
+  └── feature/REQ-004-agent-adapter-architecture (base)
+       ├── feature/RM-007-xxx
+       ├── feature/RM-008-xxx
+       └── feature/RM-009-xxx
+```
+
+**Merge Order**:
+1. Complete RM-007, RM-008, RM-009 on child branches
+2. Merge child branches into REQ-004 branch (or use stacked PRs)
+3. Final merge of REQ-004 into `main`
+
+---
+
+## 8. Release Checklist
 
 - [x] All tests passing
 - [x] Security review complete
