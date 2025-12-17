@@ -77,23 +77,29 @@ CC-DevFlow v2.x 升级目标：借鉴 spec-kit 的"质量左移"理念，通过�
 
 ---
 
-### M3: v2.0 Release (Q1-2026 End)
+### M3: v2.0 Release (Q1-2026 End) 🟡
 
+**Status:** 🟡 In Progress (1/4 completed)
 **Goal:** Production-ready release with P0+P1 features and multi-platform foundation
 
 **Deliverables:**
-- RM-003: 分支命名优化 (中文转拼音)
+- RM-003: 分支命名优化 (中文转拼音) ✅
+  - 使用 pypinyin 实现中文转拼音 ✅
+  - 支持多音字智能选择（lazy_pinyin 词组识别）✅
+  - 向后兼容现有分支命名 ✅
+  - 完整单元测试套件 (10 测试用例) ✅
 - RM-004: GitHub API 限流处理
 - RM-005: Coverage Summary Table 增强
 - RM-006: Agent 适配层架构
 
 **Success Criteria:**
-- All P0 and P1 features tested and documented
+- All P0 and P1 features tested and documented (进行中)
 - Multi-platform adapter architecture defined
 - Zero critical bugs
 - Migration guide available
 
 **Timeline:** Q1-2026 (weeks 5-6 + architecture design)
+**Completed:** RM-003 merged on 2025-12-16 (PR #6)
 
 ---
 
@@ -155,9 +161,10 @@ CC-DevFlow v2.x 升级目标：借鉴 spec-kit 的"质量左移"理念，通过�
    - Create quality checklist engine
    - Implement coverage analysis
 
-2. **RM-003: 分支命名优化** (P1, 0.5 weeks)
-   - Chinese to Pinyin conversion
-   - Branch naming validation
+2. **RM-003: 分支命名优化** (P1, 0.5 weeks) ✅
+   - Chinese to Pinyin conversion ✅
+   - Branch naming validation ✅
+   - Completed: 2025-12-16 (PR #6)
 
 3. **RM-004: GitHub API 限流处理** (P1, 0.5 weeks)
    - Rate limit detection
@@ -309,10 +316,10 @@ RM-001 → RM-002 → RM-006 → RM-007 → RM-009/010/011/012
 - [x] >90% quality check coverage (90% AC coverage achieved)
 - [ ] 50% reduction in downstream rework (待后续统计)
 
-### M3 (v2.0 Release)
-- [ ] All P0+P1 features shipped
-- [ ] Zero critical bugs
-- [ ] Documentation complete
+### M3 (v2.0 Release) 🟡
+- [ ] All P0+P1 features shipped (1/4 P1 features completed)
+- [x] Zero critical bugs (RM-003 passed)
+- [x] Documentation complete (RM-003 documented)
 - [ ] 100 beta users onboarded
 
 ### M4 (Multi-Platform)
@@ -346,5 +353,5 @@ RM-001 → RM-002 → RM-006 → RM-007 → RM-009/010/011/012
 
 **Document Status:** Living Document
 **Owner:** CC-DevFlow Team
-**Last Updated:** 2025-12-16
+**Last Updated:** 2025-12-16 (RM-003 completed)
 **Next Review:** End of M3 (Q1-2026 End)

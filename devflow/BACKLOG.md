@@ -1,6 +1,6 @@
 # CC-DevFlow v2.x Backlog
 
-**Last Updated:** 2025-12-16 (RM-002 completed)
+**Last Updated:** 2025-12-16 (RM-002, RM-003 completed)
 **Total Items:** 12
 **Estimated Effort:** 11.5 weeks
 
@@ -107,34 +107,36 @@
 
 ### RM-003: 分支命名优化 (中文转拼音)
 
-**Status:** 🔵 Planned
+**Status:** 🟢 Completed
 **Effort:** 0.5 weeks
 **Quarter:** Q1-2026
 **Milestone:** M3 (v2.0 Release)
 **Dependencies:** None
+**Merged:** 2025-12-16 (PR #6)
 
 **Description:**
 优化 Git 分支命名逻辑，自动将中文特性名转换为拼音，避免 Git 工具兼容性问题。
 
 **Acceptance Criteria:**
-- [ ] 集成 pinyin 库（如 `pinyin-pro`）
-- [ ] 支持多音字智能选择
-- [ ] 保留英文和数字
-- [ ] 转换规则：
-  - 中文 → 拼音小写
-  - 空格 → 连字符
+- [x] 集成 pinyin 库（使用 `pypinyin`）
+- [x] 支持多音字智能选择（使用 lazy_pinyin 进行词组识别）
+- [x] 保留英文和数字
+- [x] 转换规则：
+  - 中文 → 拼音小写（通过 pypinyin）
+  - 空格 → 连字符（slugify 函数处理）
   - 特殊字符 → 移除
-- [ ] 示例: "用户登录功能" → "feature/yong-hu-deng-lu-gong-neng"
-- [ ] 向后兼容现有分支命名
+- [x] 示例: "用户登录功能" → "yong-hu-deng-lu-gong-neng"
+- [x] 向后兼容现有分支命名（英文输入行为不变）
 
 **Technical Notes:**
-- Library: `pinyin-pro` or `pinyin`
-- Update: `lib/git-utils.js`
-- Add unit tests for edge cases
+- Library: `pypinyin` (Python 库，通过 python3 调用)
+- Update: `.claude/scripts/common.sh` (slugify 函数增强)
+- 添加了完整的单元测试套件: `.claude/tests/slugify.bats` (10 个测试用例)
 
 **Related Files:**
-- `lib/git-utils.js`
-- `tests/git-utils.test.js`
+- `.claude/scripts/common.sh` (modified, +71 lines)
+- `.claude/tests/slugify.bats` (new, 82 lines)
+- `README.md` (modified, 添加 pypinyin 可选依赖说明)
 
 ---
 
@@ -504,9 +506,9 @@
 | Priority | Completed | In Progress | Planned | Total | Completion % |
 |----------|-----------|-------------|---------|-------|--------------|
 | P0       | 2         | 0           | 0       | 2     | 100%         |
-| P1       | 0         | 0           | 3       | 3     | 0%           |
+| P1       | 1         | 0           | 2       | 3     | 33.3%        |
 | P2       | 0         | 0           | 7       | 7     | 0%           |
-| **Total**| **2**     | **0**       | **10**  | **12**| **16.7%**    |
+| **Total**| **3**     | **0**       | **9**   | **12**| **25.0%**    |
 
 ### Milestone Progress
 
@@ -514,7 +516,7 @@
 |-----------|--------------|-------|-----------|--------|
 | M1        | Q4-2025 End  | 1     | 1/1       | 🟢 Completed |
 | M2        | Q1-2026 Mid  | 1     | 1/1       | 🟢 Completed |
-| M3        | Q1-2026 End  | 4     | 0/4       | 🔵 Not Started |
+| M3        | Q1-2026 End  | 4     | 1/4       | 🟡 In Progress |
 | M4        | Q2-2026 End  | 6     | 0/6       | 🔵 Not Started |
 
 ### Effort Distribution
