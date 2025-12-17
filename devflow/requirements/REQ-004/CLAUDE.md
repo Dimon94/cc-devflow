@@ -6,6 +6,7 @@
 devflow/requirements/REQ-004/
 ├── README.md                  # 本需求索引与阶段清单
 ├── CLAUDE.md                  # 本目录的架构镜像与关键决策（本文件）
+├── REQ-004-code-review.md      # Git 新增文件的高强度 Code Review 报告
 ├── EXECUTION_LOG.md           # 执行事件流水（只追加，不回写）
 ├── orchestration_status.json  # 编排状态机（机器可读，单一真相源）
 └── research/
@@ -35,4 +36,4 @@ devflow/requirements/REQ-004/
 ## 变更日志
 
 - 2025-12-17：完成 REQ-004 澄清并生成 `research/clarifications/20251217-140906-flow-clarify.md`。
-
+- 2025-12-17：新增 `REQ-004-code-review.md`，用于记录 Git 新增文件的审查结论与整改建议。

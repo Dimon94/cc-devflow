@@ -1,8 +1,8 @@
 {
   "reqId": "REQ-004",
   "title": "Agent Adapter Architecture",
-  "status": "epic_complete",
-  "phase": "epic_planning",
+  "status": "release_in_progress",
+  "phase": "release",
   "phase0_complete": true,
   "phase1_complete": true,
   "clarify_complete": true,
@@ -25,8 +25,11 @@
     "clarify",
     "prd",
     "tech_design",
-    "epic"
+    "epic",
+    "development",
+    "qa"
   ],
+  "lastQaAt": "2025-12-17T17:56:00Z",
   "createdAt": "2025-12-17T13:36:03+08:00",
-  "updatedAt": "2025-12-17T16:20:00+08:00"
+  "updatedAt": "2025-12-17T17:59:00+08:00"
 }

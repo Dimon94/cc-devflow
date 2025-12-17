@@ -1,6 +1,6 @@
 # EPIC: REQ-004 - Agent Adapter Architecture
 
-**Status**: In Progress
+**Status**: Complete
 **Owner**: cc-devflow Team
 **Type**: Architecture
 **PRD**: [PRD.md](file:///Users/dimon/001Area/80-CodeWorld/002-devflow/cc-devflow/devflow/requirements/REQ-004/PRD.md)
@@ -63,13 +63,16 @@ Based on [TECH_DESIGN.md](file:///Users/dimon/001Area/80-CodeWorld/002-devflow/c
 ## 4. Rollout Plan
 
 - **Phase 1: Foundation**: Create Interface, Registry, and Config schema.
-- **Phase 2: Adapters**: Implement Claude (migrate) and Codex (new).
+- **Phase 2: TDD Phase 2 (Tests First)**: Write failing tests, then implement.
 - **Phase 3: Integration**: Switch Command entry points to use Registry.
-- **Phase 4: Verification**: full regression test.
+- **Phase 4: Verification**: Full regression test.
+
+### ⚠️ TEST VERIFICATION CHECKPOINT ⚠️
+*All Phase 2 tests verified: PASS*
 
 ---
 
-## 5. Constitution Check (Epic Level)
+## Constitution Check
 
 - [x] **II.1 No Duplication**: Platform logic encapsulated in Adapters.
 - [x] **III.3 Least Privilege**: Default deny for Shell/Network capabilities.
