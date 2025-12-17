@@ -1,0 +1,32 @@
+{
+  "reqId": "REQ-004",
+  "title": "Agent Adapter Architecture",
+  "status": "epic_complete",
+  "phase": "epic_planning",
+  "phase0_complete": true,
+  "phase1_complete": true,
+  "clarify_complete": true,
+  "clarify_session_id": "20251217-135507-REQ-004",
+  "clarifications": {
+    "questionsAsked": 5,
+    "questionsAnswered": 5,
+    "keyDecisions": {
+      "mvp_scope": "claude-code + codex-cli adapters runnable",
+      "dod": "interface+registry+default adapter+config+tests+docs+>=1 non-default adapter",
+      "security": "capability allow-list; default deny shell/network; audited enable",
+      "selection_policy": "explicit override > config > detect score > fallback; warn on conflicts",
+      "nfr": "detect <50ms (cached <5ms) + structured logs"
+    }
+  },
+  "prd_complete": true,
+  "completedSteps": [
+    "init",
+    "research",
+    "clarify",
+    "prd",
+    "tech_design",
+    "epic"
+  ],
+  "createdAt": "2025-12-17T13:36:03+08:00",
+  "updatedAt": "2025-12-17T16:20:00+08:00"
+}

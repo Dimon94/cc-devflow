@@ -1,0 +1,22 @@
+{
+  "tasks": [
+    {
+      "id": "R001",
+      "type": "pattern_selection",
+      "prompt": "Determine the best design pattern for multi-platform CLI support.",
+      "status": "completed",
+      "decision": "Use Strategy Pattern combined with a Plugin Registry.",
+      "rationale": "Strategy pattern allows interchangeable algorithms (adapters) independent of clients. Registry manages lifecycle and selection logic.",
+      "alternatives": "Conditional logic in every command (rejected: unmaintainable); Microservices (rejected: over-engineering for a CLI tool)."
+    },
+    {
+      "id": "R002",
+      "type": "interface_design",
+      "prompt": "Define the core AgentAdapter interface.",
+      "status": "completed",
+      "decision": "Standardize around detect(), executeCommand(), and context management.",
+      "rationale": "These three primitives cover the essential differences between execution environments.",
+      "alternatives": "Event-based only (rejected: request-response is more common for command execution)."
+    }
+  ]
+}
