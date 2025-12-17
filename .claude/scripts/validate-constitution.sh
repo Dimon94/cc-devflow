@@ -325,7 +325,9 @@ validate_code() {
         fi
 
         # Check for commented-out code (dead code)
-        local commented_lines=$(grep -cE "^\s*(#|//)\s*(def |function |class |const |let |var )" "$file" 2>/dev/null || echo "0")
+        local commented_lines
+        commented_lines=$(grep -cE "^\s*(#|//)\s*(def |function |class |const |let |var )" "$file" 2>/dev/null || true)
+        commented_lines=${commented_lines:-0}
         if [[ "$commented_lines" -gt 3 ]]; then
             add_issue "warning" "NO_DEAD_CODE" "Excessive commented-out code detected ($commented_lines lines)" "$file"
         fi
@@ -394,7 +396,9 @@ validate_prd() {
     fi
 
     # Check for placeholders
-    local placeholder_count=$(grep -c "{{.*}}" "$PRD_FILE" 2>/dev/null || echo "0")
+    local placeholder_count
+    placeholder_count=$(grep -c "{{.*}}" "$PRD_FILE" 2>/dev/null || true)
+    placeholder_count=${placeholder_count:-0}
     if [[ "$placeholder_count" -gt 0 ]]; then
         add_issue "error" "PRD" "Unfilled placeholders detected ($placeholder_count)" "$PRD_FILE"
     fi
@@ -429,7 +433,9 @@ validate_epic() {
     fi
 
     # Check for placeholders
-    local placeholder_count=$(grep -c "{{.*}}" "$EPIC_FILE" 2>/dev/null || echo "0")
+    local placeholder_count
+    placeholder_count=$(grep -c "{{.*}}" "$EPIC_FILE" 2>/dev/null || true)
+    placeholder_count=${placeholder_count:-0}
     if [[ "$placeholder_count" -gt 0 ]]; then
         add_issue "warning" "EPIC" "Unfilled placeholders detected ($placeholder_count)" "$EPIC_FILE"
     fi
