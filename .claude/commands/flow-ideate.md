@@ -1,6 +1,6 @@
 ---
 name: flow-ideate
-description: Intent-driven requirement development. Usage: /flow-ideate "我想做一个用户管理系统" or /flow-ideate "REQ-123|我想要一个数据分析的东西"
+description: 'Intent-driven requirement development. Usage: /flow-ideate "我想做一个用户管理系统" or /flow-ideate "REQ-123|我想要一个数据分析的东西"'
 scripts:
   prereq: .claude/scripts/check-prerequisites.sh
   create_requirement: .claude/scripts/create-requirement.sh

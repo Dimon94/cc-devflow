@@ -1,6 +1,6 @@
 ---
 name: flow-new
-description: One-shot requirement flow. Usage: /flow-new "REQ-123|支持用户下单|https://plan.example.com/Q1"
+description: 'One-shot requirement flow. Usage: /flow-new "REQ-123|支持用户下单|https://plan.example.com/Q1"'
 ---
 
 # Flow-New - 一键需求开发流

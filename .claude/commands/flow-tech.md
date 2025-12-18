@@ -1,6 +1,6 @@
 ---
 name: flow-tech
-description: Generate Technical Design package. Usage: /flow-tech "REQ-123" or /flow-tech
+description: 'Generate Technical Design package. Usage: /flow-tech "REQ-123" or /flow-tech'
 scripts:
   prereq: .claude/scripts/check-prerequisites.sh
   tech_analysis: .claude/scripts/generate-tech-analysis.sh

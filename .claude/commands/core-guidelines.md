@@ -1,5 +1,6 @@
 ---
-description: Generate project-specific development guidelines skills (frontend/backend separately). Usage: /core-guidelines [--frontend|--backend|--new|--force]
+name: core-guidelines
+description: 'Generate project-specific development guidelines skills (frontend/backend separately). Usage: /core-guidelines [--frontend|--backend|--new|--force]'
 ---
 
 # Generate Project Development Guidelines

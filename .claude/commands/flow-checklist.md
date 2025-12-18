@@ -1,3 +1,8 @@
+---
+name: flow-checklist
+description: 'Generate requirement quality checklist. Usage: /flow-checklist [OPTIONS]'
+---
+
 # /flow-checklist - 需求质量检查命令
 
 ## Usage

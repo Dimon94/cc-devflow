@@ -1,6 +1,6 @@
 ---
 name: flow-upgrade
-description: PRD version management, analysis, and application workflow. Usage: /flow-upgrade "REQ-123" --analyze or --version="2.0.0" --reason="..."
+description: 'PRD version management, analysis, and application workflow. Usage: /flow-upgrade "REQ-123" --analyze or --version="2.0.0" --reason="..."'
 scripts:
   prereq: .claude/scripts/check-prerequisites.sh
   manage_constitution: .claude/scripts/manage-constitution.sh

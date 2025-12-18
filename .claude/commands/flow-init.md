@@ -1,6 +1,6 @@
 ---
 name: flow-init
-description: Initialize requirement structure. Usage: /flow-init "REQ-123|User Authentication" or /flow-init --interactive
+description: 'Initialize requirement structure. Usage: /flow-init "REQ-123|User Authentication" or /flow-init --interactive'
 scripts:
   create: .claude/scripts/create-requirement.sh
   prereq: .claude/scripts/check-prerequisites.sh

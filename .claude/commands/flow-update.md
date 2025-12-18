@@ -1,6 +1,6 @@
 ---
 name: flow-update
-description: Update task progress for cc-devflow requirements. Usage: /flow-update "REQ-123" "T012" [OPTIONS]
+description: 'Update task progress for cc-devflow requirements. Usage: /flow-update "REQ-123" "T012" [OPTIONS]'
 scripts:
   prereq: .claude/scripts/check-prerequisites.sh
   check_tasks: .claude/scripts/check-task-status.sh

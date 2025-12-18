@@ -1,6 +1,6 @@
 ---
 name: flow-qa
-description: Execute quality assurance and security review. Usage: /flow-qa "REQ-123" or /flow-qa
+description: 'Execute quality assurance and security review. Usage: /flow-qa "REQ-123" or /flow-qa'
 scripts:
   prereq: .claude/scripts/check-prerequisites.sh
   check_tasks: .claude/scripts/check-task-status.sh

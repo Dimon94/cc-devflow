@@ -1,6 +1,6 @@
 ---
 name: flow-archive
-description: Archive completed/deprecated requirements. Usage: /flow-archive "REQ-123" or /flow-archive --list
+description: 'Archive completed/deprecated requirements. Usage: /flow-archive "REQ-123" or /flow-archive --list'
 scripts:
   archive: .claude/scripts/archive-requirement.sh
 ---

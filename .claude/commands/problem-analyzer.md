@@ -1,6 +1,6 @@
 ---
 name: problem-analyzer
-description: Diagnose incidents or regressions and outline minimal fixes. Usage: /problem-analyzer "<issue description>"
+description: 'Diagnose incidents or regressions and outline minimal fixes. Usage: /problem-analyzer "<issue description>"'
 scripts:
   analyze: .claude/scripts/run-problem-analysis.sh
 ---

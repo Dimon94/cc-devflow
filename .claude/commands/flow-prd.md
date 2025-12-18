@@ -1,6 +1,6 @@
 ---
 name: flow-prd
-description: Generate Product Requirements Document. Usage: /flow-prd "REQ-123" or /flow-prd
+description: 'Generate Product Requirements Document. Usage: /flow-prd "REQ-123" or /flow-prd'
 scripts:
   prereq: .claude/scripts/check-prerequisites.sh
   validate_research: .claude/scripts/validate-research.sh

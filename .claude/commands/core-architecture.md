@@ -1,6 +1,6 @@
 ---
 name: core-architecture
-description: Generate or update ARCHITECTURE.md with 4 architecture diagrams. Usage: /core-architecture
+description: 'Generate or update ARCHITECTURE.md with 4 architecture diagrams. Usage: /core-architecture'
 scripts:
   sync_progress: .claude/scripts/sync-roadmap-progress.sh
 ---
