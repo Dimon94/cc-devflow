@@ -28,12 +28,12 @@ Commands are defined as Markdown files with structured protocols:
 - **Body**: Instructions for the AI agent, including when to run scripts and how to parse findings.
 - **Interactive Loops**: The prompts instruct the Agent to run a script, read output, and interact with the user (e.g., "Sequential questioning loop").
 
-## Insights for REQ-005 (Command Template Engine)
+## Insights for REQ-005 (Compile From `.claude/`)
 
-1.  **Runtime vs Build-Time**:
-    - `spec-kit` optimizes for "no dependencies" (just download a zip).
-    - `cc-devflow` should favor **Runtime Generation** (Handlebars) to allow dynamic customization without shipping dozens of static files.
-    - **Adoption**: We will replicate `spec-kit`'s *Placeholder* concept but implement it via Handlebars helpers (e.g., `{{script 'clarify'}}` instead of static `{SCRIPT}` replacement).
+1.  **Build-Time Determinism**:
+    - `spec-kit` optimizes for "download a zip" by doing placeholder replacement at build time.
+    - `cc-devflow` can adopt the same determinism but keep `.claude/` as SSOT by compiling in-repo instead of shipping per-platform zips.
+    - **Adoption**: replicate `spec-kit`'s placeholder replacement via compile-time transforms on `.claude/commands`.
 
 2.  **Agent Registry**:
     - `spec-kit`'s `AGENT_CONFIG` confirms our RM-006 `AgentAdapter` design is correct.
@@ -43,7 +43,8 @@ Commands are defined as Markdown files with structured protocols:
     - The structure of `templates/commands/clarify.md` is an excellent reference for our future prompts. It mixes "System Instructions" with "Runtime Context".
 
 ## Recommendation for Implementation
-- **Template Source**: Create a `templates/commands/` directory in our codebase similar to `spec-kit`.
-- **Helpers**: Implement Handlebars helpers that mimic `create-release-packages.sh` logic:
-  - `{{agent_script 'command_name'}}`: Resolves script path based on current adapter.
-  - `{{agent_args}}`: Outputs `$ARGUMENTS` or `{{args}}` based on adapter type.
+- **Template Source**: Use `.claude/commands/*.md` as the source of truth.
+- **Compiler Rules**: Implement deterministic expansion:
+  - `{SCRIPT:<alias>}` resolved from frontmatter `scripts`
+  - `{AGENT_SCRIPT}` resolved from frontmatter `agent_scripts` (with `__AGENT__` substitution)
+  - `$ARGUMENTS` token mapped per platform (`{{args}}` for TOML)

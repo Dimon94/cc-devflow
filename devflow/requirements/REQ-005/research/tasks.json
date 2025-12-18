@@ -3,35 +3,35 @@
         {
             "id": "R001",
             "type": "technology",
-            "prompt": "Research Handlebars.js features for CLI command templating.",
+            "prompt": "Confirm `.claude/commands` frontmatter + placeholders are sufficient for deterministic multi-platform compilation.",
             "status": "completed",
-            "decision": "Use Handlebars.js as the template engine.",
-            "rationale": "Simple syntax, natively supported helpers, and easy integration with Node.js.",
+            "decision": "Use a compiler approach: expand `{SCRIPT:*}`/`{AGENT_SCRIPT}`/`$ARGUMENTS` from command frontmatter and emit platform artifacts.",
+            "rationale": "cc-devflow command files already contain structured frontmatter and deterministic placeholders, enabling compile-time generation without a runtime template engine.",
             "alternatives": [
-                "Mustache (too simple)",
-                "EJS (too focused on HTML)"
+                "Runtime Handlebars engine (unnecessary complexity)",
+                "Static per-platform templates (drift + duplication)"
             ]
         },
         {
             "id": "R002",
             "type": "architecture",
-            "prompt": "Design template storage and fallback mechanism.",
+            "prompt": "Design deterministic compilation outputs per platform.",
             "status": "completed",
-            "decision": "Store templates in `templates/adapters/[platform]/[command].hbs` and fallback to `generic` platform.",
-            "rationale": "Clear isolation between platforms and ensures robustness with a fallback.",
+            "decision": "Emit compiled artifacts to per-platform folders: `.codex/.cursor/.qwen/.agent`.",
+            "rationale": "Matches platform-native consumption while keeping `.claude/` as SSOT.",
             "alternatives": [
-                "Single monolithic template with complex IFs"
+                "Hand-maintained per-platform configs"
             ]
         },
         {
             "id": "R003",
             "type": "source_analysis",
-            "prompt": "Analyze spec-kit source code for implementation patterns.",
+            "prompt": "Analyze spec-kit source code for placeholder replacement and multi-agent packaging patterns.",
             "status": "completed",
-            "decision": "Adopt Placeholder patterns via Runtime Helpers.",
-            "rationale": "spec-kit uses build-time shell scripts to replace {SCRIPT} and {ARGS}. We will achieve the same outcome dynamically using Handlebars helpers {{agent_script}} and {{agent_args}}.",
+            "decision": "Adopt spec-kit placeholder replacement patterns via compile-time transforms (not runtime helpers).",
+            "rationale": "spec-kit replaces {SCRIPT}/{ARGS} at build time. cc-devflow can do the same by compiling `.claude/commands` into target platform artifacts.",
             "alternatives": [
-                "Copy spec-kit's shell script build system (too rigid)"
+                "Copy spec-kit's release zip templating (not aligned with SSOT in-repo)"
             ]
         }
     ]

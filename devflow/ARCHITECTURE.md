@@ -2,9 +2,9 @@
 
 **Version**: 2.1.0
 **Created**: 2025-12-15T16:30:00+08:00 北京时间
-**Updated**: 2025-12-15T16:30:00+08:00 北京时间
+**Updated**: 2025-12-18T00:00:00+08:00 北京时间
 **Architecture Type**: Plugin-based CLI Framework (插件式命令行框架)
-**Deployment Model**: CLI Tool (Claude Code Extension)
+**Deployment Model**: CLI Tool + Generated Agent Artifacts
 
 ---
 
@@ -19,6 +19,11 @@
   - 作为 Claude Code 的 `.claude/` 目录配置
   - 无需独立服务器部署
   - 通过 `npx tiged` 一键安装
+
+- **多平台输出**: Generated Agent Artifacts（生成物）
+  - 以 `.claude/` 为单一事实源（SSOT）
+  - 通过编译器生成 `.codex/`、`.cursor/`、`.qwen/`、`.agent/` 等目录
+  - 生成物可删可重建（build artifacts）
 
 ---
 
@@ -44,6 +49,17 @@
 - **Activation**: Keyword/Intent/File triggers
 - **Pattern**: Domain knowledge + Guardrails
 - **Count**: 6 skill packages
+
+### Multi-Platform Compilation Layer (编译层)
+- **Compiler**: Adapter Compiler（从 `.claude/` 编译生成平台产物）
+- **Outputs**: `.codex/`, `.cursor/`, `.qwen/`, `.agent/` (Antigravity IDE)
+- **Skills Strategy**: Registry + Loader（渐进披露），MCP 可选增强
+
+**Command Compilation Rule (关键规则)**
+- `.claude/commands/*.md` 的 frontmatter 作为可执行映射源
+  - `scripts` + `{SCRIPT:<alias>}` → 编译为可执行命令
+  - `agent_scripts` + `{AGENT_SCRIPT}` → 编译为平台上下文更新步骤（并替换 `__AGENT__`）
+  - `$ARGUMENTS` / `{{args}}` → 按目标平台替换
 
 ### Integration Layer (集成层)
 - **AI**: Claude API (via Claude Code)
@@ -104,7 +120,9 @@ graph TB
 
     subgraph "规划中 Planned - v2.x 升级"
         AgentAdapter[Agent适配层<br/>多平台支持]
-        CommandEngine[命令模板引擎]
+        CommandEmitter[命令转译器<br/>从 .claude 生成命令]
+        AdapterCompiler[Adapter Compiler<br/>生成平台产物]
+        SkillsBridge[Skills Bridge<br/>Registry + Loader]
     end
 
     %% 核心层依赖
@@ -169,6 +187,7 @@ graph TB
         CoreScripts[Core Scripts<br/>common.sh, create-requirement.sh<br/>check-prerequisites.sh]
         FlowScripts[Flow Scripts<br/>setup-epic.sh, mark-task-complete.sh<br/>generate-status-report.sh]
         ValidationScripts[Validation Scripts<br/>validate-constitution.sh<br/>validate-scope-boundary.sh]
+        HookScripts[Hook Scripts<br/>PreToolUse, Stop, Tracking]
     end
 
     subgraph "配置层 Config Layer"
@@ -176,6 +195,13 @@ graph TB
         Constitution[Constitution<br/>10 Articles, Quality Gates]
         Skills[Skills<br/>cc-devflow-orchestrator<br/>devflow-tdd-enforcer]
         Rules[Rules<br/>core-patterns, devflow-conventions]
+    end
+
+    subgraph "编译层 Compilation Layer (Planned)"
+        CommandEmitter[Command Emitter<br/>.claude/commands → platform]
+        SkillsBridge[Skills Bridge<br/>Registry + Loader]
+        AdapterCompiler[Adapter Compiler<br/>emit .codex/.cursor/.qwen/.agent]
+        Artifacts[Generated Artifacts<br/>Agent rules + workflows]
     end
 
     subgraph "集成层 Integration Layer"
@@ -210,6 +236,20 @@ graph TB
     %% 代理层到集成层
     MainAgent --> ClaudeAPI
     ResearchAgents --> FileSystem
+
+    %% 编译层关系（规划中）
+    CoreCmds --> CommandEmitter
+    FlowCmds --> CommandEmitter
+    NewCmds --> CommandEmitter
+    Skills --> SkillsBridge
+    HookScripts --> AdapterCompiler
+    CoreScripts --> AdapterCompiler
+    Rules --> AdapterCompiler
+    Constitution --> AdapterCompiler
+    CommandEmitter --> AdapterCompiler
+    SkillsBridge --> AdapterCompiler
+    AdapterCompiler --> Artifacts
+    AdapterCompiler --> FileSystem
 ```
 
 ---
@@ -288,69 +328,52 @@ graph LR
 
 基于 v2.x 升级任务的需求依赖:
 
-- **RM-001 ~ RM-004**: P0 质量左移特性 (clarify, checklist)
-- **RM-005 ~ RM-008**: P1 工程体验优化 (分支命名, GitHub API, Coverage)
-- **RM-009 ~ RM-012**: P2 多平台支持 (Agent 适配层)
+- **RM-001 ~ RM-002**: P0 质量左移特性 (/flow-clarify, /flow-checklist)
+- **RM-003 ~ RM-005**: P1 工程体验优化 (分支命名, GitHub API 限流, Coverage)
+- **RM-006 ~ RM-013**: P2 多平台支持 (Adapter + 编译产物)
 
 ### 架构图
 
 ```mermaid
 graph TD
     subgraph "Milestone 1: Quality Shift Left 质量左移"
-        RM001[RM-001: flow-clarify<br/>11维度歧义扫描]
-        RM002[RM-002: clarify-agent<br/>推荐选项机制]
-        RM003[RM-003: flow-checklist<br/>需求质量检查]
-        RM004[RM-004: checklist-agent<br/>Unit Tests for English]
+        RM001[RM-001: /flow-clarify<br/>11维度歧义扫描]
+        RM002[RM-002: /flow-checklist<br/>Unit Tests for English]
     end
 
     subgraph "Milestone 2: DX Enhancement 工程体验"
-        RM005[RM-005: Branch Naming<br/>中文拼音转换]
-        RM006[RM-006: gh_api_safe<br/>GitHub限流处理]
-        RM007[RM-007: Coverage Table<br/>覆盖率统计]
-        RM008[RM-008: Severity Levels<br/>问题分级]
+        RM003[RM-003: Branch Naming<br/>中文拼音转换]
+        RM004[RM-004: GitHub Rate Limiting<br/>限流检测与退避重试]
+        RM005[RM-005: Coverage Summary<br/>覆盖率汇总增强]
     end
 
     subgraph "Milestone 3: Multi-Platform 多平台"
-        RM009[RM-009: Agent Adapter<br/>适配层架构]
-        RM010[RM-010: Command Engine<br/>模板引擎]
-        RM011[RM-011: Codex Support<br/>Codex CLI适配]
-        RM012[RM-012: Other Platforms<br/>Cursor/Qwen等]
-    end
+        RM006[RM-006: Agent Adapter<br/>适配层架构]
+        RM007[RM-007: Command Emitter<br/>命令转译器]
+        RM008[RM-008: Adapter Compiler<br/>编译器入口]
+        RM009[RM-009: Codex CLI Output<br/>.codex/prompts]
+        RM010[RM-010: Antigravity IDE Output<br/>.agent/rules + workflows]
+        RM011[RM-011: Cursor Output<br/>.cursorrules + tasks]
+        RM012[RM-012: Qwen Output<br/>.qwen/commands]
+    RM013[RM-013: Skills Bridge<br/>Registry + Loader]
+end
 
-    subgraph "Foundation 基础设施"
-        FOUND001[Foundation: Templates<br/>CLARIFICATIONS, CHECKLIST]
-        FOUND002[Foundation: Config<br/>clarify-dimensions.yaml]
-        FOUND003[Foundation: common.sh<br/>gh_api_safe函数]
-    end
-
-    %% P0 依赖
-    RM001 --> FOUND001
-    RM001 --> FOUND002
+    %% Dependencies
     RM002 --> RM001
-    RM003 --> FOUND001
-    RM004 --> RM003
-
-    %% P1 依赖
-    RM005 --> FOUND003
-    RM006 --> FOUND003
-    RM007 --> RM004
+    RM007 --> RM006
     RM008 --> RM007
-
-    %% P2 依赖
-    RM009 --> RM004
-    RM010 --> RM009
-    RM011 --> RM010
-    RM012 --> RM010
-
-    %% 里程碑依赖
-    RM005 --> RM004
     RM009 --> RM008
+    RM010 --> RM008
+    RM011 --> RM008
+    RM012 --> RM008
+    RM013 --> RM008
 
     %% 样式
     style RM001 fill:#FFD700
     style RM002 fill:#FFD700
     style RM003 fill:#FFD700
-    style RM004 fill:#FFD700
+    style RM003 fill:#D3D3D3
+    style RM004 fill:#D3D3D3
     style RM005 fill:#D3D3D3
     style RM006 fill:#D3D3D3
     style RM007 fill:#D3D3D3
@@ -359,10 +382,19 @@ graph TD
     style RM010 fill:#D3D3D3
     style RM011 fill:#D3D3D3
     style RM012 fill:#D3D3D3
-    style FOUND001 fill:#90EE90
-    style FOUND002 fill:#90EE90
-    style FOUND003 fill:#90EE90
+    style RM013 fill:#D3D3D3
 ```
+
+### RM-008 Adapter Compiler Runtime
+
+`AdapterCompiler` (RM-008) is implemented by `.claude/scripts/update-agent-context.sh`. Rather than depending on spec-kit's `.specify` directory, the script now:
+
+- Derives its context from `.claude/` assets plus an optional plan specified via `DEVFLOW_CONTEXT_SOURCE` or `DEVFLOW_PLAN_PATH`, falling back to `devflow/ROADMAP.md` when no plan is provided.
+- Detects the current branch through `DEVFLOW_BRANCH` or live Git metadata but never aborts when the branch cannot be resolved, logging warnings instead.
+- Emits agent-specific templates via an embedded placeholder layout, with `DEVFLOW_AGENT_CONTEXT_TEMPLATE` available for overrides, so new platforms can be added without referencing external templates.
+- Continues to update existing agent files or fabricate new ones per agent argument, exposing a platform-neutral CLI surface for the adapter compiler.
+
+This runtime node feeds the artifacts leaf in the graph and keeps the compiled outputs rebuildable.
 
 **图例**:
 - 🟢 #90EE90 (浅绿): 基础设施 (Foundation)
@@ -517,7 +549,7 @@ graph TD
 
 **v3.0.0 愿景** (2025 Q2):
 - 多平台支持: Codex CLI, Antigravity, Cursor, Qwen Code
-- 命令模板引擎
+- 编译式适配: Adapter Compiler + 命令转译器
 - 统一适配层
 
 ### 演进计划

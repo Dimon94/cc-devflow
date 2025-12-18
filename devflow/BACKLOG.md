@@ -1,8 +1,8 @@
 # CC-DevFlow v2.x Backlog
 
-**Last Updated:** 2025-12-18 (RM-004 completed)
-**Total Items:** 12
-**Estimated Effort:** 11.5 weeks
+**Last Updated:** 2025-12-18 (Google ecosystem: Antigravity IDE only)
+**Total Items:** 13
+**Estimated Effort:** 12.0 weeks
 
 ## Priority Legend
 
@@ -264,7 +264,7 @@
 
 ---
 
-### RM-007: 命令模板引擎
+### RM-007: 命令转译器（Command Emitter）
 
 **Status:** 🔵 Planned
 **Effort:** 1 week
@@ -273,39 +273,38 @@
 **Dependencies:** RM-006
 
 **Description:**
-实现命令模板引擎，支持根据不同 AI Agent 平台特性生成定制化命令和提示词。
+实现命令转译/发射器：以 `.claude/commands/*.md` 为单一事实源（SSOT），生成各平台可消费的命令/工作流文件，并对 `{SCRIPT:*}` / `{AGENT_SCRIPT}` / `$ARGUMENTS` 等占位符做确定性展开。
 
 **Acceptance Criteria:**
-- [ ] 模板语法设计
-  - 变量替换: `{{variable}}`
-  - 条件渲染: `{{#if condition}}...{{/if}}`
-  - 循环: `{{#each items}}...{{/each}}`
-  - 平台检测: `{{#platform codex}}...{{/platform}}`
-- [ ] 平台能力检测
-  - 支持的工具 API
-  - 上下文大小限制
-  - 特殊语法要求
-- [ ] 模板存储和管理
-  - 路径: `templates/adapters/[platform]/[command].hbs`
-  - 版本控制
-  - 继承和覆盖
-- [ ] 集成到命令执行流程
+- [ ] 以 `.claude/commands/*.md` 为输入生成平台命令/工作流
+  - Codex: `.codex/prompts/{core-*,flow-*}.md`
+  - Cursor: `.cursor/commands/{core-*,flow-*}.md`
+  - Qwen: `.qwen/commands/{core-*,flow-*}.toml`
+  - Antigravity: `.agent/workflows/{core-*,flow-*}.md`
+- [ ] 统一 args 占位符策略
+  - Markdown targets: `$ARGUMENTS`
+  - TOML targets: `{{args}}`
+- [ ] 展开 cc-devflow 占位符（frontmatter 驱动）
+  - `{SCRIPT:<alias>}` → `scripts.<alias>`
+  - `{AGENT_SCRIPT}` → `agent_scripts`（并替换 `__AGENT__`）
+  - 兼容过渡：`{SCRIPT:<path-with-slash>}` 视为脚本路径直跑（并在输出中提示迁移为 alias）
+- [ ] 生成命令清单与来源映射（manifest）
+  - 记录：source path、target path、hash、生成时间
+- [ ] 文件名保持原名
+  - 不强制增加 `devflow.*` 前缀（cc-devflow 已通过 `core-*` / `flow-*` 自带命名空间）
 
 **Technical Notes:**
-- Template engine: Handlebars.js
-- Platform detection: Runtime capability probing
-- Fallback to generic template if platform-specific not found
+- Prefer deterministic transforms over complex templating
+- Optional: Handlebars helpers only if needed for placeholders
 
 **Related Files:**
-- `lib/template-engine.js` (new)
-- `templates/adapters/codex/` (new)
-- `templates/adapters/antigravity/` (new)
-- `templates/adapters/cursor/` (new)
-- `templates/adapters/qwen/` (new)
+- `lib/compiler/command-emitter.js` (new)
+- `lib/compiler/platform-spec.js` (new)
+- `devflow/.generated/manifest.json` (new)
 
 ---
 
-### RM-008: update-agent-context 脚本
+### RM-008: Adapter Compiler（Dynamic Context Compiler）
 
 **Status:** 🔵 Planned
 **Effort:** 1 week
@@ -314,31 +313,43 @@
 **Dependencies:** RM-006, RM-007
 
 **Description:**
-实现自动更新 Agent 上下文的脚本，确保各平台 Agent 始终使用最新的项目配置和命令定义。
+实现编译式多平台适配入口：扫描 `.claude/`（commands/agents/hooks/scripts/skills/rules/constitution/guides），生成目标平台目录产物（`.codex/.cursor/.qwen/.agent` 等），并以 Skills Registry + Loader 实现渐进加载。
 
 **Acceptance Criteria:**
-- [ ] 上下文同步机制
-  - 读取项目配置（`devflow.config.yml`）
-  - 生成平台特定上下文文件
-  - 触发 Agent 重载
-- [ ] 平台特定上下文生成
-  - Codex: `.codex/context.json`
-  - Antigravity: `.antigravity/agent.yml`
-  - Cursor: `.cursor/commands.json`
-  - Qwen: `.qwen/config.toml`
-- [ ] 增量更新优化
-  - 仅同步变更部分
-  - 哈希校验避免重复
-- [ ] 集成到 `/flow-init` 和配置更新流程
+- [ ] CLI 入口
+  - `npm run adapt -- --platform <name>` / `--all` / `--check`
+- [ ] 生成平台规则入口文件（Context/Roles）
+  - Cursor: `.cursorrules`
+  - Codex: `.codex/prompts/devflow.context.md`
+  - Antigravity: `.agent/rules/rules.md`
+  - Qwen: 平台约定入口文件（TBD）
+- [ ] Skills 渐进加载
+  - 生成 `Skill Registry`（name/description/triggers/path）并注入到入口文件
+  - 提供 `load_skill <name>` 脚本工具（按需输出对应 `SKILL.md`）
+- [ ] Cursor 脚本入口
+  - 生成 `.vscode/tasks.json`，将关键 `/flow-*` 与校验脚本暴露为 tasks
+- [ ] 增量更新
+  - 基于 manifest hash，避免无意义重写
+- [ ] Antigravity 文件限制处理
+  - Rules/Workflows 单文件 ≤ 12,000 chars（超过则拆分并用 `@` 引用）
+  - Rules 支持 trigger（Manual / Always On / Model Decision / Glob）
+  - Rules 支持 `@filename` 引用（相对路径按 rules 文件位置解析）
 
 **Technical Notes:**
-- Script: `scripts/update-agent-context.js`
-- Run on: config changes, post-install, manual trigger
-- Support both CLI and programmatic API
+- Script: `scripts/adapt.js` (or `scripts/update-agent-context.js` as entrypoint)
+- Generated outputs treated as build artifacts (rebuildable)
+
+**Implementation Notes:**
+- Runtime entry currently lives in `.claude/scripts/update-agent-context.sh`; it can be invoked with an optional agent argument and no longer relies on `.specify` or spec-kit helpers.
+- Plan metadata is best-effort: supply `DEVFLOW_CONTEXT_SOURCE` or `DEVFLOW_PLAN_PATH` to point to a plan, otherwise the script falls back to `devflow/ROADMAP.md`. Missing plan data only logs warnings, never aborts.
+- Branch detection honors `DEVFLOW_BRANCH` or live Git state, so feature context still surfaces even outside spec-kit workflows.
+- Use `DEVFLOW_AGENT_CONTEXT_TEMPLATE` to override the embedded placeholder template; otherwise the script writes a built-in context outline that matches the placeholder replacements used elsewhere.
 
 **Related Files:**
-- `scripts/update-agent-context.js` (new)
-- `lib/context-generator.js` (new)
+- `scripts/adapt.js` (new)
+- `lib/compiler/index.js` (new)
+- `lib/compiler/skill-registry.js` (new)
+- `.claude/scripts/update-agent-context.sh` (existing)
 
 ---
 
@@ -348,22 +359,19 @@
 **Effort:** 0.5 weeks
 **Quarter:** Q2-2026
 **Milestone:** M4 (Multi-Platform)
-**Dependencies:** RM-006, RM-007
+**Dependencies:** RM-006, RM-008
 **Platform Priority:** #1
 
 **Description:**
 实现 Codex CLI 平台适配器，作为多平台支持的首个外部平台。
 
 **Acceptance Criteria:**
-- [ ] 实现 CodexAdapter
-  - 继承 AdapterInterface
-  - 平台检测逻辑
-  - 命令执行映射
+- [ ] Codex 平台产物生成
+  - `.codex/prompts/devflow.context.md` + `.codex/prompts/{core-*,flow-*}.md`
 - [ ] 核心工作流验证
   - `/flow-prd`
-  - `/flow-tasks`
+  - `/flow-epic`
   - `/flow-dev`
-  - `/flow-test`
   - `/flow-pr`
 - [ ] Codex 特性适配
   - 工具调用格式
@@ -372,9 +380,7 @@
 - [ ] 集成测试套件
 
 **Technical Notes:**
-- Codex API documentation: [link TBD]
-- Context file: `.codex/context.json`
-- Special considerations: Token limits, streaming support
+- Target folder aligns with spec-kit: `.codex/prompts/`
 
 **Related Files:**
 - `lib/adapters/codex-adapter.js` (new)
@@ -383,37 +389,27 @@
 
 ---
 
-### RM-010: Antigravity 适配
+### RM-010: Antigravity IDE 适配
 
 **Status:** 🔵 Planned
 **Effort:** 1 week
 **Quarter:** Q2-2026
 **Milestone:** M4 (Multi-Platform)
-**Dependencies:** RM-006, RM-007
+**Dependencies:** RM-006, RM-008
 **Platform Priority:** #2
 
 **Description:**
-实现 Google Antigravity 平台适配器，支持 Google 生态系统的 AI Agent。
+实现 Antigravity IDE 平台适配：生成 `.agent/rules/rules.md` 与 `.agent/workflows/*.md`，让非 Claude 平台也能消费 cc-devflow 的 workflow/skills/hooks。
 
 **Acceptance Criteria:**
-- [ ] 实现 AntigravityAdapter
-  - 继承 AdapterInterface
-  - 平台检测逻辑
-  - 命令执行映射
+- [ ] 生成 Antigravity 目录结构
+  - `.agent/rules/rules.md`
+  - `.agent/workflows/{core-*,flow-*}.md`
+- [ ] Skills Registry + load_skill 用法注入到 `.agent/rules/rules.md`
 - [ ] 核心工作流验证（同 RM-009）
-- [ ] Antigravity 特性适配
-  - Google Cloud 集成
-  - 工具调用格式
-  - 多模态支持
-- [ ] Google 特定优化
-  - Workspace 集成
-  - Cloud Storage 支持
-- [ ] 集成测试套件
 
 **Technical Notes:**
-- Antigravity API: [link TBD]
-- Context file: `.antigravity/agent.yml`
-- Consider Gemini model optimizations
+- Antigravity 与 Gemini CLI 分离；谷歌体系只适配 Antigravity IDE
 
 **Related Files:**
 - `lib/adapters/antigravity-adapter.js` (new)
@@ -428,26 +424,17 @@
 **Effort:** 0.5 weeks
 **Quarter:** Q2-2026
 **Milestone:** M4 (Multi-Platform)
-**Dependencies:** RM-006, RM-007
+**Dependencies:** RM-006, RM-008
 **Platform Priority:** #3
 
 **Description:**
 实现 Cursor IDE 平台适配器，支持在 IDE 环境中使用 CC-DevFlow 工作流。
 
 **Acceptance Criteria:**
-- [ ] 实现 CursorAdapter
-  - 继承 AdapterInterface
-  - 平台检测逻辑（检测 Cursor IDE）
-  - 命令执行映射
+- [ ] 生成 `.cursorrules`（硬规则 + Skills Registry + Loader 用法）
+- [ ] 生成 `.vscode/tasks.json`（暴露关键脚本/flow 入口）
+- [ ] 可选生成 `.cursor/commands/{core-*,flow-*}.md`
 - [ ] 核心工作流验证（同 RM-009）
-- [ ] Cursor 特性适配
-  - IDE 集成点
-  - 编辑器交互
-  - 文件浏览器联动
-- [ ] UI 增强
-  - 侧边栏集成
-  - 快捷键支持
-- [ ] 集成测试套件
 
 **Technical Notes:**
 - Cursor API: Extension API
@@ -467,26 +454,17 @@
 **Effort:** 0.5 weeks
 **Quarter:** Q2-2026
 **Milestone:** M4 (Multi-Platform)
-**Dependencies:** RM-006, RM-007
+**Dependencies:** RM-006, RM-008
 **Platform Priority:** #4
 
 **Description:**
 实现通义千问 Qwen Code 平台适配器，优化对中文开发场景的支持。
 
 **Acceptance Criteria:**
-- [ ] 实现 QwenAdapter
-  - 继承 AdapterInterface
-  - 平台检测逻辑
-  - 命令执行映射
+- [ ] 生成 `.qwen/commands/{core-*,flow-*}.toml`
+- [ ] 生成 Qwen 入口规则文件（以 Qwen CLI 实际约定为准）
 - [ ] 核心工作流验证（同 RM-009）
-- [ ] Qwen 特性适配
-  - 中文优化提示词
-  - 本地化错误消息
-  - 中文文档生成
-- [ ] Qwen 特定优化
-  - 中文分词优化
-  - 国内网络环境适配
-- [ ] 集成测试套件
+- [ ] 中文提示词优化（可选）
 
 **Technical Notes:**
 - Qwen API: [link TBD]
@@ -500,6 +478,33 @@
 
 ---
 
+### RM-013: Skills Bridge（Registry + Loader + MCP 可选）
+
+**Status:** 🔵 Planned
+**Effort:** 0.5 weeks
+**Quarter:** Q2-2026
+**Milestone:** M4 (Multi-Platform)
+**Dependencies:** RM-008
+
+**Description:**
+让 `.claude/skills` 在非 Claude 平台可用：通过 Skills Registry（摘要）+ Loader（按需加载）实现渐进披露；对支持 MCP 的平台可选提供本地 Skills MCP Server。
+
+**Acceptance Criteria:**
+- [ ] `list_skills` 输出：name + description + triggers
+- [ ] `load_skill <name>` 输出：对应 `SKILL.md` 原文
+- [ ] 编译器能把 Registry 注入到各平台规则入口文件
+- [ ] （可选）MCP server：提供 `list_skills/get_skill` 两个 tools
+
+**Technical Notes:**
+- Default path: `.claude/skills/*/SKILL.md`
+- Local-only server, no network exposure by default
+
+**Related Files:**
+- `scripts/load-skill.sh` or `bin/load-skill.js` (new)
+- `lib/mcp/skills-server.js` (new)
+
+---
+
 ## Progress Tracking
 
 ### Overall Progress
@@ -508,8 +513,8 @@
 |----------|-----------|-------------|---------|-------|--------------|
 | P0       | 2         | 0           | 0       | 2     | 100%         |
 | P1       | 1         | 0           | 2       | 3     | 33.3%        |
-| P2       | 1         | 0           | 6       | 7     | 14.3%        |
-| **Total**| **4**     | **0**       | **8**   | **12**| **33.3%**    |
+| P2       | 1         | 0           | 7       | 8     | 12.5%        |
+| **Total**| **4**     | **0**       | **9**   | **13**| **30.8%**    |
 
 ### Milestone Progress
 
@@ -518,7 +523,7 @@
 | M1        | Q4-2025 End  | 1     | 1/1       | 🟢 Completed |
 | M2        | Q1-2026 Mid  | 1     | 1/1       | 🟢 Completed |
 | M3        | Q1-2026 End  | 4     | 2/4       | 🟡 In Progress |
-| M4        | Q2-2026 End  | 6     | 0/6       | 🔵 Not Started |
+| M4        | Q2-2026 End  | 7     | 0/7       | 🔵 Not Started |
 
 ### Effort Distribution
 
@@ -526,8 +531,8 @@
 |-----------|----------------|-------|-------------------------|
 | Q4-2025   | 2.0 weeks      | 1     | /flow-clarify           |
 | Q1-2026   | 6.0 weeks      | 5     | Quality + P1 + Arch     |
-| Q2-2026   | 3.5 weeks      | 6     | Multi-platform adapters |
-| **Total** | **11.5 weeks** | **12**|                         |
+| Q2-2026   | 4.0 weeks      | 7     | Multi-platform adapters |
+| **Total** | **12.0 weeks** | **13**|                         |
 
 ### Dependency Status
 
@@ -541,10 +546,11 @@
 | RM-006  | -          | N/A            | ✅ Yes (🟢 Completed) |
 | RM-007  | RM-006     | 🟢 Completed   | ✅ Yes         |
 | RM-008  | RM-006, RM-007 | 🔵 Planned | ❌ No          |
-| RM-009  | RM-006, RM-007 | 🔵 Planned | ❌ No          |
-| RM-010  | RM-006, RM-007 | 🔵 Planned | ❌ No          |
-| RM-011  | RM-006, RM-007 | 🔵 Planned | ❌ No          |
-| RM-012  | RM-006, RM-007 | 🔵 Planned | ❌ No          |
+| RM-009  | RM-006, RM-008 | 🔵 Planned | ❌ No          |
+| RM-010  | RM-006, RM-008 | 🔵 Planned | ❌ No          |
+| RM-011  | RM-006, RM-008 | 🔵 Planned | ❌ No          |
+| RM-012  | RM-006, RM-008 | 🔵 Planned | ❌ No          |
+| RM-013  | RM-008     | 🔵 Planned | ❌ No          |
 
 ---
 

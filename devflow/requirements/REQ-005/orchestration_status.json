@@ -1,9 +1,12 @@
 {
-    "reqId": "REQ-005",
-    "title": "RM-007: 命令模板引擎",
-    "status": "initialized",
-    "phase": "planning",
-    "phase0_complete": true,
-    "createdAt": "2025-12-18T09:55:00Z",
-    "updatedAt": "2025-12-18T10:00:00Z"
+  "reqId": "REQ-005",
+  "title": "REQ-005: Multi-Platform Adaptation (Compile From .claude/)",
+  "status": "prd_complete",
+  "phase": "epic_planning",
+  "completedSteps": [
+    "prd"
+  ],
+  "phase0_complete": true,
+  "createdAt": "2025-12-18T09:55:00Z",
+  "updatedAt": "2025-12-18T12:32:00Z"
 }

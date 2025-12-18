@@ -16,6 +16,13 @@ build/
 *.swo
 *~
 
+# Agent platform generated artifacts (compiled from .claude/)
+.agent/
+.codex/
+.cursor/
+.qwen/
+devflow/.generated/
+
 # OS
 .DS_Store
 Thumbs.db

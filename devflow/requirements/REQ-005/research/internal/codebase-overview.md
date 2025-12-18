@@ -18,16 +18,16 @@
 - [config/adapters.yml](file:///Users/dimon/001Area/80-CodeWorld/002-devflow/cc-devflow/config/adapters.yml): 处理首选适配器和安全策略。
 - [config/schema/adapters.schema.json](file:///Users/dimon/001Area/80-CodeWorld/002-devflow/cc-devflow/config/schema/adapters.schema.json): 适配器配置校验。
 
-## 模板引擎集成点 (Template Engine Integration Points)
+## 编译器集成点 (Compiler Integration Points)
 
 ### 潜在入口
-- 目前尚未在 `lib/` 中发现统一的模板渲染模块。
-- 计划新建 `lib/template-engine.js` 作为核心组件。
-- 模板文件预留路径：`templates/adapters/[platform]/[command].hbs`。
+- 目前尚未在 `lib/` 中发现统一的“编译式适配”模块。
+- 建议在 `lib/compiler/` 下新增编译入口（RM-007/RM-008）。
+- 以 `.claude/commands/*.md` 为源，输出到 `.codex/.cursor/.qwen/.agent`。
 
 ## 依赖分析 (Dependency Analysis)
-- `package.json` 当前未包含 `handlebars`，需在后续步骤中引入。
 - 现有依赖：`js-yaml`, `zod`, `jest`。
+- 编译器实现可优先基于 `js-yaml` 解析 frontmatter，避免引入 Handlebars runtime。
 
 ## 内部调研结论
 1. 已有完善的适配器接口定义 (`AgentAdapter`)，为模板引擎的多平台支持奠定了基础。

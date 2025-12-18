@@ -1,10 +1,10 @@
-# REQ-005: RM-007: 命令模板引擎
+# REQ-005: Multi-Platform Adaptation (Compile From `.claude/`)
 
 ## Overview
-实现命令模板引擎，支持根据不同 AI Agent 平台特性生成定制化命令和提示词。
+以 `.claude/` 为单一事实源（SSOT），将 commands/scripts/skills/hooks 等资产编译为各平台可消费的规则与工作流。
 
 ## Roadmap Context
-- **Roadmap Item**: RM-007
+- **Roadmap Item**: RM-007 + RM-008
 - **Milestone**: M4 (Multi-Platform)
 - **Quarter**: Q2-2026
 - **Dependencies**: RM-006 (Agent Adapter Architecture)
@@ -12,7 +12,7 @@
 ## Workflow Checklist
 - [ ] Phase 0: Research & Discovery
   - [ ] Internal Research: Codebase overview
-  - [ ] External Research: Handlebars.js, Platform detection
+  - [ ] External Research: spec-kit multi-agent packaging + Antigravity Rules/Workflows
   - [ ] Research Consolidation
 - [ ] Phase 1: Product Requirements (PRD)
 - [ ] Phase 2: Technical Design
@@ -22,7 +22,7 @@
 - [ ] Phase 6: Release
 
 ## Next Steps
-1. Perform internal research on existing adapter logic.
-2. Research Handlebars.js integration.
-3. Consolidate research into `research/research.md`.
-4. Run `/flow-prd` to generate PRD.md.
+1. Consolidate decisions into `research/research.md` (SSOT + compiler strategy).
+2. Run `/flow-prd` to update PRD.md.
+3. Update `devflow/BACKLOG.md` / `devflow/ROADMAP.md` / `devflow/ARCHITECTURE.md` to match.
+4. (Optional) Implement `npm run adapt` compiler entrypoint.
