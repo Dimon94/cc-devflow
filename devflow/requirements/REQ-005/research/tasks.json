@@ -1,0 +1,38 @@
+{
+    "tasks": [
+        {
+            "id": "R001",
+            "type": "technology",
+            "prompt": "Research Handlebars.js features for CLI command templating.",
+            "status": "completed",
+            "decision": "Use Handlebars.js as the template engine.",
+            "rationale": "Simple syntax, natively supported helpers, and easy integration with Node.js.",
+            "alternatives": [
+                "Mustache (too simple)",
+                "EJS (too focused on HTML)"
+            ]
+        },
+        {
+            "id": "R002",
+            "type": "architecture",
+            "prompt": "Design template storage and fallback mechanism.",
+            "status": "completed",
+            "decision": "Store templates in `templates/adapters/[platform]/[command].hbs` and fallback to `generic` platform.",
+            "rationale": "Clear isolation between platforms and ensures robustness with a fallback.",
+            "alternatives": [
+                "Single monolithic template with complex IFs"
+            ]
+        },
+        {
+            "id": "R003",
+            "type": "source_analysis",
+            "prompt": "Analyze spec-kit source code for implementation patterns.",
+            "status": "completed",
+            "decision": "Adopt Placeholder patterns via Runtime Helpers.",
+            "rationale": "spec-kit uses build-time shell scripts to replace {SCRIPT} and {ARGS}. We will achieve the same outcome dynamically using Handlebars helpers {{agent_script}} and {{agent_args}}.",
+            "alternatives": [
+                "Copy spec-kit's shell script build system (too rigid)"
+            ]
+        }
+    ]
+}
