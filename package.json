@@ -5,9 +5,17 @@
     "main": "bin/cc-devflow.js",
     "scripts": {
         "test": "jest",
-        "start": "node bin/cc-devflow.js"
+        "start": "node bin/cc-devflow.js",
+        "adapt": "node bin/adapt.js",
+        "adapt:codex": "node bin/adapt.js --platform codex",
+        "adapt:cursor": "node bin/adapt.js --platform cursor",
+        "adapt:qwen": "node bin/adapt.js --platform qwen",
+        "adapt:antigravity": "node bin/adapt.js --platform antigravity",
+        "adapt:check": "node bin/adapt.js --check"
     },
     "dependencies": {
+        "gray-matter": "^4.0.3",
+        "@iarna/toml": "^2.2.5",
         "js-yaml": "^4.1.0",
         "zod": "^3.22.4"
     },
