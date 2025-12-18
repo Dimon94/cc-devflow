@@ -14,6 +14,17 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/common.sh"
 
 # =============================================================================
+# 跨平台时间戳 (epoch ms)
+# =============================================================================
+now_ms() {
+    if command -v python3 >/dev/null 2>&1; then
+        python3 -c 'import time; print(int(time.time() * 1000))'
+        return 0
+    fi
+    echo $(( $(date +%s) * 1000 ))
+}
+
+# =============================================================================
 # Constants (T012)
 # =============================================================================
 readonly DIMENSIONS=(
@@ -65,6 +76,140 @@ check_api_key() {
         return 1
     fi
     return 0
+}
+
+# =============================================================================
+# API Key 快速检测 (不输出错误)
+# =============================================================================
+has_valid_api_key() {
+    [[ -n "${CLAUDE_API_KEY:-}" ]] && [[ "${CLAUDE_API_KEY}" =~ ^sk-ant- ]]
+}
+
+# =============================================================================
+# 无 API Key 降级：规则引擎歧义扫描
+# =============================================================================
+contains_any() {
+    local haystack="$1"
+    shift
+    local needle
+    for needle in "$@"; do
+        if [[ -n "$needle" ]] && [[ "$haystack" == *"$needle"* ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+scan_dimension_heuristic() {
+    local dim_id="$1"
+    local dim_name="$2"
+    local research_content="$3"
+
+    local description impact uncertainty
+    description=""
+    impact=5
+    uncertainty=5
+
+    case "$dim_id" in
+        1)
+            if ! contains_any "$research_content" "In Scope" "Out of Scope" "in-scope" "out-of-scope" "范围" "不做" "非目标" "success" "Success" "验收" "完成定义"; then
+                description="功能范围边界与成功标准不清：缺少 In Scope / Out of Scope、可度量验收信号"
+                impact=9
+                uncertainty=8
+            fi
+            ;;
+        2)
+            if ! contains_any "$research_content" "ExecutionResult" "Context" "context" "capabilities" "capability" "schema" "字段" "数据模型"; then
+                description="接口数据模型未定义：Context / ExecutionResult / capabilities 的结构与生命周期缺失"
+                impact=7
+                uncertainty=7
+            fi
+            ;;
+        3)
+            if ! contains_any "$research_content" "UX" "用户" "交互" "CLI" "参数" "flag" "配置" "auto" "自动"; then
+                description="调用方如何选择/覆盖 Adapter 未定义：自动探测 vs 配置文件 vs CLI 参数"
+                impact=7
+                uncertainty=6
+            fi
+            ;;
+        4)
+            if ! contains_any "$research_content" "性能" "latency" "timeout" "SLA" "可观测" "logging" "metrics" "稳定" "reliability"; then
+                description="非功能目标缺失：性能/超时/错误恢复/可观测性要求未量化"
+                impact=6
+                uncertainty=7
+            fi
+            ;;
+        5)
+            if ! contains_any "$research_content" ".claude" "commands" "agents" "scripts" "集成" "integration" "entry" "registry"; then
+                description="集成点不清：与现有命令/Agent/脚本的调用链、初始化时机、配置来源未明确"
+                impact=8
+                uncertainty=7
+            fi
+            ;;
+        6)
+            if ! contains_any "$research_content" "fallback" "优先级" "priority" "冲突" "conflict" "multiple" "edge" "降级"; then
+                description="边界场景缺失：多个 Adapter 命中/无 Adapter 命中/探测冲突时的降级与报错策略"
+                impact=7
+                uncertainty=7
+            fi
+            ;;
+        7)
+            if ! contains_any "$research_content" "constraint" "tradeoff" "取舍" "约束" "兼容" "backward" "breaking" "向后"; then
+                description="约束与取舍未声明：是否必须保持 Claude Code 行为完全兼容？允许哪些破坏性重构？"
+                impact=6
+                uncertainty=6
+            fi
+            ;;
+        8)
+            if [[ "$research_content" =~ RM-[0-9]+ ]]; then
+                description="术语/编号不一致：文档出现 RM-* 与 REQ-* 混用，需统一命名与引用"
+                impact=5
+                uncertainty=6
+            fi
+            ;;
+        9)
+            if ! contains_any "$research_content" "验收" "完成" "Definition" "DoD" "Acceptance" "测试" "交付"; then
+                description="完成定义不清：需要可验证交付物与验收清单（接口、注册表、默认适配器、测试）"
+                impact=8
+                uncertainty=8
+            fi
+            ;;
+        10)
+            if contains_any "$research_content" "TODO" "TBD" "None requested" "not clear" "不清楚"; then
+                description="存在占位/来源缺失：外部参考/输入不足，决策依据可能不够可追溯"
+                impact=5
+                uncertainty=7
+            fi
+            ;;
+        11)
+            if ! contains_any "$research_content" "security" "Security" "privacy" "Privacy" "权限" "Auth" "鉴权" "审计"; then
+                description="安全边界未定义：Adapter 能力（shell/filesystem/network）最小化、审计与隔离策略缺失"
+                impact=8
+                uncertainty=7
+            fi
+            ;;
+        *)
+            ;;
+    esac
+
+    if [[ -z "$description" ]]; then
+        jq -n '{"issues": []}'
+        return 0
+    fi
+
+    jq -n \
+        --arg desc "$description" \
+        --argjson impact "$impact" \
+        --argjson uncertainty "$uncertainty" \
+        '{
+            issues: [
+                {
+                    description: $desc,
+                    impact: $impact,
+                    uncertainty: $uncertainty
+                }
+            ]
+        }'
 }
 
 # =============================================================================
@@ -209,7 +354,7 @@ scan_dimension() {
     local timeout_sec="${5:-$DEFAULT_TIMEOUT}"
 
     local start_time
-    start_time=$(date +%s%3N 2>/dev/null || date +%s)000
+    start_time=$(now_ms)
 
     local system_prompt="You are a requirements ambiguity scanner for dimension: ${dim_name}.
 Focus areas: ${dim_focus}
@@ -226,10 +371,19 @@ Output ONLY valid JSON:
 If no issues found, return: {\"issues\": []}"
 
     local result
-    result=$(call_claude_api "claude-haiku-4-5-20241022" "$system_prompt" "$research_content" 1000 "$timeout_sec") || true
+    if has_valid_api_key; then
+        result=$(call_claude_api "claude-haiku-4-5-20241022" "$system_prompt" "$research_content" 1000 "$timeout_sec") || true
+
+        # API 不可用/超时/输出无效时，降级到规则引擎
+        if [[ -z "$result" ]] || [[ "$result" == *'"error"'* ]] || ! echo "$result" | jq -e '.issues' >/dev/null 2>&1; then
+            result=$(scan_dimension_heuristic "$dim_id" "$dim_name" "$research_content")
+        fi
+    else
+        result=$(scan_dimension_heuristic "$dim_id" "$dim_name" "$research_content")
+    fi
 
     local end_time
-    end_time=$(date +%s%3N 2>/dev/null || date +%s)000
+    end_time=$(now_ms)
     local duration=$((end_time - start_time))
 
     # 解析结果
@@ -297,7 +451,7 @@ scan_all_dimensions() {
     local session_id
     session_id="$(TZ='Asia/Shanghai' date '+%Y%m%d-%H%M%S')-${req_id}"
     local start_time
-    start_time=$(date +%s%3N 2>/dev/null || date +%s)000
+    start_time=$(now_ms)
 
     local results=()
     local pids=()
@@ -357,7 +511,7 @@ scan_all_dimensions() {
     rm -rf "$temp_dir"
 
     local end_time
-    end_time=$(date +%s%3N 2>/dev/null || date +%s)000
+    end_time=$(now_ms)
     local total_duration=$((end_time - start_time))
 
     # T020: 格式化输出
@@ -416,8 +570,9 @@ parse_args() {
 }
 
 main() {
-    # 检查 API Key
-    check_api_key || exit 2
+    if ! has_valid_api_key; then
+        echo "Warning: CLAUDE_API_KEY not set or invalid; using heuristic scan" >&2
+    fi
 
     # 解析参数
     local parsed

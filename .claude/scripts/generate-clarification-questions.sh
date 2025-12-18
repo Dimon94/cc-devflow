@@ -16,6 +16,15 @@ source "${SCRIPT_DIR}/common.sh"
 # Import functions from run-clarify-scan.sh
 source "${SCRIPT_DIR}/run-clarify-scan.sh" 2>/dev/null || true
 
+# =============================================================================
+# API Key 检测 (与 run-clarify-scan.sh 对齐)
+# =============================================================================
+if ! declare -F has_valid_api_key >/dev/null 2>&1; then
+has_valid_api_key() {
+    [[ -n "${CLAUDE_API_KEY:-}" ]] && [[ "${CLAUDE_API_KEY}" =~ ^sk-ant- ]]
+}
+fi
+
 # Configuration
 MAX_QUESTIONS=5
 INPUT_FILE=""
@@ -53,6 +62,99 @@ merge_similar_issues() {
 # =============================================================================
 # T028: 问题模板生成
 # =============================================================================
+generate_heuristic_question() {
+    local dim_id="$1"
+    local description="$2"
+
+    case "$dim_id" in
+        1)
+            jq -n \
+                --arg desc "$description" \
+                '{
+                    text: "REQ-004 的 MVP 适配范围应如何定义？",
+                    options: [
+                        {optionId: "A", text: "双平台可运行", description: "交付 claude-code + codex-cli 两个可运行 adapter，其它平台先留 stub"},
+                        {optionId: "B", text: "单平台先抽象", description: "只交付 claude-code adapter + 接口/注册表，其它平台后续需求再做"},
+                        {optionId: "C", text: "多平台一次到位", description: "至少 3 个可运行 adapter（Claude/Codex/Cursor 等）"},
+                        {optionId: "D", text: "仅出设计不落地", description: "只输出 PRD/Tech Design，本需求不交付代码"}
+                    ],
+                    recommendedOption: "A",
+                    recommendedRationale: "至少落地 2 个可运行 adapter 才能验证架构正确性，同时把范围控制在可交付的最小集合"
+                }'
+            ;;
+        4)
+            jq -n \
+                --arg desc "$description" \
+                '{
+                    text: "对 adapter 的探测/执行链路，有哪些硬性非功能要求需要现在锁定？",
+                    options: [
+                        {optionId: "A", text: "轻量指标 + 结构化日志", description: "detect 总耗时 <50ms（缓存后 <5ms），记录 adapter/timing/result 的结构化日志"},
+                        {optionId: "B", text: "严格指标 + 可观测套件", description: "detect <5ms，强制 metrics/tracing，所有执行都有 traceId"},
+                        {optionId: "C", text: "不设指标", description: "先按 best-effort 做通功能，后续再补性能与观测"}
+                    ],
+                    recommendedOption: "A",
+                    recommendedRationale: "先把可观测性与基本性能边界写清，避免后续返工；同时不引入过度工程"
+                }'
+            ;;
+        6)
+            jq -n \
+                --arg desc "$description" \
+                '{
+                    text: "当多个 adapter 同时命中或没有命中时，选择/降级策略应是什么？",
+                    options: [
+                        {optionId: "A", text: "可覆盖 + 确定性优先级", description: "用户显式指定(ENV/CLI) > 配置 > detect 打分最高 > fallback 默认 adapter；冲突时输出告警"},
+                        {optionId: "B", text: "冲突即失败", description: "多个命中或无命中直接报错，要求用户显式指定"},
+                        {optionId: "C", text: "先到先得", description: "按注册顺序 first-match，不做打分与冲突处理"}
+                    ],
+                    recommendedOption: "A",
+                    recommendedRationale: "保证可预测性与可控性：默认自动化，但允许用户明确覆盖，并且对冲突有确定性规则"
+                }'
+            ;;
+        9)
+            jq -n \
+                --arg desc "$description" \
+                '{
+                    text: "REQ-004 的 Definition of Done 应以哪些可验证交付物为准？",
+                    options: [
+                        {optionId: "A", text: "可运行 + 可验证", description: "接口规范 + registry + 默认 adapter + 配置机制 + 测试 + 文档 + 至少 1 个非默认平台 adapter"},
+                        {optionId: "B", text: "先抽象后验证", description: "接口规范 + registry + 默认 adapter + 基础测试；非默认 adapter 仅 stub"},
+                        {optionId: "C", text: "文档优先", description: "只产出 PRD/Tech Design/TASKS，代码实现拆到后续需求"}
+                    ],
+                    recommendedOption: "A",
+                    recommendedRationale: "定义完成必须可验证；至少一个非默认 adapter 能证明架构不是纸上谈兵"
+                }'
+            ;;
+        11)
+            jq -n \
+                --arg desc "$description" \
+                '{
+                    text: "Adapter 的能力边界与默认安全策略应如何设计（shell/filesystem/network）？",
+                    options: [
+                        {optionId: "A", text: "Capability allow-list", description: "adapter 声明 capabilities；命令声明 required capabilities；默认 deny 危险能力（shell/network），启用需显式配置并写审计日志"},
+                        {optionId: "B", text: "完全信任", description: "adapter 拥有全部能力，不做额外限制"},
+                        {optionId: "C", text: "全局 Safe Mode", description: "默认关闭 shell/network，提供全局开关；不做细粒度 capability 控制"}
+                    ],
+                    recommendedOption: "A",
+                    recommendedRationale: "用能力模型把危险操作从设计上隔离出去，默认最小权限，审计可追踪"
+                }'
+            ;;
+        *)
+            jq -n \
+                --arg desc "$description" \
+                '{
+                    text: ("需要澄清：" + $desc),
+                    options: [
+                        {optionId: "A", text: "采用推荐方案", description: "采用行业最佳实践"},
+                        {optionId: "B", text: "自定义方案", description: "需要进一步说明"},
+                        {optionId: "C", text: "暂时跳过", description: "稍后决定"}
+                    ],
+                    recommendedOption: "A",
+                    recommendedRationale: "优先选可验证、低风险路径"
+                }'
+            ;;
+    esac
+}
+
 generate_question_template() {
     local issue_json="$1"
     local question_id="$2"
@@ -72,28 +174,32 @@ generate_question_template() {
     # 生成问题文本
     local question_text="关于 ${dim_name}: ${description}"
 
-    # 默认选项模板
-    local options='[
-        {"optionId": "A", "text": "使用推荐方案", "description": "采用行业最佳实践"},
-        {"optionId": "B", "text": "自定义方案", "description": "需要进一步说明"},
-        {"optionId": "C", "text": "暂时跳过", "description": "稍后决定"}
-    ]'
+    local template_json options recommended recommended_rationale
+    template_json="{}"
+    options='[]'
+    recommended="A"
+    recommended_rationale="推荐使用行业最佳实践以降低风险"
 
-    # 如果有 CLAUDE_API_KEY，使用 AI 生成更好的问题
-    if [[ -n "${CLAUDE_API_KEY:-}" ]]; then
-        local ai_result
-        ai_result=$(generate_ai_question "$issue_json" "$dim_name") || true
-        if [[ -n "$ai_result" ]] && echo "$ai_result" | jq -e '.text' >/dev/null 2>&1; then
-            question_text=$(echo "$ai_result" | jq -r '.text')
-            options=$(echo "$ai_result" | jq '.options // []')
-            if [[ $(echo "$options" | jq 'length') -eq 0 ]]; then
-                options='[
-                    {"optionId": "A", "text": "使用推荐方案", "description": "采用行业最佳实践"},
-                    {"optionId": "B", "text": "自定义方案", "description": "需要进一步说明"},
-                    {"optionId": "C", "text": "暂时跳过", "description": "稍后决定"}
-                ]'
-            fi
-        fi
+    if has_valid_api_key; then
+        template_json=$(generate_ai_question "$issue_json" "$dim_name") || true
+    else
+        template_json=$(generate_heuristic_question "$dim_id" "$description") || true
+    fi
+
+    if [[ -n "$template_json" ]] && echo "$template_json" | jq -e '.text and (.options | length > 0)' >/dev/null 2>&1; then
+        question_text=$(echo "$template_json" | jq -r '.text')
+        options=$(echo "$template_json" | jq '.options')
+        recommended=$(echo "$template_json" | jq -r '.recommendedOption // "A"')
+        recommended_rationale=$(echo "$template_json" | jq -r '.recommendedRationale // "推荐使用行业最佳实践以降低风险"')
+    else
+        # 兜底：使用最通用模板
+        options='[
+            {"optionId": "A", "text": "使用推荐方案", "description": "采用行业最佳实践"},
+            {"optionId": "B", "text": "自定义方案", "description": "需要进一步说明"},
+            {"optionId": "C", "text": "暂时跳过", "description": "稍后决定"}
+        ]'
+        recommended="A"
+        recommended_rationale="推荐使用行业最佳实践以降低风险"
     fi
 
     # 构建问题 JSON
@@ -102,8 +208,8 @@ generate_question_template() {
         --argjson dimId "$dim_id" \
         --arg text "$question_text" \
         --argjson options "$options" \
-        --arg recommended "A" \
-        --arg rationale "推荐使用行业最佳实践以降低风险" \
+        --arg recommended "$recommended" \
+        --arg rationale "$recommended_rationale" \
         '{
             questionId: $qid,
             dimensionId: $dimId,

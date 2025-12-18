@@ -176,14 +176,21 @@ EOF
 
     # 高优先级问题
     local high_priority_issues
-    high_priority_issues=$(echo "$session_data" | jq '[.scanResults.dimensions[]?.issues[]? | select(.priority >= 50)]')
+    high_priority_issues=$(echo "$session_data" | jq '[
+        .scanResults.dimensions[]? |
+        .dimensionId as $dimId |
+        .name as $dimName |
+        (.issues // [])[]? |
+        select(.priority >= 50) |
+        . + {dimensionId: $dimId, dimensionName: $dimName}
+    ]')
     local hp_count
     hp_count=$(echo "$high_priority_issues" | jq 'length')
 
     if [[ "$hp_count" -gt 0 ]]; then
         echo "| Issue ID | Dimension | Description | Impact | Uncertainty | Priority |"
         echo "|----------|-----------|-------------|--------|-------------|----------|"
-        echo "$high_priority_issues" | jq -r '.[] | "| \(.issueId // "N/A") | \(.dimensionId // "-") | \(.description // "-" | .[0:50])... | \(.impact // 0)/10 | \(.uncertainty // 0)/10 | \(.priority // 0) |"'
+        echo "$high_priority_issues" | jq -r '.[] | "| \(.issueId // "N/A") | \(.dimensionName // (.dimensionId | tostring) // "-") | \(.description // "-" | .[0:50])... | \(.impact // 0)/10 | \(.uncertainty // 0)/10 | \(.priority // 0) |"'
     else
         echo "No high-priority issues detected."
     fi
