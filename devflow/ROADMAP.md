@@ -2,7 +2,7 @@
 
 **Version:** 2.0
 **Status:** Planning
-**Last Updated:** 2025-12-16
+**Last Updated:** 2025-12-18
 
 ## Vision Statement
 
@@ -79,7 +79,7 @@ CC-DevFlow v2.x 升级目标：借鉴 spec-kit 的"质量左移"理念，通过�
 
 ### M3: v2.0 Release (Q1-2026 End) 🟡
 
-**Status:** 🟡 In Progress (1/4 completed)
+**Status:** 🟡 In Progress (2/4 completed)
 **Goal:** Production-ready release with P0+P1 features and multi-platform foundation
 
 **Deliverables:**
@@ -88,9 +88,13 @@ CC-DevFlow v2.x 升级目标：借鉴 spec-kit 的"质量左移"理念，通过�
   - 支持多音字智能选择（lazy_pinyin 词组识别）✅
   - 向后兼容现有分支命名 ✅
   - 完整单元测试套件 (10 测试用例) ✅
+- RM-006: Agent 适配层架构 ✅
+  - 定义 Adapter 接口规范 ✅
+  - 实现插件系统与 Registry ✅
+  - 默认支持 Claude Code CLI ✅
+  - 适配 Codex CLI (MVP) ✅
 - RM-004: GitHub API 限流处理
 - RM-005: Coverage Summary Table 增强
-- RM-006: Agent 适配层架构
 
 **Success Criteria:**
 - All P0 and P1 features tested and documented (进行中)
@@ -176,15 +180,16 @@ CC-DevFlow v2.x 升级目标：借鉴 spec-kit 的"质量左移"理念，通过�
    - Trend analysis
    - Export capabilities
 
-5. **RM-006: Agent 适配层架构** (P2, 2 weeks)
-   - Define adapter interface
-   - Design plugin system
-   - Create adapter registry
+5. **RM-006: Agent 适配层架构** (P2, 2 weeks) ✅
+   - Define adapter interface ✅
+   - Design plugin system ✅
+   - Create adapter registry ✅
+   - Completed: 2025-12-17 (PR #7)
 
 **Resource Allocation:**
 - P0 Features: 35%
 - P1 Features: 35%
-- P2 Architecture: 30%
+- P2 Architecture: 30% ✅ (Completed)
 
 **Key Risks:**
 - Scope creep from P1 features
@@ -318,8 +323,9 @@ RM-001 → RM-002 → RM-006 → RM-007 → RM-009/010/011/012
 
 ### M3 (v2.0 Release) 🟡
 - [ ] All P0+P1 features shipped (1/4 P1 features completed)
-- [x] Zero critical bugs (RM-003 passed)
-- [x] Documentation complete (RM-003 documented)
+- [x] RM-006 Architecture delivered (2025-12-17)
+- [x] Zero critical bugs (RM-003, RM-006 passed)
+- [x] Documentation complete (RM-003, RM-006 documented)
 - [ ] 100 beta users onboarded
 
 ### M4 (Multi-Platform)
@@ -353,5 +359,5 @@ RM-001 → RM-002 → RM-006 → RM-007 → RM-009/010/011/012
 
 **Document Status:** Living Document
 **Owner:** CC-DevFlow Team
-**Last Updated:** 2025-12-16 (RM-003 completed)
+**Last Updated:** 2025-12-18 (RM-006 completed)
 **Next Review:** End of M3 (Q1-2026 End)

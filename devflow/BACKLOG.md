@@ -1,6 +1,6 @@
 # CC-DevFlow v2.x Backlog
 
-**Last Updated:** 2025-12-16 (RM-002, RM-003 completed)
+**Last Updated:** 2025-12-18 (RM-004 completed)
 **Total Items:** 12
 **Estimated Effort:** 11.5 weeks
 
@@ -218,17 +218,18 @@
 
 ### RM-006: Agent 适配层架构
 
-**Status:** 🔵 Planned
+**Status:** 🟢 Completed
 **Effort:** 2 weeks
 **Quarter:** Q1-2026
 **Milestone:** M3 (v2.0 Release)
 **Dependencies:** None
+**Merged:** 2025-12-17 (PR #7)
 
 **Description:**
 设计并实现多平台 Agent 适配层架构，为后续支持 Codex CLI、Antigravity、Cursor、Qwen Code 等平台奠定基础。
 
 **Acceptance Criteria:**
-- [ ] 定义 Adapter 接口规范
+- [x] 定义 Adapter 接口规范
   ```typescript
   interface AgentAdapter {
     name: string;
@@ -239,16 +240,16 @@
     setContext(ctx: Context): Promise<void>;
   }
   ```
-- [ ] 设计插件系统
+- [x] 设计插件系统
   - 动态加载机制
   - 配置文件格式
   - 生命周期钩子
-- [ ] 创建 Adapter Registry
+- [x] 创建 Adapter Registry
   - 平台自动检测
   - 优先级排序
   - Fallback 机制
-- [ ] 实现默认 Adapter（Claude Code CLI）
-- [ ] 编写 Adapter 开发指南
+- [x] 实现默认 Adapter（Claude Code CLI）
+- [x] 编写 Adapter 开发指南
 
 **Technical Notes:**
 - Architecture: Strategy Pattern
@@ -507,8 +508,8 @@
 |----------|-----------|-------------|---------|-------|--------------|
 | P0       | 2         | 0           | 0       | 2     | 100%         |
 | P1       | 1         | 0           | 2       | 3     | 33.3%        |
-| P2       | 0         | 0           | 7       | 7     | 0%           |
-| **Total**| **3**     | **0**       | **9**   | **12**| **25.0%**    |
+| P2       | 1         | 0           | 6       | 7     | 14.3%        |
+| **Total**| **4**     | **0**       | **8**   | **12**| **33.3%**    |
 
 ### Milestone Progress
 
@@ -516,7 +517,7 @@
 |-----------|--------------|-------|-----------|--------|
 | M1        | Q4-2025 End  | 1     | 1/1       | 🟢 Completed |
 | M2        | Q1-2026 Mid  | 1     | 1/1       | 🟢 Completed |
-| M3        | Q1-2026 End  | 4     | 1/4       | 🟡 In Progress |
+| M3        | Q1-2026 End  | 4     | 2/4       | 🟡 In Progress |
 | M4        | Q2-2026 End  | 6     | 0/6       | 🔵 Not Started |
 
 ### Effort Distribution
@@ -537,8 +538,8 @@
 | RM-003  | -          | N/A            | ✅ Yes         |
 | RM-004  | -          | N/A            | ✅ Yes         |
 | RM-005  | -          | N/A            | ✅ Yes         |
-| RM-006  | -          | N/A            | ✅ Yes         |
-| RM-007  | RM-006     | 🔵 Planned     | ❌ No          |
+| RM-006  | -          | N/A            | ✅ Yes (🟢 Completed) |
+| RM-007  | RM-006     | 🟢 Completed   | ✅ Yes         |
 | RM-008  | RM-006, RM-007 | 🔵 Planned | ❌ No          |
 | RM-009  | RM-006, RM-007 | 🔵 Planned | ❌ No          |
 | RM-010  | RM-006, RM-007 | 🔵 Planned | ❌ No          |
