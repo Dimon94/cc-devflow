@@ -1,7 +1,7 @@
 {
   "reqId": "REQ-006",
   "title": "Adapter Compiler (RM-008)",
-  "status": "qa_complete",
+  "status": "release_complete",
   "phase": "release",
   "phase0_complete": true,
   "phase1_complete": true,
@@ -11,7 +11,7 @@
   "tech_design_complete": true,
   "epic_complete": true,
   "qa_complete": true,
-  "completedSteps": ["research", "clarify", "prd", "tech_design", "epic", "development", "qa"],
+  "completedSteps": ["research", "clarify", "prd", "tech_design", "epic", "development", "qa", "release"],
   "branch": "feature/REQ-006-adapter-compiler",
   "milestone": "M4",
   "dependencies": ["RM-006", "RM-007"],
@@ -37,6 +37,8 @@
     "security_report": "SECURITY_REPORT.md"
   },
   "createdAt": "2025-12-19T13:44:57+08:00",
-  "updatedAt": "2025-12-19T20:50:00+08:00",
-  "lastQaAt": "2025-12-19T20:50:00+08:00"
+  "updatedAt": "2025-12-19T21:30:00+08:00",
+  "lastQaAt": "2025-12-19T20:50:00+08:00",
+  "lastReleaseAt": "2025-12-19T21:30:00+08:00",
+  "prUrl": "https://github.com/Dimon94/cc-devflow/pull/10"
 }
