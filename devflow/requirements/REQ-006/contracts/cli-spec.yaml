@@ -1,0 +1,380 @@
+# REQ-006 CLI Contract Specification
+
+**Purpose**: 定义 Adapter Compiler CLI 接口规范
+**Type**: CLI Specification (非 HTTP API，故使用 YAML 而非 OpenAPI)
+
+---
+
+## 1. 命令概览
+
+```yaml
+cli:
+  name: adapt
+  version: "2.0.0"
+  description: "Multi-platform command compiler for CC-DevFlow"
+  entry: "bin/adapt.js"
+  npm_script: "npm run adapt"
+```
+
+---
+
+## 2. 参数规范
+
+```yaml
+options:
+  --platform:
+    type: string
+    enum: [codex, cursor, qwen, antigravity]
+    description: "Target platform for compilation"
+    required: false
+    default: null  # compile all platforms
+
+  --all:
+    type: boolean
+    description: "Compile for all platforms (explicit)"
+    required: false
+    default: false
+
+  --check:
+    type: boolean
+    description: "Drift detection mode (no file writes)"
+    required: false
+    default: false
+
+  --skills:
+    type: boolean
+    description: "Generate skills-registry.json only"
+    required: false
+    default: false
+
+  --rules:
+    type: boolean
+    description: "Generate rules entry files only"
+    required: false
+    default: false
+
+  --verbose:
+    type: boolean
+    description: "Show detailed compilation output"
+    required: false
+    default: false
+
+  --help:
+    type: boolean
+    aliases: [-h]
+    description: "Show help message"
+    required: false
+    default: false
+```
+
+---
+
+## 3. 输出格式
+
+### 3.1 成功输出
+
+```yaml
+success_output:
+  format: text
+  fields:
+    - label: "Compilation complete."
+    - label: "Platforms"
+      value: "comma-separated list"
+    - label: "Files compiled"
+      value: integer
+    - label: "Files skipped"
+      value: integer
+    - label: "Resources copied"
+      value: integer
+    - label: "Resources skipped"
+      value: integer
+    - label: "Rules generated"  # NEW
+      value: integer
+    - label: "Skills registered"  # NEW
+      value: integer
+
+  example: |
+    Compilation complete.
+      Platforms: codex, cursor, qwen, antigravity
+      Files compiled: 29
+      Files skipped: 0
+      Resources copied: 47
+      Resources skipped: 0
+      Rules generated: 4
+      Skills registered: 6
+```
+
+### 3.2 漂移检测输出 (--check)
+
+```yaml
+check_output:
+  success:
+    message: "No drift detected."
+    exit_code: 0
+
+  failure:
+    format: |
+      Drift detected:
+        - ${source}: ${issue}
+    exit_code: 2
+
+  example: |
+    Drift detected:
+      - .claude/commands/flow-init.md: target file modified since last compile
+      - .cursor/rules/devflow.mdc: target file missing
+```
+
+### 3.3 错误输出
+
+```yaml
+error_output:
+  format: |
+    Compilation failed:
+      - ${error_message}
+  exit_code: 1
+
+  example: |
+    Compilation failed:
+      - flow-init.md -> codex: Missing required frontmatter field 'description'
+```
+
+---
+
+## 4. Exit Codes
+
+```yaml
+exit_codes:
+  0:
+    name: SUCCESS
+    description: "Compilation or check completed successfully"
+
+  1:
+    name: COMPILATION_ERROR
+    description: "One or more files failed to compile"
+    causes:
+      - "Invalid frontmatter"
+      - "Unknown placeholder alias"
+      - "File write error"
+
+  2:
+    name: DRIFT_DETECTED
+    description: "Drift detected in --check mode"
+    causes:
+      - "Target file modified since last compile"
+      - "Target file missing"
+
+  3:
+    name: INVALID_ARGUMENTS
+    description: "Invalid command-line arguments"
+    causes:
+      - "Unknown option"
+      - "Unknown platform name"
+```
+
+---
+
+## 5. 文件输出契约
+
+### 5.1 Skills Registry
+
+```yaml
+output_file: "devflow/.generated/skills-registry.json"
+schema:
+  type: object
+  required: [version, generatedAt, skills]
+  properties:
+    version:
+      type: string
+      pattern: "^\\d+\\.\\d+$"
+    generatedAt:
+      type: string
+      format: date-time
+    skills:
+      type: array
+      items:
+        $ref: "#/definitions/SkillEntry"
+```
+
+### 5.2 Manifest v2.0
+
+```yaml
+output_file: "devflow/.generated/manifest.json"
+schema:
+  type: object
+  required: [version, generatedAt, entries, skills, rulesEntry]
+  properties:
+    version:
+      type: string
+      enum: ["2.0"]
+    generatedAt:
+      type: string
+      format: date-time
+    entries:
+      type: array
+      items:
+        $ref: "#/definitions/ManifestEntry"
+    skills:
+      type: array
+      items:
+        type: object
+        properties:
+          name: { type: string }
+          sourceHash: { type: string, pattern: "^[a-f0-9]{64}$" }
+          timestamp: { type: string, format: date-time }
+    rulesEntry:
+      type: object
+      additionalProperties:
+        type: object
+        properties:
+          path: { type: string }
+          hash: { type: string, pattern: "^[a-f0-9]{64}$" }
+          timestamp: { type: string, format: date-time }
+```
+
+### 5.3 Platform Rules Entry Files
+
+```yaml
+cursor:
+  path: ".cursor/rules/devflow.mdc"
+  format: "MDC (YAML frontmatter + Markdown)"
+  required_frontmatter:
+    - description
+    - globs
+    - alwaysApply
+
+codex:
+  path: ".codex/skills/cc-devflow/SKILL.md"
+  format: "Markdown with YAML frontmatter"
+  required_frontmatter:
+    - name
+    - description
+    - type
+
+qwen:
+  path: ".qwen/commands/devflow.toml"
+  format: "TOML"
+  required_sections:
+    - skill
+    - commands
+
+antigravity:
+  path: ".agent/rules/rules.md"
+  format: "Markdown with YAML frontmatter"
+  constraints:
+    max_file_chars: 12000
+  required_frontmatter:
+    - description
+```
+
+---
+
+## 6. 使用示例
+
+```yaml
+examples:
+  full_compilation:
+    command: "npm run adapt"
+    description: "Compile all platforms with commands, skills, and rules"
+    expected_output: "Compilation complete with statistics"
+    exit_code: 0
+
+  single_platform:
+    command: "npm run adapt -- --platform cursor"
+    description: "Compile for Cursor only"
+    expected_output: "Compilation complete for cursor platform"
+    exit_code: 0
+
+  drift_detection:
+    command: "npm run adapt -- --check"
+    description: "Check for drift without modifying files"
+    expected_output: "No drift detected OR Drift detected with details"
+    exit_code: "0 or 2"
+
+  skills_only:
+    command: "npm run adapt -- --skills"
+    description: "Generate skills-registry.json only"
+    expected_output: "Skills registry generated: devflow/.generated/skills-registry.json"
+    exit_code: 0
+
+  verbose_mode:
+    command: "npm run adapt -- --verbose"
+    description: "Show detailed compilation output"
+    expected_output: "Per-file compilation status"
+    exit_code: 0
+```
+
+---
+
+## 7. Definitions
+
+```yaml
+definitions:
+  SkillEntry:
+    type: object
+    required: [name, description, type, skillPath]
+    properties:
+      name:
+        type: string
+        minLength: 1
+        maxLength: 100
+      description:
+        type: string
+        maxLength: 500
+      type:
+        type: string
+        enum: [domain, guardrail, utility]
+      enforcement:
+        type: string
+        enum: [suggest, block, warn]
+        default: suggest
+      priority:
+        type: string
+        enum: [critical, high, medium, low]
+        default: medium
+      skillPath:
+        type: string
+      triggers:
+        type: object
+        properties:
+          prompt:
+            type: object
+            properties:
+              keywords:
+                type: array
+                items: { type: string }
+              intentPatterns:
+                type: array
+                items: { type: string }
+          file:
+            type: object
+            properties:
+              pathPatterns:
+                type: array
+                items: { type: string }
+              contentPatterns:
+                type: array
+                items: { type: string }
+
+  ManifestEntry:
+    type: object
+    required: [source, target, hash, platform, timestamp]
+    properties:
+      source:
+        type: string
+      target:
+        type: string
+      hash:
+        type: string
+        pattern: "^[a-f0-9]{64}$"
+      platform:
+        type: string
+        enum: [codex, cursor, qwen, antigravity]
+      timestamp:
+        type: string
+        format: date-time
+```
+
+---
+
+**Generated**: 2025-12-19
+**Version**: 1.0.0

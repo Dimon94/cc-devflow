@@ -1,0 +1,44 @@
+{
+  "reqId": "REQ-006",
+  "title": "Adapter Compiler (RM-008)",
+  "status": "release_complete",
+  "phase": "release",
+  "phase0_complete": true,
+  "phase1_complete": true,
+  "clarify_complete": true,
+  "clarify_session_id": "20251219-143000-REQ-006",
+  "prd_complete": true,
+  "tech_design_complete": true,
+  "epic_complete": true,
+  "qa_complete": true,
+  "completedSteps": ["research", "clarify", "prd", "tech_design", "epic", "development", "qa", "release"],
+  "branch": "feature/REQ-006-adapter-compiler",
+  "milestone": "M4",
+  "dependencies": ["RM-006", "RM-007"],
+  "research": {
+    "internal": "research/internal/codebase-overview.md",
+    "external": [
+      "research/mcp/20251219/official/cursor-rules-spec.md",
+      "research/mcp/20251219/official/codex-cli-config.md",
+      "research/mcp/20251219/official/antigravity-rules-workflows.md"
+    ],
+    "decisions": "research/research.md",
+    "summary": "research/research-summary.md",
+    "clarifications": "research/clarifications/20251219-flow-clarify.md",
+    "techAnalysis": "research/codebase-tech-analysis.md"
+  },
+  "documents": {
+    "prd": "PRD.md",
+    "tech_design": "TECH_DESIGN.md",
+    "data_model": "data-model.md",
+    "contracts": "contracts/cli-spec.yaml",
+    "quickstart": "quickstart.md",
+    "test_report": "TEST_REPORT.md",
+    "security_report": "SECURITY_REPORT.md"
+  },
+  "createdAt": "2025-12-19T13:44:57+08:00",
+  "updatedAt": "2025-12-19T21:30:00+08:00",
+  "lastQaAt": "2025-12-19T20:50:00+08:00",
+  "lastReleaseAt": "2025-12-19T21:30:00+08:00",
+  "prUrl": "https://github.com/Dimon94/cc-devflow/pull/10"
+}

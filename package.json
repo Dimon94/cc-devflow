@@ -7,11 +7,13 @@
         "test": "jest",
         "start": "node bin/cc-devflow.js",
         "adapt": "node bin/adapt.js",
+        "adapt:check": "node bin/adapt.js --check",
+        "adapt:skills": "node bin/adapt.js --skills",
+        "adapt:rules": "node bin/adapt.js --rules",
         "adapt:codex": "node bin/adapt.js --platform codex",
         "adapt:cursor": "node bin/adapt.js --platform cursor",
         "adapt:qwen": "node bin/adapt.js --platform qwen",
-        "adapt:antigravity": "node bin/adapt.js --platform antigravity",
-        "adapt:check": "node bin/adapt.js --check"
+        "adapt:antigravity": "node bin/adapt.js --platform antigravity"
     },
     "dependencies": {
         "gray-matter": "^4.0.3",
