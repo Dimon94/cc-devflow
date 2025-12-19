@@ -266,7 +266,7 @@
 
 ### RM-007: 命令转译器（Command Emitter）
 
-**Status:** 🔵 Planned
+**Status:** 🟢 Completed
 **Effort:** 1 week
 **Quarter:** Q2-2026
 **Milestone:** M4 (Multi-Platform)
@@ -276,21 +276,21 @@
 实现命令转译/发射器：以 `.claude/commands/*.md` 为单一事实源（SSOT），生成各平台可消费的命令/工作流文件，并对 `{SCRIPT:*}` / `{AGENT_SCRIPT}` / `$ARGUMENTS` 等占位符做确定性展开。
 
 **Acceptance Criteria:**
-- [ ] 以 `.claude/commands/*.md` 为输入生成平台命令/工作流
+- [x] 以 `.claude/commands/*.md` 为输入生成平台命令/工作流
   - Codex: `.codex/prompts/{core-*,flow-*}.md`
   - Cursor: `.cursor/commands/{core-*,flow-*}.md`
   - Qwen: `.qwen/commands/{core-*,flow-*}.toml`
   - Antigravity: `.agent/workflows/{core-*,flow-*}.md`
-- [ ] 统一 args 占位符策略
+- [x] 统一 args 占位符策略
   - Markdown targets: `$ARGUMENTS`
   - TOML targets: `{{args}}`
-- [ ] 展开 cc-devflow 占位符（frontmatter 驱动）
+- [x] 展开 cc-devflow 占位符（frontmatter 驱动）
   - `{SCRIPT:<alias>}` → `scripts.<alias>`
   - `{AGENT_SCRIPT}` → `agent_scripts`（并替换 `__AGENT__`）
   - 兼容过渡：`{SCRIPT:<path-with-slash>}` 视为脚本路径直跑（并在输出中提示迁移为 alias）
-- [ ] 生成命令清单与来源映射（manifest）
+- [x] 生成命令清单与来源映射（manifest）
   - 记录：source path、target path、hash、生成时间
-- [ ] 文件名保持原名
+- [x] 文件名保持原名
   - 不强制增加 `devflow.*` 前缀（cc-devflow 已通过 `core-*` / `flow-*` 自带命名空间）
 
 **Technical Notes:**
