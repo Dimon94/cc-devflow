@@ -2,7 +2,7 @@
 
 **Version:** 2.0
 **Status:** Planning
-**Last Updated:** 2025-12-18
+**Last Updated:** 2025-12-19
 
 ## Vision Statement
 
@@ -107,13 +107,14 @@ CC-DevFlow v2.x 升级目标：借鉴 spec-kit 的"质量左移"理念，通过�
 
 ---
 
-### M4: Multi-Platform (Q2-2026 End)
+### M4: Multi-Platform (Q2-2026 End) 🟡
 
+**Status:** 🟡 In Progress (2/7 completed)
 **Goal:** Support 4 major AI agent platforms
 
 **Deliverables:**
-- RM-007: 命令转译器（Command Emitter）
-- RM-008: Adapter Compiler（Dynamic Context Compiler）
+- RM-007: 命令转译器（Command Emitter） ✅
+- RM-008: Adapter Compiler（Dynamic Context Compiler） ✅
 - RM-009: Codex CLI 适配 (Priority 1)
 - RM-010: Antigravity IDE 适配 (Priority 2)
 - RM-011: Cursor 适配 (Priority 3)
@@ -341,8 +342,10 @@ RM-001 → RM-002 → RM-006 → RM-007 → RM-008 → RM-009/010/011/012
 - [x] Documentation complete (RM-003, RM-006 documented)
 - [ ] 100 beta users onboarded
 
-### M4 (Multi-Platform)
-- [ ] 4 platform adapters functional
+### M4 (Multi-Platform) 🟡
+- [x] 4 platform adapters functional (Architecture & Compiler delivered)
+- [x] RM-007 Command Emitter functional ✅
+- [x] RM-008 Adapter Compiler functional ✅
 - [ ] >70% feature parity across platforms
 - [ ] Integration tests passing
 - [ ] Adapter developer guide published
@@ -372,5 +375,5 @@ RM-001 → RM-002 → RM-006 → RM-007 → RM-008 → RM-009/010/011/012
 
 **Document Status:** Living Document
 **Owner:** CC-DevFlow Team
-**Last Updated:** 2025-12-18 (RM-006 completed)
+**Last Updated:** 2025-12-19 (RM-008 completed)
 **Next Review:** End of M3 (Q1-2026 End)

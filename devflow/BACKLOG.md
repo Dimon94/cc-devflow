@@ -1,6 +1,6 @@
 # CC-DevFlow v2.x Backlog
 
-**Last Updated:** 2025-12-18 (Google ecosystem: Antigravity IDE only)
+**Last Updated:** 2025-12-19 (Google ecosystem: Antigravity IDE only)
 **Total Items:** 13
 **Estimated Effort:** 12.0 weeks
 
@@ -306,35 +306,36 @@
 
 ### RM-008: Adapter Compiler（Dynamic Context Compiler）
 
-**Status:** 🔵 Planned
+**Status:** 🟢 Completed
 **Effort:** 1 week
 **Quarter:** Q2-2026
 **Milestone:** M4 (Multi-Platform)
 **Dependencies:** RM-006, RM-007
+**Merged:** 2025-12-19 (PR #10)
 
 **Description:**
 实现编译式多平台适配入口：扫描 `.claude/`（commands/agents/hooks/scripts/skills/rules/constitution/guides），生成目标平台目录产物（`.codex/.cursor/.qwen/.agent` 等），并以 Skills Registry + Loader 实现渐进加载。
 
 **Acceptance Criteria:**
-- [ ] CLI 入口
+- [x] CLI 入口
   - `npm run adapt -- --platform <name>` / `--all` / `--check`
-- [ ] 生成平台规则入口文件（Context/Roles）
+- [x] 生成平台规则入口文件（Context/Roles）
   - Cursor: `.cursorrules`
   - Codex: `.codex/prompts/devflow.context.md`
   - Antigravity: `.agent/rules/rules.md`
   - Qwen: 平台约定入口文件（TBD）
-- [ ] Skills 渐进加载
+- [x] Skills 渐进加载
   - 生成 `Skill Registry`（name/description/triggers/path）并注入到入口文件
   - 提供 `load_skill <name>` 脚本工具（按需输出对应 `SKILL.md`）
-- [ ] Cursor 脚本入口
+- [x] Cursor 脚本入口
   - 生成 `.vscode/tasks.json`，将关键 `/flow-*` 与校验脚本暴露为 tasks
-- [ ] 增量更新
+- [x] 增量更新
   - 基于 manifest hash，避免无意义重写
-- [ ] Antigravity 文件限制处理
+- [x] Antigravity 文件限制处理
   - Rules/Workflows 单文件 ≤ 12,000 chars（超过则拆分并用 `@` 引用）
   - Rules 支持 trigger（Manual / Always On / Model Decision / Glob）
   - Rules 支持 `@filename` 引用（相对路径按 rules 文件位置解析）
-- [ ] 通过一种方式打包，让用户快捷使用，并且后续的版本的更新，也可以提示用户更新，与快速使用并且在 README 和 READM.zh-CN 里更新快捷使用的操作指引
+- [x] 通过一种方式打包，让用户快捷使用，并且后续的版本的更新，也可以提示用户更新，与快速使用并且在 README 和 READM.zh-CN 里更新快捷使用的操作指引
 
 **Technical Notes:**
 - Script: `scripts/adapt.js` (or `scripts/update-agent-context.js` as entrypoint)
@@ -514,8 +515,8 @@
 |----------|-----------|-------------|---------|-------|--------------|
 | P0       | 2         | 0           | 0       | 2     | 100%         |
 | P1       | 1         | 0           | 2       | 3     | 33.3%        |
-| P2       | 1         | 0           | 7       | 8     | 12.5%        |
-| **Total**| **4**     | **0**       | **9**   | **13**| **30.8%**    |
+| P2       | 2         | 0           | 6       | 8     | 25.0%        |
+| **Total**| **5**     | **0**       | **8**   | **13**| **38.5%**    |
 
 ### Milestone Progress
 
@@ -524,7 +525,7 @@
 | M1        | Q4-2025 End  | 1     | 1/1       | 🟢 Completed |
 | M2        | Q1-2026 Mid  | 1     | 1/1       | 🟢 Completed |
 | M3        | Q1-2026 End  | 4     | 2/4       | 🟡 In Progress |
-| M4        | Q2-2026 End  | 7     | 0/7       | 🔵 Not Started |
+| M4        | Q2-2026 End  | 7     | 2/7       | � In Progress |
 
 ### Effort Distribution
 
@@ -545,13 +546,13 @@
 | RM-004  | -          | N/A            | ✅ Yes         |
 | RM-005  | -          | N/A            | ✅ Yes         |
 | RM-006  | -          | N/A            | ✅ Yes (🟢 Completed) |
-| RM-007  | RM-006     | 🟢 Completed   | ✅ Yes         |
-| RM-008  | RM-006, RM-007 | 🔵 Planned | ❌ No          |
-| RM-009  | RM-006, RM-008 | 🔵 Planned | ❌ No          |
-| RM-010  | RM-006, RM-008 | 🔵 Planned | ❌ No          |
-| RM-011  | RM-006, RM-008 | 🔵 Planned | ❌ No          |
-| RM-012  | RM-006, RM-008 | 🔵 Planned | ❌ No          |
-| RM-013  | RM-008     | 🔵 Planned | ❌ No          |
+| RM-007  | RM-006     | 🟢 Completed   | ✅ Yes (🟢 Completed) |
+| RM-008  | RM-006, RM-007 | � Completed | ✅ Yes (🟢 Completed) |
+| RM-009  | RM-006, RM-008 | � Completed | ✅ Yes         |
+| RM-010  | RM-006, RM-008 | � Completed | ✅ Yes         |
+| RM-011  | RM-006, RM-008 | � Completed | ✅ Yes         |
+| RM-012  | RM-006, RM-008 | � Completed | ✅ Yes         |
+| RM-013  | RM-008     | � Completed   | ✅ Yes         |
 
 ---
 
