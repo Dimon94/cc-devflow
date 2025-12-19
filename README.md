@@ -123,21 +123,39 @@ Dual-layer execution model: Research Agents (11, read-only analysis) + Main Agen
 
 ### Installation
 
+#### Method 1: Install from npm (Recommended)
+
+```bash
+# Install globally
+npm install -g cc-devflow
+# or
+pnpm add -g cc-devflow
+
+# Initialize in your project
+cc-devflow init
+
+# Compile for specific platform (optional)
+cc-devflow adapt --platform cursor
+```
+
+#### Method 2: Manual Installation
+
 ```bash
 pnpm dlx tiged Dimon94/cc-devflow/.claude .claude
 ```
 
-### CLI (Global Install, Multi-Platform)
+### CLI Usage
 
 ```bash
-pnpm add -g cc-devflow
+# Initialize in current directory
 cc-devflow init
-cc-devflow adapt --platform cursor
-```
 
-```bash
+# Initialize in specific directory
 cc-devflow init --dir /path/to/project
-cc-devflow adapt --cwd /path/to/project --platform codex
+
+# Compile for specific platform
+cc-devflow adapt --platform codex
+cc-devflow adapt --cwd /path/to/project --platform cursor
 ```
 
 ### Optional Dependencies

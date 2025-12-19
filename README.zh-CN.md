@@ -123,21 +123,39 @@ export SKIP_TDD_ENFORCER=1
 
 ### 安装
 
+#### 方式 1: 从 npm 安装（推荐）
+
+```bash
+# 全局安装
+npm install -g cc-devflow
+# 或
+pnpm add -g cc-devflow
+
+# 在项目中初始化
+cc-devflow init
+
+# 编译到特定平台（可选）
+cc-devflow adapt --platform cursor
+```
+
+#### 方式 2: 手动安装
+
 ```bash
 pnpm dlx tiged Dimon94/cc-devflow/.claude .claude
 ```
 
-### CLI（全局安装，多平台）
+### CLI 使用
 
 ```bash
-pnpm add -g cc-devflow
+# 在当前目录初始化
 cc-devflow init
-cc-devflow adapt --platform cursor
-```
 
-```bash
+# 在指定目录初始化
 cc-devflow init --dir /path/to/project
-cc-devflow adapt --cwd /path/to/project --platform codex
+
+# 编译到特定平台
+cc-devflow adapt --platform codex
+cc-devflow adapt --cwd /path/to/project --platform cursor
 ```
 
 ### 验证安装
