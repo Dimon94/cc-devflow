@@ -334,6 +334,7 @@
   - Rules/Workflows 单文件 ≤ 12,000 chars（超过则拆分并用 `@` 引用）
   - Rules 支持 trigger（Manual / Always On / Model Decision / Glob）
   - Rules 支持 `@filename` 引用（相对路径按 rules 文件位置解析）
+- [ ] 通过一种方式打包，让用户快捷使用，并且后续的版本的更新，也可以提示用户更新，与快速使用并且在 README 和 READM.zh-CN 里更新快捷使用的操作指引
 
 **Technical Notes:**
 - Script: `scripts/adapt.js` (or `scripts/update-agent-context.js` as entrypoint)
