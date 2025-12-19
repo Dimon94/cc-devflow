@@ -109,12 +109,12 @@ CC-DevFlow v2.x 升级目标：借鉴 spec-kit 的"质量左移"理念，通过�
 
 ### M4: Multi-Platform (Q2-2026 End) 🟡
 
-**Status:** 🟡 In Progress (2/7 completed)
+**Status:** 🟡 In Progress (3/7 completed) - **RM-008 COMPLETED 2025-12-19**
 **Goal:** Support 4 major AI agent platforms
 
 **Deliverables:**
-- RM-007: 命令转译器（Command Emitter） ✅
-- RM-008: Adapter Compiler（Dynamic Context Compiler） ✅
+- RM-007: 命令转译器（Command Emitter） ✅ - Completed 2025-12-15
+- RM-008: Adapter Compiler（Dynamic Context Compiler） ✅ - **Completed 2025-12-19** (REQ-006)
 - RM-009: Codex CLI 适配 (Priority 1)
 - RM-010: Antigravity IDE 适配 (Priority 2)
 - RM-011: Cursor 适配 (Priority 3)
@@ -217,11 +217,14 @@ CC-DevFlow v2.x 升级目标：借鉴 spec-kit 的"质量左移"理念，通过�
      - `$ARGUMENTS`/`{{args}}` 平台化
    - 生成 manifest（source/target/hash）
 
-2. **RM-008: Adapter Compiler（Dynamic Context Compiler）** (P2, 1 week)
-   - 扫描 `.claude/` 构建 Source IR
-   - 生成平台规则入口文件（Cursor/Codex/Qwen/Antigravity）
-   - Skills Registry + Loader（渐进披露）
-   - Runtime entry: `.claude/scripts/update-agent-context.sh`, which now compiles contexts without `.specify`, honors `DEVFLOW_CONTEXT_SOURCE`/`DEVFLOW_PLAN_PATH`, falls back to `devflow/ROADMAP.md` when metadata is missing, and supports `DEVFLOW_AGENT_CONTEXT_TEMPLATE` overrides.
+2. **RM-008: Adapter Compiler（Dynamic Context Compiler）** ✅ (P2, 1 week) - **COMPLETED 2025-12-19**
+   - ✅ 扫描 `.claude/` 构建 Source IR
+   - ✅ 生成平台规则入口文件（Cursor MDC, Codex SKILL.md, Qwen TOML, Antigravity 12K split）
+   - ✅ Skills Registry compilation（合并 skill-rules.json + skill.md 元数据）
+   - ✅ Manifest v2.0 扩展（skills/rulesEntry 追踪）
+   - ✅ CLI 选项：--rules, --skills
+   - ✅ Bug 修复：关闭模板默认内联
+   - **REQ-006 交付**: 173 tests (87% coverage), TEST_REPORT + SECURITY_REPORT (both PASS)
 
 3. **RM-009: Codex CLI 适配** (P2, 0.5 weeks)
    - Priority 1 platform
