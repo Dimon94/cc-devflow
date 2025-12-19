@@ -7,6 +7,68 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.3.0] - 2025-12-19
+
+### 🎯 REQ-005 完成：Command Emitter (Multi-Platform Adapter Compiler)
+
+v2.3.0 实现了命令模板编译器，将 `.claude/commands/*.md` 作为 SSOT 编译到 Codex/Cursor/Qwen/Antigravity 四个平台。
+
+#### Added - 核心功能
+
+- **`npm run adapt`** - 多平台命令编译器
+  - `--platform <name>`: 指定目标平台 (codex, cursor, qwen, antigravity)
+  - `--all`: 编译到所有平台 (默认)
+  - `--check`: 漂移检测，不执行编译
+  - `--skills`: 生成 skills-registry.json
+  - `--verbose`: 详细输出
+
+- **Parser 模块** (`lib/compiler/parser.js`)
+  - 使用 gray-matter 解析 frontmatter
+  - 检测占位符: `{SCRIPT:*}`, `{AGENT_SCRIPT}`, `$ARGUMENTS`
+  - 生成 SHA-256 hash 支持增量编译
+
+- **Transformer 模块** (`lib/compiler/transformer.js`)
+  - `{SCRIPT:alias}` → `"bash <path>"`
+  - `$ARGUMENTS` 平台映射: Qwen→`{{args}}`, Antigravity→`[arguments]`
+  - `{AGENT_SCRIPT}` + `__AGENT__` 替换
+
+- **Emitter 模块** (`lib/compiler/emitters/`)
+  - `codex-emitter.js`: `.codex/prompts/*.md` (YAML frontmatter)
+  - `cursor-emitter.js`: `.cursor/commands/*.md` (纯 Markdown)
+  - `qwen-emitter.js`: `.qwen/commands/*.toml` (TOML 格式)
+  - `antigravity-emitter.js`: `.agent/workflows/*.md` (12K 限制，自动拆分)
+
+- **Manifest 模块** (`lib/compiler/manifest.js`)
+  - 增量编译支持 (source/target hash 对比)
+  - 漂移检测 (`--check` 模式)
+  - 位置: `devflow/.generated/manifest.json`
+
+- **Skills Registry** (`lib/compiler/skills-registry.js`)
+  - 解析 `.claude/skills/` 目录
+  - 生成 `skills-registry.json`
+  - 支持 Markdown table 输出
+
+#### Added - 新增文件
+
+- `bin/adapt.js` - CLI 入口 (198 lines)
+- `lib/compiler/index.js` - 编译器入口 (161 lines)
+- `lib/compiler/parser.js` - 解析器 (170 lines)
+- `lib/compiler/transformer.js` - 转换器 (95 lines)
+- `lib/compiler/manifest.js` - Manifest 管理 (160 lines)
+- `lib/compiler/schemas.js` - Zod schemas (100 lines)
+- `lib/compiler/errors.js` - 错误类型 (100 lines)
+- `lib/compiler/skills-registry.js` - Skills 注册表 (101 lines)
+- `lib/compiler/emitters/*.js` - 4 个平台发射器
+- `lib/compiler/CLAUDE.md` - 架构文档
+
+#### Quality Metrics
+
+- **测试覆盖率**: 79.81% (目标 ≥80%)
+- **测试用例**: 203 passed
+- **性能**: 单文件 1.6ms, 全量 <200ms (远优于 100ms/5s 目标)
+
+---
+
 ## [2.2.0] - 2025-12-16
 
 ### 🎯 里程碑 M2 完成：质量左移 (Quality Left-Shift)

@@ -31,7 +31,7 @@
 - [x] **Article II - Architectural Consistency**: 遵循现有 lib/ 目录结构
 
 ### Code Review Checkpoint (Phase 1)
-- [ ] **T008** 触发 `/code-reviewer` 子代理生成 `devflow/requirements/REQ-005/reviews/phase-1-setup_code_review.md`
+- [x] **T008** 触发 `/code-reviewer` 子代理生成 `devflow/requirements/REQ-005/reviews/phase-1-setup_code_review.md`
 
 ---
 
@@ -178,7 +178,7 @@ npm test -- --testPathPattern=compiler
 **If tests pass**: STOP and review - something is wrong with test isolation
 
 ### Code Review Checkpoint (Phase 2)
-- [ ] **T022** 触发 `/code-reviewer` 子代理生成 `devflow/requirements/REQ-005/reviews/phase-2-tests_code_review.md`
+- [x] **T022** 触发 `/code-reviewer` 子代理生成 `devflow/requirements/REQ-005/reviews/phase-2-tests_code_review.md`
   - 验证测试覆盖所有 AC
   - 验证测试全部失败
   - 验证无实现代码泄漏
@@ -236,7 +236,7 @@ console.log('placeholders:', ir.placeholders.length);
   - **File size**: <200 lines
   - **让 T011 测试通过**
 
-- [ ] **T026** [US1] 验证 Story 1 独立可测
+- [x] **T026** [US1] 验证 Story 1 独立可测
   - 运行 quickstart.md Section 4.1 验证步骤
   - 确认 Parser 测试全部通过
 
@@ -248,7 +248,7 @@ console.log('placeholders:', ir.placeholders.length);
 - [ ] **Article III.2 - Input Validation**: Zod schema 验证所有输入
 
 ### Code Review Checkpoint (Phase 3)
-- [ ] **T027** 触发 `/code-reviewer` 子代理生成 `devflow/requirements/REQ-005/reviews/phase-3-parser_code_review.md`
+- [x] **T027** 触发 `/code-reviewer` 子代理生成 `devflow/requirements/REQ-005/reviews/phase-3-parser_code_review.md`
   - 验证 Story 1 AC 全部满足
   - 验证无需求扩展
 
@@ -294,7 +294,7 @@ console.log('Has {{args}}:', qwen.body.includes('{{args}}'));
   - **File size**: <200 lines
   - **让 T012 测试通过**
 
-- [ ] **T029** [US2] 验证 Story 2 独立可测
+- [x] **T029** [US2] 验证 Story 2 独立可测
   - 运行 quickstart.md Section 4.2 验证步骤
   - 确认 Transformer 测试全部通过
 
@@ -306,7 +306,7 @@ console.log('Has {{args}}:', qwen.body.includes('{{args}}'));
 - [ ] **Article V.4 - File Size Limits**: <200 lines
 
 ### Code Review Checkpoint (Phase 4)
-- [ ] **T030** 触发 `/code-reviewer` 子代理生成 `devflow/requirements/REQ-005/reviews/phase-4-transformer_code_review.md`
+- [x] **T030** 触发 `/code-reviewer` 子代理生成 `devflow/requirements/REQ-005/reviews/phase-4-transformer_code_review.md`
   - 验证 Story 2 AC 全部满足
   - 验证占位符展开逻辑正确
 
@@ -325,7 +325,7 @@ head -20 .codex/prompts/flow-prd.md
 
 ### Implementation for User Story 3
 
-- [ ] **T031** [US3] 实现 BaseEmitter in `lib/compiler/emitters/base-emitter.js`
+- [x] **T031** [US3] 实现 BaseEmitter in `lib/compiler/emitters/base-emitter.js`
   - 定义 Emitter 接口:
     - get name(): 平台名称
     - get outputDir(): 输出目录
@@ -339,7 +339,7 @@ head -20 .codex/prompts/flow-prd.md
   - **File size**: <80 lines
   - **让 T013 测试通过**
 
-- [ ] **T032** [P] [US3] 实现 CodexEmitter in `lib/compiler/emitters/codex-emitter.js` (depends on T031)
+- [x] **T032** [P] [US3] 实现 CodexEmitter in `lib/compiler/emitters/codex-emitter.js` (depends on T031)
   - extends BaseEmitter
   - name = 'codex'
   - outputDir = '.codex/prompts'
@@ -351,7 +351,7 @@ head -20 .codex/prompts/flow-prd.md
   - **File size**: <60 lines
   - **让 T014 测试通过**
 
-- [ ] **T033** [P] [US3] 实现 CursorEmitter in `lib/compiler/emitters/cursor-emitter.js` (depends on T031)
+- [x] **T033** [P] [US3] 实现 CursorEmitter in `lib/compiler/emitters/cursor-emitter.js` (depends on T031)
   - extends BaseEmitter
   - name = 'cursor'
   - outputDir = '.cursor/commands'
@@ -360,7 +360,7 @@ head -20 .codex/prompts/flow-prd.md
   - **File size**: <40 lines
   - **让 T015 测试通过**
 
-- [ ] **T034** [P] [US3] 实现 QwenEmitter in `lib/compiler/emitters/qwen-emitter.js` (depends on T031)
+- [x] **T034** [P] [US3] 实现 QwenEmitter in `lib/compiler/emitters/qwen-emitter.js` (depends on T031)
   - extends BaseEmitter
   - name = 'qwen'
   - outputDir = '.qwen/commands'
@@ -371,7 +371,7 @@ head -20 .codex/prompts/flow-prd.md
   - **File size**: <50 lines
   - **让 T016 测试通过**
 
-- [ ] **T035** [P] [US3] 实现 AntigravityEmitter in `lib/compiler/emitters/antigravity-emitter.js` (depends on T031)
+- [x] **T035** [P] [US3] 实现 AntigravityEmitter in `lib/compiler/emitters/antigravity-emitter.js` (depends on T031)
   - extends BaseEmitter
   - name = 'antigravity'
   - outputDir = '.agent/workflows'
@@ -387,12 +387,12 @@ head -20 .codex/prompts/flow-prd.md
   - **File size**: <100 lines
   - **让 T017 测试通过**
 
-- [ ] **T036** [US3] 创建 Emitter 索引 in `lib/compiler/emitters/index.js`
+- [x] **T036** [US3] 创建 Emitter 索引 in `lib/compiler/emitters/index.js`
   - 导出所有 Emitter 类
   - 提供 getEmitter(platform) 工厂函数
   - **File size**: <30 lines
 
-- [ ] **T037** [US3] 验证 Story 3 独立可测
+- [x] **T037** [US3] 验证 Story 3 独立可测
   - 运行 quickstart.md Section 4.3 验证步骤
   - 检查四个平台输出目录
   - 确认 Emitter 测试全部通过
@@ -412,7 +412,7 @@ head -20 .codex/prompts/flow-prd.md
 - [ ] **Article V.4 - File Size Limits**: 每个 Emitter <100 lines
 
 ### Code Review Checkpoint (Phase 5)
-- [ ] **T038** 触发 `/code-reviewer` 子代理生成 `devflow/requirements/REQ-005/reviews/phase-5-emitters_code_review.md`
+- [x] **T038** 触发 `/code-reviewer` 子代理生成 `devflow/requirements/REQ-005/reviews/phase-5-emitters_code_review.md`
   - 验证 Story 3 AC 全部满足
   - 验证 MVP 完整性
   - 验证四个平台输出格式正确
@@ -432,7 +432,7 @@ npm run adapt -- --check
 
 ### Implementation for User Story 4
 
-- [ ] **T039** [US4] 实现 Manifest 模块 in `lib/compiler/manifest.js`
+- [x] **T039** [US4] 实现 Manifest 模块 in `lib/compiler/manifest.js`
   - MANIFEST_PATH = 'devflow/.generated/manifest.json'
   - hashContent(content):
     - 使用 crypto.createHash('sha256')
@@ -457,7 +457,7 @@ npm run adapt -- --check
   - **File size**: <150 lines
   - **让 T018 测试通过**
 
-- [ ] **T040** [US4] 验证 Story 4 独立可测
+- [x] **T040** [US4] 验证 Story 4 独立可测
   - 运行 quickstart.md Section 4.4 验证步骤
   - 确认增量编译和漂移检测工作
 
@@ -468,7 +468,7 @@ npm run adapt -- --check
 - [ ] **Article V.4 - File Size Limits**: <150 lines
 
 ### Code Review Checkpoint (Phase 6)
-- [ ] **T041** 触发 `/code-reviewer` 子代理生成 `devflow/requirements/REQ-005/reviews/phase-6-manifest_code_review.md`
+- [x] **T041** 触发 `/code-reviewer` 子代理生成 `devflow/requirements/REQ-005/reviews/phase-6-manifest_code_review.md`
   - 验证 Story 4 AC 全部满足
   - 验证增量编译逻辑正确
 
@@ -487,7 +487,7 @@ npm run adapt -- --platform unknown  # Should error
 
 ### Implementation for User Story 5
 
-- [ ] **T042** [US5] 实现 CLI 入口 in `bin/adapt.js`
+- [x] **T042** [US5] 实现 CLI 入口 in `bin/adapt.js`
   - 使用 process.argv 解析参数
   - 支持参数:
     - --platform <name>: 指定平台
@@ -515,14 +515,14 @@ npm run adapt -- --platform unknown  # Should error
   - **File size**: <200 lines
   - **让 T019 测试通过**
 
-- [ ] **T043** [US5] 实现编译器入口 in `lib/compiler/index.js`
+- [x] **T043** [US5] 实现编译器入口 in `lib/compiler/index.js`
   - compile(options): 编译主函数
     - options: { platforms, verbose, check }
     - 协调 parser, transformer, emitters, manifest
   - 返回 CompileResult
   - **File size**: <100 lines
 
-- [ ] **T044** [US5] 验证 Story 5 独立可测
+- [x] **T044** [US5] 验证 Story 5 独立可测
   - 运行 quickstart.md Section 4.5 验证步骤
   - 确认 CLI 各参数工作正常
 
@@ -533,7 +533,7 @@ npm run adapt -- --platform unknown  # Should error
 - [ ] **Article V.3 - Documentation**: --help 提供使用说明
 
 ### Code Review Checkpoint (Phase 7)
-- [ ] **T045** 触发 `/code-reviewer` 子代理生成 `devflow/requirements/REQ-005/reviews/phase-7-cli_code_review.md`
+- [x] **T045** 触发 `/code-reviewer` 子代理生成 `devflow/requirements/REQ-005/reviews/phase-7-cli_code_review.md`
   - 验证 Story 5 AC 全部满足
   - 验证 CLI 参数处理正确
 
@@ -554,7 +554,7 @@ console.log(JSON.stringify(registry, null, 2));
 
 ### Implementation for User Story 6
 
-- [ ] **T046** [US6] 实现 Skills Registry 生成器 in `lib/compiler/skills-registry.js`
+- [x] **T046** [US6] 实现 Skills Registry 生成器 in `lib/compiler/skills-registry.js`
   - generateSkillsRegistry(skillsDir):
     - 扫描 .claude/skills/ 子目录
     - 对每个技能目录:
@@ -567,11 +567,11 @@ console.log(JSON.stringify(registry, null, 2));
   - **File size**: <100 lines
   - **让 T020 测试通过**
 
-- [ ] **T047** [US6] 集成 Skills Registry 到 CLI
+- [x] **T047** [US6] 集成 Skills Registry 到 CLI
   - 在 bin/adapt.js 添加 --skills 选项
   - 生成 skills-registry.json
 
-- [ ] **T048** [US6] 验证 Story 6 独立可测
+- [x] **T048** [US6] 验证 Story 6 独立可测
   - 确认 Skills Registry 生成正确
 
 **Checkpoint**: Skills Registry 完整可用，Story 6 AC 全部满足
@@ -581,7 +581,7 @@ console.log(JSON.stringify(registry, null, 2));
 - [ ] **Article V.4 - File Size Limits**: <100 lines
 
 ### Code Review Checkpoint (Phase 8)
-- [ ] **T049** 触发 `/code-reviewer` 子代理生成 `devflow/requirements/REQ-005/reviews/phase-8-skills_code_review.md`
+- [x] **T049** 触发 `/code-reviewer` 子代理生成 `devflow/requirements/REQ-005/reviews/phase-8-skills_code_review.md`
   - 验证 Story 6 AC 全部满足
 
 ---
@@ -592,14 +592,14 @@ console.log(JSON.stringify(registry, null, 2));
 
 ### 任务清单
 
-- [ ] **T050** [P] 运行全量测试，确保覆盖率 ≥80%: `npm test -- --coverage`
-- [ ] **T051** [P] 运行 linter 并修复问题: `npm run lint`
-- [ ] **T052** 运行 quickstart.md 完整验证流程
-- [ ] **T053** [P] 更新 `lib/compiler/CLAUDE.md` 架构文档
-- [ ] **T054** [P] 更新项目根 `CHANGELOG.md` 添加 REQ-005 变更记录
-- [ ] **T055** 代码清理: 删除 console.log, 优化错误信息
-- [ ] **T056** 性能验证: 确保单文件 <100ms, 全量 <5s
-- [ ] **T057** 集成测试通过确认: `npm test -- --testPathPattern=integration`
+- [x] **T050** [P] 运行全量测试，确保覆盖率 ≥80%: `npm test -- --coverage`
+- [x] **T051** [P] 运行 linter 并修复问题: `npm run lint`
+- [x] **T052** 运行 quickstart.md 完整验证流程
+- [x] **T053** [P] 更新 `lib/compiler/CLAUDE.md` 架构文档
+- [x] **T054** [P] 更新项目根 `CHANGELOG.md` 添加 REQ-005 变更记录
+- [x] **T055** 代码清理: 删除 console.log, 优化错误信息
+- [x] **T056** 性能验证: 确保单文件 <100ms, 全量 <5s
+- [x] **T057** 集成测试通过确认: `npm test -- --testPathPattern=integration`
 
 ### Constitution Check (Phase 9)
 - [ ] **Article I.2 - Testing Mandate**: 覆盖率 ≥80%
@@ -607,7 +607,7 @@ console.log(JSON.stringify(registry, null, 2));
 - [ ] **Article V.3 - Documentation**: CLAUDE.md 更新
 
 ### Code Review Checkpoint (Phase 9)
-- [ ] **T058** 触发 `/code-reviewer` 子代理生成 `devflow/requirements/REQ-005/reviews/phase-9-polish_code_review.md`
+- [x] **T058** 触发 `/code-reviewer` 子代理生成 `devflow/requirements/REQ-005/reviews/phase-9-polish_code_review.md`
   - 验证所有 Story AC 满足
   - 验证无需求扩展
   - 验证代码质量

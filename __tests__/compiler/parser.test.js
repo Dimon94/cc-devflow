@@ -225,7 +225,7 @@ Input: $ARGUMENTS
 name: test
 description: Test
 scripts:
-  x: path
+  x: .claude/scripts/test.sh
 ---
 Start {SCRIPT:x} end
 `;

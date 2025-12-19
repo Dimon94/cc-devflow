@@ -301,7 +301,8 @@ description: Incremental test
         sourceDir: commandsDir,
         outputBaseDir: tmpDir
       });
-      expect(result1.filesCompiled).toBe(1);
+      // 1 file × 4 platforms = 4 compiled
+      expect(result1.filesCompiled).toBe(4);
 
       // Second compile (no changes)
       const result2 = await compiler.compile({
@@ -341,7 +342,8 @@ description: Modified
         sourceDir: commandsDir,
         outputBaseDir: tmpDir
       });
-      expect(result.filesCompiled).toBe(1);
+      // 1 file × 4 platforms = 4 compiled
+      expect(result.filesCompiled).toBe(4);
     });
   });
 });

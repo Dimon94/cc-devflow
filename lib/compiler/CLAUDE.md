@@ -68,6 +68,7 @@ lib/compiler/
 npm run adapt                       # Compile all platforms
 npm run adapt -- --platform codex   # Compile single platform
 npm run adapt -- --check            # Drift detection only
+npm run adapt -- --skills           # Generate skills-registry.json
 npm run adapt -- --verbose          # Detailed output
 ```
 

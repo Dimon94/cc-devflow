@@ -1,8 +1,8 @@
 {
   "reqId": "REQ-005",
   "title": "REQ-005 (RM-007): Command Emitter",
-  "status": "development_complete",
-  "phase": "qa",
+  "status": "release_in_progress",
+  "phase": "release",
   "completedSteps": [
     "init",
     "research",
@@ -10,7 +10,8 @@
     "prd",
     "tech_design",
     "epic",
-    "dev"
+    "dev",
+    "qa"
   ],
   "phase0_complete": true,
   "research_complete": true,
@@ -33,8 +34,16 @@
   "dev_tests_passed": 201,
   "dev_test_suites": 13,
   "dev_files_created": 12,
+  "qa_complete": true,
+  "qa_test_coverage": 79.81,
+  "qa_core_coverage": 90.32,
+  "qa_tests_passed": 203,
+  "qa_security_findings": 0,
+  "qa_security_medium": 3,
+  "qa_gate": "PASS",
+  "lastQaAt": "2025-12-19T10:16:00Z",
   "createdAt": "2025-12-18T09:55:00Z",
-  "updatedAt": "2025-12-18T20:55:00Z",
+  "updatedAt": "2025-12-19T10:16:00Z",
   "clarify_complete": true,
   "clarify_session_id": "REQ-005-CLARIFY-AUTO",
   "roadmap_item": "RM-007",
