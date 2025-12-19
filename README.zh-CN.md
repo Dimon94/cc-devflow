@@ -136,6 +136,9 @@ cc-devflow init
 
 # 编译到特定平台（可选）
 cc-devflow adapt --platform cursor
+cc-devflow adapt --platform codex
+cc-devflow adapt --platform antigravity
+cc-devflow adapt --platform qwen
 ```
 
 #### 方式 2: 手动安装

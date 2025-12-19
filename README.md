@@ -136,6 +136,9 @@ cc-devflow init
 
 # Compile for specific platform (optional)
 cc-devflow adapt --platform cursor
+cc-devflow adapt --platform codex
+cc-devflow adapt --platform antigravity
+cc-devflow adapt --platform qwen
 ```
 
 #### Method 2: Manual Installation
