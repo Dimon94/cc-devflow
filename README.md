@@ -464,6 +464,14 @@ v2.2.0 introduces comprehensive multi-platform support, enabling cc-devflow work
   - Resource copying with path rewriting (scripts, templates, guides → platform directories)
   - Manifest-based incremental compilation with drift detection
 
+- **Adapter Compiler (REQ-006)** - Multi-platform rules entry file generation
+  - Platform-specific rules emitters for 4 platforms (Cursor MDC, Codex SKILL.md, Qwen TOML, Antigravity with 12K splitting)
+  - Skills registry compilation (merges `skill-rules.json` + `skill.md` metadata)
+  - Manifest v2.0 extension with `skills` and `rulesEntry` tracking
+  - `--rules` and `--skills` CLI options for selective compilation
+  - **Bug Fix**: Disabled template inlining by default (keeps path references instead of inline expansion)
+  - 173 tests, 87% coverage for new modules
+
 **📦 New CLI Tool**:
 ```bash
 npm run adapt                        # Compile for all platforms

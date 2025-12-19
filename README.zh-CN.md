@@ -459,6 +459,14 @@ v2.2.0 引入全面的多平台支持，让 cc-devflow 工作流能在多个 AI 
   - 资源复制与路径重写（脚本、模板、指南 → 平台目录）
   - 基于 Manifest 的增量编译和漂移检测
 
+- **适配器编译器 (REQ-006)** - 多平台规则入口文件生成
+  - 4 个平台专用规则 Emitters（Cursor MDC、Codex SKILL.md、Qwen TOML、Antigravity 12K 智能分块）
+  - 技能注册表编译（合并 `skill-rules.json` + `skill.md` 元数据）
+  - Manifest v2.0 扩展，支持 `skills` 和 `rulesEntry` 追踪
+  - `--rules` 和 `--skills` CLI 选项实现选择性编译
+  - **Bug 修复**：默认关闭模板内联（保持路径引用而非内联展开）
+  - 173 个测试，新模块覆盖率 87%
+
 **📦 新 CLI 工具**:
 ```bash
 npm run adapt                        # 编译到所有平台
