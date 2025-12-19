@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 /**
- * T042: CLI Entry Point - bin/adapt.js
+ * CLI Entry Point - bin/adapt.js (v2.0)
  *
  * Usage:
- *   npm run adapt                        # Compile for all platforms
+ *   npm run adapt                        # Compile all (commands + skills + rules)
  *   npm run adapt -- --platform codex    # Compile for Codex only
  *   npm run adapt -- --all               # Compile for all platforms (explicit)
  *   npm run adapt -- --check             # Check for drift
+ *   npm run adapt -- --skills            # Generate skills-registry.json only
+ *   npm run adapt -- --rules             # Generate rules entry files only
  *   npm run adapt -- --verbose           # Show detailed output
  *   npm run adapt -- --help              # Show help
  *
@@ -17,9 +19,8 @@
  *   3: Invalid arguments
  */
 const { compile, PLATFORMS } = require('../lib/compiler/index.js');
-const { generateSkillsRegistry } = require('../lib/compiler/skills-registry.js');
-const fs = require('fs');
-const path = require('path');
+const { generateSkillsRegistryV2, writeSkillsRegistry } = require('../lib/compiler/skills-registry.js');
+const { emitAllRules } = require('../lib/compiler/rules-emitters/index.js');
 
 // ============================================================
 // parseArgs - 解析命令行参数
@@ -31,7 +32,8 @@ function parseArgs(argv) {
     check: false,
     verbose: false,
     help: false,
-    skills: false
+    skills: false,
+    rules: false
   };
 
   for (let i = 0; i < argv.length; i++) {
@@ -57,6 +59,9 @@ function parseArgs(argv) {
       case '--skills':
         args.skills = true;
         break;
+      case '--rules':
+        args.rules = true;
+        break;
       default:
         if (arg.startsWith('-')) {
           console.error(`Unknown option: ${arg}`);
@@ -75,22 +80,23 @@ function showHelp() {
   console.log(`
 Usage: npm run adapt [options]
 
-Command Emitter - Compile .claude/commands/*.md to multi-platform formats
+Adapter Compiler - Compile CC-DevFlow to multi-platform formats
 
 Options:
   --platform <name>   Compile for specific platform (${PLATFORMS.join(', ')})
   --all               Compile for all platforms (default if no --platform)
   --check             Check for drift without compiling
-  --skills            Generate skills-registry.json from .claude/skills/
+  --skills            Generate skills-registry.json only
+  --rules             Generate rules entry files only
   --verbose           Show detailed compilation output
   --help, -h          Show this help message
 
 Examples:
-  npm run adapt                        # Compile for all platforms
+  npm run adapt                        # Full compilation
   npm run adapt -- --platform codex    # Compile for Codex only
-  npm run adapt -- --all               # Compile for all platforms (explicit)
-  npm run adapt -- --check             # Check for drift
   npm run adapt -- --skills            # Generate skills registry
+  npm run adapt -- --rules             # Generate rules entry files
+  npm run adapt -- --check             # Check for drift
   npm run adapt -- --verbose           # Show detailed output
 
 Exit Codes:
@@ -113,30 +119,6 @@ async function main() {
     process.exit(0);
   }
 
-  // 处理 --skills 模式
-  if (args.skills) {
-    try {
-      const skillsDir = '.claude/skills';
-      const registry = generateSkillsRegistry(skillsDir);
-      const outputPath = 'devflow/.generated/skills-registry.json';
-
-      // 确保输出目录存在
-      const outputDir = path.dirname(outputPath);
-      if (!fs.existsSync(outputDir)) {
-        fs.mkdirSync(outputDir, { recursive: true });
-      }
-
-      // 写入 JSON
-      fs.writeFileSync(outputPath, JSON.stringify(registry, null, 2));
-      console.log(`Skills registry generated: ${outputPath}`);
-      console.log(`  Skills found: ${registry.length}`);
-      process.exit(0);
-    } catch (error) {
-      console.error(`Error generating skills registry: ${error.message}`);
-      process.exit(1);
-    }
-  }
-
   // 确定目标平台
   let platforms;
   if (args.platform) {
@@ -150,12 +132,67 @@ async function main() {
     platforms = PLATFORMS;
   }
 
+  // 处理 --skills 单独模式
+  if (args.skills && !args.rules) {
+    try {
+      const skillsDir = '.claude/skills';
+      const registry = await generateSkillsRegistryV2(skillsDir);
+      const outputPath = await writeSkillsRegistry(registry);
+
+      console.log(`Skills registry generated: ${outputPath}`);
+      console.log(`  Skills found: ${registry.skills.length}`);
+      process.exit(0);
+    } catch (error) {
+      console.error(`Error generating skills registry: ${error.message}`);
+      process.exit(1);
+    }
+  }
+
+  // 处理 --rules 单独模式
+  if (args.rules && !args.skills) {
+    try {
+      const skillsDir = '.claude/skills';
+      const registry = await generateSkillsRegistryV2(skillsDir);
+
+      const rulesResults = await emitAllRules(registry, [], { platforms });
+      let rulesGenerated = 0;
+
+      for (const ruleResult of rulesResults) {
+        if (ruleResult.error) {
+          console.error(`  Error (${ruleResult.platform}): ${ruleResult.error}`);
+        } else {
+          rulesGenerated++;
+          if (args.verbose) {
+            console.log(`  Generated: ${ruleResult.path}`);
+          }
+        }
+      }
+
+      console.log(`Rules entry files generated: ${rulesGenerated}`);
+      process.exit(0);
+    } catch (error) {
+      console.error(`Error generating rules: ${error.message}`);
+      process.exit(1);
+    }
+  }
+
   try {
-    const result = await compile({
+    // 确定编译选项
+    const compileOptions = {
       platforms,
       verbose: args.verbose,
-      check: args.check
-    });
+      check: args.check,
+      rules: true,
+      skills: true
+    };
+
+    // 如果只指定 --skills 或 --rules，调整选项
+    if (args.skills || args.rules) {
+      compileOptions.skills = args.skills;
+      compileOptions.rules = args.rules;
+    }
+
+    const result = await compile(compileOptions);
 
     // 处理 check 模式
     if (args.check) {
@@ -178,6 +215,8 @@ async function main() {
       console.log(`  Files skipped: ${result.filesSkipped}`);
       console.log(`  Resources copied: ${result.resourcesCopied}`);
       console.log(`  Resources skipped: ${result.resourcesSkipped}`);
+      console.log(`  Skills registered: ${result.skillsRegistered}`);
+      console.log(`  Rules generated: ${result.rulesGenerated}`);
       process.exit(0);
     } else {
       console.error('Compilation failed:');
