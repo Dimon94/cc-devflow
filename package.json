@@ -3,7 +3,27 @@
     "version": "1.0.0",
     "description": "DevFlow CLI tool",
     "main": "bin/cc-devflow.js",
+    "bin": {
+        "cc-devflow": "bin/cc-devflow-cli.js"
+    },
+    "files": [
+        "bin/",
+        "lib/",
+        "config/",
+        ".claude/",
+        "docs/",
+        "README.md",
+        "README.zh-CN.md",
+        "CHANGELOG.md",
+        "LICENSE",
+        "package.json"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
+    "license": "MIT",
     "scripts": {
+        "prepublishOnly": "node scripts/validate-publish.js",
         "test": "jest",
         "start": "node bin/cc-devflow.js",
         "adapt": "node bin/adapt.js",

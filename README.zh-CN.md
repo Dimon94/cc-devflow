@@ -124,7 +124,20 @@ export SKIP_TDD_ENFORCER=1
 ### 安装
 
 ```bash
-npx tiged Dimon94/cc-devflow/.claude .claude
+pnpm dlx tiged Dimon94/cc-devflow/.claude .claude
+```
+
+### CLI（全局安装，多平台）
+
+```bash
+pnpm add -g cc-devflow
+cc-devflow init
+cc-devflow adapt --platform cursor
+```
+
+```bash
+cc-devflow init --dir /path/to/project
+cc-devflow adapt --cwd /path/to/project --platform codex
 ```
 
 ### 验证安装

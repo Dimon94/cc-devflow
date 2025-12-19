@@ -5,7 +5,7 @@
 ### 方式 1: 使用 npx（推荐）
 
 ```bash
-npx tiged Dimon94/cc-devflow/.claude .claude
+pnpm dlx tiged Dimon94/cc-devflow/.claude .claude
 ```
 
 ### 方式 2: 手动下载

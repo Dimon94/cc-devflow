@@ -20,7 +20,7 @@ This guide will help you get started with cc-devflow, from installation to your 
 
 ```bash
 # Clone .claude configuration to your project
-npx tiged Dimon94/cc-devflow/.claude .claude
+pnpm dlx tiged Dimon94/cc-devflow/.claude .claude
 ```
 
 ### Manual Install

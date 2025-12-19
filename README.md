@@ -124,7 +124,20 @@ Dual-layer execution model: Research Agents (11, read-only analysis) + Main Agen
 ### Installation
 
 ```bash
-npx tiged Dimon94/cc-devflow/.claude .claude
+pnpm dlx tiged Dimon94/cc-devflow/.claude .claude
+```
+
+### CLI (Global Install, Multi-Platform)
+
+```bash
+pnpm add -g cc-devflow
+cc-devflow init
+cc-devflow adapt --platform cursor
+```
+
+```bash
+cc-devflow init --dir /path/to/project
+cc-devflow adapt --cwd /path/to/project --platform codex
 ```
 
 ### Optional Dependencies
