@@ -1,6 +1,6 @@
 ---
 name: flow-epic
-description: Generate Epic and Tasks breakdown. Usage: /flow-epic "REQ-123" or /flow-epic
+description: 'Generate Epic and Tasks breakdown. Usage: /flow-epic "REQ-123" or /flow-epic'
 scripts:
   prereq: .claude/scripts/check-prerequisites.sh
   setup: .claude/scripts/setup-epic.sh

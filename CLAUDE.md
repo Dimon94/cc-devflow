@@ -110,3 +110,41 @@
 </ultimate_truth>
 
 ---
+
+## devflow 目录与需求文档
+
+`devflow/` 是本仓库的「单一真相源」，存放所有需求、设计与研发过程资料，AI 在收集上下文时应优先从这里检索：
+
+- **顶层文件**
+  - `ARCHITECTURE.md`: 全局架构设计与关键 ADR，适合回答「整体怎么设计」类问题。
+  - `BACKLOG.md`: 产品需求池与优先级，适合检索「是否已有某需求」。
+  - `DEVELOPMENT_PLAN.md`: 迭代节奏与开发顺序，适合判断当前应聚焦的 REQ。
+  - `frontend_design/`: 小程序前端 UI 设计说明（按页面拆分 `UI_0X_*.md`）。
+  - `doc/`: 通用技术文档（部署、TDesign 使用规范、数据库优化等）。
+  - `research/`: 项目级调研与风格分析。
+
+- **requirements/REQ-XXX 结构（以 REQ-007/REQ-009 为代表）**
+  - `README.md`: 该需求入口说明，列出子文档用途与状态。
+  - `PRD.md`: 产品需求文档，面向「业务 / 交互 / 用户故事」。
+  - `TECH_DESIGN.md`: 技术设计方案，包含接口、数据流、边界条件。
+  - `EPIC.md` + `TASKS.md`: 需求拆分与任务列表，是 /flow-* 命令生成/消费的核心。
+  - `data-model.md`: 与本需求相关的数据结构与字段解释。
+  - `contracts/openapi.yaml`: 与后端/API 契约相关的 OpenAPI 定义。
+  - `UI_PROTOTYPE.html` + 同目录下 `frontend_design/*.md`: 对应页面的 UI / 交互原型。
+  - `TEST_REPORT.md` / `SECURITY_REPORT.md` / `RELEASE_PLAN.md`: 测试、风险与发布记录。
+  - `EXECUTION_LOG.md` + `orchestration_status.json` + `tasks.json`: DevFlow 编排与执行日志，记录 AI 与人工协作过程。
+  - `research/`: 与该 REQ 相关的调研资料：
+    - `internal/`: 代码仓内部分析，如 `codebase-overview.md`。
+    - `mcp/<date>/`: 通过 MCP 抓取的官方 / 教程 / 指南文档（如 TDesign 组件文档、微信能力指南）。
+
+## devflow 脚本调用规范
+
+命令头文件格式:
+```yaml
+scripts:
+  mark: .claude/scripts/mark-task-complete.sh
+```
+
+使用格式: `{SCRIPT:mark} T001` → 执行 `.claude/scripts/mark-task-complete.sh T001`
+
+**规则**: 遇到 `{SCRIPT:xxx}` 时，去头文件找对应路径执行。

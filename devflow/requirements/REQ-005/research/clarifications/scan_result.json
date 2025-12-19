@@ -1,0 +1,139 @@
+{
+  "sessionId": "20251218-145454-REQ-005",
+  "scanDurationMs": 2883,
+  "dimensions": [
+    {
+      "dimensionId": 1,
+      "name": "Functional Scope",
+      "status": "ambiguous",
+      "issues": [
+        {
+          "description": "功能范围边界与成功标准不清：缺少 In Scope / Out of Scope、可度量验收信号",
+          "impact": 9,
+          "uncertainty": 8,
+          "issueId": "dim-1-issue-1",
+          "priority": 72
+        }
+      ],
+      "scanTimeMs": 593
+    },
+    {
+      "dimensionId": 2,
+      "name": "Data Model",
+      "status": "clear",
+      "issues": [],
+      "scanTimeMs": 820
+    },
+    {
+      "dimensionId": 3,
+      "name": "UX Flow",
+      "status": "ambiguous",
+      "issues": [
+        {
+          "description": "调用方如何选择/覆盖 Adapter 未定义：自动探测 vs 配置文件 vs CLI 参数",
+          "impact": 7,
+          "uncertainty": 6,
+          "issueId": "dim-3-issue-1",
+          "priority": 42
+        }
+      ],
+      "scanTimeMs": 697
+    },
+    {
+      "dimensionId": 4,
+      "name": "Non-Functional Quality",
+      "status": "ambiguous",
+      "issues": [
+        {
+          "description": "非功能目标缺失：性能/超时/错误恢复/可观测性要求未量化",
+          "impact": 6,
+          "uncertainty": 7,
+          "issueId": "dim-4-issue-1",
+          "priority": 42
+        }
+      ],
+      "scanTimeMs": 653
+    },
+    {
+      "dimensionId": 5,
+      "name": "Integration & Dependencies",
+      "status": "clear",
+      "issues": [],
+      "scanTimeMs": 652
+    },
+    {
+      "dimensionId": 6,
+      "name": "Edge Cases",
+      "status": "ambiguous",
+      "issues": [
+        {
+          "description": "边界场景缺失：多个 Adapter 命中/无 Adapter 命中/探测冲突时的降级与报错策略",
+          "impact": 7,
+          "uncertainty": 7,
+          "issueId": "dim-6-issue-1",
+          "priority": 49
+        }
+      ],
+      "scanTimeMs": 643
+    },
+    {
+      "dimensionId": 7,
+      "name": "Constraints & Tradeoffs",
+      "status": "ambiguous",
+      "issues": [
+        {
+          "description": "约束与取舍未声明：是否必须保持 Claude Code 行为完全兼容？允许哪些破坏性重构？",
+          "impact": 6,
+          "uncertainty": 6,
+          "issueId": "dim-7-issue-1",
+          "priority": 36
+        }
+      ],
+      "scanTimeMs": 660
+    },
+    {
+      "dimensionId": 8,
+      "name": "Terminology",
+      "status": "clear",
+      "issues": [],
+      "scanTimeMs": 448
+    },
+    {
+      "dimensionId": 9,
+      "name": "Completion Signals",
+      "status": "ambiguous",
+      "issues": [
+        {
+          "description": "完成定义不清：需要可验证交付物与验收清单（接口、注册表、默认适配器、测试）",
+          "impact": 8,
+          "uncertainty": 8,
+          "issueId": "dim-9-issue-1",
+          "priority": 64
+        }
+      ],
+      "scanTimeMs": 666
+    },
+    {
+      "dimensionId": 10,
+      "name": "Misc & Placeholders",
+      "status": "clear",
+      "issues": [],
+      "scanTimeMs": 692
+    },
+    {
+      "dimensionId": 11,
+      "name": "Security & Privacy",
+      "status": "ambiguous",
+      "issues": [
+        {
+          "description": "安全边界未定义：Adapter 能力（shell/filesystem/network）最小化、审计与隔离策略缺失",
+          "impact": 8,
+          "uncertainty": 7,
+          "issueId": "dim-11-issue-1",
+          "priority": 56
+        }
+      ],
+      "scanTimeMs": 497
+    }
+  ]
+}

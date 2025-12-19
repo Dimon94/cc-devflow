@@ -1,6 +1,6 @@
 ---
 name: flow-restart
-description: Restart interrupted cc-devflow requirement development. Usage: /flow-restart "REQ-123" [--from=stage]
+description: 'Restart interrupted cc-devflow requirement development. Usage: /flow-restart "REQ-123" [--from=stage]'
 scripts:
   prereq: .claude/scripts/check-prerequisites.sh
   recover: .claude/scripts/recover-workflow.sh

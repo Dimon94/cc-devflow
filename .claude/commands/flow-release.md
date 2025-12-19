@@ -1,6 +1,6 @@
 ---
 name: flow-release
-description: Create PR and manage release. Usage: /flow-release "REQ-123" or /flow-release
+description: 'Create PR and manage release. Usage: /flow-release "REQ-123" or /flow-release'
 scripts:
   prereq: .claude/scripts/check-prerequisites.sh
   check_tasks: .claude/scripts/check-task-status.sh

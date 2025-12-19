@@ -1,6 +1,6 @@
 ---
 name: flow-fix
-description: One-shot BUG fix flow. Usage: /flow-fix "BUG-123|登录时报 500"
+description: 'One-shot BUG fix flow. Usage: /flow-fix "BUG-123|登录时报 500"'
 scripts:
   prereq: .claude/scripts/check-prerequisites.sh
   recover: .claude/scripts/recover-workflow.sh

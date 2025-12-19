@@ -16,6 +16,13 @@ build/
 *.swo
 *~
 
+# Agent platform generated artifacts (compiled from .claude/)
+.agent/
+.codex/
+.cursor/
+.qwen/
+devflow/.generated/
+
 # OS
 .DS_Store
 Thumbs.db
@@ -23,6 +30,11 @@ Thumbs.db
 # 测试临时文件
 .tmp/
 tmp/
+
+# 测试覆盖率报告（可重现的计算衍生物，不跟踪）
+coverage/
+.nyc_output/
+*.lcov
 
 # 环境变量
 .env

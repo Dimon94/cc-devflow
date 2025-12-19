@@ -1,6 +1,6 @@
 ---
 name: flow-constitution
-description: Manage CC-DevFlow Constitution. Usage: /flow-constitution [--article I] [--amend --proposal file] [--apply --version TYPE]
+description: 'Manage CC-DevFlow Constitution. Usage: /flow-constitution [--article I] [--amend --proposal file] [--apply --version TYPE]'
 scripts:
   manage: .claude/scripts/manage-constitution.sh
 ---

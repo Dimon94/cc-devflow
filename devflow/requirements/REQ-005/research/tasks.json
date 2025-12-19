@@ -1,0 +1,94 @@
+{
+  "tasks": [
+    {
+      "id": "R001",
+      "type": "architecture",
+      "prompt": "Confirm `.claude/commands` frontmatter + placeholders are sufficient for deterministic multi-platform compilation.",
+      "status": "completed",
+      "decision": "Use a compiler approach: expand `{SCRIPT:*}`/`{AGENT_SCRIPT}`/`$ARGUMENTS` from command frontmatter and emit platform artifacts.",
+      "rationale": "cc-devflow command files already contain structured frontmatter and deterministic placeholders, enabling compile-time generation without a runtime template engine.",
+      "alternatives": [
+        "Runtime Handlebars engine (unnecessary complexity)",
+        "Static per-platform templates (drift + duplication)"
+      ]
+    },
+    {
+      "id": "R002",
+      "type": "architecture",
+      "prompt": "Design per-platform output directory structure.",
+      "status": "completed",
+      "decision": "Emit compiled artifacts to per-platform folders: `.codex/prompts/`, `.cursor/commands/`, `.qwen/commands/`, `.agent/workflows/`.",
+      "rationale": "Each platform scans specific directories for custom commands. Using native paths ensures automatic discovery.",
+      "alternatives": [
+        "Unified output directory (breaks platform conventions)",
+        "Symlinks (cross-platform compatibility issues)"
+      ]
+    },
+    {
+      "id": "R003",
+      "type": "source_analysis",
+      "prompt": "Analyze spec-kit source code for placeholder replacement and multi-agent packaging patterns.",
+      "status": "completed",
+      "decision": "Adopt spec-kit placeholder replacement patterns via compile-time transforms (not runtime helpers).",
+      "rationale": "spec-kit replaces {SCRIPT}/{ARGS} at build time. cc-devflow can do the same by compiling `.claude/commands` into target platform artifacts.",
+      "alternatives": [
+        "Copy spec-kit's release zip templating (not aligned with SSOT in-repo)"
+      ]
+    },
+    {
+      "id": "R004",
+      "type": "technology",
+      "prompt": "Research target platform command formats: Codex, Cursor, Qwen, Antigravity.",
+      "status": "completed",
+      "decision": "Map placeholders per platform: Codex uses `$ARGUMENTS`, Qwen uses `{{args}}`, Antigravity uses `[bracket]` notation. Cursor has no native placeholders.",
+      "rationale": "Each platform has distinct argument handling. Explicit mapping ensures correct runtime behavior.",
+      "alternatives": [
+        "Universal syntax (incompatible with platform parsers)",
+        "No argument support (reduces utility)"
+      ]
+    },
+    {
+      "id": "R005",
+      "type": "architecture",
+      "prompt": "Design manifest generation for tracking compiled outputs.",
+      "status": "completed",
+      "decision": "Generate `devflow/.generated/manifest.json` with source path, target path, content hash (SHA-256), timestamp, and platform identifier.",
+      "rationale": "Enables incremental compilation, drift detection, and debugging.",
+      "alternatives": [
+        "No manifest (harder to debug)",
+        "Database (overkill for static files)"
+      ]
+    },
+    {
+      "id": "R006",
+      "type": "policy",
+      "prompt": "Decide on output filename conventions.",
+      "status": "completed",
+      "decision": "Preserve original command filenames without adding `devflow.*` prefix.",
+      "rationale": "CC-DevFlow commands already use namespaced prefixes (`core-*`, `flow-*`), making additional prefixes redundant.",
+      "alternatives": [
+        "`devflow.*` prefix (clutters namespace, breaks platform conventions)"
+      ]
+    },
+    {
+      "id": "R007",
+      "type": "technology",
+      "prompt": "Select JavaScript libraries for frontmatter parsing and serialization.",
+      "status": "completed",
+      "decision": "Use gray-matter (frontmatter parsing), js-yaml (YAML serialization), @iarna/toml (TOML output).",
+      "rationale": "gray-matter is the de facto standard for frontmatter parsing (97 code snippets, High reputation). js-yaml is the standard YAML library for Node.js.",
+      "alternatives": [
+        "Custom parser (reinventing the wheel)",
+        "Handlebars (runtime overhead)"
+      ]
+    }
+  ],
+  "metadata": {
+    "requirement_id": "REQ-005",
+    "roadmap_item": "RM-007",
+    "title": "Command Emitter",
+    "total_tasks": 7,
+    "completed_tasks": 7,
+    "last_updated": "2025-12-18T15:30:00+08:00"
+  }
+}

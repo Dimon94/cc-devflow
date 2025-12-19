@@ -2,11 +2,11 @@
 
 **Version:** 2.0
 **Status:** Planning
-**Last Updated:** 2025-12-16
+**Last Updated:** 2025-12-18
 
 ## Vision Statement
 
-CC-DevFlow v2.x 升级目标：借鉴 spec-kit 的"质量左移"理念，通过新增 `/flow-clarify`（11 维度歧义扫描）和 `/flow-checklist`（需求单元测试）两个核心命令，在 PRD 生成和任务分解阶段消除需求歧义。同时构建多平台适配层，支持 Codex CLI、Google Antigravity、Cursor、Qwen Code 等主流 AI Agent。
+CC-DevFlow v2.x 升级目标：借鉴 spec-kit 的"质量左移"理念，通过新增 `/flow-clarify`（11 维度歧义扫描）和 `/flow-checklist`（需求单元测试）两个核心命令，在 PRD 生成和任务分解阶段消除需求歧义。同时构建 **编译式多平台适配层**：以 `.claude/` 为单一事实源（SSOT），将 commands/scripts/skills/hooks 等资产编译为各平台可消费的规则与工作流（Codex/Cursor/Qwen/Antigravity）。
 
 ## Timeline Overview
 
@@ -27,7 +27,7 @@ CC-DevFlow v2.x 升级目标：借鉴 spec-kit 的"质量左移"理念，通过�
 |-----------|-------------------------|---------------------------------------|----------------|
 | Q4-2025   | MVP Foundation          | /flow-clarify                         | 2.0            |
 | Q1-2026   | Quality & Enhancement   | /flow-checklist + P1 features + arch  | 6.0            |
-| Q2-2026   | Multi-Platform Support  | Template engine + 4 platform adapters | 3.5            |
+| Q2-2026   | Multi-Platform Support  | Adapter compiler + 4 platform outputs | 4.0            |
 
 ## Milestones
 
@@ -79,7 +79,7 @@ CC-DevFlow v2.x 升级目标：借鉴 spec-kit 的"质量左移"理念，通过�
 
 ### M3: v2.0 Release (Q1-2026 End) 🟡
 
-**Status:** 🟡 In Progress (1/4 completed)
+**Status:** 🟡 In Progress (2/4 completed)
 **Goal:** Production-ready release with P0+P1 features and multi-platform foundation
 
 **Deliverables:**
@@ -88,9 +88,13 @@ CC-DevFlow v2.x 升级目标：借鉴 spec-kit 的"质量左移"理念，通过�
   - 支持多音字智能选择（lazy_pinyin 词组识别）✅
   - 向后兼容现有分支命名 ✅
   - 完整单元测试套件 (10 测试用例) ✅
+- RM-006: Agent 适配层架构 ✅
+  - 定义 Adapter 接口规范 ✅
+  - 实现插件系统与 Registry ✅
+  - 默认支持 Claude Code CLI ✅
+  - 适配 Codex CLI (MVP) ✅
 - RM-004: GitHub API 限流处理
 - RM-005: Coverage Summary Table 增强
-- RM-006: Agent 适配层架构
 
 **Success Criteria:**
 - All P0 and P1 features tested and documented (进行中)
@@ -108,12 +112,13 @@ CC-DevFlow v2.x 升级目标：借鉴 spec-kit 的"质量左移"理念，通过�
 **Goal:** Support 4 major AI agent platforms
 
 **Deliverables:**
-- RM-007: 命令模板引擎
-- RM-008: update-agent-context 脚本
+- RM-007: 命令转译器（Command Emitter）
+- RM-008: Adapter Compiler（Dynamic Context Compiler）
 - RM-009: Codex CLI 适配 (Priority 1)
-- RM-010: Antigravity 适配 (Priority 2)
+- RM-010: Antigravity IDE 适配 (Priority 2)
 - RM-011: Cursor 适配 (Priority 3)
 - RM-012: Qwen Code 适配 (Priority 4)
+- RM-013: Skills Bridge（Registry + Loader + MCP 可选）
 
 **Success Criteria:**
 - All 4 platforms can execute core workflows
@@ -123,9 +128,10 @@ CC-DevFlow v2.x 升级目标：借鉴 spec-kit 的"质量左移"理念，通过�
 
 **Dependencies:**
 - Requires RM-006 (Adapter architecture)
-- Requires RM-007 (Template engine)
+- Requires RM-007 (Command emitter)
+- Requires RM-008 (Adapter compiler)
 
-**Timeline:** Q2-2026 (3.5 weeks)
+**Timeline:** Q2-2026 (4.0 weeks)
 
 ## Quarterly Planning Details
 
@@ -176,15 +182,16 @@ CC-DevFlow v2.x 升级目标：借鉴 spec-kit 的"质量左移"理念，通过�
    - Trend analysis
    - Export capabilities
 
-5. **RM-006: Agent 适配层架构** (P2, 2 weeks)
-   - Define adapter interface
-   - Design plugin system
-   - Create adapter registry
+5. **RM-006: Agent 适配层架构** (P2, 2 weeks) ✅
+   - Define adapter interface ✅
+   - Design plugin system ✅
+   - Create adapter registry ✅
+   - Completed: 2025-12-17 (PR #7)
 
 **Resource Allocation:**
 - P0 Features: 35%
 - P1 Features: 35%
-- P2 Architecture: 30%
+- P2 Architecture: 30% ✅ (Completed)
 
 **Key Risks:**
 - Scope creep from P1 features
@@ -197,22 +204,31 @@ CC-DevFlow v2.x 升级目标：借鉴 spec-kit 的"质量左移"理念，通过�
 **Theme:** Platform Expansion
 
 **Projects:**
-1. **RM-007: 命令模板引擎** (P2, 1 week)
-   - Template syntax design
-   - Variable substitution
-   - Platform detection
+1. **RM-007: 命令转译器（Command Emitter）** (P2, 1 week)
+   - 从 `.claude/commands/*.md` 生成平台命令/工作流
+     - Codex: `.codex/prompts/*.md`
+     - Cursor: `.cursor/commands/*.md`
+     - Qwen: `.qwen/commands/*.toml`
+     - Antigravity: `.agent/workflows/*.md`
+   - 展开占位符（确定性编译）
+     - `{SCRIPT:<alias>}` → frontmatter `scripts` 实际命令
+     - `{AGENT_SCRIPT}` → frontmatter `agent_scripts`（并替换 `__AGENT__`）
+     - `$ARGUMENTS`/`{{args}}` 平台化
+   - 生成 manifest（source/target/hash）
 
-2. **RM-008: update-agent-context 脚本** (P2, 1 week)
-   - Context sync mechanism
-   - Platform-specific context generation
+2. **RM-008: Adapter Compiler（Dynamic Context Compiler）** (P2, 1 week)
+   - 扫描 `.claude/` 构建 Source IR
+   - 生成平台规则入口文件（Cursor/Codex/Qwen/Antigravity）
+   - Skills Registry + Loader（渐进披露）
+   - Runtime entry: `.claude/scripts/update-agent-context.sh`, which now compiles contexts without `.specify`, honors `DEVFLOW_CONTEXT_SOURCE`/`DEVFLOW_PLAN_PATH`, falls back to `devflow/ROADMAP.md` when metadata is missing, and supports `DEVFLOW_AGENT_CONTEXT_TEMPLATE` overrides.
 
 3. **RM-009: Codex CLI 适配** (P2, 0.5 weeks)
    - Priority 1 platform
    - Core workflow validation
 
-4. **RM-010: Antigravity 适配** (P2, 1 week)
+4. **RM-010: Antigravity IDE 适配** (P2, 1 week)
    - Priority 2 platform
-   - Google-specific optimizations
+   - `.agent/rules/` + `.agent/workflows/` 产物生成
 
 5. **RM-011: Cursor 适配** (P2, 0.5 weeks)
    - Priority 3 platform
@@ -223,7 +239,7 @@ CC-DevFlow v2.x 升级目标：借鉴 spec-kit 的"质量左移"理念，通过�
    - Chinese language optimizations
 
 **Resource Allocation:**
-- Template Engine: 30%
+- Compiler/Emitter: 30%
 - Adapter Development: 60%
 - Integration Testing: 10%
 
@@ -249,28 +265,30 @@ Phase 2: Quality Gates (Q1-2026)
 Phase 3: Platform Support (Q2-2026)
   RM-006 (Adapter architecture)
     |
-    +---> RM-007 (Template engine)
+    +---> RM-007 (Command emitter)
             |
-            +---> RM-008 (Update script)
+            +---> RM-008 (Adapter compiler)
             |       |
             |       +---> RM-009 (Codex CLI)
             |       |
-            |       +---> RM-010 (Antigravity)
+            |       +---> RM-010 (Antigravity IDE)
             |       |
             |       +---> RM-011 (Cursor)
             |       |
             |       +---> RM-012 (Qwen Code)
+            |       |
+            |       +---> RM-013 (Skills Bridge)
             |
             v
 ```
 
 **Critical Path:**
-RM-001 → RM-002 → RM-006 → RM-007 → RM-009/010/011/012
+RM-001 → RM-002 → RM-006 → RM-007 → RM-008 → RM-009/010/011/012
 
 **Parallel Tracks:**
 - Track 1 (Quality): RM-001 → RM-002
 - Track 2 (Enhancements): RM-003, RM-004, RM-005 (can run in parallel)
-- Track 3 (Platform): RM-006 → RM-007 → (RM-009 + RM-010 + RM-011 + RM-012)
+- Track 3 (Platform): RM-006 → RM-007 → RM-008 → (RM-009 + RM-010 + RM-011 + RM-012) + RM-013
 
 ## Risks & Mitigation Strategies
 
@@ -318,8 +336,9 @@ RM-001 → RM-002 → RM-006 → RM-007 → RM-009/010/011/012
 
 ### M3 (v2.0 Release) 🟡
 - [ ] All P0+P1 features shipped (1/4 P1 features completed)
-- [x] Zero critical bugs (RM-003 passed)
-- [x] Documentation complete (RM-003 documented)
+- [x] RM-006 Architecture delivered (2025-12-17)
+- [x] Zero critical bugs (RM-003, RM-006 passed)
+- [x] Documentation complete (RM-003, RM-006 documented)
 - [ ] 100 beta users onboarded
 
 ### M4 (Multi-Platform)
@@ -353,5 +372,5 @@ RM-001 → RM-002 → RM-006 → RM-007 → RM-009/010/011/012
 
 **Document Status:** Living Document
 **Owner:** CC-DevFlow Team
-**Last Updated:** 2025-12-16 (RM-003 completed)
+**Last Updated:** 2025-12-18 (RM-006 completed)
 **Next Review:** End of M3 (Q1-2026 End)

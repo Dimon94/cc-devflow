@@ -1,6 +1,6 @@
 ---
 name: core-style
-description: Generate project-level design style guide. Usage: /core-style [--update]
+description: 'Generate project-level design style guide. Usage: /core-style [--update]'
 scripts:
   validate_constitution: .claude/scripts/validate-constitution.sh
 ---

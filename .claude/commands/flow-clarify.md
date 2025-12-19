@@ -1,3 +1,8 @@
+---
+name: flow-clarify
+description: 'Requirement clarification with 11-dimension ambiguity scan. Usage: /flow-clarify [REQ-XXX] [--skip] [--history]'
+---
+
 # /flow-clarify - 需求澄清命令
 
 ## Usage

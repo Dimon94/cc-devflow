@@ -1,6 +1,6 @@
 ---
 name: flow-status
-description: Query development progress status for cc-devflow requirements. Usage: /flow-status [REQ-ID]
+description: 'Query development progress status for cc-devflow requirements. Usage: /flow-status [REQ-ID]'
 scripts:
   prereq: .claude/scripts/check-prerequisites.sh
   generate_status: .claude/scripts/generate-status-report.sh

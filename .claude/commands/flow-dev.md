@@ -1,6 +1,6 @@
 ---
 name: flow-dev
-description: Execute development tasks following TDD order. Usage: /flow-dev "REQ-123" or /flow-dev
+description: 'Execute development tasks following TDD order. Usage: /flow-dev "REQ-123" or /flow-dev'
 scripts:
   prereq: .claude/scripts/check-prerequisites.sh
   check_tasks: .claude/scripts/check-task-status.sh
@@ -98,7 +98,7 @@ For each remaining task (顺序严格遵循 TASKS.md):
    → 文件路径与任务描述一致
 
 4. 标记完成
-   → Run: {SCRIPT:.claude/scripts/mark-task-complete.sh} T###
+   → Run: {SCRIPT:mark_task} T###
    → Git 提交 (一任务一提交)
 ```
 

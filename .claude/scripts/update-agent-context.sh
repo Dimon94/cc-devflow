@@ -50,13 +50,30 @@ set -o pipefail
 
 # Get script directory and load common functions
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Load shared helpers and derive repo metadata (avoid spec-kit context)
 source "$SCRIPT_DIR/common.sh"
 
-# Get all paths and variables from common functions
-eval $(get_feature_paths)
+REPO_ROOT="$(get_repo_root)"
+HAS_GIT="false"
+if has_git; then
+    HAS_GIT="true"
+fi
 
-NEW_PLAN="$IMPL_PLAN"  # Alias for compatibility with existing code
+CURRENT_BRANCH="${DEVFLOW_BRANCH:-}"
+if [[ -z "$CURRENT_BRANCH" && "$HAS_GIT" == "true" ]]; then
+    CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || "")
+fi
+if [[ -z "$CURRENT_BRANCH" ]]; then
+    CURRENT_BRANCH="unknown-branch"
+fi
+
+NEW_PLAN="${DEVFLOW_CONTEXT_SOURCE:-${DEVFLOW_PLAN_PATH:-}}"
+if [[ -z "$NEW_PLAN" && -f "$REPO_ROOT/devflow/ROADMAP.md" ]]; then
+    NEW_PLAN="$REPO_ROOT/devflow/ROADMAP.md"
+fi
+
 AGENT_TYPE="${1:-}"
+AGENT_CONTEXT_TEMPLATE="${DEVFLOW_AGENT_CONTEXT_TEMPLATE:-}"
 
 # Agent-specific file paths  
 CLAUDE_FILE="$REPO_ROOT/CLAUDE.md"
@@ -72,9 +89,6 @@ ROO_FILE="$REPO_ROOT/.roo/rules/specify-rules.md"
 CODEBUDDY_FILE="$REPO_ROOT/CODEBUDDY.md"
 AMP_FILE="$REPO_ROOT/AGENTS.md"
 Q_FILE="$REPO_ROOT/AGENTS.md"
-
-# Template file
-TEMPLATE_FILE="$REPO_ROOT/.specify/templates/agent-file-template.md"
 
 # Global variables for parsed plan data
 NEW_LANG=""
@@ -118,31 +132,25 @@ trap cleanup EXIT INT TERM
 #==============================================================================
 
 validate_environment() {
-    # Check if we have a current branch/feature (git or non-git)
-    if [[ -z "$CURRENT_BRANCH" ]]; then
-        log_error "Unable to determine current feature"
-        if [[ "$HAS_GIT" == "true" ]]; then
-            log_info "Make sure you're on a feature branch"
-        else
-            log_info "Set SPECIFY_FEATURE environment variable or create a feature first"
+    if [[ "$CURRENT_BRANCH" == "unknown-branch" ]]; then
+        log_warning "Unable to resolve current branch; context may lack feature-specific metadata."
+        if [[ "$HAS_GIT" == "false" ]]; then
+            log_info "Running outside git; set DEVFLOW_BRANCH to provide a stable branch name."
         fi
-        exit 1
+    else
+        log_info "Detected branch: $CURRENT_BRANCH"
     fi
-    
-    # Check if plan.md exists
-    if [[ ! -f "$NEW_PLAN" ]]; then
-        log_error "No plan.md found at $NEW_PLAN"
-        log_info "Make sure you're working on a feature with a corresponding spec directory"
-        if [[ "$HAS_GIT" != "true" ]]; then
-            log_info "Use: export SPECIFY_FEATURE=your-feature-name or create a new feature first"
+
+    if [[ -n "$NEW_PLAN" ]]; then
+        if [[ ! -f "$NEW_PLAN" ]]; then
+            log_warning "Plan file not found at $NEW_PLAN; context update will skip plan metadata."
         fi
-        exit 1
+    else
+        log_info "No plan source configured; plan-based metadata extraction disabled."
     fi
-    
-    # Check if template exists (needed for new files)
-    if [[ ! -f "$TEMPLATE_FILE" ]]; then
-        log_warning "Template file not found at $TEMPLATE_FILE"
-        log_warning "Creating new agent files will fail"
+
+    if [[ -n "$AGENT_CONTEXT_TEMPLATE" && ! -f "$AGENT_CONTEXT_TEMPLATE" ]]; then
+        log_warning "Custom agent context template '$AGENT_CONTEXT_TEMPLATE' was not found. Using embedded template."
     fi
 }
 
@@ -165,14 +173,19 @@ extract_plan_field() {
 parse_plan_data() {
     local plan_file="$1"
     
-    if [[ ! -f "$plan_file" ]]; then
-        log_error "Plan file not found: $plan_file"
-        return 1
+    if [[ -z "$plan_file" ]]; then
+        log_info "Skipping plan parsing (no plan source)."
+        return 0
     fi
-    
+
+    if [[ ! -f "$plan_file" ]]; then
+        log_warning "Plan file not available: $plan_file. Skipping metadata extraction."
+        return 0
+    fi
+
     if [[ ! -r "$plan_file" ]]; then
-        log_error "Plan file is not readable: $plan_file"
-        return 1
+        log_warning "Plan file is not readable: $plan_file. Skipping metadata extraction."
+        return 0
     fi
     
     log_info "Parsing plan data from $plan_file"
@@ -270,21 +283,43 @@ create_new_agent_file() {
     local project_name="$3"
     local current_date="$4"
     
-    if [[ ! -f "$TEMPLATE_FILE" ]]; then
-        log_error "Template not found at $TEMPLATE_FILE"
-        return 1
-    fi
-    
-    if [[ ! -r "$TEMPLATE_FILE" ]]; then
-        log_error "Template file is not readable: $TEMPLATE_FILE"
-        return 1
-    fi
-    
-    log_info "Creating new agent context file from template..."
-    
-    if ! cp "$TEMPLATE_FILE" "$temp_file"; then
-        log_error "Failed to copy template file"
-        return 1
+    local template_source="$AGENT_CONTEXT_TEMPLATE"
+
+    if [[ -n "$template_source" ]] && [[ -f "$template_source" ]]; then
+        log_info "Creating new agent context file from custom template..."
+        if ! cp "$template_source" "$temp_file"; then
+            log_error "Failed to copy custom template: $template_source"
+            return 1
+        fi
+    else
+        if [[ -n "$template_source" ]]; then
+            log_warning "Custom template '$template_source' is unavailable. Falling back to embedded template."
+        else
+            log_info "Creating new agent context file from embedded template."
+        fi
+
+        cat <<'EOF' > "$temp_file"
+# [PROJECT NAME] Agent Context
+
+**Last updated**: [DATE]
+
+## Active Technologies
+[EXTRACTED FROM ALL PLAN.MD FILES]
+
+## Expected Project Structure
+[ACTUAL STRUCTURE FROM PLANS]
+
+## Command Access Notes
+[ONLY COMMANDS FOR ACTIVE TECHNOLOGIES]
+
+## Language Guidance
+[LANGUAGE-SPECIFIC, ONLY FOR LANGUAGES IN USE]
+
+## Recent Feature Highlights
+[LAST 3 FEATURES AND WHAT THEY ADDED]
+
+*Generated by cc-devflow adapter compiler for automated agent contexts.*
+EOF
     fi
     
     # Replace template placeholders
@@ -769,4 +804,3 @@ main() {
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     main "$@"
 fi
-

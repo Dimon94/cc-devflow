@@ -1,0 +1,49 @@
+{
+    "reqId": "REQ-005",
+    "sessionId": "20251218-150200-REQ-005",
+    "startTime": "2025-12-18T15:00:00Z",
+    "answers": [
+        {
+            "questionId": "Q1",
+            "dimensionId": 1,
+            "text": "REQ-004 的 MVP 适配范围应如何定义？",
+            "answer": "C",
+            "answerText": "多平台一次到位 (Codex/Cursor/Qwen/Antigravity)",
+            "rationale": "用户明确要求同时适配 4 个平台：Codex, Cursor, Qwen, Antigravity"
+        },
+        {
+            "questionId": "Q2",
+            "dimensionId": 9,
+            "text": "REQ-004 的 Definition of Done 应以哪些可验证交付物为准？",
+            "answer": "A",
+            "answerText": "可运行 + 可验证",
+            "rationale": "用户要求生成各平台可消费的命令/工作流文件，并包含 manifest 验证"
+        },
+        {
+            "questionId": "Q3",
+            "dimensionId": 11,
+            "text": "Adapter 的能力边界与默认安全策略应如何设计？",
+            "answer": "A",
+            "answerText": "Capability allow-list",
+            "rationale": "采用推荐方案，利用 manifest 和确定性转换作为安全边界"
+        },
+        {
+            "questionId": "Q4",
+            "dimensionId": 6,
+            "text": "当多个 adapter 同时命中或没有命中时，选择/降级策略应是什么？",
+            "answer": "A",
+            "answerText": "可覆盖 + 确定性优先级",
+            "rationale": "通过 npm run adapt --platform 指定，或生成物明确分发"
+        },
+        {
+            "questionId": "Q5",
+            "dimensionId": 3,
+            "text": "需要澄清：调用方如何选择/覆盖 Adapter 未定义",
+            "answer": "A",
+            "answerText": "采用推荐方案",
+            "rationale": "遵循行业最佳实践"
+        }
+    ],
+    "currentQuestionIndex": 5,
+    "completed": true
+}

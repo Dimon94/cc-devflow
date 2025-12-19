@@ -1,6 +1,6 @@
 ---
 name: core-roadmap
-description: Generate product roadmap and architecture through 6-stage interactive dialogue. Usage: /core-roadmap
+description: 'Generate product roadmap and architecture through 6-stage interactive dialogue. Usage: /core-roadmap'
 scripts:
   calculate_quarter: .claude/scripts/calculate-quarter.sh
   sync_progress: .claude/scripts/sync-roadmap-progress.sh

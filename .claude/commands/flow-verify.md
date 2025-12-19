@@ -1,6 +1,6 @@
 ---
 name: flow-verify
-description: Comprehensive consistency verification across documents and implementation. Usage: /flow-verify "REQ-123" or /flow-verify --all
+description: 'Comprehensive consistency verification across documents and implementation. Usage: /flow-verify "REQ-123" or /flow-verify --all'
 scripts:
   prereq: .claude/scripts/check-prerequisites.sh
   validate_constitution: .claude/scripts/validate-constitution.sh

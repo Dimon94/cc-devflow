@@ -1,6 +1,6 @@
 ---
 name: code-review-high
-description: Produce a high-rigor code review report with severity triage. Usage: /code-review-high "<diff or summary>"
+description: 'Produce a high-rigor code review report with severity triage. Usage: /code-review-high "<diff or summary>"'
 scripts:
   review: .claude/scripts/run-high-review.sh
 ---

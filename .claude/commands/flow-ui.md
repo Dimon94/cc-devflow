@@ -1,6 +1,6 @@
 ---
 name: flow-ui
-description: Generate interactive HTML prototype from PRD. Usage: /flow-ui "REQ-123" or /flow-ui
+description: 'Generate interactive HTML prototype from PRD. Usage: /flow-ui "REQ-123" or /flow-ui'
 scripts:
   prereq: .claude/scripts/check-prerequisites.sh
   validate_constitution: .claude/scripts/validate-constitution.sh

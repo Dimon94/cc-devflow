@@ -1,0 +1,151 @@
+{
+  "questions": [
+    {
+      "questionId": "Q1",
+      "dimensionId": 1,
+      "text": "REQ-004 的 MVP 适配范围应如何定义？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "optionId": "A",
+          "text": "双平台可运行",
+          "description": "交付 claude-code + codex-cli 两个可运行 adapter，其它平台先留 stub"
+        },
+        {
+          "optionId": "B",
+          "text": "单平台先抽象",
+          "description": "只交付 claude-code adapter + 接口/注册表，其它平台后续需求再做"
+        },
+        {
+          "optionId": "C",
+          "text": "多平台一次到位",
+          "description": "至少 3 个可运行 adapter（Claude/Codex/Cursor 等）"
+        },
+        {
+          "optionId": "D",
+          "text": "仅出设计不落地",
+          "description": "只输出 PRD/Tech Design，本需求不交付代码"
+        }
+      ],
+      "recommendedOption": "A",
+      "recommendedRationale": "至少落地 2 个可运行 adapter 才能验证架构正确性，同时把范围控制在可交付的最小集合",
+      "answer": null,
+      "answeredAt": null,
+      "rationale": null
+    },
+    {
+      "questionId": "Q2",
+      "dimensionId": 9,
+      "text": "REQ-004 的 Definition of Done 应以哪些可验证交付物为准？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "optionId": "A",
+          "text": "可运行 + 可验证",
+          "description": "接口规范 + registry + 默认 adapter + 配置机制 + 测试 + 文档 + 至少 1 个非默认平台 adapter"
+        },
+        {
+          "optionId": "B",
+          "text": "先抽象后验证",
+          "description": "接口规范 + registry + 默认 adapter + 基础测试；非默认 adapter 仅 stub"
+        },
+        {
+          "optionId": "C",
+          "text": "文档优先",
+          "description": "只产出 PRD/Tech Design/TASKS，代码实现拆到后续需求"
+        }
+      ],
+      "recommendedOption": "A",
+      "recommendedRationale": "定义完成必须可验证；至少一个非默认 adapter 能证明架构不是纸上谈兵",
+      "answer": null,
+      "answeredAt": null,
+      "rationale": null
+    },
+    {
+      "questionId": "Q3",
+      "dimensionId": 11,
+      "text": "Adapter 的能力边界与默认安全策略应如何设计（shell/filesystem/network）？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "optionId": "A",
+          "text": "Capability allow-list",
+          "description": "adapter 声明 capabilities；命令声明 required capabilities；默认 deny 危险能力（shell/network），启用需显式配置并写审计日志"
+        },
+        {
+          "optionId": "B",
+          "text": "完全信任",
+          "description": "adapter 拥有全部能力，不做额外限制"
+        },
+        {
+          "optionId": "C",
+          "text": "全局 Safe Mode",
+          "description": "默认关闭 shell/network，提供全局开关；不做细粒度 capability 控制"
+        }
+      ],
+      "recommendedOption": "A",
+      "recommendedRationale": "用能力模型把危险操作从设计上隔离出去，默认最小权限，审计可追踪",
+      "answer": null,
+      "answeredAt": null,
+      "rationale": null
+    },
+    {
+      "questionId": "Q4",
+      "dimensionId": 6,
+      "text": "当多个 adapter 同时命中或没有命中时，选择/降级策略应是什么？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "optionId": "A",
+          "text": "可覆盖 + 确定性优先级",
+          "description": "用户显式指定(ENV/CLI) > 配置 > detect 打分最高 > fallback 默认 adapter；冲突时输出告警"
+        },
+        {
+          "optionId": "B",
+          "text": "冲突即失败",
+          "description": "多个命中或无命中直接报错，要求用户显式指定"
+        },
+        {
+          "optionId": "C",
+          "text": "先到先得",
+          "description": "按注册顺序 first-match，不做打分与冲突处理"
+        }
+      ],
+      "recommendedOption": "A",
+      "recommendedRationale": "保证可预测性与可控性：默认自动化，但允许用户明确覆盖，并且对冲突有确定性规则",
+      "answer": null,
+      "answeredAt": null,
+      "rationale": null
+    },
+    {
+      "questionId": "Q5",
+      "dimensionId": 3,
+      "text": "需要澄清：调用方如何选择/覆盖 Adapter 未定义：自动探测 vs 配置文件 vs CLI 参数",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "optionId": "A",
+          "text": "采用推荐方案",
+          "description": "采用行业最佳实践"
+        },
+        {
+          "optionId": "B",
+          "text": "自定义方案",
+          "description": "需要进一步说明"
+        },
+        {
+          "optionId": "C",
+          "text": "暂时跳过",
+          "description": "稍后决定"
+        }
+      ],
+      "recommendedOption": "A",
+      "recommendedRationale": "优先选可验证、低风险路径",
+      "answer": null,
+      "answeredAt": null,
+      "rationale": null
+    }
+  ],
+  "totalIssuesFound": 7,
+  "questionsGenerated": 5
+}
