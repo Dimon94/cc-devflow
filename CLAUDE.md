@@ -137,14 +137,72 @@
     - `internal/`: 代码仓内部分析，如 `codebase-overview.md`。
     - `mcp/<date>/`: 通过 MCP 抓取的官方 / 教程 / 指南文档（如 TDesign 组件文档、微信能力指南）。
 
-## devflow 脚本调用规范
+## devflow 脚本与文档引用规范
 
 命令头文件格式:
 ```yaml
 scripts:
   mark: .claude/scripts/mark-task-complete.sh
+  validate: .claude/scripts/validate-requirement.sh
+templates:
+  flow: .claude/docs/templates/INIT_FLOW_TEMPLATE.md
+  research: .claude/docs/templates/RESEARCH_TEMPLATE.md
+guides:
+  troubleshoot: .claude/docs/guides/INIT_TROUBLESHOOTING.md
 ```
 
+### 三种引用类型
+
+#### 1. {SCRIPT:xxx} - 脚本执行
 使用格式: `{SCRIPT:mark} T001` → 执行 `.claude/scripts/mark-task-complete.sh T001`
 
-**规则**: 遇到 `{SCRIPT:xxx}` 时，去头文件找对应路径执行。
+**解释规则**:
+- 去头文件 `scripts:` 字段找到 `mark` 对应的路径
+- 用 `bash` 执行该脚本，并传递后续参数
+
+**示例**:
+```markdown
+→ Run: {SCRIPT:validate} --strict
+# 解释为:
+→ bash .claude/scripts/validate-requirement.sh --strict
+```
+
+#### 2. {TEMPLATE:xxx} - 模板加载
+使用格式: `详见 {TEMPLATE:flow} Stage 2.5` → 读取并参考模板文件的特定章节
+
+**解释规则**:
+- 去头文件 `templates:` 字段找到 `flow` 对应的路径
+- 用 Read 工具打开该文件
+- 定位到 Stage 2.5 章节并阅读
+
+**示例**:
+```markdown
+→ 参见 {TEMPLATE:research} 获取研究模板格式
+# 解释为:
+→ 打开并阅读 .claude/docs/templates/RESEARCH_TEMPLATE.md
+```
+
+#### 3. {GUIDE:xxx} - 故障排查指南
+使用格式: `遇到问题参考 {GUIDE:troubleshoot}` → 读取故障排查文档
+
+**解释规则**:
+- 去头文件 `guides:` 字段找到 `troubleshoot` 对应的路径
+- 用 Read 工具打开该文件
+- 根据当前遇到的问题检索相关章节
+
+**示例**:
+```markdown
+→ 常见错误详见 {GUIDE:troubleshoot} Error 5
+# 解释为:
+→ 打开 .claude/docs/guides/INIT_TROUBLESHOOTING.md 并查找 Error 5
+```
+
+### 核心规则
+
+**通用解析流程**:
+1. 识别占位符格式: `{TYPE:key}`
+2. 提取 TYPE (SCRIPT/TEMPLATE/GUIDE)
+3. 去命令头文件 YAML 中找到对应 TYPE 字段
+4. 查找 key 对应的文件路径
+5. 根据 TYPE 执行对应操作 (执行脚本/加载模板/查阅指南)
+

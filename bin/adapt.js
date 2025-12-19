@@ -176,6 +176,8 @@ async function main() {
       console.log(`  Platforms: ${result.platforms.join(', ')}`);
       console.log(`  Files compiled: ${result.filesCompiled}`);
       console.log(`  Files skipped: ${result.filesSkipped}`);
+      console.log(`  Resources copied: ${result.resourcesCopied}`);
+      console.log(`  Resources skipped: ${result.resourcesSkipped}`);
       process.exit(0);
     } else {
       console.error('Compilation failed:');

@@ -29,6 +29,7 @@
 - 🔍 **一致性验证** - 企业级一致性检查，智能冲突检测
 - 🧪 **TDD 强制执行** - 严格的测试驱动开发，TEST VERIFICATION CHECKPOINT
 - 📜 **Constitution** - 10条宪法条款管控质量、安全和架构
+- 🔌 **多平台支持** - 通过 `npm run adapt` 编译工作流到 Codex、Cursor、Qwen、Antigravity
 
 ---
 
@@ -436,7 +437,37 @@ bash .claude/tests/run-all-tests.sh --scripts
 
 ## 📝 版本历史
 
-### v2.1.0 (2025-11-07) - 最新版本
+### v2.2.0 (2025-12-19) - 最新版本
+
+**🔌 多平台适配：Agent 适配器架构 + 命令编译器**
+
+v2.2.0 引入全面的多平台支持，让 cc-devflow 工作流能在多个 AI 编码助手上运行：
+
+- **Agent 适配器架构 (REQ-004)** - 平台差异的可插拔适配层
+  - 统一的 Agent Adapter 抽象（环境探测、命令执行、能力声明）
+  - Adapter Registry 支持自动检测和显式覆盖
+  - 内置适配器：Claude Code（默认）、Codex CLI、Cursor、Qwen、Antigravity
+  - 安全优先设计：能力白名单，高风险操作默认禁用
+  - 结构化日志便于调试和审计
+
+- **命令编译器 (REQ-005)** - 单一真相源编译
+  - `.claude/` 作为 SSOT，编译为平台原生格式
+  - `npm run adapt` CLI 多平台编译
+  - 支持平台：Codex (`.codex/`)、Cursor (`.cursor/`)、Qwen (`.qwen/`)、Antigravity (`.agent/`)
+  - 占位符展开：`{SCRIPT:*}`、`{TEMPLATE:*}`、`{GUIDE:*}`、`{AGENT_SCRIPT}`、`$ARGUMENTS`
+  - 模板/指南内联，自动嵌入引用内容
+  - 资源复制与路径重写（脚本、模板、指南 → 平台目录）
+  - 基于 Manifest 的增量编译和漂移检测
+
+**📦 新 CLI 工具**:
+```bash
+npm run adapt                        # 编译到所有平台
+npm run adapt -- --platform codex    # 编译到指定平台
+npm run adapt -- --check             # 检查漂移（不编译）
+npm run adapt -- --verbose           # 显示详细输出
+```
+
+### v2.1.0 (2025-11-07)
 
 **🏢 核心突破：引入项目级命令（Project-Level Commands）**
 

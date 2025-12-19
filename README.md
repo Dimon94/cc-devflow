@@ -29,6 +29,7 @@ Complete automated workflow from PRD generation to code delivery with `/flow-new
 - 🔍 **Consistency Verification** - Enterprise-grade consistency checking with intelligent conflict detection
 - 🧪 **TDD Enforced** - Strict Test-Driven Development with TEST VERIFICATION CHECKPOINT
 - 📜 **Constitution** - 10 Articles governing quality, security, and architecture
+- 🔌 **Multi-Platform Support** - Compile workflows for Codex, Cursor, Qwen, Antigravity via `npm run adapt`
 
 ---
 
@@ -441,7 +442,37 @@ bash .claude/tests/run-all-tests.sh --scripts
 
 ## 📝 Version History
 
-### v2.1.0 (2025-11-07) - Latest Release
+### v2.2.0 (2025-12-19) - Latest Release
+
+**🔌 Multi-Platform Adaptation: Agent Adapter Architecture + Command Emitter**
+
+v2.2.0 introduces comprehensive multi-platform support, enabling cc-devflow workflows to run on multiple AI coding assistants:
+
+- **Agent Adapter Architecture (REQ-004)** - Pluggable adapter layer for platform differences
+  - Unified Agent Adapter abstraction (environment detection, command execution, capability declaration)
+  - Adapter Registry with auto-detection and explicit override support
+  - Built-in adapters: Claude Code (default), Codex CLI, Cursor, Qwen, Antigravity
+  - Security-first design: capability allow-list with default deny for high-risk operations
+  - Structured logging for debugging and auditing
+
+- **Command Emitter Compiler (REQ-005)** - Single Source of Truth compilation
+  - `.claude/` as SSOT, compiles to platform-native formats
+  - `npm run adapt` CLI for multi-platform compilation
+  - Supported platforms: Codex (`.codex/`), Cursor (`.cursor/`), Qwen (`.qwen/`), Antigravity (`.agent/`)
+  - Placeholder expansion: `{SCRIPT:*}`, `{TEMPLATE:*}`, `{GUIDE:*}`, `{AGENT_SCRIPT}`, `$ARGUMENTS`
+  - Template/Guide inlining with automatic content embedding
+  - Resource copying with path rewriting (scripts, templates, guides → platform directories)
+  - Manifest-based incremental compilation with drift detection
+
+**📦 New CLI Tool**:
+```bash
+npm run adapt                        # Compile for all platforms
+npm run adapt -- --platform codex    # Compile for specific platform
+npm run adapt -- --check             # Check for drift without compiling
+npm run adapt -- --verbose           # Show detailed output
+```
+
+### v2.1.0 (2025-11-07)
 
 **🏢 Core Breakthrough: Introduction of Project-Level Commands**
 
