@@ -28,6 +28,30 @@ TASK_ID=""
 JSON_MODE=false
 VERBOSE=false
 
+count_matches() {
+    local pattern="$1"
+    local file="$2"
+    local count
+    count=$(grep -c "$pattern" "$file" 2>/dev/null || true)
+    count=${count//[[:space:]]/}
+    printf '%s' "${count:-0}"
+}
+
+count_phase_tasks() {
+    local header="$1"
+    local mode="$2"
+    local file="$3"
+    awk -v header="$header" -v mode="$mode" '
+        $0 ~ header {in_section=1; next}
+        in_section && /^## / {exit}
+        in_section {
+            if (mode == "all" && $0 ~ /^- \[/) {count++}
+            if (mode == "complete" && $0 ~ /^- \[x\]/) {count++}
+        }
+        END {print count+0}
+    ' "$file"
+}
+
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --json)
@@ -132,8 +156,8 @@ if [[ ! -f "$TASKS_FILE" ]]; then
 fi
 
 # Count tasks
-TOTAL_INCOMPLETE=$(grep -c "^\- \[ \]" "$TASKS_FILE" 2>/dev/null || echo "0")
-TOTAL_COMPLETE=$(grep -c "^\- \[x\]" "$TASKS_FILE" 2>/dev/null || echo "0")
+TOTAL_INCOMPLETE=$(count_matches "^\- \[ \]" "$TASKS_FILE")
+TOTAL_COMPLETE=$(count_matches "^\- \[x\]" "$TASKS_FILE")
 TOTAL_TASKS=$((TOTAL_INCOMPLETE + TOTAL_COMPLETE))
 
 # Calculate percentage
@@ -189,24 +213,24 @@ fi
 
 # Get phase breakdown - ensure all values are clean integers
 if grep -q "^## Phase 1:" "$TASKS_FILE" 2>/dev/null; then
-    PHASE_1_TOTAL=$(grep "^## Phase 1:" -A 100 "$TASKS_FILE" | grep -c "^\- \[")
-    PHASE_1_COMPLETE=$(grep "^## Phase 1:" -A 100 "$TASKS_FILE" | grep "^\- \[x\]" | wc -l | tr -d ' \n')
+    PHASE_1_TOTAL=$(count_phase_tasks "^## Phase 1:" "all" "$TASKS_FILE")
+    PHASE_1_COMPLETE=$(count_phase_tasks "^## Phase 1:" "complete" "$TASKS_FILE")
 else
     PHASE_1_TOTAL=0
     PHASE_1_COMPLETE=0
 fi
 
 if grep -q "^## Phase 2:" "$TASKS_FILE" 2>/dev/null; then
-    PHASE_2_TOTAL=$(grep "^## Phase 2:" -A 100 "$TASKS_FILE" | grep -c "^\- \[")
-    PHASE_2_COMPLETE=$(grep "^## Phase 2:" -A 100 "$TASKS_FILE" | grep "^\- \[x\]" | wc -l | tr -d ' \n')
+    PHASE_2_TOTAL=$(count_phase_tasks "^## Phase 2:" "all" "$TASKS_FILE")
+    PHASE_2_COMPLETE=$(count_phase_tasks "^## Phase 2:" "complete" "$TASKS_FILE")
 else
     PHASE_2_TOTAL=0
     PHASE_2_COMPLETE=0
 fi
 
 if grep -q "^## Phase 3:" "$TASKS_FILE" 2>/dev/null; then
-    PHASE_3_TOTAL=$(grep "^## Phase 3:" -A 100 "$TASKS_FILE" | grep -c "^\- \[")
-    PHASE_3_COMPLETE=$(grep "^## Phase 3:" -A 100 "$TASKS_FILE" | grep "^\- \[x\]" | wc -l | tr -d ' \n')
+    PHASE_3_TOTAL=$(count_phase_tasks "^## Phase 3:" "all" "$TASKS_FILE")
+    PHASE_3_COMPLETE=$(count_phase_tasks "^## Phase 3:" "complete" "$TASKS_FILE")
 else
     PHASE_3_TOTAL=0
     PHASE_3_COMPLETE=0
