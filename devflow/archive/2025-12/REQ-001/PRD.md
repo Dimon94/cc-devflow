@@ -471,7 +471,7 @@ AC3: Given clarifications/ 目录为空
 
 *GATE: 必须在 Epic 规划前通过*
 
-**Reference**: `.claude/constitution/project-constitution.md` (v2.0.0)
+**Reference**: `.claude/rules/project-constitution.md` (v2.0.0)
 
 ### Article I: Quality First (质量至上)
 

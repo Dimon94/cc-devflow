@@ -61,7 +61,7 @@ $ARGUMENTS = "[--article I] [--verify] [--impact-report] [--amend --proposal pat
 ### 5. Apply
 ```
 → {SCRIPT:manage} apply <TYPE>
-→ 更新 .claude/constitution/project-constitution.md 版本号
+→ 更新 .claude/rules/project-constitution.md 版本号
 → 触发模板/代理/脚本同步
 → 生成 Sync Report
 ```

@@ -22,7 +22,7 @@ fi
 # ============================================================================
 
 test_constitution_version_readable() {
-    local constitution_file="$REPO_ROOT/.claude/constitution/project-constitution.md"
+    local constitution_file="$REPO_ROOT/.claude/rules/project-constitution.md"
 
     assert_file_exists "$constitution_file" "Constitution file should exist"
 
@@ -61,7 +61,7 @@ test_all_templates_reference_same_version() {
 }
 
 test_all_agents_reference_same_version() {
-    local constitution_version=$(grep -E '^\*\*Version\*\*:|^> \*\*Version\*\*:' "$REPO_ROOT/.claude/constitution/project-constitution.md" | head -1 | sed 's/.*v\([0-9.]*\).*/\1/')
+    local constitution_version=$(grep -E '^\*\*Version\*\*:|^> \*\*Version\*\*:' "$REPO_ROOT/.claude/rules/project-constitution.md" | head -1 | sed 's/.*v\([0-9.]*\).*/\1/')
 
     local agents_dir="$REPO_ROOT/.claude/agents"
     local inconsistent_count=0
@@ -81,7 +81,7 @@ test_all_agents_reference_same_version() {
 }
 
 test_claude_md_references_current_version() {
-    local constitution_version=$(grep -E '^\*\*Version\*\*:|^> \*\*Version\*\*:' "$REPO_ROOT/.claude/constitution/project-constitution.md" | head -1 | sed 's/.*v\([0-9.]*\).*/\1/')
+    local constitution_version=$(grep -E '^\*\*Version\*\*:|^> \*\*Version\*\*:' "$REPO_ROOT/.claude/rules/project-constitution.md" | head -1 | sed 's/.*v\([0-9.]*\).*/\1/')
 
     local claude_md="$REPO_ROOT/CLAUDE.md"
 

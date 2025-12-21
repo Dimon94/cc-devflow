@@ -333,7 +333,7 @@ AC2: Given Hook 降级说明
 
 ## Constitution Check (宪法符合性检查)
 
-**Reference**: `.claude/constitution/project-constitution.md` (v2.0.0)
+**Reference**: `.claude/rules/project-constitution.md` (v2.0.0)
 
 ### Article I: Quality First (质量至上)
 - [x] **I.1 - NO PARTIAL IMPLEMENTATION**: 所有用户故事有完整验收标准，无占位符

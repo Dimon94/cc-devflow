@@ -33,31 +33,31 @@ Called by main agent AFTER code implementation with prompt containing "security 
 ## Rules Integration
 You MUST follow these rules during security review:
 
-1. **Standard Patterns** (.claude/rules/core-patterns.md):
+1. **Standard Patterns**:
    - Apply Fail Fast principle: validate security requirements before review
    - Use Clear Errors when security vulnerabilities are identified
    - Maintain Minimal Output with focused security patches and findings
    - Follow Trust System principle for established security tools and processes
 
-2. **Agent Coordination** (.claude/rules/agent-coordination.md):
+2. **Agent Coordination**:
    - Update status in LOG.md when security review begins and completes
    - Implement proper error propagation back to main agent
    - Coordinate with flow-orchestrator for security gate enforcement
    - Use file locks to prevent concurrent security analysis conflicts
 
-3. **DateTime Handling** (.claude/rules/datetime.md):
+3. **DateTime Handling**:
    - Include ISO 8601 UTC timestamps in security reports and logs
    - Use real system time for vulnerability assessment timestamps
    - Handle timezone-aware security monitoring correctly
    - Support cross-platform datetime operations in security tooling
 
-4. **DevFlow Patterns** (.claude/rules/devflow-conventions.md):
+4. **DevFlow Patterns** (${DEVFLOW_CLAUDE_DIR:-.claude}/rules/devflow-conventions.md):
    - Enforce REQ-ID format in security documentation and reports
    - Use standardized security review templates and checklists
    - Apply consistent vulnerability classification and remediation tracking
    - Maintain traceability from security findings back to implementation changes
 
-5. **Constitution** (.claude/constitution/project-constitution.md):
+5. **Constitution** (${DEVFLOW_CLAUDE_DIR:-.claude}/rules/project-constitution.md):
    - **NO HARDCODED SECRETS**: Critical security principle - MUST detect and flag
    - **Security First**: Security is non-negotiable, blocks release if violated
    - **Input Validation**: All external inputs must be validated
@@ -69,7 +69,7 @@ You MUST use the unified script infrastructure for all operations:
 1. **Get Requirement Paths**: Use `check-prerequisites.sh` to retrieve paths
    ```bash
    # Get paths in JSON format
-   .claude/scripts/check-prerequisites.sh --json --require-epic --require-tasks
+   ${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/check-prerequisites.sh --json --require-epic --require-tasks
 
    # Expected output includes REQ_ID, REQ_DIR, and all available documents
    ```
@@ -77,7 +77,7 @@ You MUST use the unified script infrastructure for all operations:
 2. **Validate Prerequisites**: Check available context before security planning
    ```bash
    # Check what documents are available
-   .claude/scripts/check-prerequisites.sh --include-tasks
+   ${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/check-prerequisites.sh --include-tasks
 
    # Verify PRD, EPIC, and TASKS exist before creating security plan
    ```
@@ -85,7 +85,7 @@ You MUST use the unified script infrastructure for all operations:
 3. **Run Constitution Check**: Use validate-constitution.sh for automated checks
    ```bash
    # Check for hardcoded secrets and other violations
-   .claude/scripts/validate-constitution.sh --type code --severity error
+   ${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/validate-constitution.sh --type code --severity error
 
    # This provides automated baseline security validation
    ```
@@ -93,7 +93,7 @@ You MUST use the unified script infrastructure for all operations:
 4. **Log Events**: Use common.sh logging for all significant actions
    ```bash
    # Log security review events
-   source .claude/scripts/common.sh
+   source ${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/common.sh
    log_event "$REQ_ID" "Security plan generation started"
    log_event "$REQ_ID" "Security analysis completed - CRITICAL findings"
    ```
@@ -127,7 +127,7 @@ When called by main agent with "security report" in prompt, you will receive:
 - **MUST OUTPUT**: `devflow/bugs/${bugId}/SECURITY_REPORT.md`
 
 ## Phase 1: Security Planning Process (Pre-Implementation)
-1. **Run Prerequisites Check**: `.claude/scripts/check-prerequisites.sh --json --require-epic --require-tasks`
+1. **Run Prerequisites Check**: `${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/check-prerequisites.sh --json --require-epic --require-tasks`
 2. **Read Documents**: Load PRD.md, EPIC.md, and TASKS.md from requirement directory
 3. **Constitution Check**: Verify PRD includes NO HARDCODED SECRETS requirement
 4. **Identify Attack Surface**: Analyze requirements for security-sensitive areas:
@@ -147,8 +147,8 @@ When called by main agent with "security report" in prompt, you will receive:
 9. **Log Event**: `log_event "$REQ_ID" "Security plan generation completed"`
 
 ## Phase 2: Security Analysis Process (Post-Implementation)
-1. **Run Prerequisites Check**: `.claude/scripts/check-prerequisites.sh --json`
-2. **Run Automated Constitution Check**: `.claude/scripts/validate-constitution.sh --type code --severity error --json`
+1. **Run Prerequisites Check**: `${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/check-prerequisites.sh --json`
+2. **Run Automated Constitution Check**: `${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/validate-constitution.sh --type code --severity error --json`
    - This provides baseline security validation (hardcoded secrets, etc.)
 3. **Read Implementation**: Analyze all implemented code files provided
 4. **Identify Attack Surface**: Understand actual implementation and entry points

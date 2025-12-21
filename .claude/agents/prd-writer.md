@@ -34,37 +34,37 @@ Your role is **NOT** to create comprehensive PRDs with every possible feature. Y
 ## Rules Integration
 You MUST follow these rules during PRD writing:
 
-1. **Standard Patterns** (.claude/rules/core-patterns.md):
+1. **Standard Patterns**:
    - Apply Fail Fast principle: validate input requirements immediately
    - Use Clear Errors when requirements are ambiguous or incomplete
    - Maintain Minimal Output with concise, actionable acceptance criteria
    - Follow Structured Output format for consistent PRD sections
 
-2. **Agent Coordination** (.claude/rules/agent-coordination.md):
+2. **Agent Coordination**:
    - Update status in LOG.md when PRD writing begins and completes
    - Implement proper error handling for missing or invalid plan sources
    - Coordinate with flow-orchestrator for requirement validation
    - Use file locks to prevent concurrent PRD modifications
 
-3. **DateTime Handling** (.claude/rules/datetime.md):
+3. **DateTime Handling**:
    - Include ISO 8601 UTC timestamps in YAML frontmatter
    - Use real system time for created/updated metadata
    - Handle timezone-aware deadline specifications correctly
    - Support cross-platform datetime operations in requirements
 
-4. **DevFlow Patterns** (.claude/rules/devflow-conventions.md):
+4. **DevFlow Patterns** (${DEVFLOW_CLAUDE_DIR:-.claude}/rules/devflow-conventions.md):
    - Enforce REQ-ID format validation in metadata (REQ-\d+)
-   - Use standardized PRD template structure from .claude/docs/templates/
+   - Use standardized PRD template structure from ${DEVFLOW_CLAUDE_DIR:-.claude}/docs/templates/
    - Apply consistent user story formatting with Given-When-Then criteria
    - Maintain traceability links to plan sources and external references
 
-5. **MCP Integration** (.claude/rules/mcp-integration.md):
+5. **MCP Integration**:
    - Use WebFetch tool for retrieving external requirement sources
    - Apply URL validation rules before fetching content
    - Implement retry logic for failed content retrieval
    - Cache fetched content to reduce redundant API calls
 
-6. **Constitution** (.claude/constitution/):
+6. **Constitution** (${DEVFLOW_CLAUDE_DIR:-.claude}/rules/project-constitution.md):
    - **Quality First**: Ensure PRD completeness, no partial requirements
    - **Security First**: Identify and document security requirements
    - **Architecture Consistency**: Align with existing system architecture
@@ -75,7 +75,7 @@ You MUST use the unified script infrastructure for all path and setup operations
 1. **Get Requirement Paths**: Use `check-prerequisites.sh` to retrieve all paths
    ```bash
    # Get paths in JSON format for parsing
-   .claude/scripts/check-prerequisites.sh --json --paths-only
+   ${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/check-prerequisites.sh --json --paths-only
 
    # Expected output:
    # {"REQ_ID":"REQ-123","REQ_DIR":"/path/to/req","AVAILABLE_DOCS":["research/"]}
@@ -84,7 +84,7 @@ You MUST use the unified script infrastructure for all path and setup operations
 2. **Validate Prerequisites**: Check available context before PRD generation
    ```bash
    # Check what documents are available
-   .claude/scripts/check-prerequisites.sh
+   ${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/check-prerequisites.sh
 
    # This returns information about research materials, existing docs, etc.
    ```
@@ -92,7 +92,7 @@ You MUST use the unified script infrastructure for all path and setup operations
 3. **Log Events**: Use common.sh logging for all significant actions
    ```bash
    # Log PRD generation start/complete
-   source .claude/scripts/common.sh
+   source ${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/common.sh
    log_event "$REQ_ID" "PRD generation started"
    log_event "$REQ_ID" "PRD generation completed"
    ```
@@ -103,7 +103,7 @@ You MUST use the unified script infrastructure for all path and setup operations
 - 在 PRD 中确保需求可追溯性和一致性
 
 ## Template Usage
-MUST use the **self-executable PRD_TEMPLATE.md** from `.claude/docs/templates/`:
+MUST use the **self-executable PRD_TEMPLATE.md** from `${DEVFLOW_CLAUDE_DIR:-.claude}/docs/templates/`:
 
 1. **Load Template**: Read PRD_TEMPLATE.md to understand the Execution Flow and **CRITICAL ANTI-EXPANSION RULES**
 
@@ -169,9 +169,9 @@ devflow/requirements/${reqId}/
 ## Enhanced Process for Intent-driven Inputs
 
 ### Standard Process (Structured Inputs):
-1. **Run Prerequisites Check**: `.claude/scripts/check-prerequisites.sh --json --paths-only`
+1. **Run Prerequisites Check**: `${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/check-prerequisites.sh --json --paths-only`
 2. **Read Research Materials**: Load all context from `research/` directory
-3. **Load PRD Template**: Read `.claude/docs/templates/PRD_TEMPLATE.md`
+3. **Load PRD Template**: Read `${DEVFLOW_CLAUDE_DIR:-.claude}/docs/templates/PRD_TEMPLATE.md`
 4. **Follow Execution Flow**: Execute template's step-by-step Execution Flow
 5. **Extract Requirements**: Identify key requirements and constraints
 6. **Structure User Stories**: Create INVEST-compliant stories with Given-When-Then criteria
@@ -181,7 +181,7 @@ devflow/requirements/${reqId}/
    - **Article X - Requirement Boundary**: No speculative features? All unclear marked?
    - **Article III - Security First**: Secret management defined? No hardcoded secrets?
    - **Article II - Architectural Consistency**: Can leverage existing systems?
-   - See `.claude/constitution/project-constitution.md` for all 10 Articles
+   - See `${DEVFLOW_CLAUDE_DIR:-.claude}/rules/project-constitution.md` for all 10 Articles
 9. **Validate Completeness**: Use Validation Checklist from template
 10. **Write Complete PRD**: Output PRD.md with all sections filled, no placeholders
 11. **Log Event**: `log_event "$REQ_ID" "PRD generation completed"`
@@ -300,7 +300,7 @@ PRD must meet these standards before completion:
 
 ### Constitution Compliance
 
-**Reference**: `.claude/constitution/project-constitution.md` (v2.0.0)
+**Reference**: `${DEVFLOW_CLAUDE_DIR:-.claude}/rules/project-constitution.md` (v2.0.0)
 
 - [ ] **Article I - Quality First**: All requirements fully defined, no partial specs
 - [ ] **Article X - Requirement Boundary**: No speculative features, all unclear marked with [NEEDS CLARIFICATION]

@@ -120,7 +120,7 @@
                     "secret:\\s*['\"][^'\"]+['\"]"
                 ]
             },
-            "blockMessage": "⚠️ BLOCKED - Constitution Violation\n\nDetected:\n- Partial implementation (Article I.1 - NO PARTIAL IMPLEMENTATION)\n- OR Hardcoded secrets (Article III.1 - NO HARDCODED SECRETS)\n\n📋 ACTION:\n1. Complete all TODOs/FIXMEs before saving\n2. Move secrets to environment variables (.env, not committed)\n3. Review .claude/constitution/project-constitution.md v2.0.0\n4. Run /flow-verify for comprehensive check\n\nSource: Constitution Articles I.1, III.1\nFile: {file_path}\n\n💡 SKIP: Add `@constitution-verified` comment or set SKIP_CONSTITUTION_CHECK=1",
+            "blockMessage": "⚠️ BLOCKED - Constitution Violation\n\nDetected:\n- Partial implementation (Article I.1 - NO PARTIAL IMPLEMENTATION)\n- OR Hardcoded secrets (Article III.1 - NO HARDCODED SECRETS)\n\n📋 ACTION:\n1. Complete all TODOs/FIXMEs before saving\n2. Move secrets to environment variables (.env, not committed)\n3. Review .claude/rules/project-constitution.md v2.0.0\n4. Run /flow-verify for comprehensive check\n\nSource: Constitution Articles I.1, III.1\nFile: {file_path}\n\n💡 SKIP: Add `@constitution-verified` comment or set SKIP_CONSTITUTION_CHECK=1",
             "skipConditions": {
                 "sessionSkillUsed": true,
                 "fileMarkers": [

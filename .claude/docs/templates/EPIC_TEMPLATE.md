@@ -544,7 +544,7 @@ User ─(1:N)─ Post ─(1:N)─ Comment
 
 **Critical**: 这些闸门必须在架构设计之前通过，防止过度设计和复杂性蔓延
 
-**Reference**: `.claude/constitution/project-constitution.md` (v2.0.0)
+**Reference**: `.claude/rules/project-constitution.md` (v2.0.0)
 
 ### Gate 1: Simplicity Gate (Article VII)
 **原则**: ≤3 Projects/Modules, No Future-Proofing
@@ -603,7 +603,7 @@ User ─(1:N)─ Post ─(1:N)─ Comment
 
 *GATE: 必须在任务生成前通过*
 
-**Reference**: `.claude/constitution/project-constitution.md` (v2.0.0)
+**Reference**: `.claude/rules/project-constitution.md` (v2.0.0)
 
 ### Article I: Quality First (质量至上)
 - [ ] **I.1 - NO PARTIAL IMPLEMENTATION**: Epic 范围完整且明确？无占位符？

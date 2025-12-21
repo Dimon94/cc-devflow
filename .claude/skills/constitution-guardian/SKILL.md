@@ -102,7 +102,7 @@ Detected:
 📋 ACTION:
 1. Complete all TODOs/FIXMEs before saving
 2. Move secrets to environment variables (.env, not committed)
-3. Review .claude/constitution/project-constitution.md v2.0.0
+3. Review `.claude/rules/project-constitution.md` v2.0.0
 4. Run /flow-verify for comprehensive check
 
 Source: Constitution Articles I.1, III.1
@@ -198,7 +198,7 @@ Users can bypass Constitution guardian in specific scenarios:
 - Double insurance: Guardrail catches most issues, Script catches remaining
 
 ### Constitution Document
-- **Source of Truth**: `.claude/constitution/project-constitution.md` v2.0.0
+- **Source of Truth**: `.claude/rules/project-constitution.md` v2.0.0
 - **Contains**: All 10 Articles with detailed rules
 - **This guardrail**: Extracts Articles I.1, III.1 prohibition rules only
 
@@ -236,7 +236,7 @@ In `.claude/skills/skill-rules.json`:
         "password:\\s*['\"][^'\"]+['\"]"
       ]
     },
-    "blockMessage": "⚠️ BLOCKED - Constitution Violation\n\nDetected:\n- Partial implementation (Article I.1)\n- Hardcoded secrets (Article III.1)\n\n📋 ACTION:\n1. Complete all TODOs/FIXMEs\n2. Move secrets to config system\n3. Run /flow-verify\n\nSource: .claude/constitution/project-constitution.md v2.0.0",
+    "blockMessage": "⚠️ BLOCKED - Constitution Violation\n\nDetected:\n- Partial implementation (Article I.1)\n- Hardcoded secrets (Article III.1)\n\n📋 ACTION:\n1. Complete all TODOs/FIXMEs\n2. Move secrets to config system\n3. Run /flow-verify\n\nSource: .claude/rules/project-constitution.md v2.0.0",
     "skipConditions": {
       "sessionSkillUsed": true,
       "fileMarkers": ["@constitution-verified"],

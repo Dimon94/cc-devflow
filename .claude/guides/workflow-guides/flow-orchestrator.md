@@ -30,55 +30,55 @@ type: workflow-guide
 ## Rules Integration
 You MUST follow these rules during orchestration:
 
-0. **Constitution** (.claude/constitution/):
+0. **Constitution** (${DEVFLOW_CLAUDE_DIR:-.claude}/rules/project-constitution.md):
    - **Project Constitution**: Follow all constitutional principles without exception
    - **Quality Gates**: Enforce all quality gate requirements
    - **Architecture Constraints**: Adhere to architectural consistency rules
    - **Security Principles**: Apply security-first approach to all operations
 
-1. **Standard Patterns** (.claude/rules/core-patterns.md):
+1. **Standard Patterns**:
    - Apply Fail Fast principle: validate inputs immediately
    - Use Clear Errors with structured error messages
    - Maintain Minimal Output approach in user communication
    - Follow Trust System principle for sub-agent delegation
 
-2. **DevFlow Patterns** (.claude/rules/devflow-conventions.md):
+2. **DevFlow Patterns**:
    - Enforce REQ-ID format validation: REQ-\d+
    - Use standard branch naming: feature/${reqId}-${slug(title)}
    - Apply commit message format: feat(${reqId}): ${taskTitle}
    - Maintain complete document chain: PRD → EPIC → TASKS
 
-3. **Agent Coordination** (.claude/rules/agent-coordination.md):
+3. **Agent Coordination**:
    - Use file locks for concurrent access prevention
    - Update status in LOG.md after each sub-agent call
    - Implement proper error propagation between agents
    - Follow the defined sub-agent call sequence
 
-4. **Branch Operations** (.claude/guides/technical-guides/git-github-guide.md):
+4. **Branch Operations** (${DEVFLOW_CLAUDE_DIR:-.claude}/guides/technical-guides/git-github-guide.md):
    - Verify clean working directory before branch creation
    - Use conventional commit messages with Co-authored-by
    - Enforce quality gates before any push operations
    - Clean up branches after successful merge
 
-5. **GitHub Operations** (.claude/guides/technical-guides/git-github-guide.md):
+5. **GitHub Operations** (${DEVFLOW_CLAUDE_DIR:-.claude}/guides/technical-guides/git-github-guide.md):
    - Check authentication status before PR operations
    - Verify repository is not a template before modifications
    - Use structured PR descriptions with links to documentation
    - Handle permission errors gracefully
 
-6. **Test Execution** (.claude/rules/test-execution.md):
+6. **Test Execution**:
    - Delegate all testing to qa-tester sub-agent
    - Capture verbose test output for audit trail
    - Enforce minimum coverage thresholds
    - Never mock external services in tests
 
-7. **DateTime Handling** (.claude/rules/datetime.md):
+7. **DateTime Handling**:
    - Use real system time in ISO 8601 UTC format
    - Include timestamps in all YAML frontmatter
    - Handle timezone-aware operations correctly
    - Support cross-platform datetime operations
 
-8. **MCP Integration** (.claude/rules/mcp-integration.md):
+8. **MCP Integration**:
    - Use WebFetch tool for all external content retrieval
    - Apply URL validation rules for security
    - Implement retry logic with exponential backoff
@@ -86,7 +86,7 @@ You MUST follow these rules during orchestration:
 
 Steps:
 0) Constitutional Validation
-   - Read and internalize .claude/constitution/ requirements
+   - Read and internalize ${DEVFLOW_CLAUDE_DIR:-.claude}/rules/project-constitution.md requirements
    - Validate all inputs against constitutional principles
    - Ensure current environment meets constitutional standards
    - Apply constitutional constraints to the entire workflow

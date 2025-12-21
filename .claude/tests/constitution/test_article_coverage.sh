@@ -161,7 +161,7 @@ test_article_X_has_enforcement_points() {
 }
 
 test_all_articles_documented_in_constitution() {
-    local constitution="$REPO_ROOT/.claude/constitution/project-constitution.md"
+    local constitution="$REPO_ROOT/.claude/rules/project-constitution.md"
 
     for article in I II III IV V VI VII VIII IX X; do
         assert_file_contains "$constitution" "## Article $article:" "Constitution should document Article $article"

@@ -523,7 +523,7 @@ npm run adapt -- --skills               # 仅生成技能注册表
 
 ## Constitution Check (宪法符合性检查)
 
-**Reference**: `.claude/constitution/project-constitution.md` (v2.0.0)
+**Reference**: `.claude/rules/project-constitution.md` (v2.0.0)
 
 ### Article I: Quality First (质量至上)
 

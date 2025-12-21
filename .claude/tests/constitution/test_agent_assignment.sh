@@ -140,7 +140,7 @@ test_all_agents_reference_constitution() {
 }
 
 test_agents_reference_current_version() {
-    local constitution_version=$(grep -E '^\*\*Version\*\*:|^> \*\*Version\*\*:' "$REPO_ROOT/.claude/constitution/project-constitution.md" | head -1 | sed 's/.*v\([0-9.]*\).*/\1/')
+    local constitution_version=$(grep -E '^\*\*Version\*\*:|^> \*\*Version\*\*:' "$REPO_ROOT/.claude/rules/project-constitution.md" | head -1 | sed 's/.*v\([0-9.]*\).*/\1/')
 
     local agents=(
         "$REPO_ROOT/.claude/agents/prd-writer.md"

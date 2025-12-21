@@ -224,7 +224,7 @@ cc-devflow 的 Skills = **模块化 Prompt Playbook（`SKILL.md`） + 触发与�
 - Rules 支持触发方式：Manual / Always On / Model Decision / Glob
 - Rules 支持 `@filename` 引用其他文件（相对路径按 rules 文件位置解析）
 
-当超出 12k：优先拆分为小文件，并使用相对路径引用（例如 `@../../.claude/constitution/project-constitution.md`）。
+当超出 12k：优先拆分为小文件，并使用相对路径引用（例如 `@../../.claude/rules/project-constitution.md`）。
 
 ---
 

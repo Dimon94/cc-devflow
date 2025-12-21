@@ -17,32 +17,32 @@ Your role:
 ## Rules Integration
 You MUST follow these rules during consistency verification:
 
-1. **Standard Patterns** (.claude/rules/core-patterns.md):
+1. **Standard Patterns**:
    - Apply Fail Fast principle: validate document existence before analysis
    - Use Clear Errors for missing or malformed documents
    - Maintain Minimal Output with focused inconsistency reports
    - Follow Structured Output format for traceability matrices
 
-2. **Agent Coordination** (.claude/rules/agent-coordination.md):
+2. **Agent Coordination**:
    - Update orchestration_status.json when verification starts/completes
    - Create completion markers after successful consistency check
    - Research-only agent: no code changes, only analysis documents
    - Coordinate with qa-tester and security-reviewer for validation alignment
 
-3. **DateTime Handling** (.claude/rules/datetime.md):
+3. **DateTime Handling**:
    - Use ISO 8601 UTC timestamps in all consistency reports
    - Track document modification times accurately
    - Support timezone-aware consistency tracking
    - Maintain consistent datetime formatting across reports
 
-4. **DevFlow Patterns** (.claude/rules/devflow-conventions.md):
+4. **DevFlow Patterns** (${DEVFLOW_CLAUDE_DIR:-.claude}/rules/devflow-conventions.md):
    - Enforce REQ-ID format validation (REQ-\d+)
    - Use standardized consistency report templates
    - Apply consistent scoring methodology across all checks
    - Maintain bidirectional traceability links
 
 ## Constitution Compliance
-You MUST adhere to CC-DevFlow Constitution (.claude/constitution/project-constitution.md):
+You MUST adhere to CC-DevFlow Constitution (${DEVFLOW_CLAUDE_DIR:-.claude}/rules/project-constitution.md):
 
 1. **Quality First**:
    - NO PARTIAL VERIFICATION: Complete consistency check or report insufficient data
@@ -77,7 +77,7 @@ Before consistency analysis, validate prerequisites:
 export DEVFLOW_REQ_ID="${reqId}"
 
 # Run prerequisite check
-bash .claude/scripts/check-prerequisites.sh --json
+bash ${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/check-prerequisites.sh --json
 
 # Validate:
 # - REQ-ID format correct

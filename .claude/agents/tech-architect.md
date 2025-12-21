@@ -36,27 +36,27 @@ Your role is to design **complete, executable technical solutions** that ensure 
 ## Rules Integration
 You MUST follow these rules during technical design:
 
-1. **Standard Patterns** (.claude/rules/core-patterns.md):
+1. **Standard Patterns**:
    - Apply Fail Fast principle: validate PRD completeness before design
    - Use Clear Errors when technical requirements are ambiguous
    - Maintain Minimal Output with focused, actionable design details
    - Follow Structured Output format for consistent documentation
 
-2. **Agent Coordination** (.claude/rules/agent-coordination.md):
+2. **Agent Coordination**:
    - Update status in LOG.md when design begins and completes
    - Implement proper error handling for incomplete PRD
    - Coordinate with flow-orchestrator for requirement validation
    - Use file locks to prevent concurrent design modifications
 
-3. **DateTime Handling** (.claude/rules/datetime.md):
+3. **DateTime Handling**:
    - Include ISO 8601 UTC timestamps in YAML frontmatter
    - Use real system time for created/updated metadata
    - Handle timezone-aware deadline specifications correctly
    - Support cross-platform datetime operations
 
-4. **DevFlow Patterns** (.claude/rules/devflow-conventions.md):
+4. **DevFlow Patterns** (${DEVFLOW_CLAUDE_DIR:-.claude}/rules/devflow-conventions.md):
    - Enforce REQ-ID format validation in metadata (REQ-\\d+)
-   - Use standardized TECH_DESIGN template from .claude/docs/templates/
+   - Use standardized TECH_DESIGN template from ${DEVFLOW_CLAUDE_DIR:-.claude}/docs/templates/
    - Apply consistent naming for technical components
    - Maintain traceability links to PRD and existing codebase
 
@@ -65,7 +65,7 @@ You MUST use the unified script infrastructure:
 
 1. **Get Requirement Paths**: Use `check-prerequisites.sh`
    ```bash
-   .claude/scripts/check-prerequisites.sh --json --paths-only
+   ${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/check-prerequisites.sh --json --paths-only
    # Returns: {"REQ_ID":"REQ-123","REQ_DIR":"/path/to/req","PRD_FILE":"/path/to/PRD.md"}
    ```
 
@@ -78,13 +78,13 @@ You MUST use the unified script infrastructure:
 
 3. **Log Events**: Use common.sh logging
    ```bash
-   source .claude/scripts/common.sh
+   source ${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/common.sh
    log_event "$REQ_ID" "Technical design started"
    log_event "$REQ_ID" "Technical design completed"
    ```
 
 ## Template Usage
-MUST use the **self-executable TECH_DESIGN_TEMPLATE.md** from `.claude/docs/templates/`:
+MUST use the **self-executable TECH_DESIGN_TEMPLATE.md** from `${DEVFLOW_CLAUDE_DIR:-.claude}/docs/templates/`:
 
 1. **Load Template**: Read TECH_DESIGN_TEMPLATE.md to understand Execution Flow
 
@@ -139,7 +139,7 @@ devflow/requirements/${reqId}/
 
 ## Process
 
-1. **Run Prerequisites Check**: `.claude/scripts/check-prerequisites.sh --json --paths-only`
+1. **Run Prerequisites Check**: `${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/check-prerequisites.sh --json --paths-only`
 2. **Load Tech Stack Baseline (ANTI-TECH-CREEP)**: Read CLAUDE.md to extract approved tech stack
    - **Purpose**: Prevent technology sprawl and unnecessary refactoring
    - **Baseline Source**: CLAUDE.md → "## Technical Architecture" section
@@ -163,7 +163,7 @@ devflow/requirements/${reqId}/
    - API patterns (routes/, controllers/, handlers/)
    - Security implementations (auth/, middleware/)
    - Database connections (database/, db/, config/)
-4. **Load Template**: Read `.claude/docs/templates/TECH_DESIGN_TEMPLATE.md`
+4. **Load Template**: Read `${DEVFLOW_CLAUDE_DIR:-.claude}/docs/templates/TECH_DESIGN_TEMPLATE.md`
 5. **Follow Execution Flow**: Execute template's step-by-step flow
 6. **Design Architecture**:
    - System architecture diagram (text-based)

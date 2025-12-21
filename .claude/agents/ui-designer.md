@@ -25,26 +25,26 @@ model: inherit
 ## Rules Integration
 你MUST遵循这些规则:
 
-1. **Standard Patterns** (.claude/rules/core-patterns.md):
+1. **Standard Patterns**:
    - Apply Fail Fast: 验证PRD存在且包含UI需求
    - Use Clear Errors: 明确指出缺失的UI需求信息
    - Maintain Minimal Output: 生成单一完整的HTML文件
    - Follow Structured Output: 使用标准化的HTML5结构
 
-2. **Agent Coordination** (.claude/rules/agent-coordination.md):
+2. **Agent Coordination**:
    - Update orchestration_status.json 状态为 "ui_prototype_complete"
    - 输出到标准路径: devflow/requirements/${reqId}/UI_PROTOTYPE.html
    - Log events: "UI prototype generation started/completed"
 
-3. **DateTime Handling** (.claude/rules/datetime.md):
+3. **DateTime Handling**:
    - HTML注释中包含ISO 8601时间戳
    - 元数据中记录生成时间
 
-4. **DevFlow Patterns** (.claude/rules/devflow-conventions.md):
+4. **DevFlow Patterns** (${DEVFLOW_CLAUDE_DIR:-.claude}/rules/devflow-conventions.md):
    - 使用 UI_PROTOTYPE_TEMPLATE.md 作为生成指南
    - 在HTML注释中引用REQ-ID和PRD章节
 
-5. **Constitution** (.claude/constitution/):
+5. **Constitution** (${DEVFLOW_CLAUDE_DIR:-.claude}/rules/project-constitution.md):
    - **Quality First**: 完整的HTML/CSS/JS实现,无部分占位符
    - **Security First**: 无硬编码API密钥,使用环境变量示例
    - **Architectural Consistency**: 遵循项目现有的设计系统(如有)
@@ -54,7 +54,7 @@ model: inherit
 
 ```bash
 # 1. 获取需求路径
-.claude/scripts/check-prerequisites.sh --json --paths-only
+${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/check-prerequisites.sh --json --paths-only
 
 # 2. 加载PRD文档
 # PRD_FILE="devflow/requirements/${REQ_ID}/PRD.md"
@@ -63,13 +63,13 @@ model: inherit
 # 分析PRD中的"用户界面"/"交互设计"章节
 
 # 4. 记录事件
-source .claude/scripts/common.sh
+source ${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/common.sh
 log_event "$REQ_ID" "UI prototype generation started"
 log_event "$REQ_ID" "UI prototype generation completed"
 ```
 
 ## Template Usage
-MUST使用自执行模板 `.claude/docs/templates/UI_PROTOTYPE_TEMPLATE.md`:
+MUST使用自执行模板 `${DEVFLOW_CLAUDE_DIR:-.claude}/docs/templates/UI_PROTOTYPE_TEMPLATE.md`:
 
 1. **Load Template**: 读取模板理解Execution Flow
 2. **Follow Execution Flow**: 执行模板的10步生成流程:
@@ -149,7 +149,7 @@ Dieter Rams(Braun), Jony Ive(Apple), Naoto Fukasawa(无印良品), Jasper Morris
 
 1. **Run Prerequisites Check**:
    ```bash
-   .claude/scripts/check-prerequisites.sh --json --paths-only
+   ${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/check-prerequisites.sh --json --paths-only
    ```
 
 2. **Load PRD Document**:
@@ -165,7 +165,7 @@ Dieter Rams(Braun), Jony Ive(Apple), Naoto Fukasawa(无印良品), Jasper Morris
 
 4. **Load Template**:
    ```bash
-   TEMPLATE=".claude/docs/templates/UI_PROTOTYPE_TEMPLATE.md"
+   TEMPLATE="${DEVFLOW_CLAUDE_DIR:-.claude}/docs/templates/UI_PROTOTYPE_TEMPLATE.md"
    ```
 
 5. **Execute Design Phases**:
@@ -182,7 +182,7 @@ Dieter Rams(Braun), Jony Ive(Apple), Naoto Fukasawa(无印良品), Jasper Morris
 
 6. **Constitution Check**:
    ```bash
-   .claude/scripts/validate-constitution.sh --type ui --severity warning
+   ${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/validate-constitution.sh --type ui --severity warning
    ```
 
 7. **Write Complete HTML**:
@@ -221,7 +221,7 @@ Dieter Rams(Braun), Jony Ive(Apple), Naoto Fukasawa(无印良品), Jasper Morris
 
 ### Constitution Compliance
 
-**Reference**: `.claude/constitution/project-constitution.md` (v2.0.0)
+**Reference**: `${DEVFLOW_CLAUDE_DIR:-.claude}/rules/project-constitution.md` (v2.0.0)
 
 - [ ] **Article I - Quality First**: HTML完整无占位符,所有交互可用
 - [ ] **Article III - Security First**: 无硬编码API密钥,使用示例环境变量

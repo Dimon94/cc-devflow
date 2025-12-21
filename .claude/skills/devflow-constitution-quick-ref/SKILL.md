@@ -8,7 +8,7 @@ description: Quick reference guide to CC-DevFlow Constitution v2.0.0 with links 
 ## Purpose
 Provide quick summaries of all 10 Constitutional Articles with links to full Constitution document. This skill does NOT duplicate the complete Constitution text.
 
-**Full Constitution**: [.claude/constitution/project-constitution.md](.claude/constitution/project-constitution.md) v2.0.0
+**Full Constitution**: `.claude/rules/project-constitution.md` v2.0.0
 
 ## Constitution Overview
 
@@ -40,7 +40,7 @@ Quality is the non-negotiable baseline.
 ❌ "defer to v2"
 ```
 
-**For Details**: See [Constitution Article I](.claude/constitution/project-constitution.md#article-i-quality-first-质量至上)
+**For Details**: See `.claude/rules/project-constitution.md#article-i-quality-first-质量至上`
 
 ---
 
@@ -66,7 +66,7 @@ Maintain codebase uniformity and predictability.
 ❌ 800-line file                 // Exceeds limit
 ```
 
-**For Details**: See [Constitution Article II](.claude/constitution/project-constitution.md#article-ii-architectural-consistency-架构一致性)
+**For Details**: See `.claude/rules/project-constitution.md#article-ii-architectural-consistency-架构一致性`
 
 ---
 
@@ -92,7 +92,7 @@ Security is foundational, not an afterthought.
 ❌ const PASSWORD = "admin123"       // Hardcoded
 ```
 
-**For Details**: See [Constitution Article III](.claude/constitution/project-constitution.md#article-iii-security-first-安全优先)
+**For Details**: See `.claude/rules/project-constitution.md#article-iii-security-first-安全优先`
 
 ---
 
@@ -118,7 +118,7 @@ Performance is user experience; proactive optimization required.
 ❌ no connection.close()             // Resource leak
 ```
 
-**For Details**: See [Constitution Article IV](.claude/constitution/project-constitution.md#article-iv-performance-accountability-性能责任)
+**For Details**: See `.claude/rules/project-constitution.md#article-iv-performance-accountability-性能责任`
 
 ---
 
@@ -144,7 +144,7 @@ Code must be understandable, modifiable, and extensible.
 ❌ 800-line function               // Exceeds limit
 ```
 
-**For Details**: See [Constitution Article V](.claude/constitution/project-constitution.md#article-v-maintainability-可维护性)
+**For Details**: See `.claude/rules/project-constitution.md#article-v-maintainability-可维护性`
 
 ---
 
@@ -173,7 +173,7 @@ Phase 3: Write Implementation
   → Goal: Make tests pass
 ```
 
-**For Details**: See [Constitution Article VI](.claude/constitution/project-constitution.md#article-vi-test-first-development-测试优先开发)
+**For Details**: See `.claude/rules/project-constitution.md#article-vi-test-first-development-测试优先开发`
 
 ---
 
@@ -199,7 +199,7 @@ Default to simplicity; complexity requires justification.
 ❌ Custom ORM wrapper                     # Unnecessary abstraction
 ```
 
-**For Details**: See [Constitution Article VII](.claude/constitution/project-constitution.md#article-vii-simplicity-gate-简单性闸门)
+**For Details**: See `.claude/rules/project-constitution.md#article-vii-simplicity-gate-简单性闸门`
 
 ---
 
@@ -225,7 +225,7 @@ Prefer concrete code over abstractions until three+ use cases proven.
 ❌ Custom framework wrapper             // Over-abstraction
 ```
 
-**For Details**: See [Constitution Article VIII](.claude/constitution/project-constitution.md#article-viii-anti-abstraction-反抽象化)
+**For Details**: See `.claude/rules/project-constitution.md#article-viii-anti-abstraction-反抽象化`
 
 ---
 
@@ -253,7 +253,7 @@ Test contracts/integrations before internal logic.
 4. Unit tests (internal logic)
 ```
 
-**For Details**: See [Constitution Article IX](.claude/constitution/project-constitution.md#article-ix-integration-first-testing-集成优先测试)
+**For Details**: See `.claude/rules/project-constitution.md#article-ix-integration-first-testing-集成优先测试`
 
 ---
 
@@ -279,7 +279,7 @@ Prevent scope creep; enforce strict requirement boundaries.
 ❌ Adding unplanned features during /flow-dev             # Feature expansion
 ```
 
-**For Details**: See [Constitution Article X](.claude/constitution/project-constitution.md#article-x-requirement-boundary-需求边界)
+**For Details**: See `.claude/rules/project-constitution.md#article-x-requirement-boundary-需求边界`
 
 ---
 

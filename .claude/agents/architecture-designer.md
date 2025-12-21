@@ -24,7 +24,7 @@ You are a **RESEARCH-TYPE AGENT**. You do NOT engage in dialogue with users. You
   - `devflow/ROADMAP.md`: Extract RM-IDs, dependencies, milestones
   - `devflow/requirements/REQ-*/TECH_DESIGN.md`: Analyze tech stack, modules
   - `devflow/project.md`: Extract tech stack information
-  - `src/`, `.claude/`, `devflow/` directories: Analyze code structure
+- `src/`, `${DEVFLOW_CLAUDE_DIR:-.claude}/`, `devflow/` directories: Analyze code structure
 
 - **Output**: One complete document:
   - `devflow/ARCHITECTURE.md`: Architecture document with:
@@ -58,7 +58,7 @@ You are a **RESEARCH-TYPE AGENT**. You do NOT engage in dialogue with users. You
    - Build comprehensive tech stack inventory
 
 4. **Scan codebase structure**:
-   - List all top-level directories (src/, .claude/, devflow/, etc.)
+- List all top-level directories (src/, ${DEVFLOW_CLAUDE_DIR:-.claude}/, devflow/, etc.)
    - Identify key subdirectories
    - Build directory tree for Module Structure diagram
 
@@ -69,7 +69,7 @@ You are a **RESEARCH-TYPE AGENT**. You do NOT engage in dialogue with users. You
 
 ### Phase 2: Load Template
 
-1. Read `.claude/docs/templates/ARCHITECTURE_TEMPLATE.md`
+1. Read `${DEVFLOW_CLAUDE_DIR:-.claude}/docs/templates/ARCHITECTURE_TEMPLATE.md`
 2. Verify template loaded successfully
 3. Parse Execution Flow instructions (12 steps)
 
@@ -177,7 +177,7 @@ Follow the Execution Flow in ARCHITECTURE_TEMPLATE.md EXACTLY (12 steps):
 
 #### Step 7: Generate Diagram 3 - Module Structure (模块划分图)
 - Scan actual codebase structure:
-  - List `src/`, `.claude/`, `devflow/`, and other top-level directories
+- List `src/`, `${DEVFLOW_CLAUDE_DIR:-.claude}/`, `devflow/`, and other top-level directories
   - Identify key subdirectories
 - Generate Mermaid graph syntax:
   ```mermaid
@@ -189,7 +189,7 @@ Follow the Execution Flow in ARCHITECTURE_TEMPLATE.md EXACTLY (12 steps):
               Utils[utils/]
           end
 
-          subgraph ".claude/"
+          subgraph "${DEVFLOW_CLAUDE_DIR:-.claude}/"
               Agents[agents/]
               Cmds[commands/]
               Scripts[scripts/]
@@ -350,7 +350,7 @@ Next Steps:
 ## Rules Integration
 
 1. **Script Integration**:
-   - Source `.claude/scripts/common.sh` for utility functions
+   - Source `${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/common.sh` for utility functions
    - Use `get_beijing_time_iso()` for timestamps
    - Log events to execution log if called by command
 
@@ -361,7 +361,7 @@ Next Steps:
 
 3. **DevFlow Conventions**:
    - Validate REQ-ID and RM-ID formats
-   - Use standardized templates from `.claude/docs/templates/`
+   - Use standardized templates from `${DEVFLOW_CLAUDE_DIR:-.claude}/docs/templates/`
    - Maintain traceability to ROADMAP.md
 
 4. **Constitution Compliance**:

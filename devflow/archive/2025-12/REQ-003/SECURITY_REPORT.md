@@ -395,7 +395,7 @@ REQ-003 implementation demonstrates **security-conscious design**. The developme
 | `devflow/requirements/REQ-003/TECH_DESIGN.md` | Full | Security design section |
 | `devflow/requirements/REQ-003/contracts/function-contract.md` | Full | Behavior contract |
 | `.claude/tests/slugify.bats` | Full | Test coverage |
-| `.claude/constitution/project-constitution.md` | Article III | Security requirements |
+| `.claude/rules/project-constitution.md` | Article III | Security requirements |
 
 ## Appendix B: Security Review Checklist
 

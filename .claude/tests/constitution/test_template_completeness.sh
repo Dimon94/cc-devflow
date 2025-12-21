@@ -26,7 +26,7 @@ test_prd_template_has_constitution_check() {
 
     assert_file_exists "$template" "PRD_TEMPLATE.md should exist"
     assert_file_contains "$template" "## Constitution Check" "PRD template should have Constitution Check section"
-    assert_file_contains "$template" ".claude/constitution/project-constitution.md" "PRD template should reference Constitution file"
+    assert_file_contains "$template" ".claude/rules/project-constitution.md" "PRD template should reference Constitution file"
 }
 
 test_epic_template_has_constitution_check() {
@@ -34,7 +34,7 @@ test_epic_template_has_constitution_check() {
 
     assert_file_exists "$template" "EPIC_TEMPLATE.md should exist"
     assert_file_contains "$template" "## Constitution Check" "EPIC template should have Constitution Check section"
-    assert_file_contains "$template" ".claude/constitution/project-constitution.md" "EPIC template should reference Constitution file"
+    assert_file_contains "$template" ".claude/rules/project-constitution.md" "EPIC template should reference Constitution file"
 }
 
 test_tasks_template_has_constitution_alignment() {
@@ -42,7 +42,7 @@ test_tasks_template_has_constitution_alignment() {
 
     assert_file_exists "$template" "TASKS_TEMPLATE.md should exist"
     assert_file_contains "$template" "Constitution Alignment|Constitution Compliance" "TASKS template should have Constitution section"
-    assert_file_contains "$template" ".claude/constitution/project-constitution.md" "TASKS template should reference Constitution file"
+    assert_file_contains "$template" ".claude/rules/project-constitution.md" "TASKS template should reference Constitution file"
 }
 
 test_prd_template_has_article_references() {
@@ -81,7 +81,7 @@ test_epic_template_has_complexity_tracking() {
 }
 
 test_all_templates_reference_current_version() {
-    local constitution_version=$(grep -E '^\*\*Version\*\*:|^> \*\*Version\*\*:' "$REPO_ROOT/.claude/constitution/project-constitution.md" | head -1 | sed 's/.*v\([0-9.]*\).*/\1/')
+    local constitution_version=$(grep -E '^\*\*Version\*\*:|^> \*\*Version\*\*:' "$REPO_ROOT/.claude/rules/project-constitution.md" | head -1 | sed 's/.*v\([0-9.]*\).*/\1/')
 
     local templates=(
         "$REPO_ROOT/.claude/docs/templates/PRD_TEMPLATE.md"

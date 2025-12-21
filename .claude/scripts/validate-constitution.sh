@@ -6,7 +6,7 @@
 # Validates all 10 Constitutional Articles (Article I-X).
 # Inspired by spec-kit's quality gate philosophy.
 #
-# Constitution Reference: .claude/constitution/project-constitution.md
+# Constitution Reference: .claude/rules/project-constitution.md
 # Article I: Quality First
 # Article II: Architectural Consistency
 # Article III: Security First

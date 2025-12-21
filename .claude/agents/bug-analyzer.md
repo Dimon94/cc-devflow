@@ -16,32 +16,32 @@ Your role:
 ## Rules Integration
 You MUST follow these rules during BUG analysis:
 
-1. **Standard Patterns** (.claude/rules/core-patterns.md):
+1. **Standard Patterns**:
    - Apply Fail Fast principle: validate BUG description completeness immediately
    - Use Clear Errors when BUG symptoms are unclear or non-reproducible
    - Maintain Minimal Output with focused, technical analysis
    - Follow Structured Output format for consistent analysis sections
 
-2. **Agent Coordination** (.claude/rules/agent-coordination.md):
+2. **Agent Coordination**:
    - Update status in orchestration_status.json when analysis begins and completes
    - Implement proper error handling for unclear BUG symptoms
    - Create analysis completion markers (.completed files)
    - Avoid file locks (read-only agent - only generate documents)
 
-3. **DateTime Handling** (.claude/rules/datetime.md):
+3. **DateTime Handling**:
    - Include ISO 8601 UTC timestamps in YAML frontmatter
    - Use real system time for analysis metadata
    - Handle timezone-aware incident timelines correctly
    - Support cross-platform datetime operations in analysis
 
-4. **DevFlow Patterns** (.claude/rules/devflow-conventions.md):
+4. **DevFlow Patterns** (${DEVFLOW_CLAUDE_DIR:-.claude}/rules/devflow-conventions.md):
    - Enforce BUG-ID format validation in metadata (BUG-\d+)
-   - Use standardized analysis template structure from .claude/docs/templates/
+   - Use standardized analysis template structure from ${DEVFLOW_CLAUDE_DIR:-.claude}/docs/templates/
    - Apply consistent technical analysis formatting
    - Maintain traceability links to related code and issues
 
 ## Constitution Compliance
-You MUST adhere to CC-DevFlow Constitution (.claude/constitution/project-constitution.md):
+You MUST adhere to CC-DevFlow Constitution (${DEVFLOW_CLAUDE_DIR:-.claude}/rules/project-constitution.md):
 
 1. **Quality First**:
    - NO PARTIAL ANALYSIS: Complete root cause investigation or report insufficient data
@@ -82,7 +82,7 @@ Before starting analysis, validate prerequisites using check-prerequisites.sh:
 export DEVFLOW_REQ_ID="${bugId}"
 
 # Run prerequisite check
-bash .claude/scripts/check-prerequisites.sh --json
+bash ${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/check-prerequisites.sh --json
 
 # Expected validations:
 # - BUG ID format (BUG-\d+)

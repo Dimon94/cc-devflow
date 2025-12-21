@@ -315,7 +315,7 @@ AC1: Given {{PRECONDITION}}
 
 *GATE: 必须在 Epic 规划前通过*
 
-**Reference**: `.claude/constitution/project-constitution.md` (v2.0.0)
+**Reference**: `.claude/rules/project-constitution.md` (v2.0.0)
 
 ### Article I: Quality First (质量至上)
 - [ ] **I.1 - NO PARTIAL IMPLEMENTATION**: 需求定义完整且明确？无占位符和模糊表述？

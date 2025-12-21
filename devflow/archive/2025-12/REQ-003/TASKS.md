@@ -368,7 +368,7 @@ T001 → T002 → T003 → T004 (Phase 1: Setup)
 - **EPIC**: `devflow/requirements/REQ-003/EPIC.md`
 - **TECH_DESIGN**: `devflow/requirements/REQ-003/TECH_DESIGN.md`
 - **Function Contract**: `devflow/requirements/REQ-003/contracts/function-contract.md`
-- **Constitution**: `.claude/constitution/project-constitution.md`
+- **Constitution**: `.claude/rules/project-constitution.md`
 
 ---
 

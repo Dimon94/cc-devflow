@@ -17,43 +17,43 @@ Your role:
 ## Rules Integration
 You MUST follow these rules during release management:
 
-1. **Standard Patterns** (.claude/rules/core-patterns.md):
+1. **Standard Patterns**:
    - Apply Fail Fast principle: validate all quality gates before merge
    - Use Clear Errors when release criteria are not met
    - Maintain Minimal Output with focused release documentation
    - Follow Trust System principle for automated quality gate verification
 
-2. **Agent Coordination** (.claude/rules/agent-coordination.md):
+2. **Agent Coordination**:
    - Update status in LOG.md when release process begins and completes
    - Implement proper error propagation for failed quality gates
    - Coordinate with flow-orchestrator for final release approval
    - Use file locks to prevent concurrent release operations
 
-3. **Branch Operations** (.claude/guides/technical-guides/git-github-guide.md):
+3. **Branch Operations** (${DEVFLOW_CLAUDE_DIR:-.claude}/guides/technical-guides/git-github-guide.md):
    - Verify clean working directory before creating pull requests
    - Use conventional commit messages with proper Co-authored-by attribution
    - Apply squash merge strategy for clean commit history
    - Clean up feature branches after successful merge
 
-4. **GitHub Operations** (.claude/guides/technical-guides/git-github-guide.md):
+4. **GitHub Operations** (${DEVFLOW_CLAUDE_DIR:-.claude}/guides/technical-guides/git-github-guide.md):
    - Check GitHub authentication status before PR operations
    - Verify repository permissions before merge operations
    - Use structured PR descriptions with links to documentation
    - Handle permission errors and authentication failures gracefully
 
-5. **DateTime Handling** (.claude/rules/datetime.md):
+5. **DateTime Handling**:
    - Include ISO 8601 UTC timestamps in release documentation
    - Use real system time for release timestamps and changelog entries
    - Handle timezone-aware release scheduling correctly
    - Support cross-platform datetime operations in release tooling
 
-6. **DevFlow Patterns** (.claude/rules/devflow-conventions.md):
+6. **DevFlow Patterns** (${DEVFLOW_CLAUDE_DIR:-.claude}/rules/devflow-conventions.md):
    - Enforce REQ-ID format in PR titles and commit messages
    - Use standardized PR templates and release documentation
    - Apply consistent branch naming and cleanup procedures
    - Maintain complete traceability from requirements to release
 
-7. **Constitution** (.claude/constitution/project-constitution.md):
+7. **Constitution** (${DEVFLOW_CLAUDE_DIR:-.claude}/rules/project-constitution.md):
    - Verify all Constitution checks passed before release
    - Ensure quality gates enforced (NO PARTIAL IMPLEMENTATION)
    - Validate security requirements met (NO HARDCODED SECRETS)
@@ -65,7 +65,7 @@ You MUST use the unified script infrastructure for all operations:
 1. **Get Requirement Paths**: Use `check-prerequisites.sh` to retrieve paths
    ```bash
    # Get all paths and available documents
-   .claude/scripts/check-prerequisites.sh --json --include-tasks
+   ${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/check-prerequisites.sh --json --include-tasks
 
    # Expected output includes REQ_ID, REQ_DIR, and all documents
    ```
@@ -73,7 +73,7 @@ You MUST use the unified script infrastructure for all operations:
 2. **Check Task Status**: Use `check-task-status.sh` to verify completion
    ```bash
    # Get task completion status
-   .claude/scripts/check-task-status.sh --json
+   ${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/check-task-status.sh --json
 
    # Example output: {"total_tasks":20,"completed":20,"remaining":0,"percentage":100}
    ```
@@ -81,7 +81,7 @@ You MUST use the unified script infrastructure for all operations:
 3. **Validate Constitution**: Use `validate-constitution.sh` for final checks
    ```bash
    # Run comprehensive Constitution validation
-   .claude/scripts/validate-constitution.sh --type all --severity error --json
+   ${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/validate-constitution.sh --type all --severity error --json
 
    # Must return 0 errors before release can proceed
    ```
@@ -89,7 +89,7 @@ You MUST use the unified script infrastructure for all operations:
 4. **Log Events**: Use common.sh logging for release milestones
    ```bash
    # Log release events
-   source .claude/scripts/common.sh
+   source ${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/common.sh
    log_event "$REQ_ID" "Release readiness assessment started"
    log_event "$REQ_ID" "Release plan generated - READY FOR MERGE"
    ```
@@ -115,11 +115,11 @@ When called by main agent, you will receive:
 - Expected to output: `devflow/bugs/${bugId}/RELEASE_PLAN.md`
 
 Release analysis process:
-1. **Run Prerequisites Check**: `.claude/scripts/check-prerequisites.sh --json --include-tasks`
-2. **Check Task Completion**: `.claude/scripts/check-task-status.sh --json`
+1. **Run Prerequisites Check**: `${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/check-prerequisites.sh --json --include-tasks`
+2. **Check Task Completion**: `${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/check-task-status.sh --json`
    - Verify 100% task completion (remaining: 0)
    - Ensure all Phase 2 (Tests First) and Phase 3 (Implementation) tasks completed
-3. **Validate Constitution**: `.claude/scripts/validate-constitution.sh --type all --severity error --json`
+3. **Validate Constitution**: `${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/validate-constitution.sh --type all --severity error --json`
    - Must return {"errors": 0} to proceed
    - Verify NO PARTIAL IMPLEMENTATION, NO HARDCODED SECRETS, etc.
 4. **Verify Quality Gates**: Check all quality gate documents exist and passed:

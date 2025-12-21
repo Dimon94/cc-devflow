@@ -115,7 +115,7 @@ interface ArchitectureData {
         };
     };
     module_structure: {
-        directories: string[];       // ["src/", "backend/", ".claude/"]
+        directories: string[];       // ["src/", "backend/", "${DEVFLOW_CLAUDE_DIR:-.claude}/"]
         tree: Record<string, string[]>; // {"src/": ["components/", "services/"]}
     };
     architecture_decisions: ADRRecord[];
@@ -351,8 +351,8 @@ if (archData.warnings.length > 0) {
 ```typescript
 // Determine reference directory
 const referenceDir = target_skill === 'frontend-guidelines'
-    ? '.claude/skills/_reference-implementations/frontend-react-mui/'
-    : '.claude/skills/_reference-implementations/backend-express-prisma/';
+    ? '${DEVFLOW_CLAUDE_DIR:-.claude}/skills/_reference-implementations/frontend-react-mui/'
+    : '${DEVFLOW_CLAUDE_DIR:-.claude}/skills/_reference-implementations/backend-express-prisma/';
 
 // Read reference SKILL.md
 const referenceSkill = await Read(`${referenceDir}SKILL.md`);
@@ -667,7 +667,7 @@ if (scope === 'backend-only') {
 **Objective**: Write generated content to correct locations.
 
 ```typescript
-const outputDir = `.claude/skills/${target_skill}/`;
+const outputDir = `${DEVFLOW_CLAUDE_DIR:-.claude}/skills/${target_skill}/`;
 
 // Create directory if doesn't exist
 await Bash(`mkdir -p ${outputDir}resources/`);
@@ -711,7 +711,7 @@ for (const pattern of hardcodedPaths) {
 
 ```typescript
 // Read existing skill-rules.json
-const rulesPath = '.claude/skills/skill-rules.json';
+const rulesPath = '${DEVFLOW_CLAUDE_DIR:-.claude}/skills/skill-rules.json';
 const rules = JSON.parse(await Read(rulesPath));
 
 // Generate path patterns based on project structure
@@ -960,13 +960,13 @@ function generateKeywords({ target_skill, tech_stack, archData }) {
         "data_fetching": "TanStack Query"
     },
     "files_created": [
-        ".claude/skills/frontend-guidelines/SKILL.md",
-        ".claude/skills/frontend-guidelines/resources/component-patterns.md",
-        ".claude/skills/frontend-guidelines/resources/data-fetching.md",
-        ".claude/skills/frontend-guidelines/resources/styling-guide.md",
-        ".claude/skills/frontend-guidelines/resources/routing-guide.md",
-        ".claude/skills/frontend-guidelines/resources/performance.md",
-        ".claude/skills/frontend-guidelines/resources/typescript-standards.md"
+        "${DEVFLOW_CLAUDE_DIR:-.claude}/skills/frontend-guidelines/SKILL.md",
+        "${DEVFLOW_CLAUDE_DIR:-.claude}/skills/frontend-guidelines/resources/component-patterns.md",
+        "${DEVFLOW_CLAUDE_DIR:-.claude}/skills/frontend-guidelines/resources/data-fetching.md",
+        "${DEVFLOW_CLAUDE_DIR:-.claude}/skills/frontend-guidelines/resources/styling-guide.md",
+        "${DEVFLOW_CLAUDE_DIR:-.claude}/skills/frontend-guidelines/resources/routing-guide.md",
+        "${DEVFLOW_CLAUDE_DIR:-.claude}/skills/frontend-guidelines/resources/performance.md",
+        "${DEVFLOW_CLAUDE_DIR:-.claude}/skills/frontend-guidelines/resources/typescript-standards.md"
     ],
     "skill_rules_updated": true,
     "triggers": {
@@ -1322,7 +1322,7 @@ async function parseTechStackSection(content, target_skill) {
 - ❌ Ask user questions
 - ❌ Make assumptions (all info in prompt)
 - ❌ Generate both frontend and backend in one call
-- ❌ Modify files outside .claude/skills/
+- ❌ Modify files outside ${DEVFLOW_CLAUDE_DIR:-.claude}/skills/
 
 ---
 

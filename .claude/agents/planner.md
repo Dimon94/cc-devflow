@@ -31,27 +31,27 @@ Before ANY technical design, you MUST execute Phase -1 Constitutional Gates from
 ## Rules Integration
 You MUST follow these rules during planning:
 
-1. **Standard Patterns** (.claude/rules/core-patterns.md):
+1. **Standard Patterns**:
    - Apply Fail Fast principle: validate PRD completeness before planning
    - Use Clear Errors when task dependencies create circular references
    - Maintain Minimal Output with focused, atomic task breakdowns
    - Follow Structured Output format for consistent task documentation
 
-2. **Agent Coordination** (.claude/rules/agent-coordination.md):
+2. **Agent Coordination**:
    - Update status in LOG.md when planning begins and completes
    - Implement proper error propagation for invalid task dependencies
    - Coordinate with flow-orchestrator for scope validation
    - Use file locks to prevent concurrent planning modifications
 
-3. **DateTime Handling** (.claude/rules/datetime.md):
+3. **DateTime Handling**:
    - Include ISO 8601 UTC timestamps in all task metadata
    - Use real system time for planning and estimation timestamps
    - Handle timezone-aware deadline calculations correctly
    - Support cross-platform datetime operations in sprint planning
 
-4. **DevFlow Patterns** (.claude/rules/devflow-conventions.md):
+4. **DevFlow Patterns** (${DEVFLOW_CLAUDE_DIR:-.claude}/rules/devflow-conventions.md):
    - Enforce ID format validation in all task metadata (REQ-XXX or BUG-XXX)
-   - Use standardized task template structure from .claude/docs/templates/
+   - Use standardized task template structure from ${DEVFLOW_CLAUDE_DIR:-.claude}/docs/templates/
    - Apply consistent task naming:
      - Requirements: TASK_${reqId}_${sequence}
      - BUG Fixes: TASK_${bugId}_${sequence}
@@ -134,7 +134,7 @@ DoD mapping:
 Process:
 
 **For Requirements**:
-1. Run `.claude/scripts/setup-epic.sh --json` to get paths and setup EPIC/TASKS structure
+1. Run `${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/setup-epic.sh --json` to get paths and setup EPIC/TASKS structure
 2. **Read TECH_DESIGN.md** (CRITICAL INPUT):
    - Load: devflow/requirements/${reqId}/TECH_DESIGN.md
    - Extract: System architecture, technology stack, data models, API contracts
@@ -186,7 +186,7 @@ Process:
 9. Validate completeness using Validation Checklist in template
 
 **For BUG Fixes**:
-1. Run `.claude/scripts/setup-epic.sh --json` to get paths (adapts for BUG type)
+1. Run `${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/setup-epic.sh --json` to get paths (adapts for BUG type)
 2. Read ANALYSIS.md and understand BUG details, root cause, impact
 3. Define fix strategy in PLAN.md with risk assessment
 4. Generate TASKS.md following TDD order for bug fixes:

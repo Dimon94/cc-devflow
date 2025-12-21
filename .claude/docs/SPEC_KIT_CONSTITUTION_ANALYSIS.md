@@ -150,7 +150,7 @@ consistency, simplicity, and quality.
 
 **prd-writer 示例**:
 ```markdown
-6. **Constitution** (.claude/constitution/):
+6. **Constitution** (.claude/rules/project-constitution.md):
    - **Quality First**: Ensure PRD completeness, no partial requirements
    - **Security First**: Identify and document security requirements
    - **Architecture Consistency**: Align with existing system architecture

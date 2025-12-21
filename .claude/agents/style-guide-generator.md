@@ -242,7 +242,7 @@ STYLE.md 是项目的**设计真理源（SSOT）**，所有 UI 相关工作必�
 ### Phase 3: 文档生成与优化
 ```
 1. 使用模板生成 STYLE.md
-   → 读取 .claude/docs/templates/STYLE_TEMPLATE.md
+   → 读取 ${DEVFLOW_CLAUDE_DIR:-.claude}/docs/templates/STYLE_TEMPLATE.md
    → 填充所有部分（Overview, Color Palette, Typography, ...）
    → 确保每个部分都有详细说明和示例代码
 

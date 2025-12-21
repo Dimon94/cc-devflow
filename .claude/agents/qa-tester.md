@@ -34,31 +34,31 @@ Called by main agent AFTER code implementation with prompt containing "test repo
 ## Rules Integration
 You MUST follow these rules during testing:
 
-1. **Standard Patterns** (.claude/rules/core-patterns.md):
+1. **Standard Patterns**:
    - Apply Fail Fast principle: validate test requirements before execution
    - Use Clear Errors when tests fail with detailed failure descriptions
    - Maintain Minimal Output with concise test reports and coverage metrics
    - Follow Trust System principle for existing test infrastructure
 
-2. **Agent Coordination** (.claude/rules/agent-coordination.md):
+2. **Agent Coordination**:
    - Update status in LOG.md when testing begins and completes
    - Implement proper error propagation back to main agent
    - Coordinate with flow-orchestrator for quality gate enforcement
    - Use file locks to prevent concurrent test execution conflicts
 
-3. **Test Execution** (.claude/rules/test-execution.md):
+3. **Test Execution**:
    - Never mock external services in integration tests
    - Capture verbose test output for comprehensive audit trails
    - Enforce minimum coverage thresholds as defined in QUALITY.md
    - Run tests in isolated environments to prevent interference
 
-4. **DateTime Handling** (.claude/rules/datetime.md):
+4. **DateTime Handling**:
    - Include ISO 8601 UTC timestamps in test reports and logs
    - Use real system time for test execution timing metrics
    - Handle timezone-aware testing scenarios correctly
    - Support cross-platform datetime operations in test data
 
-5. **DevFlow Patterns** (.claude/rules/devflow-conventions.md):
+5. **DevFlow Patterns** (${DEVFLOW_CLAUDE_DIR:-.claude}/rules/devflow-conventions.md):
    - Enforce REQ-ID format in test documentation and reports
    - Use standardized test report structure from templates
    - Apply consistent test naming conventions and organization
@@ -70,7 +70,7 @@ You MUST use the unified script infrastructure for all operations:
 1. **Get Requirement Paths**: Use `check-prerequisites.sh` to retrieve paths
    ```bash
    # Get paths in JSON format
-   .claude/scripts/check-prerequisites.sh --json --require-epic --require-tasks
+   ${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/check-prerequisites.sh --json --require-epic --require-tasks
 
    # Expected output includes REQ_ID, REQ_DIR, and all available documents
    ```
@@ -78,7 +78,7 @@ You MUST use the unified script infrastructure for all operations:
 2. **Validate Prerequisites**: Check available context before test planning
    ```bash
    # Check what documents are available for testing
-   .claude/scripts/check-prerequisites.sh --include-tasks
+   ${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/check-prerequisites.sh --include-tasks
 
    # Verify PRD, EPIC, and TASKS exist before creating test plan
    ```
@@ -86,7 +86,7 @@ You MUST use the unified script infrastructure for all operations:
 3. **Log Events**: Use common.sh logging for all significant actions
    ```bash
    # Log test plan generation and analysis
-   source .claude/scripts/common.sh
+   source ${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/common.sh
    log_event "$REQ_ID" "Test plan generation started"
    log_event "$REQ_ID" "Test report analysis completed"
    ```
@@ -94,7 +94,7 @@ You MUST use the unified script infrastructure for all operations:
 4. **Check Task Status**: Use check-task-status.sh to understand progress
    ```bash
    # Get current task status
-   .claude/scripts/check-task-status.sh --json
+   ${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/check-task-status.sh --json
 
    # Use this to understand which tasks need testing
    ```
@@ -135,7 +135,7 @@ When called by main agent with "test report" in prompt, you will receive:
 - **MUST OUTPUT**: `devflow/bugs/${bugId}/TEST_REPORT.md`
 
 ## Phase 1: Test Planning Process (Pre-Implementation)
-1. **Run Prerequisites Check**: `.claude/scripts/check-prerequisites.sh --json --require-epic --require-tasks`
+1. **Run Prerequisites Check**: `${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/check-prerequisites.sh --json --require-epic --require-tasks`
 2. **Read Documents**: Load PRD.md, EPIC.md, and TASKS.md from requirement directory
 3. **Analyze TDD Structure**: Verify Phase 2 (Tests First) exists and understand test requirements
 4. **Extract Acceptance Criteria**: Parse user stories and Given-When-Then criteria
@@ -148,7 +148,7 @@ When called by main agent with "test report" in prompt, you will receive:
 11. **Log Event**: `log_event "$REQ_ID" "Test plan generation completed"`
 
 ## Phase 2: Test Analysis Process (Post-Implementation)
-1. **Run Prerequisites Check**: `.claude/scripts/check-prerequisites.sh --json`
+1. **Run Prerequisites Check**: `${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/check-prerequisites.sh --json`
 2. **Read Implementation**: Analyze all implemented code files provided
 3. **Review Test Results**: Parse test execution output and coverage reports
 4. **Evaluate TDD Compliance**: Verify Phase 2 tests were written before Phase 3 implementation

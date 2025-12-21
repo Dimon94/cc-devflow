@@ -26,8 +26,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 source "$SCRIPT_DIR/common.sh"
-CONSTITUTION_FILE="$REPO_ROOT/.claude/constitution/project-constitution.md"
-AMENDMENT_DIR="$REPO_ROOT/.claude/constitution/amendments"
+CONSTITUTION_FILE="$REPO_ROOT/.claude/rules/project-constitution.md"
+AMENDMENT_DIR="$REPO_ROOT/.claude/rules/amendments"
 
 # 需要更新版本号的文件模式
 declare -a FILES_TO_UPDATE=(

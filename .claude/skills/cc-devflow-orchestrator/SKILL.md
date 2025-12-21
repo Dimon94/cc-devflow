@@ -181,7 +181,7 @@ status: "released"
 ### Constitution violation?
 - **Real-time check**: constitution-guardian guardrail (PreToolUse hook)
 - **Batch validation**: Run `.claude/scripts/validate-constitution.sh`
-- **Reference**: See [.claude/constitution/project-constitution.md](.claude/constitution/project-constitution.md) v2.0.0
+- **Reference**: See `.claude/rules/project-constitution.md` v2.0.0
 
 ### TDD order violated?
 - **Real-time check**: devflow-tdd-enforcer guardrail (PreToolUse hook)
