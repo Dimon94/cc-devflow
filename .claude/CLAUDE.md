@@ -38,8 +38,13 @@ This directory contains Claude Code CLI extensions for the CC-DevFlow developmen
 │   └── ...                    # Other scripts
 │
 ├── skills/                    # Reusable skill definitions
-│   └── cc-devflow-orchestrator/
-│       └── skill.md           # Workflow router (modified: /flow-checklist)
+│   ├── fractal-docs-generator/   # 目录级 CLAUDE.md 自动生成
+│   │   └── SKILL.md
+│   ├── file-header-guardian/     # 文件头注释 @input/@output/@pos 守护
+│   │   └── SKILL.md
+│   ├── cc-devflow-orchestrator/
+│   │   └── SKILL.md           # Workflow router (modified: /flow-checklist)
+│   └── ...
 │
 └── docs/
     └── templates/

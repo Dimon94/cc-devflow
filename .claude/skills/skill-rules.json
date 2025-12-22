@@ -129,6 +129,81 @@
                 "envOverride": "SKIP_CONSTITUTION_CHECK"
             }
         },
+        "fractal-docs-generator": {
+            "type": "domain",
+            "enforcement": "suggest",
+            "priority": "high",
+            "description": "分形文档生成器。创建目录时自动生成目录级 CLAUDE.md，实现 GEB 式递归架构文档",
+            "promptTriggers": {
+                "keywords": [
+                    "创建目录",
+                    "新建文件夹",
+                    "mkdir",
+                    "add folder",
+                    "create directory",
+                    "目录结构",
+                    "CLAUDE.md",
+                    "架构文档",
+                    "分形文档"
+                ],
+                "intentPatterns": [
+                    "(创建|新建|添加).*?(目录|文件夹|folder|directory)",
+                    "(mkdir|create|add).*?(folder|directory|dir)",
+                    "目录.*?(结构|变更|调整)",
+                    "(更新|同步).*?CLAUDE\\.md"
+                ]
+            },
+            "fileTriggers": {
+                "pathPatterns": [
+                    "**/CLAUDE.md"
+                ]
+            }
+        },
+        "file-header-guardian": {
+            "type": "domain",
+            "enforcement": "suggest",
+            "priority": "high",
+            "description": "文件头注释守护者。创建/修改代码文件时确保 @input/@output/@pos 三行契约注释存在",
+            "promptTriggers": {
+                "keywords": [
+                    "创建文件",
+                    "新建文件",
+                    "write file",
+                    "create file",
+                    "add file",
+                    "文件头注释",
+                    "头注释",
+                    "@input",
+                    "@output",
+                    "@pos"
+                ],
+                "intentPatterns": [
+                    "(创建|新建|添加|编写).*?(文件|模块|组件)",
+                    "(create|write|add).*?(file|module|component)",
+                    "(检查|更新|添加).*?(头注释|header comment)",
+                    "文件.*?(注释|documentation)"
+                ]
+            },
+            "fileTriggers": {
+                "pathPatterns": [
+                    "**/*.ts",
+                    "**/*.tsx",
+                    "**/*.js",
+                    "**/*.jsx",
+                    "**/*.py",
+                    "**/*.go",
+                    "**/*.rs",
+                    "**/*.sh"
+                ],
+                "pathExclusions": [
+                    "**/*.test.ts",
+                    "**/*.spec.ts",
+                    "**/*.d.ts",
+                    "**/node_modules/**",
+                    "**/.claude/**"
+                ]
+            }
+        },
         "devflow-file-standards": {
             "type": "domain",
             "enforcement": "suggest",
