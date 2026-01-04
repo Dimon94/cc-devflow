@@ -2,7 +2,7 @@
 
 **Version:** 2.0
 **Status:** Planning
-**Last Updated:** 2025-12-19
+**Last Updated:** 2025-12-26
 
 ## Vision Statement
 
@@ -26,7 +26,7 @@ CC-DevFlow v2.x 升级目标：借鉴 spec-kit 的"质量左移"理念，通过�
 | Quarter   | Focus Area              | Deliverables                          | Effort (weeks) |
 |-----------|-------------------------|---------------------------------------|----------------|
 | Q4-2025   | MVP Foundation          | /flow-clarify                         | 2.0            |
-| Q1-2026   | Quality & Enhancement   | /flow-checklist + P1 features + arch  | 6.0            |
+| Q1-2026   | Quality & Enhancement   | /flow-checklist + P1 features + context guardrails + arch  | 7.0            |
 | Q2-2026   | Multi-Platform Support  | Adapter compiler + 4 platform outputs | 4.0            |
 
 ## Milestones
@@ -79,7 +79,7 @@ CC-DevFlow v2.x 升级目标：借鉴 spec-kit 的"质量左移"理念，通过�
 
 ### M3: v2.0 Release (Q1-2026 End) 🟡
 
-**Status:** 🟡 In Progress (2/4 completed)
+**Status:** 🟡 In Progress (2/5 completed)
 **Goal:** Production-ready release with P0+P1 features and multi-platform foundation
 
 **Deliverables:**
@@ -95,6 +95,7 @@ CC-DevFlow v2.x 升级目标：借鉴 spec-kit 的"质量左移"理念，通过�
   - 适配 Codex CLI (MVP) ✅
 - RM-004: GitHub API 限流处理
 - RM-005: Coverage Summary Table 增强
+- RM-014: Context Contract & Slimming（Context Pack）
 
 **Success Criteria:**
 - All P0 and P1 features tested and documented (进行中)
@@ -189,6 +190,13 @@ CC-DevFlow v2.x 升级目标：借鉴 spec-kit 的"质量左移"理念，通过�
    - Create adapter registry ✅
    - Completed: 2025-12-17 (PR #7)
 
+6. **RM-014: Context Contract & Slimming（Context Pack）** (P1, 1 week)
+   - SSOT: requirements/orchestration_status.json as the only source of truth
+   - flow-audit (strict) + PR gate; flow-generate for ROADMAP/BACKLOG
+   - Schema + step normalization + mapping enforcement
+   - Context budget + TTL guardrails
+   - CONTEXT.md + DECISIONS.md templates + context refresh hook
+
 **Resource Allocation:**
 - P0 Features: 35%
 - P1 Features: 35%
@@ -263,6 +271,7 @@ Phase 2: Quality Gates (Q1-2026)
   RM-003 (Branch naming)
   RM-004 (Rate limiting)
   RM-005 (Coverage)
+  RM-014 (Context guardrails)
   RM-006 (Adapter architecture)
     |
     v
@@ -290,7 +299,7 @@ Phase 3: Platform Support (Q2-2026)
 RM-001 → RM-002 → RM-006 → RM-007 → RM-008 → RM-009/010/011/012
 
 **Parallel Tracks:**
-- Track 1 (Quality): RM-001 → RM-002
+- Track 1 (Quality): RM-001 → RM-002 → RM-014
 - Track 2 (Enhancements): RM-003, RM-004, RM-005 (can run in parallel)
 - Track 3 (Platform): RM-006 → RM-007 → RM-008 → (RM-009 + RM-010 + RM-011 + RM-012) + RM-013
 
@@ -378,5 +387,5 @@ RM-001 → RM-002 → RM-006 → RM-007 → RM-008 → RM-009/010/011/012
 
 **Document Status:** Living Document
 **Owner:** CC-DevFlow Team
-**Last Updated:** 2025-12-19 (RM-008 completed)
+**Last Updated:** 2025-12-26 (RM-014 planned)
 **Next Review:** End of M3 (Q1-2026 End)

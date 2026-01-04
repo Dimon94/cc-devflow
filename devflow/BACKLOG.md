@@ -1,8 +1,8 @@
 # CC-DevFlow v2.x Backlog
 
-**Last Updated:** 2025-12-19 (Google ecosystem: Antigravity IDE only)
-**Total Items:** 13
-**Estimated Effort:** 12.0 weeks
+**Last Updated:** 2025-12-26 (Google ecosystem: Antigravity IDE only)
+**Total Items:** 14
+**Estimated Effort:** 13.0 weeks
 
 ## Priority Legend
 
@@ -211,6 +211,54 @@
 - `core/test.js`
 - `lib/coverage-reporter.js` (new)
 - `.devflow/coverage-history.json` (data)
+
+---
+
+### RM-014: Context Contract & Slimming（Context Pack）
+
+**Status:** 🔵 Planned
+**Effort:** 1 week
+**Quarter:** Q1-2026
+**Milestone:** M3 (v2.0 Release)
+**Dependencies:** RM-001, RM-002
+
+**Description:**
+为上下文工程加上“最小契约 + 轻量护栏”，避免上下文膨胀成新规格系统，确保上下文仅记录被消费的信息。
+
+**Acceptance Criteria:**
+- [ ] 定义 Context Pack schema（Intent/Constraints/Assumptions/Non-goals/Decision log/Open questions）
+- [ ] 每一项字段必须声明消费点（/flow-clarify, /flow-prd, /flow-dev, /flow-test）
+- [ ] Context Budget：每段限额（条目/字数）+ 超限精简提示
+- [ ] TTL：假设/约束过期提示，要求确认或删除
+- [ ] SSOT：requirements/orchestration_status.json 作为唯一事实源
+- [ ] flow-audit：schema 校验 + 对齐审计（requirements vs ROADMAP/BACKLOG 差异报告）
+- [ ] flow-generate：从 SSOT 生成 ROADMAP/BACKLOG（禁止手改）
+- [ ] PR gate：触达 requirements 或 ROADMAP/BACKLOG 时强制 strict audit
+- [ ] 规范化状态字段：补齐 roadmap_item/milestone/quarter；completedSteps 词汇统一
+- [ ] 增量迁移：仅对变更触达的 REQ 严格校验，legacy 仅告警
+- [ ] CONTEXT.md + DECISIONS.md 模板并挂载到 PRD 输出
+- [ ] `context-refresh` 触发：需求变更时更新上下文并记录原因
+
+**Technical Notes:**
+- Config: `.claude/config/context-contract.yml`, `config/orchestration-schema.yml`
+- Validator: `lib/context/validator.js`
+- Templates: `.claude/docs/templates/CONTEXT.md`, `.claude/docs/templates/DECISIONS.md`
+- Hook: `.claude/hooks/context-budget-gate.js`, `.claude/hooks/flow-audit-gate.js`
+- Audit: `bin/flow-audit.js`
+- Generate: `bin/flow-generate.js`
+- Report: `devflow/.generated/audit-report.json`
+
+**Related Files:**
+- `.claude/commands/flow-prd.md` (modified)
+- `.claude/commands/flow-dev.md` (modified)
+- `lib/context/validator.js` (new)
+- `.claude/config/context-contract.yml` (new)
+- `.claude/docs/templates/CONTEXT.md` (new)
+- `.claude/docs/templates/DECISIONS.md` (new)
+- `bin/flow-audit.js` (new)
+- `bin/flow-generate.js` (new)
+- `config/orchestration-schema.yml` (new)
+- `.claude/hooks/flow-audit-gate.js` (new)
 
 ---
 
@@ -514,9 +562,9 @@
 | Priority | Completed | In Progress | Planned | Total | Completion % |
 |----------|-----------|-------------|---------|-------|--------------|
 | P0       | 2         | 0           | 0       | 2     | 100%         |
-| P1       | 1         | 0           | 2       | 3     | 33.3%        |
+| P1       | 1         | 0           | 3       | 4     | 25.0%        |
 | P2       | 2         | 0           | 6       | 8     | 25.0%        |
-| **Total**| **5**     | **0**       | **8**   | **13**| **38.5%**    |
+| **Total**| **5**     | **0**       | **9**   | **14**| **35.7%**    |
 
 ### Milestone Progress
 
@@ -524,7 +572,7 @@
 |-----------|--------------|-------|-----------|--------|
 | M1        | Q4-2025 End  | 1     | 1/1       | 🟢 Completed |
 | M2        | Q1-2026 Mid  | 1     | 1/1       | 🟢 Completed |
-| M3        | Q1-2026 End  | 4     | 2/4       | 🟡 In Progress |
+| M3        | Q1-2026 End  | 5     | 2/5       | 🟡 In Progress |
 | M4        | Q2-2026 End  | 7     | 2/7       | � In Progress |
 
 ### Effort Distribution
@@ -532,9 +580,9 @@
 | Quarter   | Planned Effort | Items | Focus Area              |
 |-----------|----------------|-------|-------------------------|
 | Q4-2025   | 2.0 weeks      | 1     | /flow-clarify           |
-| Q1-2026   | 6.0 weeks      | 5     | Quality + P1 + Arch     |
+| Q1-2026   | 7.0 weeks      | 6     | Quality + P1 + Arch     |
 | Q2-2026   | 4.0 weeks      | 7     | Multi-platform adapters |
-| **Total** | **12.0 weeks** | **13**|                         |
+| **Total** | **13.0 weeks** | **14**|                         |
 
 ### Dependency Status
 
@@ -545,6 +593,7 @@
 | RM-003  | -          | N/A            | ✅ Yes         |
 | RM-004  | -          | N/A            | ✅ Yes         |
 | RM-005  | -          | N/A            | ✅ Yes         |
+| RM-014  | RM-001, RM-002 | 🟢 Completed | ✅ Yes         |
 | RM-006  | -          | N/A            | ✅ Yes (🟢 Completed) |
 | RM-007  | RM-006     | 🟢 Completed   | ✅ Yes (🟢 Completed) |
 | RM-008  | RM-006, RM-007 | � Completed | ✅ Yes (🟢 Completed) |
