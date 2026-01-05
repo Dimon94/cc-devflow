@@ -28,11 +28,13 @@ BUG_ID 必须满足 `BUG-\d+`；TITLE 为简洁现象描述。
 ### 阶段 0: Entry Gate
 ```
 1. 解析 BUG_ID、TITLE
+   → 若 TITLE 含中文/非ASCII，使用模型意译生成 BRANCH_TITLE_EN（英文语义翻译，禁止拼音/音译）
+   → 若意译不确定或未生成 ASCII 结果，向用户确认英文分支标题
 2. {SCRIPT:prereq} --json 验证:
    → devflow/bugs/${BUG_ID}/ 是否存在（首次执行将创建）
    → Git 工作区干净
 3. 创建目录与分支:
-   → git checkout -b "bugfix/${BUG_ID}-${slug(TITLE)}"
+   → git checkout -b "bugfix/${BUG_ID}-${slug(BRANCH_TITLE_EN)}"
    → 初始化 devflow/bugs/${BUG_ID}/ 结构与 orchestration_status.json
 4. 检查 quickstart.md
    → 若需求目录已有 quickstart.md，复制引用用于测试执行

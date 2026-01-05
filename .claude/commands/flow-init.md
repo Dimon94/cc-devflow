@@ -97,6 +97,9 @@ $ARGUMENTS = "REQ_ID|TITLE|PLAN_URLS?" 或 --interactive
 1. 解析参数: REQ_ID|TITLE|PLAN_URLS
    → 验证 REQ_ID 格式: ^(REQ|BUG)-[0-9]+$
    → 提取 TITLE 和 PLAN_URLS
+   → 若 TITLE 含中文/非ASCII，使用模型意译生成 BRANCH_TITLE_EN（英文语义翻译，禁止拼音/音译）
+   → BRANCH_TITLE_EN 仅用于分支名，文档标题仍使用原始 TITLE
+   → 若意译不确定或未生成 ASCII 结果，向用户确认英文分支标题
 
 2. 前置条件检查
    → Run: {SCRIPT:prereq} --json --paths-only
@@ -132,7 +135,7 @@ $ARGUMENTS = "REQ_ID|TITLE|PLAN_URLS?" 或 --interactive
 
 ```
 创建需求目录结构:
-→ Run: {SCRIPT:create} "${REQ_ID}" --title "${TITLE}" --json
+→ Run: {SCRIPT:create} "${REQ_ID}" --title "${TITLE}" --branch-title "${BRANCH_TITLE_EN}" --json (如有)
 
 生成文件:
 - devflow/requirements/${REQ_ID}/README.md
@@ -202,10 +205,11 @@ Task 1-5: External Learning Materials (MCP)
 
 ```
 创建功能分支:
-→ Requirements: feature/${REQ_ID}-${slug(title)}
-→ Bug Fixes:    bugfix/${BUG_ID}-${slug(title)}
+→ Requirements: feature/${REQ_ID}-${slug(BRANCH_TITLE_EN)}
+→ Bug Fixes:    bugfix/${BUG_ID}-${slug(BRANCH_TITLE_EN)}
 
-Where slug() = lowercase, replace spaces/special chars with hyphens
+Where BRANCH_TITLE_EN = TITLE 的英文意译 (语义为准，非拼音，使用模型意译)
+      slug() = lowercase, replace spaces/special chars with hyphens
 ```
 
 ---
@@ -274,7 +278,7 @@ devflow/requirements/${REQ_ID}/
 
 ### Git
 
-- **Branch**: `feature/${REQ_ID}-${slug(title)}`
+- **Branch**: `feature/${REQ_ID}-${slug(BRANCH_TITLE_EN)}`
 - **Status**: orchestration_status.json.status = "initialized"
 - **Phase**: orchestration_status.json.phase = "planning"
 

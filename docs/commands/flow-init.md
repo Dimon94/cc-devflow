@@ -22,6 +22,8 @@ Initialize requirement directory structure and load roadmap and architecture con
 |-----------|-------------|----------|---------|
 | **REQ-ID** | Requirement number | ✅ | `REQ-123` |
 | **Feature Title** | Brief description | ✅ | `User Authentication Feature` |
+
+> If the title contains non-ASCII text, the agent produces an English semantic translation for branch naming (not pinyin), while keeping the original title in docs.
 | **--interactive** | Interactive ID selection | ❌ | Auto-select next available ID |
 
 ## 🎬 Use Cases
@@ -68,7 +70,7 @@ Stage 2.6: Research task dispatch & decision integration
   └─ Consolidate research findings
   ↓
 Stage 3: Git branch creation
-  └─ Create feature/REQ-XXX-title branch
+  └─ Create feature/REQ-XXX-english-slug branch (model-translated, not pinyin)
 ```
 
 ## 💡 Examples

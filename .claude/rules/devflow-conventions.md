@@ -69,12 +69,14 @@ devflow/requirements/${reqId}/
 ### 分支命名
 ```bash
 # 标准格式
-feature/${reqId}-${slug(title)}
+feature/${reqId}-${slug(BRANCH_TITLE_EN)}
 
 # 示例
 feature/REQ-123-user-order-support
 feature/REQ-124-permission-management
 ```
+
+> BRANCH_TITLE_EN 为 TITLE 的英文意译 (语义为准，非拼音，使用模型意译)
 
 ### 分支操作流程
 1. 检查当前在 main 分支且状态干净

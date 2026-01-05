@@ -44,7 +44,7 @@ You MUST follow these rules during orchestration:
 
 2. **DevFlow Patterns**:
    - Enforce REQ-ID format validation: REQ-\d+
-   - Use standard branch naming: feature/${reqId}-${slug(title)}
+   - Use standard branch naming: feature/${reqId}-${slug(BRANCH_TITLE_EN)} (模型意译生成，禁止拼音/音译)
    - Apply commit message format: feat(${reqId}): ${taskTitle}
    - Maintain complete document chain: PRD → EPIC → TASKS
 
@@ -96,7 +96,7 @@ Steps:
    - Read local .claude/docs/plan/*.md and CLAUDE.md to learn codebase constraints.
 
 2) Git branch
-   - git switch -c feature/${reqId}-${slug(title)}
+   - git switch -c feature/${reqId}-${slug(BRANCH_TITLE_EN)}
 
 ## 标准作业流程
 

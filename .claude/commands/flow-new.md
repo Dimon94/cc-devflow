@@ -111,9 +111,11 @@ $ARGUMENTS = "REQ_ID|TITLE|PLAN_URLS?"
 ```
 
 **输出**:
-- Git分支: `feature/${REQ_ID}-${slug(title)}`
+- Git分支: `feature/${REQ_ID}-${slug(BRANCH_TITLE_EN)}`
 - 需求目录已创建
 - 研究材料已抓取
+
+> BRANCH_TITLE_EN 为 TITLE 的英文意译 (语义为准，非拼音，使用模型意译)
 
 ---
 

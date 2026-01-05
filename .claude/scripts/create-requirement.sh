@@ -12,7 +12,8 @@
 #                       Optional if --interactive mode is used
 #
 # OPTIONS:
-#   --title TITLE       Requirement title (for git branch)
+#   --title TITLE       Requirement title (docs; branch fallback)
+#   --branch-title TITLE Branch title used for git branch naming (optional)
 #   --description DESC  Brief description (optional)
 #   --skip-git          Skip git branch creation
 #   --interactive, -i   Interactive mode (prompts for inputs)
@@ -22,6 +23,7 @@
 # EXAMPLES:
 #   # Create requirement with title
 #   ./create-requirement.sh REQ-123 --title "User authentication"
+#   ./create-requirement.sh REQ-123 --title "User authentication" --branch-title "Auth"
 #
 #   # Interactive mode
 #   ./create-requirement.sh --interactive
@@ -37,6 +39,7 @@ set -e
 # Parse command line arguments
 REQ_ID=""
 TITLE=""
+BRANCH_TITLE=""
 DESCRIPTION=""
 SKIP_GIT=false
 INTERACTIVE=false
@@ -47,6 +50,10 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         --title)
             TITLE="$2"
+            shift 2
+            ;;
+        --branch-title)
+            BRANCH_TITLE="$2"
             shift 2
             ;;
         --description)
@@ -80,7 +87,8 @@ ARGUMENTS:
                       Optional if --interactive mode is used
 
 OPTIONS:
-  --title TITLE       Requirement title (for git branch naming)
+  --title TITLE       Requirement title (docs; branch fallback)
+  --branch-title TITLE Branch title used for git branch naming (optional)
   --description DESC  Brief description (optional)
   --skip-git          Skip git branch creation
   --interactive, -i   Interactive mode (prompts for inputs)
@@ -91,6 +99,9 @@ OPTIONS:
 EXAMPLES:
   # Create requirement with title
   ./create-requirement.sh REQ-123 --title "User authentication"
+
+  # Create requirement with custom branch title
+  ./create-requirement.sh REQ-123 --title "User authentication" --branch-title "Auth"
 
   # Interactive mode
   ./create-requirement.sh --interactive
@@ -353,12 +364,14 @@ fi
 GIT_BRANCH=""
 if ! $SKIP_GIT && has_git; then
     # Generate branch name from title
-    if [[ -n "$TITLE" ]]; then
+    if [[ -n "$BRANCH_TITLE" ]]; then
+        BRANCH_SUFFIX=$(slugify "$BRANCH_TITLE")
+    elif [[ -n "$TITLE" ]]; then
         BRANCH_SUFFIX=$(slugify "$TITLE")
-        if [[ -z "$BRANCH_SUFFIX" ]]; then
-            BRANCH_SUFFIX="new-requirement"
-        fi
     else
+        BRANCH_SUFFIX="new-requirement"
+    fi
+    if [[ -z "$BRANCH_SUFFIX" ]]; then
         BRANCH_SUFFIX="new-requirement"
     fi
 
