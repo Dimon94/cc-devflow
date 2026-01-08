@@ -190,8 +190,10 @@ For each remaining task (顺序严格遵循 TASKS.md):
    → 提示用户修复问题
    → 可选：记录到 ERROR_LOG.md
 
-5. 标记完成
-   → Run: {SCRIPT:mark_task} T###
+5. 标记完成 (CRITICAL)
+   → Run: {SCRIPT:mark_task} T### (MANDATORY)
+   → 必须执行此脚本将 TASKS.md 中的 [ ] update 为 [x]
+   → 如果不执行此脚本，Check Tasks 将认为任务未完成并导致死循环
    → Git 提交 (一任务一提交)
 ```
 
@@ -229,7 +231,8 @@ FOR iteration in 1..max_iterations:
   │   → Update ERROR_LOG.md with resolution              │
   │ ELSE:                                                │
   │   → Task succeeded                                   │
-  │   → Run: {SCRIPT:mark_task} T###                     │
+  │   → Run: {SCRIPT:mark_task} T### (CRITICAL: MUST RUN)│
+  │   → NEVER skip this step. Task is NOT done until marked.│
   │   → Git commit (one task per commit)                 │
   └──────────────────────────────────────────────────────┘
 
