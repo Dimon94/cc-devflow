@@ -22,32 +22,45 @@ Guide users to the correct agent/command WITHOUT duplicating their detailed stan
 ### 📦 需求级工作流（Requirement-Level, 每个需求执行一次）
 
 ```
-/flow-init → research.md + tasks.json (研究初始化)
+/flow-init → research.md + tasks.json + BRAINSTORM.md (研究初始化 + 头脑风暴) ⭐ v2.1.0 变更
      ↓
-/flow-clarify → clarifications/*.md (11 维度歧义扫描, 可选) ⭐ 新增
+/flow-clarify → clarifications/*.md (11 维度歧义扫描, 可选)
      ↓
-/flow-prd → PRD.md (invoke prd-writer agent)
+/flow-prd → PRD.md (invoke prd-writer agent, 需 BRAINSTORM.md 对齐) ⭐ v2.1.0 变更
      ↓
-/flow-checklist → checklists/*.md (需求质量检查, 可选) ⭐ 新增
+/flow-checklist → checklists/*.md (需求质量检查, 可选)
      ↓
 /flow-tech → TECH_DESIGN.md + data-model + contracts (invoke tech-architect agent)
      ↓
-/flow-ui → UI_PROTOTYPE.html (invoke ui-designer agent, 可选, 引用 STYLE.md) ⭐ 变更
+/flow-ui → UI_PROTOTYPE.html (invoke ui-designer agent, 可选, 引用 STYLE.md)
      ↓
-/flow-epic → EPIC.md + TASKS.md (invoke planner agent with PRD+TECH+UI)
+/flow-epic → EPIC.md + TASKS.md (invoke planner, bite-sized tasks) ⭐ v2.1.0 变更
      ↓
-/flow-dev → TASKS.md execution (TDD order enforced, 引用 STYLE.md) ⭐ 变更
+/flow-dev → TASKS.md execution (TDD checkpoint enforced) ⭐ v2.1.0 变更
+     ↓
+/flow-review → SPEC_REVIEW.md + CODE_QUALITY_REVIEW.md (Two-Stage Review) ⭐ v2.1.0 新增
      ↓
 /flow-qa → QA reports (invoke qa-tester + security-reviewer agents)
      ↓
-/flow-release → PR creation + deployment
+/flow-release → PR creation + deployment (分支完成决策) ⭐ v2.1.0 变更
      ↓
 /flow-verify → consistency check (invoke consistency-checker agent, 任意阶段可调用)
 ```
 
+### 🐛 Bug 修复工作流 (v2.1.0 新增)
+
+```
+/flow-fix "BUG-123|描述" → 系统化调试 (4阶段: Root Cause → Pattern → Hypothesis → TDD Fix)
+```
+
 **说明**:
 - 项目级命令建立全局标准（SSOT），需求级命令引用这些标准
+- `/flow-init` 包含 Brainstorming 阶段，生成 BRAINSTORM.md 作为需求「北极星」
+- `/flow-prd` 需要 BRAINSTORM.md 对齐检查
 - `/flow-clarify` 在 PRD 前可选执行，消除 research.md 中的歧义
+- `/flow-epic` 使用 bite-sized tasks 原则 (2-5分钟/任务)
+- `/flow-dev` 包含 TDD Checkpoint (Phase 2 测试必须先 FAIL)
+- `/flow-review` 是新增的两阶段审查 (Spec Compliance → Code Quality)
 - `/flow-ui` 和 `/flow-dev` 自动加载 `devflow/STYLE.md`（如存在）
 - 项目级命令可按需执行，无严格顺序要求
 
@@ -104,26 +117,43 @@ Guide users to the correct agent/command WITHOUT duplicating their detailed stan
 - **DON'T**: Duplicate QA standards (qa-tester agent has ~300 lines)
 - **Link**: See [.claude/agents/qa-tester.md](.claude/agents/qa-tester.md) for QA details
 
+### When User Asks About Code Review (v2.1.0 新增)
+- **DO**: Recommend `/flow-review` command → invokes spec-reviewer + code-quality-reviewer agents
+- **DON'T**: Duplicate review standards (Two-Stage Review)
+- **Link**: See [.claude/commands/flow-review.md](.claude/commands/flow-review.md) for details
+- **Features**: Stage 1 (Spec Compliance) → Stage 2 (Code Quality), 不信任实现者报告
+
+### When User Asks About Bug Fix (v2.1.0 新增)
+- **DO**: Recommend `/flow-fix` command → 4-phase systematic debugging
+- **DON'T**: Guess and fix without investigation
+- **Link**: See [.claude/commands/flow-fix.md](.claude/commands/flow-fix.md) for details
+- **Features**: Root Cause → Pattern → Hypothesis → TDD Fix, Iron Law enforcement
+
 ## Phase Gates (Quick Reference Only)
 
 ### Entry Gates
+- **flow-init Entry**: Git 工作区干净, main 分支
 - **flow-clarify Entry**: research.md 存在, phase0_complete == true
-- **flow-prd Entry**: research.md 无 TODO placeholder, phase0_complete == true (clarify 可选)
+- **flow-prd Entry**: BRAINSTORM.md 存在, research.md 无 TODO placeholder ⭐ v2.1.0 变更
 - **flow-checklist Entry**: PRD.md 必须完成 (prd_complete == true)
 - **flow-tech Entry**: PRD.md 必须完成
 - **flow-ui Entry**: PRD.md 必须完成（可与 tech 并行）
 - **flow-epic Entry**: PRD 完成，tech/ui 推荐但可选，Checklist Gate (如存在 checklists/)
 - **flow-dev Entry**: EPIC.md + TASKS.md 存在
-- **flow-qa Entry**: development_complete == true
+- **flow-review Entry**: development_complete == true ⭐ v2.1.0 新增
+- **flow-qa Entry**: review_complete == true (或 development_complete)
+- **flow-release Entry**: qa_complete == true
 
 ### Exit Gates
-- **flow-init Exit**: research.md 5-level quality check
+- **flow-init Exit**: research.md 5-level quality check, BRAINSTORM.md 完整 ⭐ v2.1.0 变更
 - **flow-clarify Exit**: clarification report 完整, orchestration_status.clarify_complete == true
-- **flow-prd Exit**: PRD.md 无 placeholder, Constitution 合规
+- **flow-prd Exit**: PRD.md 无 placeholder, Constitution 合规, BRAINSTORM 对齐 ⭐ v2.1.0 变更
 - **flow-tech Exit**: TECH_DESIGN.md + data-model + contracts 完整
-- **flow-epic Exit**: TASKS.md TDD 顺序正确, Phase -1 Gates 通过
-- **flow-dev Exit**: 所有 TASKS 完成, 测试通过
+- **flow-epic Exit**: TASKS.md TDD 顺序正确, bite-sized tasks, Phase -1 Gates 通过 ⭐ v2.1.0 变更
+- **flow-dev Exit**: 所有 TASKS 完成, TDD Checkpoint 通过, 测试通过 ⭐ v2.1.0 变更
+- **flow-review Exit**: SPEC_REVIEW.md + CODE_QUALITY_REVIEW.md 均 PASS ⭐ v2.1.0 新增
 - **flow-qa Exit**: 无 high-severity 漏洞
+- **flow-release Exit**: PR 创建成功, 分支决策完成 ⭐ v2.1.0 变更
 
 **For Details**: See [orchestration_status.json](devflow/requirements/REQ-XXX/orchestration_status.json) and [EXECUTION_LOG.md](devflow/requirements/REQ-XXX/EXECUTION_LOG.md)
 
@@ -135,6 +165,7 @@ Read `orchestration_status.json` to determine current phase:
 status: "initialized"
   → Recommend: /flow-clarify (optional, clarify ambiguities)
   → Alternative: /flow-prd (skip clarification, generate PRD directly)
+  → Note: BRAINSTORM.md 已在 /flow-init 生成 ⭐ v2.1.0
 
 status: "clarify_complete" OR "clarify_skipped"
   → Recommend: /flow-prd (generate PRD)
@@ -151,6 +182,10 @@ status: "epic_complete"
   → Recommend: /flow-dev (start TDD development)
 
 status: "development_complete"
+  → Recommend: /flow-review (Two-Stage Code Review) ⭐ v2.1.0 新增
+  → Alternative: /flow-qa (skip review, go directly to QA)
+
+status: "review_complete"
   → Recommend: /flow-qa (quality assurance and security review)
 
 status: "qa_complete"
@@ -181,11 +216,13 @@ status: "released"
 ### Constitution violation?
 - **Real-time check**: constitution-guardian guardrail (PreToolUse hook)
 - **Batch validation**: Run `.claude/scripts/validate-constitution.sh`
-- **Reference**: See `.claude/rules/project-constitution.md` v2.0.0
+- **Reference**: See `.claude/rules/project-constitution.md` v2.1.0 ⭐ 更新
+- **Rationalization Library**: See `.claude/rules/rationalization-library.md` ⭐ v2.1.0 新增
 
 ### TDD order violated?
 - **Real-time check**: devflow-tdd-enforcer guardrail (PreToolUse hook)
 - **Manual check**: See TASKS.md, tests MUST be marked [x] before implementation
+- **TDD Skill**: See `.claude/skills/flow-tdd/SKILL.md` ⭐ v2.1.0 新增
 
 ## Auxiliary Commands
 
@@ -199,17 +236,29 @@ status: "released"
 - `/flow-constitution` - Constitution management
 - `/flow-verify "REQ-123"` - Comprehensive consistency verification
 
-### Bug Fix
-- `/flow-fix "BUG-123|登录超时"` - One-shot BUG fix workflow
+### Bug Fix (v2.1.0 增强)
+- `/flow-fix "BUG-123|登录超时"` - 系统化 BUG 修复 (4阶段调试法)
 - `/problem-analyzer "<issue>"` - Problem diagnosis
 
-### Code Review
+### Code Review (v2.1.0 新增)
+- `/flow-review "REQ-123"` - Two-Stage Code Review (Spec → Quality)
 - `/code-review-high "<diff>"` - High-rigor code review
 
 ## Integration with Other Skills
 
-- **devflow-tdd-enforcer**: Enforces TDD order in TASKS.md (Guardrail, blocks)
-- **constitution-guardian**: Enforces Constitution compliance (Guardrail, blocks)
+### Guardrails (实时阻断)
+- **devflow-tdd-enforcer**: Enforces TDD order in TASKS.md
+- **constitution-guardian**: Enforces Constitution compliance
+
+### Workflow Skills (v2.1.0 新增)
+- **flow-brainstorming**: 需求头脑风暴，生成 BRAINSTORM.md
+- **flow-tdd**: TDD Iron Law 执行
+- **flow-debugging**: 4阶段系统化调试
+- **flow-receiving-review**: 处理代码审查反馈
+- **flow-finishing-branch**: 分支完成决策
+- **verification-before-completion**: 验证闸门
+
+### Reference Skills
 - **devflow-file-standards**: File naming and directory structure reference
 - **devflow-constitution-quick-ref**: Constitution quick reference
 

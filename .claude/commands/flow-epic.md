@@ -8,9 +8,42 @@ scripts:
 agent_scripts:
   sh: .claude/scripts/update-agent-context.sh __AGENT__
   ps: scripts/powershell/update-agent-context.ps1 -AgentType __AGENT__
+skills:
+  tdd: .claude/skills/flow-tdd/SKILL.md
 ---
 
 # Flow-Epic - Epic 和任务规划命令
+
+## Bite-Sized Tasks 原则
+
+任务必须足够小：
+
+```yaml
+Task 粒度规范:
+  - 每个 step 2-5 分钟可完成
+  - "Write the failing test" = 1 step
+  - "Run it to make sure it fails" = 1 step
+  - "Implement minimal code to pass" = 1 step
+  - "Run tests and verify" = 1 step
+  - "Commit" = 1 step
+
+Task 内容规范:
+  - 精确的文件路径 (不是 "update the config")
+  - 完整的代码片段 (不是 "add validation")
+  - 精确的命令 + 期望输出
+  - 明确的验收标准
+
+Bad Task Examples:
+  ❌ "Implement user authentication"
+  ❌ "Add validation"
+  ❌ "Update the API"
+
+Good Task Examples:
+  ✅ "Create src/auth/login.ts with LoginRequest interface"
+  ✅ "Write failing test: POST /api/login returns 401 for invalid credentials"
+  ✅ "Run npm test -- --grep 'login' and verify test fails"
+  ✅ "Implement login handler to pass the test"
+```
 
 ## User Input
 ```text

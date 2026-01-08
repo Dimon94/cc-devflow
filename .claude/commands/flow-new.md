@@ -73,34 +73,42 @@ $ARGUMENTS = "REQ_ID|TITLE|PLAN_URLS?"
 
 **设计理念**: flow-new 是**编排器**（Orchestrator），串行调用 7-8 个阶段化命令
 
-**调用链**:
+**调用链** (v2.1.0 更新):
 ```
 /flow-new "REQ-123|Title|URLs"
   ↓
-[1/8] /flow-init "REQ-123|Title|URLs"
+[1/9] /flow-init "REQ-123|Title|URLs"
+      → 包含 Brainstorming，生成 BRAINSTORM.md ⭐ v2.1.0
   ↓
-[2/8] /flow-prd "REQ-123"
+[2/9] /flow-prd "REQ-123"
+      → 需要 BRAINSTORM.md 对齐检查 ⭐ v2.1.0
   ↓
-[2.3/8] /flow-checklist "REQ-123" (可选, 80%门禁)
+[2.3/9] /flow-checklist "REQ-123" (可选, 80%门禁)
   ↓
-[2.5/8] /flow-ui "REQ-123" (条件触发)
+[2.5/9] /flow-ui "REQ-123" (条件触发)
   ↓
-[2.7/8] /flow-tech "REQ-123" (必需)
+[2.7/9] /flow-tech "REQ-123" (必需)
   ↓
-[3/8] /flow-epic "REQ-123"
+[3/9] /flow-epic "REQ-123"
+      → bite-sized tasks (2-5分钟/任务) ⭐ v2.1.0
   ↓
-[4/8] /flow-dev "REQ-123"
+[4/9] /flow-dev "REQ-123"
+      → TDD Checkpoint (测试必须先 FAIL) ⭐ v2.1.0
   ↓
-[5/8] /flow-qa "REQ-123" --full
+[5/9] /flow-review "REQ-123" ⭐ v2.1.0 新增
+      → Two-Stage Review (Spec → Quality)
   ↓
-[6/8] /flow-release "REQ-123"
+[6/9] /flow-qa "REQ-123" --full
+  ↓
+[7/9] /flow-release "REQ-123"
+      → 分支完成决策 ⭐ v2.1.0
 ```
 
 ---
 
 ## 执行流程骨架
 
-### [1/8] 初始化 → /flow-init
+### [1/9] 初始化 → /flow-init
 
 ```
 调用: /flow-init "${REQ_ID}|${TITLE}|${PLAN_URLS}"
@@ -114,17 +122,21 @@ $ARGUMENTS = "REQ_ID|TITLE|PLAN_URLS?"
 - Git分支: `feature/${REQ_ID}-${slug(BRANCH_TITLE_EN)}`
 - 需求目录已创建
 - 研究材料已抓取
+- **BRAINSTORM.md** (需求北极星) ⭐ v2.1.0 新增
 
 > BRANCH_TITLE_EN 为 TITLE 的英文意译 (语义为准，非拼音，使用模型意译)
 
 ---
 
-### [2/8] PRD生成 → /flow-prd
+### [2/9] PRD生成 → /flow-prd
 
 ```
 调用: /flow-prd "${REQ_ID}"
 
-检查: PRD.md 存在且完整
+检查:
+  - BRAINSTORM.md 存在 ⭐ v2.1.0 新增
+  - PRD.md 存在且完整
+  - BRAINSTORM 对齐检查通过 ⭐ v2.1.0 新增
 
 → 详见 {TEMPLATE:orchestration} Stage 2
 ```
@@ -135,7 +147,7 @@ $ARGUMENTS = "REQ_ID|TITLE|PLAN_URLS?"
 
 ---
 
-### [2.3/8] 需求质量检查 → /flow-checklist (可选)
+### [2.3/9] 需求质量检查 → /flow-checklist (可选)
 
 ```
 触发条件: quality-rules.yml 中 checklist_gate_enabled: true
@@ -149,7 +161,7 @@ $ARGUMENTS = "REQ_ID|TITLE|PLAN_URLS?"
 
 ---
 
-### [2.5/8] UI原型生成 → /flow-ui (条件触发)
+### [2.5/9] UI原型生成 → /flow-ui (条件触发)
 
 ```
 触发条件 (任一满足):
@@ -171,7 +183,7 @@ $ARGUMENTS = "REQ_ID|TITLE|PLAN_URLS?"
 
 ---
 
-### [2.7/8] 技术方案设计 → /flow-tech (必需)
+### [2.7/9] 技术方案设计 → /flow-tech (必需)
 
 ```
 调用: /flow-tech "${REQ_ID}"
@@ -189,7 +201,7 @@ $ARGUMENTS = "REQ_ID|TITLE|PLAN_URLS?"
 
 ---
 
-### [3/8] Epic规划 → /flow-epic
+### [3/9] Epic规划 → /flow-epic
 
 ```
 调用: /flow-epic "${REQ_ID}"
@@ -197,17 +209,18 @@ $ARGUMENTS = "REQ_ID|TITLE|PLAN_URLS?"
 检查:
   - EPIC.md + TASKS.md 存在
   - TASKS 覆盖 TECH_DESIGN.md 所有技术层
+  - 任务粒度: 2-5分钟/任务 (bite-sized) ⭐ v2.1.0
 
 → 详见 {TEMPLATE:orchestration} Stage 3
 ```
 
 **输出**:
 - EPIC.md (Epic描述)
-- TASKS.md (单文件管理所有任务)
+- TASKS.md (单文件管理所有任务，bite-sized)
 
 ---
 
-### [4/8] 开发执行 → /flow-dev
+### [4/9] 开发执行 → /flow-dev
 
 ```
 调用: /flow-dev "${REQ_ID}"
@@ -215,7 +228,7 @@ $ARGUMENTS = "REQ_ID|TITLE|PLAN_URLS?"
 执行模式: TDD (Tests First)
   Phase 1: 分析现有代码
   Phase 2: 编写测试 (Tests First)
-  TEST VERIFICATION CHECKPOINT (测试必须先失败)
+  ⚠️ TDD CHECKPOINT (测试必须先 FAIL) ⭐ v2.1.0
   Phase 3: 实现代码
   Phase 4: 测试验证 (测试必须通过)
   Phase 5: Git提交并标记完成
@@ -231,7 +244,30 @@ $ARGUMENTS = "REQ_ID|TITLE|PLAN_URLS?"
 
 ---
 
-### [5/8] 质量保证 → /flow-qa
+### [5/9] 代码审查 → /flow-review ⭐ v2.1.0 新增
+
+```
+调用: /flow-review "${REQ_ID}"
+
+Two-Stage Review:
+  Stage 1: Spec Compliance (规格合规)
+    → 不信任实现者报告，读代码验证
+    → 检查 scope creep
+    → BRAINSTORM 对齐检查
+  Stage 2: Code Quality (代码质量)
+    → 仅在 Stage 1 通过后执行
+    → 测试质量、Constitution 合规
+
+→ 详见 flow-review.md
+```
+
+**输出**:
+- SPEC_REVIEW.md (Stage 1)
+- CODE_QUALITY_REVIEW.md (Stage 2)
+
+---
+
+### [6/9] 质量保证 → /flow-qa
 
 ```
 调用: /flow-qa "${REQ_ID}" --full
@@ -253,12 +289,13 @@ Exit Gate检查:
 
 ---
 
-### [6/8] 发布管理 → /flow-release
+### [7/9] 发布管理 → /flow-release
 
 ```
 调用: /flow-release "${REQ_ID}"
 
 执行:
+  - 分支完成决策 (FF merge / PR / Squash / Cleanup) ⭐ v2.1.0
   - 生成发布计划
   - 更新 CLAUDE.md (如有重要架构变更)
   - 最终构建
@@ -279,19 +316,20 @@ Exit Gate检查:
 **实时进度** (详见 `{TEMPLATE:orchestration}` Progress Display Format):
 
 ```
-🎯 CC-DevFlow 完整需求开发流程
+🎯 CC-DevFlow 完整需求开发流程 (v2.1.0)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 需求: REQ-123 | 支持用户下单
 
-[1/8] ✅ 初始化完成
-[2/8] ✅ PRD生成完成
-[2.5/8] ✅ UI原型生成完成 ⚡️
-[2.7/8] ✅ 技术方案设计完成 🔧
-[3/8] ✅ Epic规划完成
-[4/8] 🔄 开发执行中... (8/18 已完成)
-[5/8] ⏳ 等待质量保证...
-[6/8] ⏳ 等待发布管理...
+[1/9] ✅ 初始化完成 (含 Brainstorming)
+[2/9] ✅ PRD生成完成 (BRAINSTORM 对齐)
+[2.5/9] ✅ UI原型生成完成 ⚡️
+[2.7/9] ✅ 技术方案设计完成 🔧
+[3/9] ✅ Epic规划完成 (bite-sized tasks)
+[4/9] 🔄 开发执行中... (8/18 已完成)
+[5/9] ⏳ 等待代码审查... ⭐ 新增
+[6/9] ⏳ 等待质量保证...
+[7/9] ⏳ 等待发布管理...
 ```
 
 ---
@@ -302,6 +340,7 @@ Exit Gate检查:
 
 ```
 devflow/requirements/${REQ_ID}/
+├── BRAINSTORM.md ⭐ v2.1.0 新增
 ├── research/ (初始化时生成)
 ├── PRD.md
 ├── UI_PROTOTYPE.html (条件)
@@ -310,8 +349,10 @@ devflow/requirements/${REQ_ID}/
 ├── contracts/openapi.yaml
 ├── quickstart.md
 ├── EPIC.md
-├── TASKS.md
+├── TASKS.md (bite-sized)
 ├── tasks/*.completed
+├── SPEC_REVIEW.md ⭐ v2.1.0 新增
+├── CODE_QUALITY_REVIEW.md ⭐ v2.1.0 新增
 ├── TEST_PLAN.md + TEST_REPORT.md
 ├── SECURITY_PLAN.md + SECURITY_REPORT.md
 └── RELEASE_PLAN.md
@@ -392,5 +433,11 @@ gh pr merge <PR_NUMBER>
 **Related Documentation**:
 - [NEW_ORCHESTRATION_TEMPLATE.md](../.claude/docs/templates/NEW_ORCHESTRATION_TEMPLATE.md) - 详细编排流程
 - [NEW_TROUBLESHOOTING.md](../.claude/docs/guides/NEW_TROUBLESHOOTING.md) - 故障排查指南
-- [flow-init.md](./flow-init.md) - 初始化阶段
-- [flow-dev.md](./flow-dev.md) - 开发阶段
+- [flow-init.md](./flow-init.md) - 初始化阶段 (含 Brainstorming)
+- [flow-review.md](./flow-review.md) - 代码审查阶段 ⭐ v2.1.0 新增
+- [flow-dev.md](./flow-dev.md) - 开发阶段 (TDD Checkpoint)
+- [flow-fix.md](./flow-fix.md) - Bug 修复流程 ⭐ v2.1.0 增强
+
+---
+
+**[PROTOCOL]**: 变更时更新此头部，然后检查 CLAUDE.md

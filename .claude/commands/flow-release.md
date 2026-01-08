@@ -6,9 +6,42 @@ scripts:
   check_tasks: .claude/scripts/check-task-status.sh
   validate_constitution: .claude/scripts/validate-constitution.sh
   generate_status: .claude/scripts/generate-status-report.sh
+  verify_gate: .claude/scripts/verify-gate.sh
+skills:
+  finishing: .claude/skills/flow-finishing-branch/SKILL.md
+  verification: .claude/skills/verification-before-completion/SKILL.md
 ---
 
 # Flow-Release - 发布管理命令
+
+## 分支完成决策 (新增)
+
+参考 `{SKILL:finishing}` 原则，发布前需要决定分支处理方式：
+
+```yaml
+决策选项:
+  A) Fast-forward merge
+     → 适用: 小改动，单人开发，无需审查记录
+     → 命令: git checkout main && git merge --ff-only feature/xxx
+
+  B) Create PR (推荐)
+     → 适用: 需要记录，团队审查，CI 验证
+     → 命令: gh pr create
+
+  C) Squash and merge
+     → 适用: 多个提交需合并为一个
+     → 命令: gh pr merge --squash
+
+  D) Cleanup only
+     → 适用: 工作被废弃，只需清理分支
+     → 命令: git checkout main && git branch -D feature/xxx
+
+决策依据:
+  - 改动大小 (>10 files → PR)
+  - 是否需要审查 (团队项目 → PR)
+  - 提交历史是否清晰 (混乱 → Squash)
+  - 是否需要 CI 验证 (生产代码 → PR)
+```
 
 ## User Input
 ```text
