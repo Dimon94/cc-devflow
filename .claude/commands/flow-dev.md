@@ -6,9 +6,50 @@ scripts:
   check_tasks: .claude/scripts/check-task-status.sh
   mark_task: .claude/scripts/mark-task-complete.sh
   validate_constitution: .claude/scripts/validate-constitution.sh
+  verify_gate: .claude/scripts/verify-gate.sh
+skills:
+  tdd: .claude/skills/flow-tdd/SKILL.md
+  verification: .claude/skills/verification-before-completion/SKILL.md
 ---
 
 # Flow-Dev - 开发执行命令
+
+## TDD Iron Law (新增)
+
+参考 `{SKILL:tdd}`:
+
+```
+NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
+```
+
+### TDD Checkpoint
+
+在 Phase 2 (Tests) 和 Phase 3 (Implementation) 之间，必须执行：
+
+```yaml
+⚠️ TEST VERIFICATION CHECKPOINT:
+  1. 运行所有 Phase 2 测试
+     → npm test (或 quickstart 中的测试命令)
+
+  2. 验证所有新测试 FAIL
+     → 如果任何测试 PASS → STOP
+     → 通过的测试 = 无效测试或代码已存在
+
+  3. 只有全部 FAIL 后才能进入 Phase 3
+
+  4. 如果已经写了实现代码:
+     → DELETE 代码
+     → 重新从 failing tests 开始
+```
+
+### Rationalization Prevention
+
+| Excuse | Reality |
+|--------|---------|
+| "Tests are ready, let's implement" | Run tests first. Verify they FAIL. |
+| "I'll run tests after implementation" | That's testing-after, not TDD. |
+| "Test passed, that's good" | Test passing before implementation = invalid test. |
+| "Just this once" | No exceptions. TDD is non-negotiable. |
 
 ## User Input
 ```text
