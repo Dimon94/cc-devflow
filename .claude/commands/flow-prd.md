@@ -5,6 +5,7 @@ scripts:
   prereq: .claude/scripts/check-prerequisites.sh
   validate_research: .claude/scripts/validate-research.sh
   validate_constitution: .claude/scripts/validate-constitution.sh
+  verify_gate: .claude/scripts/verify-gate.sh
 ---
 
 # Flow-PRD - PRD 生成命令
@@ -30,10 +31,22 @@ $ARGUMENTS = "REQ_ID?"
    → Else: run {SCRIPT:prereq} --json --paths-only
    → If仍为空: ERROR "No requirement ID found."
 
-2. 校验目录
+2. Brainstorm Alignment Check (新增)
+   → 读取 devflow/requirements/${REQ_ID}/BRAINSTORM.md
+   → 验证存在且包含必需章节:
+      • 原始需求
+      • 核心问题定义
+      • 成功标准
+      • 方案探索
+      • 最终决策
+   → 缺少 BRAINSTORM.md → ERROR "BRAINSTORM.md missing. Run /flow-init brainstorming."
+   → 加载「原始意图」作为 PRD 生成的北极星
+
+3. 校验目录
    → 使用 {SCRIPT:prereq} --json 获取路径
    → 必须存在:
       • devflow/requirements/${REQ_ID}/
+      • BRAINSTORM.md 
       • EXECUTION_LOG.md
       • orchestration_status.json (phase0_complete == true)
       • research/research.md
@@ -59,10 +72,10 @@ $ARGUMENTS = "REQ_ID?"
      3. 直接编辑 research/research.md 补充决策内容
      4. 参考 .claude/docs/templates/RESEARCH_TEMPLATE.md 模板
 
-3. PRD 覆盖提示
+4. PRD 覆盖提示
    → 若 PRD.md 已存在 → WARN 并确认是否覆盖
 
-4. 状态校验
+5. 状态校验
    → orchestration_status.status ∈ {"initialized", "prd_generation_failed"}
    → 否则提示按流程顺序执行
 ```

@@ -11,8 +11,11 @@ scripts:
 templates:
   flow: .claude/docs/templates/INIT_FLOW_TEMPLATE.md
   research: .claude/docs/templates/RESEARCH_TEMPLATE.md
+  brainstorm: .claude/docs/templates/BRAINSTORM_TEMPLATE.md
 guides:
   troubleshoot: .claude/docs/guides/INIT_TROUBLESHOOTING.md
+skills:
+  brainstorming: .claude/skills/flow-brainstorming/SKILL.md
 ---
 
 <!-- ============================================================
@@ -148,6 +151,61 @@ $ARGUMENTS = "REQ_ID|TITLE|PLAN_URLS?" 或 --interactive
 
 ---
 
+### Stage 2.3: Brainstorming (North Star Capture)
+
+**目标**: 捕捉需求的原始意图，确保后续流程有明确的「北极星」可追溯
+
+**Iron Law**: `NO FLOW EXECUTION WITHOUT BRAINSTORM ALIGNMENT`
+
+```
+触发 flow-brainstorming skill:
+→ 参见 {SKILL:brainstorming} 了解完整流程
+
+执行步骤:
+1. Understanding the Idea
+   → 一次问一个问题，不要压垮用户
+   → 优先多选题，更容易回答
+   → 理解: 目的、约束、成功标准
+
+2. Exploring Approaches
+   → 提出 2-3 种方案及取舍
+   → 给出推荐方案和理由
+   → 让用户做最终决策
+
+3. Presenting the Design
+   → 分段呈现设计 (200-300 字/段)
+   → 每段后确认是否正确
+   → 涵盖: 架构、组件、数据流、测试
+
+4. Documentation
+   → 使用 {TEMPLATE:brainstorm} 模板
+   → 输出: devflow/requirements/${REQ_ID}/BRAINSTORM.md
+   → 必须包含: 原始需求、核心问题、成功标准、方案探索、最终决策
+
+Rationalization Prevention:
+| Excuse | Reality |
+|--------|---------|
+| "需求已经很清楚了" | Brainstorm 确保没有遗漏假设 |
+| "用户赶时间" | 头脑风暴节省后续返工时间 |
+| "这是小需求" | 小需求也有核心问题和成功标准 |
+
+Red Flags - STOP:
+→ 跳过问问题直接开始做
+→ 没有记录方案取舍就选定
+→ 没有写 BRAINSTORM.md 就进入下一阶段
+```
+
+**输出**: `devflow/requirements/${REQ_ID}/BRAINSTORM.md`
+
+**验证**:
+- [ ] BRAINSTORM.md 存在
+- [ ] 包含「原始需求」章节 (用户原话)
+- [ ] 包含「成功标准」章节
+- [ ] 包含「方案探索」章节 (2-3种)
+- [ ] 包含「最终决策」章节
+
+---
+
 ### Stage 2.5: Research (MCP Mandatory Flow)
 
 **目标**: 收集"真实材料"，所有步骤 **MANDATORY**
@@ -260,6 +318,7 @@ Level 5: Git & Status & Constitution
 ```
 devflow/requirements/${REQ_ID}/
 ├── README.md
+├── BRAINSTORM.md               # 需求的北极星 (Stage 2.3)
 ├── research/
 │   ├── internal/
 │   │   └── codebase-overview.md
