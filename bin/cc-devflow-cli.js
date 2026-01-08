@@ -87,6 +87,27 @@ function parseCliArgs(args) {
   return { options, rest };
 }
 
+function copyIncremental(src, dest) {
+  const stats = fs.statSync(src);
+  if (stats.isDirectory()) {
+    if (!fs.existsSync(dest)) {
+      fs.mkdirSync(dest);
+    }
+    const entries = fs.readdirSync(src);
+    for (const entry of entries) {
+      copyIncremental(path.join(src, entry), path.join(dest, entry));
+    }
+  } else {
+    if (!fs.existsSync(dest)) {
+      fs.copyFileSync(src, dest);
+      console.log(`[NEW] ${path.relative(process.cwd(), dest)}`);
+    } else {
+      // File exists - skip to preserve user changes
+      // TODO: In the future, we could implement a 3-way merge or check for unmodified defaults
+    }
+  }
+}
+
 function runInit(args) {
   const { options } = parseCliArgs(args);
 
@@ -103,17 +124,26 @@ function runInit(args) {
     return 1;
   }
 
-  if (fs.existsSync(targetDir)) {
-    if (!options.force) {
-      console.error(`Target already exists: ${targetDir}`);
-      console.error('Use --force to overwrite.');
-      return 1;
-    }
-    fs.rmSync(targetDir, { recursive: true, force: true });
+  // Case 1: Directory does not exist - Clean Install
+  if (!fs.existsSync(targetDir)) {
+    fs.cpSync(TEMPLATE_DIR, targetDir, { recursive: true });
+    console.log(`Initialized .claude in ${targetRoot}`);
+    return 0;
   }
 
-  fs.cpSync(TEMPLATE_DIR, targetDir, { recursive: true });
-  console.log(`Initialized .claude in ${targetRoot}`);
+  // Case 2: Directory exists + Force - Hard Reset
+  if (options.force) {
+    console.log('Force flag detected. Resetting .claude directory...');
+    fs.rmSync(targetDir, { recursive: true, force: true });
+    fs.cpSync(TEMPLATE_DIR, targetDir, { recursive: true });
+    console.log(`Re-initialized .claude in ${targetRoot}`);
+    return 0;
+  }
+
+  // Case 3: Directory exists - Incremental Update
+  console.log(`Target ${targetDir} already exists. Performing incremental update...`);
+  copyIncremental(TEMPLATE_DIR, targetDir);
+  console.log('Incremental update complete. Existing files were preserved.');
   return 0;
 }
 

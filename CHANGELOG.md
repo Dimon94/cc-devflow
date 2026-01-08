@@ -7,7 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [2.3.0] - 2025-12-19
+## [2.4.1] - 2026-01-08
+
+### 🩹 CLI 增强：增量更新 (Incremental Update)
+
+`cc-devflow init` 命令现在支持增量更新，不再强制覆盖用户已修改的文件。
+
+#### Added
+
+- **增量更新机制**: 当目标目录已存在时，`init` 默认进入增量模式。
+  - 仅复制目标目录中**缺失**的文件。
+  - **保留**所有已存在的文件（即使用户修改过）。
+  - 输出 `[NEW] filename` 提示新增文件。
+- **强制模式重构**: `--force` 选项现在的行为更明确：彻底删除旧目录并重新安装。
+
+---
+
+## [2.4.0] - 2025-12-19
 
 ### 🎯 REQ-005 完成：Command Emitter (Multi-Platform Adapter Compiler)
 
