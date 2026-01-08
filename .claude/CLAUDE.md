@@ -19,13 +19,12 @@ This directory contains Claude Code CLI extensions for the CC-DevFlow developmen
 │
 ├── commands/                  # Slash command definitions
 │   ├── flow-checklist.md      # /flow-checklist command [NEW: REQ-002]
-│   ├── flow-ralph.md          # /flow-ralph command [NEW: v2.3.0 Ralph × Manus]
 │   ├── flow-init.md           # /flow-init (modified: Manus method in Stage 2.5)
 │   ├── flow-clarify.md        # /flow-clarify
 │   ├── flow-prd.md            # /flow-prd
 │   ├── flow-tech.md           # /flow-tech
 │   ├── flow-epic.md           # /flow-epic (modified: Checklist Gate)
-│   ├── flow-dev.md            # /flow-dev (modified: Attention Refresh Protocol 2)
+│   ├── flow-dev.md            # /flow-dev (Autonomous by default, /w --manual opt)
 │   └── ...                    # Other commands
 │
 ├── hooks/                     # JavaScript hooks for validation/gating
@@ -48,7 +47,7 @@ This directory contains Claude Code CLI extensions for the CC-DevFlow developmen
 │   ├── flow-tdd/                 # TDD enforcement (modified: Error Recording)
 │   │   └── SKILL.md
 │   ├── cc-devflow-orchestrator/
-│   │   └── SKILL.md           # Workflow router (modified: /flow-checklist, /flow-ralph)
+│   │   └── SKILL.md           # Workflow router (modified: /flow-checklist, /flow-dev autonomous)
 │   └── ...
 │
 └── docs/
@@ -125,16 +124,16 @@ Combine Ralph-Wiggum's autonomous iteration loop with Manus-style Planning-with-
 
 | Component | File | Purpose |
 |-----------|------|---------|
-| **Command** | `commands/flow-ralph.md` | Ralph autonomous loop command |
+| **Command** | `commands/flow-dev.md` | Autonomous iteration loop (Default) |
 | **Attention Skill** | `skills/flow-attention-refresh/SKILL.md` | 4 attention refresh protocols |
 | **TDD Skill** | `skills/flow-tdd/SKILL.md` | Error recording integration |
 | **Error Template** | `docs/templates/ERROR_LOG_TEMPLATE.md` | Execution error log format |
 | **Attempt Template** | `docs/templates/ATTEMPT_TEMPLATE.md` | Research attempt log format |
 
 **Modified Files**:
-- `commands/flow-dev.md` - Added Protocol 2 (Task Start attention refresh)
+- `commands/flow-dev.md` - Merged Ralph Loop (Autonomous by default)
 - `commands/flow-init.md` - Added Manus method in Stage 2.5 Research
-- `skills/cc-devflow-orchestrator/SKILL.md` - Added /flow-ralph routing
+- `skills/cc-devflow-orchestrator/SKILL.md` - Updated routing for autonomous flow
 
 ### Attention Refresh Protocols
 
@@ -171,22 +170,22 @@ Combine Ralph-Wiggum's autonomous iteration loop with Manus-style Planning-with-
 
 ### Integration Points
 
-1. **Entry**: After `/flow-epic`, alternative to `/flow-dev`
-2. **Trigger**: `status: "epic_complete"` → `/flow-ralph` (autonomous) OR `/flow-dev` (supervised)
+1. **Entry**: After `/flow-epic`, execute `/flow-dev`
+2. **Trigger**: `status: "epic_complete"` → `/flow-dev` (Autonomous by default)
 3. **Output**:
    - `ERROR_LOG.md` (execution errors)
    - `research/attempts/` (research phase failures)
    - All tasks completed with TDD
 
-### Comparison: /flow-ralph vs /flow-dev
+### Modes: Autonomous (Default) vs Manual
 
-| | /flow-dev | /flow-ralph |
+| | /flow-dev (Default) | /flow-dev --manual |
 |--|-----------|-------------|
-| 退出条件 | 任务失败可停止 | 迭代直到完成或上限 |
-| 错误处理 | 提示用户修复 | 自动重试 |
-| 注意力刷新 | 每任务一次 | 每迭代刷新（含错误学习） |
-| 适用场景 | 需要人工监督 | 可无人值守 |
-| ERROR_LOG | 可选记录 | 强制记录 |
+| 退出条件 | 迭代直到完成或上限 | 任务失败可停止 |
+| 错误处理 | 自动重试 | 提示用户修复 |
+| 注意力刷新 | 每迭代刷新（含错误学习） | 每任务一次 |
+| 适用场景 | 可无人值守 | 需要人工监督 |
+| ERROR_LOG | 强制记录 | 可选记录 |
 
 ### Success Metrics (Target)
 

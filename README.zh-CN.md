@@ -29,6 +29,7 @@
 - 🔍 **一致性验证** - 企业级一致性检查，智能冲突检测
 - 🧪 **TDD 强制执行** - 严格的测试驱动开发，TEST VERIFICATION CHECKPOINT
 - 📜 **Constitution** - 10条宪法条款管控质量、安全和架构
+- 🔄 **自主开发** - Ralph × Manus 集成实现有记忆的持续迭代
 - 🔌 **多平台支持** - 通过 `npm run adapt` 编译工作流到 Codex、Cursor、Qwen、Antigravity
 
 ---
@@ -514,11 +515,27 @@ v2.3.0 将 Constitution 从"文档"升级为"可执行纪律系统"，借鉴 sup
   - `flow-tdd`、`flow-debugging`、`flow-receiving-review`、`flow-finishing-branch`
   - 所有 `superpowers:xxx` 引用替换为本地技能
 
+- **Ralph × Manus 集成** - 有记忆的自主开发（新增）
+  - 合并入 `/flow-dev` (默认自主模式)
+  - `flow-attention-refresh` 技能提供 4 个刷新协议
+  - `ERROR_LOG.md` 结构化错误追踪
+  - `research/attempts/` 失败痕迹记录
+  - Stop Hook 实现自引用循环
+  - `/flow-init` Stage 2.5 融入 Manus 研究方法
+  - 目标：无人工干预任务完成率 ≥85%
+
 **📋 Constitution v2.1.0**:
 - 所有 10 条条款现在都有铁律 + 合理化防御 + 红旗标志
 - 交叉引用到 `rationalization-library.md`
 
 **📁 新增文件**:
+- `.claude/commands/cancel-ralph.md` - 取消 Ralph 循环命令
+- `.claude/skills/flow-attention-refresh/SKILL.md` - 4 个注意力刷新协议
+- `.claude/hooks/ralph-stop-hook.sh` - 自引用循环 Stop Hook
+- `.claude/hooks/hooks.json` - Hook 注册配置
+- `.claude/scripts/setup-ralph-loop.sh` - Ralph 状态初始化脚本
+- `.claude/docs/templates/ERROR_LOG_TEMPLATE.md` - 执行错误日志格式
+- `.claude/docs/templates/ATTEMPT_TEMPLATE.md` - 研究尝试日志格式
 - `.claude/agents/spec-reviewer.md` - 阶段 1 规格合规性审查员
 - `.claude/agents/code-quality-reviewer.md` - 阶段 2 代码质量审查员
 - `.claude/commands/flow-review.md` - 两阶段审查命令

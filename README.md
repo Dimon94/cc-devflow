@@ -29,6 +29,7 @@ Complete automated workflow from PRD generation to code delivery with `/flow-new
 - 🔍 **Consistency Verification** - Enterprise-grade consistency checking with intelligent conflict detection
 - 🧪 **TDD Enforced** - Strict Test-Driven Development with TEST VERIFICATION CHECKPOINT
 - 📜 **Constitution** - 10 Articles governing quality, security, and architecture
+- 🔄 **Autonomous Development** - Ralph × Manus Integration for memory-enhanced continuous iteration
 - 🔌 **Multi-Platform Support** - Compile workflows for Codex, Cursor, Qwen, Antigravity via `npm run adapt`
 
 ---
@@ -526,11 +527,27 @@ v2.3.0 upgrades the Constitution from a "document" to an "executable discipline 
   - `flow-tdd`, `flow-debugging`, `flow-receiving-review`, `flow-finishing-branch`
   - All `superpowers:xxx` references replaced with local skills
 
+- **Ralph × Manus Integration** - Autonomous development with memory (NEW)
+  - Merged into `/flow-dev` (Autonomous by default)
+  - `flow-attention-refresh` skill with 4 refresh protocols
+  - `ERROR_LOG.md` structured error tracking
+  - `research/attempts/` failure trace recording
+  - Stop Hook for self-referential loops
+  - Manus method in `/flow-init` Stage 2.5 Research
+  - Target: ≥85% task completion rate without human intervention
+
 **📋 Constitution v2.1.0**:
 - All 10 Articles now have Iron Law + Rationalization Defense + Red Flags
 - Cross-reference to `rationalization-library.md`
 
 **📁 New Files**:
+- `.claude/commands/cancel-ralph.md` - Cancel Ralph loop command
+- `.claude/skills/flow-attention-refresh/SKILL.md` - 4 attention refresh protocols
+- `.claude/hooks/ralph-stop-hook.sh` - Stop Hook for self-referential loops
+- `.claude/hooks/hooks.json` - Hook registration configuration
+- `.claude/scripts/setup-ralph-loop.sh` - Ralph state initialization script
+- `.claude/docs/templates/ERROR_LOG_TEMPLATE.md` - Execution error log format
+- `.claude/docs/templates/ATTEMPT_TEMPLATE.md` - Research attempt log format
 - `.claude/agents/spec-reviewer.md` - Stage 1 spec compliance reviewer
 - `.claude/agents/code-quality-reviewer.md` - Stage 2 code quality reviewer
 - `.claude/commands/flow-review.md` - Two-stage review command
