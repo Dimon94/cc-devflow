@@ -239,6 +239,8 @@ bash .claude/tests/constitution/run_all_constitution_tests.sh
 | `/flow-init` | 📦 Initialize Requirement | `/flow-init "REQ-123\|Feature"` | [→](docs/commands/flow-init.md) |
 | `/flow-clarify` | 🔎 Clarify Ambiguities | `/flow-clarify "REQ-123"` | [→](.claude/commands/flow-clarify.md) |
 | `/flow-checklist` | ✅ Requirement Quality Check | `/flow-checklist --type ux` | [→](.claude/commands/flow-checklist.md) |
+| `/flow-review` | �� Two-Stage Code Review | `/flow-review "REQ-123"` | [→](.claude/commands/flow-review.md) |
+| `/flow-fix` | 🐛 Systematic Bug Fix | `/flow-fix "BUG-123\|Description"` | [→](.claude/commands/flow-fix.md) |
 | `/flow-verify` | 🔍 Verify Consistency | `/flow-verify "REQ-123"` | [→](docs/commands/flow-verify.md) |
 | `/flow-qa` | 🧪 Quality Assurance | `/flow-qa "REQ-123"` | [→](docs/commands/flow-qa.md) |
 | `/flow-release` | 🚢 Create Release | `/flow-release "REQ-123"` | [→](docs/commands/flow-release.md) |
@@ -275,42 +277,44 @@ The following Mermaid diagram illustrates the complete cc-devflow workflow, incl
 ```mermaid
 graph TB
     Start([Start Project]) --> ProjectLevel{Project-Level Setup}
-    
+
     ProjectLevel --> CoreRoadmap["/core-roadmap<br/>ROADMAP.md & BACKLOG.md"]
     ProjectLevel --> CoreArch["/core-architecture<br/>ARCHITECTURE.md"]
     ProjectLevel --> CoreGuidelines["/core-guidelines<br/>frontend/backend guidelines"]
     ProjectLevel --> CoreStyle["/core-style<br/>STYLE.md"]
-    
+
     CoreRoadmap --> ReqLevel
     CoreArch --> ReqLevel
     CoreGuidelines --> ReqLevel
     CoreStyle --> ReqLevel
-    
-    ReqLevel([Requirement-Level Development]) --> FlowInit["/flow-init<br/>research.md & tasks.json"]
-    
+
+    ReqLevel([Requirement-Level Development]) --> FlowInit["/flow-init<br/>research.md & BRAINSTORM.md"]
+
     FlowInit --> FlowClarify["/flow-clarify<br/>clarifications/*.md<br/>Optional"]
-    FlowClarify --> FlowPRD["/flow-prd<br/>PRD.md"]
+    FlowClarify --> FlowPRD["/flow-prd<br/>PRD.md<br/>BRAINSTORM alignment"]
     FlowInit -.->|Skip clarify| FlowPRD
     FlowPRD --> FlowChecklist["/flow-checklist<br/>checklists/*.md<br/>80% Gate"]
     FlowPRD --> FlowTech["/flow-tech<br/>TECH_DESIGN.md & data-model"]
     FlowPRD --> FlowUI["/flow-ui<br/>UI_PROTOTYPE.html<br/>Optional"]
 
     FlowChecklist --> FlowEpic
-    FlowTech --> FlowEpic["/flow-epic<br/>EPIC.md & TASKS.md"]
+    FlowTech --> FlowEpic["/flow-epic<br/>EPIC.md & TASKS.md<br/>bite-sized tasks"]
     FlowUI --> FlowEpic
-    
-    FlowEpic --> FlowDev["/flow-dev<br/>TASKS.md execution<br/>TDD enforced"]
-    
-    FlowDev --> FlowQA["/flow-qa<br/>QA reports & Security"]
-    
-    FlowQA --> FlowRelease["/flow-release<br/>PR creation & Deployment"]
-    
+
+    FlowEpic --> FlowDev["/flow-dev<br/>TASKS.md execution<br/>TDD Checkpoint"]
+
+    FlowDev --> FlowReview["/flow-review<br/>Two-Stage Review<br/>Spec → Quality"]
+
+    FlowReview --> FlowQA["/flow-qa<br/>QA reports & Security"]
+
+    FlowQA --> FlowRelease["/flow-release<br/>PR creation<br/>Branch decision"]
+
     FlowRelease --> FlowVerify["/flow-verify<br/>Consistency check"]
-    
+
     FlowVerify --> End([Release Complete])
-    
+
     FlowVerify -.->|Can be called at any stage| ReqLevel
-    
+
     style ProjectLevel fill:#e1f5ff
     style ReqLevel fill:#fff4e1
     style FlowInit fill:#e8f5e9
@@ -321,6 +325,7 @@ graph TB
     style FlowUI fill:#fff9c4
     style FlowEpic fill:#e8f5e9
     style FlowDev fill:#f3e5f5
+    style FlowReview fill:#e1bee7
     style FlowQA fill:#fce4ec
     style FlowRelease fill:#e0f2f1
     style FlowVerify fill:#e3f2fd
@@ -329,10 +334,12 @@ graph TB
 **Workflow Notes**:
 - **Project-Level Commands** (light blue): Execute once at project initialization, establish global standards (SSOT)
 - **Requirement-Level Commands** (light orange): Execute once per requirement (REQ-XXX)
+- **Brainstorming** (v2.3.0): `/flow-init` now generates `BRAINSTORM.md` as requirement "North Star"
+- **Two-Stage Review** (v2.3.0): `/flow-review` validates Spec Compliance before Code Quality
 - **Optional Steps** (yellow): `/flow-clarify` and `/flow-ui` are optional; clarify can be skipped if requirements are clear
 - **Quality Gate** (orange): `/flow-checklist` validates requirement quality with 80% completion threshold before `/flow-epic`
+- **TDD Checkpoint** (v2.3.0): `/flow-dev` includes mandatory TDD checkpoint (tests must FAIL first)
 - **Quality Gates**: Each stage has entry/exit gates ensuring document quality and Constitution compliance
-- **TDD Enforcement**: `/flow-dev` strictly enforces Test-Driven Development order
 - **Consistency Check**: `/flow-verify` can be called at any stage to ensure document consistency
 
 ---
@@ -476,7 +483,68 @@ bash .claude/tests/run-all-tests.sh --scripts
 
 ## 📝 Version History
 
-### v2.2.0 (2025-12-19) - Latest Release
+### v2.3.0 (2026-01-08) - Latest Release
+
+**🛡️ Discipline System: Iron Law + Rationalization Defense + Pressure Testing**
+
+v2.3.0 upgrades the Constitution from a "document" to an "executable discipline system", borrowing best practices from superpowers project:
+
+- **Iron Law + Rationalization Tables** - Pre-block AI Agent rationalization attempts
+  - Each of 10 Constitution Articles now has an Iron Law (absolute prohibition)
+  - Rationalization Tables with `| Excuse | Reality |` format
+  - Red Flags for AI self-check triggers
+  - Centralized `rationalization-library.md` for all rationalizations
+
+- **Two-Stage Code Review** - `/flow-review` command (NEW)
+  - Stage 1: Spec Compliance (don't trust implementer reports, read code directly)
+  - Stage 2: Code Quality (only runs after Stage 1 passes)
+  - `spec-reviewer.md` and `code-quality-reviewer.md` agents
+
+- **Verification Before Completion** - Evidence before assertions
+  - `verification-before-completion` skill
+  - `verify-gate.sh` script for all flow exit gates
+  - No completion claims without fresh verification evidence
+
+- **Systematic Debugging** - `/flow-fix` enhanced with 4-phase debugging
+  - Phase 1: Root Cause Investigation (NO FIXES YET)
+  - Phase 2: Pattern Analysis
+  - Phase 3: Hypothesis and Testing
+  - Phase 4: TDD Implementation
+  - `flow-debugging` and `flow-tdd` skills
+
+- **Brainstorming Integration** - `/flow-init` now includes brainstorming
+  - `BRAINSTORM.md` as requirement "North Star"
+  - `/flow-prd` requires BRAINSTORM alignment check
+  - `flow-brainstorming` skill
+
+- **Pressure Testing Framework** - TDD for Skills
+  - `tests/pressure-scenarios/` with 4 scenarios
+  - Tests AI behavior under time/sunk cost/authority/exhaustion pressure
+  - `run-pressure-tests.sh` runner
+
+- **Skills Fusion** - Superpowers skills migrated to local
+  - `flow-tdd`, `flow-debugging`, `flow-receiving-review`, `flow-finishing-branch`
+  - All `superpowers:xxx` references replaced with local skills
+
+**📋 Constitution v2.1.0**:
+- All 10 Articles now have Iron Law + Rationalization Defense + Red Flags
+- Cross-reference to `rationalization-library.md`
+
+**📁 New Files**:
+- `.claude/agents/spec-reviewer.md` - Stage 1 spec compliance reviewer
+- `.claude/agents/code-quality-reviewer.md` - Stage 2 code quality reviewer
+- `.claude/commands/flow-review.md` - Two-stage review command
+- `.claude/rules/rationalization-library.md` - Centralized rationalization defense
+- `.claude/scripts/verify-gate.sh` - Exit gate verification script
+- `.claude/skills/flow-brainstorming/` - Brainstorming skill
+- `.claude/skills/flow-debugging/` - Systematic debugging skill
+- `.claude/skills/flow-tdd/` - TDD enforcement skill
+- `.claude/skills/flow-receiving-review/` - Review feedback handling skill
+- `.claude/skills/flow-finishing-branch/` - Branch completion decision skill
+- `.claude/skills/verification-before-completion/` - Completion verification skill
+- `tests/` - Pressure testing framework
+
+### v2.2.0 (2025-12-19)
 
 **🔌 Multi-Platform Adaptation: Agent Adapter Architecture + Command Emitter**
 
