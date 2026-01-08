@@ -1,8 +1,8 @@
 # CC-DevFlow Project Constitution
 
-> **Version**: v2.0.0
+> **Version**: v2.1.0
 > **Effective Date**: 2025-01-10
-> **Last Amended**: 2025-01-10
+> **Last Amended**: 2026-01-08
 > **Status**: Active
 > **Amendment Process**: See Section IX
 
@@ -23,6 +23,31 @@ This Constitution establishes the **immutable architectural DNA** of the CC-DevF
 ## Article I: Quality First (质量至上)
 
 **Principle**: Quality is the non-negotiable baseline.
+
+### The Iron Law
+
+```
+NO PARTIAL IMPLEMENTATION - COMPLETE OR NOTHING
+```
+
+### Rationalization Defense
+
+> See [rationalization-library.md](./rationalization-library.md#article-i-quality-first---rationalization-table) for full table.
+
+| Excuse | Reality |
+|--------|---------|
+| "This is simplified for now" | CONSTITUTIONAL VIOLATION. Complete it or don't ship it. |
+| "Will complete in v2" | Future versions don't exist. Implement fully now. |
+| "80% is good enough" | 80% = broken for 20% of users. Not good enough. |
+
+### Red Flags - STOP
+
+If you find yourself thinking:
+- "This is good enough for now"
+- "I'll fix it before PR"
+- "Core logic works, edge cases later"
+
+**STOP. You are rationalizing. Complete the implementation or don't ship.**
 
 ### I.1 Complete Implementation Mandate
 
@@ -69,6 +94,31 @@ All code must pass:
 ## Article II: Architectural Consistency (架构一致性)
 
 **Principle**: Maintain codebase uniformity and predictability.
+
+### The Iron Law
+
+```
+REUSE EXISTING CODE - NO DUPLICATION
+```
+
+### Rationalization Defense
+
+> See [rationalization-library.md](./rationalization-library.md#article-ii-architectural-consistency---rationalization-table) for full table.
+
+| Excuse | Reality |
+|--------|---------|
+| "Faster to rewrite" | Faster now = slower forever. Find and reuse. |
+| "Slightly different use case" | Extract common, parameterize difference. |
+| "I understand my version better" | Understand the shared version. That's your job. |
+
+### Red Flags - STOP
+
+If you find yourself thinking:
+- "That code is messy, I'll write my own"
+- "I don't have time to search"
+- "It's just a small function"
+
+**STOP. Search the codebase. Reuse or refactor existing code.**
 
 ### II.1 No Code Duplication
 
@@ -136,6 +186,31 @@ MODULE COHESION:
 
 **Principle**: Security is foundational, not an afterthought.
 
+### The Iron Law
+
+```
+NO HARDCODED SECRETS - ENVIRONMENT VARIABLES ONLY
+```
+
+### Rationalization Defense
+
+> See [rationalization-library.md](./rationalization-library.md#article-iii-security-first---rationalization-table) for full table.
+
+| Excuse | Reality |
+|--------|---------|
+| "It's just for testing" | Commits are forever. Use env vars even for tests. |
+| "I'll remove it before commit" | You won't. You'll forget. Use env vars. |
+| "Local development only" | Local becomes production. Start secure. |
+
+### Red Flags - STOP
+
+If you find yourself thinking:
+- "Nobody will see the repo"
+- "It's not a real secret"
+- "I'll rotate it later"
+
+**STOP. Never commit secrets. Use environment variables from the start.**
+
 ### III.1 No Hardcoded Secrets
 
 ```yaml
@@ -199,6 +274,31 @@ DEFAULT SECURITY:
 ## Article IV: Performance Accountability (性能责任)
 
 **Principle**: Performance is user experience; proactive optimization required.
+
+### The Iron Law
+
+```
+NO RESOURCE LEAKS - ALWAYS CLEANUP
+```
+
+### Rationalization Defense
+
+> See [rationalization-library.md](./rationalization-library.md#article-iv-performance-accountability---rationalization-table) for full table.
+
+| Excuse | Reality |
+|--------|---------|
+| "Garbage collector will handle it" | GC doesn't close files/connections. Explicit cleanup. |
+| "Small leak, won't matter" | Small leaks become big crashes. Fix now. |
+| "Framework handles it" | Verify that. Don't assume. |
+
+### Red Flags - STOP
+
+If you find yourself thinking:
+- "It's a short-lived process"
+- "I'll add cleanup later"
+- "Only happens in edge case"
+
+**STOP. Add cleanup with creation. Edge cases run in production.**
 
 ### IV.1 No Resource Leaks
 
@@ -272,6 +372,31 @@ INTELLIGENT CACHING:
 
 **Principle**: Code must be understandable, modifiable, and extensible.
 
+### The Iron Law
+
+```
+NO DEAD CODE - USE IT OR DELETE IT
+```
+
+### Rationalization Defense
+
+> See [rationalization-library.md](./rationalization-library.md#article-v-maintainability---rationalization-table) for full table.
+
+| Excuse | Reality |
+|--------|---------|
+| "Might need it later" | Git history exists. Delete now, retrieve if needed. |
+| "It's just commented out" | Commented code = noise. Delete it. |
+| "Too risky to delete" | Tests exist. If tests pass after delete, it's safe. |
+
+### Red Flags - STOP
+
+If you find yourself thinking:
+- "Reference for future work"
+- "Someone else might need it"
+- "I worked hard on this"
+
+**STOP. Sunk cost fallacy. Delete dead code. Git remembers.**
+
 ### V.1 No Dead Code
 
 ```yaml
@@ -340,6 +465,33 @@ SIZE CONSTRAINTS:
 
 **Principle**: Tests define behavior; implementation makes tests pass.
 
+### The Iron Law
+
+```
+NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
+```
+
+### Rationalization Defense
+
+> See [rationalization-library.md](./rationalization-library.md#article-vi-test-first-development---rationalization-table) for full table.
+
+| Excuse | Reality |
+|--------|---------|
+| "Too simple to test" | Simple code breaks. Test takes 30 seconds. |
+| "I'll test after" | Tests passing immediately prove nothing. |
+| "TDD slows me down" | TDD faster than debugging. Pragmatic = test-first. |
+| "This is different because..." | No. This is rationalization. Follow the law. |
+
+### Red Flags - STOP
+
+If you find yourself thinking:
+- "Just this once"
+- "I'm being pragmatic, not dogmatic"
+- "Spirit not letter"
+- "Need to explore first" (without deleting exploration code)
+
+**STOP. You are rationalizing. Delete the code. Write the test first.**
+
 ### VI.1 TDD Mandate (NON-NEGOTIABLE)
 
 ```yaml
@@ -399,6 +551,31 @@ TEST QUALITY:
 
 **Principle**: Default to simplicity; complexity requires justification.
 
+### The Iron Law
+
+```
+MAXIMUM 3 PROJECTS - JUSTIFY ANY ADDITIONAL COMPLEXITY
+```
+
+### Rationalization Defense
+
+> See [rationalization-library.md](./rationalization-library.md#article-vii-simplicity-gate---rationalization-table) for full table.
+
+| Excuse | Reality |
+|--------|---------|
+| "Microservices are better" | For your scale? Monolith is simpler. Start there. |
+| "Future scalability" | YAGNI. Scale when you need to. |
+| "Best practices say..." | Best practices assume scale you don't have. |
+
+### Red Flags - STOP
+
+If you find yourself thinking:
+- "Separation of concerns" (as justification for new project)
+- "Team autonomy"
+- "We might need it"
+
+**STOP. Build for now. Refactor when needed. Complexity is the enemy.**
+
 ### VII.1 Project Count Limit
 
 ```yaml
@@ -433,6 +610,31 @@ YAGNI ENFORCEMENT:
 ## Article VIII: Anti-Abstraction (反抽象)
 
 **Principle**: Trust frameworks; avoid unnecessary wrapping.
+
+### The Iron Law
+
+```
+USE FRAMEWORKS DIRECTLY - NO UNNECESSARY WRAPPERS
+```
+
+### Rationalization Defense
+
+> See [rationalization-library.md](./rationalization-library.md#article-viii-anti-abstraction---rationalization-table) for full table.
+
+| Excuse | Reality |
+|--------|---------|
+| "Abstraction for future flexibility" | YAGNI. You won't switch frameworks. |
+| "Cleaner interface" | Framework interface IS clean. Learn it. |
+| "Easier testing" | Mock the framework. Don't wrap it. |
+
+### Red Flags - STOP
+
+If you find yourself thinking:
+- "Hide implementation details"
+- "Consistent with other projects"
+- "Best practice pattern"
+
+**STOP. Use the framework directly. Wrappers add complexity, not value.**
 
 ### VIII.1 Direct Framework Usage
 
@@ -470,6 +672,31 @@ ONE ENTITY, ONE REPRESENTATION:
 
 **Principle**: Test with real environments, not mocks.
 
+### The Iron Law
+
+```
+CONTRACTS FIRST - REAL ENVIRONMENTS
+```
+
+### Rationalization Defense
+
+> See [rationalization-library.md](./rationalization-library.md#article-ix-integration-first-testing---rationalization-table) for full table.
+
+| Excuse | Reality |
+|--------|---------|
+| "Unit tests are faster" | Fast wrong tests waste time. Integration tests catch real bugs. |
+| "Mocks are simpler" | Mocks hide integration issues. Real databases find them. |
+| "In-memory database works" | In-memory differs from production. Test with real DB. |
+
+### Red Flags - STOP
+
+If you find yourself thinking:
+- "CI is slow"
+- "Docker is complex"
+- "We can mock this"
+
+**STOP. Production bugs are expensive. Test with real environments.**
+
 ### IX.1 Contract-First
 
 ```yaml
@@ -506,6 +733,32 @@ INTEGRATION TESTING:
 ## Article X: Requirement Boundary (需求边界)
 
 **Principle**: Implement what's requested, nothing more.
+
+### The Iron Law
+
+```
+IMPLEMENT WHAT'S REQUESTED, NOTHING MORE
+```
+
+### Rationalization Defense
+
+> See [rationalization-library.md](./rationalization-library.md#article-x-requirement-boundary---rationalization-table) for full table.
+
+| Excuse | Reality |
+|--------|---------|
+| "User might need this later" | User didn't ask. Don't add. YAGNI. |
+| "It's just a small addition" | Small additions compound. Scope creep. |
+| "I'm being helpful" | Helpful = following spec. Unhelpful = scope creep. |
+
+### Red Flags - STOP
+
+If you find yourself thinking:
+- "While I'm here anyway"
+- "It's only 5 more lines"
+- "User will thank me"
+- "This is a natural extension"
+
+**STOP. Stay on task. Create separate requirement for extensions.**
 
 ### X.1 Forced Clarification
 
@@ -744,5 +997,6 @@ This Constitution is the **architectural DNA** of CC-DevFlow. All templates, age
 *CC-DevFlow Project Constitution - Ensuring Excellence, Rejecting Compromise*
 
 **Version History**:
+- v2.1.0 (2026-01-08): Added Iron Law + Rationalization Defense + Red Flags to all 10 Articles
 - v2.0.0 (2025-10-09): Article-based restructure, enforcement mechanisms, amendment process
 - v1.0.0 (2025-01-20): Initial version with five core principles
