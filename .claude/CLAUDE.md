@@ -19,7 +19,7 @@ This directory contains Claude Code CLI extensions for the CC-DevFlow developmen
 │
 ├── commands/                  # Slash command definitions
 │   ├── flow-checklist.md      # /flow-checklist command [NEW: REQ-002]
-│   ├── flow-init.md           # /flow-init (modified: Manus method in Stage 2.5)
+│   ├── flow-init.md           # /flow-init (modified: Git Branch Creation moved to Stage 1.2)
 │   ├── flow-clarify.md        # /flow-clarify
 │   ├── flow-prd.md            # /flow-prd
 │   ├── flow-tech.md           # /flow-tech

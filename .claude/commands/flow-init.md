@@ -118,6 +118,19 @@ $ARGUMENTS = "REQ_ID|TITLE|PLAN_URLS?" 或 --interactive
 
 ---
 
+### Stage 1.2: Git Branch Creation
+
+```
+创建功能分支:
+→ Requirements: feature/${REQ_ID}-${slug(BRANCH_TITLE_EN)}
+→ Bug Fixes:    bugfix/${BUG_ID}-${slug(BRANCH_TITLE_EN)}
+
+Where BRANCH_TITLE_EN = TITLE 的英文意译 (语义为准，非拼音，使用模型意译)
+      slug() = lowercase, replace spaces/special chars with hyphens
+```
+
+---
+
 ### Stage 1.5: Context Loading (路线图与架构)
 
 **目标**: 理解需求在项目中的位置
@@ -283,20 +296,9 @@ Task 1-5: External Learning Materials (MCP)
 
 ---
 
-### Stage 3: Git Branch Creation
 
-```
-创建功能分支:
-→ Requirements: feature/${REQ_ID}-${slug(BRANCH_TITLE_EN)}
-→ Bug Fixes:    bugfix/${BUG_ID}-${slug(BRANCH_TITLE_EN)}
 
-Where BRANCH_TITLE_EN = TITLE 的英文意译 (语义为准，非拼音，使用模型意译)
-      slug() = lowercase, replace spaces/special chars with hyphens
-```
-
----
-
-### Stage 4: README Generation
+### Stage 3: README Generation
 
 ```
 生成工作流指南:
@@ -306,7 +308,7 @@ Where BRANCH_TITLE_EN = TITLE 的英文意译 (语义为准，非拼音，使用
 
 ---
 
-### Stage 5: Exit Gate (5-Level Quality Check)
+### Stage 4: Exit Gate (5-Level Quality Check)
 
 **5层验证**:
 
@@ -330,7 +332,7 @@ Level 5: Git & Status & Constitution
 → orchestration_status.json 正确
 → Constitution 符合性检查
 
-→ 详见 {TEMPLATE:flow} Stage 5
+→ 详见 {TEMPLATE:flow} Stage 4
 ```
 
 ---

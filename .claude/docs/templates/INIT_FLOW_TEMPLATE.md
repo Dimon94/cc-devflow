@@ -50,6 +50,19 @@ bash {SCRIPT:prereq} --json --paths-only
 
 ---
 
+## Stage 1.2: Git Branch Creation
+
+```bash
+# 创建功能分支
+Requirements: feature/${REQ_ID}-${slug(BRANCH_TITLE_EN)}
+Bug Fixes:    bugfix/${BUG_ID}-${slug(BRANCH_TITLE_EN)}
+
+# BRANCH_TITLE_EN = TITLE 的英文意译 (语义为准，非拼音，使用模型意译)
+# slug() = lowercase, replace spaces/special chars with hyphens
+```
+
+---
+
 ## Stage 1.5: Context Loading (路线图与架构)
 
 **目标**: 理解需求在项目中的位置
@@ -132,20 +145,9 @@ orchestration_status.json.phase0_complete = true
 
 ---
 
-## Stage 3: Git Branch Creation
 
-```bash
-# 创建功能分支
-Requirements: feature/${REQ_ID}-${slug(BRANCH_TITLE_EN)}
-Bug Fixes:    bugfix/${BUG_ID}-${slug(BRANCH_TITLE_EN)}
 
-# BRANCH_TITLE_EN = TITLE 的英文意译 (语义为准，非拼音，使用模型意译)
-# slug() = lowercase, replace spaces/special chars with hyphens
-```
-
----
-
-## Stage 4: README Generation
+## Stage 3: README Generation
 
 ```bash
 # 生成工作流指南
@@ -155,7 +157,7 @@ Bug Fixes:    bugfix/${BUG_ID}-${slug(BRANCH_TITLE_EN)}
 
 ---
 
-## Stage 5: Exit Gate (5-Level Quality Check)
+## Stage 4: Exit Gate (5-Level Quality Check)
 
 ### Level 1: File Existence Check
 ```bash
