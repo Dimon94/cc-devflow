@@ -210,6 +210,30 @@ Red Flags - STOP:
 
 **目标**: 收集"真实材料"，所有步骤 **MANDATORY**
 
+**Manus 研究方法** (Planning-with-files 融合):
+
+```yaml
+原则 1: 大内容存文件
+  → 抓取的文档存 research/mcp/$(date +%Y%m%d)/
+  → 上下文只保留路径引用
+  → 避免塞满上下文窗口
+
+原则 2: 决策前读取
+  → 每次做研究决策前，先读 research/research.md Decisions 章节
+  → 确保不重复已有决策
+  → 注意力刷新，目标回到窗口
+
+原则 3: 失败尝试记录
+  → 研究中放弃的方案写入 research/attempts/
+  → 说明放弃原因和学习（见 ATTEMPT_TEMPLATE 格式）
+  → 失败是学习数据，不要隐藏
+
+原则 4: 增量追加
+  → 使用 append 而非 rewrite
+  → 保持研究历史完整
+  → 避免覆盖已有信息
+```
+
 ```
 S0: Internal Codebase Research (必需)
 → 分析现有代码库，生成 research/internal/codebase-overview.md

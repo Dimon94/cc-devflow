@@ -135,14 +135,81 @@ Bad Tests (Cheater Tests):
   ❌ Depend on execution order
 ```
 
+## Error Recording Protocol
+
+当测试失败或构建错误发生时，必须立即记录到 ERROR_LOG.md:
+
+```yaml
+Error Recording Workflow:
+  1. Capture Error Context:
+     - Phase (flow-dev / T###)
+     - Error Type (Test Failure | Build Error | Runtime Error)
+     - Full error message
+     - Timestamp
+
+  2. Create ERROR_LOG.md if not exists:
+     → Use .claude/docs/templates/ERROR_LOG_TEMPLATE.md
+     → Location: devflow/requirements/${REQ_ID}/ERROR_LOG.md
+
+  3. Append Error Record:
+     ## [TIMESTAMP] E###: TITLE
+     **Phase**: flow-dev / T###
+     **Error Type**: Test Failure
+     **Error Message**:
+     ```
+     [完整错误信息]
+     ```
+     **Root Cause**: [分析后填写]
+     **Resolution**: [解决后填写]
+     **Prevention**: [可选]
+
+  4. Debug with Error Context:
+     → Read ERROR_LOG.md for similar past errors
+     → Apply attention refresh (Protocol 4)
+     → Fix the root cause, not symptoms
+
+  5. Update Record After Fix:
+     → Fill Root Cause
+     → Fill Resolution
+     → Add Prevention if applicable
+```
+
+### Error Recording Example
+
+```markdown
+## [2026-01-08T14:30:00] E001: Test Failure - User Login Validation
+
+**Phase**: flow-dev / T005
+**Error Type**: Test Failure
+**Error Message**:
+\`\`\`
+FAIL src/auth/login.test.ts
+  × should reject invalid email format
+    Expected: false
+    Received: true
+\`\`\`
+
+**Root Cause**: 正则表达式 `/^.+@.+$/` 过于宽松，接受了 `user@` 这样的无效邮箱
+**Resolution**: 更新正则为 `/^[^\s@]+@[^\s@]+\.[^\s@]+$/` 要求至少有域名和顶级域
+**Prevention**: 扩充测试用例，添加边界情况（无域名、无顶级域、特殊字符等）
+```
+
 ## Integration with Constitution
 
 - **Article I**: Complete implementation includes tests
 - **Article VI**: TDD Mandate (this skill)
 - **Article IX**: Integration-first testing
 
+## Integration with Attention Refresh
+
+- **Protocol 4**: Error Recovery 时读取 ERROR_LOG.md
+- 避免重复犯相同错误
+- 从历史错误中学习
+
 ## Cross-Reference
 
+- [flow-attention-refresh](../flow-attention-refresh/SKILL.md) - Protocol 4
+- [ERROR_LOG_TEMPLATE.md](../../docs/templates/ERROR_LOG_TEMPLATE.md)
 - [rationalization-library.md](../../rules/rationalization-library.md#article-vi-test-first-development---rationalization-table)
 - [project-constitution.md](../../rules/project-constitution.md#article-vi-test-first-development-测试优先开发)
 

@@ -37,6 +37,8 @@ Guide users to the correct agent/command WITHOUT duplicating their detailed stan
 /flow-epic → EPIC.md + TASKS.md (invoke planner, bite-sized tasks) ⭐ v2.1.0 变更
      ↓
 /flow-dev → TASKS.md execution (TDD checkpoint enforced) ⭐ v2.1.0 变更
+     OR
+/flow-ralph → Autonomous Ralph loop (iterate until complete) ⭐ v2.3.0 新增
      ↓
 /flow-review → SPEC_REVIEW.md + CODE_QUALITY_REVIEW.md (Two-Stage Review) ⭐ v2.1.0 新增
      ↓
@@ -60,6 +62,7 @@ Guide users to the correct agent/command WITHOUT duplicating their detailed stan
 - `/flow-clarify` 在 PRD 前可选执行，消除 research.md 中的歧义
 - `/flow-epic` 使用 bite-sized tasks 原则 (2-5分钟/任务)
 - `/flow-dev` 包含 TDD Checkpoint (Phase 2 测试必须先 FAIL)
+- `/flow-ralph` 自主迭代循环，适合清晰需求的无人值守开发 ⭐ v2.3.0 新增
 - `/flow-review` 是新增的两阶段审查 (Spec Compliance → Code Quality)
 - `/flow-ui` 和 `/flow-dev` 自动加载 `devflow/STYLE.md`（如存在）
 - 项目级命令可按需执行，无严格顺序要求
@@ -129,6 +132,15 @@ Guide users to the correct agent/command WITHOUT duplicating their detailed stan
 - **Link**: See [.claude/commands/flow-fix.md](.claude/commands/flow-fix.md) for details
 - **Features**: Root Cause → Pattern → Hypothesis → TDD Fix, Iron Law enforcement
 
+### When User Asks About Autonomous Development (v2.3.0 新增)
+- **DO**: Recommend `/flow-ralph` command → Ralph 自主迭代循环
+- **DON'T**: Use for complex requirements needing human judgment
+- **Link**: See [.claude/commands/flow-ralph.md](.claude/commands/flow-ralph.md) for details
+- **Features**: 持续迭代直到完成，注意力刷新协议，ERROR_LOG.md 强制记录
+- **适用场景**: TASKS.md 定义清晰，可无人值守，任务相对独立
+- **不适用**: 需求模糊、需要架构决策、依赖外部反馈
+- **vs /flow-dev**: Ralph 自动重试错误，flow-dev 遇错停止需人工干预
+
 ## Phase Gates (Quick Reference Only)
 
 ### Entry Gates
@@ -180,6 +192,7 @@ status: "tech_design_complete"
 
 status: "epic_complete"
   → Recommend: /flow-dev (start TDD development)
+  → Alternative: /flow-ralph (autonomous development, no human supervision) ⭐ v2.3.0 新增
 
 status: "development_complete"
   → Recommend: /flow-review (Two-Stage Code Review) ⭐ v2.1.0 新增

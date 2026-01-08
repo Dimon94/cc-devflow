@@ -10,6 +10,7 @@ scripts:
 skills:
   tdd: .claude/skills/flow-tdd/SKILL.md
   verification: .claude/skills/verification-before-completion/SKILL.md
+  attention: .claude/skills/flow-attention-refresh/SKILL.md
 ---
 
 # Flow-Dev - 开发执行命令
@@ -120,6 +121,12 @@ $ARGUMENTS = "REQ_ID? [--task T###]"
 ### 阶段 3: TDD 循环
 ```
 For each remaining task (顺序严格遵循 TASKS.md):
+
+**注意力刷新** (参见 {SKILL:attention} Protocol 2):
+→ Read: TASKS.md 当前任务 T### 段落 + DoD
+→ Read: quickstart.md 相关命令
+→ Focus: 这个任务的验收标准是什么？
+→ Then: 开始执行任务
 
 1. 读取任务定义
    → 提取 task id、phase、文件路径、是否 [P]

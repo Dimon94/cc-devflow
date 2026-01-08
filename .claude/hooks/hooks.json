@@ -1,0 +1,15 @@
+{
+    "description": "CC-DevFlow Ralph loop stop hook integration",
+    "hooks": {
+        "Stop": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "${CLAUDE_PLUGIN_ROOT}/hooks/ralph-stop-hook.sh"
+                    }
+                ]
+            }
+        ]
+    }
+}

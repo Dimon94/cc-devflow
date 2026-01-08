@@ -19,12 +19,13 @@ This directory contains Claude Code CLI extensions for the CC-DevFlow developmen
 │
 ├── commands/                  # Slash command definitions
 │   ├── flow-checklist.md      # /flow-checklist command [NEW: REQ-002]
-│   ├── flow-init.md           # /flow-init
+│   ├── flow-ralph.md          # /flow-ralph command [NEW: v2.3.0 Ralph × Manus]
+│   ├── flow-init.md           # /flow-init (modified: Manus method in Stage 2.5)
 │   ├── flow-clarify.md        # /flow-clarify
 │   ├── flow-prd.md            # /flow-prd
 │   ├── flow-tech.md           # /flow-tech
 │   ├── flow-epic.md           # /flow-epic (modified: Checklist Gate)
-│   ├── flow-dev.md            # /flow-dev
+│   ├── flow-dev.md            # /flow-dev (modified: Attention Refresh Protocol 2)
 │   └── ...                    # Other commands
 │
 ├── hooks/                     # JavaScript hooks for validation/gating
@@ -42,13 +43,19 @@ This directory contains Claude Code CLI extensions for the CC-DevFlow developmen
 │   │   └── SKILL.md
 │   ├── file-header-guardian/     # 文件头注释 @input/@output/@pos 守护
 │   │   └── SKILL.md
+│   ├── flow-attention-refresh/   # 注意力刷新协议 [NEW: v2.3.0 Ralph × Manus]
+│   │   └── SKILL.md
+│   ├── flow-tdd/                 # TDD enforcement (modified: Error Recording)
+│   │   └── SKILL.md
 │   ├── cc-devflow-orchestrator/
-│   │   └── SKILL.md           # Workflow router (modified: /flow-checklist)
+│   │   └── SKILL.md           # Workflow router (modified: /flow-checklist, /flow-ralph)
 │   └── ...
 │
 └── docs/
     └── templates/
         ├── CHECKLIST_TEMPLATE.md  # Checklist output template [NEW: REQ-002]
+        ├── ERROR_LOG_TEMPLATE.md  # Error log template [NEW: v2.3.0 Ralph × Manus]
+        ├── ATTEMPT_TEMPLATE.md    # Research attempt template [NEW: v2.3.0 Ralph × Manus]
         └── ...                    # Other templates
 ```
 
@@ -86,3 +93,111 @@ This directory contains Claude Code CLI extensions for the CC-DevFlow developmen
 
 **Last Updated**: 2025-12-15
 **REQ-002 Version**: 1.0.0
+
+---
+
+## v2.3.0 Module: Ralph × Manus Integration
+
+### Purpose
+Combine Ralph-Wiggum's autonomous iteration loop with Manus-style Planning-with-Files for memory-enhanced continuous development.
+
+### Core Concepts
+
+**Ralph Loop**: Autonomous iteration until completion (持续迭代直到完成，永不放弃)
+- Prompt stays constant, file state changes
+- Claude learns from its own previous work
+- Auto-retry on errors, no manual intervention
+
+**Manus 6 Principles**:
+1. 文件系统作外部记忆 - Filesystem as external memory
+2. 注意力操纵 - Attention manipulation (read goal files at key moments)
+3. 保留失败痕迹 - Keep failure traces (ERROR_LOG.md, research/attempts/)
+4. 避免少样本过拟合 - Avoid few-shot overfitting
+5. 稳定前缀优化缓存 - Stable prefix for KV-cache optimization
+6. 只追加上下文 - Append-only context
+
+**Why They're a Perfect Match**:
+- Ralph: "监督把活干完" (supervise task completion)
+- Manus: "认真把进度记下来" (carefully record progress)
+- Together: 有记忆的持续迭代系统 (memory-enhanced continuous iteration)
+
+### Components
+
+| Component | File | Purpose |
+|-----------|------|---------|
+| **Command** | `commands/flow-ralph.md` | Ralph autonomous loop command |
+| **Attention Skill** | `skills/flow-attention-refresh/SKILL.md` | 4 attention refresh protocols |
+| **TDD Skill** | `skills/flow-tdd/SKILL.md` | Error recording integration |
+| **Error Template** | `docs/templates/ERROR_LOG_TEMPLATE.md` | Execution error log format |
+| **Attempt Template** | `docs/templates/ATTEMPT_TEMPLATE.md` | Research attempt log format |
+
+**Modified Files**:
+- `commands/flow-dev.md` - Added Protocol 2 (Task Start attention refresh)
+- `commands/flow-init.md` - Added Manus method in Stage 2.5 Research
+- `skills/cc-devflow-orchestrator/SKILL.md` - Added /flow-ralph routing
+
+### Attention Refresh Protocols
+
+| Protocol | Trigger Point | Reads | Purpose |
+|----------|---------------|-------|---------|
+| Protocol 1 | Every flow-* Entry Gate | BRAINSTORM.md | Align with original intent |
+| Protocol 2 | flow-dev task start | TASKS.md T### + DoD | Clarify task goal |
+| Protocol 3 | Ralph iteration start | TASKS.md + ERROR_LOG.md | Next action + avoid errors |
+| Protocol 4 | After error | ERROR_LOG.md | Root cause analysis |
+
+### ERROR_LOG.md Structure
+
+```markdown
+## [TIMESTAMP] E###: TITLE
+
+**Phase**: flow-dev / T###
+**Error Type**: Test Failure | Build Error | Runtime Error
+**Error Message**: [full error]
+**Root Cause**: [after analysis]
+**Resolution**: [after fix]
+**Prevention**: [optional]
+```
+
+### research/attempts/ Structure
+
+```markdown
+# Attempt: [方案名]
+
+**Date**: YYYY-MM-DD
+**Context**: 解决 [什么问题]
+
+## Approach / Result / Reason / Learning / References
+```
+
+### Integration Points
+
+1. **Entry**: After `/flow-epic`, alternative to `/flow-dev`
+2. **Trigger**: `status: "epic_complete"` → `/flow-ralph` (autonomous) OR `/flow-dev` (supervised)
+3. **Output**:
+   - `ERROR_LOG.md` (execution errors)
+   - `research/attempts/` (research phase failures)
+   - All tasks completed with TDD
+
+### Comparison: /flow-ralph vs /flow-dev
+
+| | /flow-dev | /flow-ralph |
+|--|-----------|-------------|
+| 退出条件 | 任务失败可停止 | 迭代直到完成或上限 |
+| 错误处理 | 提示用户修复 | 自动重试 |
+| 注意力刷新 | 每任务一次 | 每迭代刷新（含错误学习） |
+| 适用场景 | 需要人工监督 | 可无人值守 |
+| ERROR_LOG | 可选记录 | 强制记录 |
+
+### Success Metrics (Target)
+
+| 指标 | 目标 |
+|------|------|
+| 任务完成率 (无人工干预) | ≥85% |
+| 测试失败后自动恢复率 | ≥70% |
+| 上下文遗忘导致的返工 | ≤0.5 次/需求 |
+| 错误重复发生率 | ≤10% |
+
+---
+
+**Last Updated**: 2026-01-08
+**v2.3.0 Module**: Ralph × Manus Integration
