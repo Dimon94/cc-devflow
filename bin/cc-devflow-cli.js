@@ -109,10 +109,10 @@ function copyIncremental(src, dest) {
         const destContent = fs.readFileSync(dest);
 
         if (!srcContent.equals(destContent)) {
-          // Content differs - Create .new version
-          const newFile = `${dest}.new`;
-          fs.copyFileSync(src, newFile);
-          console.log(`[UPDATE] ${path.relative(process.cwd(), newFile)} (conflict detected)`);
+          // Content differs - Overwrite original
+          fs.unlinkSync(dest);
+          fs.copyFileSync(src, dest);
+          console.log(`[UPDATE] ${path.relative(process.cwd(), dest)}`);
         }
         // else: Content identical - Silent skip
       } catch (err) {
