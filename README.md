@@ -148,6 +148,18 @@ cc-devflow adapt --platform qwen
 pnpm dlx tiged Dimon94/cc-devflow/.claude .claude
 ```
 
+#### Update
+
+To update to the latest version and synchronize your local project:
+
+```bash
+# Update globally
+npm install -g cc-devflow@latest
+
+# Update local project files (will overwrite conflicts)
+cc-devflow init
+```
+
 ### CLI Usage
 
 ```bash

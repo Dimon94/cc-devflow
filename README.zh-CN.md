@@ -148,6 +148,18 @@ cc-devflow adapt --platform qwen
 pnpm dlx tiged Dimon94/cc-devflow/.claude .claude
 ```
 
+#### 更新指南 (Update)
+
+更新到最新版本并同步本地项目：
+
+```bash
+# 全局更新
+npm install -g cc-devflow@latest
+
+# 更新本地项目文件（将覆盖冲突文件）
+cc-devflow init
+```
+
 ### CLI 使用
 
 ```bash
