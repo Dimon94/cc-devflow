@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [2.4.1] - 2026-01-08
+## [2.4.2] - 2026-01-09
 
 ### 🩹 CLI 增强：增量更新 (Incremental Update)
 
@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **增量更新机制**: 当目标目录已存在时，`init` 默认进入增量模式。
   - 仅复制目标目录中**缺失**的文件。
   - **保留**所有已存在的文件（即使用户修改过）。
+  - 若目标文件存在但内容与新版模板不同，生成 `filename.new` 并提示 `[UPDATE]`。
   - 输出 `[NEW] filename` 提示新增文件。
 - **强制模式重构**: `--force` 选项现在的行为更明确：彻底删除旧目录并重新安装。
 

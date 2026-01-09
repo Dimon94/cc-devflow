@@ -99,11 +99,25 @@ function copyIncremental(src, dest) {
     }
   } else {
     if (!fs.existsSync(dest)) {
+      // Case 1: File missing - Copy it
       fs.copyFileSync(src, dest);
       console.log(`[NEW] ${path.relative(process.cwd(), dest)}`);
     } else {
-      // File exists - skip to preserve user changes
-      // TODO: In the future, we could implement a 3-way merge or check for unmodified defaults
+      // Case 2: File exists - Compare content
+      try {
+        const srcContent = fs.readFileSync(src);
+        const destContent = fs.readFileSync(dest);
+
+        if (!srcContent.equals(destContent)) {
+          // Content differs - Create .new version
+          const newFile = `${dest}.new`;
+          fs.copyFileSync(src, newFile);
+          console.log(`[UPDATE] ${path.relative(process.cwd(), newFile)} (conflict detected)`);
+        }
+        // else: Content identical - Silent skip
+      } catch (err) {
+        console.warn(`[WARN] Could not compare ${path.relative(process.cwd(), dest)}: ${err.message}`);
+      }
     }
   }
 }
