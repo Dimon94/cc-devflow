@@ -40,3 +40,6 @@ coverage/
 .env
 .env.local
 .env.*.local
+
+# Claude Code 缓存
+.claude/tsc-cache/
