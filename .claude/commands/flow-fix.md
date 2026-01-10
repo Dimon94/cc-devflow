@@ -157,7 +157,7 @@ Step 4: 逆向追踪数据流
 3. 每个任务完成后:
    → 运行 quickstart 中相关测试命令
    → Git 提交 (一任务一提交)
-   → 更新 tasks/TASK_*.completed
+   → 更新 TASKS.md (checkbox 标记)
 
 4. 3+ 次修复失败 → STOP
    → 停下来，质疑架构

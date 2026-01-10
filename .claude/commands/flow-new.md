@@ -239,7 +239,7 @@ $ARGUMENTS = "REQ_ID|TITLE|PLAN_URLS?"
 **输出**:
 - 实现代码
 - 测试代码
-- tasks/*.completed 标记
+- TASKS.md 更新 (checkbox 标记)
 - Git commits (每个任务一个)
 
 ---
@@ -349,8 +349,7 @@ devflow/requirements/${REQ_ID}/
 ├── contracts/openapi.yaml
 ├── quickstart.md
 ├── EPIC.md
-├── TASKS.md (bite-sized)
-├── tasks/*.completed
+├── TASKS.md (bite-sized, checkbox 标记)
 ├── SPEC_REVIEW.md ⭐ v2.1.0 新增
 ├── CODE_QUALITY_REVIEW.md ⭐ v2.1.0 新增
 ├── TEST_PLAN.md + TEST_REPORT.md

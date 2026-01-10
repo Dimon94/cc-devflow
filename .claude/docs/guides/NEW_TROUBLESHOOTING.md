@@ -87,11 +87,11 @@ git branch -D feature/REQ-123-*
 
 ### Partial Resume (从特定任务继续)
 ```bash
-# 检查最后完成的任务
-ls devflow/requirements/REQ-123/tasks/*.completed | tail -1
+# 检查任务状态
+bash .claude/scripts/check-task-status.sh --verbose
 
-# 从下一任务继续
-/flow-dev "REQ-123" --resume --from=TASK_008
+# 从特定任务继续
+/flow-dev "REQ-123" --task T008
 ```
 
 ### State File Rebuild

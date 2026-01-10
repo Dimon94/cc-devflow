@@ -57,7 +57,7 @@ Phase 3: 实现代码
 Phase 4: 测试验证 → 测试必须通过
 Phase 5: Git 提交并标记完成
 ```
-- 输出: 实现代码 + 测试代码 + tasks/*.completed
+- 输出: 实现代码 + 测试代码 + TASKS.md 更新 (checkbox 标记)
 
 ### [5/8] /flow-qa --full
 **Exit Gate 检查**:
@@ -115,8 +115,7 @@ devflow/requirements/${REQ_ID}/
 ├── contracts/openapi.yaml
 ├── quickstart.md
 ├── EPIC.md                       # [3/8]
-├── TASKS.md
-├── tasks/*.completed             # [4/8]
+├── TASKS.md                      # [4/8] (checkbox 标记任务完成状态)
 ├── TEST_REPORT.md                # [5/8]
 ├── SECURITY_REPORT.md
 └── RELEASE_PLAN.md               # [6/8]
