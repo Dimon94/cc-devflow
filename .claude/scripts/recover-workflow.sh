@@ -164,16 +164,19 @@ detect_workflow_status() {
 
     # 检查任务进度
     if [[ -f "$REQ_DIR/TASKS.md" ]]; then
-        local tasks_total=$(grep -c "^## TASK" "$REQ_DIR/TASKS.md" 2>/dev/null || echo "0")
-        local tasks_completed=0
-        if [[ -d "$REQ_DIR/tasks" ]]; then
-            tasks_completed=$(find "$REQ_DIR/tasks" -name "*.completed" -type f 2>/dev/null | wc -l | tr -d ' ')
-        fi
+        # 统计已完成任务 (- [x] 标记)
+        local tasks_completed=$(grep -c "^\- \[x\]" "$REQ_DIR/TASKS.md" 2>/dev/null || echo "0")
+
+        # 统计待完成任务 (- [ ] 标记)
+        local tasks_pending=$(grep -c "^\- \[ \]" "$REQ_DIR/TASKS.md" 2>/dev/null || echo "0")
+
+        # 计算任务总数
+        local tasks_total=$((tasks_completed + tasks_pending))
 
         echo -e "${BOLD}任务进度:${NC}"
         echo -e "  总任务数:     $tasks_total"
         echo -e "  已完成:       $tasks_completed"
-        echo -e "  未完成:       $((tasks_total - tasks_completed))"
+        echo -e "  未完成:       $tasks_pending"
         echo ""
     fi
 
@@ -235,13 +238,16 @@ analyze_recovery_strategy() {
         development|dev_complete)
             # 检查是否有未完成的任务
             if [[ -f "$REQ_DIR/TASKS.md" ]]; then
-                local tasks_total=$(grep -c "^## TASK" "$REQ_DIR/TASKS.md" 2>/dev/null || echo "0")
-                local tasks_completed=0
-                if [[ -d "$REQ_DIR/tasks" ]]; then
-                    tasks_completed=$(find "$REQ_DIR/tasks" -name "*.completed" -type f 2>/dev/null | wc -l | tr -d ' ')
-                fi
+                # 统计已完成任务 (- [x] 标记)
+                local tasks_completed=$(grep -c "^\- \[x\]" "$REQ_DIR/TASKS.md" 2>/dev/null || echo "0")
 
-                if [[ $tasks_completed -lt $tasks_total ]]; then
+                # 统计待完成任务 (- [ ] 标记)
+                local tasks_pending=$(grep -c "^\- \[ \]" "$REQ_DIR/TASKS.md" 2>/dev/null || echo "0")
+
+                # 计算任务总数
+                local tasks_total=$((tasks_completed + tasks_pending))
+
+                if [[ $tasks_pending -gt 0 ]]; then
                     echo -e "${CYAN}建议: 继续开发 (恢复未完成任务)${NC}"
                     echo "dev"
                 else

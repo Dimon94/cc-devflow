@@ -197,14 +197,14 @@ collect_requirements() {
         local tasks_file="$req_dir/TASKS.md"
 
         if [[ -f "$tasks_file" ]]; then
-            # 统计任务总数 (以 ## TASK 开头的行)
-            tasks_total=$(grep -c "^## TASK" "$tasks_file" 2>/dev/null || echo "0")
+            # 统计已完成任务 (- [x] 标记)
+            tasks_completed=$(grep -c "^\- \[x\]" "$tasks_file" 2>/dev/null || echo "0")
 
-            # 统计已完成任务 (检查 .completed 标记文件)
-            local tasks_dir="$req_dir/tasks"
-            if [[ -d "$tasks_dir" ]]; then
-                tasks_completed=$(find "$tasks_dir" -name "*.completed" -type f 2>/dev/null | wc -l | tr -d ' ')
-            fi
+            # 统计待完成任务 (- [ ] 标记)
+            local tasks_pending=$(grep -c "^\- \[ \]" "$tasks_file" 2>/dev/null || echo "0")
+
+            # 计算任务总数
+            tasks_total=$((tasks_completed + tasks_pending))
         fi
 
         # 计算进度百分比
