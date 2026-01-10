@@ -24,7 +24,6 @@ You MUST follow these rules during impact analysis:
 
 2. **Agent Coordination**:
    - Update orchestration_status.json when analysis begins/completes
-   - Create completion markers (.completed files) after analysis
    - Research-only agent: no code modifications, only analysis documents
    - Coordinate with compatibility-checker for version management
 

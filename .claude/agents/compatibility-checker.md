@@ -25,7 +25,6 @@ You MUST follow these rules during compatibility analysis:
 
 2. **Agent Coordination**:
    - Update orchestration_status.json when analysis begins/completes
-   - Create completion markers (.completed files) after successful analysis
    - Coordinate with impact-analyzer for change assessment
    - Research-only agent: no file modifications, only document generation
 

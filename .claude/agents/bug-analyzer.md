@@ -25,7 +25,6 @@ You MUST follow these rules during BUG analysis:
 2. **Agent Coordination**:
    - Update status in orchestration_status.json when analysis begins and completes
    - Implement proper error handling for unclear BUG symptoms
-   - Create analysis completion markers (.completed files)
    - Avoid file locks (read-only agent - only generate documents)
 
 3. **DateTime Handling**:
