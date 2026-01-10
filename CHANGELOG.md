@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.4.5] - 2026-01-10
+
+### 🛠️ Skills 增强：新增开发辅助工具
+
+新增两个实用 Skills，优化开发工作流体验。
+
+#### Added
+
+- **npm-release Skill** - NPM 包发版流程标准化
+  - 语义化版本管理（Patch/Minor/Major）
+  - CHANGELOG.md 和 package.json 同步更新
+  - Git tag 自动创建和推送
+  - npm 发布前 dry-run 验证
+  - 网络故障排查指南
+
+- **writing-skills Skill** - Skill 开发最佳实践指南
+  - 遵循 Anthropic 官方规范
+  - YAML frontmatter 标准格式
+  - Progressive disclosure 设计模式
+  - Hook 机制集成（UserPromptSubmit, PreToolUse）
+  - Trigger pattern 最佳实践
+
+#### Benefits
+
+- ✅ **标准化**: 确保发版流程一致性，减少人为错误
+- ✅ **可追溯**: 版本号、CHANGELOG、Git tag 三者强制同步
+- ✅ **质量保障**: Skill 开发遵循最佳实践，提升代码质量
+
+---
+
 ## [2.4.4] - 2026-01-10
 
 ### 🧹 工作流优化：任务状态管理重构
