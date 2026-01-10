@@ -1,6 +1,6 @@
 {
     "name": "cc-devflow",
-    "version": "2.4.3",
+    "version": "2.4.4",
     "description": "DevFlow CLI tool",
     "main": "bin/cc-devflow.js",
     "bin": {
