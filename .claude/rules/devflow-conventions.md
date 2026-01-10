@@ -37,9 +37,7 @@ devflow/requirements/${reqId}/
 ├── UI_PROTOTYPE.html           # UI原型 ⚡️ 条件生成 (仅UI需求)
 ├── EPIC.md                     # Epic 规划
 ├── TASKS.md                    # 任务分解 (单文件管理所有任务)
-├── tasks/                      # 任务执行标记
-│   ├── TASK_001.completed      # 任务完成标记
-│   ├── TASK_002.completed
+├── tasks/                      # 任务执行文档
 │   └── IMPLEMENTATION_PLAN.md  # dev-implementer 输出
 ├── research/                   # 研究资料
 │   ├── ${reqId}_plan_1.md
@@ -56,8 +54,7 @@ devflow/requirements/${reqId}/
 ### 文档命名约定
 - **PRD 文件**: `PRD.md`
 - **Epic 文件**: `EPIC.md`
-- **Tasks 文件**: `TASKS.md` (所有任务集中在一个文件)
-- **任务完成标记**: `tasks/TASK_{ID}.completed` (空文件)
+- **Tasks 文件**: `TASKS.md` (所有任务集中在一个文件，通过 checkbox 标记完成状态)
 - **研究文件**: `${reqId}_plan_{序号}.md`
 - **测试报告**: `TEST_REPORT.md`
 - **执行日志**: `EXECUTION_LOG.md`
@@ -137,7 +134,7 @@ Co-authored-by: Claude <claude@anthropic.com>
 
 ### 状态同步约定
 - 每个阶段完成后更新 `orchestration_status.json`
-- 每个任务完成后创建 `tasks/TASK_{ID}.completed`
+- 每个任务完成后更新 `TASKS.md` 中的 checkbox (`- [ ]` → `- [x]`)
 - 所有重要操作记录到 `EXECUTION_LOG.md`
 
 ---
