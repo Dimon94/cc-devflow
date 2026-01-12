@@ -93,55 +93,32 @@ devflow/requirements/${REQ_ID}/
 
 ---
 
-## Stage 2.5: Research (MCP Mandatory Flow)
+## Stage 2.5: Research (Subagent Mandatory)
 
-**目标**: 收集"真实材料"，所有步骤 **MANDATORY**
+**目标**: 研究默认必跑，但研究过程必须“隔离上下文”。
 
-### S0: Internal Codebase Research (必需)
-```bash
-→ 分析现有代码库
-→ 生成 research/internal/codebase-overview.md
+**规则**: 大内容写入 `research/`，主会话只保留路径引用与决策摘要。
+
+### Mandatory: Call `flow-researcher` Subagent
+
+```
+Task tool call:
+  subagent_type: "flow-researcher"
+  prompt: (JSON) reqId/reqDir/title/planUrls/contextFiles
 ```
 
-### Task 1-5: External Learning Materials (MCP)
-```
-1. Official Documentation (Context7)
-   → research/mcp/$(date +%Y%m%d)/official/
-
-2. Domain Tutorials (Web Search)
-   → research/mcp/$(date +%Y%m%d)/guides/
-
-3. Core Materials (WebFetch)
-   → research/mcp/$(date +%Y%m%d)/tutorials/
-
-4. Case Studies/Examples (Web Search + WebFetch)
-   → research/mcp/$(date +%Y%m%d)/examples/
-
-5. Summary & Recommendations
-   → research/research-summary.md
-```
+**产物** (由 subagent 写入):
+- `research/internal/codebase-overview.md`
+- `research/mcp/$(date +%Y%m%d)/**`
+- `research/research-summary.md`
+- `research/tasks.json`
+- `research/research.md`
 
 ---
 
 ## Stage 2.6: Research Consolidation
 
-```bash
-# 1. Generate research tasks
-bash {SCRIPT:research_tasks} "${REQ_DIR}"
-→ Output: research/tasks.json
-
-# 2. Populate task decisions
-bash {SCRIPT:populate_tasks} "${REQ_DIR}"
-→ Fill decision/rationale/alternatives from research
-
-# 3. Consolidate research
-bash {SCRIPT:consolidate} "${REQ_DIR}"
-→ Output: research/research.md
-→ Format: Decision/Rationale/Alternatives/Source
-
-# 4. Update status
-orchestration_status.json.phase0_complete = true
-```
+> 该阶段由 `flow-researcher` subagent 执行（含 tasks 生成/回填/整合/校验）。
 
 ---
 
@@ -166,7 +143,7 @@ orchestration_status.json.phase0_complete = true
 
 ### Level 2: Research.md Structure Validation
 ```bash
-bash {SCRIPT:validate_research} "${REQ_DIR}"
+bash {SCRIPT:validate_research} "${REQ_DIR}" --strict
 → 检查 research.md 结构
 ```
 

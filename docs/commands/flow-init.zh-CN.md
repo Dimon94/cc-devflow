@@ -43,6 +43,9 @@ Stage 1: 前置条件验证
   ├─ 检查 devflow/ 目录
   └─ 验证 REQ-ID 唯一性
   ↓
+Stage 1.2: Git 分支创建
+  └─ 创建 feature/REQ-XXX-english-slug 分支（标题英文意译，非拼音）
+  ↓
 Stage 1.5: 路线图与架构上下文加载（NEW）
   ├─ 检查 ROADMAP.md 存在性
   ├─ 定位需求在路线图中的位置
@@ -57,17 +60,19 @@ Stage 1.5: 路线图与架构上下文加载（NEW）
   ↓
 Stage 2: 目录结构创建
   ├─ 创建 devflow/requirements/REQ-123/
-  ├─ 创建子目录 tasks/, research/
+  ├─ 创建子目录 research/
   ├─ 初始化 orchestration_status.json
   └─ 初始化 EXECUTION_LOG.md
   ↓
-Stage 2.6: 调研任务分派与决策整合（FIXED）
-  ├─ 生成研究任务 (generate-research-tasks.sh)
-  ├─ 填充研究决策 (populate-research-tasks.sh)
-  └─ 整合研究结论 (consolidate-research.sh)
+Stage 2.3: 头脑风暴（skill）
+  └─ 生成 devflow/requirements/REQ-XXX/BRAINSTORM.md 作为需求「北极星」
   ↓
-Stage 3: Git 分支创建
-  └─ 创建 feature/REQ-123-user-auth 分支（标题英文意译，非拼音）
+Stage 2.5: 调研（subagent，默认必跑，上下文隔离）
+  ├─ 内部代码库调研 → research/internal/codebase-overview.md
+  ├─ 外部资料落盘 → research/mcp/YYYYMMDD/**
+  ├─ 决策摘要 → research/research-summary.md
+  ├─ 任务回填 → research/tasks.json（decision/rationale/alternatives 完整）
+  └─ 研究整合 → research/research.md（通过校验，无 TODO/PLACEHOLDER）
 ```
 
 ## 💡 示例
@@ -129,7 +134,6 @@ Stage 3: Git 分支创建
 devflow/requirements/REQ-123/
 ├── orchestration_status.json    # 状态管理
 ├── EXECUTION_LOG.md             # 审计轨迹
-├── tasks/                       # 任务产物目录
 ├── research/                    # 研究材料目录
 └── (等待后续阶段生成其他文档)
 ```

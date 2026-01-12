@@ -72,24 +72,44 @@ def extract_task_sections(markdown_content: str) -> List[Dict[str, str]]:
     从 research-summary.md 中提取任务章节信息。
 
     期望格式:
-    ### RT-001: 输入框架构重构
-    **决策**: 全面重构方案
-    **理由**: 当前实现仅207行...
-    **备选方案**: 1. 渐进式增强...
+    ### R001 — 输入框架构重构
+    - **Decision**: 全面重构方案
+    - **Rationale**:
+      - 当前实现仅207行...
+    - **Alternatives Considered**:
+      - 渐进式增强...
     """
     sections = []
     current_section = None
+    current_field = None
 
-    # 匹配任务标题: ### RT-001: 任务标题
-    task_header = re.compile(r'^###\s+(RT-\d+):\s+(.+)$')
-    # 匹配决策行: **决策**: xxx 或 **Decision**: xxx
-    decision_line = re.compile(r'^\*\*(?:决策|Decision)\*\*:\s*(.+)$')
-    # 匹配理由行: **理由**: xxx 或 **Rationale**: xxx
-    rationale_line = re.compile(r'^\*\*(?:理由|Rationale)\*\*:\s*(.+)$')
-    # 匹配备选方案行: **备选方案**: xxx 或 **Alternatives**: xxx
-    alternatives_line = re.compile(r'^\*\*(?:备选方案|Alternatives)\*\*:\s*(.+)$')
+    # 匹配任务标题（兼容历史 RT-001）:
+    # - ### R001 — Title
+    # - ### R001: Title
+    # - ### R001 - Title
+    # - ### RT-001: Title  (legacy)
+    task_header = re.compile(r"^###\s+(?P<id>R\d{3}|RT-\d{3})\s*(?:[:—-])\s*(?P<title>.+)$")
+
+    # 匹配字段头（兼容是否带 bullet）:
+    # - - **Decision**: xxx
+    # - - **Rationale**:
+    # - - **Alternatives Considered**:
+    field_header = re.compile(
+        r"^(?:[-*]\s*)?\*\*(?P<label>决策|Decision|理由|Rationale|备选方案|Alternatives(?:\s+Considered)?|来源|Source)\*\*:\s*(?P<value>.*)$"
+    )
+
+    def normalize_task_id(raw: str) -> str:
+        if raw.startswith("RT-"):
+            return f"R{raw.split('-', 1)[1]}"
+        return raw
+
+    def normalize_list_item(line: str) -> str:
+        line = line.strip()
+        line = re.sub(r"^[-*]\s+", "", line)
+        return line.strip()
 
     for line in markdown_content.splitlines():
+        raw_line = line
         line = line.strip()
 
         # 检测新任务章节
@@ -97,9 +117,10 @@ def extract_task_sections(markdown_content: str) -> List[Dict[str, str]]:
         if task_match:
             if current_section:
                 sections.append(current_section)
+            current_field = None
             current_section = {
-                "id": task_match.group(1),
-                "title": task_match.group(2),
+                "id": normalize_task_id(task_match.group("id")),
+                "title": task_match.group("title"),
                 "decision": "",
                 "rationale": "",
                 "alternatives": "",
@@ -109,31 +130,35 @@ def extract_task_sections(markdown_content: str) -> List[Dict[str, str]]:
         if not current_section:
             continue
 
-        # 提取决策
-        decision_match = decision_line.match(line)
-        if decision_match:
-            current_section["decision"] = decision_match.group(1).strip()
+        # 检测字段头
+        field_match = field_header.match(line)
+        if field_match:
+            label = field_match.group("label").strip().lower()
+            value = (field_match.group("value") or "").strip()
+
+            if label in {"来源", "source"}:
+                current_field = None
+                continue
+            if label in {"决策", "decision"}:
+                current_field = "decision"
+            elif label in {"理由", "rationale"}:
+                current_field = "rationale"
+            else:
+                current_field = "alternatives"
+
+            if value:
+                current_section[current_field] = value
             continue
 
-        # 提取理由
-        rationale_match = rationale_line.match(line)
-        if rationale_match:
-            current_section["rationale"] = rationale_match.group(1).strip()
-            continue
-
-        # 提取备选方案
-        alternatives_match = alternatives_line.match(line)
-        if alternatives_match:
-            current_section["alternatives"] = alternatives_match.group(1).strip()
-            continue
-
-        # 继续累积多行理由（如果上一行是理由）
-        if current_section.get("rationale") and line and not line.startswith("**"):
-            current_section["rationale"] += " " + line.strip()
-
-        # 继续累积多行备选方案
-        if current_section.get("alternatives") and line and not line.startswith("**"):
-            current_section["alternatives"] += " " + line.strip()
+        # 累积字段内容（支持列表项）
+        if current_field and line:
+            item = normalize_list_item(raw_line)
+            if not item:
+                continue
+            if current_section[current_field]:
+                current_section[current_field] += "\n" + item
+            else:
+                current_section[current_field] = item
 
     # 添加最后一个章节
     if current_section:

@@ -47,6 +47,9 @@ Stage 1: Prerequisites validation
   ├─ Check devflow/ directory
   └─ Verify REQ-ID uniqueness
   ↓
+Stage 1.2: Git branch creation
+  └─ Create feature/REQ-XXX-english-slug branch (model-translated, not pinyin)
+  ↓
 Stage 1.5: Roadmap & Architecture context loading (NEW)
   ├─ Check ROADMAP.md existence
   ├─ Locate requirement in roadmap
@@ -64,13 +67,15 @@ Stage 2: Directory structure creation
   ├─ Initialize orchestration_status.json
   └─ Create EXECUTION_LOG.md
   ↓
-Stage 2.6: Research task dispatch & decision integration
-  ├─ Generate research tasks
-  ├─ Populate research decisions
-  └─ Consolidate research findings
+Stage 2.3: Brainstorming (skill)
+  └─ Generate devflow/requirements/REQ-XXX/BRAINSTORM.md as the “North Star”
   ↓
-Stage 3: Git branch creation
-  └─ Create feature/REQ-XXX-english-slug branch (model-translated, not pinyin)
+Stage 2.5: Research (subagent, mandatory, context-isolated)
+  ├─ Run internal codebase research → research/internal/codebase-overview.md
+  ├─ Capture external sources into files → research/mcp/YYYYMMDD/**
+  ├─ Produce decisions → research/research-summary.md
+  ├─ Fill tasks → research/tasks.json (decision/rationale/alternatives)
+  └─ Consolidate → research/research.md (validated; no TODO/PLACEHOLDER)
 ```
 
 ## 💡 Examples
@@ -124,10 +129,9 @@ Stage 3: Git branch creation
 
 ## 📂 Output
 
-- `devflow/requirements/REQ-XXX/` complete directory
-- `orchestration_status.json`
-- `EXECUTION_LOG.md`
-- Roadmap and architecture context (if exists)
+- `devflow/requirements/REQ-XXX/` initialized directory (includes `BRAINSTORM.md` + `research/`)
+- `orchestration_status.json` + `EXECUTION_LOG.md`
+- Roadmap and architecture context display (if exists)
 
 ## 🔗 Related Commands
 

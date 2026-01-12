@@ -10,6 +10,7 @@ This directory contains Claude Code CLI extensions for the CC-DevFlow developmen
 ├── agents/                    # Agent instruction files (research-type, invoked by commands)
 │   ├── checklist-agent.md     # Checklist generation logic [NEW: REQ-002]
 │   ├── clarify-analyst.md     # Requirements clarification
+│   ├── flow-researcher.md     # /flow-init mandatory research runner (subagent; file-based memory)
 │   ├── prd-writer.md          # PRD generation
 │   ├── tech-architect.md      # Technical design
 │   ├── planner.md             # EPIC/TASKS planning
@@ -19,7 +20,7 @@ This directory contains Claude Code CLI extensions for the CC-DevFlow developmen
 │
 ├── commands/                  # Slash command definitions
 │   ├── flow-checklist.md      # /flow-checklist command [NEW: REQ-002]
-│   ├── flow-init.md           # /flow-init (modified: Git Branch Creation moved to Stage 1.2)
+│   ├── flow-init.md           # /flow-init (modified: research delegated to flow-researcher subagent)
 │   ├── flow-clarify.md        # /flow-clarify
 │   ├── flow-prd.md            # /flow-prd
 │   ├── flow-tech.md           # /flow-tech
@@ -132,7 +133,7 @@ Combine Ralph-Wiggum's autonomous iteration loop with Manus-style Planning-with-
 
 **Modified Files**:
 - `commands/flow-dev.md` - Merged Ralph Loop (Autonomous by default)
-- `commands/flow-init.md` - Added Manus method in Stage 2.5 Research
+- `commands/flow-init.md` - Research made mandatory via `flow-researcher` subagent (context-isolated)
 - `skills/cc-devflow-orchestrator/SKILL.md` - Updated routing for autonomous flow
 
 ### Attention Refresh Protocols

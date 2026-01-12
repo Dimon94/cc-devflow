@@ -219,85 +219,53 @@ Red Flags - STOP:
 
 ---
 
-### Stage 2.5: Research (MCP Mandatory Flow)
+### Stage 2.5: Research (Subagent Mandatory)
 
-**目标**: 收集"真实材料"，所有步骤 **MANDATORY**
+**目标**: 研究默认必跑，但将“研究型内容”隔离到 subagent，避免主会话上下文耗尽。
 
-**Manus 研究方法** (Planning-with-files 融合):
+**Iron Law**: 大内容落盘，主会话只返回「决策摘要 + 文件路径」。
 
-```yaml
-原则 1: 大内容存文件
-  → 抓取的文档存 research/mcp/$(date +%Y%m%d)/
-  → 上下文只保留路径引用
-  → 避免塞满上下文窗口
+#### ✅ Mandatory: Call `flow-researcher` Subagent
 
-原则 2: 决策前读取
-  → 每次做研究决策前，先读 research/research.md Decisions 章节
-  → 确保不重复已有决策
-  → 注意力刷新，目标回到窗口
-
-原则 3: 失败尝试记录
-  → 研究中放弃的方案写入 research/attempts/
-  → 说明放弃原因和学习（见 ATTEMPT_TEMPLATE 格式）
-  → 失败是学习数据，不要隐藏
-
-原则 4: 增量追加
-  → 使用 append 而非 rewrite
-  → 保持研究历史完整
-  → 避免覆盖已有信息
-```
+> subagent 负责内部/外部研究、落盘、任务回填、研究整合与质量验证；主 agent 只做编排与最终 Gate。
 
 ```
-S0: Internal Codebase Research (必需)
-→ 分析现有代码库，生成 research/internal/codebase-overview.md
-
-Task 1-5: External Learning Materials (MCP)
-1. Official Documentation (Context7)
-2. Domain Tutorials (Web Search)
-3. Core Materials (WebFetch)
-4. Case Studies/Examples (Web Search + WebFetch)
-5. Summary & Recommendations
-
-→ 详见 {TEMPLATE:flow} Stage 2.5
+Task tool call:
+  description: "Run mandatory research for /flow-init (file-based memory)"
+  subagent_type: "flow-researcher"
+  model: "inherit"
+  prompt: (JSON)
+    {
+      "reqId": "${REQ_ID}",
+      "reqDir": "devflow/requirements/${REQ_ID}",
+      "title": "${TITLE}",
+      "planUrls": ["..."],
+      "contextFiles": {
+        "brainstorm": "devflow/requirements/${REQ_ID}/BRAINSTORM.md",
+        "roadmap": "devflow/ROADMAP.md",
+        "architecture": "devflow/ARCHITECTURE.md"
+      }
+    }
 ```
 
-**输出**:
-- `research/internal/codebase-overview.md`
-- `research/mcp/$(date +%Y%m%d)/official/*`
-- `research/mcp/$(date +%Y%m%d)/guides/*`
-- `research/mcp/$(date +%Y%m%d)/tutorials/*`
-- `research/mcp/$(date +%Y%m%d)/examples/*`
-- `research/research-summary.md`
+**期望输出** (由 subagent 写入):
+- `devflow/requirements/${REQ_ID}/research/internal/codebase-overview.md`
+- `devflow/requirements/${REQ_ID}/research/mcp/$(date +%Y%m%d)/**`
+- `devflow/requirements/${REQ_ID}/research/research-summary.md`
+- `devflow/requirements/${REQ_ID}/research/tasks.json` (decision/rationale/alternatives 完整)
+- `devflow/requirements/${REQ_ID}/research/research.md` (可通过 validate-research)
 
 ---
 
 ### Stage 2.6: Research Consolidation
 
-```
-研究决策整合:
-1. Generate research tasks
-   → Run: {SCRIPT:research_tasks} "${REQ_DIR}"
-   → Output: research/tasks.json
+> 该阶段由 `flow-researcher` subagent 执行（包含 tasks 生成/回填/整合/校验）。
 
-2. Populate task decisions
-   → Run: {SCRIPT:populate_tasks} "${REQ_DIR}"
-   → Fill decision/rationale/alternatives from research
-
-3. Consolidate research
-   → Run: {SCRIPT:consolidate} "${REQ_DIR}"
-   → Output: research/research.md
-   → Format: Decision/Rationale/Alternatives/Source
-
-4. Update status
-   → orchestration_status.json.phase0_complete = true
-
-→ 详见 {TEMPLATE:flow} Stage 2.6
-```
+主 agent 在 Exit Gate 中只做最终验证与状态更新：
+- Run: `{SCRIPT:validate_research} "${REQ_DIR}" --strict`
+- `orchestration_status.json.phase0_complete = true`
 
 ---
-
-
-
 ### Stage 3: README Generation
 
 ```
@@ -317,7 +285,7 @@ Level 1: File Existence Check
 → 验证所有必需文件已创建
 
 Level 2: Research.md Structure Validation
-→ Run: {SCRIPT:validate_research} "${REQ_DIR}"
+→ Run: {SCRIPT:validate_research} "${REQ_DIR}" --strict
 → 检查 research.md 结构
 
 Level 3: Research.md Content Quality
