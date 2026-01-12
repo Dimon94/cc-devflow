@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.4.6] - 2026-01-12
+
+### flow-init 工作流精简：研究步骤抽离为 subagent
+
+将研究型内容从主流程中拆分到独立 subagent，减少上下文消耗，并同步更新命令、模板、脚本与文档。
+
+#### Added
+
+- **flow-researcher agent** - 执行 `/flow-init` 深度研究并写入 `devflow/requirements/$REQ_ID/research/`
+
+#### Changed
+
+- **flow-init command** - 重组流程，研究部分改由 subagent 执行
+- **INIT_FLOW_TEMPLATE.md** - 精简初始化模板
+- **populate-research-tasks.sh** - 更新 research tasks 填充逻辑
+- **flow-init docs** - 同步更新中英文文档
+
+#### Benefits
+
+- **更省上下文**: 主会话仅保留关键决策与路径
+- **更可追溯**: 研究产物落盘，便于审计与复用
+
+---
+
 ## [2.4.5] - 2026-01-10
 
 ### 🛠️ Skills 增强：新增开发辅助工具
