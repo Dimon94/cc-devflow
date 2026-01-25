@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.5.0] - 2026-01-25
+
+### 🚀 新增 Skills：一致性检查与发版自动化
+
+v2.5.0 引入了两个强大的新 Skills，分别解决了跨需求一致性检查和 NPM 包发版自动化的问题。
+
+#### Added
+
+- **Journey Coherence Checker Skill** - 跨需求一致性检查
+  - 检查依赖满足情况 (Dependency Satisfaction)
+  - 验证里程碑 Success Criteria
+  - 检测累积偏差 (Cumulative Scope Drift)
+  - 发现用户旅程空隙 (Journey Gaps)
+  - 集成到发布门禁 (`/flow-release`)
+
+- **NPM Release Skill** - NPM 发版流程自动化
+  - 标准化发版工作流 (Patch/Minor/Major)
+  - 自动更新 CHANGELOG.md
+  - 自动创建并验证 Git Tags
+  - 发布前安全检查
+
 ## [2.4.6] - 2026-01-12
 
 ### flow-init 工作流精简：研究步骤抽离为 subagent
