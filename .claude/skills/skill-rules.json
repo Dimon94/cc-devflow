@@ -304,6 +304,37 @@
                     "devflow/requirements/**/orchestration_status.json"
                 ]
             }
+        },
+        "npm-release": {
+            "type": "domain",
+            "enforcement": "suggest",
+            "priority": "high",
+            "description": "Standardized release process for cc-devflow npm package. Handles version bumping, changelog updates, and publishing checks.",
+            "promptTriggers": {
+                "keywords": [
+                    "publish npm",
+                    "release version",
+                    "npm publish",
+                    "bump version",
+                    "new release",
+                    "publish package",
+                    "update changelog",
+                    "release workflow"
+                ],
+                "intentPatterns": [
+                    "(publish|release).*?(npm|package|version)",
+                    "(bump|update).*?(version|semver)",
+                    "(create|generate).*?(release|changelog)",
+                    "ready to publish",
+                    "deploy to npm"
+                ]
+            },
+            "fileTriggers": {
+                "pathPatterns": [
+                    "package.json",
+                    "CHANGELOG.md"
+                ]
+            }
         }
     },
     "notes": {

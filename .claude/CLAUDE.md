@@ -52,6 +52,8 @@ This directory contains Claude Code CLI extensions for the CC-DevFlow developmen
 │   ├── journey-coherence-checker/  # 跨需求一致性检查 [NEW: v2.4.0]
 │   │   ├── SKILL.md           # 检查协议：依赖满足、旅程完整、累积偏差
 │   │   └── pressure-scenarios.md  # TDD 压力测试场景
+│   ├── npm-release/              # NPM 包发布工作流
+│   │   └── SKILL.md           # 版本发布、Changelog 维护、原子化发布流程
 │   └── ...
 │
 └── docs/
