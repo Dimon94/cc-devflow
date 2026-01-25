@@ -264,6 +264,46 @@
                     "should I.*?(test first|write implementation)"
                 ]
             }
+        },
+        "journey-coherence-checker": {
+            "type": "domain",
+            "enforcement": "suggest",
+            "priority": "high",
+            "description": "Use when completing a requirement, checking milestone progress, or asking about project status. Detects gaps between requirements, unmet dependencies, and cumulative scope drift.",
+            "promptTriggers": {
+                "keywords": [
+                    "需求完成",
+                    "REQ完成",
+                    "里程碑",
+                    "milestone",
+                    "项目进度",
+                    "可以发布",
+                    "发布前检查",
+                    "全局检查",
+                    "M1进度",
+                    "M2进度",
+                    "M3进度",
+                    "M4进度",
+                    "所有需求",
+                    "依赖满足",
+                    "journey check",
+                    "coherence check"
+                ],
+                "intentPatterns": [
+                    "(需求|REQ|requirement).*?(完成|done|finished)",
+                    "(里程碑|milestone).*?(进度|status|完成)",
+                    "(项目|project).*?(进度|status|如何)",
+                    "(可以|ready).*?(发布|release)",
+                    "(所有|all).*?(需求|requirement).*?(完成|done)",
+                    "(检查|check).*?(全局|global|依赖|dependency)"
+                ]
+            },
+            "fileTriggers": {
+                "pathPatterns": [
+                    "devflow/ROADMAP.md",
+                    "devflow/requirements/**/orchestration_status.json"
+                ]
+            }
         }
     },
     "notes": {

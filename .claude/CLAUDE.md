@@ -49,6 +49,9 @@ This directory contains Claude Code CLI extensions for the CC-DevFlow developmen
 │   │   └── SKILL.md
 │   ├── cc-devflow-orchestrator/
 │   │   └── SKILL.md           # Workflow router (modified: /flow-checklist, /flow-dev autonomous)
+│   ├── journey-coherence-checker/  # 跨需求一致性检查 [NEW: v2.4.0]
+│   │   ├── SKILL.md           # 检查协议：依赖满足、旅程完整、累积偏差
+│   │   └── pressure-scenarios.md  # TDD 压力测试场景
 │   └── ...
 │
 └── docs/
