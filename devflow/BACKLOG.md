@@ -14,6 +14,10 @@
 
 ---
 
+借鉴源码：
+OpenSpec：/Users/dimon/001Area/80-CodeWorld/002-devflow/OpenSpec 和
+Trellis：/Users/dimon/001Area/80-CodeWorld/002-devflow/Trellis
+
 ## P0: Critical Priority
 
 ### RM-001: /flow-clarify 需求澄清命令
@@ -618,3 +622,4 @@
 **Document Status:** Living Document
 **Owner:** CC-DevFlow Team
 **Next Review:** Weekly during active development
+
