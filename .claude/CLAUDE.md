@@ -3,7 +3,7 @@
 ## Purpose
 This directory contains Claude Code CLI extensions for the CC-DevFlow development workflow system.
 
-## Directory Structure (v4.0 Skills-First Architecture)
+## Directory Structure (v4.1 Skills-First Architecture)
 
 ```
 .claude/
@@ -17,8 +17,11 @@ This directory contains Claude Code CLI extensions for the CC-DevFlow developmen
 │   │   │   ├── scripts/       # 内嵌脚本
 │   │   │   ├── references/    # Agent 指令
 │   │   │   └── assets/        # 模板
-│   │   ├── flow-prd/          # PRD 生成
-│   │   ├── flow-epic/         # Epic/Tasks 规划
+│   │   ├── flow-spec/         # 统一规格阶段 [NEW: v4.1] ⭐
+│   │   ├── flow-prd/          # PRD 生成 (deprecated, use flow-spec)
+│   │   ├── flow-tech/         # 技术设计 (deprecated, use flow-spec)
+│   │   ├── flow-ui/           # UI 原型 (deprecated, use flow-spec)
+│   │   ├── flow-epic/         # Epic/Tasks (deprecated, use flow-spec)
 │   │   └── flow-dev/          # 开发执行
 │   │
 │   ├── domain/                # 领域 Skills
@@ -40,6 +43,10 @@ This directory contains Claude Code CLI extensions for the CC-DevFlow developmen
 │   └── inject-skill-context.ts  # 上下文注入钩子 [NEW: v4.0]
 ├── scripts/                   # 共享脚本
 └── docs/templates/            # 共享模板
+    └── _shared/               # 共享模板组件 [NEW: v4.1]
+        ├── CONSTITUTION_CHECK.md
+        ├── VALIDATION_CHECKLIST.md
+        └── YAML_FRONTMATTER.md
 
 devflow/
 ├── spec/                      # 分层规范库 [NEW: v4.0]
@@ -335,5 +342,109 @@ devflow/
 
 ---
 
-**Last Updated**: 2026-02-06
+**Last Updated**: 2026-02-07
 **v3.0.0 Module**: OpenSpec × Trellis Integration
+
+---
+
+## v4.1.0 Module: Unified Specification Phase
+
+### Purpose
+
+合并 flow-prd/flow-tech/flow-ui/flow-epic 为统一的 `/flow-spec` 命令，减少命令调用次数，利用 Agent 并行执行潜力。
+
+### Key Changes
+
+| Before (v4.0) | After (v4.1) | Improvement |
+|---------------|--------------|-------------|
+| 4 个独立命令 | 1 个统一命令 | -75% 命令数 |
+| 串行执行 | Tech + UI 并行 | -35% 时间 |
+| 重复 Entry/Exit Gate | 统一 Gate | -280 行代码 |
+
+### New Command: /flow-spec
+
+```bash
+# Full Mode (默认)
+/flow-spec "REQ-123"
+
+# Quick Mode (小需求)
+/flow-spec "REQ-123" --skip-tech --skip-ui
+
+# Backend Only
+/flow-spec "REQ-123" --skip-ui
+
+# Frontend Only
+/flow-spec "REQ-123" --skip-tech
+```
+
+### Execution Flow
+
+```
+PRD (sequential) → Tech + UI (parallel) → Epic (sequential)
+
+Time ────────────────────────────────────────────►
+
+T0   ┌─────────────┐
+     │ prd-writer  │  (必须先完成)
+     └──────┬──────┘
+            │
+T1          ├────────────────────┐
+            │                    │
+     ┌──────▼──────┐      ┌──────▼──────┐
+     │tech-architect│      │ ui-designer │  (并行)
+     └──────┬──────┘      └──────┬──────┘
+            │                    │
+T2          └─────────┬──────────┘
+                      │
+               ┌──────▼──────┐
+               │   planner   │  (等待两者完成)
+               └─────────────┘
+```
+
+### New Files
+
+| File | Purpose |
+|------|---------|
+| `.claude/skills/workflow/flow-spec/SKILL.md` | 主指令 (~250 行) |
+| `.claude/skills/workflow/flow-spec/context.jsonl` | 上下文定义 |
+| `.claude/skills/workflow/flow-spec/scripts/entry-gate.sh` | 统一入口检查 |
+| `.claude/skills/workflow/flow-spec/scripts/parallel-orchestrator.sh` | 并行调度逻辑 |
+| `.claude/skills/workflow/flow-spec/scripts/exit-gate.sh` | 统一出口检查 |
+| `.claude/docs/templates/_shared/CONSTITUTION_CHECK.md` | 共享 Constitution 检查 |
+| `.claude/docs/templates/_shared/VALIDATION_CHECKLIST.md` | 共享验证清单 |
+| `.claude/docs/templates/_shared/YAML_FRONTMATTER.md` | 共享 YAML 头部 |
+
+### Deprecations
+
+| Old Command | Replacement | Status |
+|-------------|-------------|--------|
+| `/flow-prd` | `/flow-spec` | Deprecated (warning) |
+| `/flow-tech` | `/flow-spec` | Deprecated (warning) |
+| `/flow-ui` | `/flow-spec` | Deprecated (warning) |
+| `/flow-epic` | `/flow-spec` | Deprecated (warning) |
+
+### Simplified Workflows (v4.1)
+
+```
+【精简流程】(3 步, 适合小需求)
+/flow-init --quick → /flow-spec --skip-tech --skip-ui → /flow-dev → /flow-release
+
+【标准流程】(4 步, 适合中等需求)
+/flow-init → /flow-spec → /flow-dev → /flow-quality → /flow-release
+
+【完整流程】(5 步, 适合大需求)
+/flow-init → /flow-clarify → /flow-spec → /flow-dev → /flow-quality --full → /flow-release
+```
+
+### Expected Improvements
+
+| Metric | Before (v4.0) | After (v4.1) | Improvement |
+|--------|---------------|--------------|-------------|
+| 命令调用次数 | 4 | 1 | -75% |
+| 设计阶段时间 | 8-12 min | 5-8 min | -35% |
+| Entry/Exit Gate 代码 | ~280 行 | ~100 行 | -64% |
+
+---
+
+**Last Updated**: 2026-02-07
+**v4.1.0 Module**: Unified Specification Phase

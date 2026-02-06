@@ -26,15 +26,14 @@ Guide users to the correct agent/command WITHOUT duplicating their detailed stan
      ↓
 /flow-clarify → clarifications/*.md (11 维度歧义扫描, 可选)
      ↓
-/flow-prd → PRD.md (invoke prd-writer agent, 需 BRAINSTORM.md 对齐)
-     ↓
-/flow-checklist → checklists/*.md (需求质量检查, 可选)
-     ↓
-/flow-tech → TECH_DESIGN.md + data-model + contracts (invoke tech-architect agent)
-     ↓
-/flow-ui → UI_PROTOTYPE.html (invoke ui-designer agent, 可选, 引用 STYLE.md)
-     ↓
-/flow-epic → EPIC.md + TASKS.md (invoke planner, bite-sized tasks)
+┌─────────────────────────────────────────────────────────────────────┐
+│ /flow-spec → PRD + Tech + UI + Epic (推荐: 统一规格阶段)            │
+│   Modes:                                                            │
+│   - Full: PRD → Tech+UI (并行) → Epic                              │
+│   - Quick: PRD → Epic (--skip-tech --skip-ui)                      │
+│   - Backend: PRD → Tech → Epic (--skip-ui)                         │
+│   - Frontend: PRD → UI → Epic (--skip-tech)                        │
+└─────────────────────────────────────────────────────────────────────┘
      ↓
 /flow-dev → TASKS.md execution (TDD + Autonomous mode default)
      ↓
@@ -45,7 +44,29 @@ Guide users to the correct agent/command WITHOUT duplicating their detailed stan
 /flow-verify → consistency check (invoke consistency-checker agent, 任意阶段可调用)
 ```
 
-### 🚀 v3.0 简化流程
+### ⚠️ Legacy Commands (Deprecated, 保留兼容)
+
+```
+/flow-prd → PRD.md (⚠️ Deprecated: Use /flow-spec instead)
+/flow-tech → TECH_DESIGN.md (⚠️ Deprecated: Use /flow-spec instead)
+/flow-ui → UI_PROTOTYPE.html (⚠️ Deprecated: Use /flow-spec instead)
+/flow-epic → EPIC.md + TASKS.md (⚠️ Deprecated: Use /flow-spec instead)
+```
+
+### 🚀 v4.1 简化流程 (使用 /flow-spec)
+
+```
+【精简流程】(适合小需求, 3 步)
+/flow-init --quick → /flow-spec --skip-tech --skip-ui → /flow-dev → /flow-release
+
+【标准流程】(适合中等需求, 4 步)
+/flow-init → /flow-spec → /flow-dev → /flow-quality → /flow-release
+
+【完整流程】(适合大需求, 5 步)
+/flow-init → /flow-clarify → /flow-spec → /flow-dev → /flow-quality --full → /flow-release
+```
+
+### 🚀 v3.0 Legacy 流程 (仍可用，但推荐使用 /flow-spec)
 
 ```
 【精简流程】(适合小需求, 5 步)
@@ -68,15 +89,21 @@ Guide users to the correct agent/command WITHOUT duplicating their detailed stan
 **说明**:
 - 项目级命令建立全局标准（SSOT），需求级命令引用这些标准
 - `/flow-init` 包含 Brainstorming 阶段，生成 BRAINSTORM.md 作为需求「北极星」
-- `/flow-prd` 需要 BRAINSTORM.md 对齐检查
-- `/flow-clarify` 在 PRD 前可选执行，消除 research.md 中的歧义
-- `/flow-epic` 使用 bite-sized tasks 原则 (2-5分钟/任务)
-- `/flow-dev` 默认 Autonomous 模式（自动重试），使用 `--manual` 退出到 Manual 模式 
-- `/flow-review` 是新增的两阶段审查 (Spec Compliance → Code Quality)
+- **`/flow-spec` 是推荐的统一规格命令**，合并 PRD/Tech/UI/Epic 为单一命令
+- `/flow-spec` 内部并行执行 Tech + UI，减少 ~35% 设计阶段时间
+- `/flow-prd`, `/flow-tech`, `/flow-ui`, `/flow-epic` 仍可用但标记为 deprecated
+- `/flow-dev` 默认 Autonomous 模式（自动重试），使用 `--manual` 退出到 Manual 模式
 - `/flow-ui` 和 `/flow-dev` 自动加载 `devflow/STYLE.md`（如存在）
 - 项目级命令可按需执行，无严格顺序要求
 
 ## Agent Delegation Guide
+
+### When User Asks About Unified Specification (推荐)
+- **DO**: Recommend `/flow-spec` command → orchestrates prd-writer + tech-architect + ui-designer + planner
+- **DON'T**: Recommend individual commands (flow-prd, flow-tech, flow-ui, flow-epic) unless user explicitly needs them
+- **Link**: See [.claude/skills/workflow/flow-spec/SKILL.md](.claude/skills/workflow/flow-spec/SKILL.md) for details
+- **Modes**: Full (default), Quick (--skip-tech --skip-ui), Backend (--skip-ui), Frontend (--skip-tech)
+- **Benefits**: 4 commands → 1 command, ~35% time reduction via parallel execution
 
 ### When User Asks About Requirements Clarification
 - **DO**: Recommend `/flow-clarify` command → invokes clarify-analyst agent
@@ -175,24 +202,26 @@ Read `orchestration_status.json` to determine current phase:
 
 ```yaml
 status: "initialized"
-  → Recommend: /flow-clarify (optional, clarify ambiguities)
-  → Alternative: /flow-prd (skip clarification, generate PRD directly)
-  → Note: BRAINSTORM.md 已在 /flow-init 生成 
+  → Recommend: /flow-spec (统一规格阶段, 推荐)
+  → Alternative: /flow-clarify (optional, clarify ambiguities first)
+  → Legacy: /flow-prd (deprecated, still works)
+  → Note: BRAINSTORM.md 已在 /flow-init 生成
 
 status: "clarify_complete" OR "clarify_skipped"
-  → Recommend: /flow-prd (generate PRD)
+  → Recommend: /flow-spec (统一规格阶段)
+  → Legacy: /flow-prd (deprecated)
 
 status: "prd_complete"
-  → Recommend: /flow-tech (generate technical design)
-  → Alternative: /flow-ui (generate UI prototype, optional)
+  → If using legacy flow: /flow-tech or /flow-ui or /flow-epic
+  → Note: 如果使用 /flow-spec，此状态不会出现
 
-status: "tech_design_complete"
-  → If UI not done: /flow-ui (optional)
-  → Else: /flow-epic (generate EPIC and TASKS)
+status: "spec_complete"
+  → Recommend: /flow-dev (TDD development, Autonomous mode default)
+  → Alternative: /flow-dev --manual (Manual mode for complex requirements)
 
 status: "epic_complete"
   → Recommend: /flow-dev (TDD development, Autonomous mode default)
-  → Alternative: /flow-dev --manual (Manual mode for complex requirements) 
+  → Note: 此状态来自 legacy flow-epic 命令
 
 status: "development_complete"
   → Recommend: /flow-quality (quick verification, v3.0 NEW)

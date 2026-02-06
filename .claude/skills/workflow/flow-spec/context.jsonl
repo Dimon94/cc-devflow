@@ -1,0 +1,7 @@
+{"file": "devflow/requirements/{REQ}/BRAINSTORM.md", "reason": "Original intent and requirements"}
+{"file": "devflow/requirements/{REQ}/research/research.md", "reason": "Research findings"}
+{"file": "devflow/requirements/{REQ}/research/internal/codebase-overview.md", "reason": "Codebase analysis", "optional": true}
+{"file": "devflow/spec/frontend/index.md", "reason": "Frontend conventions", "optional": true}
+{"file": "devflow/spec/backend/index.md", "reason": "Backend conventions", "optional": true}
+{"file": "devflow/STYLE.md", "reason": "Design style guide", "optional": true}
+{"file": "CLAUDE.md", "reason": "Tech stack baseline"}
