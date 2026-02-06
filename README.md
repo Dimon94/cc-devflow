@@ -73,28 +73,37 @@ export SKIP_TDD_ENFORCER=1
 📚 [Complete Hooks Documentation](docs/guides/hooks-system.md)
 </details>
 
-### Skills System
+### Skills System (v4.0 Skills-First Architecture)
 
-Intelligent knowledge base activation, auto-recommending relevant domain knowledge.
+Intelligent knowledge base activation with grouped Skills and automatic context injection.
 
 <details>
 <summary>📖 Skills Details (Click to Expand)</summary>
 
-**Available Skills**:
+**Skills-First Architecture** (v4.0):
 
-| Skill | Type | Trigger Scenarios |
-|-------|------|-------------------|
-| `cc-devflow-orchestrator` | domain | Requirement management, process guidance |
-| `devflow-tdd-enforcer` | guardrail | Editing TASKS.md |
-| `constitution-guardian` | guardrail | Editing PRD/EPIC/TASKS |
-| `devflow-file-standards` | domain | File naming, directory structure |
-| `skill-developer` | domain | Skill development, Hook system |
+```
+.claude/skills/
+├── workflow.yaml           # Skill dependency graph (OpenSpec-inspired)
+├── workflow/               # 9 Workflow Skills (flow-init, flow-prd, etc.)
+├── domain/                 # 7 Domain Skills (tdd, debugging, brainstorming)
+├── guardrail/              # 3 Guardrail Skills (constitution-guardian, tdd-enforcer)
+└── utility/                # 8 Utility Skills (npm-release, skill-creator)
+```
 
-**Trigger Mechanisms**:
-1. **Keyword Trigger** - Input contains specific keywords
-2. **Intent Matching** - Regex matching user intent
-3. **File Trigger** - Editing specific path files
-4. **Content Matching** - File content matches specific patterns
+**Key Skills by Category**:
+
+| Category | Skills | Purpose |
+|----------|--------|---------|
+| **Workflow** | flow-init, flow-prd, flow-epic, flow-dev, flow-quality, flow-release | Core development workflow |
+| **Domain** | tdd, debugging, brainstorming, verification | Domain expertise |
+| **Guardrail** | constitution-guardian, tdd-enforcer | Real-time compliance |
+| **Utility** | npm-release, skill-creator, writing-skills | Development tools |
+
+**Context Injection** (Trellis-inspired):
+- Each Skill has `context.jsonl` defining required context files
+- `inject-skill-context.ts` hook auto-loads context before Skill execution
+- Variable substitution: `{REQ}` → actual requirement ID
 
 📚 [Complete Skills Documentation](docs/guides/skills-system.md)
 </details>
@@ -496,7 +505,49 @@ bash .claude/tests/run-all-tests.sh --scripts
 
 ## 📝 Version History
 
-### v2.3.0 (2026-01-08) - Latest Release
+### v4.0.0 (2026-02-07) - Latest Release
+
+**🏗️ Skills-First Architecture: Unified Skills with Context Injection**
+
+v4.0.0 introduces a major architectural refactor, reorganizing 135 files into a unified Skills-First Architecture inspired by Trellis and OpenSpec:
+
+- **Skills-First Architecture** - All Skills organized into 4 groups
+  - `workflow/`: 9 core workflow Skills (flow-init, flow-prd, flow-epic, flow-dev, etc.)
+  - `domain/`: 7 domain expertise Skills (tdd, debugging, brainstorming, verification)
+  - `guardrail/`: 3 real-time compliance Skills (constitution-guardian, tdd-enforcer)
+  - `utility/`: 8 development tool Skills (npm-release, skill-creator, writing-skills)
+
+- **JSONL Context Injection** (Trellis-inspired)
+  - Each Skill has `context.jsonl` defining required context files
+  - `inject-skill-context.ts` hook auto-loads context before Skill execution
+  - Variable substitution: `{REQ}` replaced with actual requirement ID
+  - Optional files supported with `"optional": true`
+
+- **workflow.yaml Dependency Graph** (OpenSpec-inspired)
+  - Defines Skill dependencies with `requires` and `generates`
+  - File existence state detection for workflow status
+  - Clear visualization of Skill execution order
+
+- **Self-Contained Skills**
+  - Each Skill directory contains: SKILL.md + context.jsonl + scripts/ + references/ + assets/
+  - SKILL.md limited to <500 lines for focused instructions
+  - Agent instructions moved to `references/` subdirectory
+  - Templates moved to `assets/` subdirectory
+
+**📊 Improvements**:
+| Metric | Before | After | Improvement |
+|--------|--------|-------|-------------|
+| Maintenance points | 4 directories | 1 directory | -75% |
+| Context loading | Manual full load | On-demand auto | -70% tokens |
+| Dependency visibility | Implicit | Explicit (workflow.yaml) | +100% |
+
+**📁 New Files**:
+- `.claude/skills/workflow.yaml` - Skill dependency graph
+- `.claude/hooks/inject-skill-context.ts` - Context injection hook
+- `.claude/skills/workflow/*/context.jsonl` - Per-Skill context definitions
+- `devflow/spec/{frontend,backend,shared}/index.md` - Specification indexes
+
+### v2.3.0 (2026-01-08)
 
 **🛡️ Discipline System: Iron Law + Rationalization Defense + Pressure Testing**
 

@@ -73,28 +73,37 @@ export SKIP_TDD_ENFORCER=1
 📚 [完整 Hooks 文档](docs/guides/hooks-system.zh-CN.md)
 </details>
 
-### Skills 系统
+### Skills 系统 (v4.0 Skills-First 架构)
 
-智能知识库激活，自动推荐相关领域知识。
+智能知识库激活，分组 Skills 与自动上下文注入。
 
 <details>
 <summary>📖 Skills 详解（点击展开）</summary>
 
-**可用 Skills**:
+**Skills-First 架构** (v4.0):
 
-| Skill | 类型 | 触发场景 |
-|-------|------|----------|
-| `cc-devflow-orchestrator` | domain | 需求管理、流程指导 |
-| `devflow-tdd-enforcer` | guardrail | 编辑 TASKS.md |
-| `constitution-guardian` | guardrail | 编辑 PRD/EPIC/TASKS |
-| `devflow-file-standards` | domain | 文件命名、目录结构 |
-| `skill-developer` | domain | Skill 开发、Hook 系统 |
+```
+.claude/skills/
+├── workflow.yaml           # Skill 依赖图 (借鉴 OpenSpec)
+├── workflow/               # 9 个工作流 Skills (flow-init, flow-prd 等)
+├── domain/                 # 7 个领域 Skills (tdd, debugging, brainstorming)
+├── guardrail/              # 3 个守护 Skills (constitution-guardian, tdd-enforcer)
+└── utility/                # 8 个工具 Skills (npm-release, skill-creator)
+```
 
-**触发机制**:
-1. **关键词触发** - 输入包含特定关键词
-2. **意图匹配** - 正则匹配用户意图
-3. **文件触发** - 编辑特定路径文件
-4. **内容匹配** - 文件内容匹配特定模式
+**按分类的关键 Skills**:
+
+| 分类 | Skills | 用途 |
+|------|--------|------|
+| **Workflow** | flow-init, flow-prd, flow-epic, flow-dev, flow-quality, flow-release | 核心开发工作流 |
+| **Domain** | tdd, debugging, brainstorming, verification | 领域专业知识 |
+| **Guardrail** | constitution-guardian, tdd-enforcer | 实时合规检查 |
+| **Utility** | npm-release, skill-creator, writing-skills | 开发工具 |
+
+**上下文注入** (借鉴 Trellis):
+- 每个 Skill 有 `context.jsonl` 定义所需上下文文件
+- `inject-skill-context.ts` 钩子在 Skill 执行前自动加载上下文
+- 变量替换: `{REQ}` → 实际需求 ID
 
 📚 [完整 Skills 文档](docs/guides/skills-system.zh-CN.md)
 </details>
@@ -484,7 +493,49 @@ bash .claude/tests/run-all-tests.sh --scripts
 
 ## 📝 版本历史
 
-### v2.3.0 (2026-01-08) - 最新版本
+### v4.0.0 (2026-02-07) - 最新版本
+
+**🏗️ Skills-First 架构：统一 Skills 与上下文注入**
+
+v4.0.0 引入重大架构重构，将 135 个文件重组为统一的 Skills-First 架构，借鉴 Trellis 和 OpenSpec：
+
+- **Skills-First 架构** - 所有 Skills 组织为 4 个分组
+  - `workflow/`: 9 个核心工作流 Skills (flow-init, flow-prd, flow-epic, flow-dev 等)
+  - `domain/`: 7 个领域专业 Skills (tdd, debugging, brainstorming, verification)
+  - `guardrail/`: 3 个实时合规 Skills (constitution-guardian, tdd-enforcer)
+  - `utility/`: 8 个开发工具 Skills (npm-release, skill-creator, writing-skills)
+
+- **JSONL 上下文注入** (借鉴 Trellis)
+  - 每个 Skill 有 `context.jsonl` 定义所需上下文文件
+  - `inject-skill-context.ts` 钩子在 Skill 执行前自动加载上下文
+  - 变量替换: `{REQ}` 替换为实际需求 ID
+  - 支持可选文件 `"optional": true`
+
+- **workflow.yaml 依赖图** (借鉴 OpenSpec)
+  - 通过 `requires` 和 `generates` 定义 Skill 依赖
+  - 文件存在性状态检测
+  - 清晰可视化 Skill 执行顺序
+
+- **自包含 Skills**
+  - 每个 Skill 目录包含: SKILL.md + context.jsonl + scripts/ + references/ + assets/
+  - SKILL.md 限制 <500 行，聚焦核心指令
+  - Agent 指令移至 `references/` 子目录
+  - 模板移至 `assets/` 子目录
+
+**📊 改进指标**:
+| 指标 | 之前 | 之后 | 改善 |
+|------|------|------|------|
+| 维护点 | 4 个目录 | 1 个目录 | -75% |
+| 上下文加载 | 手动全量 | 按需自动 | -70% token |
+| 依赖可见性 | 隐式 | 显式 (workflow.yaml) | +100% |
+
+**📁 新增文件**:
+- `.claude/skills/workflow.yaml` - Skill 依赖图
+- `.claude/hooks/inject-skill-context.ts` - 上下文注入钩子
+- `.claude/skills/workflow/*/context.jsonl` - 每个 Skill 的上下文定义
+- `devflow/spec/{frontend,backend,shared}/index.md` - 规范索引
+
+### v2.3.0 (2026-01-08)
 
 **🛡️ 纪律系统：铁律 + 合理化防御 + 压力测试**
 

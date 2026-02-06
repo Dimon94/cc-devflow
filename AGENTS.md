@@ -281,3 +281,46 @@ Phase 3 生根:
 维护三层完整，执行回环约束，拒绝孤立变更。
 Keep the map aligned with the terrain, or the terrain will be lost.
 </INVOCATION>
+
+---
+
+## Skills-First Architecture (v4.0)
+
+`.claude/skills/` 是 CC-DevFlow 的核心，采用分组 Skills 架构：
+
+```
+.claude/skills/
+├── workflow.yaml           # Skill 依赖图 (借鉴 OpenSpec)
+├── workflow/               # 9 个工作流 Skills
+│   ├── flow-init/          # 需求初始化
+│   ├── flow-prd/           # PRD 生成
+│   ├── flow-epic/          # Epic/Tasks 规划
+│   ├── flow-dev/           # 开发执行
+│   ├── flow-tech/          # 技术设计
+│   ├── flow-ui/            # UI 原型
+│   ├── flow-quality/       # 质量验证
+│   ├── flow-release/       # 发布管理
+│   └── flow-fix/           # Bug 修复
+├── domain/                 # 7 个领域 Skills (tdd, debugging, brainstorming...)
+├── guardrail/              # 3 个守护 Skills (constitution-guardian, tdd-enforcer...)
+└── utility/                # 8 个工具 Skills (npm-release, skill-creator...)
+```
+
+### Skill 结构规范
+
+每个 Skill 自包含:
+```
+skill-name/
+├── SKILL.md           # 核心指令 (<500 行)
+├── context.jsonl      # 上下文定义 (借鉴 Trellis)
+├── scripts/           # 内嵌脚本
+├── references/        # Agent 指令
+└── assets/            # 模板
+```
+
+### context.jsonl 格式
+
+```jsonl
+{"file": "devflow/requirements/{REQ}/BRAINSTORM.md", "reason": "Original intent"}
+{"file": "devflow/spec/frontend/index.md", "reason": "Frontend conventions", "optional": true}
+```

@@ -285,6 +285,49 @@ Keep the map aligned with the terrain, or the terrain will be lost.
 
 ---
 
+## Skills-First Architecture (v4.0)
+
+`.claude/skills/` 是 CC-DevFlow 的核心，采用分组 Skills 架构：
+
+```
+.claude/skills/
+├── workflow.yaml           # Skill 依赖图 (借鉴 OpenSpec)
+├── workflow/               # 9 个工作流 Skills
+│   ├── flow-init/          # 需求初始化
+│   ├── flow-prd/           # PRD 生成
+│   ├── flow-epic/          # Epic/Tasks 规划
+│   ├── flow-dev/           # 开发执行
+│   ├── flow-tech/          # 技术设计
+│   ├── flow-ui/            # UI 原型
+│   ├── flow-quality/       # 质量验证
+│   ├── flow-release/       # 发布管理
+│   └── flow-fix/           # Bug 修复
+├── domain/                 # 7 个领域 Skills (tdd, debugging, brainstorming...)
+├── guardrail/              # 3 个守护 Skills (constitution-guardian, tdd-enforcer...)
+└── utility/                # 8 个工具 Skills (npm-release, skill-creator...)
+```
+
+### Skill 结构规范
+
+每个 Skill 自包含:
+```
+skill-name/
+├── SKILL.md           # 核心指令 (<500 行)
+├── context.jsonl      # 上下文定义 (借鉴 Trellis)
+├── scripts/           # 内嵌脚本
+├── references/        # Agent 指令
+└── assets/            # 模板
+```
+
+### context.jsonl 格式
+
+```jsonl
+{"file": "devflow/requirements/{REQ}/BRAINSTORM.md", "reason": "Original intent"}
+{"file": "devflow/spec/frontend/index.md", "reason": "Frontend conventions", "optional": true}
+```
+
+---
+
 ## devflow 目录与需求文档
 
 `devflow/` 是本仓库的「单一真相源」，存放所有需求、设计与研发过程资料，AI 在收集上下文时应优先从这里检索：
@@ -293,6 +336,10 @@ Keep the map aligned with the terrain, or the terrain will be lost.
   - `ARCHITECTURE.md`: 全局架构设计与关键 ADR，适合回答「整体怎么设计」类问题。
   - `BACKLOG.md`: 产品需求池与优先级，适合检索「是否已有某需求」。
   - `DEVELOPMENT_PLAN.md`: 迭代节奏与开发顺序，适合判断当前应聚焦的 REQ。
+  - `spec/`: 分层规范库 (v4.0 新增)
+    - `frontend/index.md`: 前端规范索引
+    - `backend/index.md`: 后端规范索引
+    - `shared/index.md`: 共享规范索引
   - `frontend_design/`: 小程序前端 UI 设计说明（按页面拆分 `UI_0X_*.md`）。
   - `doc/`: 通用技术文档（部署、TDesign 使用规范、数据库优化等）。
   - `research/`: 项目级调研与风格分析。

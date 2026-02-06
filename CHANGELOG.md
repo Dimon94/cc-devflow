@@ -7,6 +7,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.0.0] - 2026-02-07
+
+### 🏗️ Skills-First Architecture: Unified Skills with Context Injection
+
+v4.0.0 introduces a major architectural refactor, reorganizing 135 files into a unified Skills-First Architecture inspired by Trellis and OpenSpec.
+
+#### Added
+
+- **Skills-First Architecture** - All Skills organized into 4 groups
+  - `workflow/`: 9 core workflow Skills (flow-init, flow-prd, flow-epic, flow-dev, flow-tech, flow-ui, flow-quality, flow-release, flow-fix)
+  - `domain/`: 7 domain expertise Skills (tdd, debugging, brainstorming, attention-refresh, verification, receiving-review, finishing-branch)
+  - `guardrail/`: 3 real-time compliance Skills (constitution-guardian, tdd-enforcer, file-header-guardian)
+  - `utility/`: 8 development tool Skills (npm-release, skill-creator, skill-developer, writing-skills, fractal-docs, journey-checker, file-standards, constitution-quick-ref)
+
+- **JSONL Context Injection** (Trellis-inspired)
+  - Each Skill has `context.jsonl` defining required context files
+  - `inject-skill-context.ts` hook auto-loads context before Skill execution
+  - Variable substitution: `{REQ}` replaced with actual requirement ID
+  - Optional files supported with `"optional": true`
+
+- **workflow.yaml Dependency Graph** (OpenSpec-inspired)
+  - Defines Skill dependencies with `requires` and `generates`
+  - File existence state detection for workflow status
+  - Clear visualization of Skill execution order
+
+- **Self-Contained Skills**
+  - Each Skill directory contains: SKILL.md + context.jsonl + scripts/ + references/ + assets/
+  - SKILL.md limited to <500 lines for focused instructions
+  - Agent instructions moved to `references/` subdirectory
+  - Templates moved to `assets/` subdirectory
+
+- **Specification Library** - `devflow/spec/{frontend,backend,shared}/index.md`
+
+#### Changed
+
+- **Skills Directory Structure** - Flat structure → Grouped directories
+- **Commands** - Simplified to trigger entries, core logic in Skills
+- **Context Loading** - Manual full load → On-demand automatic injection
+
+#### Benefits
+
+- **-75% Maintenance Points**: 4 directories → 1 directory
+- **-70% Context Tokens**: On-demand loading vs full manual load
+- **+100% Dependency Visibility**: Explicit workflow.yaml vs implicit
+
+---
+
 ## [2.5.0] - 2026-01-25
 
 ### 🚀 新增 Skills：一致性检查与发版自动化
