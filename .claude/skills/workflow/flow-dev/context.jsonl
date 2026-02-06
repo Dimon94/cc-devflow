@@ -1,0 +1,8 @@
+{"file": "devflow/requirements/{REQ}/TASKS.md", "reason": "Task list"}
+{"file": "devflow/requirements/{REQ}/EPIC.md", "reason": "Epic overview"}
+{"file": "devflow/requirements/{REQ}/BRAINSTORM.md", "reason": "Original intent"}
+{"file": "devflow/requirements/{REQ}/ERROR_LOG.md", "reason": "Previous errors", "optional": true}
+{"file": "devflow/requirements/{REQ}/TECH_DESIGN.md", "reason": "Technical design", "optional": true}
+{"file": "devflow/spec/frontend/index.md", "reason": "Frontend conventions", "optional": true}
+{"file": "devflow/spec/backend/index.md", "reason": "Backend conventions", "optional": true}
+{"file": ".claude/rules/project-constitution.md", "reason": "Quality rules"}

@@ -1,0 +1,265 @@
+# =============================================================================
+# CC-DevFlow Workflow Definition (借鉴 OpenSpec schema.yaml)
+# =============================================================================
+# 定义 Skill 依赖图，用于：
+# 1. 自动检测 Skill 完成状态（通过 generates 文件存在性）
+# 2. 验证 Skill 执行顺序（通过 requires 依赖关系）
+# 3. 上下文注入（通过 context.jsonl 定义）
+#
+# [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+# =============================================================================
+
+name: cc-devflow
+version: "4.0.0"
+description: CC-DevFlow Skills-First Architecture 工作流定义
+
+# =============================================================================
+# Workflow Skills (工作流 Skills)
+# =============================================================================
+# 按执行顺序定义，每个 Skill 声明：
+# - id: Skill 唯一标识
+# - path: Skill 目录路径
+# - generates: 输出文件（用于状态检测）
+# - requires: 依赖的 Skill（必须先完成）
+# - optional_requires: 可选依赖（推荐但非必须）
+
+workflow:
+  # -------------------------------------------------------------------------
+  # 项目级 Skills (执行一次)
+  # -------------------------------------------------------------------------
+  - id: core-roadmap
+    path: workflow/core-roadmap
+    generates:
+      - devflow/ROADMAP.md
+      - devflow/BACKLOG.md
+    requires: []
+
+  - id: core-architecture
+    path: workflow/core-architecture
+    generates:
+      - devflow/ARCHITECTURE.md
+    requires: []
+
+  - id: core-guidelines
+    path: workflow/core-guidelines
+    generates:
+      - devflow/spec/frontend/index.md
+      - devflow/spec/backend/index.md
+    requires: []
+
+  - id: core-style
+    path: workflow/core-style
+    generates:
+      - devflow/STYLE.md
+    requires: []
+
+  # -------------------------------------------------------------------------
+  # 需求级 Skills (每个需求执行)
+  # -------------------------------------------------------------------------
+  - id: flow-init
+    path: workflow/flow-init
+    generates:
+      - devflow/requirements/{REQ}/BRAINSTORM.md
+      - devflow/requirements/{REQ}/research/
+    requires: []
+
+  - id: flow-clarify
+    path: workflow/flow-clarify
+    generates:
+      - devflow/requirements/{REQ}/clarifications/
+    requires:
+      - flow-init
+    optional: true
+
+  - id: flow-prd
+    path: workflow/flow-prd
+    generates:
+      - devflow/requirements/{REQ}/PRD.md
+    requires:
+      - flow-init
+
+  - id: flow-checklist
+    path: workflow/flow-checklist
+    generates:
+      - devflow/requirements/{REQ}/checklists/
+    requires:
+      - flow-prd
+    optional: true
+
+  - id: flow-tech
+    path: workflow/flow-tech
+    generates:
+      - devflow/requirements/{REQ}/TECH_DESIGN.md
+      - devflow/requirements/{REQ}/data-model.md
+      - devflow/requirements/{REQ}/contracts/
+    requires:
+      - flow-prd
+    optional: true
+
+  - id: flow-ui
+    path: workflow/flow-ui
+    generates:
+      - devflow/requirements/{REQ}/UI_PROTOTYPE.html
+    requires:
+      - flow-prd
+    optional: true
+
+  - id: flow-epic
+    path: workflow/flow-epic
+    generates:
+      - devflow/requirements/{REQ}/EPIC.md
+      - devflow/requirements/{REQ}/TASKS.md
+    requires:
+      - flow-prd
+    optional_requires:
+      - flow-tech
+      - flow-ui
+      - flow-checklist
+
+  - id: flow-dev
+    path: workflow/flow-dev
+    generates:
+      - src/**
+      - tests/**
+    requires:
+      - flow-epic
+
+  - id: flow-quality
+    path: workflow/flow-quality
+    generates:
+      - devflow/requirements/{REQ}/QUALITY_REPORT.md
+    requires:
+      - flow-dev
+
+  - id: flow-release
+    path: workflow/flow-release
+    generates:
+      - devflow/requirements/{REQ}/RELEASE_PLAN.md
+    requires:
+      - flow-quality
+
+  # -------------------------------------------------------------------------
+  # Bug 修复 Skills
+  # -------------------------------------------------------------------------
+  - id: flow-fix
+    path: workflow/flow-fix
+    generates:
+      - devflow/bugs/{BUG}/ANALYSIS.md
+      - devflow/bugs/{BUG}/PLAN.md
+    requires: []
+
+# =============================================================================
+# Domain Skills (领域 Skills)
+# =============================================================================
+# 可在任意阶段调用的领域专业 Skills
+
+domain:
+  - id: tdd
+    path: domain/tdd
+    description: TDD Iron Law 执行
+
+  - id: debugging
+    path: domain/debugging
+    description: 4阶段系统化调试
+
+  - id: brainstorming
+    path: domain/brainstorming
+    description: 需求头脑风暴
+
+  - id: attention-refresh
+    path: domain/attention-refresh
+    description: 注意力刷新协议
+
+  - id: verification
+    path: domain/verification
+    description: 完成前验证
+
+  - id: receiving-review
+    path: domain/receiving-review
+    description: 处理代码审查反馈
+
+  - id: finishing-branch
+    path: domain/finishing-branch
+    description: 分支完成决策
+
+# =============================================================================
+# Guardrail Skills (守护 Skills)
+# =============================================================================
+# 实时阻断违规行为的守护 Skills
+
+guardrail:
+  - id: constitution-guardian
+    path: guardrail/constitution-guardian
+    description: Constitution 合规检查
+
+  - id: tdd-enforcer
+    path: guardrail/tdd-enforcer
+    description: TDD 顺序强制执行
+
+  - id: file-header-guardian
+    path: guardrail/file-header-guardian
+    description: 文件头注释守护
+
+# =============================================================================
+# Utility Skills (工具 Skills)
+# =============================================================================
+# 通用工具 Skills
+
+utility:
+  - id: git-commit
+    path: utility/git-commit
+    description: Git 提交工作流
+
+  - id: npm-release
+    path: utility/npm-release
+    description: NPM 包发布
+
+  - id: fractal-docs
+    path: utility/fractal-docs
+    description: 分形文档生成
+
+  - id: journey-checker
+    path: utility/journey-checker
+    description: 跨需求一致性检查
+
+  - id: skill-creator
+    path: utility/skill-creator
+    description: Skill 创建向导
+
+  - id: skill-developer
+    path: utility/skill-developer
+    description: Skill 开发指南
+
+  - id: writing-skills
+    path: utility/writing-skills
+    description: Skill 编写最佳实践
+
+  - id: file-standards
+    path: utility/file-standards
+    description: 文件命名规范
+
+  - id: constitution-quick-ref
+    path: utility/constitution-quick-ref
+    description: Constitution 快速参考
+
+# =============================================================================
+# Context Injection Configuration
+# =============================================================================
+# 上下文注入配置（借鉴 Trellis）
+
+context:
+  # 全局上下文（所有 Skill 都会注入）
+  global:
+    - file: .claude/rules/project-constitution.md
+      reason: Quality rules and constraints
+
+  # 按 Skill 类型的默认上下文
+  defaults:
+    workflow:
+      - file: devflow/requirements/{REQ}/BRAINSTORM.md
+        reason: Original intent alignment
+        optional: true
+    domain:
+      - file: devflow/requirements/{REQ}/TASKS.md
+        reason: Current task context
+        optional: true

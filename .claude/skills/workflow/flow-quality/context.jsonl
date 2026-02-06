@@ -1,0 +1,6 @@
+{"file": "devflow/requirements/{REQ}/TASKS.md", "reason": "Task completion status"}
+{"file": "devflow/requirements/{REQ}/PRD.md", "reason": "Spec compliance check"}
+{"file": "devflow/requirements/{REQ}/TECH_DESIGN.md", "reason": "Technical design", "optional": true}
+{"file": "devflow/requirements/{REQ}/ERROR_LOG.md", "reason": "Previous errors", "optional": true}
+{"file": ".claude/config/quality-gates.yml", "reason": "Quality gate rules", "optional": true}
+{"file": ".claude/rules/project-constitution.md", "reason": "Quality rules"}

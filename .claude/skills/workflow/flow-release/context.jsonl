@@ -1,0 +1,7 @@
+{"file": "devflow/requirements/{REQ}/PRD.md", "reason": "Product requirements"}
+{"file": "devflow/requirements/{REQ}/EPIC.md", "reason": "Epic overview"}
+{"file": "devflow/requirements/{REQ}/TASKS.md", "reason": "Task completion"}
+{"file": "devflow/requirements/{REQ}/TEST_REPORT.md", "reason": "Test results", "optional": true}
+{"file": "devflow/requirements/{REQ}/SECURITY_REPORT.md", "reason": "Security results", "optional": true}
+{"file": "devflow/requirements/{REQ}/quickstart.md", "reason": "Verification commands", "optional": true}
+{"file": ".claude/rules/project-constitution.md", "reason": "Quality rules"}

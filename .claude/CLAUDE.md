@@ -3,65 +3,92 @@
 ## Purpose
 This directory contains Claude Code CLI extensions for the CC-DevFlow development workflow system.
 
-## Directory Structure
+## Directory Structure (v4.0 Skills-First Architecture)
 
 ```
 .claude/
-├── agents/                    # Agent instruction files (research-type, invoked by commands)
-│   ├── checklist-agent.md     # Checklist generation logic [NEW: REQ-002]
-│   ├── clarify-analyst.md     # Requirements clarification
-│   ├── flow-researcher.md     # /flow-init mandatory research runner (subagent; file-based memory)
-│   ├── prd-writer.md          # PRD generation
-│   ├── tech-architect.md      # Technical design
-│   ├── planner.md             # EPIC/TASKS planning
-│   ├── code-reviewer.md       # Code review
-│   ├── qa-tester.md           # QA testing
-│   └── ...                    # Other agents
+├── skills/                    # Skills 目录 (核心)
+│   ├── workflow.yaml          # 工作流依赖图定义 [NEW: v4.0]
+│   │
+│   ├── workflow/              # 工作流 Skills [NEW: v4.0]
+│   │   ├── flow-init/         # 需求初始化
+│   │   │   ├── SKILL.md       # 核心指令 (<500 行)
+│   │   │   ├── context.jsonl  # 上下文定义 (借鉴 Trellis)
+│   │   │   ├── scripts/       # 内嵌脚本
+│   │   │   ├── references/    # Agent 指令
+│   │   │   └── assets/        # 模板
+│   │   ├── flow-prd/          # PRD 生成
+│   │   ├── flow-epic/         # Epic/Tasks 规划
+│   │   └── flow-dev/          # 开发执行
+│   │
+│   ├── domain/                # 领域 Skills
+│   │   ├── tdd/               # TDD Iron Law
+│   │   ├── debugging/         # 系统化调试
+│   │   └── brainstorming/     # 头脑风暴
+│   │
+│   ├── guardrail/             # 守护 Skills
+│   │   ├── constitution-guardian/
+│   │   └── tdd-enforcer/
+│   │
+│   └── utility/               # 工具 Skills
+│       ├── git-commit/
+│       └── npm-release/
 │
-├── commands/                  # Slash command definitions
-│   ├── flow-checklist.md      # /flow-checklist command [NEW: REQ-002]
-│   ├── flow-init.md           # /flow-init (modified: research delegated to flow-researcher subagent)
-│   ├── flow-clarify.md        # /flow-clarify
-│   ├── flow-prd.md            # /flow-prd
-│   ├── flow-tech.md           # /flow-tech
-│   ├── flow-epic.md           # /flow-epic (modified: Checklist Gate)
-│   ├── flow-dev.md            # /flow-dev (Autonomous by default, /w --manual opt)
-│   └── ...                    # Other commands
-│
-├── hooks/                     # JavaScript hooks for validation/gating
-│   └── checklist-gate.js      # Epic entry gate hook [NEW: REQ-002]
-│
+├── commands/                  # 精简为触发入口
+├── agents/                    # Agent 指令 (迁移到 skills/*/references/)
+├── hooks/                     # 钩子脚本
+│   └── inject-skill-context.ts  # 上下文注入钩子 [NEW: v4.0]
+├── scripts/                   # 共享脚本
+└── docs/templates/            # 共享模板
+
+devflow/
+├── spec/                      # 分层规范库 [NEW: v4.0]
+│   ├── frontend/index.md      # 前端规范
+│   ├── backend/index.md       # 后端规范
+│   └── shared/index.md        # 共享规范
+└── requirements/              # 需求目录
+```
+
+## v4.0 Skills-First Architecture
+
+### 核心创新 (借鉴 Trellis + OpenSpec)
+
+| 来源 | 创新点 | 应用方式 |
+|------|--------|----------|
+| **Trellis** | JSONL 上下文注入 | 每个 Skill 有 `context.jsonl` |
+| **Trellis** | 分层规范库 | `devflow/spec/{frontend,backend}/` |
+| **OpenSpec** | Schema 驱动工作流 | `workflow.yaml` 定义依赖图 |
+| **OpenSpec** | 文件存在性状态检测 | 通过 generates 判断完成状态 |
+
+### Skill 结构规范
+
+```
+skill-name/
+├── SKILL.md           # 核心指令 (<500 行)
+├── context.jsonl      # 上下文定义
+├── scripts/           # 内嵌脚本
+├── references/        # Agent 指令
+└── assets/            # 模板
+```
+
+### context.jsonl 格式
+
+```jsonl
+{"file": "devflow/requirements/{REQ}/BRAINSTORM.md", "reason": "Original intent"}
+{"file": "devflow/spec/frontend/index.md", "reason": "Frontend conventions", "optional": true}
+```
+
+---
+
+## Legacy Structure (保留兼容)
+
+```
+.claude/
+├── agents/                    # Agent instruction files (迁移中)
+├── commands/                  # Slash command definitions (精简为触发入口)
+├── hooks/                     # JavaScript hooks
 ├── scripts/                   # Bash utility scripts
-│   ├── calculate-checklist-completion.sh  # Completion calculation [NEW: REQ-002]
-│   ├── checklist-errors.sh    # Error codes and validation [NEW: REQ-002]
-│   ├── common.sh              # Shared functions
-│   ├── check-prerequisites.sh # Entry gate checks
-│   └── ...                    # Other scripts
-│
-├── skills/                    # Reusable skill definitions
-│   ├── fractal-docs-generator/   # 目录级 CLAUDE.md 自动生成
-│   │   └── SKILL.md
-│   ├── file-header-guardian/     # 文件头注释 @input/@output/@pos 守护
-│   │   └── SKILL.md
-│   ├── flow-attention-refresh/   # 注意力刷新协议 [NEW: v2.3.0 Ralph × Manus]
-│   │   └── SKILL.md
-│   ├── flow-tdd/                 # TDD enforcement (modified: Error Recording)
-│   │   └── SKILL.md
-│   ├── cc-devflow-orchestrator/
-│   │   └── SKILL.md           # Workflow router (modified: /flow-checklist, /flow-dev autonomous)
-│   ├── journey-coherence-checker/  # 跨需求一致性检查 [NEW: v2.4.0]
-│   │   ├── SKILL.md           # 检查协议：依赖满足、旅程完整、累积偏差
-│   │   └── pressure-scenarios.md  # TDD 压力测试场景
-│   ├── npm-release/              # NPM 包发布工作流
-│   │   └── SKILL.md           # 版本发布、Changelog 维护、原子化发布流程
-│   └── ...
-│
-└── docs/
-    └── templates/
-        ├── CHECKLIST_TEMPLATE.md  # Checklist output template [NEW: REQ-002]
-        ├── ERROR_LOG_TEMPLATE.md  # Error log template [NEW: v2.3.0 Ralph × Manus]
-        ├── ATTEMPT_TEMPLATE.md    # Research attempt template [NEW: v2.3.0 Ralph × Manus]
-        └── ...                    # Other templates
+└── docs/templates/            # Templates
 ```
 
 ## REQ-002 Module: /flow-checklist
