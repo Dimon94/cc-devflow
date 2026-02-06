@@ -11,12 +11,6 @@ description: 'Unified specification phase: PRD → Tech+UI (parallel) → Epic/T
 
 统一规格阶段，合并 flow-prd/flow-tech/flow-ui/flow-epic 为单一命令，内部并行调度 Agent。
 
-## Benefits
-
-- **命令简化**: 4 个命令 → 1 个命令 (-75%)
-- **时间优化**: 8-12 min → 5-8 min (-35%)
-- **并行执行**: Tech + UI 同时进行
-
 ## Input Format
 
 ```bash
