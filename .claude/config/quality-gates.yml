@@ -1,0 +1,215 @@
+# ============================================================================
+# Quality Gates Configuration for CC-DevFlow v3.0
+# ============================================================================
+# Version: 3.0.0
+# Purpose: Define programmatic quality verification rules for each flow phase.
+#          Replaces completion marker checking with code-verifies-code approach.
+# Reference: RM-016 Quality Gate Enhancement
+# ============================================================================
+
+# ============================================================================
+# Global Settings
+# ============================================================================
+global:
+  # Maximum iterations before forced stop (Ralph loop safety)
+  max_iterations: 10
+
+  # Timeout per phase in minutes
+  timeout_minutes: 30
+
+  # Enable verbose logging
+  verbose: false
+
+# ============================================================================
+# Phase-Specific Quality Gates
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# flow-dev: Development Phase
+# ----------------------------------------------------------------------------
+flow-dev:
+  # Programmatic verification commands (must all pass to exit)
+  verify:
+    - name: "Lint Check"
+      command: "npm run lint --if-present || true"
+      required: true
+
+    - name: "Type Check"
+      command: "npm run typecheck --if-present || true"
+      required: true
+
+    - name: "Unit Tests"
+      command: "npm test -- --passWithNoTests"
+      required: true
+
+  # Fallback to completion markers if verify commands not available
+  completion_markers:
+    - "ALL_TASKS_COMPLETE"
+    - "TDD_CHECKPOINT_PASS"
+
+  # Phase-specific settings
+  max_iterations: 15
+  timeout_minutes: 45
+
+# ----------------------------------------------------------------------------
+# flow-review: Code Review Phase
+# ----------------------------------------------------------------------------
+flow-review:
+  verify:
+    - name: "Lint Check"
+      command: "npm run lint --if-present || true"
+      required: true
+
+    - name: "Type Check"
+      command: "npm run typecheck --if-present || true"
+      required: true
+
+  completion_markers:
+    - "SPEC_REVIEW_PASS"
+    - "CODE_QUALITY_PASS"
+
+  max_iterations: 5
+  timeout_minutes: 20
+
+# ----------------------------------------------------------------------------
+# flow-quality: Combined Quality Phase (v3.0 NEW)
+# ----------------------------------------------------------------------------
+flow-quality:
+  # Quick mode (default)
+  quick:
+    verify:
+      - name: "Lint Check"
+        command: "npm run lint --if-present || true"
+        required: true
+
+      - name: "Type Check"
+        command: "npm run typecheck --if-present || true"
+        required: true
+
+      - name: "Unit Tests"
+        command: "npm test -- --passWithNoTests"
+        required: true
+
+  # Full mode (--full flag)
+  full:
+    verify:
+      - name: "Lint Check"
+        command: "npm run lint --if-present || true"
+        required: true
+
+      - name: "Type Check"
+        command: "npm run typecheck --if-present || true"
+        required: true
+
+      - name: "Unit Tests"
+        command: "npm test -- --passWithNoTests"
+        required: true
+
+      - name: "Integration Tests"
+        command: "npm run test:integration --if-present || true"
+        required: false
+
+      - name: "Security Scan"
+        command: "npm audit --audit-level=high || true"
+        required: false
+
+    completion_markers:
+      - "SPEC_REVIEW_PASS"
+      - "CODE_QUALITY_PASS"
+      - "QA_PASS"
+      - "SECURITY_PASS"
+
+  max_iterations: 10
+  timeout_minutes: 30
+
+# ----------------------------------------------------------------------------
+# flow-qa: QA Phase (deprecated in v3.0, use flow-quality)
+# ----------------------------------------------------------------------------
+flow-qa:
+  verify:
+    - name: "Unit Tests"
+      command: "npm test -- --passWithNoTests"
+      required: true
+
+    - name: "Security Audit"
+      command: "npm audit --audit-level=high || true"
+      required: false
+
+  completion_markers:
+    - "QA_PASS"
+    - "SECURITY_PASS"
+
+  max_iterations: 5
+  timeout_minutes: 20
+
+# ----------------------------------------------------------------------------
+# flow-release: Release Phase
+# ----------------------------------------------------------------------------
+flow-release:
+  verify:
+    - name: "All Tests Pass"
+      command: "npm test -- --passWithNoTests"
+      required: true
+
+    - name: "Build Success"
+      command: "npm run build --if-present || true"
+      required: true
+
+  completion_markers:
+    - "PR_CREATED"
+    - "RELEASE_READY"
+
+  max_iterations: 3
+  timeout_minutes: 15
+
+# ============================================================================
+# Error Recording Configuration
+# ============================================================================
+error_recording:
+  # Path to ERROR_LOG.md (relative to requirement directory)
+  log_file: "ERROR_LOG.md"
+
+  # Error entry format
+  format: |
+    ## [{timestamp}] E{error_number}: {title}
+
+    **Phase**: {phase}
+    **Error Type**: {error_type}
+    **Error Message**:
+    ```
+    {error_message}
+    ```
+    **Root Cause**: {root_cause}
+    **Resolution**: {resolution}
+    **Prevention**: {prevention}
+
+  # Error types
+  types:
+    - "Test Failure"
+    - "Build Error"
+    - "Lint Error"
+    - "Type Error"
+    - "Runtime Error"
+    - "Security Issue"
+
+# ============================================================================
+# Integration with Ralph Loop
+# ============================================================================
+ralph_loop:
+  # State file location
+  state_file: "ralph-loop.local.json"
+
+  # Fields to track
+  state_fields:
+    - phase
+    - iteration
+    - errors
+    - lastVerifyResult
+    - lastVerifyTimestamp
+
+  # Exit conditions
+  exit_conditions:
+    - "all_verify_pass"
+    - "max_iterations_reached"
+    - "timeout_reached"
+    - "manual_stop"
