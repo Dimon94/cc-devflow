@@ -43,3 +43,4 @@ coverage/
 
 # Claude Code 缓存
 .claude/tsc-cache/
+.claude/_backup/
