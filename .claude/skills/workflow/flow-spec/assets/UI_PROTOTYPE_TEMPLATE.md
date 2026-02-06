@@ -1,0 +1,1 @@
+../../../docs/templates/UI_PROTOTYPE_TEMPLATE.md

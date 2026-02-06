@@ -1,5 +1,0 @@
-{"file": "devflow/requirements/{REQ}/BRAINSTORM.md", "reason": "Original intent alignment"}
-{"file": "devflow/requirements/{REQ}/research/research.md", "reason": "Research decisions"}
-{"file": "devflow/requirements/{REQ}/research/research-summary.md", "reason": "Research summary", "optional": true}
-{"file": "devflow/requirements/{REQ}/research/internal/codebase-overview.md", "reason": "Codebase context", "optional": true}
-{"file": ".claude/rules/project-constitution.md", "reason": "Quality rules"}

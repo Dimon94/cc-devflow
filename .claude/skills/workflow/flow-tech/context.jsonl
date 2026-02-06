@@ -1,7 +1,0 @@
-{"file": "devflow/requirements/{REQ}/PRD.md", "reason": "Product requirements"}
-{"file": "devflow/requirements/{REQ}/BRAINSTORM.md", "reason": "Original intent"}
-{"file": "devflow/requirements/{REQ}/research/research.md", "reason": "Research decisions"}
-{"file": "devflow/requirements/{REQ}/research/internal/codebase-overview.md", "reason": "Codebase analysis"}
-{"file": "devflow/requirements/{REQ}/UI_PROTOTYPE.html", "reason": "UI prototype", "optional": true}
-{"file": "devflow/spec/backend/index.md", "reason": "Backend conventions", "optional": true}
-{"file": ".claude/rules/project-constitution.md", "reason": "Quality rules"}

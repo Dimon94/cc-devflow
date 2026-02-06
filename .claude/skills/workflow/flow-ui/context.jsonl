@@ -1,6 +1,0 @@
-{"file": "devflow/requirements/{REQ}/PRD.md", "reason": "Product requirements"}
-{"file": "devflow/requirements/{REQ}/BRAINSTORM.md", "reason": "Original intent"}
-{"file": "devflow/requirements/{REQ}/research/research.md", "reason": "Research decisions"}
-{"file": "devflow/STYLE.md", "reason": "Project style guide", "optional": true}
-{"file": "devflow/spec/frontend/index.md", "reason": "Frontend conventions", "optional": true}
-{"file": ".claude/rules/project-constitution.md", "reason": "Quality rules"}
