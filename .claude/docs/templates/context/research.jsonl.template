@@ -1,0 +1,4 @@
+{"type": "file", "path": "research/research.md", "purpose": "Research findings and analysis"}
+{"type": "file", "path": "research/research-summary.md", "purpose": "Condensed research summary"}
+{"type": "file", "path": "research/internal/codebase-overview.md", "purpose": "Codebase structure analysis"}
+{"type": "directory", "path": "research/mcp/", "purpose": "MCP-fetched documentation", "depth": 2}

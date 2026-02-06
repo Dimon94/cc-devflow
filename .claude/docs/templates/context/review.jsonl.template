@@ -1,0 +1,5 @@
+{"type": "file", "path": "PRD.md", "purpose": "Requirements to verify against"}
+{"type": "file", "path": "TASKS.md", "purpose": "Completed tasks to review"}
+{"type": "file", "path": "TECH_DESIGN.md", "purpose": "Design decisions to validate"}
+{"type": "directory", "path": "contracts/", "purpose": "API contracts to verify"}
+{"type": "file", "path": "ERROR_LOG.md", "purpose": "Known issues", "optional": true}

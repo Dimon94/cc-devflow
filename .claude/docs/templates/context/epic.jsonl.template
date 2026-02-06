@@ -1,0 +1,5 @@
+{"type": "file", "path": "PRD.md", "purpose": "Product requirements for task breakdown"}
+{"type": "file", "path": "TECH_DESIGN.md", "purpose": "Technical design decisions"}
+{"type": "file", "path": "data-model.md", "purpose": "Data structures"}
+{"type": "directory", "path": "contracts/", "purpose": "API contracts"}
+{"type": "file", "path": "UI_PROTOTYPE.html", "purpose": "UI prototype reference", "optional": true}

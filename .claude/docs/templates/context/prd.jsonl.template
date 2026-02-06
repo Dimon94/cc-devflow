@@ -1,0 +1,4 @@
+{"type": "file", "path": "BRAINSTORM.md", "purpose": "Original intent and design decisions"}
+{"type": "file", "path": "research/research-summary.md", "purpose": "Research findings summary"}
+{"type": "file", "path": "research/internal/codebase-overview.md", "purpose": "Existing codebase patterns"}
+{"type": "spec", "path": "devflow/spec/shared/naming.md", "purpose": "Naming conventions"}

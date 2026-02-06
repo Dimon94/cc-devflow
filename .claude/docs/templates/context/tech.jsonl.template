@@ -1,0 +1,5 @@
+{"type": "file", "path": "PRD.md", "purpose": "Product requirements"}
+{"type": "file", "path": "BRAINSTORM.md", "purpose": "Original intent alignment"}
+{"type": "file", "path": "research/internal/codebase-overview.md", "purpose": "Existing architecture"}
+{"type": "spec", "path": "devflow/spec/backend/api.md", "purpose": "API conventions"}
+{"type": "spec", "path": "devflow/spec/shared/security.md", "purpose": "Security standards"}

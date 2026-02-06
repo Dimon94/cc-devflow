@@ -1,0 +1,6 @@
+{"type": "file", "path": "TASKS.md", "purpose": "Current task list and progress"}
+{"type": "file", "path": "EPIC.md", "purpose": "Epic overview and phases"}
+{"type": "file", "path": "TECH_DESIGN.md", "purpose": "Technical implementation guide"}
+{"type": "file", "path": "ERROR_LOG.md", "purpose": "Previous errors to avoid", "optional": true}
+{"type": "spec", "path": "devflow/spec/frontend/style.md", "purpose": "Frontend style guide", "optional": true}
+{"type": "spec", "path": "devflow/spec/backend/api.md", "purpose": "Backend API conventions", "optional": true}
