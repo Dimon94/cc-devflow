@@ -204,5 +204,109 @@ Combine Ralph-Wiggum's autonomous iteration loop with Manus-style Planning-with-
 
 ---
 
-**Last Updated**: 2026-01-08
+**Last Updated**: 2026-02-06
 **v2.3.0 Module**: Ralph × Manus Integration
+
+---
+
+## v3.0.0 Module: OpenSpec × Trellis Integration
+
+### Purpose
+
+Borrow design concepts from OpenSpec (Delta Specs + Archive) and Trellis (Context Injection + Ralph Loop) to solve 5 major pain points:
+
+1. **Context Bloat** → Staged Context Injection (RM-015)
+2. **Weak Quality Gates** → Programmatic Verification (RM-016)
+3. **No Incremental Tracking** → Delta Specs Engine (RM-017)
+4. **No Session Persistence** → Workspace System (RM-018)
+5. **Scattered Guidelines** → Unified Spec Directory (RM-019)
+6. **Workflow Redundancy** → Flow Simplification (RM-020)
+
+### New Directory Structure
+
+```
+devflow/
+├── specs/              # SSOT for specifications [NEW: RM-017]
+│   └── modules/        # Module-level specs
+├── workspace/          # Developer workspaces [NEW: RM-018]
+│   └── {developer}/    # Per-developer journals
+├── spec/               # Unified project specs [NEW: RM-019]
+│   ├── frontend/       # Frontend specifications
+│   ├── backend/        # Backend specifications
+│   └── shared/         # Cross-cutting specs
+├── QUICK_REFERENCE.md  # v3.0 workflow quick reference [NEW]
+└── MIGRATION_v3.0.md   # Migration guide [NEW]
+
+.claude/
+├── config/
+│   └── quality-gates.yml  # Programmatic verification rules [NEW: RM-016]
+├── hooks/
+│   ├── inject-agent-context.ts  # Context injection hook [NEW: RM-015]
+│   ├── types/
+│   │   └── context-injection.d.ts  # TypeScript types [NEW]
+│   └── utils/
+│       └── jsonl-parser.ts  # JSONL parsing utilities [NEW]
+├── commands/
+│   ├── flow-context.md    # Context management [NEW: RM-015]
+│   ├── flow-delta.md      # Delta specs management [NEW: RM-017]
+│   ├── flow-workspace.md  # Workspace management [NEW: RM-018]
+│   └── flow-quality.md    # Combined quality verification [NEW: RM-020]
+├── scripts/
+│   ├── flow-context-*.sh  # Context scripts [NEW]
+│   ├── flow-delta-*.sh    # Delta scripts [NEW]
+│   ├── flow-workspace-*.sh # Workspace scripts [NEW]
+│   ├── flow-quality-*.sh  # Quality scripts [NEW]
+│   ├── run-quality-gates.sh  # Gate execution [NEW: RM-016]
+│   └── record-quality-error.sh  # Error recording [NEW]
+└── docs/templates/
+    ├── context/           # Context JSONL templates [NEW: RM-015]
+    │   ├── dev.jsonl.template
+    │   ├── epic.jsonl.template
+    │   └── ...
+    ├── DELTA_SPEC_TEMPLATE.md  # Delta spec format [NEW: RM-017]
+    └── JOURNAL_TEMPLATE.md     # Journal format [NEW: RM-018]
+```
+
+### New Commands
+
+| Command | Purpose | Module |
+|---------|---------|--------|
+| `/flow-context` | Manage staged context injection | RM-015 |
+| `/flow-delta` | Manage delta specs | RM-017 |
+| `/flow-workspace` | Manage developer workspace | RM-018 |
+| `/flow-quality` | Combined quality verification | RM-020 |
+
+### Simplified Workflows
+
+```
+【精简流程】(5 步, 适合小需求)
+/flow-init --quick → /flow-prd --quick → /flow-epic → /flow-dev → /flow-release
+
+【标准流程】(6 步, 适合中等需求)
+/flow-init → /flow-prd → /flow-epic → /flow-dev → /flow-quality → /flow-release
+
+【完整流程】(8 步, 适合大需求)
+/flow-init → /flow-clarify → /flow-prd → /flow-tech → /flow-ui
+    → /flow-epic → /flow-dev → /flow-quality --full → /flow-release
+```
+
+### Deprecations
+
+| Old Command | Replacement | Status |
+|-------------|-------------|--------|
+| `/flow-review` | `/flow-quality --full` | Deprecated (warning) |
+| `/flow-qa` | `/flow-quality --full` | Deprecated (warning) |
+
+### Expected Improvements
+
+| Metric | Before | After | Improvement |
+|--------|--------|-------|-------------|
+| Agent context size | 10000+ tokens | 3000 tokens | -70% |
+| Single command time | 2-3 min | 1-1.5 min | -50% |
+| Full workflow time | 30-45 min | 15-20 min | -50% |
+| Rework rate | ~30% | ~10% | -67% |
+
+---
+
+**Last Updated**: 2026-02-06
+**v3.0.0 Module**: OpenSpec × Trellis Integration

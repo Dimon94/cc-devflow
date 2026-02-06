@@ -38,13 +38,25 @@ Guide users to the correct agent/command WITHOUT duplicating their detailed stan
      ↓
 /flow-dev → TASKS.md execution (TDD + Autonomous mode default)
      ↓
-/flow-review → SPEC_REVIEW.md + CODE_QUALITY_REVIEW.md (Two-Stage Review) 
-     ↓
-/flow-qa → QA reports (invoke qa-tester + security-reviewer agents)
+/flow-quality → Quality verification (v3.0 NEW, replaces flow-review + flow-qa)
      ↓
 /flow-release → PR creation + deployment (分支完成决策)
      ↓
 /flow-verify → consistency check (invoke consistency-checker agent, 任意阶段可调用)
+```
+
+### 🚀 v3.0 简化流程
+
+```
+【精简流程】(适合小需求, 5 步)
+/flow-init --quick → /flow-prd --quick → /flow-epic → /flow-dev → /flow-release
+
+【标准流程】(适合中等需求, 6 步)
+/flow-init → /flow-prd → /flow-epic → /flow-dev → /flow-quality → /flow-release
+
+【完整流程】(适合大需求, 8 步)
+/flow-init → /flow-clarify → /flow-prd → /flow-tech → /flow-ui
+    → /flow-epic → /flow-dev → /flow-quality --full → /flow-release
 ```
 
 ### 🐛 Bug 修复工作流
@@ -183,13 +195,11 @@ status: "epic_complete"
   → Alternative: /flow-dev --manual (Manual mode for complex requirements) 
 
 status: "development_complete"
-  → Recommend: /flow-review (Two-Stage Code Review) 
-  → Alternative: /flow-qa (skip review, go directly to QA)
+  → Recommend: /flow-quality (quick verification, v3.0 NEW)
+  → Alternative: /flow-quality --full (comprehensive review)
+  → Deprecated: /flow-review, /flow-qa (still work, but show warning)
 
-status: "review_complete"
-  → Recommend: /flow-qa (quality assurance and security review)
-
-status: "qa_complete"
+status: "quality_complete"
   → Recommend: /flow-release (create PR and release)
 
 status: "released"
