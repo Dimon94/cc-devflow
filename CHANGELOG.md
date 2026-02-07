@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.1.2] - 2026-02-07
+
+### 🔧 Adapt Compiler Migration Reliability Fixes
+
+v4.1.2 fixes regressions in multi-platform `adapt` output generation and adds regression coverage to prevent command/skill migration gaps.
+
+#### Fixed
+
+- **Nested command compilation restored**
+  - `adapt` now recursively scans `.claude/commands/**` instead of top-level only
+  - Preserves relative command paths (for example `flow/new` → platform subdirectories)
+  - Ensures command outputs are emitted to matching platform folder structures
+
+- **Skills migration completeness restored**
+  - Added recursive Skill discovery for grouped and root-level skills
+  - Registry and platform emitters now discover the same full skill set
+  - Resolved missing Codex/Cursor/Qwen/Antigravity skill outputs
+
+- **Module emission restored in main compile path**
+  - `adapt` main flow now emits skills/agents/rules/hooks in addition to commands
+  - CLI output now reports module-level emission statistics for easier verification
+
+- **Resource copy reliability improved**
+  - Handles Skill resource symlinks more robustly during emitter copy
+  - Ignores glob-style inline paths to avoid false missing-file warnings
+  - Fixed broken workflow skill symlink targets under `.claude/skills/workflow/*`
+
+#### Added
+
+- **Regression tests for adapt migration pipeline**
+  - Parser recursive command discovery tests
+  - Skill discovery tests (grouped + root-level)
+  - Compile end-to-end regression test
+  - Resource copier glob-filter test
+
+#### Benefits
+
+- ✅ `cc-devflow adapt --platform <target>` now generates complete expected outputs
+- ✅ Cross-platform command/skill migration behavior is consistent and test-protected
+- ✅ Release/debug verification is faster with explicit module emission metrics
+
 ## [4.1.1] - 2026-02-07
 
 ### 🔧 Flow-Init Script Reliability + Flow Docs Alignment
