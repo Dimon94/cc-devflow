@@ -61,9 +61,79 @@ devflow/requirements/${reqId}/
 
 ---
 
-## 🌿 Git 分支约定
+## 🌿 Git Worktree 约定 (v4.3)
 
-### 分支命名
+### Worktree vs Branch 模式
+
+| 模式 | 命令 | 适用场景 |
+|------|------|----------|
+| **Worktree (默认)** | `/flow-init "REQ-123\|Title"` | 多需求并行、需要隔离环境 |
+| **Branch** | `/flow-init "REQ-123\|Title" --branch-only` | 单需求开发、简单修改 |
+
+### Worktree 目录布局
+
+```
+~/projects/
+├── cc-devflow/                    # 主仓库 (main 分支)
+├── cc-devflow-REQ-001/            # REQ-001 worktree
+├── cc-devflow-REQ-002/            # REQ-002 worktree
+├── cc-devflow-analysis/           # 只读分析 worktree (可选)
+└── cc-devflow-hotfix/             # 紧急修复 worktree (可选)
+```
+
+### 命名规范
+
+```bash
+# Worktree 目录
+{repo-name}-{REQ_ID}
+# 示例: cc-devflow-REQ-123
+
+# 对应分支 (不变)
+feature/${reqId}-${slug(BRANCH_TITLE_EN)}
+# 示例: feature/REQ-123-user-order-support
+```
+
+### Worktree 操作流程
+
+1. **创建** (flow-init 自动执行)
+   ```bash
+   git worktree add -b feature/REQ-123-title ../cc-devflow-REQ-123
+   ```
+
+2. **切换**
+   ```bash
+   cd ../cc-devflow-REQ-123
+   # 或使用 shell 别名
+   zw REQ-123
+   ```
+
+3. **开发**
+   - 每个 worktree 独立的 Claude Code 会话
+   - 互不干扰，保持上下文
+
+4. **清理** (flow-release 自动执行)
+   ```bash
+   git worktree remove ../cc-devflow-REQ-123
+   git branch -d feature/REQ-123-title
+   ```
+
+### Shell 别名推荐
+
+```bash
+# 添加到 ~/.zshrc 或 ~/.bashrc
+alias za='cd $(git rev-parse --show-toplevel 2>/dev/null || echo .)'
+alias zl='git worktree list'
+alias zm='cd ~/projects/cc-devflow'
+
+zw() {
+  local req_id="${1:-}"
+  local repo_name=$(basename $(git rev-parse --show-toplevel 2>/dev/null))
+  cd ~/projects/${repo_name}-${req_id}
+}
+```
+
+### 分支命名 (保持不变)
+
 ```bash
 # 标准格式
 feature/${reqId}-${slug(BRANCH_TITLE_EN)}
@@ -75,13 +145,16 @@ feature/REQ-124-permission-management
 
 > BRANCH_TITLE_EN 为 TITLE 的英文意译 (语义为准，非拼音，使用模型意译)
 
-### 分支操作流程
-1. 检查当前在 main 分支且状态干净
-2. 创建特性分支
-3. 实施开发 (TDD方式)
-4. 质量闸检查
-5. 创建 PR
-6. 合并后清理分支
+### 分支操作流程 (Worktree 模式)
+
+1. 确保主仓库在 main 分支且状态干净
+2. 执行 `/flow-init` 创建 worktree + 分支
+3. 切换到 worktree 目录
+4. 启动新的 Claude Code 会话
+5. 实施开发 (TDD方式)
+6. 质量闸检查
+7. 创建 PR
+8. 合并后清理 worktree 和分支
 
 ---
 

@@ -284,7 +284,7 @@ Keep the map aligned with the terrain, or the terrain will be lost.
 
 ---
 
-## Skills-First Architecture (v4.1)
+## Skills-First Architecture (v4.3)
 
 `.claude/skills/` 是 CC-DevFlow 的核心，采用分组 Skills 架构：
 
@@ -292,13 +292,17 @@ Keep the map aligned with the terrain, or the terrain will be lost.
 .claude/skills/
 ├── workflow.yaml           # Skill 依赖图 (借鉴 OpenSpec)
 ├── workflow/               # 9 个工作流 Skills
-│   ├── flow-init/          # 需求初始化
+│   ├── flow-init/          # 需求初始化 (支持 worktree)
 │   ├── flow-spec/          # 统一规格阶段 (v4.1) ⭐ PRD+Tech+UI+Epic
 │   ├── flow-dev/           # 开发执行
 │   ├── flow-quality/       # 质量验证
-│   ├── flow-release/       # 发布管理
+│   ├── flow-release/       # 发布管理 (支持 worktree 清理)
 │   └── flow-fix/           # Bug 修复
-├── domain/                 # 7 个领域 Skills (tdd, debugging, brainstorming...)
+├── domain/                 # 8 个领域 Skills
+│   ├── tdd/                # TDD Iron Law
+│   ├── debugging/          # 系统化调试
+│   ├── brainstorming/      # 头脑风暴
+│   └── using-git-worktrees/ # Git Worktree 管理 [NEW: v4.3] ⭐
 ├── guardrail/              # 3 个守护 Skills (constitution-guardian, tdd-enforcer...)
 └── utility/                # 8 个工具 Skills (npm-release, skill-creator...)
 ```

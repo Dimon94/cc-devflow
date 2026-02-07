@@ -36,7 +36,7 @@ get_repo_root() {
     fi
 }
 
-# Get current requirement ID from branch or environment
+# Get current requirement ID from worktree path, branch, or environment
 # Returns: REQ-XXX or BUG-XXX format
 get_current_req_id() {
     # First check if DEVFLOW_REQ_ID environment variable is set
@@ -45,8 +45,19 @@ get_current_req_id() {
         return
     fi
 
-    # Then check git branch if available
-    if git rev-parse --abbrev-ref HEAD >/dev/null 2>&1; then
+    # Check if in git repo
+    if git rev-parse --show-toplevel >/dev/null 2>&1; then
+        # Try to extract from worktree directory name first (e.g., cc-devflow-REQ-123)
+        local git_root
+        git_root=$(git rev-parse --show-toplevel)
+        local dir_name
+        dir_name=$(basename "$git_root")
+        if [[ "$dir_name" =~ -([A-Z]+-[0-9]+(-[0-9]+)?)$ ]]; then
+            echo "${BASH_REMATCH[1]}"
+            return
+        fi
+
+        # Then check git branch
         local branch=$(git rev-parse --abbrev-ref HEAD)
         # Extract REQ-XXX or BUG-XXX from branch name like feature/REQ-123-title or feature/REQ-20251006-001-title
         # Support formats: REQ-123, REQ-20251006-001, BUG-456, etc.
@@ -560,6 +571,131 @@ list_archived_reqs() {
     if [[ "$found" == "false" ]]; then
         echo "No archived requirements found."
     fi
+}
+
+# =============================================================================
+# Git Worktree Functions (v4.3)
+# =============================================================================
+
+# Check if currently in a git worktree (not main repo)
+# Returns: 0 if in worktree, 1 if in main repo or not in git
+is_in_worktree() {
+    local git_dir
+    git_dir=$(git rev-parse --git-dir 2>/dev/null) || return 1
+
+    # If .git is a file (not directory), we're in a worktree
+    if [[ -f "$(git rev-parse --show-toplevel 2>/dev/null)/.git" ]]; then
+        return 0
+    fi
+    return 1
+}
+
+# Get the main repository path (works from any worktree)
+# Returns: absolute path to main repository
+get_main_repo_path() {
+    local git_root
+    git_root=$(git rev-parse --show-toplevel 2>/dev/null) || return 1
+
+    if is_in_worktree; then
+        # Read gitdir from .git file and extract main repo path
+        local gitdir_content
+        gitdir_content=$(cat "$git_root/.git" 2>/dev/null)
+        if [[ "$gitdir_content" =~ ^gitdir:\ (.+)$ ]]; then
+            local gitdir="${BASH_REMATCH[1]}"
+            # gitdir format: /path/to/main/.git/worktrees/name
+            echo "$gitdir" | sed 's|/.git/worktrees/.*||'
+        fi
+    else
+        echo "$git_root"
+    fi
+}
+
+# Get current worktree path
+# Returns: absolute path to current worktree (or main repo if not in worktree)
+get_worktree_path() {
+    git rev-parse --show-toplevel 2>/dev/null
+}
+
+# Get worktree directory for a specific REQ_ID
+# Args: $1 - REQ_ID
+# Returns: expected worktree path (may not exist)
+get_worktree_dir_for_req() {
+    local req_id="$1"
+    local main_repo
+    main_repo=$(get_main_repo_path) || return 1
+
+    local repo_name
+    repo_name=$(basename "$main_repo")
+
+    echo "$(dirname "$main_repo")/${repo_name}-${req_id}"
+}
+
+# Check if a worktree exists for a specific REQ_ID
+# Args: $1 - REQ_ID
+# Returns: 0 if exists, 1 if not
+worktree_exists_for_req() {
+    local req_id="$1"
+    local worktree_dir
+    worktree_dir=$(get_worktree_dir_for_req "$req_id")
+
+    [[ -d "$worktree_dir" ]]
+}
+
+# Extract REQ_ID from current worktree path or branch
+# Returns: REQ_ID or empty string
+get_req_id_from_worktree() {
+    local git_root
+    git_root=$(git rev-parse --show-toplevel 2>/dev/null) || return 1
+
+    # Try to extract from directory name first (e.g., cc-devflow-REQ-123)
+    local dir_name
+    dir_name=$(basename "$git_root")
+    if [[ "$dir_name" =~ -([A-Z]+-[0-9]+(-[0-9]+)?)$ ]]; then
+        echo "${BASH_REMATCH[1]}"
+        return 0
+    fi
+
+    # Fall back to branch name
+    local branch
+    branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+    if [[ "$branch" =~ (REQ-[0-9]+(-[0-9]+)?|BUG-[0-9]+(-[0-9]+)?) ]]; then
+        echo "${BASH_REMATCH[1]}"
+        return 0
+    fi
+
+    echo ""
+}
+
+# List all worktrees with their REQ_IDs
+# Output format: path|branch|req_id (one per line)
+list_worktrees_with_req() {
+    local main_repo
+    main_repo=$(get_main_repo_path) || return 1
+
+    git -C "$main_repo" worktree list --porcelain | while IFS= read -r line; do
+        if [[ "$line" =~ ^worktree ]]; then
+            local path="${line#worktree }"
+        elif [[ "$line" =~ ^branch ]]; then
+            local branch="${line#branch refs/heads/}"
+            local req_id=""
+            local dir_name
+            dir_name=$(basename "$path")
+            if [[ "$dir_name" =~ -([A-Z]+-[0-9]+(-[0-9]+)?)$ ]]; then
+                req_id="${BASH_REMATCH[1]}"
+            elif [[ "$branch" =~ (REQ-[0-9]+(-[0-9]+)?|BUG-[0-9]+(-[0-9]+)?) ]]; then
+                req_id="${BASH_REMATCH[1]}"
+            fi
+            echo "${path}|${branch}|${req_id}"
+        elif [[ "$line" =~ ^detached ]]; then
+            local req_id=""
+            local dir_name
+            dir_name=$(basename "$path")
+            if [[ "$dir_name" =~ -([A-Z]+-[0-9]+(-[0-9]+)?)$ ]]; then
+                req_id="${BASH_REMATCH[1]}"
+            fi
+            echo "${path}|(detached)|${req_id}"
+        fi
+    done
 }
 
 # Color output helpers

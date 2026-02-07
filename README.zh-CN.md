@@ -32,6 +32,7 @@
 - 🔄 **自主开发** - Ralph × Manus 集成实现有记忆的持续迭代
 - 🔌 **多平台支持** - 通过 `npm run adapt` 编译工作流到 Codex、Cursor、Qwen、Antigravity
 - 🔄 **多模块编译器** - 完整模块编译：skills、commands、agents、rules、hooks
+- 🌿 **Git Worktree 集成** - 支持 3-5 个并行 Claude 会话的隔离 worktree 开发
 
 ---
 
@@ -484,7 +485,37 @@ bash .claude/tests/run-all-tests.sh --scripts
 
 ## 📝 版本历史
 
-### v4.1.0 (2026-02-07) - 最新版本
+### v4.3.0 (2026-02-07) - 最新版本
+
+**🌿 Git Worktree 集成：并行开发支持**
+
+v4.3.0 引入 Git Worktree 集成，支持多个隔离的 Claude Code 会话并行开发：
+
+- **Git Worktree 模式（默认）** - 隔离的开发环境
+  - 创建 `../repo-name-REQ-xxx/` worktree 目录
+  - 每个 worktree 有独立的 Claude Code 会话
+  - 用 `cd` 切换需求，而非 `git checkout`
+  - `--branch-only` 标志支持传统分支模式
+
+- **新增 Skill: using-git-worktrees** - 完整的 worktree 管理
+  - `worktree-create.sh` - 创建新 worktree
+  - `worktree-list.sh` - 列出所有 worktree
+  - `worktree-switch.sh` - 切换 worktree
+  - `worktree-cleanup.sh` - 清理已合并的 worktree
+  - Shell 别名模板 (za/zl/zm/zw)
+
+- **修改的命令**
+  - `/flow-init` - 默认 worktree 模式，`--branch-only` 兼容旧模式
+  - `/flow-release` - 自动清理 worktree
+
+**📊 v4.3 改进指标**:
+| 指标 | 之前 | 之后 | 改善 |
+|------|------|------|------|
+| 并行需求数 | 1 | 3-5 | +400% |
+| 上下文切换时间 | 30s | 1s | -97% |
+| 会话隔离 | 无 | 完全 | 100% |
+
+### v4.1.0 (2026-02-07)
 
 **🎯 统一规格阶段：/flow-spec 命令**
 

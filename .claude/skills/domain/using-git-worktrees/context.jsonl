@@ -1,0 +1,4 @@
+{"file": ".claude/scripts/common.sh", "reason": "Worktree helper functions"}
+{"file": ".claude/skills/workflow/flow-init/SKILL.md", "reason": "Worktree creation integration"}
+{"file": ".claude/skills/workflow/flow-release/SKILL.md", "reason": "Worktree cleanup integration"}
+{"file": ".claude/rules/devflow-conventions.md", "reason": "Git worktree conventions", "optional": true}

@@ -9,7 +9,7 @@ description: 'Create PR and manage release. Usage: /flow-release "REQ-123" or /f
 
 ## Purpose
 
-创建 PR 并管理发布流程。
+创建 PR 并管理发布流程，包括 worktree 清理。
 
 ## Input Format
 
@@ -43,6 +43,7 @@ description: 'Create PR and manage release. Usage: /flow-release "REQ-123" or /f
 收集元数据:
 - TITLE, branch, commits, changed files
 - coverage, security 状态
+- **Worktree 检测**: 判断是否在 worktree 中
 
 ### Stage 2: Release Manager Agent
 
@@ -56,11 +57,46 @@ description: 'Create PR and manage release. Usage: /flow-release "REQ-123" or /f
 - 标题: `${REQ_ID}: ${TITLE}`
 - 正文: agent 输出
 
-### Stage 4: Exit Gate
+### Stage 4: Worktree/Branch Cleanup
+
+**Worktree 模式**:
+```bash
+# 获取当前 worktree 信息
+CURRENT_WORKTREE=$(git rev-parse --show-toplevel)
+MAIN_REPO=$(get_main_repo_path)
+BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+
+# 切换到主仓库
+cd "$MAIN_REPO"
+
+# 合并 (PR 或 fast-forward)
+# ...
+
+# 删除 worktree
+git worktree remove "$CURRENT_WORKTREE"
+
+# 删除分支
+git branch -d "$BRANCH_NAME"
+```
+
+**分支模式**:
+```bash
+# 切换到 main
+git checkout main
+
+# 合并
+git merge --ff-only "$BRANCH_NAME"
+
+# 删除分支
+git branch -d "$BRANCH_NAME"
+```
+
+### Stage 5: Exit Gate
 
 1. RELEASE_PLAN.md 存在
 2. PR 创建成功
 3. Status: `release_complete`
+4. Worktree 已清理 (如适用)
 
 ## Output
 
@@ -71,7 +107,17 @@ devflow/requirements/${REQ_ID}/
 
 GitHub:
 └── PR created with link
+
+Cleanup:
+└── Worktree removed (if applicable)
 ```
+
+## Worktree Cleanup Notes
+
+- 清理前确保所有更改已提交并推送
+- 如果 PR 未合并，worktree 保留
+- 使用 `--keep-worktree` 标志可跳过清理
+- 清理失败不阻塞发布流程
 
 ## Next Step
 

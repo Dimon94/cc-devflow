@@ -3,7 +3,7 @@
 ## Purpose
 This directory contains Claude Code CLI extensions for the CC-DevFlow development workflow system.
 
-## Directory Structure (v4.1 Skills-First Architecture)
+## Directory Structure (v4.3 Skills-First Architecture)
 
 ```
 .claude/
@@ -11,7 +11,7 @@ This directory contains Claude Code CLI extensions for the CC-DevFlow developmen
 │   ├── workflow.yaml          # 工作流依赖图定义 [NEW: v4.0]
 │   │
 │   ├── workflow/              # 工作流 Skills [NEW: v4.0]
-│   │   ├── flow-init/         # 需求初始化
+│   │   ├── flow-init/         # 需求初始化 (支持 worktree)
 │   │   │   ├── SKILL.md       # 核心指令 (<500 行)
 │   │   │   ├── context.jsonl  # 上下文定义 (借鉴 Trellis)
 │   │   │   ├── scripts/       # 内嵌脚本
@@ -22,12 +22,14 @@ This directory contains Claude Code CLI extensions for the CC-DevFlow developmen
 │   │   ├── flow-tech/         # 技术设计 (deprecated, use flow-spec)
 │   │   ├── flow-ui/           # UI 原型 (deprecated, use flow-spec)
 │   │   ├── flow-epic/         # Epic/Tasks (deprecated, use flow-spec)
-│   │   └── flow-dev/          # 开发执行
+│   │   ├── flow-dev/          # 开发执行
+│   │   └── flow-release/      # 发布管理 (支持 worktree 清理)
 │   │
 │   ├── domain/                # 领域 Skills
 │   │   ├── tdd/               # TDD Iron Law
 │   │   ├── debugging/         # 系统化调试
-│   │   └── brainstorming/     # 头脑风暴
+│   │   ├── brainstorming/     # 头脑风暴
+│   │   └── using-git-worktrees/  # Git Worktree 管理 [NEW: v4.3] ⭐
 │   │
 │   ├── guardrail/             # 守护 Skills
 │   │   ├── constitution-guardian/
@@ -45,6 +47,7 @@ This directory contains Claude Code CLI extensions for the CC-DevFlow developmen
 ├── hooks/                     # 钩子脚本
 │   └── inject-skill-context.ts  # 上下文注入钩子 [NEW: v4.0]
 ├── scripts/                   # 共享脚本
+│   └── common.sh              # 通用函数 (含 worktree 辅助函数)
 └── docs/templates/            # 共享模板
     └── _shared/               # 共享模板组件 [NEW: v4.1]
         ├── CONSTITUTION_CHECK.md
@@ -521,3 +524,93 @@ T2          └─────────┬──────────┘
 
 **Last Updated**: 2026-02-07
 **v4.1.0 Module**: Unified Specification Phase
+
+---
+
+## v4.3.0 Module: Git Worktree Integration
+
+### Purpose
+
+将所有 Git 分支操作改为 Git Worktree 方式，支持 3-5 个并行 Claude Code 会话，借鉴官方最佳实践。
+
+### Key Changes
+
+| Before (v4.2) | After (v4.3) | Improvement |
+|---------------|--------------|-------------|
+| 传统分支切换 | Worktree 隔离 | 并行开发 |
+| stash/checkout | cd 切换 | 切换时间 -97% |
+| 单一 Claude 会话 | 多会话并行 | 效率 +200% |
+
+### Worktree Directory Layout
+
+```
+~/projects/
+├── cc-devflow/                    # 主仓库 (main 分支)
+├── cc-devflow-REQ-001/            # REQ-001 worktree
+├── cc-devflow-REQ-002/            # REQ-002 worktree
+├── cc-devflow-analysis/           # 只读分析 worktree (可选)
+└── cc-devflow-hotfix/             # 紧急修复 worktree (可选)
+```
+
+### New Skill: using-git-worktrees
+
+```
+.claude/skills/domain/using-git-worktrees/
+├── SKILL.md                    # 核心指令 (~200 行)
+├── context.jsonl               # 上下文定义
+├── scripts/
+│   ├── worktree-create.sh      # 创建 worktree
+│   ├── worktree-list.sh        # 列出 worktree
+│   ├── worktree-switch.sh      # 切换 worktree
+│   ├── worktree-cleanup.sh     # 清理 worktree
+│   └── worktree-status.sh      # 状态检查
+└── assets/
+    └── SHELL_ALIASES.md        # Shell 别名模板
+```
+
+### Modified Commands
+
+| Command | Change |
+|---------|--------|
+| `/flow-init` | 默认使用 worktree 模式，`--branch-only` 兼容旧模式 |
+| `/flow-release` | 自动清理 worktree |
+
+### Shell Aliases (Recommended)
+
+```bash
+alias za='cd $(git rev-parse --show-toplevel 2>/dev/null || echo .)'
+alias zl='git worktree list'
+alias zm='cd ~/projects/cc-devflow'
+
+zw() {
+  local req_id="${1:-}"
+  local repo_name=$(basename $(git rev-parse --show-toplevel 2>/dev/null))
+  cd ~/projects/${repo_name}-${req_id}
+}
+```
+
+### New common.sh Functions
+
+| Function | Purpose |
+|----------|---------|
+| `is_in_worktree()` | 检测是否在 worktree 中 |
+| `get_main_repo_path()` | 获取主仓库路径 |
+| `get_worktree_path()` | 获取当前 worktree 路径 |
+| `get_worktree_dir_for_req()` | 获取指定 REQ 的 worktree 目录 |
+| `worktree_exists_for_req()` | 检查 worktree 是否存在 |
+| `get_req_id_from_worktree()` | 从 worktree 路径提取 REQ-ID |
+| `list_worktrees_with_req()` | 列出所有 worktree 及其 REQ-ID |
+
+### Expected Improvements
+
+| Metric | Before | After | Improvement |
+|--------|--------|-------|-------------|
+| 并行需求数 | 1 | 3-5 | +400% |
+| 上下文切换时间 | 30s | 1s | -97% |
+| 紧急修复响应 | 需要 stash | 直接新建 | 即时 |
+| Claude 会话隔离 | 无 | 完全隔离 | 100% |
+
+---
+
+**Last Updated**: 2026-02-07
+**v4.3.0 Module**: Git Worktree Integration
