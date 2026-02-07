@@ -285,7 +285,7 @@ Keep the map aligned with the terrain, or the terrain will be lost.
 
 ---
 
-## Skills-First Architecture (v4.3)
+## Skills-First Architecture (v4.7)
 
 `.claude/skills/` 是 CC-DevFlow 的核心，采用分组 Skills 架构：
 
@@ -294,8 +294,8 @@ Keep the map aligned with the terrain, or the terrain will be lost.
 ├── workflow.yaml           # Skill 依赖图 (借鉴 OpenSpec)
 ├── workflow/               # 9 个工作流 Skills
 │   ├── flow-init/          # 需求初始化 (支持 worktree)
-│   ├── flow-spec/          # 统一规格阶段 (v4.1) ⭐ PRD+Tech+UI+Epic
-│   ├── flow-dev/           # 开发执行
+│   ├── flow-spec/          # 统一规格阶段 (v4.1) ⭐ PRD+Tech+UI+Epic (支持 Team 模式)
+│   ├── flow-dev/           # 开发执行 (支持 --team 并行模式) [NEW: v4.7] ⭐
 │   ├── flow-quality/       # 质量验证
 │   ├── flow-release/       # 发布管理 (支持 worktree 清理)
 │   └── flow-fix/           # Bug 修复
@@ -307,6 +307,25 @@ Keep the map aligned with the terrain, or the terrain will be lost.
 ├── guardrail/              # 3 个守护 Skills (constitution-guardian, tdd-enforcer...)
 └── utility/                # 8 个工具 Skills (npm-release, skill-creator...)
 ```
+
+### v4.7 Claude Team 集成
+
+多 Agent 并行协作开发：
+
+```bash
+/flow:dev "REQ-123" --team               # Team 模式，3 个 Agent 并行
+/flow:dev "REQ-123" --team --agents 5    # Team 模式，5 个 Agent 并行
+```
+
+**新增 Hooks**:
+- `TeammateIdle Hook` - 任务分配和调度
+- `TaskCompleted Hook` - 完成时质量验证
+
+**新增脚本**:
+- `parse-task-dependencies.js` - 任务依赖解析
+- `detect-file-conflicts.sh` - 文件冲突检测
+- `team-dev-init.sh` - Dev Team 初始化
+- `team-state-recovery.sh` - 状态恢复
 
 ### v4.2 命令命名空间重构
 
