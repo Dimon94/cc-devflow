@@ -262,14 +262,13 @@ bash .claude/tests/constitution/run_all_constitution_tests.sh
 |---------|---------|---------------|---------------|
 | `/flow-new` | 🎯 Start New Requirement | `/flow-new "REQ-123\|Feature"` | [→](docs/commands/flow-new.md) |
 | `/flow-init` | 📦 Initialize Requirement | `/flow-init "REQ-123\|Feature"` | [→](docs/commands/flow-init.md) |
-| `/flow-clarify` | 🔎 Clarify Ambiguities | `/flow-clarify "REQ-123"` | [→](.claude/commands/flow-clarify.md) |
-| `/flow-spec` | 📋 Unified Specification (v4.1) | `/flow-spec "REQ-123"` | [→](.claude/commands/flow-spec.md) |
-| `/flow-checklist` | ✅ Requirement Quality Check | `/flow-checklist --type ux` | [→](.claude/commands/flow-checklist.md) |
-| `/flow-review` | �� Two-Stage Code Review | `/flow-review "REQ-123"` | [→](.claude/commands/flow-review.md) |
-| `/flow-fix` | 🐛 Systematic Bug Fix | `/flow-fix "BUG-123\|Description"` | [→](.claude/commands/flow-fix.md) |
-| `/flow-verify` | 🔍 Verify Consistency | `/flow-verify "REQ-123"` | [→](docs/commands/flow-verify.md) |
-| `/flow-qa` | 🧪 Quality Assurance | `/flow-qa "REQ-123"` | [→](docs/commands/flow-qa.md) |
-| `/flow-release` | 🚢 Create Release | `/flow-release "REQ-123"` | [→](docs/commands/flow-release.md) |
+| `/flow-clarify` | 🔎 Clarify Ambiguities | `/flow-clarify "REQ-123"` | [→](.claude/commands/flow/clarify.md) |
+| `/flow-spec` | 📋 Unified Specification (v4.1) | `/flow-spec "REQ-123"` | [→](.claude/commands/flow/spec.md) |
+| `/flow-checklist` | ✅ Requirement Quality Check | `/flow-checklist --type ux` | [→](.claude/commands/flow/checklist.md) |
+| `/flow-quality` | ✅ Combined Quality Verification | `/flow-quality "REQ-123" --full` | [→](.claude/commands/flow/quality.md) |
+| `/flow-fix` | 🐛 Systematic Bug Fix | `/flow-fix "BUG-123\|Description"` | [→](.claude/commands/flow/fix.md) |
+| `/flow-verify` | 🔍 Verify Consistency | `/flow-verify "REQ-123"` | [→](.claude/commands/flow/verify.md) |
+| `/flow-release` | 🚢 Create Release | `/flow-release "REQ-123"` | [→](.claude/commands/flow/release.md) |
 
 📚 [Complete Command Reference](docs/commands/README.md)
 
@@ -288,7 +287,7 @@ Your Scenario:
 ├─ Continue interrupted development? → /flow-restart "REQ-123"
 ├─ Check development progress? → /flow-status REQ-123
 ├─ Found document inconsistencies? → /flow-verify "REQ-123"
-├─ Development complete, need testing? → /flow-qa "REQ-123"
+├─ Development complete, need verification? → /flow-quality "REQ-123" --full
 ├─ Fix production bug? → /flow-fix "BUG-001|Description"
 └─ Ready to release? → /flow-release "REQ-123"
 ```
@@ -322,11 +321,9 @@ graph TB
 
     FlowSpec --> FlowDev["/flow-dev<br/>TASKS.md execution<br/>TDD Checkpoint"]
 
-    FlowDev --> FlowReview["/flow-review<br/>Two-Stage Review<br/>Spec → Quality"]
+    FlowDev --> FlowQuality["/flow-quality<br/>Quick/Full Verification<br/>Spec + Quality + Security"]
 
-    FlowReview --> FlowQA["/flow-qa<br/>QA reports & Security"]
-
-    FlowQA --> FlowRelease["/flow-release<br/>PR creation<br/>Branch decision"]
+    FlowQuality --> FlowRelease["/flow-release<br/>PR creation<br/>Branch decision"]
 
     FlowRelease --> FlowVerify["/flow-verify<br/>Consistency check"]
 
@@ -340,8 +337,7 @@ graph TB
     style FlowClarify fill:#fff9c4
     style FlowSpec fill:#e8f5e9
     style FlowDev fill:#f3e5f5
-    style FlowReview fill:#e1bee7
-    style FlowQA fill:#fce4ec
+    style FlowQuality fill:#e1bee7
     style FlowRelease fill:#e0f2f1
     style FlowVerify fill:#e3f2fd
 ```
@@ -351,7 +347,7 @@ graph TB
 - **Requirement-Level Commands** (light orange): Execute once per requirement (REQ-XXX)
 - **Unified /flow-spec** (v4.1): Replaces flow-prd/flow-tech/flow-ui/flow-epic with parallel execution
 - **Brainstorming** (v2.3.0): `/flow-init` now generates `BRAINSTORM.md` as requirement "North Star"
-- **Two-Stage Review** (v2.3.0): `/flow-review` validates Spec Compliance before Code Quality
+- **Unified Quality Verification** (v3.0.0): `/flow-quality --full` combines spec compliance, code quality, and security
 - **Optional Steps** (yellow): `/flow-clarify` is optional; skip if requirements are clear
 - **TDD Checkpoint** (v2.3.0): `/flow-dev` includes mandatory TDD checkpoint (tests must FAIL first)
 - **Quality Gates**: Each stage has entry/exit gates ensuring document quality and Constitution compliance
@@ -713,7 +709,7 @@ v2.3.0 upgrades the Constitution from a "document" to an "executable discipline 
 - Cross-reference to `rationalization-library.md`
 
 **📁 New Files**:
-- `.claude/commands/cancel-ralph.md` - Cancel Ralph loop command
+- `.claude/commands/util/cancel-ralph.md` - Cancel Ralph loop command
 - `.claude/skills/flow-attention-refresh/SKILL.md` - 4 attention refresh protocols
 - `.claude/hooks/ralph-stop-hook.sh` - Stop Hook for self-referential loops
 - `.claude/hooks/hooks.json` - Hook registration configuration
@@ -722,7 +718,7 @@ v2.3.0 upgrades the Constitution from a "document" to an "executable discipline 
 - `.claude/docs/templates/ATTEMPT_TEMPLATE.md` - Research attempt log format
 - `.claude/agents/spec-reviewer.md` - Stage 1 spec compliance reviewer
 - `.claude/agents/code-quality-reviewer.md` - Stage 2 code quality reviewer
-- `.claude/commands/flow-review.md` - Two-stage review command
+- `.claude/commands/flow-review.md` - Two-stage review command (legacy, replaced by `.claude/commands/flow/quality.md`)
 - `.claude/rules/rationalization-library.md` - Centralized rationalization defense
 - `.claude/scripts/verify-gate.sh` - Exit gate verification script
 - `.claude/skills/flow-brainstorming/` - Brainstorming skill

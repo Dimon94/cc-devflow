@@ -256,12 +256,13 @@ bash .claude/tests/constitution/run_all_constitution_tests.sh
 |------|------|----------|----------|
 | `/flow-new` | 🎯 启动新需求 | `/flow-new "REQ-123\|功能"` | [→](docs/commands/flow-new.zh-CN.md) |
 | `/flow-init` | 📦 初始化需求 | `/flow-init "REQ-123\|功能"` | [→](docs/commands/flow-init.zh-CN.md) |
-| `/flow-clarify` | 🔎 澄清歧义 | `/flow-clarify "REQ-123"` | [→](.claude/commands/flow-clarify.md) |
-| `/flow-spec` | 📋 统一规格阶段 (v4.1) | `/flow-spec "REQ-123"` | [→](.claude/commands/flow-spec.md) |
-| `/flow-checklist` | ✅ 需求质量检查 | `/flow-checklist --type ux` | [→](.claude/commands/flow-checklist.md) |
-| `/flow-verify` | 🔍 验证一致性 | `/flow-verify "REQ-123"` | [→](docs/commands/flow-verify.zh-CN.md) |
-| `/flow-qa` | 🧪 质量保证 | `/flow-qa "REQ-123"` | [→](docs/commands/flow-qa.zh-CN.md) |
-| `/flow-release` | 🚢 创建发布 | `/flow-release "REQ-123"` | [→](docs/commands/flow-release.zh-CN.md) |
+| `/flow-clarify` | 🔎 澄清歧义 | `/flow-clarify "REQ-123"` | [→](.claude/commands/flow/clarify.md) |
+| `/flow-spec` | 📋 统一规格阶段 (v4.1) | `/flow-spec "REQ-123"` | [→](.claude/commands/flow/spec.md) |
+| `/flow-checklist` | ✅ 需求质量检查 | `/flow-checklist --type ux` | [→](.claude/commands/flow/checklist.md) |
+| `/flow-quality` | ✅ 统一质量验证 | `/flow-quality "REQ-123" --full` | [→](.claude/commands/flow/quality.md) |
+| `/flow-fix` | 🐛 系统化缺陷修复 | `/flow-fix "BUG-123\|描述"` | [→](.claude/commands/flow/fix.md) |
+| `/flow-verify` | 🔍 验证一致性 | `/flow-verify "REQ-123"` | [→](.claude/commands/flow/verify.md) |
+| `/flow-release` | 🚢 创建发布 | `/flow-release "REQ-123"` | [→](.claude/commands/flow/release.md) |
 
 📚 [完整命令参考](docs/commands/README.zh-CN.md)
 
@@ -281,7 +282,7 @@ bash .claude/tests/constitution/run_all_constitution_tests.sh
 ├─ 开发中断需要继续？ → /flow-restart "REQ-123"
 ├─ 检查开发进度？ → /flow-status REQ-123
 ├─ 发现文档不一致？ → /flow-verify "REQ-123"
-├─ 开发完成需要测试？ → /flow-qa "REQ-123"
+├─ 开发完成需要验证？ → /flow-quality "REQ-123" --full
 ├─ 修复生产 Bug？ → /flow-fix "BUG-001|描述"
 └─ 准备发布？ → /flow-release "REQ-123"
 ```
@@ -315,9 +316,9 @@ graph TB
 
     FlowSpec --> FlowDev["/flow-dev<br/>TASKS.md 执行<br/>TDD 强制"]
 
-    FlowDev --> FlowQA["/flow-qa<br/>QA 报告 & 安全审查"]
+    FlowDev --> FlowQuality["/flow-quality<br/>快速/完整验证<br/>规格 + 质量 + 安全"]
 
-    FlowQA --> FlowRelease["/flow-release<br/>PR 创建 & 部署"]
+    FlowQuality --> FlowRelease["/flow-release<br/>PR 创建 & 部署"]
 
     FlowRelease --> FlowVerify["/flow-verify<br/>一致性检查"]
 
@@ -331,7 +332,7 @@ graph TB
     style FlowClarify fill:#fff9c4
     style FlowSpec fill:#e8f5e9
     style FlowDev fill:#f3e5f5
-    style FlowQA fill:#fce4ec
+    style FlowQuality fill:#fce4ec
     style FlowRelease fill:#e0f2f1
     style FlowVerify fill:#e3f2fd
 ```
@@ -340,6 +341,7 @@ graph TB
 - **项目级命令**（浅蓝色）：项目初始化时执行一次，建立全局标准（SSOT）
 - **需求级命令**（浅橙色）：每个需求（REQ-XXX）执行一次
 - **统一 /flow-spec** (v4.1)：替代 flow-prd/flow-tech/flow-ui/flow-epic，支持并行执行
+- **统一质量验证** (v3.0.0)：`/flow-quality --full` 合并规格合规、代码质量与安全检查
 - **可选步骤**（黄色）：`/flow-clarify` 为可选步骤，需求清晰时可跳过
 - **质量闸门**：每个阶段都有入口/出口闸门，确保文档质量和 Constitution 合规性
 - **TDD 强制执行**：`/flow-dev` 严格强制执行测试驱动开发顺序
@@ -701,7 +703,7 @@ v2.3.0 将 Constitution 从"文档"升级为"可执行纪律系统"，借鉴 sup
 - 交叉引用到 `rationalization-library.md`
 
 **📁 新增文件**:
-- `.claude/commands/cancel-ralph.md` - 取消 Ralph 循环命令
+- `.claude/commands/util/cancel-ralph.md` - 取消 Ralph 循环命令
 - `.claude/skills/flow-attention-refresh/SKILL.md` - 4 个注意力刷新协议
 - `.claude/hooks/ralph-stop-hook.sh` - 自引用循环 Stop Hook
 - `.claude/hooks/hooks.json` - Hook 注册配置
@@ -710,7 +712,7 @@ v2.3.0 将 Constitution 从"文档"升级为"可执行纪律系统"，借鉴 sup
 - `.claude/docs/templates/ATTEMPT_TEMPLATE.md` - 研究尝试日志格式
 - `.claude/agents/spec-reviewer.md` - 阶段 1 规格合规性审查员
 - `.claude/agents/code-quality-reviewer.md` - 阶段 2 代码质量审查员
-- `.claude/commands/flow-review.md` - 两阶段审查命令
+- `.claude/commands/flow-review.md` - 两阶段审查命令（legacy，已由 `.claude/commands/flow/quality.md` 取代）
 - `.claude/rules/rationalization-library.md` - 集中式合理化防御
 - `.claude/scripts/verify-gate.sh` - 出口闸门验证脚本
 - `.claude/skills/flow-brainstorming/` - 头脑风暴技能
