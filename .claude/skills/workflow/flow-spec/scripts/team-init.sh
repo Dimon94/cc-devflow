@@ -164,23 +164,26 @@ EOF
 
 main() {
     local action="${1:-detect}"
-    local repo_root="${2:-$(get_repo_root)}"
-    local req_id="${3:-$(get_current_req_id)}"
-    local skip_tech="${4:-false}"
-    local skip_ui="${5:-false}"
 
     case "$action" in
         detect)
+            local skip_tech="${2:-false}"
+            local skip_ui="${3:-false}"
             detect_execution_mode "$skip_tech" "$skip_ui"
             ;;
         init)
+            local repo_root="${2:-$(get_repo_root)}"
+            local req_id="${3:-$(get_current_req_id)}"
             init_spec_team "$repo_root" "$req_id"
             ;;
         config)
             get_team_config
             ;;
         *)
-            echo "Usage: $0 {detect|init|config} [repo_root] [req_id] [skip_tech] [skip_ui]" >&2
+            echo "Usage: $0 {detect|init|config} [args...]" >&2
+            echo "  detect [skip_tech] [skip_ui]  - Detect execution mode" >&2
+            echo "  init [repo_root] [req_id]    - Initialize Team state" >&2
+            echo "  config                        - Output Team config JSON" >&2
             exit 1
             ;;
     esac

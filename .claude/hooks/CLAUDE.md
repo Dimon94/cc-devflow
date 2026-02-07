@@ -16,7 +16,7 @@ Claude Code CLI 钩子脚本，在工具调用前后执行自定义逻辑。
 | `post-tool-use-tracker.sh` | 文件修改追踪 | PostToolUse(Edit\|Write) |
 | `skill-activation-prompt.sh` | Skill 激活提示 | UserPromptSubmit |
 | `error-handling-reminder.sh` | 错误处理提醒 | Stop |
-| `ralph-loop.ts` | Ralph Loop 程序化验证 [v4.4] | SubagentStop |
+| `ralph-loop.ts` | Ralph Loop 程序化验证 [v4.7 Team 模式] | SubagentStop |
 | `teammate-idle-hook.ts` | Team 任务调度器 [v4.7] | TeammateIdle |
 | `task-completed-hook.ts` | 任务完成验证器 [v4.7] | TaskCompleted |
 | `checklist-gate.js` | Checklist 质量门 | Custom |
@@ -87,6 +87,118 @@ Hook 检测到 Task 工具调用
 | tech-architect | flow-spec | tech-architect.jsonl |
 | planner | flow-spec | planner.jsonl |
 | qa-tester | flow-quality | qa-tester.jsonl |
+
+## ralph-loop.ts (v4.7 Team 模式)
+
+SubagentStop 钩子，支持单 Agent 和多 Teammate 两种模式。
+
+### 单 Agent 模式 (原有逻辑)
+
+```
+SubagentStop Event
+    ↓
+加载 .ralph-state.json
+    ↓
+检查超时/最大迭代
+    ↓
+执行 verify 命令
+    ↓
+通过 → allow | 失败 → block
+```
+
+### Team 模式 (v4.7 新增)
+
+```
+SubagentStop Event (with teammate_id)
+    ↓
+加载 orchestration_status.json
+    ↓
+检查 Team 模式是否启用
+    ↓
+检查 Teammate 迭代次数 / 全局迭代次数
+    ↓
+执行 Teammate 级别验证 (teammate_verify)
+    ↓
+验证失败 → block (更新 ralphLoop.teammates[id])
+验证通过 → 检查是否最后一个活跃 Teammate
+    ↓
+是最后一个 → 执行全局验证 (global_verify)
+    ↓
+全局通过 → allow | 全局失败 → block
+不是最后一个 → allow
+```
+
+### 输入格式 (Team 模式扩展)
+
+```typescript
+interface HookInput {
+  hook_event_name: 'SubagentStop';
+  cwd: string;
+  session_id: string;
+  // Team 模式扩展
+  teammate_id?: string;
+  teammate_role?: string;
+}
+```
+
+### 配置 (quality-gates.yml)
+
+```yaml
+ralph_loop:
+  max_iterations: 5
+  timeout_minutes: 30
+
+  team_mode:
+    enabled: true
+    scope: teammate
+
+    teammate_verify:
+      dev-frontend:
+        - npm run lint -- --files-changed
+        - npm run typecheck --if-present
+      dev-backend:
+        - npm run lint -- --files-changed
+        - npm test -- --changed
+
+    global_verify:
+      - npm run lint
+      - npm run typecheck --if-present
+      - npm test -- --passWithNoTests
+
+    max_iterations_per_teammate: 3
+    max_global_iterations: 10
+```
+
+### 状态存储
+
+**单 Agent 模式**: `.ralph-state.json`
+```json
+{
+  "agent_id": "session-xxx",
+  "iteration": 2,
+  "last_failures": [...],
+  "started_at": "2026-02-07T10:00:00Z"
+}
+```
+
+**Team 模式**: `orchestration_status.json` 中的 `ralphLoop` 字段
+```json
+{
+  "ralphLoop": {
+    "enabled": true,
+    "teammates": {
+      "dev-frontend": {
+        "iteration": 2,
+        "lastVerifyResult": "passed",
+        "lastVerifyAt": "2026-02-07T10:00:00Z"
+      }
+    },
+    "globalIteration": 5,
+    "maxIterations": 10,
+    "startedAt": "2026-02-07T09:00:00Z"
+  }
+}
+```
 
 ## teammate-idle-hook.ts (v4.7)
 

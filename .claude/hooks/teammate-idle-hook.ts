@@ -441,6 +441,78 @@ function allTeammatesIdle(teamState: TeamState | undefined): boolean {
 }
 
 /**
+ * 检查 Teammate 是否超时
+ * @param teammate Teammate 状态
+ * @param timeoutSeconds 超时秒数
+ * @returns 是否超时
+ */
+function isTeammateTimedOut(teammate: TeammateState, timeoutSeconds: number): boolean {
+  if (!teammate.lastActiveAt) {
+    return false;
+  }
+
+  const lastActive = new Date(teammate.lastActiveAt).getTime();
+  const now = Date.now();
+  const elapsedSeconds = (now - lastActive) / 1000;
+
+  return elapsedSeconds > timeoutSeconds;
+}
+
+/**
+ * 获取超时的 Teammate 列表
+ */
+function getTimedOutTeammates(
+  teamState: TeamState | undefined,
+  timeoutSeconds: number
+): TeammateState[] {
+  if (!teamState || teamState.teammates.length === 0) {
+    return [];
+  }
+
+  return teamState.teammates.filter(t =>
+    t.status === 'working' && isTeammateTimedOut(t, timeoutSeconds)
+  );
+}
+
+/**
+ * 记录超时告警到 EXECUTION_LOG.md
+ */
+function logTimeoutAlert(
+  repoRoot: string,
+  reqId: string,
+  timedOutTeammates: TeammateState[]
+): void {
+  const logPath = path.join(repoRoot, 'devflow', 'requirements', reqId, 'EXECUTION_LOG.md');
+
+  const timestamp = new Date().toISOString();
+  const alertContent = timedOutTeammates.map(t =>
+    `- **${t.id}** (task: ${t.currentTask || 'none'}, last active: ${t.lastActiveAt})`
+  ).join('\n');
+
+  const logEntry = `
+## [${timestamp}] ⚠️ Teammate Timeout Alert
+
+The following teammates have exceeded the idle timeout:
+
+${alertContent}
+
+**Action**: Consider checking their status or reassigning tasks.
+
+---
+`;
+
+  try {
+    if (fs.existsSync(logPath)) {
+      fs.appendFileSync(logPath, logEntry, 'utf-8');
+    } else {
+      fs.writeFileSync(logPath, `# Execution Log\n${logEntry}`, 'utf-8');
+    }
+  } catch {
+    // 忽略日志写入错误
+  }
+}
+
+/**
  * 分配任务给 Teammate
  */
 function assignTask(
@@ -537,6 +609,7 @@ function main(): void {
   // 加载配置
   const config = loadConfig(repoRoot);
   const idleChecks = getIdleChecks(config);
+  const idleTimeout = config.teammate_idle?.idle_timeout || 300; // 默认 5 分钟
 
   // 加载 orchestration_status.json
   const status = loadOrchestrationStatus(repoRoot, reqId);
@@ -547,6 +620,12 @@ function main(): void {
     };
     console.log(JSON.stringify(output, null, 0));
     process.exit(0);
+  }
+
+  // 检查超时的 Teammate 并记录告警
+  const timedOutTeammates = getTimedOutTeammates(status.team, idleTimeout);
+  if (timedOutTeammates.length > 0) {
+    logTimeoutAlert(repoRoot, reqId, timedOutTeammates);
   }
 
   // 如果有上一个任务，执行验证

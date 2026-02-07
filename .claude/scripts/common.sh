@@ -1090,3 +1090,148 @@ cleanup_team_state() {
     ' "$status_file" > "${status_file}.tmp" && mv "${status_file}.tmp" "$status_file"
 }
 
+# =============================================================================
+# Team Monitoring Functions (v4.7)
+# =============================================================================
+
+# Get Team status summary
+# Args: $1 - repo root, $2 - requirement ID
+# Returns: JSON summary of Team status
+get_team_status_summary() {
+    local repo_root="$1"
+    local req_id="$2"
+    local status_file
+    status_file=$(get_req_dir "$repo_root" "$req_id")/orchestration_status.json
+
+    if [[ ! -f "$status_file" ]]; then
+        echo '{"error": "Status file not found"}'
+        return 1
+    fi
+
+    jq '{
+        mode: .team.mode,
+        lead: .team.lead,
+        teammateCount: (.team.teammates | length),
+        workingCount: ([.team.teammates[] | select(.status == "working")] | length),
+        idleCount: ([.team.teammates[] | select(.status == "idle")] | length),
+        completedTaskCount: ([.team.teammates[].completedTasks | length] | add),
+        assignedTaskCount: (.team.taskAssignments | keys | length),
+        ralphLoop: {
+            globalIteration: .ralphLoop.globalIteration,
+            maxIterations: .ralphLoop.maxIterations
+        },
+        lastUpdated: .team.updatedAt
+    }' "$status_file" 2>/dev/null
+}
+
+# Check for timed out teammates
+# Args: $1 - repo root, $2 - requirement ID, $3 - timeout seconds (default 300)
+# Returns: JSON array of timed out teammates
+get_timed_out_teammates() {
+    local repo_root="$1"
+    local req_id="$2"
+    local timeout_seconds="${3:-300}"
+    local status_file
+    status_file=$(get_req_dir "$repo_root" "$req_id")/orchestration_status.json
+
+    if [[ ! -f "$status_file" ]]; then
+        echo '[]'
+        return 1
+    fi
+
+    local now_epoch
+    now_epoch=$(date +%s)
+
+    jq --argjson now "$now_epoch" --argjson timeout "$timeout_seconds" '
+        [.team.teammates[] |
+            select(.status == "working") |
+            select(
+                ($now - ((.lastActiveAt | sub("\\.[0-9]+"; "") | sub("Z$"; "+00:00") | fromdateiso8601) // 0)) > $timeout
+            )
+        ]
+    ' "$status_file" 2>/dev/null
+}
+
+# Log Team event to EXECUTION_LOG.md
+# Args: $1 - repo root, $2 - requirement ID, $3 - event type, $4 - message
+log_team_event() {
+    local repo_root="$1"
+    local req_id="$2"
+    local event_type="$3"
+    local message="$4"
+    local log_file
+    log_file=$(get_req_dir "$repo_root" "$req_id")/EXECUTION_LOG.md
+
+    local timestamp
+    timestamp=$(get_beijing_time_iso)
+
+    local icon
+    case "$event_type" in
+        info) icon="ℹ️" ;;
+        warning) icon="⚠️" ;;
+        error) icon="❌" ;;
+        success) icon="✅" ;;
+        *) icon="📝" ;;
+    esac
+
+    local entry="
+## [$timestamp] $icon Team Event: $event_type
+
+$message
+
+---
+"
+
+    if [[ -f "$log_file" ]]; then
+        echo "$entry" >> "$log_file"
+    else
+        echo "# Execution Log
+
+$entry" > "$log_file"
+    fi
+}
+
+# Check Team health and log warnings
+# Args: $1 - repo root, $2 - requirement ID
+# Returns: 0 if healthy, 1 if issues found
+check_team_health() {
+    local repo_root="$1"
+    local req_id="$2"
+    local status_file
+    status_file=$(get_req_dir "$repo_root" "$req_id")/orchestration_status.json
+
+    if [[ ! -f "$status_file" ]]; then
+        return 1
+    fi
+
+    local issues=0
+
+    # Check for timed out teammates
+    local timed_out
+    timed_out=$(get_timed_out_teammates "$repo_root" "$req_id")
+    local timed_out_count
+    timed_out_count=$(echo "$timed_out" | jq 'length')
+
+    if [[ "$timed_out_count" -gt 0 ]]; then
+        local teammate_ids
+        teammate_ids=$(echo "$timed_out" | jq -r '.[].id' | tr '\n' ', ' | sed 's/,$//')
+        log_team_event "$repo_root" "$req_id" "warning" "Timed out teammates: $teammate_ids"
+        issues=$((issues + 1))
+    fi
+
+    # Check Ralph Loop iteration limit
+    local global_iter max_iter
+    global_iter=$(jq '.ralphLoop.globalIteration // 0' "$status_file")
+    max_iter=$(jq '.ralphLoop.maxIterations // 10' "$status_file")
+
+    if [[ "$global_iter" -ge "$max_iter" ]]; then
+        log_team_event "$repo_root" "$req_id" "error" "Ralph Loop reached max iterations ($global_iter/$max_iter)"
+        issues=$((issues + 1))
+    elif [[ "$global_iter" -ge $((max_iter * 80 / 100)) ]]; then
+        log_team_event "$repo_root" "$req_id" "warning" "Ralph Loop approaching limit ($global_iter/$max_iter)"
+    fi
+
+    [[ "$issues" -eq 0 ]] && return 0
+    return 1
+}
+

@@ -1,6 +1,6 @@
 ---
 name: flow-dev
-description: 'Execute development tasks following TDD order. Usage: /flow-dev "REQ-123" [--manual] [--max-iterations N]'
+description: 'Execute development tasks following TDD order. Usage: /flow-dev "REQ-123" [--manual] [--max-iterations N] [--team] [--agents N]'
 scripts:
   prereq: .claude/scripts/check-prerequisites.sh
   check_tasks: .claude/scripts/check-task-status.sh
@@ -8,6 +8,9 @@ scripts:
   validate_constitution: .claude/scripts/validate-constitution.sh
   verify_gate: .claude/scripts/verify-gate.sh
   setup_loop: .claude/scripts/setup-ralph-loop.sh
+  team_init: .claude/scripts/team-dev-init.sh
+  parse_tasks: .claude/scripts/parse-task-dependencies.js
+  detect_conflicts: .claude/scripts/detect-file-conflicts.sh
 skills:
   tdd: .claude/skills/flow-tdd/SKILL.md
   verification: .claude/skills/verification-before-completion/SKILL.md
@@ -55,25 +58,28 @@ NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
 
 ## User Input
 ```text
-$ARGUMENTS = "REQ_ID? [--task T###] [--manual] [--max-iterations N]"
+$ARGUMENTS = "REQ_ID? [--task T###] [--manual] [--max-iterations N] [--team] [--agents N]"
 ```
 
 - **REQ_ID**: 未提供时从当前分支或 `DEVFLOW_REQ_ID` 推断
 - **--task T###**: 指定起始任务（从该任务开始执行）
 - **--manual**: Manual模式，遇错停止等待人工修复（向后兼容）
 - **--max-iterations N**: Autonomous模式最大迭代次数（默认10）
+- **--team**: Team模式，启用多 Agent 并行执行 [NEW: v4.7]
+- **--agents N**: Team模式下的 Agent 数量（默认3，范围2-5）[NEW: v4.7]
 
 **默认行为**: Autonomous模式（自动重试直到完成）
 
 ### 运行模式对比
 
-| | Manual模式 | Autonomous模式（默认） |
-|--|------------|----------------------|
-| 触发方式 | `--manual` | 默认（或指定 `--max-iterations`） |
-| 遇到错误 | 停止，等待人工修复 | 自动重试，记录 ERROR_LOG.md |
-| 注意力刷新 | Protocol 2（每任务） | Protocol 2 + Protocol 3（每迭代） + Protocol 4（遇错） |
-| 适用场景 | 复杂需求需人工判断 | 清晰需求可无人值守 |
-| 退出条件 | 任务失败可停止 | 迭代直到完成或达到上限 |
+| | Manual模式 | Autonomous模式（默认） | Team模式 [NEW] |
+|--|------------|----------------------|----------------|
+| 触发方式 | `--manual` | 默认 | `--team` |
+| 遇到错误 | 停止，等待人工修复 | 自动重试 | 分布式重试 |
+| 并行执行 | 否 | 否 | 是（多 Agent） |
+| 注意力刷新 | Protocol 2 | Protocol 2+3+4 | 每 Agent 独立 |
+| 适用场景 | 复杂需求 | 清晰需求 | 大量并行任务 |
+| 退出条件 | 任务失败可停止 | 迭代直到完成 | 所有 Agent 完成 |
 
 **示例**:
 ```bash
@@ -82,6 +88,8 @@ $ARGUMENTS = "REQ_ID? [--task T###] [--manual] [--max-iterations N]"
 /flow-dev "REQ-123" --manual             # Manual模式，遇错停止
 /flow-dev "REQ-123" --task T005          # 从 T005 开始（Autonomous模式）
 /flow-dev "REQ-123" --task T005 --manual # 从 T005 开始（Manual模式）
+/flow-dev "REQ-123" --team               # Team模式，3 个 Agent 并行
+/flow-dev "REQ-123" --team --agents 5    # Team模式，5 个 Agent 并行
 ```
 
 ## 执行流程
@@ -89,9 +97,10 @@ $ARGUMENTS = "REQ_ID? [--task T###] [--manual] [--max-iterations N]"
 ### 阶段 1: Entry Gate
 ```
 1. 解析参数
-   → Parse: REQ_ID, --task, --manual, --max-iterations
+   → Parse: REQ_ID, --task, --manual, --max-iterations, --team, --agents
    → If REQ_ID not provided: run {SCRIPT:prereq} --json --paths-only
    → Determine mode:
+      • --team flag present → Team mode
       • --manual flag present → Manual mode
       • Otherwise → Autonomous mode (default max_iterations = 10)
 
@@ -115,6 +124,12 @@ $ARGUMENTS = "REQ_ID? [--task T###] [--manual] [--max-iterations N]"
    → 任务格式 `- [ ] T### [P?] [US?] Description (path)`
 
 4. 模式初始化
+   → If Team mode:
+      • Run: {SCRIPT:team_init} init "${REPO_ROOT}" "${REQ_ID}" ${NUM_AGENTS}
+      • Analyze tasks: {SCRIPT:team_init} analyze "${REPO_ROOT}" "${REQ_ID}"
+      • Check conflicts: {SCRIPT:team_init} conflicts "${REPO_ROOT}" "${REQ_ID}"
+      • Assign tasks: {SCRIPT:team_init} assign "${REPO_ROOT}" "${REQ_ID}" ${NUM_AGENTS}
+      • Log to EXECUTION_LOG.md: "Starting Team mode with N agents"
    → If Autonomous mode:
       • Run: {SCRIPT:setup_loop} "${REQ_ID}" --max-iterations ${MAX_ITERATIONS}
       • Creates .claude/ralph-loop.local.md (state file for Stop Hook)
@@ -157,6 +172,84 @@ $ARGUMENTS = "REQ_ID? [--task T###] [--manual] [--max-iterations N]"
 ```
 
 ### 阶段 3: 执行循环
+
+**Team 模式循环** (--team) [NEW: v4.7]:
+```
+┌──────────────────────────────────────────────────────────────────┐
+│ Team Mode Execution Flow                                          │
+├──────────────────────────────────────────────────────────────────┤
+│                                                                   │
+│  1. 任务分析与分配                                                 │
+│     → Run: {SCRIPT:team_init} analyze "${REPO_ROOT}" "${REQ_ID}"  │
+│     → Run: {SCRIPT:team_init} conflicts "${REPO_ROOT}" "${REQ_ID}"│
+│     → Run: {SCRIPT:team_init} assign "${REPO_ROOT}" "${REQ_ID}" N │
+│                                                                   │
+│  2. 并行执行                                                       │
+│     → 每个 Agent 独立执行分配的任务                                │
+│     → 文件冲突的任务分配给同一 Agent 串行执行                       │
+│     → 无冲突的任务可并行执行                                       │
+│                                                                   │
+│  3. 任务完成处理                                                   │
+│     → TeammateIdle Hook 验证任务完成                               │
+│     → 验证通过 → 标记完成，分配下一任务                            │
+│     → 验证失败 → 继续修复                                          │
+│                                                                   │
+│  4. 阶段转换                                                       │
+│     → 当前阶段所有任务完成 → 进入下一阶段                          │
+│     → 重新分析任务并行性和冲突                                     │
+│                                                                   │
+│  5. 完成条件                                                       │
+│     → 所有任务完成 → 所有 Agent shutdown                           │
+│     → 更新 orchestration_status.json                               │
+│                                                                   │
+└──────────────────────────────────────────────────────────────────┘
+
+Task Assignment Strategy:
+┌─────────────────────────────────────────────────────────────────┐
+│ 1. 解析 TASKS.md 获取当前阶段任务                                 │
+│    → node {SCRIPT:parse_tasks} next TASKS.md                     │
+│                                                                  │
+│ 2. 检测文件冲突                                                   │
+│    → {SCRIPT:detect_conflicts} < tasks.json                      │
+│                                                                  │
+│ 3. 分配策略                                                       │
+│    → 有冲突: 冲突任务分配给同一 Agent                             │
+│    → 无冲突: Round-robin 分配给各 Agent                           │
+│                                                                  │
+│ 4. 输出分配计划                                                   │
+│    {                                                             │
+│      "assignments": [                                            │
+│        {"agent": "dev-1", "tasks": ["T001", "T002"]},            │
+│        {"agent": "dev-2", "tasks": ["T003"]},                    │
+│        {"agent": "dev-3", "tasks": ["T004"]}                     │
+│      ],                                                          │
+│      "hasConflicts": false                                       │
+│    }                                                             │
+└─────────────────────────────────────────────────────────────────┘
+
+Conflict Resolution:
+┌─────────────────────────────────────────────────────────────────┐
+│ 文件冲突检测示例:                                                 │
+│                                                                  │
+│ Input:                                                           │
+│   T001 [P] 修改 src/user.ts                                      │
+│   T002 [P] 修改 src/user.ts                                      │
+│   T003 [P] 修改 src/order.ts                                     │
+│                                                                  │
+│ Output:                                                          │
+│   {                                                              │
+│     "hasConflicts": true,                                        │
+│     "conflicts": [                                               │
+│       {"file": "src/user.ts", "tasks": ["T001", "T002"]}         │
+│     ],                                                           │
+│     "safeGroups": [{"tasks": ["T003"]}]                          │
+│   }                                                              │
+│                                                                  │
+│ Assignment:                                                      │
+│   dev-1: T001, T002 (串行，因为冲突)                              │
+│   dev-2: T003 (独立)                                             │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 **Manual 模式循环** (--manual):
 ```
@@ -281,10 +374,11 @@ Note: Stop Hook (.claude/hooks/ralph-stop-hook.sh) 会在 Autonomous 模式下:
 ## 运行提示
 - **默认 Autonomous 模式**: 遇错自动重试，无需人工干预
 - **使用 `--manual` 退出**: 适合需要人工判断的复杂场景
+- **使用 `--team` 并行**: 适合大量可并行任务的需求 [NEW: v4.7]
 - **使用 `/cancel-ralph` 停止**: 紧急停止 Autonomous 循环
 - 始终使用 quickstart 中提供的命令（测试、lint、db migrate 等）
 - Phase 2 的所有测试必须在实现前失败；若某测试直接通过，回滚并修正
-- 遵循 TASKS.md 标注的 `[P]` 仅表示逻辑上可并行，实际执行依旧串行
+- 遵循 TASKS.md 标注的 `[P]` 表示可并行，Team 模式下会真正并行执行
 - 如需恢复，可使用 `/flow-dev --task TXYZ` 指向首个未完成任务
 
 ## 错误处理
@@ -300,6 +394,13 @@ Note: Stop Hook (.claude/hooks/ralph-stop-hook.sh) 会在 Autonomous 模式下:
 - 任务执行失败 → 记录 ERROR_LOG.md，Protocol 4 刷新注意力，自动重试
 - 达到 max_iterations → 输出状态报告（已完成/剩余任务），保持 development_in_progress
 - 紧急停止 → 使用 `/cancel-ralph` 删除状态文件，立即终止循环
+
+**Team 模式** [NEW: v4.7]:
+- 缺少资产 → 同 Manual 模式（Entry Gate 阻止）
+- 文件冲突 → 自动检测并分配给同一 Agent 串行执行
+- Agent 任务失败 → TeammateIdle Hook 触发重试
+- 所有 Agent 空闲但任务未完成 → 重新分配任务
+- 紧急停止 → 清理 Team 状态，所有 Agent shutdown
 
 ## 取消 Autonomous 循环
 

@@ -1098,6 +1098,13 @@ TaskCompleted Event
 | `.claude/hooks/teammate-idle-hook.ts` | TeammateIdle Hook 实现 |
 | `.claude/hooks/task-completed-hook.ts` | TaskCompleted Hook 实现 |
 | `.claude/hooks/types/team-types.d.ts` | Team 状态 TypeScript 类型 |
+| `.claude/scripts/parse-task-dependencies.js` | TASKS.md 任务依赖解析器 |
+| `.claude/scripts/detect-file-conflicts.sh` | 并行任务文件冲突检测 |
+| `.claude/scripts/team-dev-init.sh` | flow-dev Team 模式初始化 |
+| `.claude/skills/workflow/flow-spec/scripts/team-init.sh` | flow-spec Team 模式初始化 |
+| `.claude/skills/workflow/flow-spec/scripts/team-communication.sh` | Teammate 通信协议 |
+| `.claude/skills/workflow/flow-spec/team-config.json` | spec-design-team 配置 |
+| `.claude/docs/templates/DESIGN_DECISIONS_TEMPLATE.md` | 设计决策记录模板 |
 
 ### common.sh 新增函数
 
@@ -1113,6 +1120,60 @@ TaskCompleted Event
 | `update_teammate_ralph_state()` | 更新 Ralph 状态 |
 | `all_teammates_idle()` | 检查所有 Teammate 空闲 |
 | `cleanup_team_state()` | 清理 Team 状态 |
+
+### flow-dev Team 模式命令
+
+```bash
+# 启用 Team 模式 (默认 3 个 Agent)
+/flow:dev "REQ-123" --team
+
+# 指定 Agent 数量 (2-5)
+/flow:dev "REQ-123" --team --agents 5
+
+# Team 模式执行流程
+# 1. 解析 TASKS.md 获取任务依赖
+# 2. 检测文件冲突，分配任务给 Agent
+# 3. 并行执行无冲突任务
+# 4. 冲突任务分配给同一 Agent 串行执行
+# 5. TeammateIdle Hook 自动分配下一任务
+# 6. 所有任务完成后 shutdown
+```
+
+### Task Dependency Parser (parse-task-dependencies.js)
+
+```bash
+# 解析 TASKS.md
+node .claude/scripts/parse-task-dependencies.js parse TASKS.md
+
+# 获取并行分组
+node .claude/scripts/parse-task-dependencies.js groups TASKS.md
+
+# 获取下一批可执行任务
+node .claude/scripts/parse-task-dependencies.js next TASKS.md
+
+# 输出格式
+{
+  "tasks": [
+    {"id": "T001", "phase": 1, "parallel": true, "userStory": "US1", "filePath": "src/user.ts"}
+  ],
+  "parallelGroups": [["T001", "T002"], ["T003"]],
+  "stats": {"total": 10, "completed": 3, "pending": 7}
+}
+```
+
+### File Conflict Detection (detect-file-conflicts.sh)
+
+```bash
+# 检测文件冲突
+echo '{"tasks": [...]}' | .claude/scripts/detect-file-conflicts.sh
+
+# 输出格式
+{
+  "hasConflicts": true,
+  "conflicts": [{"file": "src/user.ts", "tasks": ["T001", "T002"]}],
+  "safeGroups": [{"tasks": ["T003", "T004"]}]
+}
+```
 
 ### quality-gates.yml 新增配置
 
