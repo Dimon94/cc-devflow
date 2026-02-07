@@ -761,3 +761,332 @@ color_green() { echo -e "\033[0;32m$1\033[0m"; }
 color_yellow() { echo -e "\033[0;33m$1\033[0m"; }
 color_blue() { echo -e "\033[0;34m$1\033[0m"; }
 color_bold() { echo -e "\033[1m$1\033[0m"; }
+
+# =============================================================================
+# Claude Team Functions (v4.7)
+# =============================================================================
+
+# Check if Team mode is enabled for a requirement
+# Args: $1 - repo root, $2 - requirement ID
+# Returns: 0 if Team mode enabled, 1 if not
+is_team_mode_enabled() {
+    local repo_root="$1"
+    local req_id="$2"
+    local status_file
+    status_file=$(get_req_dir "$repo_root" "$req_id")/orchestration_status.json
+
+    if [[ -f "$status_file" ]]; then
+        local team_mode
+        team_mode=$(jq -r '.team.mode // empty' "$status_file" 2>/dev/null)
+        [[ -n "$team_mode" ]] && return 0
+    fi
+    return 1
+}
+
+# Initialize Team state in orchestration_status.json
+# Args: $1 - repo root, $2 - requirement ID, $3 - team mode (sequential|parallel), $4 - lead ID
+init_team_state() {
+    local repo_root="$1"
+    local req_id="$2"
+    local mode="${3:-parallel}"
+    local lead="${4:-team-lead}"
+    local status_file
+    status_file=$(get_req_dir "$repo_root" "$req_id")/orchestration_status.json
+
+    if [[ ! -f "$status_file" ]]; then
+        echo "ERROR: orchestration_status.json not found" >&2
+        return 1
+    fi
+
+    local now
+    now=$(get_beijing_time_iso)
+
+    # Add team state using jq
+    jq --arg mode "$mode" --arg lead "$lead" --arg now "$now" '
+        .team = {
+            mode: $mode,
+            lead: $lead,
+            teammates: [],
+            taskAssignments: {},
+            createdAt: $now,
+            updatedAt: $now
+        } |
+        .ralphLoop = {
+            enabled: true,
+            teammates: {},
+            globalIteration: 0,
+            maxIterations: 10,
+            startedAt: $now
+        }
+    ' "$status_file" > "${status_file}.tmp" && mv "${status_file}.tmp" "$status_file"
+}
+
+# Add a teammate to Team state
+# Args: $1 - repo root, $2 - requirement ID, $3 - teammate ID, $4 - role
+add_teammate() {
+    local repo_root="$1"
+    local req_id="$2"
+    local teammate_id="$3"
+    local role="${4:-developer}"
+    local status_file
+    status_file=$(get_req_dir "$repo_root" "$req_id")/orchestration_status.json
+
+    if [[ ! -f "$status_file" ]]; then
+        echo "ERROR: orchestration_status.json not found" >&2
+        return 1
+    fi
+
+    local now
+    now=$(get_beijing_time_iso)
+
+    jq --arg id "$teammate_id" --arg role "$role" --arg now "$now" '
+        .team.teammates += [{
+            id: $id,
+            role: $role,
+            status: "idle",
+            currentTask: null,
+            completedTasks: [],
+            lastActiveAt: $now
+        }] |
+        .team.updatedAt = $now |
+        .ralphLoop.teammates[$id] = {
+            iteration: 0,
+            lastVerifyResult: "skipped"
+        }
+    ' "$status_file" > "${status_file}.tmp" && mv "${status_file}.tmp" "$status_file"
+}
+
+# Update teammate status
+# Args: $1 - repo root, $2 - requirement ID, $3 - teammate ID, $4 - status, $5 - current task (optional)
+update_teammate_status() {
+    local repo_root="$1"
+    local req_id="$2"
+    local teammate_id="$3"
+    local status="$4"
+    local current_task="${5:-null}"
+    local status_file
+    status_file=$(get_req_dir "$repo_root" "$req_id")/orchestration_status.json
+
+    if [[ ! -f "$status_file" ]]; then
+        echo "ERROR: orchestration_status.json not found" >&2
+        return 1
+    fi
+
+    local now
+    now=$(get_beijing_time_iso)
+
+    # Handle null vs string for current_task
+    if [[ "$current_task" == "null" ]]; then
+        jq --arg id "$teammate_id" --arg status "$status" --arg now "$now" '
+            (.team.teammates[] | select(.id == $id)) |= (
+                .status = $status |
+                .currentTask = null |
+                .lastActiveAt = $now
+            ) |
+            .team.updatedAt = $now
+        ' "$status_file" > "${status_file}.tmp" && mv "${status_file}.tmp" "$status_file"
+    else
+        jq --arg id "$teammate_id" --arg status "$status" --arg task "$current_task" --arg now "$now" '
+            (.team.teammates[] | select(.id == $id)) |= (
+                .status = $status |
+                .currentTask = $task |
+                .lastActiveAt = $now
+            ) |
+            .team.updatedAt = $now
+        ' "$status_file" > "${status_file}.tmp" && mv "${status_file}.tmp" "$status_file"
+    fi
+}
+
+# Mark task as completed by teammate
+# Args: $1 - repo root, $2 - requirement ID, $3 - teammate ID, $4 - task ID
+mark_teammate_task_complete() {
+    local repo_root="$1"
+    local req_id="$2"
+    local teammate_id="$3"
+    local task_id="$4"
+    local status_file
+    status_file=$(get_req_dir "$repo_root" "$req_id")/orchestration_status.json
+
+    if [[ ! -f "$status_file" ]]; then
+        echo "ERROR: orchestration_status.json not found" >&2
+        return 1
+    fi
+
+    local now
+    now=$(get_beijing_time_iso)
+
+    jq --arg id "$teammate_id" --arg task "$task_id" --arg now "$now" '
+        (.team.teammates[] | select(.id == $id)) |= (
+            .completedTasks += [$task] |
+            .currentTask = null |
+            .status = "idle" |
+            .lastActiveAt = $now
+        ) |
+        .team.updatedAt = $now
+    ' "$status_file" > "${status_file}.tmp" && mv "${status_file}.tmp" "$status_file"
+}
+
+# Assign task to teammate
+# Args: $1 - repo root, $2 - requirement ID, $3 - task ID, $4 - teammate ID
+assign_task_to_teammate() {
+    local repo_root="$1"
+    local req_id="$2"
+    local task_id="$3"
+    local teammate_id="$4"
+    local status_file
+    status_file=$(get_req_dir "$repo_root" "$req_id")/orchestration_status.json
+
+    if [[ ! -f "$status_file" ]]; then
+        echo "ERROR: orchestration_status.json not found" >&2
+        return 1
+    fi
+
+    local now
+    now=$(get_beijing_time_iso)
+
+    jq --arg task "$task_id" --arg id "$teammate_id" --arg now "$now" '
+        .team.taskAssignments[$task] = $id |
+        (.team.teammates[] | select(.id == $id)) |= (
+            .currentTask = $task |
+            .status = "working" |
+            .lastActiveAt = $now
+        ) |
+        .team.updatedAt = $now
+    ' "$status_file" > "${status_file}.tmp" && mv "${status_file}.tmp" "$status_file"
+}
+
+# Get teammate by ID
+# Args: $1 - repo root, $2 - requirement ID, $3 - teammate ID
+# Returns: JSON object of teammate state
+get_teammate() {
+    local repo_root="$1"
+    local req_id="$2"
+    local teammate_id="$3"
+    local status_file
+    status_file=$(get_req_dir "$repo_root" "$req_id")/orchestration_status.json
+
+    if [[ ! -f "$status_file" ]]; then
+        echo "{}"
+        return 1
+    fi
+
+    jq --arg id "$teammate_id" '.team.teammates[] | select(.id == $id)' "$status_file" 2>/dev/null
+}
+
+# List all teammates
+# Args: $1 - repo root, $2 - requirement ID
+# Returns: JSON array of teammates
+list_teammates() {
+    local repo_root="$1"
+    local req_id="$2"
+    local status_file
+    status_file=$(get_req_dir "$repo_root" "$req_id")/orchestration_status.json
+
+    if [[ ! -f "$status_file" ]]; then
+        echo "[]"
+        return 1
+    fi
+
+    jq '.team.teammates // []' "$status_file" 2>/dev/null
+}
+
+# Get unassigned tasks (tasks not in taskAssignments)
+# Args: $1 - repo root, $2 - requirement ID
+# Returns: List of unassigned task IDs
+get_unassigned_tasks() {
+    local repo_root="$1"
+    local req_id="$2"
+    local req_dir
+    req_dir=$(get_req_dir "$repo_root" "$req_id")
+    local tasks_file="$req_dir/TASKS.md"
+    local status_file="$req_dir/orchestration_status.json"
+
+    if [[ ! -f "$tasks_file" ]] || [[ ! -f "$status_file" ]]; then
+        echo ""
+        return 1
+    fi
+
+    # Extract task IDs from TASKS.md (format: - [ ] **T001** ...)
+    local all_tasks
+    all_tasks=$(grep -oE '\*\*T[0-9]+\*\*' "$tasks_file" | sed 's/\*\*//g' | sort -u)
+
+    # Get assigned tasks from status file
+    local assigned_tasks
+    assigned_tasks=$(jq -r '.team.taskAssignments | keys[]' "$status_file" 2>/dev/null)
+
+    # Find unassigned tasks
+    for task in $all_tasks; do
+        if ! echo "$assigned_tasks" | grep -q "^${task}$"; then
+            echo "$task"
+        fi
+    done
+}
+
+# Update Ralph Loop state for teammate
+# Args: $1 - repo root, $2 - requirement ID, $3 - teammate ID, $4 - verify result (passed|failed)
+update_teammate_ralph_state() {
+    local repo_root="$1"
+    local req_id="$2"
+    local teammate_id="$3"
+    local verify_result="$4"
+    local status_file
+    status_file=$(get_req_dir "$repo_root" "$req_id")/orchestration_status.json
+
+    if [[ ! -f "$status_file" ]]; then
+        echo "ERROR: orchestration_status.json not found" >&2
+        return 1
+    fi
+
+    local now
+    now=$(get_beijing_time_iso)
+
+    jq --arg id "$teammate_id" --arg result "$verify_result" --arg now "$now" '
+        .ralphLoop.teammates[$id].iteration += 1 |
+        .ralphLoop.teammates[$id].lastVerifyResult = $result |
+        .ralphLoop.teammates[$id].lastVerifyAt = $now |
+        .ralphLoop.globalIteration += 1
+    ' "$status_file" > "${status_file}.tmp" && mv "${status_file}.tmp" "$status_file"
+}
+
+# Check if all teammates are idle or completed
+# Args: $1 - repo root, $2 - requirement ID
+# Returns: 0 if all idle/completed, 1 if any working
+all_teammates_idle() {
+    local repo_root="$1"
+    local req_id="$2"
+    local status_file
+    status_file=$(get_req_dir "$repo_root" "$req_id")/orchestration_status.json
+
+    if [[ ! -f "$status_file" ]]; then
+        return 1
+    fi
+
+    local working_count
+    working_count=$(jq '[.team.teammates[] | select(.status == "working")] | length' "$status_file" 2>/dev/null)
+
+    [[ "$working_count" == "0" ]] && return 0
+    return 1
+}
+
+# Clean up Team state
+# Args: $1 - repo root, $2 - requirement ID
+cleanup_team_state() {
+    local repo_root="$1"
+    local req_id="$2"
+    local status_file
+    status_file=$(get_req_dir "$repo_root" "$req_id")/orchestration_status.json
+
+    if [[ ! -f "$status_file" ]]; then
+        return 0
+    fi
+
+    local now
+    now=$(get_beijing_time_iso)
+
+    jq --arg now "$now" '
+        del(.team) |
+        del(.ralphLoop) |
+        .updatedAt = $now
+    ' "$status_file" > "${status_file}.tmp" && mv "${status_file}.tmp" "$status_file"
+}
+

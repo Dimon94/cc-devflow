@@ -46,7 +46,11 @@ This directory contains Claude Code CLI extensions for the CC-DevFlow developmen
 ├── agents/                    # Agent 指令 (迁移到 skills/*/references/)
 ├── hooks/                     # 钩子脚本
 │   ├── inject-skill-context.ts  # 上下文注入钩子 [NEW: v4.0]
-│   └── ralph-loop.ts            # Ralph Loop 程序化验证 [NEW: v4.4] ⭐
+│   ├── ralph-loop.ts            # Ralph Loop 程序化验证 [NEW: v4.4]
+│   ├── teammate-idle-hook.ts    # Team 任务调度器 [NEW: v4.7] ⭐
+│   ├── task-completed-hook.ts   # 任务完成验证器 [NEW: v4.7] ⭐
+│   └── types/
+│       └── team-types.d.ts      # Team 状态类型定义 [NEW: v4.7]
 ├── scripts/                   # 共享脚本
 │   └── common.sh              # 通用函数 (含 worktree 辅助函数)
 └── docs/templates/            # 共享模板
@@ -989,3 +993,167 @@ devflow/archive/
 
 **Last Updated**: 2026-02-07
 **v4.6.0 Module**: Archive System Enhancement
+
+---
+
+## v4.7.0 Module: Claude Team Integration
+
+### Purpose
+
+集成 Claude Team 功能，支持多 Agent 并行协作开发。实现 TeammateIdle 和 TaskCompleted Hook，扩展状态管理支持 Team 模式。
+
+### Key Changes
+
+| Before (v4.6) | After (v4.7) | Improvement |
+|---------------|--------------|-------------|
+| 单 Agent 执行 | 多 Agent 并行 | 效率 +200% |
+| 无 Team 状态 | 完整 Team 状态管理 | 可追溯 |
+| 单一 Ralph Loop | 多 Teammate Ralph Loop | 分布式验证 |
+
+### New Hooks
+
+| Hook | File | Trigger | Purpose |
+|------|------|---------|---------|
+| **TeammateIdle** | `teammate-idle-hook.ts` | Teammate 空闲时 | 任务分配和调度 |
+| **TaskCompleted** | `task-completed-hook.ts` | 任务完成时 | 质量验证和状态更新 |
+
+### TeammateIdle Hook 工作流程
+
+```
+TeammateIdle Event
+    ↓
+验证 last_task_id (如有)
+    ↓
+验证失败 → 返回 assign_task (继续修复)
+验证通过 → 标记任务完成
+    ↓
+查找下一个未分配任务
+    ↓
+有任务 → 返回 assign_task
+无任务 + 所有 Teammate 空闲 → 返回 shutdown
+无任务 + 有 Teammate 工作中 → 返回 wait
+```
+
+### TaskCompleted Hook 工作流程
+
+```
+TaskCompleted Event
+    ↓
+执行 task_completed.verify 命令
+    ↓
+    ├── 通过 → accept + 更新 Team 状态
+    └── 失败 → block_on_failure?
+                ├── true → reject
+                └── false → accept (with warning)
+    ↓
+记录失败到 ERROR_LOG.md
+    ↓
+检查阶段转换
+```
+
+### orchestration_status.json 扩展
+
+```json
+{
+  "reqId": "REQ-007",
+  "status": "in_progress",
+  "phase": "development",
+
+  "team": {
+    "mode": "parallel",
+    "lead": "team-lead",
+    "teammates": [
+      {
+        "id": "dev-analyst",
+        "role": "developer",
+        "status": "working",
+        "currentTask": "T001",
+        "completedTasks": ["T000"],
+        "lastActiveAt": "2026-02-07T10:00:00Z"
+      }
+    ],
+    "taskAssignments": {
+      "T001": "dev-analyst"
+    }
+  },
+
+  "ralphLoop": {
+    "enabled": true,
+    "teammates": {
+      "dev-analyst": {
+        "iteration": 2,
+        "lastVerifyResult": "passed"
+      }
+    },
+    "globalIteration": 3,
+    "maxIterations": 10
+  }
+}
+```
+
+### New Files
+
+| File | Purpose |
+|------|---------|
+| `.claude/hooks/teammate-idle-hook.ts` | TeammateIdle Hook 实现 |
+| `.claude/hooks/task-completed-hook.ts` | TaskCompleted Hook 实现 |
+| `.claude/hooks/types/team-types.d.ts` | Team 状态 TypeScript 类型 |
+
+### common.sh 新增函数
+
+| Function | Purpose |
+|----------|---------|
+| `is_team_mode_enabled()` | 检查 Team 模式是否启用 |
+| `init_team_state()` | 初始化 Team 状态 |
+| `add_teammate()` | 添加 Teammate |
+| `update_teammate_status()` | 更新 Teammate 状态 |
+| `mark_teammate_task_complete()` | 标记任务完成 |
+| `assign_task_to_teammate()` | 分配任务 |
+| `get_unassigned_tasks()` | 获取未分配任务 |
+| `update_teammate_ralph_state()` | 更新 Ralph 状态 |
+| `all_teammates_idle()` | 检查所有 Teammate 空闲 |
+| `cleanup_team_state()` | 清理 Team 状态 |
+
+### quality-gates.yml 新增配置
+
+```yaml
+# TeammateIdle Hook 配置
+teammate_idle:
+  idle_checks:
+    - npm run lint --if-present
+    - npm run typecheck --if-present
+  assignment_strategy: priority_first
+  idle_timeout: 300
+
+# TaskCompleted Hook 配置
+task_completed:
+  verify:
+    - npm run lint --if-present
+    - npm run typecheck --if-present
+    - npm test -- --passWithNoTests
+  block_on_failure: true
+  max_retries: 3
+
+# Ralph Loop Team 模式配置
+ralph_loop:
+  team_mode:
+    enabled: true
+    scope: teammate
+    max_iterations_per_teammate: 3
+    max_global_iterations: 10
+```
+
+### Expected Improvements
+
+| Metric | Before | After | Improvement |
+|--------|--------|-------|-------------|
+| 并行 Agent 数 | 1 | 3-5 | +400% |
+| 需求完成时间 | 90 min | 50 min | -45% |
+| 任务调度 | 手动 | 自动 | 100% |
+| 质量验证 | 单点 | 分布式 | 100% |
+
+---
+
+**Last Updated**: 2026-02-07
+**v4.7.0 Module**: Claude Team Integration
+

@@ -38,6 +38,41 @@ ralph_loop:
   timeout_minutes: 30
 
 # ============================================================================
+# Claude Team Hooks Configuration (v4.7)
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# TaskCompleted Hook: Verify task completion quality
+# ----------------------------------------------------------------------------
+task_completed:
+  # Verification commands (uses top-level verify if not specified)
+  verify:
+    - npm run lint --if-present
+    - npm run typecheck --if-present
+    - npm test -- --passWithNoTests
+
+  # Block task completion if verification fails
+  block_on_failure: true
+
+  # Maximum retry attempts before allowing completion
+  max_retries: 3
+
+# ----------------------------------------------------------------------------
+# TeammateIdle Hook: Task assignment strategy
+# ----------------------------------------------------------------------------
+teammate_idle:
+  # Checks to run before assigning new task
+  idle_checks:
+    - npm run lint --if-present
+    - npm run typecheck --if-present
+
+  # Task assignment strategy: priority_first | round_robin | skill_match
+  assignment_strategy: priority_first
+
+  # Idle timeout in seconds before triggering shutdown
+  idle_timeout: 300
+
+# ============================================================================
 # Phase-Specific Quality Gates
 # ============================================================================
 
@@ -230,3 +265,41 @@ ralph_loop:
     - "max_iterations_reached"
     - "timeout_reached"
     - "manual_stop"
+
+  # ----------------------------------------------------------------------------
+  # Team Mode Configuration (v4.7)
+  # ----------------------------------------------------------------------------
+  team_mode:
+    # Enable Team mode Ralph Loop
+    enabled: true
+
+    # Verification scope: teammate (per-teammate) or global (all at once)
+    scope: teammate
+
+    # Teammate-specific verification commands
+    # Each teammate can have custom verify commands based on their role
+    teammate_verify:
+      dev-frontend:
+        - npm run lint -- --files-changed
+        - npm run typecheck --if-present
+        - npm test -- --changed
+      dev-backend:
+        - npm run lint -- --files-changed
+        - npm run typecheck --if-present
+        - npm test -- --changed
+      dev-database:
+        - npm run lint -- --files-changed
+        - npm run typecheck --if-present
+
+    # Global verification (runs when last teammate stops)
+    global_verify:
+      - npm run lint
+      - npm run typecheck --if-present
+      - npm test -- --passWithNoTests
+
+    # Maximum iterations per teammate before forced stop
+    max_iterations_per_teammate: 3
+
+    # Maximum global iterations before forced stop
+    max_global_iterations: 10
+
