@@ -1,7 +1,7 @@
 #!/bin/bash
 # [INPUT]: 依赖 DELTA_SPEC_TEMPLATE.md
-# [OUTPUT]: 创建 delta-specs/{module}/spec.md
-# [POS]: scripts 的 delta spec 创建脚本，被 /flow-delta create 调用
+# [OUTPUT]: 创建 deltas/{date}-{slug}/delta.md
+# [POS]: scripts 的 delta spec 创建脚本，被 /flow:delta create 调用
 # [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
 
 set -e
@@ -20,20 +20,18 @@ TEMPLATE_FILE="$PROJECT_ROOT/.claude/docs/templates/DELTA_SPEC_TEMPLATE.md"
 
 usage() {
     cat << EOF
-Usage: flow-delta-create.sh <module> <description> [REQ-ID]
+Usage: flow-delta-create.sh <REQ-ID> <slug> [title]
 
-Create a new delta spec for a module.
+Create a new delta spec for a requirement.
 
 Arguments:
-    module          Module name (e.g., auth, payment, user)
-    description     Brief description of changes
-
-Options:
-    REQ-ID          Requirement ID (auto-detected if not provided)
+    REQ-ID          Requirement ID (e.g., REQ-123)
+    slug            Short identifier for the delta (e.g., add-2fa)
+    title           Optional title (defaults to slug with spaces)
 
 Examples:
-    flow-delta-create.sh auth "Add 2FA support"
-    flow-delta-create.sh payment "Integrate Stripe" REQ-007
+    flow-delta-create.sh REQ-123 add-2fa
+    flow-delta-create.sh REQ-123 add-2fa "Add Two-Factor Authentication"
 EOF
     exit 1
 }
@@ -42,28 +40,24 @@ EOF
 # Parse Arguments
 # ============================================================================
 
-MODULE="$1"
-DESCRIPTION="$2"
-REQ_ID="${3:-}"
+REQ_ID="$1"
+SLUG="$2"
+TITLE="${3:-}"
 
-if [[ -z "$MODULE" || -z "$DESCRIPTION" ]]; then
-    echo "Error: module and description are required"
+if [[ -z "$REQ_ID" || -z "$SLUG" ]]; then
+    echo "Error: REQ-ID and slug are required"
     usage
 fi
 
-# Auto-detect REQ-ID
-if [[ -z "$REQ_ID" ]]; then
-    REQ_ID="${DEVFLOW_REQ_ID:-}"
-fi
-
-if [[ -z "$REQ_ID" ]]; then
-    BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
-    REQ_ID=$(echo "$BRANCH" | grep -oE 'REQ-[0-9]+' | head -1 || echo "")
-fi
-
-if [[ -z "$REQ_ID" ]]; then
-    echo "Error: Could not detect REQ-ID"
+# Validate REQ-ID format
+if [[ ! "$REQ_ID" =~ ^REQ-[0-9]+$ ]]; then
+    echo "Error: Invalid REQ-ID format. Expected: REQ-XXX"
     exit 1
+fi
+
+# Generate title from slug if not provided
+if [[ -z "$TITLE" ]]; then
+    TITLE=$(echo "$SLUG" | sed 's/-/ /g' | sed 's/\b\(.\)/\u\1/g')
 fi
 
 # ============================================================================
@@ -71,83 +65,98 @@ fi
 # ============================================================================
 
 REQ_DIR="$PROJECT_ROOT/devflow/requirements/$REQ_ID"
-DELTA_DIR="$REQ_DIR/delta-specs/$MODULE"
-SPEC_FILE="$DELTA_DIR/spec.md"
 
 if [[ ! -d "$REQ_DIR" ]]; then
     echo "Error: Requirement directory not found: $REQ_DIR"
     exit 1
 fi
 
-# Create delta-specs directory
-mkdir -p "$DELTA_DIR"
+# Generate delta_id with date prefix
+DATE_PREFIX=$(date +"%Y-%m-%d")
+DELTA_ID="${DATE_PREFIX}-${SLUG}"
+DELTA_DIR="$REQ_DIR/deltas/$DELTA_ID"
+DELTA_FILE="$DELTA_DIR/delta.md"
+TASKS_FILE="$DELTA_DIR/tasks.md"
 
-# Check if spec already exists
-if [[ -f "$SPEC_FILE" ]]; then
-    echo "Warning: Delta spec already exists: $SPEC_FILE"
-    echo "Use an editor to modify it."
-    exit 0
+# Check if delta already exists
+if [[ -d "$DELTA_DIR" ]]; then
+    echo "Error: Delta already exists: $DELTA_DIR"
+    exit 1
 fi
+
+# Create delta directory
+mkdir -p "$DELTA_DIR"
 
 # Generate timestamp
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-# Create spec from template
+# Create delta.md from template
 if [[ -f "$TEMPLATE_FILE" ]]; then
-    # Replace placeholders in template
-    sed -e "s/{REQ_ID}/$REQ_ID/g" \
-        -e "s/{MODULE_NAME}/$MODULE/g" \
+    sed -e "s/{DELTA_ID}/$DELTA_ID/g" \
+        -e "s/{REQ_ID}/$REQ_ID/g" \
+        -e "s/{TITLE}/$TITLE/g" \
         -e "s/{TIMESTAMP}/$TIMESTAMP/g" \
         -e "s/{AUTHOR}/Claude/g" \
-        "$TEMPLATE_FILE" > "$SPEC_FILE"
+        "$TEMPLATE_FILE" > "$DELTA_FILE"
 else
-    # Create minimal spec
-    cat > "$SPEC_FILE" << EOF
+    # Create minimal delta spec
+    cat > "$DELTA_FILE" << EOF
 ---
+delta_id: "$DELTA_ID"
 req_id: "$REQ_ID"
-module: "$MODULE"
+title: "$TITLE"
 created_at: "$TIMESTAMP"
-version: "1.0.0"
 status: "draft"
 ---
 
-# Delta Spec: $MODULE
+# Delta: $TITLE
 
 > **[PROTOCOL]**: 变更时更新此头部，然后检查 CLAUDE.md
 
 ## Summary
 
-$DESCRIPTION
+{简要描述变更内容}
 
 ---
 
-## Changes
+## ADDED Requirements
 
-### ADDED
+### Requirement: {Name}
 
-<!-- New specifications added by this requirement -->
+{Description}
 
-### MODIFIED
+#### Scenario: {Scenario Name}
 
-<!-- Changes to existing specifications -->
-
-### REMOVED
-
-<!-- Specifications deprecated or removed -->
+- GIVEN {precondition}
+- WHEN {action}
+- THEN {expected result}
 
 ---
 
-## Impact Analysis
+## MODIFIED Requirements
 
-### Affected Files
+### Requirement: {Name}
 
-| File | Change Type | Description |
-|------|-------------|-------------|
+{New description}
 
-### Dependencies
+(Previously: {old description})
 
-- Requires: None
-- Blocks: None
+---
+
+## REMOVED Requirements
+
+### Requirement: {Name}
+
+**Reason**: {why removed}
+
+**Migration**: {how to migrate}
+
+---
+
+## RENAMED Requirements
+
+- FROM: {Old Name}
+- TO: {New Name}
 
 ---
 
@@ -156,9 +165,38 @@ $DESCRIPTION
 EOF
 fi
 
-echo "✅ Created delta spec: $SPEC_FILE"
+# Create tasks.md for delta-specific tasks
+cat > "$TASKS_FILE" << EOF
+---
+delta_id: "$DELTA_ID"
+req_id: "$REQ_ID"
+created_at: "$TIMESTAMP"
+---
+
+# Tasks for Delta: $TITLE
+
+> **[PROTOCOL]**: 变更时更新此头部，然后检查 CLAUDE.md
+
+## Tasks
+
+- [ ] T001: Review delta specification
+- [ ] T002: Implement changes
+- [ ] T003: Update tests
+- [ ] T004: Update documentation
+
+## Notes
+
+Add implementation notes here.
+EOF
+
+echo "✅ Created delta: $DELTA_ID"
+echo ""
+echo "Files created:"
+echo "  - $DELTA_FILE"
+echo "  - $TASKS_FILE"
 echo ""
 echo "Next steps:"
-echo "  1. Edit the spec to add ADDED/MODIFIED/REMOVED sections"
-echo "  2. Run '/flow-delta diff $REQ_ID' to review changes"
-echo "  3. Run '/flow-delta sync $REQ_ID' before release"
+echo "  1. Edit delta.md to add ADDED/MODIFIED/REMOVED/RENAMED sections"
+echo "  2. Run '/flow:delta status $REQ_ID $SLUG' to validate"
+echo "  3. Change status to 'approved' when ready"
+echo "  4. Run '/flow:delta apply $REQ_ID $SLUG' to apply changes"

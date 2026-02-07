@@ -21,6 +21,23 @@ global:
   verbose: false
 
 # ============================================================================
+# Ralph Loop Configuration (SubagentStop Hook)
+# ============================================================================
+# Top-level verify commands for ralph-loop.ts hook
+# These run when any subagent attempts to stop
+verify:
+  - npm run lint --if-present
+  - npm run typecheck --if-present
+  - npm test -- --passWithNoTests
+
+ralph_loop:
+  # Maximum iterations before forced stop
+  max_iterations: 5
+
+  # Timeout in minutes before forced stop
+  timeout_minutes: 30
+
+# ============================================================================
 # Phase-Specific Quality Gates
 # ============================================================================
 

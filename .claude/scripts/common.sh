@@ -573,6 +573,63 @@ list_archived_reqs() {
     fi
 }
 
+# Get archive summary for a requirement
+# Args: $1 - repo root, $2 - requirement ID
+# Returns: JSON summary of archived requirement
+get_archive_summary() {
+    local repo_root="$1"
+    local req_id="$2"
+    local archived_path=$(find_archived_req "$repo_root" "$req_id")
+
+    if [[ -z "$archived_path" ]]; then
+        echo "{\"error\": \"not_found\"}"
+        return 1
+    fi
+
+    local status_file="$archived_path/orchestration_status.json"
+    if [[ -f "$status_file" ]]; then
+        jq '{
+            reqId: .reqId,
+            title: .title,
+            status: .status,
+            archivedReason: .archivedReason,
+            archivedAt: .archivedAt,
+            archiveLocation: .archiveLocation,
+            statusBeforeArchive: .statusBeforeArchive
+        }' "$status_file"
+    else
+        echo "{\"reqId\": \"$req_id\", \"archiveLocation\": \"$archived_path\"}"
+    fi
+}
+
+# Check if requirement has deltas to archive
+# Args: $1 - requirement directory
+# Returns: 0 if has deltas, 1 if not
+has_deltas_to_archive() {
+    local req_dir="$1"
+    local deltas_dir="$req_dir/deltas"
+
+    if [[ -d "$deltas_dir" ]]; then
+        local count=$(find "$deltas_dir" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
+        [[ $count -gt 0 ]] && return 0
+    fi
+    return 1
+}
+
+# Get delta count for a requirement
+# Args: $1 - requirement directory
+# Returns: number of deltas
+get_delta_count() {
+    local req_dir="$1"
+    local deltas_dir="$req_dir/deltas"
+
+    if [[ -d "$deltas_dir" ]]; then
+        find "$deltas_dir" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l | tr -d ' '
+    else
+        echo "0"
+    fi
+}
+
 # =============================================================================
 # Git Worktree Functions (v4.3)
 # =============================================================================

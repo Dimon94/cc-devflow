@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
 # =============================================================================
-# archive-requirement.sh - 需求归档脚本
+# archive-requirement.sh - 需求归档脚本 (v4.5 增强版)
 # 将已完成或废弃的需求移动到归档目录
+# 支持 Delta Specs 集成
 # =============================================================================
+# [INPUT]: 依赖 common.sh, orchestration_status.json
+# [OUTPUT]: 移动需求到 devflow/archive/{YYYY-MM}/
+# [POS]: scripts 的归档脚本，被 /flow:archive 调用
+# [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
 
 set -euo pipefail
 
@@ -276,10 +281,41 @@ archive_month=$(TZ='Asia/Shanghai' date '+%Y-%m')
 archive_dir=$(get_archive_dir "$REPO_ROOT" "$archive_month")
 target_dir="$archive_dir/$REQ_ID"
 
+# 检查 Delta Specs
+delta_count=$(get_delta_count "$source_dir")
+has_unapplied_deltas=false
+if [[ "$delta_count" -gt 0 ]]; then
+    # 检查是否有未应用的 deltas
+    for delta_dir in "$source_dir/deltas"/*/; do
+        [[ -d "$delta_dir" ]] || continue
+        delta_file="$delta_dir/delta.md"
+        if [[ -f "$delta_file" ]]; then
+            status=$(grep -E '^status:' "$delta_file" | head -1 | sed 's/status:[[:space:]]*"\?\([^"]*\)"\?/\1/')
+            if [[ "$status" != "applied" ]]; then
+                has_unapplied_deltas=true
+                break
+            fi
+        fi
+    done
+fi
+
 if [[ "$DRY_RUN" == "true" ]]; then
     echo "[DRY-RUN] 将移动: $source_dir → $target_dir"
     echo "[DRY-RUN] 归档原因: $REASON"
+    if [[ "$delta_count" -gt 0 ]]; then
+        echo "[DRY-RUN] Delta Specs: $delta_count 个"
+        if [[ "$has_unapplied_deltas" == "true" ]]; then
+            echo "[DRY-RUN] ⚠️  警告: 存在未应用的 Delta Specs"
+        fi
+    fi
     exit 0
+fi
+
+# 警告未应用的 deltas
+if [[ "$has_unapplied_deltas" == "true" ]]; then
+    echo "⚠️  警告: 存在未应用的 Delta Specs"
+    echo "   建议先运行: /flow:delta apply $REQ_ID --all"
+    echo ""
 fi
 
 # 创建归档目录
@@ -303,11 +339,13 @@ if [[ -f "$status_file" ]]; then
        --arg location "$target_dir" \
        --arg prev_status "$current_status" \
        --arg updated "$(get_beijing_time_iso)" \
+       --argjson delta_count "$delta_count" \
        '.status = "archived" |
         .archivedReason = $reason |
         .archivedAt = $archived_at |
         .archiveLocation = $location |
         .statusBeforeArchive = $prev_status |
+        .deltaCount = $delta_count |
         .updatedAt = $updated' \
        "$status_file" > "${status_file}.tmp" && mv "${status_file}.tmp" "$status_file"
 fi
@@ -322,6 +360,7 @@ if [[ -f "$log_file" ]]; then
 - 归档原因: $REASON
 - 归档位置: $target_dir
 - 归档前状态: $current_status
+- Delta Specs: $delta_count 个
 EOF
 fi
 
@@ -335,6 +374,7 @@ if [[ "$JSON_MODE" == "true" ]]; then
   "to": "$target_dir",
   "reason": "$REASON",
   "previousStatus": "$current_status",
+  "deltaCount": $delta_count,
   "archivedAt": "$(get_beijing_time_iso)",
   "status": "success"
 }
@@ -347,5 +387,8 @@ else
     echo "   新位置: $target_dir"
     echo "   归档原因: $REASON"
     echo "   归档前状态: $current_status"
+    if [[ "$delta_count" -gt 0 ]]; then
+        echo "   Delta Specs: $delta_count 个"
+    fi
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 fi

@@ -1,11 +1,14 @@
 ---
 name: flow-archive
-description: 'Archive completed/deprecated requirements. Usage: /flow-archive "REQ-123" or /flow-archive --list'
+description: 'Archive completed/deprecated requirements with Delta Specs support. Usage: /flow:archive "REQ-123" or /flow:archive --list'
+version: 4.5.0
 scripts:
   archive: .claude/scripts/archive-requirement.sh
 ---
 
-# Flow-Archive - 需求归档命令
+# /flow:archive - 需求归档命令 (v4.5)
+
+> **[PROTOCOL]**: 变更时更新此头部，然后检查 CLAUDE.md
 
 ## User Input
 ```text
@@ -15,10 +18,10 @@ $ARGUMENTS = "REQ_ID?" | "--list" | "--restore REQ_ID"
 
 ## 命令格式
 ```text
-/flow-archive "REQ-123"                      # 归档已完成需求
-/flow-archive "REQ-123" --reason deprecated  # 标记为废弃归档
-/flow-archive --list                         # 列出所有归档
-/flow-archive "REQ-123" --restore            # 恢复归档需求
+/flow:archive "REQ-123"                      # 归档已完成需求
+/flow:archive "REQ-123" --reason deprecated  # 标记为废弃归档
+/flow:archive --list                         # 列出所有归档
+/flow:archive "REQ-123" --restore            # 恢复归档需求
 ```
 
 ### 参数说明
@@ -221,11 +224,43 @@ ERROR: 无效的归档原因: cancelled
 ## 与其他命令的关系
 
 ```text
-/flow-init → /flow-prd → /flow-epic → /flow-dev → /flow-qa → /flow-release
-                                                                    ↓
-                                                            /flow-archive ← 工作流终点
-                                                                    ↓
-                                                            devflow/archive/{YYYY-MM}/
+/flow:init → /flow:spec → /flow:dev → /flow:quality → /flow:release
+                                                            ↓
+                                                    /flow:archive ← 工作流终点
+                                                            ↓
+                                                    devflow/archive/{YYYY-MM}/
+```
+
+## Delta Specs 集成 (v4.5)
+
+归档时自动处理 Delta Specs:
+
+### 归档前检查
+- 检测 `deltas/` 目录中的 Delta Specs
+- 警告未应用的 Delta Specs (status != "applied")
+- 建议先运行 `/flow:delta apply REQ-XXX --all`
+
+### 归档内容
+```
+devflow/archive/{YYYY-MM}/{REQ_ID}/
+├── PRD.md                    # 主规格文档
+├── deltas/                   # Delta Specs (完整保留)
+│   ├── 2026-02-01-add-2fa/
+│   │   ├── delta.md
+│   │   └── tasks.md
+│   └── ...
+├── orchestration_status.json # 包含 deltaCount 字段
+└── ...
+```
+
+### 状态文件增强
+```json
+{
+  "status": "archived",
+  "archivedReason": "completed",
+  "deltaCount": 3,
+  "archivedAt": "2026-02-07T10:00:00+08:00"
+}
 ```
 
 ## 脚本集成

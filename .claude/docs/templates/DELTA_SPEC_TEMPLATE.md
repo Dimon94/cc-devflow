@@ -1,57 +1,65 @@
 ---
+delta_id: "{DELTA_ID}"
 req_id: "{REQ_ID}"
-module: "{MODULE_NAME}"
+title: "{TITLE}"
 created_at: "{TIMESTAMP}"
-version: "1.0.0"
 status: "draft"
 ---
 
-# Delta Spec: {MODULE_NAME}
+# Delta: {TITLE}
 
 > **[PROTOCOL]**: 变更时更新此头部，然后检查 CLAUDE.md
 
 ## Summary
 
-Brief description of what this delta spec changes.
+{简要描述变更内容}
 
 ---
 
-## Changes
+## ADDED Requirements
 
-### ADDED
+### Requirement: {Name}
 
-New specifications added by this requirement.
+{Description}
 
-```markdown
-<!-- Example -->
-### User Authentication
-- JWT-based authentication with 24h expiry
-- Refresh token rotation on each use
-- Session invalidation on password change
-```
+#### Scenario: {Scenario Name}
 
-### MODIFIED
+- GIVEN {precondition}
+- WHEN {action}
+- THEN {expected result}
 
-Changes to existing specifications.
+---
 
-```markdown
-<!-- Example -->
-### User Model (MODIFIED)
-- BEFORE: `email: string`
-- AFTER: `email: string (unique, indexed)`
-- REASON: Performance optimization for login lookup
-```
+## MODIFIED Requirements
 
-### REMOVED
+### Requirement: {Name}
 
-Specifications deprecated or removed.
+{New description}
 
-```markdown
-<!-- Example -->
-### Legacy Session Table (REMOVED)
-- REASON: Replaced by JWT-based authentication
-- MIGRATION: Run `npm run migrate:sessions` before deployment
-```
+(Previously: {old description})
+
+#### Scenario: {Scenario Name}
+
+- GIVEN {precondition}
+- WHEN {action}
+- THEN {expected result}
+
+---
+
+## REMOVED Requirements
+
+### Requirement: {Name}
+
+**Reason**: {why removed}
+
+**Migration**: {how to migrate}
+
+---
+
+## RENAMED Requirements
+
+- FROM: {Old Name}
+- TO: {New Name}
 
 ---
 
@@ -61,18 +69,12 @@ Specifications deprecated or removed.
 
 | File | Change Type | Description |
 |------|-------------|-------------|
-| `src/auth/jwt.ts` | NEW | JWT utilities |
-| `src/models/user.ts` | MODIFIED | Add email index |
+| `src/example.ts` | NEW | Example file |
 
 ### Dependencies
 
 - Requires: None
 - Blocks: None
-
-### Migration Steps
-
-1. Step 1
-2. Step 2
 
 ---
 

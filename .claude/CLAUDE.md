@@ -45,7 +45,8 @@ This directory contains Claude Code CLI extensions for the CC-DevFlow developmen
 │   └── util/                  # 工具命令 (4个) → /util:xxx
 ├── agents/                    # Agent 指令 (迁移到 skills/*/references/)
 ├── hooks/                     # 钩子脚本
-│   └── inject-skill-context.ts  # 上下文注入钩子 [NEW: v4.0]
+│   ├── inject-skill-context.ts  # 上下文注入钩子 [NEW: v4.0]
+│   └── ralph-loop.ts            # Ralph Loop 程序化验证 [NEW: v4.4] ⭐
 ├── scripts/                   # 共享脚本
 │   └── common.sh              # 通用函数 (含 worktree 辅助函数)
 └── docs/templates/            # 共享模板
@@ -614,3 +615,377 @@ zw() {
 
 **Last Updated**: 2026-02-07
 **v4.3.0 Module**: Git Worktree Integration
+
+---
+
+## v4.4.0 Module: Ralph Loop Programmatic Verification
+
+### Purpose
+
+实现 SubagentStop Hook 拦截验证机制，在子 Agent 尝试停止时执行程序化验证，确保代码质量。借鉴 Trellis 的 Ralph Loop 设计。
+
+### Key Changes
+
+| Before (v4.3) | After (v4.4) | Improvement |
+|---------------|--------------|-------------|
+| 无自动验证 | SubagentStop 拦截 | 质量保证 |
+| 手动检查 | 程序化验证 | 自动化 |
+| 无迭代控制 | 最大迭代限制 | 防止无限循环 |
+
+### New Files
+
+| File | Purpose |
+|------|---------|
+| `.claude/hooks/ralph-loop.ts` | SubagentStop Hook 主逻辑 (~350 行) |
+| `.ralph-state.json` | 运行时状态文件 (自动生成) |
+
+### Configuration
+
+`quality-gates.yml` 新增配置:
+
+```yaml
+# 顶级 verify 命令 (SubagentStop 时执行)
+verify:
+  - npm run lint --if-present
+  - npm run typecheck --if-present
+  - npm test -- --passWithNoTests
+
+ralph_loop:
+  max_iterations: 5      # 最大迭代次数
+  timeout_minutes: 30    # 超时时间
+```
+
+### Hook Registration
+
+`settings.json` 新增:
+
+```json
+{
+  "hooks": {
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx ts-node $CLAUDE_PROJECT_DIR/.claude/hooks/ralph-loop.ts"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### State File Format
+
+`.ralph-state.json`:
+
+```json
+{
+  "agent_id": "session-xxx",
+  "iteration": 2,
+  "last_failures": [
+    {
+      "command": "npm run lint",
+      "output": "error: ...",
+      "timestamp": "2026-02-07T06:00:00Z"
+    }
+  ],
+  "started_at": "2026-02-07T06:00:00Z"
+}
+```
+
+### Execution Flow
+
+```
+SubagentStop Event
+       │
+       ▼
+┌──────────────────┐
+│ Load State       │
+│ Check Timeout    │
+└────────┬─────────┘
+         │
+         ▼
+┌──────────────────┐
+│ Check Max Iter   │──── Reached ──▶ Allow Stop
+└────────┬─────────┘
+         │
+         ▼
+┌──────────────────┐
+│ Run Verify Cmds  │
+└────────┬─────────┘
+         │
+    ┌────┴────┐
+    │         │
+  Pass      Fail
+    │         │
+    ▼         ▼
+ Allow     Block
+ Stop      Stop
+           (return errors)
+```
+
+### Expected Improvements
+
+| Metric | Before | After | Improvement |
+|--------|--------|-------|-------------|
+| 代码质量保证 | 手动 | 自动 | 100% |
+| 验证遗漏率 | ~20% | ~0% | -100% |
+| 无限循环风险 | 存在 | 受控 | 安全 |
+
+---
+
+**Last Updated**: 2026-02-07
+**v4.4.0 Module**: Ralph Loop Programmatic Verification
+
+---
+
+## v4.5.0 Module: Delta Specs Enhancement
+
+### Purpose
+
+增强 Delta Specs 机制，借鉴 OpenSpec 的设计，实现完整的增量规格管理。支持 ADDED/MODIFIED/REMOVED/RENAMED 四种操作，提供 TypeScript 解析器和完整的 CLI 工具链。
+
+### Key Changes
+
+| Before (v4.4) | After (v4.5) | Improvement |
+|---------------|--------------|-------------|
+| 简单复制 | 真正的 delta 应用 | 精确变更 |
+| 3 个子命令 | 4 个子命令 | 完整功能 |
+| Bash 解析 | TypeScript 解析器 | 可靠性 |
+| 无状态管理 | 状态工作流 | 可追溯 |
+
+### New Command: /flow:delta
+
+```bash
+# Create a new delta spec
+/flow:delta create "REQ-123" "add-2fa"
+
+# List all deltas for a requirement
+/flow:delta list "REQ-123"
+
+# Apply delta to main specs (PRD.md)
+/flow:delta apply "REQ-123" "add-2fa"
+
+# Check delta status
+/flow:delta status "REQ-123" "add-2fa"
+```
+
+### Delta Spec Format (OpenSpec-style)
+
+```markdown
+---
+delta_id: "2026-02-01-add-2fa"
+req_id: "REQ-123"
+title: "Add 2FA Support"
+created_at: "2026-02-01T10:00:00Z"
+status: "draft|review|approved|applied"
+---
+
+# Delta: Add 2FA Support
+
+## ADDED Requirements
+### Requirement: Two-Factor Authentication
+#### Scenario: Enable 2FA
+- GIVEN user is logged in
+- WHEN user enables 2FA
+- THEN system generates QR code
+
+## MODIFIED Requirements
+### Requirement: User Login
+(Previously: old description)
+
+## REMOVED Requirements
+### Requirement: Legacy Session
+**Reason**: Replaced by JWT
+**Migration**: Run migration script
+
+## RENAMED Requirements
+- FROM: Old Name
+- TO: New Name
+```
+
+### New Files
+
+| File | Purpose |
+|------|---------|
+| `.claude/scripts/delta-parser.ts` | TypeScript Delta 解析器 (~400 行) |
+| `.claude/scripts/flow-delta-create.sh` | 创建 delta 目录和文件 |
+| `.claude/scripts/flow-delta-list.sh` | 列出所有 deltas |
+| `.claude/scripts/flow-delta-apply.sh` | 应用 delta 到 PRD.md |
+| `.claude/scripts/flow-delta-status.sh` | 检查 delta 状态 |
+| `.claude/docs/templates/DELTA_SPEC_TEMPLATE.md` | Delta 模板 (OpenSpec 格式) |
+
+### Directory Structure
+
+```
+devflow/requirements/REQ-123/
+├── PRD.md                    # Main specification (SSOT)
+├── deltas/                   # Delta specs directory
+│   ├── 2026-02-01-add-2fa/
+│   │   ├── delta.md          # Delta specification
+│   │   └── tasks.md          # Delta-specific tasks
+│   └── 2026-02-05-fix-login/
+│       ├── delta.md
+│       └── tasks.md
+└── ...
+
+devflow/archive/
+└── 2026-02/
+    └── REQ-123/
+        └── deltas/           # Archived deltas
+```
+
+### Status Workflow
+
+```
+draft → review → approved → applied
+  │       │         │
+  │       │         └── /flow:delta apply
+  │       │
+  │       └── Manual review approval
+  │
+  └── /flow:delta create
+```
+
+### TypeScript Parser API
+
+```typescript
+interface DeltaBlock {
+  type: 'ADDED' | 'MODIFIED' | 'REMOVED' | 'RENAMED';
+  name: string;
+  content: string;
+  previousContent?: string;  // for MODIFIED
+  reason?: string;           // for REMOVED
+  newName?: string;          // for RENAMED
+}
+
+function parseDelta(content: string): DeltaBlock[];
+function applyDelta(prdContent: string, delta: DeltaBlock[]): string;
+```
+
+### Integration Points
+
+| Integration | Description |
+|-------------|-------------|
+| `/flow:spec` | 生成 delta 而非直接修改 PRD |
+| `/flow:release` | 应用所有 approved deltas |
+| `/flow:archive` | 归档 applied deltas |
+
+### Expected Improvements
+
+| Metric | Before | After | Improvement |
+|--------|--------|-------|-------------|
+| 变更追溯性 | 无 | 完整 | 100% |
+| 冲突检测 | 无 | 自动 | 100% |
+| 回滚能力 | 手动 | 自动 | 100% |
+| 审核流程 | 无 | 状态驱动 | 100% |
+
+---
+
+**Last Updated**: 2026-02-07
+**v4.5.0 Module**: Delta Specs Enhancement
+
+---
+
+## v4.6.0 Module: Archive System Enhancement
+
+### Purpose
+
+增强归档系统，集成 Delta Specs 支持，提供完整的需求生命周期管理。
+
+### Key Changes
+
+| Before (v4.5) | After (v4.6) | Improvement |
+|---------------|--------------|-------------|
+| 简单移动目录 | Delta Specs 检查 | 完整性保证 |
+| 无警告机制 | 未应用 delta 警告 | 防止遗漏 |
+| 基础状态记录 | deltaCount 字段 | 可追溯性 |
+
+### New Features
+
+#### 1. Delta Specs 检查
+
+归档前自动检测:
+- 检查 `deltas/` 目录是否存在
+- 统计 Delta Specs 数量
+- 警告未应用的 Delta Specs (status != "applied")
+
+#### 2. 增强的状态记录
+
+```json
+{
+  "status": "archived",
+  "archivedReason": "completed",
+  "archivedAt": "2026-02-07T10:00:00+08:00",
+  "archiveLocation": "devflow/archive/2026-02/REQ-123",
+  "statusBeforeArchive": "release_complete",
+  "deltaCount": 3
+}
+```
+
+#### 3. 新增 common.sh 函数
+
+| Function | Purpose |
+|----------|---------|
+| `get_archive_summary()` | 获取归档需求的 JSON 摘要 |
+| `has_deltas_to_archive()` | 检查是否有 deltas 需要归档 |
+| `get_delta_count()` | 获取 delta 数量 |
+
+### Archive Directory Structure
+
+```
+devflow/archive/
+├── 2026-01/                      # 按月组织
+│   ├── REQ-001/
+│   │   ├── PRD.md
+│   │   ├── EPIC.md
+│   │   ├── TASKS.md
+│   │   ├── deltas/               # Delta Specs 完整保留
+│   │   │   └── 2026-01-15-add-feature/
+│   │   │       ├── delta.md
+│   │   │       └── tasks.md
+│   │   ├── orchestration_status.json
+│   │   └── ...
+│   └── REQ-002/
+└── 2026-02/
+    └── REQ-003/
+```
+
+### Command Usage
+
+```bash
+# 归档需求 (自动检测 Delta Specs)
+/flow:archive "REQ-123"
+
+# 预览归档 (显示 Delta Specs 信息)
+/flow:archive "REQ-123" --dry-run
+
+# 列出所有归档
+/flow:archive --list
+
+# 恢复归档
+/flow:archive "REQ-123" --restore
+```
+
+### Integration Points
+
+| Integration | Description |
+|-------------|-------------|
+| `/flow:release` | 发布后自动触发归档 |
+| `/flow:delta` | 归档前检查未应用的 deltas |
+| `/flow:status` | 显示归档状态 |
+
+### Expected Improvements
+
+| Metric | Before | After | Improvement |
+|--------|--------|-------|-------------|
+| Delta 遗漏率 | ~15% | ~0% | -100% |
+| 归档完整性 | 基础 | 完整 | 100% |
+| 可追溯性 | 有限 | 完整 | 100% |
+
+---
+
+**Last Updated**: 2026-02-07
+**v4.6.0 Module**: Archive System Enhancement

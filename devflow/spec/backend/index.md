@@ -11,19 +11,19 @@
 | File | Purpose | Status |
 |------|---------|--------|
 | `index.md` | 规范索引 (本文件) | Active |
-| `api.md` | API 设计规范 | Pending |
-| `database.md` | 数据库规范 | Pending |
-| `security.md` | 安全规范 | Pending |
-| `testing.md` | 后端测试规范 | Pending |
+| `directory-structure.md` | 目录结构约定 | Active |
+| `database-guidelines.md` | 数据库与 ORM 规范 | Active |
+| `error-handling.md` | 错误处理策略 | Active |
+| `logging-guidelines.md` | 日志规范 | Active |
 
 ## Quick Reference
 
 ### 文件命名
-- 路由文件: `resource.routes.ts`
-- 控制器: `resource.controller.ts`
-- 服务: `resource.service.ts`
-- 模型: `resource.model.ts`
-- 测试: `resource.test.ts`
+- 路由文件: `{resource}.routes.ts`
+- 控制器: `{resource}.controller.ts`
+- 服务: `{resource}.service.ts`
+- 模型: `{resource}.model.ts`
+- 测试: `{resource}.test.ts`
 
 ### 目录结构
 ```
@@ -33,11 +33,13 @@ src/
 ├── services/       # 业务逻辑
 ├── models/         # 数据模型
 ├── middleware/     # 中间件
-└── utils/          # 工具函数
+├── utils/          # 工具函数
+├── config/         # 配置
+└── types/          # TypeScript 类型
 ```
 
 ### 核心原则
-1. **RESTful 设计**: 遵循 REST 规范
+1. **分层架构**: 路由 → 控制器 → 服务 → 模型
 2. **输入验证**: 所有外部输入必须验证
 3. **错误处理**: 统一错误响应格式
 4. **日志记录**: 关键操作必须记录日志
@@ -45,10 +47,15 @@ src/
 ## Integration
 
 此规范被以下 Skill 引用:
-- `flow-epic` (后端任务规划)
+- `flow-spec` (后端任务规划)
 - `flow-dev` (后端开发执行)
 - `flow-tech` (技术设计)
 
+## Related Guides
+
+- [Cross-Layer Thinking Guide](../guides/cross-layer-thinking.md) - 跨层开发思考
+- [Code Reuse Thinking Guide](../guides/code-reuse-thinking.md) - 代码复用思考
+
 ---
 
-**Last Updated**: 2026-02-06
+**Last Updated**: 2026-02-07
