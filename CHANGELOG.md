@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.1.1] - 2026-02-07
+
+### 🔧 Flow-Init Script Reliability + Flow Docs Alignment
+
+v4.1.1 focuses on execution reliability for embedded flow-init scripts and removes stale command guidance from flow documentation.
+
+#### Fixed
+
+- **Flow-Init embedded scripts** now resolve shared `common.sh` safely
+  - Added fallback loading path from `skills/workflow/flow-init/scripts/*` to `.claude/scripts/common.sh`
+  - Prevents runtime failure when running bundled scripts directly from skill directories
+  - Affects:
+    - `check-prerequisites.sh`
+    - `create-requirement.sh`
+    - `validate-research.sh`
+
+#### Changed
+
+- **Flow command docs aligned with actual v4.1 workflow**
+  - Updated `/flow-new` orchestration to `flow-init → flow-clarify(optional) → flow-spec → flow-dev → flow-quality → flow-release`
+  - Removed outdated references to deprecated `/flow-review` and `/flow-qa` in active workflow guidance
+  - Synced bilingual README command links to namespace paths under `.claude/commands/flow/`
+
+#### Maintenance
+
+- **Lockfile metadata synchronized**
+  - Normalized `package-lock.json` package version markers to match `package.json`
+
+#### Benefits
+
+- ✅ `flow-init` script execution no longer fails due to missing local `common.sh`
+- ✅ Command docs now map to real command files and current workflow semantics
+- ✅ Release metadata consistency improved for publish pipeline
+
+
 ## [4.1.0] - 2026-02-07
 
 ### 🤖 Claude Team Integration: Multi-Agent Parallel Collaboration
