@@ -1,1 +1,1 @@
-../../../docs/templates/EPIC_TEMPLATE.md
+../../../../docs/templates/EPIC_TEMPLATE.md

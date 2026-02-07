@@ -1,1 +1,1 @@
-../../../agents/tech-architect.md
+../../../../agents/tech-architect.md

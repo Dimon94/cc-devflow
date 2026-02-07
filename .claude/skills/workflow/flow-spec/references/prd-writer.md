@@ -1,1 +1,1 @@
-../../../agents/prd-writer.md
+../../../../agents/prd-writer.md

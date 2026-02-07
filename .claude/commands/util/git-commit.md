@@ -4,9 +4,6 @@ description: Git Commit 工作流最佳实践 - Conventional Commits 规范、�
 version: 3.0.0
 author: CC-DevFlow
 updated_at: 2026-01-04
-scripts:
-  review: .claude/scripts/git-commit-review.sh
-  pr_check: .claude/scripts/check-remote.sh
 ---
 
 > **哲学核心**：Commit 是代码历史的节点，每个节点都应该清晰、独立、可追溯。

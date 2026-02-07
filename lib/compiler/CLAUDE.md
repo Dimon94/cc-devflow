@@ -13,6 +13,8 @@ lib/compiler/
 ├── schemas.js          # Zod validation schemas (CommandIR, Manifest)
 ├── errors.js           # Custom error types (MissingFrontmatter, UnknownAlias, etc.)
 ├── skills-registry.js  # Generate skills registry from .claude/skills/
+├── skill-discovery.js  # Recursive SKILL.md discovery (grouped + root skills)
+├── resource-copier.js  # Resource collection/copy and .claude path rewriting
 ├── platforms.js        # Platform configuration registry (v2.0)
 ├── context-expander.js # context.jsonl expansion (v3.0)
 ├── index.js            # Compiler entry point, orchestrates pipeline
@@ -69,7 +71,7 @@ Platform-specific output directories
 ## CLI Usage
 
 ```bash
-# Legacy: Compile commands only
+# Compile commands + modules
 npm run adapt                       # Compile all platforms
 npm run adapt -- --platform codex   # Compile single platform
 npm run adapt -- --check            # Drift detection only
@@ -81,8 +83,8 @@ npm run adapt -- --modules skills --platform cursor
 
 ## Key APIs
 
-### compile(options) - Legacy
-Compiles commands only (backward compatible).
+### compile(options) - Main Flow
+Compiles commands and emits platform modules (skills, agents, rules, hooks).
 
 ### compileMultiModule(options) - v3.0
 Compiles all specified modules.

@@ -215,6 +215,10 @@ async function main() {
       console.log(`  Files skipped: ${result.filesSkipped}`);
       console.log(`  Resources copied: ${result.resourcesCopied}`);
       console.log(`  Resources skipped: ${result.resourcesSkipped}`);
+      console.log(`  Skills emitted: ${result.skillsEmitted}`);
+      console.log(`  Agents emitted: ${result.agentsEmitted}`);
+      console.log(`  Module rules emitted: ${result.moduleRulesEmitted}`);
+      console.log(`  Hooks emitted: ${result.hooksEmitted}`);
       console.log(`  Skills registered: ${result.skillsRegistered}`);
       console.log(`  Rules generated: ${result.rulesGenerated}`);
       process.exit(0);

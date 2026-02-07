@@ -1,1 +1,1 @@
-../../../docs/templates/TECH_DESIGN_TEMPLATE.md
+../../../../docs/templates/TECH_DESIGN_TEMPLATE.md

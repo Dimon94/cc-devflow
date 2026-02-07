@@ -1,1 +1,1 @@
-../../../docs/templates/PRD_TEMPLATE.md
+../../../../docs/templates/PRD_TEMPLATE.md
