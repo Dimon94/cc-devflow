@@ -173,7 +173,15 @@ done
 
 # Source common functions
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/common.sh"
+COMMON_SH="$SCRIPT_DIR/common.sh"
+if [[ ! -f "$COMMON_SH" ]]; then
+    COMMON_SH="$SCRIPT_DIR/../../../../scripts/common.sh"
+fi
+if [[ ! -f "$COMMON_SH" ]]; then
+    echo "ERROR: common.sh not found (checked local + .claude/scripts)" >&2
+    exit 1
+fi
+source "$COMMON_SH"
 REPO_ROOT=$(get_repo_root)
 
 # Interactive mode

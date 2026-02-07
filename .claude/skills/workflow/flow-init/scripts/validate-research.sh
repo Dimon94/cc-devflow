@@ -28,7 +28,15 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 # shellcheck source=.claude/scripts/common.sh
-source "$SCRIPT_DIR/common.sh"
+COMMON_SH="$SCRIPT_DIR/common.sh"
+if [[ ! -f "$COMMON_SH" ]]; then
+  COMMON_SH="$SCRIPT_DIR/../../../../scripts/common.sh"
+fi
+if [[ ! -f "$COMMON_SH" ]]; then
+  echo "ERROR: common.sh not found (checked local + .claude/scripts)" >&2
+  exit 1
+fi
+source "$COMMON_SH"
 
 STRICT_MODE=false
 
