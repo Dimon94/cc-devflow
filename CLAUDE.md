@@ -285,7 +285,7 @@ Keep the map aligned with the terrain, or the terrain will be lost.
 
 ---
 
-## Skills-First Architecture (v4.1)
+## Skills-First Architecture (v4.2)
 
 `.claude/skills/` 是 CC-DevFlow 的核心，采用分组 Skills 架构：
 
@@ -304,15 +304,34 @@ Keep the map aligned with the terrain, or the terrain will be lost.
 └── utility/                # 8 个工具 Skills (npm-release, skill-creator...)
 ```
 
-### v4.1 统一 /flow-spec 命令
+### v4.2 命令命名空间重构
+
+28 个命令文件重组为 3 个分类目录，采用 Trellis 风格调用：
+
+```
+.claude/commands/
+├── flow/                   # 工作流命令 (20个) → /flow:xxx
+├── core/                   # 核心命令 (4个) → /core:xxx
+└── util/                   # 工具命令 (4个) → /util:xxx
+```
+
+| 旧命令 | 新命令 |
+|--------|--------|
+| `/flow-init` | `/flow:init` |
+| `/flow-spec` | `/flow:spec` |
+| `/flow-dev` | `/flow:dev` |
+| `/core-architecture` | `/core:architecture` |
+| `/git-commit` | `/util:git-commit` |
+
+### v4.1 统一 /flow:spec 命令
 
 合并 flow-prd/flow-tech/flow-ui/flow-epic 为单一命令：
 
 ```bash
-/flow-spec "REQ-123"                    # 完整模式: PRD → Tech+UI(并行) → Epic
-/flow-spec "REQ-123" --skip-tech --skip-ui  # 快速模式 (小需求)
-/flow-spec "REQ-123" --skip-ui          # 仅后端
-/flow-spec "REQ-123" --skip-tech        # 仅前端
+/flow:spec "REQ-123"                    # 完整模式: PRD → Tech+UI(并行) → Epic
+/flow:spec "REQ-123" --skip-tech --skip-ui  # 快速模式 (小需求)
+/flow:spec "REQ-123" --skip-ui          # 仅后端
+/flow:spec "REQ-123" --skip-tech        # 仅前端
 ```
 
 ### Skill 结构规范

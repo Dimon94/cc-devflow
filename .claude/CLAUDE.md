@@ -37,7 +37,10 @@ This directory contains Claude Code CLI extensions for the CC-DevFlow developmen
 │       ├── git-commit/
 │       └── npm-release/
 │
-├── commands/                  # 精简为触发入口
+├── commands/                  # 命令目录 (v4.2 命名空间重构)
+│   ├── flow/                  # 工作流命令 (20个) → /flow:xxx
+│   ├── core/                  # 核心命令 (4个) → /core:xxx
+│   └── util/                  # 工具命令 (4个) → /util:xxx
 ├── agents/                    # Agent 指令 (迁移到 skills/*/references/)
 ├── hooks/                     # 钩子脚本
 │   └── inject-skill-context.ts  # 上下文注入钩子 [NEW: v4.0]
@@ -87,12 +90,82 @@ skill-name/
 
 ---
 
+## v4.2.0 Module: Commands Namespace Restructure
+
+### Purpose
+
+将 28 个扁平命令文件重组为 3 个分类目录，采用 Trellis 风格的命名空间调用。
+
+### New Structure
+
+```
+commands/
+├── flow/                    # 工作流命令 (20个)
+│   ├── init.md             # /flow:init
+│   ├── spec.md             # /flow:spec
+│   ├── dev.md              # /flow:dev
+│   ├── quality.md          # /flow:quality
+│   ├── release.md          # /flow:release
+│   ├── fix.md              # /flow:fix
+│   ├── new.md              # /flow:new
+│   ├── ideate.md           # /flow:ideate
+│   ├── clarify.md          # /flow:clarify
+│   ├── restart.md          # /flow:restart
+│   ├── status.md           # /flow:status
+│   ├── update.md           # /flow:update
+│   ├── upgrade.md          # /flow:upgrade
+│   ├── verify.md           # /flow:verify
+│   ├── archive.md          # /flow:archive
+│   ├── checklist.md        # /flow:checklist
+│   ├── context.md          # /flow:context
+│   ├── delta.md            # /flow:delta
+│   ├── workspace.md        # /flow:workspace
+│   └── constitution.md     # /flow:constitution
+│
+├── core/                    # 核心命令 (4个)
+│   ├── architecture.md     # /core:architecture
+│   ├── guidelines.md       # /core:guidelines
+│   ├── roadmap.md          # /core:roadmap
+│   └── style.md            # /core:style
+│
+└── util/                    # 工具命令 (4个)
+    ├── git-commit.md       # /util:git-commit
+    ├── code-review.md      # /util:code-review
+    ├── problem-analyzer.md # /util:problem-analyzer
+    └── cancel-ralph.md     # /util:cancel-ralph
+```
+
+### Command Migration
+
+| 旧命令 | 新命令 |
+|--------|--------|
+| `/flow-init` | `/flow:init` |
+| `/flow-spec` | `/flow:spec` |
+| `/flow-dev` | `/flow:dev` |
+| `/core-architecture` | `/core:architecture` |
+| `/git-commit` | `/util:git-commit` |
+| `/code-review-high` | `/util:code-review` |
+
+### Benefits
+
+1. **清晰分类**: 28 个命令分为 3 组，一目了然
+2. **命名空间**: 避免命令名冲突
+3. **可扩展**: 新命令按类别添加
+4. **对齐 Trellis**: 统一风格，便于跨项目协作
+
+---
+
+**Last Updated**: 2026-02-07
+**v4.2.0 Module**: Commands Namespace Restructure
+
+---
+
 ## Legacy Structure (保留兼容)
 
 ```
 .claude/
 ├── agents/                    # Agent instruction files (迁移中)
-├── commands/                  # Slash command definitions (精简为触发入口)
+├── commands/                  # Slash command definitions (已重构为命名空间)
 ├── hooks/                     # JavaScript hooks
 ├── scripts/                   # Bash utility scripts
 └── docs/templates/            # Templates
