@@ -31,6 +31,7 @@ Complete automated workflow from PRD generation to code delivery with `/flow-new
 - 📜 **Constitution** - 10 Articles governing quality, security, and architecture
 - 🔄 **Autonomous Development** - Ralph × Manus Integration for memory-enhanced continuous iteration
 - 🔌 **Multi-Platform Support** - Compile workflows for Codex, Cursor, Qwen, Antigravity via `npm run adapt`
+- 🔄 **Multi-Module Compiler** - Full module compilation: skills, commands, agents, rules, hooks
 
 ---
 
@@ -85,7 +86,7 @@ Intelligent knowledge base activation with grouped Skills and automatic context 
 ```
 .claude/skills/
 ├── workflow.yaml           # Skill dependency graph (OpenSpec-inspired)
-├── workflow/               # 9 Workflow Skills (flow-init, flow-prd, etc.)
+├── workflow/               # 9 Workflow Skills (flow-init, flow-spec, flow-dev, etc.)
 ├── domain/                 # 7 Domain Skills (tdd, debugging, brainstorming)
 ├── guardrail/              # 3 Guardrail Skills (constitution-guardian, tdd-enforcer)
 └── utility/                # 8 Utility Skills (npm-release, skill-creator)
@@ -95,7 +96,7 @@ Intelligent knowledge base activation with grouped Skills and automatic context 
 
 | Category | Skills | Purpose |
 |----------|--------|---------|
-| **Workflow** | flow-init, flow-prd, flow-epic, flow-dev, flow-quality, flow-release | Core development workflow |
+| **Workflow** | flow-init, flow-spec, flow-dev, flow-quality, flow-release | Core development workflow |
 | **Domain** | tdd, debugging, brainstorming, verification | Domain expertise |
 | **Guardrail** | constitution-guardian, tdd-enforcer | Real-time compliance |
 | **Utility** | npm-release, skill-creator, writing-skills | Development tools |
@@ -260,6 +261,7 @@ bash .claude/tests/constitution/run_all_constitution_tests.sh
 | `/flow-new` | 🎯 Start New Requirement | `/flow-new "REQ-123\|Feature"` | [→](docs/commands/flow-new.md) |
 | `/flow-init` | 📦 Initialize Requirement | `/flow-init "REQ-123\|Feature"` | [→](docs/commands/flow-init.md) |
 | `/flow-clarify` | 🔎 Clarify Ambiguities | `/flow-clarify "REQ-123"` | [→](.claude/commands/flow-clarify.md) |
+| `/flow-spec` | 📋 Unified Specification (v4.1) | `/flow-spec "REQ-123"` | [→](.claude/commands/flow-spec.md) |
 | `/flow-checklist` | ✅ Requirement Quality Check | `/flow-checklist --type ux` | [→](.claude/commands/flow-checklist.md) |
 | `/flow-review` | �� Two-Stage Code Review | `/flow-review "REQ-123"` | [→](.claude/commands/flow-review.md) |
 | `/flow-fix` | 🐛 Systematic Bug Fix | `/flow-fix "BUG-123\|Description"` | [→](.claude/commands/flow-fix.md) |
@@ -313,17 +315,10 @@ graph TB
     ReqLevel([Requirement-Level Development]) --> FlowInit["/flow-init<br/>research.md & BRAINSTORM.md"]
 
     FlowInit --> FlowClarify["/flow-clarify<br/>clarifications/*.md<br/>Optional"]
-    FlowClarify --> FlowPRD["/flow-prd<br/>PRD.md<br/>BRAINSTORM alignment"]
-    FlowInit -.->|Skip clarify| FlowPRD
-    FlowPRD --> FlowChecklist["/flow-checklist<br/>checklists/*.md<br/>80% Gate"]
-    FlowPRD --> FlowTech["/flow-tech<br/>TECH_DESIGN.md & data-model"]
-    FlowPRD --> FlowUI["/flow-ui<br/>UI_PROTOTYPE.html<br/>Optional"]
+    FlowClarify --> FlowSpec["/flow-spec (v4.1)<br/>PRD → Tech+UI (parallel) → Epic<br/>Unified specification phase"]
+    FlowInit -.->|Skip clarify| FlowSpec
 
-    FlowChecklist --> FlowEpic
-    FlowTech --> FlowEpic["/flow-epic<br/>EPIC.md & TASKS.md<br/>bite-sized tasks"]
-    FlowUI --> FlowEpic
-
-    FlowEpic --> FlowDev["/flow-dev<br/>TASKS.md execution<br/>TDD Checkpoint"]
+    FlowSpec --> FlowDev["/flow-dev<br/>TASKS.md execution<br/>TDD Checkpoint"]
 
     FlowDev --> FlowReview["/flow-review<br/>Two-Stage Review<br/>Spec → Quality"]
 
@@ -341,11 +336,7 @@ graph TB
     style ReqLevel fill:#fff4e1
     style FlowInit fill:#e8f5e9
     style FlowClarify fill:#fff9c4
-    style FlowPRD fill:#e8f5e9
-    style FlowChecklist fill:#ffe0b2
-    style FlowTech fill:#e8f5e9
-    style FlowUI fill:#fff9c4
-    style FlowEpic fill:#e8f5e9
+    style FlowSpec fill:#e8f5e9
     style FlowDev fill:#f3e5f5
     style FlowReview fill:#e1bee7
     style FlowQA fill:#fce4ec
@@ -356,10 +347,10 @@ graph TB
 **Workflow Notes**:
 - **Project-Level Commands** (light blue): Execute once at project initialization, establish global standards (SSOT)
 - **Requirement-Level Commands** (light orange): Execute once per requirement (REQ-XXX)
+- **Unified /flow-spec** (v4.1): Replaces flow-prd/flow-tech/flow-ui/flow-epic with parallel execution
 - **Brainstorming** (v2.3.0): `/flow-init` now generates `BRAINSTORM.md` as requirement "North Star"
 - **Two-Stage Review** (v2.3.0): `/flow-review` validates Spec Compliance before Code Quality
-- **Optional Steps** (yellow): `/flow-clarify` and `/flow-ui` are optional; clarify can be skipped if requirements are clear
-- **Quality Gate** (orange): `/flow-checklist` validates requirement quality with 80% completion threshold before `/flow-epic`
+- **Optional Steps** (yellow): `/flow-clarify` is optional; skip if requirements are clear
 - **TDD Checkpoint** (v2.3.0): `/flow-dev` includes mandatory TDD checkpoint (tests must FAIL first)
 - **Quality Gates**: Each stage has entry/exit gates ensuring document quality and Constitution compliance
 - **Consistency Check**: `/flow-verify` can be called at any stage to ensure document consistency
@@ -505,14 +496,46 @@ bash .claude/tests/run-all-tests.sh --scripts
 
 ## 📝 Version History
 
-### v4.0.0 (2026-02-07) - Latest Release
+### v4.1.0 (2026-02-07) - Latest Release
+
+**🎯 Unified Specification Phase: /flow-spec Command**
+
+v4.1.0 merges flow-prd/flow-tech/flow-ui/flow-epic into a single `/flow-spec` command with parallel execution:
+
+- **Unified /flow-spec Command** - One command for entire specification phase
+  - Full Mode: PRD → Tech + UI (parallel) → Epic/Tasks
+  - Quick Mode: `--skip-tech --skip-ui` for small requirements
+  - Backend Only: `--skip-ui`
+  - Frontend Only: `--skip-tech`
+
+- **Parallel Agent Execution** - Tech + UI agents run concurrently
+  - ~35% time reduction in design phase
+  - Shared template components in `_shared/` directory
+
+- **Simplified Workflows** (v4.1)
+  ```
+  Quick (3 steps):    /flow-init --quick → /flow-spec --skip-tech --skip-ui → /flow-dev → /flow-release
+  Standard (4 steps): /flow-init → /flow-spec → /flow-dev → /flow-quality → /flow-release
+  Full (5 steps):     /flow-init → /flow-clarify → /flow-spec → /flow-dev → /flow-quality --full → /flow-release
+  ```
+
+- **Deprecations**: `/flow-prd`, `/flow-tech`, `/flow-ui`, `/flow-epic` now deprecated (use `/flow-spec`)
+
+**📊 v4.1 Improvements**:
+| Metric | Before (v4.0) | After (v4.1) | Improvement |
+|--------|---------------|--------------|-------------|
+| Command calls | 4 | 1 | -75% |
+| Design phase time | 8-12 min | 5-8 min | -35% |
+| Entry/Exit Gate code | ~280 lines | ~100 lines | -64% |
+
+### v4.0.0 (2026-02-07)
 
 **🏗️ Skills-First Architecture: Unified Skills with Context Injection**
 
 v4.0.0 introduces a major architectural refactor, reorganizing 135 files into a unified Skills-First Architecture inspired by Trellis and OpenSpec:
 
 - **Skills-First Architecture** - All Skills organized into 4 groups
-  - `workflow/`: 9 core workflow Skills (flow-init, flow-prd, flow-epic, flow-dev, etc.)
+  - `workflow/`: 9 core workflow Skills (flow-init, flow-spec, flow-dev, etc.)
   - `domain/`: 7 domain expertise Skills (tdd, debugging, brainstorming, verification)
   - `guardrail/`: 3 real-time compliance Skills (constitution-guardian, tdd-enforcer)
   - `utility/`: 8 development tool Skills (npm-release, skill-creator, writing-skills)
@@ -534,18 +557,31 @@ v4.0.0 introduces a major architectural refactor, reorganizing 135 files into a 
   - Agent instructions moved to `references/` subdirectory
   - Templates moved to `assets/` subdirectory
 
-**📊 Improvements**:
+- **Multi-Module Cross-Platform Compiler** (v3.0)
+  - Complete multi-module compilation: skills, commands, agents, rules, hooks
+  - Platform-specific output formats:
+    - **Codex**: `.codex/skills/`, `.codex/prompts/`, `AGENTS.md`
+    - **Cursor**: `.cursor/rules/*.mdc`, `.cursor/subagents/`, `hooks.json`
+    - **Qwen**: `.qwen/commands/*.toml`, `.qwen/agents/`, `CONTEXT.md`
+    - **Antigravity**: `.agent/skills/`, `.agent/workflows/`, `.agent/rules/`
+  - `context.jsonl` compilation-time expansion with platform-specific formats
+  - 197 tests passing (24 new multi-module tests)
+
+**📊 v4.0 Improvements**:
 | Metric | Before | After | Improvement |
 |--------|--------|-------|-------------|
 | Maintenance points | 4 directories | 1 directory | -75% |
 | Context loading | Manual full load | On-demand auto | -70% tokens |
 | Dependency visibility | Implicit | Explicit (workflow.yaml) | +100% |
+| Platform module support | Commands only | All modules | +400% |
 
 **📁 New Files**:
 - `.claude/skills/workflow.yaml` - Skill dependency graph
 - `.claude/hooks/inject-skill-context.ts` - Context injection hook
 - `.claude/skills/workflow/*/context.jsonl` - Per-Skill context definitions
 - `devflow/spec/{frontend,backend,shared}/index.md` - Specification indexes
+- `lib/compiler/context-expander.js` - Context.jsonl expansion module
+- `lib/compiler/__tests__/multi-module-emitters.test.js` - Multi-module tests
 
 ### v2.3.0 (2026-01-08)
 

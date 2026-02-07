@@ -285,7 +285,7 @@ Keep the map aligned with the terrain, or the terrain will be lost.
 
 ---
 
-## Skills-First Architecture (v4.0)
+## Skills-First Architecture (v4.1)
 
 `.claude/skills/` 是 CC-DevFlow 的核心，采用分组 Skills 架构：
 
@@ -294,17 +294,25 @@ Keep the map aligned with the terrain, or the terrain will be lost.
 ├── workflow.yaml           # Skill 依赖图 (借鉴 OpenSpec)
 ├── workflow/               # 9 个工作流 Skills
 │   ├── flow-init/          # 需求初始化
-│   ├── flow-prd/           # PRD 生成
-│   ├── flow-epic/          # Epic/Tasks 规划
+│   ├── flow-spec/          # 统一规格阶段 (v4.1) ⭐ PRD+Tech+UI+Epic
 │   ├── flow-dev/           # 开发执行
-│   ├── flow-tech/          # 技术设计
-│   ├── flow-ui/            # UI 原型
 │   ├── flow-quality/       # 质量验证
 │   ├── flow-release/       # 发布管理
 │   └── flow-fix/           # Bug 修复
 ├── domain/                 # 7 个领域 Skills (tdd, debugging, brainstorming...)
 ├── guardrail/              # 3 个守护 Skills (constitution-guardian, tdd-enforcer...)
 └── utility/                # 8 个工具 Skills (npm-release, skill-creator...)
+```
+
+### v4.1 统一 /flow-spec 命令
+
+合并 flow-prd/flow-tech/flow-ui/flow-epic 为单一命令：
+
+```bash
+/flow-spec "REQ-123"                    # 完整模式: PRD → Tech+UI(并行) → Epic
+/flow-spec "REQ-123" --skip-tech --skip-ui  # 快速模式 (小需求)
+/flow-spec "REQ-123" --skip-ui          # 仅后端
+/flow-spec "REQ-123" --skip-tech        # 仅前端
 ```
 
 ### Skill 结构规范

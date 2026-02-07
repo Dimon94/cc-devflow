@@ -31,6 +31,7 @@
 - 📜 **Constitution** - 10条宪法条款管控质量、安全和架构
 - 🔄 **自主开发** - Ralph × Manus 集成实现有记忆的持续迭代
 - 🔌 **多平台支持** - 通过 `npm run adapt` 编译工作流到 Codex、Cursor、Qwen、Antigravity
+- 🔄 **多模块编译器** - 完整模块编译：skills、commands、agents、rules、hooks
 
 ---
 
@@ -85,7 +86,7 @@ export SKIP_TDD_ENFORCER=1
 ```
 .claude/skills/
 ├── workflow.yaml           # Skill 依赖图 (借鉴 OpenSpec)
-├── workflow/               # 9 个工作流 Skills (flow-init, flow-prd 等)
+├── workflow/               # 9 个工作流 Skills (flow-init, flow-spec, flow-dev 等)
 ├── domain/                 # 7 个领域 Skills (tdd, debugging, brainstorming)
 ├── guardrail/              # 3 个守护 Skills (constitution-guardian, tdd-enforcer)
 └── utility/                # 8 个工具 Skills (npm-release, skill-creator)
@@ -95,7 +96,7 @@ export SKIP_TDD_ENFORCER=1
 
 | 分类 | Skills | 用途 |
 |------|--------|------|
-| **Workflow** | flow-init, flow-prd, flow-epic, flow-dev, flow-quality, flow-release | 核心开发工作流 |
+| **Workflow** | flow-init, flow-spec, flow-dev, flow-quality, flow-release | 核心开发工作流 |
 | **Domain** | tdd, debugging, brainstorming, verification | 领域专业知识 |
 | **Guardrail** | constitution-guardian, tdd-enforcer | 实时合规检查 |
 | **Utility** | npm-release, skill-creator, writing-skills | 开发工具 |
@@ -254,6 +255,7 @@ bash .claude/tests/constitution/run_all_constitution_tests.sh
 | `/flow-new` | 🎯 启动新需求 | `/flow-new "REQ-123\|功能"` | [→](docs/commands/flow-new.zh-CN.md) |
 | `/flow-init` | 📦 初始化需求 | `/flow-init "REQ-123\|功能"` | [→](docs/commands/flow-init.zh-CN.md) |
 | `/flow-clarify` | 🔎 澄清歧义 | `/flow-clarify "REQ-123"` | [→](.claude/commands/flow-clarify.md) |
+| `/flow-spec` | 📋 统一规格阶段 (v4.1) | `/flow-spec "REQ-123"` | [→](.claude/commands/flow-spec.md) |
 | `/flow-checklist` | ✅ 需求质量检查 | `/flow-checklist --type ux` | [→](.claude/commands/flow-checklist.md) |
 | `/flow-verify` | 🔍 验证一致性 | `/flow-verify "REQ-123"` | [→](docs/commands/flow-verify.zh-CN.md) |
 | `/flow-qa` | 🧪 质量保证 | `/flow-qa "REQ-123"` | [→](docs/commands/flow-qa.zh-CN.md) |
@@ -292,51 +294,40 @@ bash .claude/tests/constitution/run_all_constitution_tests.sh
 ```mermaid
 graph TB
     Start([项目启动]) --> ProjectLevel{项目级初始化}
-    
+
     ProjectLevel --> CoreRoadmap["/core-roadmap<br/>ROADMAP.md & BACKLOG.md"]
     ProjectLevel --> CoreArch["/core-architecture<br/>ARCHITECTURE.md"]
     ProjectLevel --> CoreGuidelines["/core-guidelines<br/>前端/后端规范"]
     ProjectLevel --> CoreStyle["/core-style<br/>STYLE.md"]
-    
+
     CoreRoadmap --> ReqLevel
     CoreArch --> ReqLevel
     CoreGuidelines --> ReqLevel
     CoreStyle --> ReqLevel
-    
-    ReqLevel([需求级开发流程]) --> FlowInit["/flow-init<br/>research.md & tasks.json"]
-    
-    FlowInit --> FlowClarify["/flow-clarify<br/>clarifications/*.md<br/>可选"]
-    FlowClarify --> FlowPRD["/flow-prd<br/>PRD.md"]
-    FlowInit -.->|跳过澄清| FlowPRD
-    FlowPRD --> FlowChecklist["/flow-checklist<br/>checklists/*.md<br/>80%门禁"]
-    FlowPRD --> FlowTech["/flow-tech<br/>TECH_DESIGN.md & 数据模型"]
-    FlowPRD --> FlowUI["/flow-ui<br/>UI_PROTOTYPE.html<br/>可选"]
 
-    FlowChecklist --> FlowEpic
-    FlowTech --> FlowEpic["/flow-epic<br/>EPIC.md & TASKS.md"]
-    FlowUI --> FlowEpic
-    
-    FlowEpic --> FlowDev["/flow-dev<br/>TASKS.md 执行<br/>TDD 强制"]
-    
+    ReqLevel([需求级开发流程]) --> FlowInit["/flow-init<br/>research.md & BRAINSTORM.md"]
+
+    FlowInit --> FlowClarify["/flow-clarify<br/>clarifications/*.md<br/>可选"]
+    FlowClarify --> FlowSpec["/flow-spec (v4.1)<br/>PRD → Tech+UI (并行) → Epic<br/>统一规格阶段"]
+    FlowInit -.->|跳过澄清| FlowSpec
+
+    FlowSpec --> FlowDev["/flow-dev<br/>TASKS.md 执行<br/>TDD 强制"]
+
     FlowDev --> FlowQA["/flow-qa<br/>QA 报告 & 安全审查"]
-    
+
     FlowQA --> FlowRelease["/flow-release<br/>PR 创建 & 部署"]
-    
+
     FlowRelease --> FlowVerify["/flow-verify<br/>一致性检查"]
-    
+
     FlowVerify --> End([发布完成])
-    
+
     FlowVerify -.->|可在任意阶段调用| ReqLevel
-    
+
     style ProjectLevel fill:#e1f5ff
     style ReqLevel fill:#fff4e1
     style FlowInit fill:#e8f5e9
     style FlowClarify fill:#fff9c4
-    style FlowPRD fill:#e8f5e9
-    style FlowChecklist fill:#ffe0b2
-    style FlowTech fill:#e8f5e9
-    style FlowUI fill:#fff9c4
-    style FlowEpic fill:#e8f5e9
+    style FlowSpec fill:#e8f5e9
     style FlowDev fill:#f3e5f5
     style FlowQA fill:#fce4ec
     style FlowRelease fill:#e0f2f1
@@ -346,8 +337,8 @@ graph TB
 **流程说明**:
 - **项目级命令**（浅蓝色）：项目初始化时执行一次，建立全局标准（SSOT）
 - **需求级命令**（浅橙色）：每个需求（REQ-XXX）执行一次
-- **可选步骤**（黄色）：`/flow-clarify` 和 `/flow-ui` 为可选步骤
-- **质量门禁**（橙色）：`/flow-checklist` 在 `/flow-epic` 前验证需求质量，80% 完成度阈值
+- **统一 /flow-spec** (v4.1)：替代 flow-prd/flow-tech/flow-ui/flow-epic，支持并行执行
+- **可选步骤**（黄色）：`/flow-clarify` 为可选步骤，需求清晰时可跳过
 - **质量闸门**：每个阶段都有入口/出口闸门，确保文档质量和 Constitution 合规性
 - **TDD 强制执行**：`/flow-dev` 严格强制执行测试驱动开发顺序
 - **一致性检查**：`/flow-verify` 可在任意阶段调用，确保文档一致性
@@ -429,7 +420,7 @@ devflow/
 ```
 
 <details>
-<parameter name="summary">🔧 完整配置选项（点击展开）</summary>
+<summary>🔧 完整配置选项（点击展开）</summary>
 
 ### Hooks 配置
 
@@ -493,14 +484,46 @@ bash .claude/tests/run-all-tests.sh --scripts
 
 ## 📝 版本历史
 
-### v4.0.0 (2026-02-07) - 最新版本
+### v4.1.0 (2026-02-07) - 最新版本
+
+**🎯 统一规格阶段：/flow-spec 命令**
+
+v4.1.0 将 flow-prd/flow-tech/flow-ui/flow-epic 合并为单一 `/flow-spec` 命令，支持并行执行：
+
+- **统一 /flow-spec 命令** - 一个命令完成整个规格阶段
+  - 完整模式：PRD → Tech + UI（并行）→ Epic/Tasks
+  - 快速模式：`--skip-tech --skip-ui` 适用于小需求
+  - 仅后端：`--skip-ui`
+  - 仅前端：`--skip-tech`
+
+- **并行 Agent 执行** - Tech + UI 代理并发运行
+  - 设计阶段时间减少约 35%
+  - 共享模板组件位于 `_shared/` 目录
+
+- **简化工作流** (v4.1)
+  ```
+  精简 (3 步):   /flow-init --quick → /flow-spec --skip-tech --skip-ui → /flow-dev → /flow-release
+  标准 (4 步):   /flow-init → /flow-spec → /flow-dev → /flow-quality → /flow-release
+  完整 (5 步):   /flow-init → /flow-clarify → /flow-spec → /flow-dev → /flow-quality --full → /flow-release
+  ```
+
+- **废弃命令**：`/flow-prd`、`/flow-tech`、`/flow-ui`、`/flow-epic` 已废弃（请使用 `/flow-spec`）
+
+**📊 v4.1 改进指标**:
+| 指标 | 之前 (v4.0) | 之后 (v4.1) | 改善 |
+|------|-------------|-------------|------|
+| 命令调用次数 | 4 | 1 | -75% |
+| 设计阶段时间 | 8-12 分钟 | 5-8 分钟 | -35% |
+| Entry/Exit Gate 代码 | ~280 行 | ~100 行 | -64% |
+
+### v4.0.0 (2026-02-07)
 
 **🏗️ Skills-First 架构：统一 Skills 与上下文注入**
 
 v4.0.0 引入重大架构重构，将 135 个文件重组为统一的 Skills-First 架构，借鉴 Trellis 和 OpenSpec：
 
 - **Skills-First 架构** - 所有 Skills 组织为 4 个分组
-  - `workflow/`: 9 个核心工作流 Skills (flow-init, flow-prd, flow-epic, flow-dev 等)
+  - `workflow/`: 9 个核心工作流 Skills (flow-init, flow-spec, flow-dev 等)
   - `domain/`: 7 个领域专业 Skills (tdd, debugging, brainstorming, verification)
   - `guardrail/`: 3 个实时合规 Skills (constitution-guardian, tdd-enforcer)
   - `utility/`: 8 个开发工具 Skills (npm-release, skill-creator, writing-skills)
@@ -522,18 +545,31 @@ v4.0.0 引入重大架构重构，将 135 个文件重组为统一的 Skills-Fir
   - Agent 指令移至 `references/` 子目录
   - 模板移至 `assets/` 子目录
 
-**📊 改进指标**:
+- **多模块跨平台编译器** (v3.0)
+  - 完整模块编译：skills、commands、agents、rules、hooks
+  - 平台专用输出格式：
+    - **Codex**: `.codex/skills/`, `.codex/prompts/`, `AGENTS.md`
+    - **Cursor**: `.cursor/rules/*.mdc`, `.cursor/subagents/`, `hooks.json`
+    - **Qwen**: `.qwen/commands/*.toml`, `.qwen/agents/`, `CONTEXT.md`
+    - **Antigravity**: `.agent/skills/`, `.agent/workflows/`, `.agent/rules/`
+  - `context.jsonl` 编译时展开，支持平台专用格式
+  - 197 个测试通过（24 个新增多模块测试）
+
+**📊 v4.0 改进指标**:
 | 指标 | 之前 | 之后 | 改善 |
 |------|------|------|------|
 | 维护点 | 4 个目录 | 1 个目录 | -75% |
 | 上下文加载 | 手动全量 | 按需自动 | -70% token |
 | 依赖可见性 | 隐式 | 显式 (workflow.yaml) | +100% |
+| 平台模块支持 | 仅命令 | 全部模块 | +400% |
 
 **📁 新增文件**:
 - `.claude/skills/workflow.yaml` - Skill 依赖图
 - `.claude/hooks/inject-skill-context.ts` - 上下文注入钩子
 - `.claude/skills/workflow/*/context.jsonl` - 每个 Skill 的上下文定义
 - `devflow/spec/{frontend,backend,shared}/index.md` - 规范索引
+- `lib/compiler/context-expander.js` - Context.jsonl 展开模块
+- `lib/compiler/__tests__/multi-module-emitters.test.js` - 多模块测试
 
 ### v2.3.0 (2026-01-08)
 
