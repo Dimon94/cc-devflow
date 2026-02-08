@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.1.4] - 2026-02-08
+
+### 🧭 Workspace Worktree Session Recovery & Release Flow Clarity
+
+v4.1.4 strengthens workspace-to-worktree continuity so developers can resume a requirement reliably across sessions, and clarifies flow init/release semantics in command and skill docs.
+
+#### Added
+
+- **Workspace switch script**
+  - Added `.claude/scripts/flow-workspace-switch.sh`
+  - Supports `REQ/BUG` pointer updates, journal logging, `--print-cd`, and sourced `--cd` switching
+
+- **Scripts architecture map**
+  - Added `.claude/scripts/CLAUDE.md` as L2 directory map for script responsibilities
+
+#### Changed
+
+- **Workspace start behavior**
+  - `.claude/scripts/flow-workspace-start.sh` now accepts `REQ-XXX/BUG-XXX` override
+  - Added `--switch` and sourced `--cd` behavior for faster worktree handoff
+  - Added BUG status file compatibility (`devflow/bugs/*/status.json`)
+
+- **Requirement initialization linkage**
+  - `.claude/scripts/create-requirement.sh` now syncs `devflow/workspace/{developer}/.current-req` when workspace exists
+
+- **Flow docs and skills alignment**
+  - Updated flow init/release/workspace command docs and workflow skills to reflect:
+    - default worktree naming semantics
+    - merge semantics by release strategy
+    - workspace continuity expectations
+
+#### Benefits
+
+- ✅ New session recovery can target the intended REQ/BUG directly
+- ✅ Worktree switching is faster and less error-prone via generated `cd` commands
+- ✅ Flow release semantics are clearer when deciding between PR-only vs merge paths
+
 ## [4.1.3] - 2026-02-08
 
 ### 🔧 Flow Quality Default Path + AGENTS.md Safe Emit
