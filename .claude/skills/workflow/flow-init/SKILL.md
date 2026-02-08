@@ -15,14 +15,12 @@ description: 'Initialize requirement structure with brainstorming and research. 
 
 ```
 /flow-init "REQ_ID|TITLE|PLAN_URLS?"
-/flow-init "REQ_ID|TITLE" --branch-only
 /flow-init --interactive
 ```
 
 - **REQ_ID**: `^(REQ|BUG)-[0-9]+$`
 - **TITLE**: 需求简短标题
 - **PLAN_URLS**: 计划文档URL (可选，逗号分隔)
-- **--branch-only**: 使用传统分支模式 (不创建 worktree)
 
 ## Execution Flow
 
@@ -31,49 +29,15 @@ description: 'Initialize requirement structure with brainstorming and research. 
 1. **参数解析**
    - 验证 REQ_ID 格式
    - 提取 TITLE 和 PLAN_URLS
-   - 若 TITLE 含中文，意译生成 BRANCH_TITLE_EN
 
 2. **前置检查**
    ```bash
    bash scripts/check-prerequisites.sh --json --paths-only
    ```
-   - Git 状态干净
    - devflow/ 目录存在
 
 3. **唯一性检查**
    - `devflow/requirements/${REQ_ID}/` 不存在
-
-### Stage 1.2: Git Worktree (Default) or Branch
-
-**Worktree 模式 (默认)**:
-```bash
-# 计算路径
-REPO_NAME=$(basename $(git rev-parse --show-toplevel))
-WORKTREE_DIR="../${REPO_NAME}-${REQ_ID}"
-
-# 分支前缀按类型决定
-if [[ "${REQ_ID}" =~ ^BUG- ]]; then
-  BRANCH_PREFIX="bugfix"
-else
-  BRANCH_PREFIX="feature"
-fi
-BRANCH_NAME="${BRANCH_PREFIX}/${REQ_ID}-${slug(BRANCH_TITLE_EN)}"
-
-# 创建 worktree + 分支
-git worktree add -b "$BRANCH_NAME" "$WORKTREE_DIR"
-
-# 切换到 worktree
-cd "$WORKTREE_DIR"
-```
-
-**分支模式 (--branch-only)**:
-```bash
-# Requirements
-git checkout -b feature/${REQ_ID}-${slug(BRANCH_TITLE_EN)}
-
-# Bug Fixes
-git checkout -b bugfix/${BUG_ID}-${slug(BRANCH_TITLE_EN)}
-```
 
 ### Stage 1.5: Context Loading
 

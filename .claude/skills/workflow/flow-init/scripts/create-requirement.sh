@@ -12,22 +12,17 @@
 #                       Optional if --interactive mode is used
 #
 # OPTIONS:
-#   --title TITLE       Requirement title (docs; branch fallback)
-#   --branch-title TITLE Branch title used for git branch naming (optional)
+#   --title TITLE       Requirement title
+#   --branch-title TITLE Branch title (deprecated, ignored)
 #   --description DESC  Brief description (optional)
-#   --skip-git          Skip git branch/worktree creation
-#   --branch-only       Use traditional branch mode (no worktree)
-#   --worktree          Use worktree mode (default)
+#   --skip-git          Deprecated (git operations removed)
 #   --interactive, -i   Interactive mode (prompts for inputs)
 #   --json              Output in JSON format
 #   --help, -h          Show help message
 #
 # EXAMPLES:
-#   # Create requirement with worktree (default)
+#   # Create requirement
 #   ./create-requirement.sh REQ-123 --title "User authentication"
-#
-#   # Create requirement with traditional branch
-#   ./create-requirement.sh REQ-123 --title "User authentication" --branch-only
 #
 #   # Interactive mode
 #   ./create-requirement.sh --interactive
@@ -66,18 +61,8 @@ while [[ $# -gt 0 ]]; do
             DESCRIPTION="$2"
             shift 2
             ;;
-        --skip-git)
-            SKIP_GIT=true
-            shift
-            ;;
-        --branch-only)
-            BRANCH_ONLY=true
-            USE_WORKTREE=false
-            shift
-            ;;
-        --worktree)
-            USE_WORKTREE=true
-            BRANCH_ONLY=false
+        --skip-git|--branch-only|--worktree)
+            # Deprecated: git operations removed from DevFlow
             shift
             ;;
         --interactive|-i)
@@ -103,12 +88,9 @@ ARGUMENTS:
                       Optional if --interactive mode is used
 
 OPTIONS:
-  --title TITLE       Requirement title (docs; branch fallback)
-  --branch-title TITLE Branch title used for git branch naming (optional)
+  --title TITLE       Requirement title
+  --branch-title TITLE Deprecated (ignored)
   --description DESC  Brief description (optional)
-  --skip-git          Skip git branch/worktree creation
-  --branch-only       Use traditional branch mode (no worktree)
-  --worktree          Use worktree mode (default)
   --interactive, -i   Interactive mode (prompts for inputs)
   --json              Output results in JSON format
   --auto-id           Auto-select next available REQ-ID when missing or duplicated
@@ -142,15 +124,9 @@ STRUCTURE CREATED:
     ├── EXECUTION_LOG.md
     └── status.json
 
-GIT MODES:
-  Worktree (default):
-    - Creates: ../repo-name-REQ-XXX/
-    - Branch: feature/REQ-XXX-title
-    - Enables parallel development
-
-  Branch (--branch-only):
-    - Creates: feature/REQ-XXX-title branch
-    - Traditional single-workspace mode
+NOTE:
+  Git branch/worktree management is handled externally by the user.
+  DevFlow only creates the requirement directory structure.
 
 EOF
             exit 0
@@ -392,98 +368,16 @@ if [[ -n "$DESCRIPTION" ]]; then
     log_event "$REQ_ID" "Description: $DESCRIPTION"
 fi
 
-# Create git branch/worktree if requested and available
-GIT_BRANCH=""
-WORKTREE_DIR=""
-if ! $SKIP_GIT && has_git; then
-    # Generate branch name from title
-    if [[ -n "$BRANCH_TITLE" ]]; then
-        BRANCH_SUFFIX=$(slugify "$BRANCH_TITLE")
-    elif [[ -n "$TITLE" ]]; then
-        BRANCH_SUFFIX=$(slugify "$TITLE")
-    else
-        BRANCH_SUFFIX="new-requirement"
-    fi
-    if [[ -z "$BRANCH_SUFFIX" ]]; then
-        BRANCH_SUFFIX="new-requirement"
-    fi
-
-    # Determine branch prefix based on type
-    if [[ "$REQ_TYPE" == "bug" ]]; then
-        GIT_BRANCH="bugfix/$REQ_ID-$BRANCH_SUFFIX"
-    else
-        GIT_BRANCH="feature/$REQ_ID-$BRANCH_SUFFIX"
-    fi
-
-    # Check if branch already exists
-    if git rev-parse --verify "$GIT_BRANCH" >/dev/null 2>&1; then
-        if ! $JSON_MODE; then
-            echo "WARNING: Git branch already exists: $GIT_BRANCH" >&2
-        fi
-        # Branch exists - check if we should use worktree mode
-        if $USE_WORKTREE && ! $BRANCH_ONLY; then
-            REPO_NAME=$(basename "$REPO_ROOT")
-            WORKTREE_DIR="$(dirname "$REPO_ROOT")/${REPO_NAME}-${REQ_ID}"
-            if [[ -d "$WORKTREE_DIR" ]]; then
-                if ! $JSON_MODE; then
-                    echo "Worktree already exists at: $WORKTREE_DIR" >&2
-                fi
-            else
-                # Create worktree with existing branch
-                git worktree add "$WORKTREE_DIR" "$GIT_BRANCH" >/dev/null 2>&1
-                log_event "$REQ_ID" "Created git worktree: $WORKTREE_DIR (existing branch: $GIT_BRANCH)"
-                if ! $JSON_MODE; then
-                    echo "Created worktree at: $WORKTREE_DIR" >&2
-                fi
-            fi
-        fi
-    else
-        # Branch doesn't exist - create it
-        if $USE_WORKTREE && ! $BRANCH_ONLY; then
-            # Worktree mode (default)
-            REPO_NAME=$(basename "$REPO_ROOT")
-            WORKTREE_DIR="$(dirname "$REPO_ROOT")/${REPO_NAME}-${REQ_ID}"
-
-            if [[ -d "$WORKTREE_DIR" ]]; then
-                if ! $JSON_MODE; then
-                    echo "WARNING: Worktree directory already exists: $WORKTREE_DIR" >&2
-                    echo "Skipping worktree creation." >&2
-                fi
-            else
-                # Create worktree with new branch
-                git worktree add -b "$GIT_BRANCH" "$WORKTREE_DIR" >/dev/null 2>&1
-                log_event "$REQ_ID" "Created git worktree: $WORKTREE_DIR (branch: $GIT_BRANCH)"
-
-                if ! $JSON_MODE; then
-                    echo "Created worktree at: $WORKTREE_DIR" >&2
-                    echo "Branch: $GIT_BRANCH" >&2
-                fi
-            fi
-        else
-            # Traditional branch mode
-            git checkout -b "$GIT_BRANCH" >/dev/null 2>&1
-            log_event "$REQ_ID" "Created git branch: $GIT_BRANCH"
-
-            if ! $JSON_MODE; then
-                echo "Created and checked out branch: $GIT_BRANCH" >&2
-            fi
-        fi
-    fi
-
-    # Set environment variable for non-branch-based workflows
-    export DEVFLOW_REQ_ID="$REQ_ID"
-fi
+# Set environment variable for REQ identification
+export DEVFLOW_REQ_ID="$REQ_ID"
 
 # Output results
 if $JSON_MODE; then
-    printf '{"req_id":"%s","req_type":"%s","req_dir":"%s","title":"%s","git_branch":"%s","worktree_dir":"%s","mode":"%s","created_at":"%s"}\n' \
+    printf '{"req_id":"%s","req_type":"%s","req_dir":"%s","title":"%s","created_at":"%s"}\n' \
         "$REQ_ID" \
         "$REQ_TYPE" \
         "$REQ_DIR" \
         "${TITLE:-""}" \
-        "${GIT_BRANCH:-""}" \
-        "${WORKTREE_DIR:-""}" \
-        "$( $USE_WORKTREE && echo "worktree" || echo "branch" )" \
         "$(get_beijing_time_iso)"
 else
     echo ""
@@ -495,22 +389,9 @@ else
     if [[ -n "$TITLE" ]]; then
         echo "Title:             $TITLE"
     fi
-    if [[ -n "$GIT_BRANCH" ]]; then
-        echo "Git Branch:        $GIT_BRANCH"
-    fi
-    if [[ -n "$WORKTREE_DIR" ]]; then
-        echo "Worktree:          $WORKTREE_DIR"
-        echo "Mode:              worktree (parallel development enabled)"
-    elif [[ -n "$GIT_BRANCH" ]]; then
-        echo "Mode:              branch (traditional)"
-    fi
     echo ""
     echo "Next Steps:"
-    if [[ -n "$WORKTREE_DIR" && -d "$WORKTREE_DIR" ]]; then
-        echo "  1. cd $WORKTREE_DIR"
-        echo "  2. claude  # Start new Claude Code session"
-        echo "  3. Continue with /flow-prd or /flow-spec"
-    elif [[ "$REQ_TYPE" == "bug" ]]; then
+    if [[ "$REQ_TYPE" == "bug" ]]; then
         echo "  1. Run bug-analyzer agent to analyze the BUG"
         echo "  2. Run /flow-fix to start BUG fix workflow"
         echo "  3. Keep EXECUTION_LOG.md updated during fixes"

@@ -117,7 +117,7 @@ function findRepoRoot(startPath: string): string | null {
 }
 
 /**
- * 从 worktree 目录名或分支名提取 REQ-ID
+ * 从环境变量、.current-req 文件或目录扫描提取 REQ-ID
  */
 function extractReqId(repoRoot: string): string | null {
   // 尝试从目录名提取 (e.g., cc-devflow-REQ-123)

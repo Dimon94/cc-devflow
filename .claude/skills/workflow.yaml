@@ -276,7 +276,7 @@ skills:
   workflow:
     - id: flow-init
       path: workflow/flow-init
-      description: 需求初始化 (支持 worktree)
+      description: 需求初始化
     - id: flow-clarify
       path: workflow/flow-clarify
       description: 需求澄清
@@ -291,7 +291,7 @@ skills:
       description: 质量验证
     - id: flow-release
       path: workflow/flow-release
-      description: 发布管理 (支持 worktree 清理)
+      description: 发布管理
     - id: flow-fix
       path: workflow/flow-fix
       description: Bug 修复
@@ -335,9 +335,6 @@ skills:
     - id: finishing-branch
       path: domain/finishing-branch
       description: 分支完成决策
-    - id: using-git-worktrees
-      path: domain/using-git-worktrees
-      description: Git Worktree 管理
 
   guardrail:
     - id: constitution-guardian

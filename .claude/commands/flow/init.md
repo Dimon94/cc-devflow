@@ -21,7 +21,6 @@ skill: workflow/flow-init
 | Stage | Purpose | Output |
 |-------|---------|--------|
 | 1 | Entry Gate | 参数验证 |
-| 1.2 | Git Worktree (默认) / Branch (--branch-only) | `../{repo}-{REQ_ID}` + `feature|bugfix/{REQ_ID}-{slug}` |
 | 1.5 | Context Loading | ROADMAP/ARCHITECTURE |
 | 2 | Directory Init | 目录结构 |
 | 2.3 | Brainstorming | BRAINSTORM.md |
@@ -29,20 +28,10 @@ skill: workflow/flow-init
 | 3 | README | README.md |
 | 4 | Exit Gate | 5-Level 验证 |
 
-## Worktree Naming
-
-- 默认模式会创建独立 worktree（不是只建分支）。
-- 目录命名：`{repo-name}-{REQ_ID}`（示例：`cc-devflow-REQ-123`）。
-- 分支命名：
-  - Requirement: `feature/{REQ_ID}-{slug(title)}`
-  - Bug: `bugfix/{REQ_ID}-{slug(title)}`
-- `--branch-only` 才会退回传统单仓库分支模式。
-
 ## Session Continuity
 
 - 需求上下文由 `devflow/requirements/${REQ_ID}/` 下的文档和 `orchestration_status.json` 持久化。
-- REQ 识别优先级：`DEVFLOW_REQ_ID` → worktree 目录名 → 当前分支名。
-- 进入新会话时，应先进入目标 worktree 目录再继续命令；worktree 路径可按命名规则直接定位，或使用 `using-git-worktrees` 的切换脚本。
+- REQ 识别优先级：`DEVFLOW_REQ_ID` → `devflow/workspace/.current-req` → 最新需求目录。
 
 ## Skill Location
 
@@ -56,5 +45,5 @@ skill: workflow/flow-init
 ## Next Step
 
 ```
-/flow-prd "${REQ_ID}"
+/flow-spec "${REQ_ID}"
 ```
