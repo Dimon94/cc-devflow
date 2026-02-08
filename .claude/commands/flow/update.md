@@ -106,6 +106,6 @@ $ARGUMENTS = "REQ_ID TASK_ID [--status=STATE] [--progress=PCT] [--estimate=HRS] 
 ```
 
 ## 下一步
-- 若所有任务完成：立即运行 `/flow-qa`。
+- 若所有任务完成：立即运行 `/flow-quality`（需要深度审查时再加 `--full`）。
 - 若任务被阻塞：添加 `blocked` 注释并通知相关负责人。
 - 周期性执行 `/flow-status` 获取进度总览。

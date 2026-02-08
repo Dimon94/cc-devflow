@@ -91,6 +91,10 @@ exit_criteria:
   ✓ Type Check
   ✓ Unit Tests (42 passed)
 
+Reports Generated (when REQ-ID resolved):
+  - TEST_REPORT.md
+  - SECURITY_REPORT.md
+
 Duration: 1m 23s
 ```
 
@@ -113,6 +117,7 @@ Reports Generated:
   - SPEC_REVIEW.md
   - CODE_QUALITY_REVIEW.md
   - SECURITY_REPORT.md
+  - TEST_REPORT.md
 
 Duration: 7m 45s
 ```

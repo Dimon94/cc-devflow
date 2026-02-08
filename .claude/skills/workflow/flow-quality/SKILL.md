@@ -70,6 +70,9 @@ version: 3.0.0
   ✓ Lint Check
   ✓ Type Check
   ✓ Unit Tests
+Reports Generated (when REQ-ID resolved):
+  - TEST_REPORT.md
+  - SECURITY_REPORT.md
 ```
 
 ### Full Mode
@@ -79,6 +82,7 @@ Reports Generated:
   - SPEC_REVIEW.md
   - CODE_QUALITY_REVIEW.md
   - SECURITY_REPORT.md
+  - TEST_REPORT.md
 ```
 
 ## Deprecation Notice

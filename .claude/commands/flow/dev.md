@@ -412,5 +412,5 @@ Note: Stop Hook (.claude/hooks/ralph-stop-hook.sh) 会在 Autonomous 模式下:
 ```
 
 ## 下一步
-1. 完成所有任务后运行 `/flow-qa` 进入测试与安全审查
+1. 完成所有任务后运行 `/flow-quality` 进入测试与安全审查（需要深度审查时再加 `--full`）
 2. 若有新技术引入，回到 `research/tasks.json` 补记并通知 planner

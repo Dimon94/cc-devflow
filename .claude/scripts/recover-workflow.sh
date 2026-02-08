@@ -28,7 +28,7 @@ usage() {
 
 选项:
   -h, --help              显示此帮助信息
-  --from STAGE            从指定阶段重新开始 (init/prd/epic/dev/qa/release)
+  --from STAGE            从指定阶段重新开始 (init/prd/epic/dev/quality/release, qa 兼容)
   --force                 强制恢复，跳过安全检查
   --dry-run               显示恢复计划但不执行
   --verbose               显示详细信息
@@ -38,7 +38,7 @@ usage() {
   prd       - PRD生成阶段
   epic      - Epic规划阶段
   dev       - 开发执行阶段
-  qa        - 质量保证阶段
+  quality   - 质量验证阶段
   release   - 发布管理阶段
 
 示例:
@@ -251,17 +251,17 @@ analyze_recovery_strategy() {
                     echo -e "${CYAN}建议: 继续开发 (恢复未完成任务)${NC}"
                     echo "dev"
                 else
-                    echo -e "${CYAN}建议: 进入 QA 阶段${NC}"
-                    echo "qa"
+                    echo -e "${CYAN}建议: 进入质量验证阶段${NC}"
+                    echo "quality"
                 fi
             else
                 echo -e "${CYAN}建议: 从开发阶段开始${NC}"
                 echo "dev"
             fi
             ;;
-        qa|qa_complete)
-            echo -e "${CYAN}建议: 从 QA 阶段开始${NC}"
-            echo "qa"
+        quality|quality_complete|qa|qa_complete)
+            echo -e "${CYAN}建议: 从质量验证阶段开始${NC}"
+            echo "quality"
             ;;
         release|release_complete)
             echo -e "${CYAN}建议: 从发布阶段开始${NC}"
@@ -284,12 +284,12 @@ validate_stage() {
     local stage="$1"
 
     case "$stage" in
-        init|prd|epic|dev|qa|release)
+        init|prd|epic|dev|quality|qa|release)
             return 0
             ;;
         *)
             echo -e "${RED}错误: 无效的阶段 '$stage'${NC}"
-            echo -e "${YELLOW}有效阶段: init, prd, epic, dev, qa, release${NC}"
+            echo -e "${YELLOW}有效阶段: init, prd, epic, dev, quality, release (qa 兼容)${NC}"
             exit 1
             ;;
     esac
@@ -315,19 +315,19 @@ generate_recovery_plan() {
     local stages=()
     case "$start_stage" in
         init)
-            stages=("init" "prd" "epic" "dev" "qa" "release")
+            stages=("init" "prd" "epic" "dev" "quality" "release")
             ;;
         prd)
-            stages=("prd" "epic" "dev" "qa" "release")
+            stages=("prd" "epic" "dev" "quality" "release")
             ;;
         epic)
-            stages=("epic" "dev" "qa" "release")
+            stages=("epic" "dev" "quality" "release")
             ;;
         dev)
-            stages=("dev" "qa" "release")
+            stages=("dev" "quality" "release")
             ;;
-        qa)
-            stages=("qa" "release")
+        quality|qa)
+            stages=("quality" "release")
             ;;
         release)
             stages=("release")
@@ -351,8 +351,8 @@ generate_recovery_plan() {
             dev)
                 command="/flow-dev \"$REQ_ID\" --resume"
                 ;;
-            qa)
-                command="/flow-qa \"$REQ_ID\" --full"
+            quality)
+                command="/flow-quality \"$REQ_ID\""
                 ;;
             release)
                 command="/flow-release \"$REQ_ID\""
@@ -397,29 +397,29 @@ execute_recovery() {
             echo "/flow-prd \"$REQ_ID\""
             echo "/flow-epic \"$REQ_ID\""
             echo "/flow-dev \"$REQ_ID\""
-            echo "/flow-qa \"$REQ_ID\" --full"
+            echo "/flow-quality \"$REQ_ID\""
             echo "/flow-release \"$REQ_ID\""
             ;;
         prd)
             echo "/flow-prd \"$REQ_ID\""
             echo "/flow-epic \"$REQ_ID\""
             echo "/flow-dev \"$REQ_ID\""
-            echo "/flow-qa \"$REQ_ID\" --full"
+            echo "/flow-quality \"$REQ_ID\""
             echo "/flow-release \"$REQ_ID\""
             ;;
         epic)
             echo "/flow-epic \"$REQ_ID\""
             echo "/flow-dev \"$REQ_ID\""
-            echo "/flow-qa \"$REQ_ID\" --full"
+            echo "/flow-quality \"$REQ_ID\""
             echo "/flow-release \"$REQ_ID\""
             ;;
         dev)
             echo "/flow-dev \"$REQ_ID\" --resume"
-            echo "/flow-qa \"$REQ_ID\" --full"
+            echo "/flow-quality \"$REQ_ID\""
             echo "/flow-release \"$REQ_ID\""
             ;;
-        qa)
-            echo "/flow-qa \"$REQ_ID\" --full"
+        quality|qa)
+            echo "/flow-quality \"$REQ_ID\""
             echo "/flow-release \"$REQ_ID\""
             ;;
         release)

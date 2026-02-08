@@ -56,9 +56,9 @@ $ARGUMENTS = "REQ_ID?"
 1. 解析 REQ_ID
 2. {SCRIPT:prereq} --json 校验:
    → 存在 PRD.md、TECH_DESIGN.md、data-model.md、contracts/、quickstart.md、EPIC.md、TASKS.md、TEST_REPORT.md、SECURITY_REPORT.md
-   → orchestration_status.status ∈ {"qa_complete", "release_failed"}
+   → orchestration_status.status ∈ {"quality_complete", "qa_complete", "release_failed"}
 3. {SCRIPT:check_tasks} --json 确认 remaining == 0
-4. 验证 QA gate:
+4. 验证 Quality gate:
    → TEST_REPORT.md / SECURITY_REPORT.md 中的 Gate 均为 PASS
 5. Git 环境:
    → 工作区干净、当前在 feature/bugfix 分支
@@ -115,7 +115,7 @@ Prompt 核心要求:
 ```
 
 ## 错误处理
-- QA Gate 失败或 Constitution ERROR → 立即终止，标记 status="release_failed"。
+- Quality Gate 失败或 Constitution ERROR → 立即终止，标记 status="release_failed"。
 - Git push/PR 创建失败 → 输出命令和日志，保持可重试状态。
 - CLAUDE.md 更新遗漏 → 阻断发布并提示补写。
 

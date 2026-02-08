@@ -65,7 +65,7 @@ research | prd | planning | development | qa | release
    → prd → /flow-prd
    → planning → /flow-epic
    → development → /flow-dev
-   → qa → /flow-qa
+   → quality → /flow-quality（必要时追加 --full）
    → release → /flow-release
 
 2. 若 {SCRIPT:recover} 支持自动修复（如重建 TASKS），执行对应脚本。

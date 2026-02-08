@@ -44,7 +44,7 @@ $ARGUMENTS = "[REQ_ID?] [--all] [--bugs] [--detailed] [--summary]"
   - `phase0_complete=false` → `/flow-init` consolidate
   - `phase1_complete=false` → `/flow-tech`
   - `status=epic_complete` → `/flow-dev`
-  - `status=qa_complete` → `/flow-release`
+  - `status=quality_complete`（兼容 `qa_complete`）→ `/flow-release`
 
 ## 输出样例
 ```
@@ -53,7 +53,7 @@ $ARGUMENTS = "[REQ_ID?] [--all] [--bugs] [--detailed] [--summary]"
 │ ID      │ Title        │ Status        │ Phase      │ Next     │
 ├─────────┼──────────────┼───────────────┼────────────┼──────────┤
 │ REQ-123 │ 下单流程优化   │ epic_complete │ planning   │ /flow-dev │
-│ REQ-124 │ 权限矩阵       │ qa_complete   │ release    │ /flow-release │
+│ REQ-124 │ 权限矩阵       │ quality_complete │ release │ /flow-release │
 │ REQ-125 │ 账单导出       │ prd_complete  │ technical  │ /flow-tech │
 └─────────┴──────────────┴───────────────┴────────────┴──────────┘
 ```

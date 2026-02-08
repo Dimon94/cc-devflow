@@ -33,7 +33,7 @@ description: 'Create PR and manage release. Usage: /flow-release "REQ-123" or /f
 
 1. **PRD.md, TECH_DESIGN.md, EPIC.md, TASKS.md** 存在
 2. **TEST_REPORT.md, SECURITY_REPORT.md** Gate 均为 PASS
-3. **Status**: `qa_complete` 或 `release_failed`
+3. **Status**: `quality_complete`（兼容 `qa_complete`）或 `release_failed`
 4. **Git**: 工作区干净，在 feature/bugfix 分支
 
 ## Execution Flow

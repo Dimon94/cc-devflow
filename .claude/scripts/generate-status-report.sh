@@ -124,8 +124,8 @@ get_phase_display_name() {
         epic_complete) echo "Epic完成" ;;
         development) echo "开发中" ;;
         dev_complete) echo "开发完成" ;;
-        qa) echo "质量保证" ;;
-        qa_complete) echo "QA完成" ;;
+        quality|qa) echo "质量验证" ;;
+        quality_complete|qa_complete) echo "质量完成" ;;
         release) echo "发布中" ;;
         release_complete) echo "发布完成" ;;
         completed) echo "已完成" ;;
@@ -143,8 +143,8 @@ get_phase_percentage() {
         epic_complete) echo "30" ;;
         development) echo "40" ;;
         dev_complete) echo "70" ;;
-        qa) echo "80" ;;
-        qa_complete) echo "90" ;;
+        quality|qa) echo "80" ;;
+        quality_complete|qa_complete) echo "90" ;;
         release|release_complete) echo "95" ;;
         completed) echo "100" ;;
         *) echo "0" ;;
