@@ -52,7 +52,9 @@ This directory contains Claude Code CLI extensions for the CC-DevFlow developmen
 │   └── types/
 │       └── team-types.d.ts      # Team 状态类型定义 [NEW: v4.7]
 ├── scripts/                   # 共享脚本
-│   └── common.sh              # 通用函数 (含 worktree 辅助函数)
+│   ├── CLAUDE.md              # scripts 子目录地图（成员清单与职责边界）
+│   ├── common.sh              # 通用函数 (含 worktree 辅助函数)
+│   └── flow-workspace-switch.sh # workspace REQ 切换与 worktree 快捷切换
 └── docs/templates/            # 共享模板
     └── _shared/               # 共享模板组件 [NEW: v4.1]
         ├── CONSTITUTION_CHECK.md
@@ -1217,4 +1219,3 @@ ralph_loop:
 
 **Last Updated**: 2026-02-07
 **v4.7.0 Module**: Claude Team Integration
-

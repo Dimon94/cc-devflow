@@ -50,7 +50,14 @@ description: 'Initialize requirement structure with brainstorming and research. 
 # 计算路径
 REPO_NAME=$(basename $(git rev-parse --show-toplevel))
 WORKTREE_DIR="../${REPO_NAME}-${REQ_ID}"
-BRANCH_NAME="feature/${REQ_ID}-${slug(BRANCH_TITLE_EN)}"
+
+# 分支前缀按类型决定
+if [[ "${REQ_ID}" =~ ^BUG- ]]; then
+  BRANCH_PREFIX="bugfix"
+else
+  BRANCH_PREFIX="feature"
+fi
+BRANCH_NAME="${BRANCH_PREFIX}/${REQ_ID}-${slug(BRANCH_TITLE_EN)}"
 
 # 创建 worktree + 分支
 git worktree add -b "$BRANCH_NAME" "$WORKTREE_DIR"

@@ -402,6 +402,18 @@ if ! $SKIP_GIT && has_git; then
     export DEVFLOW_REQ_ID="$REQ_ID"
 fi
 
+# Sync developer workspace pointer when workspace is initialized.
+# This keeps follow-up sessions aligned to the same requirement.
+DEVELOPER="${DEVFLOW_DEVELOPER:-$(whoami)}"
+DEV_WORKSPACE_DIR="$REPO_ROOT/devflow/workspace/$DEVELOPER"
+if [[ -d "$DEV_WORKSPACE_DIR" ]]; then
+    echo "$REQ_ID" > "$DEV_WORKSPACE_DIR/.current-req"
+    log_event "$REQ_ID" "Workspace pointer updated: $DEVELOPER -> $REQ_ID"
+    if ! $JSON_MODE; then
+        echo "Updated workspace current requirement: $DEVELOPER -> $REQ_ID" >&2
+    fi
+fi
+
 # Output results
 if $JSON_MODE; then
     printf '{"req_id":"%s","req_type":"%s","req_dir":"%s","title":"%s","git_branch":"%s","created_at":"%s"}\n' \

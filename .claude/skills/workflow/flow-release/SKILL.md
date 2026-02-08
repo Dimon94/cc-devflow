@@ -29,12 +29,19 @@ description: 'Create PR and manage release. Usage: /flow-release "REQ-123" or /f
 | C) Squash merge | 多提交合并为一 | `gh pr merge --squash` |
 | D) Cleanup only | 工作被废弃 | `git branch -D` |
 
+## Merge Semantics
+
+- A) Fast-forward: 直接合并到 `main`
+- B) Create PR: 仅创建/更新 PR，不自动合并
+- C) Squash merge: 通过 PR squash 合并到 `main`
+- D) Cleanup only: 不合并，仅清理
+
 ## Entry Gate
 
 1. **PRD.md, TECH_DESIGN.md, EPIC.md, TASKS.md** 存在
 2. **TEST_REPORT.md, SECURITY_REPORT.md** Gate 均为 PASS
 3. **Status**: `quality_complete`（兼容 `qa_complete`）或 `release_failed`
-4. **Git**: 工作区干净，在 feature/bugfix 分支
+4. **Git**: 当前在 feature/bugfix 分支；若工作区不干净，必须先按 `.claude/commands/util/git-commit.md` 完成提交（Conventional Commits + 按同类变更拆分）再继续
 
 ## Execution Flow
 
@@ -51,13 +58,19 @@ description: 'Create PR and manage release. Usage: /flow-release "REQ-123" or /f
 - 生成 RELEASE_PLAN.md
 - 生成 PR 描述草稿
 
-### Stage 3: PR Creation
+### Stage 3: Commit Gate (MANDATORY)
+
+- 检查 `git status --porcelain`
+- 若存在未提交变更，必须先执行 `/util/git-commit`（规则文件 `.claude/commands/util/git-commit.md`）
+- 提交完成后再次确认工作区干净，再进入 PR 创建
+
+### Stage 4: PR Creation
 
 使用 `gh` CLI:
 - 标题: `${REQ_ID}: ${TITLE}`
 - 正文: agent 输出
 
-### Stage 4: Worktree/Branch Cleanup
+### Stage 5: Worktree/Branch Cleanup
 
 **Worktree 模式**:
 ```bash
@@ -91,7 +104,7 @@ git merge --ff-only "$BRANCH_NAME"
 git branch -d "$BRANCH_NAME"
 ```
 
-### Stage 5: Exit Gate
+### Stage 6: Exit Gate
 
 1. RELEASE_PLAN.md 存在
 2. PR 创建成功

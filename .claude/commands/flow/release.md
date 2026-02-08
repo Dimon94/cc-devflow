@@ -43,6 +43,13 @@ skills:
   - 是否需要 CI 验证 (生产代码 → PR)
 ```
 
+## 合并语义（关键）
+
+- `A) Fast-forward merge`：会在本地直接合并到 `main`。
+- `B) Create PR`：只创建/更新 PR，不会在当前步骤自动合并到 `main`。
+- `C) Squash and merge`：会通过 PR squash 合并到 `main`（通常在评审/CI 通过后执行）。
+- `D) Cleanup only`：不会合并，只清理分支/worktree。
+
 ## User Input
 ```text
 $ARGUMENTS = "REQ_ID?"
@@ -61,8 +68,12 @@ $ARGUMENTS = "REQ_ID?"
 4. 验证 Quality gate:
    → TEST_REPORT.md / SECURITY_REPORT.md 中的 Gate 均为 PASS
 5. Git 环境:
-   → 工作区干净、当前在 feature/bugfix 分支
+   → 当前在 feature/bugfix 分支
    → 分支已推送，若无 upstream 提示 push
+6. Commit 规范门禁（工作区不干净时）:
+   → 必须先执行 `/util/git-commit`（规则见 `.claude/commands/util/git-commit.md`）
+   → Commit message 必须遵循 Conventional Commits；多文件按同类变更拆分提交
+   → 提交完成后重新执行 Entry Gate，直到工作区干净
 ```
 
 ### 阶段 2: 发布上下文准备
@@ -92,17 +103,29 @@ Prompt 核心要求:
 
 ### 阶段 4: PR 创建与完结
 ```
-1. 使用 gh CLI 创建或更新 PR
+1. PR 前提交检查:
+   → 若 `git status --porcelain` 非空，立即中止并回到 Entry Gate 第 6 步执行 `/util/git-commit`
+2. 使用 gh CLI 创建或更新 PR
    → 标题: "${REQ_ID}: ${TITLE}"
    → 正文采用 agent 输出
-2. 检查 CLAUDE.md：
+3. 检查 CLAUDE.md：
    → 若 TECH_DESIGN 引入新基础设施/重大变更，更新 "## Technical Architecture"（≤15 行）
-3. 状态更新:
+4. 状态更新:
    → orchestration_status.status = "release_complete"
    → completedSteps append "release"
    → prUrl 记录到状态文件
-4. EXECUTION_LOG 记录 PR 链接与发布时间
-5. 可选: {SCRIPT:generate_status} 生成状态报告
+5. EXECUTION_LOG 记录 PR 链接与发布时间
+6. 可选: {SCRIPT:generate_status} 生成状态报告
+```
+
+### 阶段 5: Worktree 清理策略
+```
+1. 若当前为 worktree 模式:
+   → 仅在分支已合并（或明确放弃该分支）后执行 `git worktree remove`
+2. 若仅创建 PR 且尚未合并:
+   → 默认保留 worktree，等待后续评审/CI
+3. 若已完成合并:
+   → 删除 worktree + 删除已合并分支
 ```
 
 ## 输出
@@ -118,6 +141,7 @@ Prompt 核心要求:
 - Quality Gate 失败或 Constitution ERROR → 立即终止，标记 status="release_failed"。
 - Git push/PR 创建失败 → 输出命令和日志，保持可重试状态。
 - CLAUDE.md 更新遗漏 → 阻断发布并提示补写。
+- 工作区存在未提交改动且未按 `/util/git-commit` 规则处理 → 阻断发布。
 
 ## 下一步
 1. 等待代码评审与 CI 通过。
