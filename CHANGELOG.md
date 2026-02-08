@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.1.5] - 2026-02-08
+
+### 🧹 Remove Git Worktree Management
+
+v4.1.5 removes worktree management from DevFlow. Git topology (branches, worktrees, merges) is now fully user-managed, simplifying the workflow and reducing coupling.
+
+#### Removed
+
+- **using-git-worktrees skill**
+  - Deleted `.claude/skills/domain/using-git-worktrees/` (SKILL.md, scripts, assets)
+  - Removed worktree-create, worktree-switch, worktree-cleanup, worktree-list, worktree-status scripts
+
+- **Workspace worktree scripts**
+  - Deleted `.claude/scripts/flow-workspace-start.sh`
+  - Deleted `.claude/scripts/flow-workspace-switch.sh`
+
+- **Common.sh worktree functions**
+  - Removed 159 lines of worktree-related helper functions
+
+#### Changed
+
+- **Flow commands and skills**
+  - Updated flow-init, flow-release, flow-fix, flow-workspace to remove worktree references
+  - Simplified `create-requirement.sh` (removed worktree creation logic)
+  - Updated `workflow.yaml` dependency graph
+
+- **Documentation**
+  - Updated `.claude/CLAUDE.md` architecture description
+  - Removed Git branch conventions from `devflow-conventions.md`
+  - Cleaned up `scripts/CLAUDE.md` member list
+  - Updated `TEAM_MODE_GUIDE.md`
+
+#### Benefits
+
+- ✅ Simpler workflow: DevFlow focuses on requirement management, not Git topology
+- ✅ User control: Developers manage branches/worktrees as they prefer
+- ✅ Reduced coupling: No assumptions about Git structure
+- ✅ Cleaner codebase: -2345 lines of code removed
+
+---
+
 ## [4.1.4] - 2026-02-08
 
 ### 🧭 Workspace Worktree Session Recovery & Release Flow Clarity
