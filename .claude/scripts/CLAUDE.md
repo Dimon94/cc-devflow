@@ -17,7 +17,7 @@ check-dependencies.sh: 依赖关系检查脚本。
 check-prerequisites.sh: 流程前置条件统一校验脚本。
 check-task-status.sh: TASKS 完成状态统计脚本。
 checklist-errors.sh: Checklist 错误码与诊断脚本。
-common.sh: 脚本公共函数库（REQ 识别、worktree 路径、日志工具等）。
+common.sh: 脚本公共函数库（REQ 识别、日志工具等）。
 consolidate-research.sh: research 结果汇总脚本。
 create-requirement.sh: 创建需求目录与初始状态；同步 workspace 的 `.current-req`。
 delta-parser.ts: Delta 解析器。
@@ -36,8 +36,6 @@ flow-quality-full.sh: 全量质量检查脚本。
 flow-quality-quick.sh: 快速质量检查脚本。
 flow-workspace-init.sh: 开发者 workspace 初始化脚本。
 flow-workspace-record.sh: workspace journal 追加记录脚本。
-flow-workspace-start.sh: workspace 会话恢复脚本；支持 REQ 覆盖与 worktree 切换提示。
-flow-workspace-switch.sh: workspace REQ 切换脚本；支持 `--print-cd` 与 `--cd`。
 generate-clarification-questions.sh: Clarify 问题生成脚本。
 generate-clarification-report.sh: Clarify 报告生成脚本。
 generate-quickstart.sh: quickstart 文档生成脚本。
@@ -75,5 +73,4 @@ workflow-status.ts: 工作流状态类型化读取器。
 ## 设计约束
 
 - 需求识别统一复用 `common.sh`，避免多处正则分叉。
-- worktree 与 workspace 职责分离：代码隔离由 worktree 提供，连续上下文由 workspace 提供。
 - 新增脚本优先保持幂等与可重入，便于中断恢复。
