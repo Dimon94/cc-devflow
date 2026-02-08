@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.1.3] - 2026-02-08
+
+### 🔧 Flow Quality Default Path + AGENTS.md Safe Emit
+
+v4.1.3 aligns release gates with `/flow-quality` as the default path and improves compiler emitters to preserve user-owned AGENTS memory content.
+
+#### Fixed
+
+- **Flow quality/release gate consistency**
+  - `/flow-quality` quick mode now generates minimal `TEST_REPORT.md` and `SECURITY_REPORT.md`
+  - Release entry gate accepts `quality_complete` (with `qa_complete` backward compatibility)
+  - Flow docs/scripts updated to recommend `/flow-quality` by default, with `--full` as enhanced review mode
+
+- **AGENTS.md overwrite prevention in compiler emitters**
+  - Added managed block upsert mechanism in base emitter
+  - Codex/Antigravity emitters now write compact index blocks instead of appending full agent/rule bodies
+  - Existing user memory content in `AGENTS.md` is preserved
+
+#### Added
+
+- **Regression coverage for managed blocks**
+  - Tests for AGENTS managed block generation, idempotence, and preservation behavior
+
+#### Benefits
+
+- ✅ `flow-quality` becomes a true default path to `flow-release` without requiring `--full`
+- ✅ Compiler output no longer clobbers user-maintained AGENTS memory sections
+- ✅ Backward compatibility with legacy QA status remains intact
+
 ## [4.1.2] - 2026-02-07
 
 ### 🔧 Adapt Compiler Migration Reliability Fixes
