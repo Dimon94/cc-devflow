@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.2.0] - 2026-02-19
+
+### 🧠 Long-Running Harness Protocol Alignment
+
+v4.2.0 unifies long-running execution protocol across project-level `/core:*` commands and requirement-level `/flow:*` skills, reducing context-loss regressions and premature completion.
+
+#### Added
+
+- **Project-level harness protocol**
+  - Added `Initializer / Worker / Done Gate` guidance to:
+    - `.claude/commands/core/roadmap.md`
+    - `.claude/commands/core/architecture.md`
+    - `.claude/commands/core/guidelines.md`
+    - `.claude/commands/core/style.md`
+  - Standardized resumable artifacts under `devflow/.core-harness/*` (`checklist`, `progress`, `handoff`)
+
+- **Requirement-level protocol parity**
+  - Added the same long-running protocol to:
+    - `.claude/skills/workflow/flow-init/SKILL.md`
+    - `.claude/skills/workflow/flow-spec/SKILL.md`
+    - `.claude/skills/workflow/flow-dev/SKILL.md`
+  - Standardized requirement session artifacts:
+    - `session-checklist.json`
+    - `session-progress.md`
+    - `session-handoff.md`
+
+- **Routing-level enforcement**
+  - Extended `.claude/skills/cc-devflow-orchestrator/SKILL.md` with project-level harness routing defaults and artifact-backed completion rules
+
+#### Benefits
+
+- ✅ Consistent long-running behavior between `/core:*` and `/flow:*`
+- ✅ Clear resumability across context windows
+- ✅ Stronger done criteria via artifact-backed gates (instead of subjective completion)
+
 ## [4.1.6] - 2026-02-18
 
 ### 🔧 Multi-Platform Adapt Pipeline Stabilization
