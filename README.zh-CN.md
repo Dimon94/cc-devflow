@@ -184,7 +184,12 @@ cc-devflow init --dir /path/to/project
 # 编译到特定平台
 cc-devflow adapt --platform codex
 cc-devflow adapt --cwd /path/to/project --platform cursor
+
+# 直接运行 harness runtime（供 npm scripts 委派）
+cc-devflow harness release --change-id REQ-123
 ```
+
+`cc-devflow init` 与 `cc-devflow adapt` 现在会自动补齐 `package.json` 中缺失的 `harness:*` scripts，且统一写入可移植的 `cc-devflow harness <subcommand>`（不使用机器绝对路径），避免 `/flow:*` 因脚本缺失退化到手工 fallback。
 
 ### 验证安装
 

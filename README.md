@@ -184,7 +184,12 @@ cc-devflow init --dir /path/to/project
 # Compile for specific platform
 cc-devflow adapt --platform codex
 cc-devflow adapt --cwd /path/to/project --platform cursor
+
+# Run harness runtime directly (for npm script delegation)
+cc-devflow harness release --change-id REQ-123
 ```
+
+`cc-devflow init` and `cc-devflow adapt` now auto-bootstrap missing `harness:*` npm scripts in `package.json` using portable `cc-devflow harness <subcommand>` entries (no machine-specific absolute paths), so `/flow:*` can execute the runtime chain without manual script patching.
 
 ### Optional Dependencies
 

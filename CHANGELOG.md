@@ -19,6 +19,12 @@ v4.1.6 fixes multi-platform `adapt` compilation drift and parsing failures, with
   - `.claude/commands/**/CLAUDE.md` is now excluded from command parsing
   - Prevents false `Missing YAML frontmatter` failures during `npm run adapt`
 
+- **Harness runtime chain bootstrap**
+  - `cc-devflow init` and `cc-devflow adapt` now auto-add missing `harness:*` npm scripts into target `package.json`
+  - Added `cc-devflow harness <subcommand>` passthrough so injected scripts have a stable runtime entry
+  - Injected scripts are now machine-portable (`cc-devflow harness ...`) with no absolute-path coupling
+  - Auto-repairs legacy `node bin/harness.js <cmd>`, old `npx` wrappers, and prior absolute-path script values
+
 - **Manifest consistency across platforms**
   - Separated source hash (`sourceHash`) and emitted target hash (`hash`)
   - Drift detection now compares emitted artifact hashes correctly
