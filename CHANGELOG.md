@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.1.6] - 2026-02-18
+
+### 🔧 Multi-Platform Adapt Pipeline Stabilization
+
+v4.1.6 fixes multi-platform `adapt` compilation drift and parsing failures, with a focus on deterministic incremental behavior across Codex/Cursor/Qwen/Antigravity targets.
+
+#### Fixed
+
+- **Command parser robustness**
+  - `.claude/commands/**/CLAUDE.md` is now excluded from command parsing
+  - Prevents false `Missing YAML frontmatter` failures during `npm run adapt`
+
+- **Manifest consistency across platforms**
+  - Separated source hash (`sourceHash`) and emitted target hash (`hash`)
+  - Drift detection now compares emitted artifact hashes correctly
+  - Legacy manifest entries auto-trigger one-time recompilation for migration
+
+- **Stale entry cleanup**
+  - Added stale command entry pruning scoped by source prefix + platform
+  - Eliminates historical rename/delete residue causing noisy `adapt --check` drift reports
+
+- **Split-output tracking**
+  - Manifest dedup key upgraded from `source+platform` to `source+platform+target`
+  - Prevents multi-output artifacts from overwriting each other
+
+#### Benefits
+
+- ✅ `npm run adapt` no longer fails on documentation files in command directories
+- ✅ `npm run adapt -- --check` produces reliable drift signals
+- ✅ Incremental compile behavior is stable for multi-output emitters
+
 ## [4.1.5] - 2026-02-08
 
 ### 🧹 Remove Git Worktree Management
