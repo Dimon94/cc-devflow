@@ -336,3 +336,32 @@ skill-name/
 {"file": "devflow/requirements/{REQ}/BRAINSTORM.md", "reason": "Original intent"}
 {"file": "devflow/spec/frontend/index.md", "reason": "Frontend conventions", "optional": true}
 ```
+
+<!-- cc-devflow:codex-agents:start -->
+## CC-DevFlow Agents
+
+- Scope: `.claude/agents/*.md`
+- Count: 1
+- Entries: `test-agent`
+- Policy: Keep AGENTS.md concise as global memory; full agent specs stay in source files.
+<!-- cc-devflow:codex-agents:end -->
+
+<!-- cc-devflow:codex-rules:start -->
+## CC-DevFlow Rules
+
+- Scope: `.claude/rules/*.md`
+- Count: 1
+- Entries: `test-rule`
+- Policy: AGENTS.md stores only memory-level constraints, not full rule bodies.
+<!-- cc-devflow:codex-rules:end -->
+
+<!-- cc-devflow:antigravity-agents:start -->
+## CC-DevFlow Agents
+
+- Scope: `.claude/agents/*.md`
+- Count: 22
+- Entries: `architecture-designer`, `bug-analyzer`, `checklist-agent`, `clarify-analyst`, `code-quality-reviewer`, `code-reviewer`, `codex-analyzer`, `compatibility-checker`, `consistency-checker`, `dev-implementer`, `flow-researcher`, `impact-analyzer`, ... (+10 more)
+- Policy: Keep AGENTS.md concise; detailed agent instructions stay in source files.
+<!-- cc-devflow:antigravity-agents:end -->
+
+
