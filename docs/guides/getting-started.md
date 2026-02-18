@@ -48,32 +48,33 @@ This script will check:
 
 ## 🎯 Your First Requirement
 
-### Step 1: Start Development Flow
+### Step 1: Run the Mainline Flow
 
 ```bash
-/flow-new "REQ-001|User Authentication|https://docs.example.com/auth"
+/flow:init "REQ-001|User Authentication|https://docs.example.com/auth"
+/flow:spec "REQ-001"
+/flow:dev "REQ-001"
+/flow:verify "REQ-001" --strict
+/flow:release "REQ-001"
 ```
 
 This will:
-1. Initialize requirement structure
-2. Generate PRD
-3. Generate UI prototype (if needed)
-4. Create technical design
-5. Generate EPIC and TASKS
-6. Execute development
-7. Run QA tests
-8. Prepare release
+1. Initialize requirement context package
+2. Generate executable task-manifest
+3. Dispatch task execution with checkpoints
+4. Run quick/strict quality gates
+5. Generate release note and cleanup runtime logs
 
 ### Step 2: Check Progress
 
 ```bash
-/flow-status REQ-001
+/flow:status REQ-001
 ```
 
 ### Step 3: Resume If Interrupted
 
 ```bash
-/flow-restart "REQ-001"
+/flow:dev "REQ-001" --resume
 ```
 
 ## 🛠️ Core Scripts
@@ -184,8 +185,8 @@ VERBOSE=true bash .claude/tests/run-all-tests.sh --scripts
 
 ## 💡 Tips
 
-1. **Always check progress** with `/flow-status` before continuing work
-2. **Use `/flow-verify`** to check document consistency
+1. **Always check progress** with `/flow:status` before continuing work
+2. **Use `/flow:verify`** to check quality gates and consistency
 3. **Enable debug mode** if you encounter issues: `export FLOW_DEBUG=1`
 4. **Read the Constitution** to understand quality standards
 
@@ -200,5 +201,5 @@ VERBOSE=true bash .claude/tests/run-all-tests.sh --scripts
 **Ready to start? Run your first command:**
 
 ```bash
-/flow-new "REQ-001|My First Feature"
+/flow:init "REQ-001|My First Feature"
 ```

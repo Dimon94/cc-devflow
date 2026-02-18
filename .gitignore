@@ -21,6 +21,7 @@ build/
 .codex/
 .cursor/
 .qwen/
+.harness/
 devflow/.generated/
 
 # OS

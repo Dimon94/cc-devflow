@@ -1,267 +1,88 @@
 # =============================================================================
-# CC-DevFlow Workflow Schema v5.0.0 (借鉴 OpenSpec schema.yaml)
+# CC-DevFlow Workflow Schema v6.0.0 (Harness-First)
 # =============================================================================
-# 声明式依赖图，支持：
-# 1. 文件存在性状态检测（通过 generates 路径）
-# 2. 依赖关系验证（通过 requires 数组）
-# 3. 上下文注入（通过 context.jsonl）
-# 4. 向后兼容（fallback 到 orchestration_status.json）
-#
 # [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
 # =============================================================================
 
 name: cc-devflow
-version: "5.0.0"
-description: CC-DevFlow 声明式工作流 Schema
+version: "6.0.0"
+description: CC-DevFlow Harness-First workflow schema
 
 # =============================================================================
 # 工件定义 (Artifacts)
 # =============================================================================
-# 每个工件代表工作流中的一个产出物，包含：
-# - id: 唯一标识符
-# - generates: 输出文件路径（支持 {REQ} 占位符）
-# - requires: 依赖的工件 ID 列表
-# - skill: 生成此工件的 Skill
-# - optional: 是否可选（默认 false）
-# - glob: 是否使用 glob 模式检测（默认 false）
-# - instruction: 生成指令（可选）
+# 主链：init -> spec -> dev -> verify -> release
+# 产物最小集：context-package / task-manifest / report-card / release-note
 
 artifacts:
-  # ---------------------------------------------------------------------------
-  # 项目级工件 (执行一次)
-  # ---------------------------------------------------------------------------
-  - id: roadmap
-    generates: devflow/ROADMAP.md
-    requires: []
-    skill: core-roadmap
-    instruction: |
-      创建项目路线图，定义长期目标和里程碑。
-
-  - id: backlog
-    generates: devflow/BACKLOG.md
-    requires: []
-    skill: core-roadmap
-    instruction: |
-      创建产品需求池，记录所有待处理需求。
-
-  - id: architecture
-    generates: devflow/ARCHITECTURE.md
-    requires: []
-    skill: core-architecture
-    instruction: |
-      创建架构设计文档，定义系统整体结构。
-
-  - id: frontend_spec
-    generates: devflow/spec/frontend/index.md
-    requires: []
-    skill: core-guidelines
-    instruction: |
-      创建前端规范索引，定义前端开发标准。
-
-  - id: backend_spec
-    generates: devflow/spec/backend/index.md
-    requires: []
-    skill: core-guidelines
-    instruction: |
-      创建后端规范索引，定义后端开发标准。
-
-  - id: style_guide
-    generates: devflow/STYLE.md
-    requires: []
-    skill: core-style
-    instruction: |
-      创建代码风格指南，定义编码规范。
-
-  # ---------------------------------------------------------------------------
-  # 需求级工件 (每个需求执行)
-  # ---------------------------------------------------------------------------
-  - id: brainstorm
-    generates: devflow/requirements/{REQ}/BRAINSTORM.md
+  - id: context_package
+    generates: devflow/requirements/{REQ}/context-package.md
     requires: []
     skill: flow-init
     instruction: |
-      初始化需求，进行头脑风暴会话。
-      捕获原始意图、问题背景、初步想法。
+      初始化需求并生成上下文包。
 
-  - id: research
-    generates: devflow/requirements/{REQ}/research/*.md
-    requires: [brainstorm]
+  - id: harness_state
+    generates: devflow/requirements/{REQ}/harness-state.json
+    requires: [context_package]
     skill: flow-init
-    glob: true
     instruction: |
-      进行技术调研，收集相关资料。
-      输出调研报告到 research/ 目录。
+      记录 requirement 生命周期状态。
 
-  - id: clarifications
-    generates: devflow/requirements/{REQ}/clarifications/*.md
-    requires: [brainstorm]
-    skill: flow-clarify
-    glob: true
-    optional: true
-    instruction: |
-      澄清需求疑问，记录问答过程。
-
-  - id: prd
-    generates: devflow/requirements/{REQ}/PRD.md
-    requires: [brainstorm]
+  - id: task_manifest
+    generates: devflow/requirements/{REQ}/task-manifest.json
+    requires: [context_package]
     skill: flow-spec
     instruction: |
-      创建产品需求文档 (PRD)。
-      定义用户故事、验收标准、优先级。
+      生成依赖可执行的任务清单。
 
-  - id: tech_design
-    generates: devflow/requirements/{REQ}/TECH_DESIGN.md
-    requires: [prd]
-    skill: flow-spec
-    optional: true
-    instruction: |
-      创建技术设计文档。
-      定义架构方案、接口设计、数据模型。
-
-  - id: data_model
-    generates: devflow/requirements/{REQ}/data-model.md
-    requires: [prd]
-    skill: flow-spec
-    optional: true
-    instruction: |
-      创建数据模型文档。
-      定义实体关系、字段说明。
-
-  - id: contracts
-    generates: devflow/requirements/{REQ}/contracts/*.yaml
-    requires: [tech_design]
-    skill: flow-spec
-    glob: true
-    optional: true
-    instruction: |
-      创建 API 契约文件 (OpenAPI/GraphQL)。
-
-  - id: ui_prototype
-    generates: devflow/requirements/{REQ}/UI_PROTOTYPE.html
-    requires: [prd]
-    skill: flow-spec
-    optional: true
-    instruction: |
-      创建 UI 原型。
-      使用 HTML/CSS 展示界面设计。
-
-  - id: checklists
-    generates: devflow/requirements/{REQ}/checklists/*.md
-    requires: [prd]
-    skill: flow-checklist
-    glob: true
-    optional: true
-    instruction: |
-      创建质量检查清单。
-      验证 PRD 完整性和一致性。
-
-  - id: epic
-    generates: devflow/requirements/{REQ}/EPIC.md
-    requires: [prd]
-    skill: flow-spec
-    instruction: |
-      创建 Epic 规划文档。
-      定义阶段划分、里程碑、风险评估。
-
-  - id: tasks
-    generates: devflow/requirements/{REQ}/TASKS.md
-    requires: [epic]
-    skill: flow-spec
-    instruction: |
-      创建任务分解文档。
-      将 Epic 拆分为可执行的任务列表。
-
-  - id: implementation_plan
-    generates: devflow/requirements/{REQ}/tasks/IMPLEMENTATION_PLAN.md
-    requires: [tasks]
-    skill: flow-dev
-    instruction: |
-      创建实施计划。
-      详细说明每个任务的实现步骤。
-
-  - id: source_code
-    generates: src/**
-    requires: [tasks]
+  - id: runtime_events
+    generates: .harness/runtime/{REQ}/**
+    requires: [task_manifest]
     skill: flow-dev
     glob: true
-    instruction: |
-      实现源代码。
-      遵循 TDD 流程：测试先行。
-
-  - id: test_code
-    generates: tests/**
-    requires: [tasks]
-    skill: flow-dev
-    glob: true
-    instruction: |
-      实现测试代码。
-      覆盖单元测试、集成测试。
-
-  - id: quality_report
-    generates: devflow/requirements/{REQ}/QUALITY_REPORT.md
-    requires: [source_code, test_code]
-    skill: flow-quality
-    instruction: |
-      创建质量报告。
-      包含测试覆盖率、安全扫描结果。
-
-  - id: test_report
-    generates: devflow/requirements/{REQ}/TEST_REPORT.md
-    requires: [quality_report]
-    skill: flow-quality
-    instruction: |
-      创建测试报告。
-      记录测试执行结果和问题。
-
-  - id: security_report
-    generates: devflow/requirements/{REQ}/SECURITY_REPORT.md
-    requires: [quality_report]
-    skill: flow-quality
     optional: true
     instruction: |
-      创建安全报告。
-      记录安全扫描发现和修复建议。
+      执行任务并写入 checkpoint/events。
 
-  - id: release_plan
-    generates: devflow/requirements/{REQ}/RELEASE_PLAN.md
-    requires: [quality_report]
+  - id: report_card
+    generates: devflow/requirements/{REQ}/report-card.json
+    requires: [task_manifest]
+    skill: flow-verify
+    instruction: |
+      执行 quick/strict 质量门禁并产出报告卡。
+
+  - id: release_note
+    generates: devflow/requirements/{REQ}/RELEASE_NOTE.md
+    requires: [report_card]
     skill: flow-release
+    optional: true
     instruction: |
-      创建发布计划。
-      定义发布步骤、回滚策略。
+      发布通过后生成发布说明。
 
-  # ---------------------------------------------------------------------------
-  # Bug 修复工件
-  # ---------------------------------------------------------------------------
   - id: bug_analysis
     generates: devflow/bugs/{BUG}/ANALYSIS.md
     requires: []
     skill: flow-fix
+    optional: true
     instruction: |
-      分析 Bug 根因。
-      记录复现步骤、影响范围。
+      分析 Bug 根因并沉淀修复输入。
 
   - id: bug_plan
     generates: devflow/bugs/{BUG}/PLAN.md
     requires: [bug_analysis]
     skill: flow-fix
+    optional: true
     instruction: |
-      创建 Bug 修复计划。
-      定义修复方案、测试策略。
+      生成 Bug 修复计划。
 
 # =============================================================================
 # 状态检测配置
 # =============================================================================
 detection:
-  # 主要检测方法：文件存在性
   method: file_existence
-
-  # 向后兼容：fallback 到 orchestration_status.json
-  fallback: orchestration_status.json
-
-  # glob 模式配置
+  fallback: harness-state.json
   glob_options:
-    # 忽略的文件模式
     ignore:
       - "**/.DS_Store"
       - "**/*.bak"
@@ -270,48 +91,31 @@ detection:
 # =============================================================================
 # Skill 分类定义
 # =============================================================================
-# 保留原有分类，用于 Skill 发现和文档
+# 仅登记仓库内实际存在的 skill 目录
 
 skills:
   workflow:
     - id: flow-init
       path: workflow/flow-init
-      description: 需求初始化
-    - id: flow-clarify
-      path: workflow/flow-clarify
-      description: 需求澄清
+      description: 主链初始化 (context-package + harness-state)
     - id: flow-spec
       path: workflow/flow-spec
-      description: 统一规格阶段 (PRD + Tech + UI + Epic)
+      description: 主链规格阶段 (task-manifest)
     - id: flow-dev
       path: workflow/flow-dev
-      description: 开发执行 (TDD + Ralph Loop)
-    - id: flow-quality
-      path: workflow/flow-quality
-      description: 质量验证
+      description: 主链开发执行 (dispatch/resume)
+    - id: flow-verify
+      path: workflow/flow-verify
+      description: 主链质量门禁 (report-card)
     - id: flow-release
       path: workflow/flow-release
-      description: 发布管理
+      description: 主链发布收尾 (release/janitor)
+    - id: flow-quality
+      path: workflow/flow-quality
+      description: 旧质量流程 (deprecated)
     - id: flow-fix
       path: workflow/flow-fix
       description: Bug 修复
-    - id: flow-checklist
-      path: workflow/flow-checklist
-      description: 质量检查清单
-
-  core:
-    - id: core-roadmap
-      path: workflow/core-roadmap
-      description: 项目路线图
-    - id: core-architecture
-      path: workflow/core-architecture
-      description: 架构设计
-    - id: core-guidelines
-      path: workflow/core-guidelines
-      description: 开发规范
-    - id: core-style
-      path: workflow/core-style
-      description: 代码风格
 
   domain:
     - id: tdd
@@ -319,7 +123,7 @@ skills:
       description: TDD Iron Law 执行
     - id: debugging
       path: domain/debugging
-      description: 4阶段系统化调试
+      description: 系统化调试
     - id: brainstorming
       path: domain/brainstorming
       description: 需求头脑风暴
@@ -343,14 +147,8 @@ skills:
     - id: tdd-enforcer
       path: guardrail/tdd-enforcer
       description: TDD 顺序强制执行
-    - id: file-header-guardian
-      path: guardrail/file-header-guardian
-      description: 文件头注释守护
 
   utility:
-    - id: git-commit
-      path: utility/git-commit
-      description: Git 提交工作流
     - id: npm-release
       path: utility/npm-release
       description: NPM 包发布
@@ -363,12 +161,6 @@ skills:
     - id: skill-creator
       path: utility/skill-creator
       description: Skill 创建向导
-    - id: skill-developer
-      path: utility/skill-developer
-      description: Skill 开发指南
-    - id: writing-skills
-      path: utility/writing-skills
-      description: Skill 编写最佳实践
     - id: file-standards
       path: utility/file-standards
       description: 文件命名规范
@@ -377,38 +169,51 @@ skills:
       description: Constitution 快速参考
 
 # =============================================================================
-# 上下文注入配置 (借鉴 Trellis)
+# 上下文注入配置
 # =============================================================================
 context:
-  # 全局上下文（所有 Skill 都会注入）
   global:
     - file: .claude/rules/project-constitution.md
       reason: Quality rules and constraints
 
-  # 按 Skill 类型的默认上下文
   defaults:
     workflow:
-      - file: devflow/requirements/{REQ}/BRAINSTORM.md
-        reason: Original intent alignment
+      - file: devflow/requirements/{REQ}/context-package.md
+        reason: Execution context package
+        optional: true
+      - file: devflow/requirements/{REQ}/task-manifest.json
+        reason: Executable task graph
         optional: true
     domain:
-      - file: devflow/requirements/{REQ}/TASKS.md
+      - file: devflow/requirements/{REQ}/task-manifest.json
         reason: Current task context
         optional: true
 
 # =============================================================================
-# 废弃的 Skill (保留兼容)
+# 废弃命令/技能映射
 # =============================================================================
 deprecated:
+  - id: flow-new
+    replacement: flow-init
+    message: "Use /flow:init -> /flow:spec -> /flow:dev -> /flow:verify -> /flow:release"
+  - id: flow-clarify
+    replacement: flow-spec
+    message: "Clarification stage removed from default chain"
+  - id: flow-checklist
+    replacement: flow-verify
+    message: "Checklist stage merged into verification gates"
+  - id: flow-quality
+    replacement: flow-verify
+    message: "Use /flow:verify for quick/strict gates"
   - id: flow-prd
     replacement: flow-spec
-    message: "Use /flow-spec instead"
+    message: "Use /flow:spec instead"
   - id: flow-tech
     replacement: flow-spec
-    message: "Use /flow-spec instead"
+    message: "Use /flow:spec instead"
   - id: flow-ui
     replacement: flow-spec
-    message: "Use /flow-spec instead"
+    message: "Use /flow:spec instead"
   - id: flow-epic
     replacement: flow-spec
-    message: "Use /flow-spec instead"
+    message: "Use /flow:spec instead"

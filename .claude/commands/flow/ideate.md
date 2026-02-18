@@ -1,6 +1,6 @@
 ---
 name: flow-ideate
-description: 'Intent-driven requirement development. Usage: /flow-ideate "我想做一个用户管理系统" or /flow-ideate "REQ-123|我想要一个数据分析的东西"'
+description: 'Intent-driven requirement development. Usage: /flow:ideate "我想做一个用户管理系统" or /flow:ideate "REQ-123|我想要一个数据分析的东西"'
 scripts:
   prereq: .claude/scripts/check-prerequisites.sh
   create_requirement: .claude/scripts/create-requirement.sh
@@ -20,17 +20,17 @@ $ARGUMENTS = "REQ_ID?|IDEA|LINKS?"
 
 ## 命令格式
 ```text
-/flow-ideate "我想做一个用户管理系统"
-/flow-ideate "REQ-123|我想要一个用户管理的东西"
-/flow-ideate "|数据分析功能|一些想法和计划链接"
-/flow-ideate "REQ-123|支持用户下单|https://plan.example.com/Q1"
+/flow:ideate "我想做一个用户管理系统"
+/flow:ideate "REQ-123|我想要一个用户管理的东西"
+/flow:ideate "|数据分析功能|一些想法和计划链接"
+/flow:ideate "REQ-123|支持用户下单|https://plan.example.com/Q1"
 ```
 
 ## 执行流程
 
 ### 阶段 1: 输入解析
 - 解析 `$ARGUMENTS`：
-  - 如果匹配 `REQ|TITLE|LINKS` → 跳转 `/flow-new`。
+  - 如果匹配 `REQ|TITLE|LINKS` → 进入 `/flow:init`（随后执行 `/flow:spec`）。
   - 如果包含 `REQ-XXX` 且标题为空 → 视为已有需求再澄清。
   - 纯自然语言 → 进入意图澄清模式。
 - 对于新需求生成候选 `REQ-${YYYYMMDD}-${seq}`。
@@ -62,8 +62,8 @@ $ARGUMENTS = "REQ_ID?|IDEA|LINKS?"
 ```
 
 ### 阶段 4: 标准流程对接
-- 对于模糊输入：推荐自动触发 `/flow-prd` 或提示用户继续。
-- 对于已有 REQ-ID：在 README 中记录追加需求并提示 `/flow-upgrade`。
+- 对于模糊输入：推荐自动触发 `/flow:spec` 或提示用户继续。
+- 对于已有 REQ-ID：在 README 中记录追加需求并提示 `/flow:upgrade`。
 - 将澄清会话摘要写入 `research/intent-log.md` 供后续引用。
 
 ## 错误处理
@@ -80,9 +80,9 @@ $ARGUMENTS = "REQ_ID?|IDEA|LINKS?"
 ```
 
 ## 下一步
-- 对新需求执行 `/flow-init "REQ_ID|TITLE"` 完成 Phase0 调研。
-- 若是已有需求的变更，使用 `/flow-upgrade` 创建版本升级。
-- 通过 `/flow-status REQ_ID --detailed` 查看澄清结果与推荐动作。
+- 对新需求执行 `/flow:init "REQ_ID|TITLE"` 完成初始化。
+- 若是已有需求的变更，使用 `/flow:upgrade` 创建版本升级。
+- 通过 `/flow:status REQ_ID --detailed` 查看澄清结果与推荐动作。
 
 ### 3. 这是新系统还是现有系统的改进？
 **Why this matters**: 影响技术方案和实施策略
@@ -130,7 +130,7 @@ Once you provide these answers, I'll generate more specific questions about功�
 
 **用户输入**:
 ```text
-/flow-ideate "需要一个数据分析功能来帮助业务决策"
+/flow:ideate "需要一个数据分析功能来帮助业务决策"
 ```
 
 **系统澄清过程**:
@@ -211,4 +211,4 @@ export FLOW_QUESTION_SELECTION_STRATEGY="adaptive"
 
 ---
 
-**核心价值**: /flow-ideate 将 cc-devflow 的能力边界从"明确需求的快速实现"扩展到"模糊想法的完整转化"，显著降低了使用门槛，支持更多探索性和创新性的开发场景。
+**核心价值**: /flow:ideate 将 cc-devflow 的能力边界从"明确需求的快速实现"扩展到"模糊想法的完整转化"，显著降低了使用门槛，支持更多探索性和创新性的开发场景。

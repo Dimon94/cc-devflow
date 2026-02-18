@@ -1,6 +1,6 @@
 ---
 name: flow-restart
-description: 'Restart interrupted cc-devflow requirement development. Usage: /flow-restart "REQ-123" [--from=stage]'
+description: 'Restart interrupted cc-devflow requirement development. Usage: /flow:restart "REQ-123" [--from=stage]'
 scripts:
   prereq: .claude/scripts/check-prerequisites.sh
   recover: .claude/scripts/recover-workflow.sh
@@ -16,8 +16,9 @@ $ARGUMENTS = "REQ_ID [--from=stage] [--force] [--backup]"
 
 ## 支持阶段
 ```
-research | prd | planning | development | qa | release
+init | spec | dev | verify | release
 ```
+兼容别名：`research->init`、`prd/planning->spec`、`development->dev`、`qa/quality->verify`。
 
 ## 执行流程
 
@@ -43,11 +44,10 @@ research | prd | planning | development | qa | release
 ### 阶段 2: 清理与重置
 ```
 1. 根据阶段执行清理动作:
-   • research: 清理临时 research/mcp 缓存、保留 summary
-   • prd: 备份 PRD.md，重置 status=initialized
-   • planning: 备份 EPIC.md/TASKS.md，清理规划中间状态
-   • development: 检查未完成任务、生成 git stash 建议
-   • qa: 删除过期 TEST_REPORT/SECURITY_REPORT
+   • init: 清理临时 research/mcp 缓存、保留 summary
+   • spec: 备份 PRD.md/EPIC.md/TASKS.md，重置 planning 状态
+   • dev: 检查未完成任务、生成 git stash 建议
+   • verify: 删除过期 TEST_REPORT/SECURITY_REPORT
    • release: 关闭未完成 PR 草稿、重置 release 状态
 
 2. 更新 orchestration_status:
@@ -61,12 +61,11 @@ research | prd | planning | development | qa | release
 ### 阶段 3: 恢复执行
 ```
 1. 根据 stage 自动触发后续命令提示：
-   → research → 建议运行 /flow-init --resume
-   → prd → /flow-prd
-   → planning → /flow-epic
-   → development → /flow-dev
-   → quality → /flow-quality（必要时追加 --full）
-   → release → /flow-release
+   → init（兼容 research）→ `/flow:init "REQ_ID|TITLE|URLS?"`
+   → spec（兼容 prd/planning）→ `/flow:spec "REQ_ID"`
+   → dev（兼容 development）→ `/flow:dev "REQ_ID" --resume`
+   → verify（兼容 qa/quality）→ `/flow:verify "REQ_ID" --strict`
+   → release → `/flow:release "REQ_ID"`
 
 2. 若 {SCRIPT:recover} 支持自动修复（如重建 TASKS），执行对应脚本。
 ```
@@ -81,7 +80,7 @@ research | prd | planning | development | qa | release
 ```
 
 ## 错误处理
-- 检测不到中断 → 提示使用 `/flow-status` 查看当前状态，或需 --force。
+- 检测不到中断 → 提示使用 `/flow:status` 查看当前状态，或需 --force。
 - 备份失败 → 终止并保留原样。
 - 清理动作报错 → 输出日志路径，允许用户手动处理后重试。
 
@@ -94,5 +93,5 @@ research | prd | planning | development | qa | release
 
 ## 下一步
 1. 按提示执行下一阶段命令。
-2. 使用 `/flow-status REQ_ID --detailed` 确认状态恢复正确。
-3. 如多次失败，考虑跑 `/flow-verify` 或手动 review 产物。
+2. 使用 `/flow:status REQ_ID --detailed` 确认状态恢复正确。
+3. 如多次失败，考虑跑 `/flow:verify` 或手动 review 产物。

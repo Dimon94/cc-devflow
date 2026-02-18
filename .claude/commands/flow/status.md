@@ -1,6 +1,6 @@
 ---
 name: flow-status
-description: 'Query development progress status for cc-devflow requirements. Usage: /flow-status [REQ-ID]'
+description: 'Query development progress status for cc-devflow requirements. Usage: /flow:status [REQ-ID]'
 scripts:
   prereq: .claude/scripts/check-prerequisites.sh
   generate_status: .claude/scripts/generate-status-report.sh
@@ -28,9 +28,9 @@ $ARGUMENTS = "[REQ_ID?] [--all] [--bugs] [--detailed] [--summary]"
    → devflow/bugs/*/orchestration_status.json
 3. 读取每个状态文件及 EXECUTION_LOG.md 头部，提取:
    → status, phase, completedSteps, phase0/phase1 flag, lastUpdated
-   → 是否存在 PRD/TECH_DESIGN/data-model/contracts/quickstart/EPIC/TASKS/QA 报告
+   → 是否存在 context-package/task-manifest/report-card/RELEASE_NOTE
 4. 若 `--branches`: 读取 git 分支与 upstream 状态
-5. 若 `--detailed`: 关联 PRD/EPIC/TASKS 进度、QA/Release 结论
+5. 若 `--detailed`: 关联 task-manifest 任务统计、report-card 结论、release note
 ```
 
 ### 3. 输出格式
@@ -39,12 +39,12 @@ $ARGUMENTS = "[REQ_ID?] [--all] [--bugs] [--detailed] [--summary]"
 - **Summary/All**: 使用 {SCRIPT:generate_status} 生成聚合报告。
 
 ### 4. 建议动作
-- 根据状态字段提示下一命令：
-  - `status=initialized` → `/flow-prd`
-  - `phase0_complete=false` → `/flow-init` consolidate
-  - `phase1_complete=false` → `/flow-tech`
-  - `status=epic_complete` → `/flow-dev`
-  - `status=quality_complete`（兼容 `qa_complete`）→ `/flow-release`
+  - 根据状态字段提示下一命令（优先主链）：
+    - `status=initialized` 或 `status=context_packed` → `/flow:spec`
+    - `status=planned` 或 `status=spec_complete` → `/flow:dev`
+    - `status=development_in_progress` 且有失败任务 → `/flow:dev --resume`
+    - `status=development_complete` → `/flow:verify --strict`
+    - `status=quality_complete` 或 `status=verified` → `/flow:release`
 
 ## 输出样例
 ```
@@ -52,9 +52,9 @@ $ARGUMENTS = "[REQ_ID?] [--all] [--bugs] [--detailed] [--summary]"
 ┌─────────┬──────────────┬───────────────┬────────────┬──────────┐
 │ ID      │ Title        │ Status        │ Phase      │ Next     │
 ├─────────┼──────────────┼───────────────┼────────────┼──────────┤
-│ REQ-123 │ 下单流程优化   │ epic_complete │ planning   │ /flow-dev │
-│ REQ-124 │ 权限矩阵       │ quality_complete │ release │ /flow-release │
-│ REQ-125 │ 账单导出       │ prd_complete  │ technical  │ /flow-tech │
+│ REQ-123 │ 下单流程优化   │ planned        │ planning   │ /flow:dev │
+│ REQ-124 │ 权限矩阵       │ quality_complete │ verify  │ /flow:release │
+│ REQ-125 │ 账单导出       │ initialized    │ init       │ /flow:spec │
 └─────────┴──────────────┴───────────────┴────────────┴──────────┘
 ```
 

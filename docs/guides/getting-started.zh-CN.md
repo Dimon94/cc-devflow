@@ -42,37 +42,35 @@ python3 .claude/scripts/demo.py
 ### 1. 启动需求开发
 
 ```bash
-/flow-new "REQ-001|用户认证功能|https://docs.example.com/auth"
+/flow:init "REQ-001|用户认证功能|https://docs.example.com/auth"
+/flow:spec "REQ-001"
+/flow:dev "REQ-001"
+/flow:verify "REQ-001" --strict
+/flow:release "REQ-001"
 ```
 
 ### 2. 查看进度
 
 ```bash
-/flow-status REQ-001
+/flow:status REQ-001
 ```
 
 ### 3. 如果中断，恢复开发
 
 ```bash
-/flow-restart "REQ-001"
+/flow:dev "REQ-001" --resume
 ```
 
 ### 4. 验证一致性
 
 ```bash
-/flow-verify "REQ-001"
+/flow:verify "REQ-001" --strict
 ```
 
-### 5. 执行 QA
+### 5. 创建发布
 
 ```bash
-/flow-qa "REQ-001"
-```
-
-### 6. 创建发布
-
-```bash
-/flow-release "REQ-001"
+/flow:release "REQ-001"
 ```
 
 ## 📋 核心脚本

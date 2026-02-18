@@ -1,6 +1,6 @@
 ---
 name: flow-upgrade
-description: 'PRD version management, analysis, and application workflow. Usage: /flow-upgrade "REQ-123" --analyze or --version="2.0.0" --reason="..."'
+description: 'PRD version management, analysis, and application workflow. Usage: /flow:upgrade "REQ-123" --analyze or --version="2.0.0" --reason="..."'
 scripts:
   prereq: .claude/scripts/check-prerequisites.sh
   manage_constitution: .claude/scripts/manage-constitution.sh
@@ -34,7 +34,7 @@ $ARGUMENTS = "REQ_ID [--analyze] [--version=SEMVER] [--reason='...'] [--rollback
    → Git 工作区需干净（除非只做 analyze）。
 
 3. 状态确认
-   → orchestration_status.status 至少为 "prd_complete"。
+   → orchestration_status.status 至少为 "initialized"。
    → 若后续流程在开发阶段进行，提示可能影响当前迭代。
 ```
 
@@ -70,7 +70,7 @@ $ARGUMENTS = "REQ_ID [--analyze] [--version=SEMVER] [--reason='...'] [--rollback
    → EXECUTION_LOG.md 记录升级摘要。
 
 5. 触发后续动作
-   → 提示重新运行 /flow-tech、/flow-epic 等受影响阶段。
+   → 提示重新运行 `/flow:spec`、`/flow:dev`、`/flow:verify` 等受影响阶段。
 ```
 
 ### 阶段 2C: 回滚 (--rollback)
@@ -91,7 +91,7 @@ $ARGUMENTS = "REQ_ID [--analyze] [--version=SEMVER] [--reason='...'] [--rollback
 ### 阶段 3: Exit Gate
 ```
 1. 核验版本快照目录、CHANGELOG、影响报告是否生成。
-2. 若版本号更新成功，提示下一步（重新跑 /flow-tech /flow-epic）。
+2. 若版本号更新成功，提示下一步（重新跑 `/flow:spec` / `/flow:dev` / `/flow:verify`）。
 3. 失败时保持原状态，给出恢复指引。
 ```
 
@@ -111,5 +111,5 @@ $ARGUMENTS = "REQ_ID [--analyze] [--version=SEMVER] [--reason='...'] [--rollback
 
 ## 下一步
 - 若版本包含重大变更：立即通知团队重新生成技术方案和规划。
-- 使用 `/flow-status` 检查其他需求是否依赖该版本。
-- 需要宪法变更时调用 `/flow-constitution --amend`。
+- 使用 `/flow:status` 检查其他需求是否依赖该版本。
+- 需要宪法变更时调用 `/flow:constitution --amend`。

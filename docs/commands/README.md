@@ -4,54 +4,50 @@
 
 ---
 
-## 🎯 Requirement Management Commands
+## 🎯 Requirement Commands
 
 | Command | Purpose | Quick Example | Detailed Docs |
 |---------|---------|---------------|---------------|
-| `/flow-new` | 🚀 Start New Requirement Development | `/flow-new "REQ-123\|Feature"` | [→](./flow-new.md) |
-| `/flow-init` | 📦 Initialize Requirement Structure | `/flow-init "REQ-123\|Feature"` | [→](./flow-init.md) |
-| `/flow-status` | 📊 Query Development Progress | `/flow-status REQ-123` | [→](./flow-status.md) |
-| `/flow-restart` | 🔄 Resume Interrupted Development | `/flow-restart "REQ-123"` | [→](./flow-restart.md) |
-| `/flow-update` | ✅ Update Task Progress | `/flow-update "REQ-123" "T001"` | [→](./flow-update.md) |
+| `/flow:init` | 📦 Initialize requirement context | `/flow:init "REQ-123\|Feature"` | [→](../../.claude/commands/flow/init.md) |
+| `/flow:spec` | 📋 Generate task-manifest | `/flow:spec "REQ-123"` | [→](../../.claude/commands/flow/spec.md) |
+| `/flow:dev` | 🛠️ Dispatch or resume task execution | `/flow:dev "REQ-123" --resume` | [→](../../.claude/commands/flow/dev.md) |
+| `/flow:verify` | ✅ Quick/strict quality gates | `/flow:verify "REQ-123" --strict` | [→](../../.claude/commands/flow/verify.md) |
+| `/flow:release` | 🚢 Release + runtime cleanup | `/flow:release "REQ-123"` | [→](../../.claude/commands/flow/release.md) |
+| `/flow:status` | 📊 Query progress snapshot | `/flow:status REQ-123` | [→](../../.claude/commands/flow/status.md) |
+| `/flow:restart` | 🔄 Recover interrupted workflow | `/flow:restart "REQ-123" --from=dev` | [→](../../.claude/commands/flow/restart.md) |
+| `/flow:update` | ✅ Update task progress | `/flow:update "REQ-123" "T001"` | [→](../../.claude/commands/flow/update.md) |
+| `/flow:fix` | 🐛 Bug fix workflow | `/flow:fix "BUG-001\|Description"` | [→](../../.claude/commands/flow/fix.md) |
 
-## 🏗️ Architecture Design Commands
+## ⚠️ Deprecated Commands
 
-| Command | Purpose | Quick Example | Detailed Docs |
-|---------|---------|---------------|---------------|
-| `/core-roadmap` | 🗺️ Generate Product Roadmap | `/core-roadmap` | [→](./core-roadmap.md) |
-| `/core-architecture` | 🏛️ Generate System Architecture | `/core-architecture` | [→](./core-architecture.md) |
-| `/core-guidelines` | 📘 Generate Project Guidelines | `/core-guidelines` | [→](./core-guidelines.md) |
+| Deprecated | Migration |
+|------------|-----------|
+| `/flow:new` | `/flow:init -> /flow:spec -> /flow:dev -> /flow:verify -> /flow:release` |
+| `/flow:clarify` | Use `/flow:spec` |
+| `/flow:checklist` | Use `/flow:verify --strict` |
+| `/flow:quality` | Use `/flow:verify` |
 
-## 🧪 Quality Assurance Commands
-
-| Command | Purpose | Quick Example | Detailed Docs |
-|---------|---------|---------------|---------------|
-| `/flow-checklist` | ✅ Requirement Quality Check | `/flow-checklist --type ux` | [→](../../.claude/commands/flow-checklist.md) |
-| `/flow-verify` | 🔍 Verify Document Consistency | `/flow-verify "REQ-123"` | [→](./flow-verify.md) |
-| `/flow-qa` | 🧪 Execute Quality Assurance | `/flow-qa "REQ-123"` | [→](./flow-qa.md) |
-| `/flow-constitution` | 📜 Constitution Compliance | `/flow-constitution --verify` | [→](./flow-constitution.md) |
-
-## 🛠️ Tool Commands
+## 🏗️ Core Commands
 
 | Command | Purpose | Quick Example | Detailed Docs |
 |---------|---------|---------------|---------------|
-| `/flow-fix` | 🐛 Bug Fix Flow | `/flow-fix "BUG-001\|Description"` | [→](./flow-fix.md) |
-| `/flow-release` | 🚢 Create Release | `/flow-release "REQ-123"` | [→](./flow-release.md) |
+| `/core:roadmap` | 🗺️ Generate product roadmap | `/core:roadmap` | [→](./core-roadmap.md) |
+| `/core:architecture` | 🏛️ Generate system architecture | `/core:architecture` | [→](./core-architecture.md) |
+| `/core:guidelines` | 📘 Generate project guidelines | `/core:guidelines` | [→](./core-guidelines.md) |
+| `/core:style` | 🎨 Generate style system guide | `/core:style` | [→](./core-style.md) |
 
 ## 🎯 Quick Selection Guide
 
-```
+```text
 Your Scenario:
-├─ Start brand new feature? → /flow-new "REQ-123|Feature"
-├─ Plan product direction? → /core-roadmap
-├─ Design system architecture? → /core-architecture
-├─ Validate requirement quality? → /flow-checklist --type ux,api,security
-├─ Continue interrupted development? → /flow-restart "REQ-123"
-├─ Check development progress? → /flow-status REQ-123
-├─ Found document conflicts? → /flow-verify "REQ-123"
-├─ Development complete, test? → /flow-qa "REQ-123"
-├─ Fix production bug? → /flow-fix "BUG-001|Description"
-└─ Ready to release? → /flow-release "REQ-123"
+├─ Start requirement delivery? → /flow:init "REQ-123|Feature|URLs"
+├─ Need executable plan? → /flow:spec "REQ-123"
+├─ Need implementation/resume? → /flow:dev "REQ-123" [--resume]
+├─ Need release gates? → /flow:verify "REQ-123" --strict
+├─ Ready to ship? → /flow:release "REQ-123"
+├─ Check progress? → /flow:status REQ-123
+├─ Fix production bug? → /flow:fix "BUG-001|Description"
+└─ Project-level planning? → /core:roadmap /core:architecture /core:guidelines
 ```
 
 ## 📚 Related Documentation

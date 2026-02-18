@@ -145,7 +145,7 @@ Generated: {GENERATED_AT}
 2. **Direct Editing**:
    - Copy this template to `research/research.md`
    - Fill in decisions based on your research
-   - Run validation script before proceeding to /flow-prd
+   - Run validation script before proceeding to /flow:spec
 
 ---
 

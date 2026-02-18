@@ -22,7 +22,7 @@ Generate comprehensive product roadmap and requirement priority planning through
 - Present product plan to team
 
 ### ❌ Not Recommended Scenarios
-- Single requirement development → Use `/flow-new`
+- Single requirement development → Use `/flow:init` (then `/flow:spec` → `/flow:dev` → `/flow:verify` → `/flow:release`)
 
 ## 🔄 Execution Flow (6-Stage Interactive Dialogue)
 
@@ -96,7 +96,7 @@ User: Target users are Tech Leads and senior engineers in development teams.
 ## 🔗 Related Commands
 
 - [`/core-architecture`](./core-architecture.md) - Generate architecture based on roadmap
-- [`/flow-init`](./flow-init.md) - Initialize requirement based on roadmap
+- [`/flow:init`](./flow-init.md) - Initialize requirement based on roadmap
 - `.claude/scripts/sync-roadmap-progress.sh` - Sync progress to roadmap
 
 ## 📚 Deep Reading

@@ -1,4 +1,4 @@
-# `/flow-init` - Initialize Requirement Structure
+# `/flow:init` - Initialize Requirement Structure
 
 [中文文档](./flow-init.zh-CN.md) | [English](./flow-init.md)
 
@@ -6,14 +6,14 @@
 
 ## 📋 Overview
 
-Initialize requirement directory structure and load roadmap and architecture context (if exists). This is the first stage of `/flow-new` and can also be used independently.
+Initialize requirement directory structure and package runtime context. This is stage 1 of the canonical mainline (`/flow:init -> /flow:spec -> /flow:dev -> /flow:verify -> /flow:release`) and can also be used independently.
 
 ## 🎯 Syntax
 
 ```bash
-/flow-init "REQ-ID|Feature Title"
+/flow:init "REQ-ID|Feature Title"
 # or
-/flow-init --interactive
+/flow:init --interactive
 ```
 
 ## 📖 Parameters
@@ -34,13 +34,13 @@ Initialize requirement directory structure and load roadmap and architecture con
 - Need to manually create document content
 
 ### ❌ Not Recommended Scenarios
-- Complete development flow → Use `/flow-new`
-- Resume development → Use `/flow-restart`
+- Expecting full delivery with one command (deprecated `/flow:new`)
+- Resume development → Use `/flow:restart`
 
 ## 🔄 Execution Flow (includes Stage 1.5)
 
 ```text
-/flow-init "REQ-123|User Authentication Feature"
+/flow:init "REQ-123|User Authentication Feature"
   ↓
 Stage 1: Prerequisites validation
   ├─ Check Git repository
@@ -83,13 +83,13 @@ Stage 2.5: Research (subagent, mandatory, context-isolated)
 ### Example 1: Basic Usage
 
 ```bash
-/flow-init "REQ-123|User Authentication Feature"
+/flow:init "REQ-123|User Authentication Feature"
 ```
 
 ### Example 2: Interactive Mode
 
 ```bash
-/flow-init --interactive
+/flow:init --interactive
 # System will auto-select next available ID
 ```
 
@@ -137,4 +137,4 @@ Stage 2.5: Research (subagent, mandatory, context-isolated)
 
 - [`/core-roadmap`](./core-roadmap.md) - Generate roadmap first
 - [`/core-architecture`](./core-architecture.md) - Generate architecture first
-- [`/flow-new`](./flow-new.md) - Complete development flow
+- Canonical chain: `/flow:init` → `/flow:spec` → `/flow:dev` → `/flow:verify` → `/flow:release`

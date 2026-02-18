@@ -1,6 +1,6 @@
 ---
 name: flow-release
-description: 'Complete requirement and update progress. Usage: /flow-release "REQ-123" or /flow-release'
+description: 'Release a verified requirement and run runtime cleanup. Use only after flow-verify has passed.'
 ---
 
 # Flow-Release Skill
@@ -9,74 +9,41 @@ description: 'Complete requirement and update progress. Usage: /flow-release "RE
 
 ## Purpose
 
-完成需求发布：更新进度文档、提交变更。Git 分支/PR/合并由用户自行管理。
+在验证通过后生成发布说明并标记需求为 released，同时执行 runtime 清理。
 
 ## Input Format
 
+```bash
+/flow:release "REQ_ID" [--janitor-hours N]
 ```
-/flow-release "REQ_ID"
-/flow-release             # Auto-detect
+
+- `janitor-hours` 默认 `72`
+
+## Execution Steps
+
+1. 检查 `report-card.json`：
+   - `overall` 必须为 `pass`
+2. 运行发布：
+
+```bash
+npm run harness:release -- --change-id "${REQ_ID}"
 ```
 
-## Entry Gate
+3. 运行熵清理：
 
-1. **PRD.md, EPIC.md, TASKS.md** 存在
-2. **TEST_REPORT.md, SECURITY_REPORT.md** Gate 均为 PASS
-3. **Status**: `quality_complete`（兼容 `qa_complete`）或 `release_failed`
-
-## Execution Flow
-
-### Stage 1: Context Preparation
-
-收集元数据:
-- REQ_ID, TITLE
-- coverage, security 状态
-- TASKS.md 完成情况
-
-### Stage 2: Release Manager Agent
-
-调用 `release-manager` agent:
-- 生成 RELEASE_PLAN.md (发布摘要)
-
-### Stage 3: Progress Update
-
-1. **更新 BACKLOG.md**
-   - 找到对应 REQ 条目，更新状态为 `completed` 或 `released`
-
-2. **更新 ROADMAP.md**
-   - 找到对应 REQ 条目，更新进度
-
-3. **更新 orchestration_status.json**
-   - Status → `release_complete`
-
-### Stage 4: Commit Gate (MANDATORY)
-
-- 检查 `git status --porcelain`
-- 若存在未提交变更，按 `.claude/commands/util/git-commit.md` 规范提交
-- 提交格式: `chore(release): complete ${REQ_ID} - ${TITLE}`
-
-### Stage 5: Exit Gate
-
-1. RELEASE_PLAN.md 存在
-2. Status: `release_complete`
-3. 变更已提交
-
-## Output
-
+```bash
+npm run harness:janitor -- --hours ${HOURS}
 ```
-devflow/requirements/${REQ_ID}/
-├── RELEASE_PLAN.md
-└── orchestration_status.json (release_complete)
 
-Updated:
-├── devflow/BACKLOG.md (REQ status updated)
-└── devflow/ROADMAP.md (REQ progress updated)
+4. 验证输出：
+   - `devflow/requirements/${REQ_ID}/RELEASE_NOTE.md`
+   - `devflow/requirements/${REQ_ID}/harness-state.json` 中 `status == "released"`
 
-Git:
-└── Changes committed (user handles branch/PR/merge externally)
-```
+## Exit Criteria
+
+- 发布文件存在且状态为 released
+- janitor 执行成功
 
 ## Next Step
 
-1. 用户自行处理分支合并 / PR 创建
-2. 可选: `/flow-verify` 复检
+- 进入 PR / merge 流程（仓库策略处理）

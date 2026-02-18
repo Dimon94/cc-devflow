@@ -134,7 +134,7 @@ fi
 # Validate required directories and files
 if [[ ! -d "$REQ_DIR" ]]; then
     echo "ERROR: Requirement directory not found: $REQ_DIR" >&2
-    echo "Run /flow-new first to create the requirement structure." >&2
+    echo "Run /flow:init first to create the requirement structure." >&2
     exit 1
 fi
 
