@@ -152,7 +152,7 @@ if [[ ! -d "$CHECKLISTS_DIR" ]]; then
         echo "ERROR: NO_CHECKLISTS" >&2
         echo "Checklists directory not found: $CHECKLISTS_DIR" >&2
         echo "" >&2
-        echo "Run /flow-checklist --type <type> first." >&2
+        echo "Run /flow:verify --strict first." >&2
     fi
     exit 1
 fi
@@ -171,7 +171,7 @@ if [[ ${#CHECKLIST_FILES[@]} -eq 0 ]]; then
         echo "ERROR: NO_CHECKLISTS" >&2
         echo "No checklist files found in $CHECKLISTS_DIR" >&2
         echo "" >&2
-        echo "Run /flow-checklist --type <type> first." >&2
+        echo "Run /flow:verify --strict first." >&2
     fi
     exit 1
 fi

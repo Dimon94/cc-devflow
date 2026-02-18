@@ -46,7 +46,7 @@
 ```bash
 ⚠️ WARNING: RM-005 依赖 REQ-008 但该需求未完成
 ```
-**Fix**: `/flow-status REQ-008` → 确认状态 → 继续但标记风险 或 移除该依赖
+**Fix**: `/flow:status REQ-008` → 确认状态 → 继续但标记风险 或 移除该依赖
 
 ---
 

@@ -328,9 +328,9 @@ Else:
 无需单独运行 /core-architecture
 ```
 
-### 在 /flow-init 中的使用
+### 在 /flow:init 中的使用
 ```
-/flow-init 可以读取 ARCHITECTURE.md 获取上下文:
+/flow:init 可以读取 ARCHITECTURE.md 获取上下文:
   - 查看需求在架构中的位置
   - 了解相关模块和依赖
   - 参考 ADR 做技术决策

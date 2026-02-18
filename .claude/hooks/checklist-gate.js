@@ -228,7 +228,7 @@ function logGateSkip(reqDir, completion, threshold, reason) {
 **Completion**: ${completion.percentage}%
 **Threshold**: ${threshold}%
 **Reason**: ${reason}
-**Command**: /flow-epic --skip-gate --reason "${reason}"
+**Command**: /flow:spec --skip-gate --reason "${reason}"
 `;
 
     try {
@@ -252,7 +252,7 @@ function outputText(result) {
         console.log('❌ Checklist Gate: NO_CHECKLISTS');
         console.log('   No checklist files found.');
         console.log('');
-        console.log('   Run /flow-checklist --type <type> first.');
+        console.log('   Run /flow:verify --strict first.');
         return;
     }
 
@@ -273,7 +273,7 @@ function outputText(result) {
         console.log('');
         console.log('   To continue:');
         console.log('   1. Review and complete checklist items');
-        console.log('   2. Run /flow-checklist --status to check progress');
+        console.log('   2. Run /flow:verify --strict to re-check progress');
         console.log('   3. Or use --skip-gate --reason "your reason" to bypass');
     }
 
@@ -382,7 +382,7 @@ function main() {
         },
         message: passed
             ? `Checklist completion ${completion.percentage}% >= ${threshold}% threshold`
-            : `Checklist completion ${completion.percentage}% < ${threshold}% threshold. Run /flow-checklist --status to review.`
+            : `Checklist completion ${completion.percentage}% < ${threshold}% threshold. Run /flow:verify --strict to review.`
     };
 
     if (options.json) {

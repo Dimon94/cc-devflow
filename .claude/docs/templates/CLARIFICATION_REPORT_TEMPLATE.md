@@ -162,15 +162,15 @@ No outstanding items.
 {{#ALL_RESOLVED}}
 ✅ **Clarification complete**. All critical ambiguities have been resolved.
 
-Recommended next command: `/flow-prd {{REQ_ID}}`
+Recommended next command: `/flow:spec {{REQ_ID}}`
 {{/ALL_RESOLVED}}
 
 {{#HAS_OUTSTANDING}}
 ⚠️ **Clarification partially complete**. Some low-impact items remain.
 
 Options:
-1. Proceed with `/flow-prd {{REQ_ID}}` (acceptable risk)
-2. Re-run `/flow-clarify {{REQ_ID}}` after planning phase
+1. Proceed with `/flow:spec {{REQ_ID}}` (acceptable risk)
+2. Re-run `/flow:spec {{REQ_ID}} --overwrite` after planning phase
 {{/HAS_OUTSTANDING}}
 
 {{#HAS_DEFERRED}}
@@ -179,13 +179,13 @@ Options:
 - {{ITEM}}
 {{/DEFERRED_SUMMARY}}
 
-These will be addressed during `/flow-tech` or `/flow-epic`.
+These will be addressed during `/flow:spec` task planning or `/flow:dev` implementation.
 {{/HAS_DEFERRED}}
 
 {{#NO_QUESTIONS}}
 ✅ **No critical ambiguities detected**. research.md is sufficiently specified.
 
-Recommended next command: `/flow-prd {{REQ_ID}}`
+Recommended next command: `/flow:spec {{REQ_ID}}`
 {{/NO_QUESTIONS}}
 
 ---

@@ -28,24 +28,23 @@ usage() {
 
 选项:
   -h, --help              显示此帮助信息
-  --from STAGE            从指定阶段重新开始 (init/prd/epic/dev/quality/release, qa 兼容)
+  --from STAGE            从指定阶段重新开始 (init/spec/dev/verify/release；prd/epic/quality/qa 兼容)
   --force                 强制恢复，跳过安全检查
   --dry-run               显示恢复计划但不执行
   --verbose               显示详细信息
 
 阶段说明:
   init      - 初始化阶段
-  prd       - PRD生成阶段
-  epic      - Epic规划阶段
+  spec      - 规格与任务规划阶段
   dev       - 开发执行阶段
-  quality   - 质量验证阶段
+  verify    - 质量验证阶段
   release   - 发布管理阶段
 
 示例:
   $0 REQ-123                          # 自动检测并恢复
   $0 REQ-123 --from dev               # 从开发阶段重新开始
   $0 REQ-123 --dry-run                # 预览恢复计划
-  $0 REQ-123 --from prd --force       # 强制从PRD阶段重新开始
+  $0 REQ-123 --from spec --force      # 强制从规划阶段重新开始
 
 EOF
     exit 0
@@ -127,14 +126,14 @@ detect_workflow_status() {
     # 检查需求目录是否存在
     if [[ ! -d "$REQ_DIR" ]]; then
         echo -e "${RED}错误: 需求目录不存在: $REQ_DIR${NC}"
-        echo -e "${YELLOW}建议: 使用 /flow-init 初始化需求${NC}"
+        echo -e "${YELLOW}建议: 使用 /flow:init 初始化需求${NC}"
         exit 1
     fi
 
     # 检查状态文件
     if [[ ! -f "$STATUS_FILE" ]]; then
         echo -e "${YELLOW}警告: 状态文件不存在，需求可能未正确初始化${NC}"
-        echo -e "${YELLOW}建议: 使用 /flow-init --force 重新初始化${NC}"
+        echo -e "${YELLOW}建议: 使用 /flow:init --force 重新初始化${NC}"
         exit 1
     fi
 
@@ -213,29 +212,21 @@ analyze_recovery_strategy() {
     if [[ -n "$FROM_STAGE" ]]; then
         echo -e "${YELLOW}用户指定从阶段恢复: $FROM_STAGE${NC}"
         validate_stage "$FROM_STAGE"
-        echo "$FROM_STAGE"
+        echo "$(normalize_stage "$FROM_STAGE")"
         return 0
     fi
 
     # 根据当前阶段智能判断恢复点
     case "$current_phase" in
-        initialized|planning)
-            echo -e "${CYAN}建议: 从 PRD 阶段开始${NC}"
-            echo "prd"
+        initialized|context_packed|planning|planned|spec_in_progress)
+            echo -e "${CYAN}建议: 从规格阶段开始${NC}"
+            echo "spec"
             ;;
-        prd_generation_in_progress)
-            echo -e "${CYAN}建议: 重新生成 PRD${NC}"
-            echo "prd"
-            ;;
-        prd_complete|epic_planning)
-            echo -e "${CYAN}建议: 从 Epic 阶段开始${NC}"
-            echo "epic"
-            ;;
-        epic_complete)
+        prd_generation_in_progress|epic_planning|prd_complete|epic_complete|spec_complete)
             echo -e "${CYAN}建议: 从开发阶段开始${NC}"
             echo "dev"
             ;;
-        development|dev_complete)
+        development|development_in_progress|dev_complete|development_complete)
             # 检查是否有未完成的任务
             if [[ -f "$REQ_DIR/TASKS.md" ]]; then
                 # 统计已完成任务 (- [x] 标记)
@@ -252,16 +243,20 @@ analyze_recovery_strategy() {
                     echo "dev"
                 else
                     echo -e "${CYAN}建议: 进入质量验证阶段${NC}"
-                    echo "quality"
+                    echo "verify"
                 fi
             else
                 echo -e "${CYAN}建议: 从开发阶段开始${NC}"
                 echo "dev"
             fi
             ;;
-        quality|quality_complete|qa|qa_complete)
+        quality|qa|verification_in_progress)
             echo -e "${CYAN}建议: 从质量验证阶段开始${NC}"
-            echo "quality"
+            echo "verify"
+            ;;
+        quality_complete|qa_complete|verified)
+            echo -e "${CYAN}建议: 从发布阶段开始${NC}"
+            echo "release"
             ;;
         release|release_complete)
             echo -e "${CYAN}建议: 从发布阶段开始${NC}"
@@ -273,8 +268,8 @@ analyze_recovery_strategy() {
             exit 0
             ;;
         *)
-            echo -e "${YELLOW}警告: 未知阶段 '$current_phase'，从 PRD 开始${NC}"
-            echo "prd"
+            echo -e "${YELLOW}警告: 未知阶段 '$current_phase'，从规格阶段开始${NC}"
+            echo "spec"
             ;;
     esac
 }
@@ -284,13 +279,29 @@ validate_stage() {
     local stage="$1"
 
     case "$stage" in
-        init|prd|epic|dev|quality|qa|release)
+        init|spec|dev|verify|release|prd|epic|quality|qa)
             return 0
             ;;
         *)
             echo -e "${RED}错误: 无效的阶段 '$stage'${NC}"
-            echo -e "${YELLOW}有效阶段: init, prd, epic, dev, quality, release (qa 兼容)${NC}"
+            echo -e "${YELLOW}有效阶段: init, spec, dev, verify, release (prd/epic/quality/qa 兼容)${NC}"
             exit 1
+            ;;
+    esac
+}
+
+# 兼容历史阶段名称，统一映射到主链阶段
+normalize_stage() {
+    local stage="$1"
+    case "$stage" in
+        prd|epic)
+            echo "spec"
+            ;;
+        quality|qa)
+            echo "verify"
+            ;;
+        *)
+            echo "$stage"
             ;;
     esac
 }
@@ -315,19 +326,16 @@ generate_recovery_plan() {
     local stages=()
     case "$start_stage" in
         init)
-            stages=("init" "prd" "epic" "dev" "quality" "release")
+            stages=("init" "spec" "dev" "verify" "release")
             ;;
-        prd)
-            stages=("prd" "epic" "dev" "quality" "release")
-            ;;
-        epic)
-            stages=("epic" "dev" "quality" "release")
+        spec)
+            stages=("spec" "dev" "verify" "release")
             ;;
         dev)
-            stages=("dev" "quality" "release")
+            stages=("dev" "verify" "release")
             ;;
-        quality|qa)
-            stages=("quality" "release")
+        verify)
+            stages=("verify" "release")
             ;;
         release)
             stages=("release")
@@ -340,22 +348,19 @@ generate_recovery_plan() {
         local command=""
         case "$stage" in
             init)
-                command="/flow-init \"$REQ_ID\""
+                command="/flow:init \"$REQ_ID\""
                 ;;
-            prd)
-                command="/flow-prd \"$REQ_ID\""
-                ;;
-            epic)
-                command="/flow-epic \"$REQ_ID\""
+            spec)
+                command="/flow:spec \"$REQ_ID\""
                 ;;
             dev)
-                command="/flow-dev \"$REQ_ID\" --resume"
+                command="/flow:dev \"$REQ_ID\" --resume"
                 ;;
-            quality)
-                command="/flow-quality \"$REQ_ID\""
+            verify)
+                command="/flow:verify \"$REQ_ID\" --strict"
                 ;;
             release)
-                command="/flow-release \"$REQ_ID\""
+                command="/flow:release \"$REQ_ID\""
                 ;;
         esac
 
@@ -387,43 +392,35 @@ execute_recovery() {
     fi
 
     # 根据起始阶段执行命令
-    # 注意: 这里只是展示命令，实际执行由用户手动调用或使用 /flow-restart
+    # 注意: 这里只是展示命令，实际执行由用户手动调用或使用 /flow:restart
     echo -e "${CYAN}请手动执行以下命令以恢复工作流:${NC}"
     echo ""
 
     case "$start_stage" in
         init)
-            echo "/flow-init \"$REQ_ID\""
-            echo "/flow-prd \"$REQ_ID\""
-            echo "/flow-epic \"$REQ_ID\""
-            echo "/flow-dev \"$REQ_ID\""
-            echo "/flow-quality \"$REQ_ID\""
-            echo "/flow-release \"$REQ_ID\""
+            echo "/flow:init \"$REQ_ID\""
+            echo "/flow:spec \"$REQ_ID\""
+            echo "/flow:dev \"$REQ_ID\""
+            echo "/flow:verify \"$REQ_ID\" --strict"
+            echo "/flow:release \"$REQ_ID\""
             ;;
-        prd)
-            echo "/flow-prd \"$REQ_ID\""
-            echo "/flow-epic \"$REQ_ID\""
-            echo "/flow-dev \"$REQ_ID\""
-            echo "/flow-quality \"$REQ_ID\""
-            echo "/flow-release \"$REQ_ID\""
-            ;;
-        epic)
-            echo "/flow-epic \"$REQ_ID\""
-            echo "/flow-dev \"$REQ_ID\""
-            echo "/flow-quality \"$REQ_ID\""
-            echo "/flow-release \"$REQ_ID\""
+        spec)
+            echo "/flow:spec \"$REQ_ID\""
+            echo "/flow:dev \"$REQ_ID\""
+            echo "/flow:verify \"$REQ_ID\" --strict"
+            echo "/flow:release \"$REQ_ID\""
             ;;
         dev)
-            echo "/flow-dev \"$REQ_ID\" --resume"
-            echo "/flow-quality \"$REQ_ID\""
-            echo "/flow-release \"$REQ_ID\""
+            echo "/flow:dev \"$REQ_ID\" --resume"
+            echo "/flow:verify \"$REQ_ID\" --strict"
+            echo "/flow:release \"$REQ_ID\""
             ;;
-        quality|qa)
-            echo "/flow-quality \"$REQ_ID\""
-            echo "/flow-release \"$REQ_ID\""
+        verify)
+            echo "/flow:verify \"$REQ_ID\" --strict"
+            echo "/flow:release \"$REQ_ID\""
             ;;
         release)
-            echo "/flow-release \"$REQ_ID\""
+            echo "/flow:release \"$REQ_ID\""
             ;;
     esac
 

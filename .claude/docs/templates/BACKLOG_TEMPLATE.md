@@ -201,7 +201,7 @@ _说明: 此矩阵用于快速识别需求间的依赖关系，避免优先级�
 
 ### 准入标准 (Definition of Ready)
 
-一个 backlog item 准备好进入开发 (运行 /flow-init) 的标准：
+一个 backlog item 准备好进入开发 (运行 /flow:init) 的标准：
 - [ ] Description 清晰明确
 - [ ] Business Value 已明确
 - [ ] Effort 已评估
@@ -213,9 +213,9 @@ _说明: 此矩阵用于快速识别需求间的依赖关系，避免优先级�
 ### 完成标准 (Definition of Done)
 
 一个 backlog item 被认为完成的标准：
-- [ ] 通过 /flow-prd, /flow-tech, /flow-epic, /flow-dev 流程
+- [ ] 通过 /flow:init, /flow:spec, /flow:dev 流程
 - [ ] 所有 TASKS.md 中的任务完成
-- [ ] 通过 /flow-qa (测试 + 安全审查)
+- [ ] 通过 /flow:verify (测试 + 安全审查)
 - [ ] 代码已合并到主分支
 - [ ] 文档已更新
 - [ ] 用户验收通过

@@ -268,9 +268,9 @@ guides:
 
 下一步建议:
   1. 审查路线图
-  2. 开始首个需求: /flow-init "REQ-XXX|{RM-title}"
+  2. 开始首个需求: /flow:init "REQ-XXX|{RM-title}"
   3. 定期更新: /core-roadmap --regenerate
-  4. 监控进度: /flow-status --all
+  4. 监控进度: /flow:status --all
 
 → 详见 {TEMPLATE:dialogue} Stage 8
 ```
@@ -425,10 +425,10 @@ grep "Status: Completed" devflow/ROADMAP.md | wc -l
 
 ```
 # 选择当前季度的第一个 RM-ID
-/flow-init "REQ-XXX|{RM-title}"
+/flow:init "REQ-XXX|{RM-title}"
 
 # 或查看所有状态
-/flow-status --all
+/flow:status --all
 ```
 
 ---

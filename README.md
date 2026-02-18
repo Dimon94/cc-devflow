@@ -1,8 +1,8 @@
 # 🚀 cc-devflow
 
-> One-Command Requirement Development Flow for Claude Code
+> Harness-First Requirement Development Flow for Claude Code
 
-A comprehensive development workflow system built on Claude Code's official sub-agents, hooks, and settings mechanisms. Transform your requirements from planning to code delivery with a single command.
+A comprehensive development workflow system built on Claude Code's official sub-agents, hooks, and settings mechanisms. Transform requirements from planning to code delivery with a deterministic command chain.
 
 [中文文档](./README.zh-CN.md) | [English](./README.md)
 
@@ -10,17 +10,17 @@ A comprehensive development workflow system built on Claude Code's official sub-
 
 ## 🎯 One-Line Introduction
 
-Complete automated workflow from PRD generation to code delivery with `/flow-new "REQ-123|Feature|URLs"`.
+Harness-first five-stage workflow from requirement setup to release: `/flow:init` → `/flow:spec` → `/flow:dev` → `/flow:verify` → `/flow:release`.
 
 ---
 
 ## ✨ Core Features
 
-- 🎯 **One-Command Flow** - Complete PRD → Code → Test → Release with a single command
-- 🔄 **Staged Commands** - 8 independent stage commands for fine-grained control
+- 🎯 **Harness-First Mainline** - Default chain is `/flow:init` → `/flow:spec` → `/flow:dev` → `/flow:verify` → `/flow:release`
+- 🔄 **NPM Command Chain** - Flow commands map to `harness:*` runtime operations with checkpoints and resume
 - 📋 **Document-Driven** - Automatic PRD → UI Prototype → EPIC → TASKS → Implementation chain
 - 📝 **Template-Driven** - Self-executable templates (PRD_TEMPLATE, EPIC_TEMPLATE, TASKS_TEMPLATE)
-- 🔄 **Smart Recovery** - `/flow-restart` auto-detects restart points for interrupted development
+- 🔄 **Smart Recovery** - `harness:resume` restores interrupted dispatch from persisted checkpoints
 - 🛡️ **Quality Gates** - Automated TypeScript checking, testing, linting, and security scanning
 - 🤖 **Sub-Agent Orchestration** - 12 specialized research agents for different development phases
 - 🎨 **UI Prototype Generation** - Conditional HTML prototype with artistic design inspiration
@@ -98,7 +98,7 @@ Intelligent knowledge base activation with grouped Skills and automatic context 
 
 | Category | Skills | Purpose |
 |----------|--------|---------|
-| **Workflow** | flow-init, flow-spec, flow-dev, flow-quality, flow-release | Core development workflow |
+| **Workflow** | flow-init, flow-spec, flow-dev, flow-verify, flow-release | Core development workflow |
 | **Domain** | tdd, debugging, brainstorming, verification | Domain expertise |
 | **Guardrail** | constitution-guardian, tdd-enforcer | Real-time compliance |
 | **Utility** | npm-release, skill-creator, writing-skills | Development tools |
@@ -202,7 +202,11 @@ pip install pypinyin
 ### First Requirement
 
 ```bash
-/flow-new "REQ-001|User Authentication|https://docs.example.com/auth"
+/flow:init "REQ-001|User Authentication|https://docs.example.com/auth"
+/flow:spec "REQ-001"
+/flow:dev "REQ-001"
+/flow:verify "REQ-001" --strict
+/flow:release "REQ-001"
 ```
 
 <details>
@@ -260,15 +264,16 @@ bash .claude/tests/constitution/run_all_constitution_tests.sh
 
 | Command | Purpose | Quick Example | Detailed Docs |
 |---------|---------|---------------|---------------|
-| `/flow-new` | 🎯 Start New Requirement | `/flow-new "REQ-123\|Feature"` | [→](docs/commands/flow-new.md) |
-| `/flow-init` | 📦 Initialize Requirement | `/flow-init "REQ-123\|Feature"` | [→](docs/commands/flow-init.md) |
-| `/flow-clarify` | 🔎 Clarify Ambiguities | `/flow-clarify "REQ-123"` | [→](.claude/commands/flow/clarify.md) |
-| `/flow-spec` | 📋 Unified Specification (v4.1) | `/flow-spec "REQ-123"` | [→](.claude/commands/flow/spec.md) |
-| `/flow-checklist` | ✅ Requirement Quality Check | `/flow-checklist --type ux` | [→](.claude/commands/flow/checklist.md) |
-| `/flow-quality` | ✅ Combined Quality Verification | `/flow-quality "REQ-123" --full` | [→](.claude/commands/flow/quality.md) |
-| `/flow-fix` | 🐛 Systematic Bug Fix | `/flow-fix "BUG-123\|Description"` | [→](.claude/commands/flow/fix.md) |
-| `/flow-verify` | 🔍 Verify Consistency | `/flow-verify "REQ-123"` | [→](.claude/commands/flow/verify.md) |
-| `/flow-release` | 🚢 Create Release | `/flow-release "REQ-123"` | [→](.claude/commands/flow/release.md) |
+| `/flow:init` | 📦 Initialize Requirement Context | `/flow:init "REQ-123\|Feature"` | [→](.claude/commands/flow/init.md) |
+| `/flow:spec` | 📋 Build Task Manifest | `/flow:spec "REQ-123"` | [→](.claude/commands/flow/spec.md) |
+| `/flow:dev` | 🛠️ Dispatch and Execute Tasks | `/flow:dev "REQ-123"` | [→](.claude/commands/flow/dev.md) |
+| `/flow:verify` | ✅ Run Report Card Gates | `/flow:verify "REQ-123" --strict` | [→](.claude/commands/flow/verify.md) |
+| `/flow:release` | 🚢 Release + Cleanup | `/flow:release "REQ-123"` | [→](.claude/commands/flow/release.md) |
+| `/flow:fix` | 🐛 Systematic Bug Fix | `/flow:fix "BUG-123\|Description"` | [→](.claude/commands/flow/fix.md) |
+| `/flow:new` | ⚠️ Deprecated alias | Use `/flow:init` mainline | [→](.claude/commands/flow/new.md) |
+| `/flow:clarify` | ⚠️ Deprecated | Merged into `/flow:spec` | [→](.claude/commands/flow/clarify.md) |
+| `/flow:checklist` | ⚠️ Deprecated | Use `/flow:verify --strict` | [→](.claude/commands/flow/checklist.md) |
+| `/flow:quality` | ⚠️ Deprecated | Use `/flow:verify` | [→](.claude/commands/flow/quality.md) |
 
 📚 [Complete Command Reference](docs/commands/README.md)
 
@@ -280,16 +285,15 @@ Your Scenario:
 ├─ Plan product direction? → /core-roadmap
 ├─ Design system architecture? → /core-architecture
 ├─ Establish coding standards? → /core-guidelines
-├─ Start brand new feature development? → /flow-new "REQ-123|Feature|URLs"
-├─ Only create requirement directory? → /flow-init "REQ-123|Feature"
-├─ Clarify ambiguous requirements? → /flow-clarify "REQ-123"
-├─ Validate requirement quality? → /flow-checklist --type ux,api,security
-├─ Continue interrupted development? → /flow-restart "REQ-123"
-├─ Check development progress? → /flow-status REQ-123
-├─ Found document inconsistencies? → /flow-verify "REQ-123"
-├─ Development complete, need verification? → /flow-quality "REQ-123" --full
-├─ Fix production bug? → /flow-fix "BUG-001|Description"
-└─ Ready to release? → /flow-release "REQ-123"
+├─ Start requirement delivery? → /flow:init "REQ-123|Feature|URLs"
+├─ Generate task manifest? → /flow:spec "REQ-123"
+├─ Execute planned tasks? → /flow:dev "REQ-123"
+├─ Run strict quality gate? → /flow:verify "REQ-123" --strict
+├─ Continue interrupted development? → /flow:restart "REQ-123"
+├─ Check development progress? → /flow:status REQ-123
+├─ Re-check consistency anytime? → /flow:verify "REQ-123"
+├─ Fix production bug? → /flow:fix "BUG-001|Description"
+└─ Ready to release? → /flow:release "REQ-123"
 ```
 </details>
 
@@ -313,45 +317,34 @@ graph TB
     CoreGuidelines --> ReqLevel
     CoreStyle --> ReqLevel
 
-    ReqLevel([Requirement-Level Development]) --> FlowInit["/flow-init<br/>research.md & BRAINSTORM.md"]
+    ReqLevel([Requirement-Level Development]) --> FlowInit["/flow:init<br/>harness:init + harness:pack"]
+    FlowInit --> FlowSpec["/flow:spec<br/>harness:plan<br/>task-manifest"]
+    FlowSpec --> FlowDev["/flow:dev<br/>harness:dispatch/resume<br/>runtime-events"]
+    FlowDev --> FlowVerify["/flow:verify<br/>harness:verify<br/>report-card"]
+    FlowVerify --> FlowRelease["/flow:release<br/>harness:release/janitor<br/>release-note"]
+    FlowRelease --> End([Release Complete])
 
-    FlowInit --> FlowClarify["/flow-clarify<br/>clarifications/*.md<br/>Optional"]
-    FlowClarify --> FlowSpec["/flow-spec (v4.1)<br/>PRD → Tech+UI (parallel) → Epic<br/>Unified specification phase"]
-    FlowInit -.->|Skip clarify| FlowSpec
-
-    FlowSpec --> FlowDev["/flow-dev<br/>TASKS.md execution<br/>TDD Checkpoint"]
-
-    FlowDev --> FlowQuality["/flow-quality<br/>Quick/Full Verification<br/>Spec + Quality + Security"]
-
-    FlowQuality --> FlowRelease["/flow-release<br/>PR creation<br/>Branch decision"]
-
-    FlowRelease --> FlowVerify["/flow-verify<br/>Consistency check"]
-
-    FlowVerify --> End([Release Complete])
-
-    FlowVerify -.->|Can be called at any stage| ReqLevel
+    FlowVerify -.->|Can be re-run at any stage| ReqLevel
 
     style ProjectLevel fill:#e1f5ff
     style ReqLevel fill:#fff4e1
     style FlowInit fill:#e8f5e9
-    style FlowClarify fill:#fff9c4
     style FlowSpec fill:#e8f5e9
     style FlowDev fill:#f3e5f5
-    style FlowQuality fill:#e1bee7
+    style FlowVerify fill:#e1bee7
     style FlowRelease fill:#e0f2f1
-    style FlowVerify fill:#e3f2fd
+    style End fill:#e3f2fd
 ```
 
 **Workflow Notes**:
 - **Project-Level Commands** (light blue): Execute once at project initialization, establish global standards (SSOT)
 - **Requirement-Level Commands** (light orange): Execute once per requirement (REQ-XXX)
-- **Unified /flow-spec** (v4.1): Replaces flow-prd/flow-tech/flow-ui/flow-epic with parallel execution
-- **Brainstorming** (v2.3.0): `/flow-init` now generates `BRAINSTORM.md` as requirement "North Star"
-- **Unified Quality Verification** (v3.0.0): `/flow-quality --full` combines spec compliance, code quality, and security
-- **Optional Steps** (yellow): `/flow-clarify` is optional; skip if requirements are clear
-- **TDD Checkpoint** (v2.3.0): `/flow-dev` includes mandatory TDD checkpoint (tests must FAIL first)
-- **Quality Gates**: Each stage has entry/exit gates ensuring document quality and Constitution compliance
-- **Consistency Check**: `/flow-verify` can be called at any stage to ensure document consistency
+- **Canonical Mainline**: `/flow:init` → `/flow:spec` → `/flow:dev` → `/flow:verify` → `/flow:release`
+- **Harness Runtime Chain**: Each stage delegates to `npm run harness:*` operations with persisted checkpoints
+- **Unified /flow:spec**: Consolidates planning output into a task manifest
+- **Report Card Gate**: `/flow:verify --strict` blocks release when quality gates fail
+- **TDD Checkpoint**: `/flow:dev` keeps fail-first verification before implementation
+- **Deprecated Commands**: `/flow:new`, `/flow:clarify`, `/flow:checklist`, `/flow:quality` remain as migration stubs
 
 ---
 
@@ -405,7 +398,7 @@ devflow/
 ### Quality Gates
 
 - Pre-push Guard (TypeScript, tests, linting, security, build)
-- Checklist Gate (`/flow-checklist` 80% completion threshold before `/flow-epic`)
+- Report Card Gate (`/flow:verify --strict` before `/flow:release`)
 - Constitution Compliance (enforced at every stage)
 - TDD Checkpoint (TEST VERIFICATION CHECKPOINT)
 - Guardrail Hooks (PreToolUse real-time blocking of non-compliant operations)
@@ -494,13 +487,42 @@ bash .claude/tests/run-all-tests.sh --scripts
 
 ## 📝 Version History
 
-### v4.7.0 (2026-02-07) - Latest Release
+Note: entries before v6.0.0 keep their original command syntax for historical accuracy.
+
+### v6.0.0 (2026-02-18) - Latest Release
+
+**🧩 Harness-First Mainline: Simpler default flow with auditable runtime state**
+
+v6.0.0 simplifies cc-devflow around a single default chain and internal runtime engine:
+
+- **Default Command Chain**
+  - `/flow:init` → `/flow:spec` → `/flow:dev` → `/flow:verify` → `/flow:release`
+  - Every stage maps to `npm run harness:*` operations for deterministic orchestration
+
+- **Runtime Artifacts**
+  - `context-package.md` + `harness-state.json` for bootstrap state
+  - `task-manifest.json` + `runtime-events.jsonl` for execution trace
+  - `report-card.json` + `release-note.md` for quality and release evidence
+
+- **Deprecated Command Migrations**
+  - `/flow:new` → run the 5-stage mainline explicitly
+  - `/flow:clarify` → merged into `/flow:spec` planning loop
+  - `/flow:checklist` and `/flow:quality` → replaced by `/flow:verify`
+
+**📊 v6.0 Improvements**:
+| Metric | Before | After | Improvement |
+|--------|--------|-------|-------------|
+| Default requirement commands | 8+ mixed paths | 5-stage fixed chain | Simplified |
+| Resume capability | Command-specific | Unified `harness:resume` | Deterministic |
+| Quality evidence | Fragmented outputs | Single report card gate | Auditable |
+
+### v4.7.0 (2026-02-07)
 
 **🤝 Claude Team Integration: Multi-Agent Parallel Collaboration**
 
 v4.7.0 introduces Claude Team integration for multi-agent parallel development:
 
-- **Team Mode for /flow-dev** - Parallel task execution with multiple agents
+- **Team Mode for /flow:dev** - Parallel task execution with multiple agents
   - `--team` flag enables Team mode (default 3 agents)
   - `--agents N` specifies agent count (2-5)
   - Automatic task dependency analysis and conflict detection
@@ -555,8 +577,8 @@ v4.3.0 introduces Git Worktree integration for parallel development with isolate
   - Shell aliases template (za/zl/zm/zw)
 
 - **Modified Commands**
-  - `/flow-init` - Default worktree mode, `--branch-only` for compatibility
-  - `/flow-release` - Automatic worktree cleanup
+  - `/flow:init` - Default worktree mode, `--branch-only` for compatibility
+  - `/flow:release` - Automatic worktree cleanup
 
 **📊 v4.3 Improvements**:
 | Metric | Before | After | Improvement |
@@ -567,11 +589,11 @@ v4.3.0 introduces Git Worktree integration for parallel development with isolate
 
 ### v4.1.0 (2026-02-07)
 
-**🎯 Unified Specification Phase: /flow-spec Command**
+**🎯 Unified Specification Phase: /flow:spec Command**
 
-v4.1.0 merges flow-prd/flow-tech/flow-ui/flow-epic into a single `/flow-spec` command with parallel execution:
+v4.1.0 merges flow-prd/flow-tech/flow-ui/flow-epic into a single `/flow:spec` command with parallel execution:
 
-- **Unified /flow-spec Command** - One command for entire specification phase
+- **Unified /flow:spec Command** - One command for entire specification phase
   - Full Mode: PRD → Tech + UI (parallel) → Epic/Tasks
   - Quick Mode: `--skip-tech --skip-ui` for small requirements
   - Backend Only: `--skip-ui`
@@ -583,12 +605,12 @@ v4.1.0 merges flow-prd/flow-tech/flow-ui/flow-epic into a single `/flow-spec` co
 
 - **Simplified Workflows** (v4.1)
   ```
-  Quick (3 steps):    /flow-init --quick → /flow-spec --skip-tech --skip-ui → /flow-dev → /flow-release
-  Standard (4 steps): /flow-init → /flow-spec → /flow-dev → /flow-quality → /flow-release
-  Full (5 steps):     /flow-init → /flow-clarify → /flow-spec → /flow-dev → /flow-quality --full → /flow-release
+  Quick (3 steps):    /flow:init --quick → /flow:spec --skip-tech --skip-ui → /flow:dev → /flow:release
+  Standard (4 steps): /flow:init → /flow:spec → /flow:dev → /flow:verify → /flow:release
+  Full (5 steps):     /flow:init → /flow:spec → /flow:dev → /flow:verify --strict → /flow:release
   ```
 
-- **Deprecations**: `/flow-prd`, `/flow-tech`, `/flow-ui`, `/flow-epic` now deprecated (use `/flow-spec`)
+- **Deprecations**: `/flow-prd`, `/flow-tech`, `/flow-ui`, `/flow-epic` now deprecated (use `/flow:spec`)
 
 **📊 v4.1 Improvements**:
 | Metric | Before (v4.0) | After (v4.1) | Improvement |
@@ -681,9 +703,9 @@ v2.3.0 upgrades the Constitution from a "document" to an "executable discipline 
   - Phase 4: TDD Implementation
   - `flow-debugging` and `flow-tdd` skills
 
-- **Brainstorming Integration** - `/flow-init` now includes brainstorming
+- **Brainstorming Integration** - `/flow:init` now includes brainstorming
   - `BRAINSTORM.md` as requirement "North Star"
-  - `/flow-prd` requires BRAINSTORM alignment check
+  - `/flow:spec` requires BRAINSTORM alignment check
   - `flow-brainstorming` skill
 
 - **Pressure Testing Framework** - TDD for Skills
@@ -696,12 +718,12 @@ v2.3.0 upgrades the Constitution from a "document" to an "executable discipline 
   - All `superpowers:xxx` references replaced with local skills
 
 - **Ralph × Manus Integration** - Autonomous development with memory (NEW)
-  - Merged into `/flow-dev` (Autonomous by default)
+  - Merged into `/flow:dev` (Autonomous by default)
   - `flow-attention-refresh` skill with 4 refresh protocols
   - `ERROR_LOG.md` structured error tracking
   - `research/attempts/` failure trace recording
   - Stop Hook for self-referential loops
-  - Manus method in `/flow-init` Stage 2.5 Research
+  - Manus method in `/flow:init` Stage 2.5 Research
   - Target: ≥85% task completion rate without human intervention
 
 **📋 Constitution v2.1.0**:

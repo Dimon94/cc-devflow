@@ -207,7 +207,7 @@ ERROR: 无效的归档原因: cancelled
 ## 最佳实践
 
 ### 何时归档
-- ✅ 需求已完成并成功发布 (`/flow-release` 后)
+- ✅ 需求已完成并成功发布 (`/flow:release` 后)
 - ✅ 需求被明确取消或废弃
 - ✅ 需求被新需求完全取代
 
@@ -224,7 +224,7 @@ ERROR: 无效的归档原因: cancelled
 ## 与其他命令的关系
 
 ```text
-/flow:init → /flow:spec → /flow:dev → /flow:quality → /flow:release
+/flow:init → /flow:spec → /flow:dev → /flow:verify → /flow:release
                                                             ↓
                                                     /flow:archive ← 工作流终点
                                                             ↓

@@ -86,7 +86,7 @@ Hook 检测到 Task 工具调用
 | prd-writer | flow-spec | prd-writer.jsonl |
 | tech-architect | flow-spec | tech-architect.jsonl |
 | planner | flow-spec | planner.jsonl |
-| qa-tester | flow-quality | qa-tester.jsonl |
+| qa-tester | flow-verify | qa-tester.jsonl |
 
 ## ralph-loop.ts (v4.7 Team 模式)
 

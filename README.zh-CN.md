@@ -1,8 +1,8 @@
 # 🚀 cc-devflow
 
-> Claude Code 一键需求开发流系统
+> Claude Code Harness 主链需求开发流系统
 
-基于 Claude Code 官方子代理、钩子和设置机制构建的完整开发工作流系统。通过单一命令将需求从规划转变为代码交付。
+基于 Claude Code 官方子代理、钩子和设置机制构建的完整开发工作流系统。通过可恢复的命令链将需求从规划推进到代码交付。
 
 [中文文档](./README.zh-CN.md) | [English](./README.md)
 
@@ -10,17 +10,17 @@
 
 ## 🎯 一句话介绍
 
-通过 `/flow-new "REQ-123|功能|URLs"` 一键从 PRD 生成到代码交付的完整自动化工作流。
+基于 harness 的 5 阶段主链：`/flow:init` → `/flow:spec` → `/flow:dev` → `/flow:verify` → `/flow:release`。
 
 ---
 
 ## ✨ 核心特性
 
-- 🎯 **一键启动流程** - 单命令完成 PRD → 代码 → 测试 → 发布全流程
-- 🔄 **阶段化命令** - 8个独立阶段命令，精细化控制每个开发环节
+- 🎯 **Harness 主链** - 默认路径固定为 `/flow:init` → `/flow:spec` → `/flow:dev` → `/flow:verify` → `/flow:release`
+- 🔄 **NPM 命令链** - 流程命令统一映射到 `harness:*` 运行时操作，支持断点与恢复
 - 📋 **文档驱动** - 自动化 PRD → UI原型 → EPIC → TASKS → 实现链条
 - 📝 **模板驱动** - 自执行模板（PRD_TEMPLATE, EPIC_TEMPLATE, TASKS_TEMPLATE）
-- 🔄 **智能恢复** - `/flow-restart` 自动检测重启点，继续中断的开发
+- 🔄 **智能恢复** - `harness:resume` 基于 checkpoint 恢复中断任务
 - 🛡️ **质量闸** - 自动化 TypeScript 检查、测试、代码检查和安全扫描
 - 🤖 **子代理编排** - 12 个专业研究型代理负责不同开发阶段
 - 🎨 **UI原型生成** - 条件触发的HTML原型，融合艺术设计灵感
@@ -98,7 +98,7 @@ export SKIP_TDD_ENFORCER=1
 
 | 分类 | Skills | 用途 |
 |------|--------|------|
-| **Workflow** | flow-init, flow-spec, flow-dev, flow-quality, flow-release | 核心开发工作流 |
+| **Workflow** | flow-init, flow-spec, flow-dev, flow-verify, flow-release | 核心开发工作流 |
 | **Domain** | tdd, debugging, brainstorming, verification | 领域专业知识 |
 | **Guardrail** | constitution-guardian, tdd-enforcer | 实时合规检查 |
 | **Utility** | npm-release, skill-creator, writing-skills | 开发工具 |
@@ -195,7 +195,11 @@ cc-devflow adapt --cwd /path/to/project --platform cursor
 ### 第一个需求
 
 ```bash
-/flow-new "REQ-001|用户认证|https://docs.example.com/auth"
+/flow:init "REQ-001|用户认证|https://docs.example.com/auth"
+/flow:spec "REQ-001"
+/flow:dev "REQ-001"
+/flow:verify "REQ-001" --strict
+/flow:release "REQ-001"
 ```
 
 <details>
@@ -254,15 +258,16 @@ bash .claude/tests/constitution/run_all_constitution_tests.sh
 
 | 命令 | 用途 | 快速示例 | 详细文档 |
 |------|------|----------|----------|
-| `/flow-new` | 🎯 启动新需求 | `/flow-new "REQ-123\|功能"` | [→](docs/commands/flow-new.zh-CN.md) |
-| `/flow-init` | 📦 初始化需求 | `/flow-init "REQ-123\|功能"` | [→](docs/commands/flow-init.zh-CN.md) |
-| `/flow-clarify` | 🔎 澄清歧义 | `/flow-clarify "REQ-123"` | [→](.claude/commands/flow/clarify.md) |
-| `/flow-spec` | 📋 统一规格阶段 (v4.1) | `/flow-spec "REQ-123"` | [→](.claude/commands/flow/spec.md) |
-| `/flow-checklist` | ✅ 需求质量检查 | `/flow-checklist --type ux` | [→](.claude/commands/flow/checklist.md) |
-| `/flow-quality` | ✅ 统一质量验证 | `/flow-quality "REQ-123" --full` | [→](.claude/commands/flow/quality.md) |
-| `/flow-fix` | 🐛 系统化缺陷修复 | `/flow-fix "BUG-123\|描述"` | [→](.claude/commands/flow/fix.md) |
-| `/flow-verify` | 🔍 验证一致性 | `/flow-verify "REQ-123"` | [→](.claude/commands/flow/verify.md) |
-| `/flow-release` | 🚢 创建发布 | `/flow-release "REQ-123"` | [→](.claude/commands/flow/release.md) |
+| `/flow:init` | 📦 初始化需求上下文 | `/flow:init "REQ-123\|功能"` | [→](.claude/commands/flow/init.md) |
+| `/flow:spec` | 📋 生成任务清单 | `/flow:spec "REQ-123"` | [→](.claude/commands/flow/spec.md) |
+| `/flow:dev` | 🛠️ 分发并执行任务 | `/flow:dev "REQ-123"` | [→](.claude/commands/flow/dev.md) |
+| `/flow:verify` | ✅ 执行报告卡质量闸 | `/flow:verify "REQ-123" --strict` | [→](.claude/commands/flow/verify.md) |
+| `/flow:release` | 🚢 发布与收尾清理 | `/flow:release "REQ-123"` | [→](.claude/commands/flow/release.md) |
+| `/flow:fix` | 🐛 系统化缺陷修复 | `/flow:fix "BUG-123\|描述"` | [→](.claude/commands/flow/fix.md) |
+| `/flow:new` | ⚠️ 已废弃别名 | 改用 `/flow:init` 主链 | [→](.claude/commands/flow/new.md) |
+| `/flow:clarify` | ⚠️ 已废弃 | 合并入 `/flow:spec` | [→](.claude/commands/flow/clarify.md) |
+| `/flow:checklist` | ⚠️ 已废弃 | 改用 `/flow:verify --strict` | [→](.claude/commands/flow/checklist.md) |
+| `/flow:quality` | ⚠️ 已废弃 | 改用 `/flow:verify` | [→](.claude/commands/flow/quality.md) |
 
 📚 [完整命令参考](docs/commands/README.zh-CN.md)
 
@@ -275,16 +280,15 @@ bash .claude/tests/constitution/run_all_constitution_tests.sh
 ├─ 设计系统架构？ → /core-architecture
 ├─ 建立编码规范？ → /core-guidelines
 ├─ 建立设计风格指南？ → /core-style
-├─ 启动全新功能开发？ → /flow-new "REQ-123|功能|URLs"
-├─ 仅创建需求目录？ → /flow-init "REQ-123|功能"
-├─ 澄清模糊需求？ → /flow-clarify "REQ-123"
-├─ 验证需求质量？ → /flow-checklist --type ux,api,security
-├─ 开发中断需要继续？ → /flow-restart "REQ-123"
-├─ 检查开发进度？ → /flow-status REQ-123
-├─ 发现文档不一致？ → /flow-verify "REQ-123"
-├─ 开发完成需要验证？ → /flow-quality "REQ-123" --full
-├─ 修复生产 Bug？ → /flow-fix "BUG-001|描述"
-└─ 准备发布？ → /flow-release "REQ-123"
+├─ 启动需求交付？ → /flow:init "REQ-123|功能|URLs"
+├─ 生成任务清单？ → /flow:spec "REQ-123"
+├─ 执行任务？ → /flow:dev "REQ-123"
+├─ 严格质量闸？ → /flow:verify "REQ-123" --strict
+├─ 开发中断需要继续？ → /flow:restart "REQ-123"
+├─ 检查开发进度？ → /flow:status REQ-123
+├─ 任意阶段复检一致性？ → /flow:verify "REQ-123"
+├─ 修复生产 Bug？ → /flow:fix "BUG-001|描述"
+└─ 准备发布？ → /flow:release "REQ-123"
 ```
 </details>
 
@@ -308,44 +312,34 @@ graph TB
     CoreGuidelines --> ReqLevel
     CoreStyle --> ReqLevel
 
-    ReqLevel([需求级开发流程]) --> FlowInit["/flow-init<br/>research.md & BRAINSTORM.md"]
+    ReqLevel([需求级开发流程]) --> FlowInit["/flow:init<br/>harness:init + harness:pack"]
+    FlowInit --> FlowSpec["/flow:spec<br/>harness:plan<br/>task-manifest"]
+    FlowSpec --> FlowDev["/flow:dev<br/>harness:dispatch/resume<br/>runtime-events"]
+    FlowDev --> FlowVerify["/flow:verify<br/>harness:verify<br/>report-card"]
+    FlowVerify --> FlowRelease["/flow:release<br/>harness:release/janitor<br/>release-note"]
+    FlowRelease --> End([发布完成])
 
-    FlowInit --> FlowClarify["/flow-clarify<br/>clarifications/*.md<br/>可选"]
-    FlowClarify --> FlowSpec["/flow-spec (v4.1)<br/>PRD → Tech+UI (并行) → Epic<br/>统一规格阶段"]
-    FlowInit -.->|跳过澄清| FlowSpec
-
-    FlowSpec --> FlowDev["/flow-dev<br/>TASKS.md 执行<br/>TDD 强制"]
-
-    FlowDev --> FlowQuality["/flow-quality<br/>快速/完整验证<br/>规格 + 质量 + 安全"]
-
-    FlowQuality --> FlowRelease["/flow-release<br/>PR 创建 & 部署"]
-
-    FlowRelease --> FlowVerify["/flow-verify<br/>一致性检查"]
-
-    FlowVerify --> End([发布完成])
-
-    FlowVerify -.->|可在任意阶段调用| ReqLevel
+    FlowVerify -.->|可在任意阶段重跑| ReqLevel
 
     style ProjectLevel fill:#e1f5ff
     style ReqLevel fill:#fff4e1
     style FlowInit fill:#e8f5e9
-    style FlowClarify fill:#fff9c4
     style FlowSpec fill:#e8f5e9
     style FlowDev fill:#f3e5f5
-    style FlowQuality fill:#fce4ec
+    style FlowVerify fill:#fce4ec
     style FlowRelease fill:#e0f2f1
-    style FlowVerify fill:#e3f2fd
+    style End fill:#e3f2fd
 ```
 
 **流程说明**:
 - **项目级命令**（浅蓝色）：项目初始化时执行一次，建立全局标准（SSOT）
 - **需求级命令**（浅橙色）：每个需求（REQ-XXX）执行一次
-- **统一 /flow-spec** (v4.1)：替代 flow-prd/flow-tech/flow-ui/flow-epic，支持并行执行
-- **统一质量验证** (v3.0.0)：`/flow-quality --full` 合并规格合规、代码质量与安全检查
-- **可选步骤**（黄色）：`/flow-clarify` 为可选步骤，需求清晰时可跳过
-- **质量闸门**：每个阶段都有入口/出口闸门，确保文档质量和 Constitution 合规性
-- **TDD 强制执行**：`/flow-dev` 严格强制执行测试驱动开发顺序
-- **一致性检查**：`/flow-verify` 可在任意阶段调用，确保文档一致性
+- **默认主链**：`/flow:init` → `/flow:spec` → `/flow:dev` → `/flow:verify` → `/flow:release`
+- **Harness 运行时链路**：各阶段统一委托 `npm run harness:*`，并持久化 checkpoint
+- **统一 /flow:spec**：将规格阶段收敛为单一任务清单产出
+- **报告卡质量闸**：`/flow:verify --strict` 不通过时阻断发布
+- **TDD 强制执行**：`/flow:dev` 保留 fail-first 检查
+- **废弃命令**：`/flow:new`、`/flow:clarify`、`/flow:checklist`、`/flow:quality` 仅保留迁移提示
 
 ---
 
@@ -399,7 +393,7 @@ devflow/
 ### 质量闸
 
 - Pre-push Guard（TypeScript、测试、代码检查、安全、构建）
-- Checklist Gate（`/flow-checklist` 80% 完成度阈值，在 `/flow-epic` 前执行）
+- Report Card Gate（`/flow:verify --strict`，在 `/flow:release` 前执行）
 - Constitution Compliance（每个阶段强制执行）
 - TDD Checkpoint（TEST VERIFICATION CHECKPOINT）
 - Guardrail Hooks（PreToolUse 实时阻止不合规操作）
@@ -488,7 +482,36 @@ bash .claude/tests/run-all-tests.sh --scripts
 
 ## 📝 版本历史
 
-### v4.7.0 (2026-02-07) - 最新版本
+说明：v6.0.0 之前的条目保留当时的命令写法，用于历史追踪。
+
+### v6.0.0 (2026-02-18) - 最新版本
+
+**🧩 Harness-First 主链：默认流程收敛为可审计运行时**
+
+v6.0.0 将 cc-devflow 收敛为单一默认路径，并由内部 runtime 引擎驱动：
+
+- **默认命令链**
+  - `/flow:init` → `/flow:spec` → `/flow:dev` → `/flow:verify` → `/flow:release`
+  - 每个阶段都映射到 `npm run harness:*`，保证流程可恢复、可追踪
+
+- **核心运行时产物**
+  - `context-package.md` + `harness-state.json`：初始化状态
+  - `task-manifest.json` + `runtime-events.jsonl`：执行轨迹
+  - `report-card.json` + `release-note.md`：质量与发布证据
+
+- **废弃命令迁移**
+  - `/flow:new` → 改为显式执行 5 阶段主链
+  - `/flow:clarify` → 合并进 `/flow:spec` 规划闭环
+  - `/flow:checklist`、`/flow:quality` → 统一迁移到 `/flow:verify`
+
+**📊 v6.0 改进指标**:
+| 指标 | 之前 | 之后 | 改善 |
+|------|------|------|------|
+| 默认需求命令路径 | 8+ 条混合路径 | 固定 5 阶段主链 | 显著简化 |
+| 中断恢复能力 | 命令分散实现 | 统一 `harness:resume` | 更稳定 |
+| 质量证据 | 分散产物 | 单一 report-card 闸门 | 可审计 |
+
+### v4.7.0 (2026-02-07)
 
 **🤝 Claude Team 集成：多 Agent 并行协作**
 
@@ -549,8 +572,8 @@ v4.3.0 引入 Git Worktree 集成，支持多个隔离的 Claude Code 会话并�
   - Shell 别名模板 (za/zl/zm/zw)
 
 - **修改的命令**
-  - `/flow-init` - 默认 worktree 模式，`--branch-only` 兼容旧模式
-  - `/flow-release` - 自动清理 worktree
+  - `/flow:init` - 默认 worktree 模式，`--branch-only` 兼容旧模式
+  - `/flow:release` - 自动清理 worktree
 
 **📊 v4.3 改进指标**:
 | 指标 | 之前 | 之后 | 改善 |
@@ -561,11 +584,11 @@ v4.3.0 引入 Git Worktree 集成，支持多个隔离的 Claude Code 会话并�
 
 ### v4.1.0 (2026-02-07)
 
-**🎯 统一规格阶段：/flow-spec 命令**
+**🎯 统一规格阶段：/flow:spec 命令**
 
-v4.1.0 将 flow-prd/flow-tech/flow-ui/flow-epic 合并为单一 `/flow-spec` 命令，支持并行执行：
+v4.1.0 将 flow-prd/flow-tech/flow-ui/flow-epic 合并为单一 `/flow:spec` 命令，支持并行执行：
 
-- **统一 /flow-spec 命令** - 一个命令完成整个规格阶段
+- **统一 /flow:spec 命令** - 一个命令完成整个规格阶段
   - 完整模式：PRD → Tech + UI（并行）→ Epic/Tasks
   - 快速模式：`--skip-tech --skip-ui` 适用于小需求
   - 仅后端：`--skip-ui`
@@ -577,12 +600,12 @@ v4.1.0 将 flow-prd/flow-tech/flow-ui/flow-epic 合并为单一 `/flow-spec` 命
 
 - **简化工作流** (v4.1)
   ```
-  精简 (3 步):   /flow-init --quick → /flow-spec --skip-tech --skip-ui → /flow-dev → /flow-release
-  标准 (4 步):   /flow-init → /flow-spec → /flow-dev → /flow-quality → /flow-release
-  完整 (5 步):   /flow-init → /flow-clarify → /flow-spec → /flow-dev → /flow-quality --full → /flow-release
+  精简 (3 步):   /flow:init --quick → /flow:spec --skip-tech --skip-ui → /flow:dev → /flow:release
+  标准 (4 步):   /flow:init → /flow:spec → /flow:dev → /flow:verify → /flow:release
+  完整 (5 步):   /flow:init → /flow:spec → /flow:dev → /flow:verify --strict → /flow:release
   ```
 
-- **废弃命令**：`/flow-prd`、`/flow-tech`、`/flow-ui`、`/flow-epic` 已废弃（请使用 `/flow-spec`）
+- **废弃命令**：`/flow-prd`、`/flow-tech`、`/flow-ui`、`/flow-epic` 已废弃（请使用 `/flow:spec`）
 
 **📊 v4.1 改进指标**:
 | 指标 | 之前 (v4.0) | 之后 (v4.1) | 改善 |
@@ -675,9 +698,9 @@ v2.3.0 将 Constitution 从"文档"升级为"可执行纪律系统"，借鉴 sup
   - 阶段 4：TDD 实现
   - `flow-debugging` 和 `flow-tdd` 技能
 
-- **头脑风暴集成** - `/flow-init` 现在包含头脑风暴
+- **头脑风暴集成** - `/flow:init` 现在包含头脑风暴
   - `BRAINSTORM.md` 作为需求"北极星"
-  - `/flow-prd` 需要 BRAINSTORM 对齐检查
+  - `/flow:spec` 需要 BRAINSTORM 对齐检查
   - `flow-brainstorming` 技能
 
 - **压力测试框架** - 技能的 TDD
@@ -690,12 +713,12 @@ v2.3.0 将 Constitution 从"文档"升级为"可执行纪律系统"，借鉴 sup
   - 所有 `superpowers:xxx` 引用替换为本地技能
 
 - **Ralph × Manus 集成** - 有记忆的自主开发（新增）
-  - 合并入 `/flow-dev` (默认自主模式)
+  - 合并入 `/flow:dev` (默认自主模式)
   - `flow-attention-refresh` 技能提供 4 个刷新协议
   - `ERROR_LOG.md` 结构化错误追踪
   - `research/attempts/` 失败痕迹记录
   - Stop Hook 实现自引用循环
-  - `/flow-init` Stage 2.5 融入 Manus 研究方法
+  - `/flow:init` Stage 2.5 融入 Manus 研究方法
   - 目标：无人工干预任务完成率 ≥85%
 
 **📋 Constitution v2.1.0**:

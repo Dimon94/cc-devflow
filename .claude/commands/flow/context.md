@@ -102,7 +102,7 @@ Overall: 12/13 paths valid (92%)
 
 ### With flow-init
 
-When `/flow-init` creates a new requirement, it automatically runs:
+When `/flow:init` creates a new requirement, it automatically runs:
 ```bash
 /flow-context init {REQ-ID} --type {detected-type}
 ```

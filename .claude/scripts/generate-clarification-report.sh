@@ -288,21 +288,21 @@ EOF
         cat << EOF
 ✅ **Clarification complete**. All ${questions_answered} questions answered.
 
-Recommended next command: \`/flow-prd ${req_id}\`
+Recommended next command: \`/flow:spec ${req_id}\`
 EOF
     elif [[ "$questions_count" -eq 0 ]]; then
         cat << EOF
 ✅ **No critical ambiguities detected**. research.md is sufficiently specified.
 
-Recommended next command: \`/flow-prd ${req_id}\`
+Recommended next command: \`/flow:spec ${req_id}\`
 EOF
     else
         cat << EOF
 ⚠️ **Clarification incomplete**. ${questions_answered}/${questions_count} questions answered.
 
 Options:
-1. Continue with \`/flow-clarify ${req_id}\` to complete remaining questions
-2. Proceed with \`/flow-prd ${req_id}\` (acceptable risk if remaining items are low-impact)
+1. Continue with \`/flow:spec ${req_id} --overwrite\` to complete remaining questions
+2. Proceed with \`/flow:spec ${req_id}\` (acceptable risk if remaining items are low-impact)
 EOF
     fi
 

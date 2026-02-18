@@ -12,7 +12,7 @@
 ```markdown
 ## [TIMESTAMP] E###: TITLE
 
-**Phase**: flow-dev / T### 或 flow-qa / 测试名
+**Phase**: flow:dev / T### 或 flow:verify / 测试名
 **Error Type**: Test Failure | Build Error | Runtime Error | Type Error | Lint Error
 **Error Message**:
 \`\`\`
@@ -30,7 +30,7 @@
 
 ## [2026-01-08T10:30:00] E001: Test Failure - Email Validation
 
-**Phase**: flow-dev / T003
+**Phase**: flow:dev / T003
 **Error Type**: Test Failure
 **Error Message**:
 ```

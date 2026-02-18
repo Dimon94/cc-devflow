@@ -303,7 +303,7 @@ main() {
   echo "════════════════════════════════════════════════════════════════════════"
   if [[ $total_errors -eq 0 ]]; then
     echo "✅ ALL VALIDATIONS PASSED"
-    echo "research.md is ready for /flow-prd"
+    echo "research.md is ready for /flow:spec"
     echo "════════════════════════════════════════════════════════════════════════"
     return 0
   else

@@ -2,7 +2,7 @@
 
 ## 问题描述
 
-在执行 `/flow-dev` 时，主代理完成了代码实现，但没有同步更新 TASKS.md 中的待办事项复选框。这导致：
+在执行 `/flow:dev` 时，主代理完成了代码实现，但没有同步更新 TASKS.md 中的待办事项复选框。这导致：
 
 - ❌ TASKS.md 显示任务未完成 `[ ]`，但代码已经实现
 - ❌ 进度追踪不准确，无法知道真实进度
@@ -13,7 +13,7 @@
 
 ### 1. 强制执行标记流程
 
-在 `/flow-dev` 命令文档中，已经强化了任务完成标记的要求：
+在 `/flow:dev` 命令文档中，已经强化了任务完成标记的要求：
 
 ```bash
 # 每完成一个任务后，必须立即执行
@@ -73,7 +73,7 @@ bash .claude/scripts/sync-task-marks.sh --dry-run
 
 ```bash
 # 1. 开始开发
-/flow-dev "REQ-123"
+/flow:dev "REQ-123"
 
 # 2. Claude 完成任务 T001
 #    (写代码、运行测试等)
@@ -223,7 +223,7 @@ bash .claude/scripts/sync-task-marks.sh --auto-mark
 2. **使用脚本**: 始终用脚本，不要手动编辑 TASKS.md
 3. **验证输出**: 检查脚本输出确认标记成功
 4. **定期检查**: 在开发过程中定期运行 `sync-task-marks.sh --dry-run`
-5. **Exit Gate**: 在 `/flow-dev` 结束前验证所有任务已标记
+5. **Exit Gate**: 在 `/flow:dev` 结束前验证所有任务已标记
 
 ### DON'T ❌
 
@@ -333,6 +333,6 @@ bash .claude/tests/scripts/test_sync_task_marks.sh
 
 - [mark-task-complete.sh 源码](.claude/scripts/mark-task-complete.sh)
 - [sync-task-marks.sh 源码](.claude/scripts/sync-task-marks.sh)
-- [/flow-dev 命令文档](.claude/commands/flow-dev.md)
+- [/flow:dev 命令文档](.claude/commands/flow/dev.md)
 - [TASKS_TEMPLATE.md 模板](.claude/docs/templates/TASKS_TEMPLATE.md)
 - [测试框架](.claude/tests/test-framework.sh)

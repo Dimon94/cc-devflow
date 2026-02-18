@@ -79,4 +79,4 @@ $ARGUMENTS = "[--article I] [--verify] [--impact-report] [--amend --proposal pat
 
 ## 下一步
 - 需要向项目传播修订时，先运行 `--impact-report`，与团队确认后再 `--apply`。
-- 应用后建议运行 `/flow-verify --all` 确认所有需求遵循最新宪法。
+- 应用后建议运行 `/flow:verify --strict` 确认所有需求遵循最新宪法。

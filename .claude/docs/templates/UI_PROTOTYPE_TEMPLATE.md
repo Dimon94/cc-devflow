@@ -1254,7 +1254,7 @@ Found keywords: 0 matches for "用户界面|前端|Web页面|UI"
 Recommendation:
   1. This appears to be a backend-only requirement
   2. Skipping UI prototype generation
-  3. Continuing to /flow-epic
+  3. Continuing within /flow:spec
 
 Action: EXIT with status "ui_skipped"
 ```
@@ -1310,17 +1310,17 @@ Recovery:
 
 ### Workflow Position:
 ```text
-/flow-prd  → PRD.md 生成完成
+/flow:spec → PRD.md 生成完成
     ↓
-/flow-ui   → 检测UI需求 → 生成UI_PROTOTYPE.html ← YOU ARE HERE
+/flow:spec → 检测UI需求 → 生成UI_PROTOTYPE.html ← YOU ARE HERE
     ↓
-/flow-epic → 参考UI原型生成EPIC.md和TASKS.md
+/flow:spec → 参考UI原型生成EPIC.md和TASKS.md
     ↓
-/flow-dev  → 基于UI原型实现代码
+/flow:dev  → 基于UI原型实现代码
 ```
 
 ### Conditional Trigger Logic:
-在 `/flow-new` 或 `/flow-prd` 完成后自动执行:
+在 `/flow:spec` 执行期间自动触发:
 
 ```bash
 # 检测是否需要UI原型
@@ -1328,11 +1328,10 @@ has_ui_keywords=$(grep -iE "用户界面|前端|Web页面|UI|界面设计|交互
 has_frontend_stack=$(ls -d src/components 2>/dev/null || ls package.json 2>/dev/null)
 
 if [[ -n "$has_ui_keywords" || -n "$has_frontend_stack" ]]; then
-    echo "✅ UI requirements detected, triggering /flow-ui"
-    /flow-ui "$REQ_ID"
+    echo "✅ UI requirements detected, continue UI prototype generation in /flow:spec"
 else
     echo "ℹ️  No UI requirements detected, skipping UI prototype"
-    # 直接进入 /flow-epic
+    # 继续 /flow:spec 后续任务规划
 fi
 ```
 

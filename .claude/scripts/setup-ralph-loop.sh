@@ -91,14 +91,14 @@ fi
 REQ_DIR="devflow/requirements/${REQ_ID}"
 if [[ ! -d "$REQ_DIR" ]]; then
   echo "❌ Error: Requirement directory not found: $REQ_DIR" >&2
-  echo "   Run /flow-init first to create the requirement structure" >&2
+  echo "   Run /flow:init first to create the requirement structure" >&2
   exit 1
 fi
 
 # Check if TASKS.md exists
 if [[ ! -f "${REQ_DIR}/TASKS.md" ]]; then
   echo "❌ Error: TASKS.md not found in $REQ_DIR" >&2
-  echo "   Run /flow-epic first to generate tasks" >&2
+  echo "   Run /flow:spec first to generate tasks" >&2
   exit 1
 fi
 

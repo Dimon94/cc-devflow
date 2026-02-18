@@ -2,7 +2,7 @@
 # ============================================================================
 # checklist-errors.sh
 # ============================================================================
-# Error codes and messages for /flow-checklist command and related hooks
+# Error codes and messages for checklist gate and related hooks
 #
 # Usage: source this file in scripts that need checklist error handling
 #
@@ -51,7 +51,7 @@ print_checklist_error() {
             echo "ERROR: $code" >&2
             echo "PRD.md not found in requirement directory." >&2
             echo "" >&2
-            echo "Run /flow-prd first." >&2
+            echo "Run /flow:spec first." >&2
             ;;
         "$ERR_INVALID_TYPE")
             echo "ERROR: $code" >&2
@@ -63,7 +63,7 @@ print_checklist_error() {
             echo "ERROR: $code" >&2
             echo "No checklists found in checklists/ directory." >&2
             echo "" >&2
-            echo "Run /flow-checklist --type <type> first." >&2
+            echo "Run /flow:verify --strict first." >&2
             ;;
         "$ERR_ITEM_NOT_FOUND")
             echo "WARNING: $code" >&2
@@ -73,7 +73,7 @@ print_checklist_error() {
             echo "ERROR: $code" >&2
             echo "Checklist completion $extra" >&2
             echo "" >&2
-            echo "Run /flow-checklist --status to review incomplete items." >&2
+            echo "Run /flow:verify --strict to review incomplete items." >&2
             echo "Or use --skip-gate --reason \"your reason\" to bypass." >&2
             ;;
         "$ERR_SKIP_REASON_REQUIRED")

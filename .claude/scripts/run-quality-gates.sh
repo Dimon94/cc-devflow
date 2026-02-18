@@ -25,7 +25,7 @@ Usage: run-quality-gates.sh <phase> [--json] [--verbose]
 Execute quality gate verification commands for a phase.
 
 Arguments:
-    phase       Phase name (flow-dev, flow-review, flow-quality, flow-qa, flow-release)
+    phase       Phase name (flow-dev, flow-review, flow-quality, flow-release)
 
 Options:
     --json      Output results as JSON

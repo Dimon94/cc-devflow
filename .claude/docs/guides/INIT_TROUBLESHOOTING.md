@@ -1,6 +1,6 @@
 # Flow-Init Troubleshooting Guide
 
-> Quick reference for `/flow-init` errors and recovery
+> Quick reference for `/flow:init` errors and recovery
 
 ---
 
@@ -18,7 +18,7 @@
 ```bash
 ❌ ERROR: devflow/requirements/REQ-123/ already exists
 ```
-**Fix**: 使用不同 ID 或 `/flow-init "REQ-123|..." --force` 强制覆盖
+**Fix**: 使用不同 ID 或 `/flow:init "REQ-123|..." --force` 强制覆盖
 
 ---
 
@@ -53,7 +53,7 @@
 ```bash
 rm -rf devflow/requirements/REQ-123/
 git branch -D feature/REQ-123-*
-/flow-init "REQ-123|Title|URLs"
+/flow:init "REQ-123|Title|URLs"
 ```
 
 ### Recover from Interruption
@@ -69,7 +69,7 @@ jq '.phase0_complete = true' devflow/requirements/REQ-123/orchestration_status.j
 mv tmp.json devflow/requirements/REQ-123/orchestration_status.json
 
 # 继续下一阶段
-/flow-prd "REQ-123"
+/flow:spec "REQ-123"
 ```
 
 ### Rebuild Research.md from Tasks.json
@@ -95,8 +95,8 @@ bash .claude/scripts/validate-research.sh "$REQ_DIR"
 
 ### Command-Line Flags
 ```bash
-/flow-init "REQ-123|..." --force        # 强制覆盖现有需求
-/flow-init --interactive                # 交互式输入模式
+/flow:init "REQ-123|..." --force        # 强制覆盖现有需求
+/flow:init --interactive                # 交互式输入模式
 ```
 
 ---
@@ -104,7 +104,7 @@ bash .claude/scripts/validate-research.sh "$REQ_DIR"
 ## FAQ
 
 **Q: 如何跳过 MCP 研究阶段？**
-A: `SKIP_MCP_RESEARCH=1 /flow-init "REQ-123|..."`
+A: `SKIP_MCP_RESEARCH=1 /flow:init "REQ-123|..."`
 
 **Q: Context Loading 阶段找不到 ROADMAP.md 怎么办？**
 A: 可选步骤，不影响执行。如需路线图，先运行 `/core-roadmap`

@@ -466,8 +466,8 @@ Choice: [user input]
 
 ## Related Commands
 
-- `/flow-init` - Initialize new requirement (can call /core-guidelines)
-- `/flow-tech` - Technical design (analyzes tech stack similarly)
+- `/flow:init` - Initialize new requirement (can call /core-guidelines)
+- `/flow:spec` - Unified specification and technical planning
 
 ---
 

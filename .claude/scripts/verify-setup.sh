@@ -31,7 +31,7 @@ require_file() {
 require_dir "$CLAUDE_DIR/commands"
 require_dir "$CLAUDE_DIR/skills"
 require_dir "$CLAUDE_DIR/scripts"
-require_file "$CLAUDE_DIR/commands/flow-new.md"
+require_file "$CLAUDE_DIR/commands/flow/new.md"
 require_file "$CLAUDE_DIR/skills/cc-devflow-orchestrator/SKILL.md"
 
 echo "cc-devflow setup OK."

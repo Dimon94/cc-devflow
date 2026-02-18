@@ -1,16 +1,16 @@
 # Flow-Init Execution Flow Template
 
-> Detailed stages for `/flow-init` requirement initialization
+> Detailed stages for `/flow:init` requirement initialization
 
 <!-- ============================================================
      调用上下文声明 (Invocation Context Declaration)
      ============================================================
 
-本模板由 `/flow-init` 命令通过 {TEMPLATE:flow} 引用加载。
+本模板由 `/flow:init` 命令通过 {TEMPLATE:flow} 引用加载。
 
 模板中的 {SCRIPT:xxx} 占位符引用 flow-init.md 头文件中的 scripts 定义：
 ```yaml
-# 来源: .claude/commands/flow-init.md 头文件
+# 来源: .claude/commands/flow/init.md 头文件
 scripts:
   create: .claude/scripts/create-requirement.sh
   prereq: .claude/scripts/check-prerequisites.sh

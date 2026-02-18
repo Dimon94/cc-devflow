@@ -1,6 +1,6 @@
-# Flow-New Troubleshooting Guide
+# Mainline Troubleshooting Guide
 
-> Quick reference for `/flow-new` errors and recovery
+> Quick reference for canonical `/flow:*` delivery errors and recovery.
 
 ---
 
@@ -8,144 +8,92 @@
 
 ### E1: Stage Command Not Found
 ```bash
-❌ ERROR: Command /flow-init not found
+❌ ERROR: Command /flow:init not found
 ```
-**Fix**: `ls .claude/commands/flow-*.md` → 检查缺失文件 → `git checkout HEAD -- .claude/commands/`
-
----
+**Fix**: 检查 `.claude/commands/flow/` 是否完整；确认当前分支已同步最新命令目录。
 
 ### E2: Status File Corrupted
 ```bash
 ❌ ERROR: Invalid orchestration_status.json
 ```
 **Diagnose**: `jq . devflow/requirements/REQ-123/orchestration_status.json`
-**Fix**: 从模板重建或 `/flow-restart "REQ-123"`
-
----
+**Fix**: 重建状态文件后执行 `/flow:status "REQ-123"` 并从建议阶段恢复。
 
 ### E3: Interrupted, Cannot Resume
 ```bash
-❌ ERROR: Requirement REQ-123 already exists
+❌ ERROR: development_in_progress but checkpoint missing
 ```
-**Diagnose**: `/flow-status REQ-123`
-**Fix**: `/flow-restart "REQ-123"` 或手动从特定阶段继续
+**Diagnose**: `/flow:status "REQ-123"`
+**Fix**: `/flow:dev "REQ-123" --resume`
 
----
-
-### E4: UI Detection False Positive
+### E4: Task Manifest Missing
 ```bash
-✅ UI原型生成完成 (但项目是纯后端)
+❌ ERROR: TASKS.md not found
 ```
-**Fix**: 在 PRD.md 开头添加 `## 项目类型声明\n**纯后端 API 项目**，无 UI 需求。`
+**Fix**: 重新执行 `/flow:spec "REQ-123"` 生成规划产物。
 
----
-
-### E5: Epic 未覆盖所有技术层
+### E5: Verify Gate Failure
 ```bash
-⚠️ WARNING: TASKS.md 未覆盖 TECH_DESIGN.md 所有层
-```
-**Diagnose**: `grep "## Section" devflow/requirements/REQ-123/TECH_DESIGN.md`
-**Fix**: 手动补充缺失任务或重新生成 `/flow-epic "REQ-123"`
-
----
-
-### E6: QA Gate Failure
-```bash
-❌ 代码覆盖率: 65% (要求 ≥ 80%)
-❌ 安全问题: 2 个高危漏洞
+❌ Coverage below threshold
+❌ High severity security issue
 ```
 **Fix**:
-- 补充测试: `npm test -- --coverage --verbose` → 识别未覆盖模块
-- 修复漏洞: 查看 `SECURITY_REPORT.md` → 修复代码 → 重新运行 `/flow-qa "REQ-123" --full`
+- 修复代码与测试后重跑 `/flow:verify "REQ-123" --strict`
+- 通过后再执行 `/flow:release "REQ-123"`
 
----
-
-### E7: Build Failure
+### E6: Release Blocked
 ```bash
-❌ error TS2345: Argument of type 'string | undefined'...
+❌ Missing strict verify report-card
 ```
-**Fix**: `npm run typecheck` → 修复类型错误 → `npm run build`
-
----
-
-### E8: PR Creation Failed
-```bash
-❌ gh pr create: HTTP 403: Resource not accessible
-```
-**Fix**: `gh auth login` → 重新认证 → `/flow-release "REQ-123"`
+**Fix**: 先执行 `/flow:verify "REQ-123" --strict`，再执行 `/flow:release "REQ-123"`。
 
 ---
 
 ## Recovery Procedures
 
-### Complete Restart
+### Full Rebuild
 ```bash
 rm -rf devflow/requirements/REQ-123/
-git branch -D feature/REQ-123-*
-/flow-new "REQ-123|Title|URLs"
+/flow:init "REQ-123|Title|URLs"
+/flow:spec "REQ-123"
+/flow:dev "REQ-123"
+/flow:verify "REQ-123" --strict
 ```
 
-### Partial Resume (从特定任务继续)
+### Resume From Current Stage
 ```bash
-# 检查任务状态
-bash .claude/scripts/check-task-status.sh --verbose
-
-# 从特定任务继续
-/flow-dev "REQ-123" --task T008
+/flow:status "REQ-123"
+/flow:dev "REQ-123" --resume
 ```
 
-### State File Rebuild
+### State File Rebuild (Minimal)
 ```bash
 REQ_DIR="devflow/requirements/REQ-123"
-HAS_PRD=$([ -f "$REQ_DIR/PRD.md" ] && echo true || echo false)
-HAS_TECH=$([ -f "$REQ_DIR/TECH_DESIGN.md" ] && echo true || echo false)
-
-# 重建状态文件
-cat > $REQ_DIR/orchestration_status.json <<EOF
+cat > "$REQ_DIR/orchestration_status.json" <<EOF_JSON
 {
   "reqId": "REQ-123",
-  "status": "$( [ "$HAS_TECH" = "true" ] && echo "tech_complete" || echo "prd_complete" )",
-  "prd_complete": $HAS_PRD,
-  "tech_design_complete": $HAS_TECH,
-  "epic_complete": false,
-  "dev_complete": false
+  "status": "spec_complete",
+  "phase": "planning",
+  "spec_complete": true,
+  "development_complete": false,
+  "quality_complete": false,
+  "release_complete": false
 }
-EOF
+EOF_JSON
 
-jq . $REQ_DIR/orchestration_status.json  # 验证
-/flow-restart "REQ-123"
-```
-
----
-
-## Configuration
-
-### Environment Variables
-| Variable | Default | Purpose |
-|----------|---------|---------|
-| `SKIP_UI_DETECTION` | `false` | 强制跳过 UI 生成 |
-| `COVERAGE_THRESHOLD` | `80` | 代码覆盖率要求 |
-| `FLOW_DEBUG` | `false` | 启用调试日志 |
-
-### Command-Line Flags
-```bash
-/flow-new "REQ-123|..." --skip-ui         # 跳过 UI
-/flow-new "REQ-123|..." --resume          # 恢复执行
+jq . "$REQ_DIR/orchestration_status.json"
+/flow:status "REQ-123"
 ```
 
 ---
 
 ## FAQ
 
-**Q: 可以在 flow-new 执行中暂停吗？**
-A: Ctrl+C 中断 → `/flow-status REQ-123` 查看状态 → `/flow-restart "REQ-123"` 恢复
+**Q: 如何从特定阶段重启？**  
+A: 用 `/flow:status` 先确认状态，然后执行对应阶段命令（通常是 `/flow:dev --resume` 或 `/flow:verify --strict`）。
 
-**Q: 如何从特定阶段重新开始？**
-A: 使用对应阶段命令重新执行，如 `/flow-prd "REQ-123"` 或 `/flow-epic "REQ-123"`
+**Q: 什么时候需要重跑 `/flow:spec`？**  
+A: `TASKS.md` 缺失、规格有重大变更、或 manifest 与实现明显漂移时。
 
-**Q: flow-new 支持 BUG 修复吗？**
-A: 不支持，BUG 使用 `/flow-fix "BUG-456|描述"`
-
----
-
-**Last Updated**: 2025-12-19
+**Q: 可以继续使用 `/flow-new` 吗？**  
+A: 不建议。`/flow-new` 仅兼容保留，主链是 `/flow:init -> /flow:spec -> /flow:dev -> /flow:verify -> /flow:release`。

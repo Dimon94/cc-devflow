@@ -78,7 +78,7 @@ validate_req_id "$REQ_ID" || exit 1
 # Ensure the requirement directory exists
 if [[ ! -d "$REQ_DIR" ]]; then
     echo "ERROR: Requirement directory not found: $REQ_DIR" >&2
-    echo "Run /flow-init first to create the requirement structure." >&2
+    echo "Run /flow:init first to create the requirement structure." >&2
     exit 1
 fi
 

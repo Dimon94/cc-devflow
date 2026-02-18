@@ -88,7 +88,7 @@ Workspace created for $DEVELOPER.
 
 ### Next Steps
 
-1. Start a requirement with \`/flow-init "REQ-XXX|Title"\`
+1. Start a requirement with \`/flow:init "REQ-XXX|Title"\`
 2. Use \`/flow-workspace record "message"\` to track progress
 3. Use \`/flow-workspace start\` to recover context in new sessions
 
@@ -113,5 +113,5 @@ echo "Files created:"
 ls -la "$DEV_WORKSPACE"
 echo ""
 echo "Next steps:"
-echo "  1. Start a requirement: /flow-init \"REQ-XXX|Title\""
+echo "  1. Start a requirement: /flow:init \"REQ-XXX|Title\""
 echo "  2. Record progress: /flow-workspace record \"message\""

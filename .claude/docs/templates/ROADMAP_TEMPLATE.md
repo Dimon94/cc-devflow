@@ -234,7 +234,7 @@ _填充规则:_
 - Feature: 功能简短标题
 - Derived From: 来源需求 ID (REQ-001) 或其他来源 (Tech Stack, User Feedback)
 - Status: Planned | In Progress | Completed | Blocked | Cancelled
-- Mapped REQ: 关联的正式需求 ID（初始为 "-"，运行 /flow-init 后填充）
+- Mapped REQ: 关联的正式需求 ID（初始为 "-"，运行 /flow:init 后填充）
 - Progress: 完成百分比 (0%, 20%, 80%, 100%)
 
 _说明: 此表用于追踪路线图项到正式需求的映射，以及进度同步_
@@ -295,7 +295,7 @@ _填充规则:_
 - **RM-ID**: Roadmap Item ID，路线图意向项标识符（如 RM-001）
 - **REQ-ID**: Requirement ID，正式需求标识符（如 REQ-010）
 - **Derived From**: 来源，标注该意向项从哪个已有需求或来源延伸而来
-- **Mapped REQ**: 映射需求，当意向项通过 /flow-init 正式创建为需求后，记录其 REQ-ID
+- **Mapped REQ**: 映射需求，当意向项通过 /flow:init 正式创建为需求后，记录其 REQ-ID
 - **Feature Cluster**: 功能集群，将相关的意向项分组便于理解和管理
 - **Milestone**: 里程碑，一个季度内要完成的一组功能集群
 - **Velocity**: 速度，团队完成需求的平均速率（天数/需求）

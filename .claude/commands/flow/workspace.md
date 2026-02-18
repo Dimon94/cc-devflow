@@ -126,7 +126,7 @@ devflow/workspace/
 
 ### With flow-init
 
-When `/flow-init` creates a new requirement (and workspace already initialized):
+When `/flow:init` creates a new requirement (and workspace already initialized):
 ```bash
 # Auto-update workspace
 echo "REQ-XXX" > devflow/workspace/{developer}/.current-req

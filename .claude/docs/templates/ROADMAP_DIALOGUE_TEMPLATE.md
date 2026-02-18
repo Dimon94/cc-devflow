@@ -177,9 +177,9 @@ Prompt: "Generate ARCHITECTURE.md with 4 diagrams..."
 
 下一步建议:
 1. 审查路线图
-2. 开始首个需求: /flow-init "REQ-XXX|{RM-title}"
+2. 开始首个需求: /flow:init "REQ-XXX|{RM-title}"
 3. 定期更新: /core-roadmap --regenerate
-4. 监控进度: /flow-status --all
+4. 监控进度: /flow:status --all
 ```
 
 ---

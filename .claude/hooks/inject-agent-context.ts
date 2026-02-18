@@ -50,8 +50,8 @@ const AGENT_SKILL_MAP: Record<string, string> = {
   'ui-designer': 'flow-spec',
   'planner': 'flow-spec',
   'dev-implementer': 'flow-dev',
-  'qa-tester': 'flow-quality',
-  'security-reviewer': 'flow-quality',
+  'qa-tester': 'flow-verify',
+  'security-reviewer': 'flow-verify',
   'release-manager': 'flow-release',
 };
 

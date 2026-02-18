@@ -146,7 +146,7 @@ LIMIT 20 OFFSET 40
 
 | | research/attempts/ | ERROR_LOG.md |
 |--|-------------------|--------------|
-| 阶段 | 研究阶段（Phase 0） | 执行阶段（flow-dev, flow-qa） |
+| 阶段 | 研究阶段（Phase 0） | 执行阶段（flow:dev, flow:verify） |
 | 内容 | 方案尝试与放弃 | 代码错误与修复 |
 | 格式 | Markdown 文件 | 结构化错误日志 |
 | 目的 | 避免重复研究 | 避免重复错误 |

@@ -124,7 +124,7 @@ Generated: {GENERATED_AT}
 1. **Manual Research Workflow**:
    ```bash
    # 1. Run flow-init (generates tasks.json)
-   /flow-init "REQ-123|Feature Name"
+   /flow:init "REQ-123|Feature Name"
 
    # 2. Research each task
    # - Check existing codebase
@@ -145,7 +145,7 @@ Generated: {GENERATED_AT}
 2. **Direct Editing**:
    - Copy this template to `research/research.md`
    - Fill in decisions based on your research
-   - Run validation script before proceeding to /flow-prd
+   - Run validation script before proceeding to /flow:spec
 
 ---
 
@@ -271,6 +271,6 @@ Generated: {GENERATED_AT}
 **Maintained By**: CC-DevFlow Team
 **Last Updated**: 2025-01-26
 **Related Docs**:
-- [flow-init.md](../../commands/flow-init.md) - 需求初始化流程
+- [flow/init.md](../../commands/flow/init.md) - 需求初始化流程
 - [validate-research.sh](../../scripts/validate-research.sh) - 验证脚本
 - [flow-init-optimization-plan.md](../../../flow-init-optimization-plan.md) - 优化方案
