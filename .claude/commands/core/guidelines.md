@@ -35,6 +35,31 @@ description: 'Generate project-specific development guidelines skills (frontend/
 /core-guidelines --dry-run
 ```
 
+## Harness Engineering 增强（Eval-Driven + Incremental）
+
+`/core-guidelines` 容易出现两类失败：一次生成过大导致中断、未验证触发规则就标记完成。为此引入双阶段协议。
+
+### Step 0: Initializer Session
+
+创建会话工件：
+- `devflow/.core-harness/guidelines/skill-checklist.json`
+  - Frontend/Backend 分别列出验收项：触发规则、关键资源文件、示例质量、约束合规，默认 `passes=false`
+- `devflow/.core-harness/guidelines/progress.md`
+- `devflow/.core-harness/guidelines/session-handoff.md`
+
+### Worker Session
+
+- 一次只处理一个 skill（frontend 或 backend），禁止同窗口双线并发重写
+- 每次只完成一个最小闭环：`生成/更新 → 触发验证 → 示例验证 → 勾选 passes`
+- 结束前必须写 handoff，明确下一窗口要做的单一目标
+
+### Eval Gate（禁止“看起来差不多”）
+
+只有当以下检查全部通过才标记对应 skill 完成：
+1. `skill-rules.json` 触发范围正确，且前后端互不污染
+2. SKILL + resources 无占位符/虚构路径
+3. 至少 1 个真实文件路径触发测试通过（frontend 与 backend 各自独立）
+
 ---
 
 ## Process

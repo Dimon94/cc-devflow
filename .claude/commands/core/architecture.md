@@ -29,6 +29,36 @@ architecture-designer (research, no dialogue)
 ARCHITECTURE.md (4 diagrams)
 ```
 
+## Harness Engineering 增强（Long-running Session Protocol）
+
+为防止跨上下文窗口后出现“图表半生成、ADR 丢失、误判已完成”，执行分为 Initializer 与 Worker 两类会话。
+
+### Phase 0: Initializer Session（首次或 --force）
+
+先建立/刷新架构任务工件（不要一次性生成整份文档）：
+- `devflow/.core-harness/architecture/checklist.json`
+  - 列出 4 张图、ADR、NFR、演进路径等验收项，默认 `passes=false`
+- `devflow/.core-harness/architecture/progress.md`
+  - 记录本次修改、风险、下一步
+- `devflow/.core-harness/architecture/init.md`
+  - 固定启动流程（读取 ROADMAP、读取最近进展、执行 Mermaid 冒烟验证）
+
+### Worker Session（增量交付）
+
+每个窗口只处理一个子目标，例如：
+- 只完成一张 Mermaid 图并自检语法
+- 只补齐 ADR 与对应图表映射
+- 只修复依赖图节点/边一致性问题
+
+会话收尾要求：
+1. 运行当前文档校验（占位符、图表数量、语法）
+2. 更新 checklist 的 `passes` 字段
+3. 写入 progress/handoff，明确下一窗口优先任务
+
+### Done Gate
+
+`checklist.json` 全绿 + Phase 4 校验通过，才可输出成功报告。
+
 ## 执行流程
 
 ### Phase 1: Prerequisites Check

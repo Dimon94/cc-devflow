@@ -102,6 +102,35 @@ guides:
 - **roadmap-planner (Agent)**: 根据上下文生成文档，无对话
 - **architecture-designer (Agent)**: 生成架构图，无对话
 
+## Harness Engineering 增强（OpenAI + Anthropic 实践融合）
+
+为避免长会话中的“半成品漂移 / 提前宣布完成 / 上下文断片”，`/core-roadmap` 强制采用双阶段执行。
+
+### Stage -1: Initializer Session（只做地基，不做全量生成）
+
+在首次运行或 `--regenerate` 时先建立可恢复工件：
+- `devflow/.core-harness/roadmap/feature-checklist.json`
+  - 结构化列出路线图必须产物（愿景、里程碑、依赖图、容量评估、季度分配等），默认 `passes=false`
+- `devflow/.core-harness/roadmap/progress.md`
+  - 记录每次会话完成内容、未决问题、下一步
+- `devflow/.core-harness/roadmap/session-handoff.md`
+  - 给下一窗口的启动指令（从哪个 Stage 继续、先做什么验证）
+
+### Worker Session（增量推进，每次只完成一个最小目标）
+
+每个窗口必须遵守：
+1. 启动先读状态：`pwd` → `progress.md` → `feature-checklist.json` → 最近 git log（若仓库可用）
+2. 先做冒烟检查：确认现有 `ROADMAP.md/BACKLOG.md/ARCHITECTURE.md` 不是损坏状态
+3. 只推进一个最小单元：
+   - 一个 Stage 的信息收集，或
+   - 一个 RM 依赖簇的整理，或
+   - 一次时间线冲突修复
+4. 结束前必须更新工件：勾选 `passes`、写入 progress/handoff、明确下一步
+
+### 完成判定（禁止“口头完成”）
+
+只有 `feature-checklist.json` 全部 `passes=true`，且 Stage 8 输出文件全部存在并通过校验，才允许宣告完成。
+
 ---
 
 ## 执行流程骨架

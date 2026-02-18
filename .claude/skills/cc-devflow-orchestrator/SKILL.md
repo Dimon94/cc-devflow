@@ -19,6 +19,29 @@ Guide users to the correct command/skill without duplicating detailed implementa
 /core:style        → STYLE.md
 ```
 
+## Project-Level Harness Protocol (Long-running)
+
+For `/core:*` commands, enforce a two-session model before declaring completion:
+
+1. Initializer session
+   - establish/update `devflow/.core-harness/<command>/checklist.json`, `progress.md`, `session-handoff.md`
+   - convert high-level goal into structured acceptance checks (default all failing)
+2. Worker session(s)
+   - resume from `session-handoff.md` + `progress.md`
+   - execute one smallest deliverable per session
+   - update checklist status only after command-specific validation
+3. Completion gate
+   - completion is allowed only when checklist is fully passing and command validation gates pass
+   - never declare success from “looks complete”; require artifact evidence
+
+### Core Route Defaults
+
+- no `devflow/ROADMAP.md` → route to `/core:roadmap` (initializer first)
+- roadmap exists but architecture missing/stale → route to `/core:architecture`
+- architecture exists but guidelines missing/stale → route to `/core:guidelines`
+- style missing/stale → route to `/core:style`
+- interrupted core command → rerun same command from handoff (`/core:roadmap --resume` if supported; otherwise run command again and continue from `session-handoff.md`)
+
 ### Requirement-Level Canonical Mainline (v6)
 
 ```text
@@ -140,5 +163,7 @@ This skill only does routing:
 - Which command to run next
 - Which gate blocks progress
 - Which migration path applies for deprecated commands
+- Prefer incremental convergence over one-shot generation
+- Require artifact-backed completion for long-running sessions
 
 Detailed quality standards stay in command files and workflow skills.

@@ -21,6 +21,24 @@ $ARGUMENTS = "[--update]"
 /core-style --update   # 更新已有风格指南
 ```
 
+## Harness Engineering 增强（多窗口稳定执行）
+
+为避免风格文档在多轮会话中变成“补丁堆”，执行采用 initializer + incremental worker。
+
+### 0. Initializer Session
+- 建立 `devflow/.core-harness/style/` 工件：
+  - `checklist.json`: token 体系、组件约束、可访问性、响应式、动效、禁用项等验收项（默认 `passes=false`）
+  - `progress.md`: 本轮修改与未决项
+  - `session-handoff.md`: 下一轮优先任务与验证命令
+
+### 1. Worker Session
+- 每轮只处理一个最小块（例如颜色 token、排版 token、某一类组件约束）
+- 修改后立即做局部验证，不通过则回滚该块后重试
+- 收尾必须同步 checklist/progress/handoff，保持可恢复
+
+### 2. Done Gate
+- 只有 checklist 全部 `passes=true` 且第 4 步校验通过，才允许输出“STYLE 生成完成”
+
 ## 执行步骤
 
 ### 1. 入口检查
