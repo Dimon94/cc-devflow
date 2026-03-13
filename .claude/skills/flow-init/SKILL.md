@@ -53,29 +53,50 @@ description: 'Initialize a requirement with harness state and context package. U
 ## Execution Steps
 
 1. 解析输入，提取 `REQ_ID`、`TITLE`、`PLAN_URLS`。
-2. 组装 goal 文本：
+
+2. **读取项目级 specs/ 了解当前系统状态**（v4.3 新增）：
+   - 读取 `devflow/specs/README.md` 了解模块结构
+   - 扫描 `devflow/specs/*/spec.md` 识别相关模块
+   - 记录当前系统状态到上下文
+
+3. 组装 goal 文本：
    - `Deliver <REQ_ID>: <TITLE>`
    - 若有 URL，追加 `Sources: <URLS>`。
-3. 运行初始化：
+
+4. 运行初始化：
 
 ```bash
 npm run harness:init -- --change-id "${REQ_ID}" --goal "${GOAL}"
 ```
 
-4. 运行上下文打包：
+5. 运行上下文打包：
 
 ```bash
 npm run harness:pack -- --change-id "${REQ_ID}" --goal "${GOAL}"
 ```
 
-5. 验证输出文件：
+6. **生成 proposal.md**（v4.3 新增，替代 PRD.md）：
+   - 基于 TITLE 和 PLAN_URLS 生成 proposal.md
+   - 格式：Why（为什么需要）+ What（要做什么）
+   - 使用 `.claude/docs/templates/PROPOSAL_TEMPLATE.md`
+   - 输出到 `devflow/requirements/${REQ_ID}/proposal.md`
+
+7. **创建 specs/ 目录**（v4.3 新增）：
+   - 创建 `devflow/requirements/${REQ_ID}/specs/` 目录
+   - 准备存放 Delta spec.md
+
+8. 验证输出文件：
    - `devflow/requirements/${REQ_ID}/harness-state.json`
    - `devflow/requirements/${REQ_ID}/context-package.md`
+   - `devflow/requirements/${REQ_ID}/proposal.md` ⭐ 新增
+   - `devflow/requirements/${REQ_ID}/specs/` 目录存在 ⭐ 新增
 
 ## Exit Criteria
 
 - `harness-state.json.status == "initialized"`
 - `context-package.md` 存在并包含 Next Commands 段落
+- `proposal.md` 存在且包含 Why 和 What 章节 ⭐ v4.3 新增
+- `specs/` 目录已创建 ⭐ v4.3 新增
 
 ## Next Step
 
