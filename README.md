@@ -27,8 +27,9 @@ Harness-first five-stage workflow from requirement setup to release: `/flow:init
 - 🔗 **GitHub Integration** - Automated PR creation, branch management, and conventional commits
 - 📊 **Progress Tracking** - Real-time status monitoring and intelligent restart points
 - 🔍 **Consistency Verification** - Enterprise-grade consistency checking with intelligent conflict detection
-- 🧪 **TDD Enforced** - Strict Test-Driven Development with TEST VERIFICATION CHECKPOINT
+- 🧪 **TDD Enforced** - Strict Test-Driven Development with automatic TDD order validation in harness planner
 - 📜 **Constitution** - 10 Articles governing quality, security, and architecture
+- 🔄 **OpenSpec Interop** - Bidirectional conversion between OpenSpec and CC-DevFlow formats with automatic TDD task generation
 - 🔄 **Autonomous Development** - Ralph × Manus Integration for memory-enhanced continuous iteration
 - 🔌 **Multi-Platform Support** - Compile workflows for Codex, Cursor, Qwen, Antigravity via `npm run adapt`
 - 🔄 **Multi-Module Compiler** - Full module compilation: skills, commands, agents, rules, hooks

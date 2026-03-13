@@ -27,8 +27,9 @@
 - 🔗 **GitHub 集成** - 自动化 PR 创建、分支管理和规范化提交
 - 📊 **进度跟踪** - 实时状态监控和智能重启点
 - 🔍 **一致性验证** - 企业级一致性检查，智能冲突检测
-- 🧪 **TDD 强制执行** - 严格的测试驱动开发，TEST VERIFICATION CHECKPOINT
+- 🧪 **TDD 强制执行** - 严格的测试驱动开发，harness planner 自动 TDD 顺序验证
 - 📜 **Constitution** - 10条宪法条款管控质量、安全和架构
+- 🔄 **OpenSpec 互操作** - OpenSpec 与 CC-DevFlow 格式双向转换，自动生成 TDD 任务
 - 🔄 **自主开发** - Ralph × Manus 集成实现有记忆的持续迭代
 - 🔌 **多平台支持** - 通过 `npm run adapt` 编译工作流到 Codex、Cursor、Qwen、Antigravity
 - 🔄 **多模块编译器** - 完整模块编译：skills、commands、agents、rules、hooks
