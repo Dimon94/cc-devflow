@@ -57,15 +57,15 @@ const AGENT_SKILL_MAP: Record<string, string> = {
 
 // Agent type to JSONL filename mapping
 const AGENT_JSONL_MAP: Record<string, string> = {
-  'flow-researcher': 'researcher.jsonl',
-  'prd-writer': 'prd-writer.jsonl',
-  'tech-architect': 'tech-architect.jsonl',
-  'ui-designer': 'ui-designer.jsonl',
-  'planner': 'planner.jsonl',
-  'dev-implementer': 'dev-implementer.jsonl',
-  'qa-tester': 'qa-tester.jsonl',
-  'security-reviewer': 'security-reviewer.jsonl',
-  'release-manager': 'release-manager.jsonl',
+  'flow-researcher': 'brainstorm.jsonl',
+  'prd-writer': 'spec.jsonl',
+  'tech-architect': 'spec.jsonl',
+  'ui-designer': 'spec.jsonl',
+  'planner': 'spec.jsonl',
+  'dev-implementer': 'dev.jsonl',
+  'qa-tester': 'dev.jsonl',
+  'security-reviewer': 'dev.jsonl',
+  'release-manager': 'dev.jsonl',
 };
 
 const MAX_FILE_SIZE = 50000; // 50KB per file

@@ -3,8 +3,6 @@
 
 成员清单
 archive.md: 归档需求命令。
-checklist.md: 已废弃命令，统一迁移到 /flow:verify。
-clarify.md: 已废弃命令，默认主链移除独立澄清阶段。
 constitution.md: 宪法规则管理命令。
 context.md: 上下文资产管理命令。
 delta.md: 需求增量变更命令。
@@ -12,8 +10,6 @@ dev.md: 主链开发阶段命令，触发 harness dispatch/resume。
 fix.md: Bug 修复命令。
 ideate.md: 想法到需求命令。
 init.md: 主链初始化命令，触发 harness init/pack。
-new.md: 已废弃命令，迁移到 /flow:init -> /flow:spec -> /flow:dev -> /flow:verify -> /flow:release。
-quality.md: 已废弃命令，统一迁移到 /flow:verify。
 release.md: 主链发布命令，触发 harness release/janitor。
 restart.md: 旧中断恢复命令（迁移过渡保留）。
 spec.md: 主链规格命令，触发 harness plan。

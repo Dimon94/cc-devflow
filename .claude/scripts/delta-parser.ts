@@ -475,6 +475,95 @@ function escapeRegex(str: string): string {
 }
 
 // ============================================================================
+// Version Bump
+// ============================================================================
+
+function bumpVersion(currentVersion: string, deltaBlocks: DeltaBlock[]): string {
+  const [major, minor, patch] = currentVersion.split('.').map(Number);
+
+  // REMOVED → MAJOR +1 (破坏性变更)
+  if (deltaBlocks.some(b => b.type === 'REMOVED')) {
+    return `${major + 1}.0.0`;
+  }
+
+  // ADDED → MINOR +1 (新功能)
+  if (deltaBlocks.some(b => b.type === 'ADDED')) {
+    return `${major}.${minor + 1}.0`;
+  }
+
+  // MODIFIED/RENAMED → PATCH +1 (修复/改进)
+  return `${major}.${minor}.${patch + 1}`;
+}
+
+// ============================================================================
+// Merge to Project-Level spec.md
+// ============================================================================
+
+export function mergeDeltaToMainSpec(
+  mainSpecPath: string,
+  deltaSpecPath: string
+): { success: boolean; newVersion: string; error?: string } {
+  const fs = require('fs');
+
+  try {
+    // 读取文件
+    const mainSpecContent = fs.readFileSync(mainSpecPath, 'utf-8');
+    const deltaSpecContent = fs.readFileSync(deltaSpecPath, 'utf-8');
+
+    // 解析 frontmatter
+    const { metadata: mainMeta, body: mainBody } = extractYamlFrontmatter(mainSpecContent);
+    const { metadata: deltaMeta } = extractYamlFrontmatter(deltaSpecContent);
+
+    // 验证模块匹配
+    if (mainMeta.module !== deltaMeta.module) {
+      return {
+        success: false,
+        newVersion: mainMeta.version || '1.0.0',
+        error: `Module mismatch: main=${mainMeta.module}, delta=${deltaMeta.module}`
+      };
+    }
+
+    // 解析 Delta blocks
+    const deltaBlocks = parseDelta(deltaSpecContent);
+
+    if (deltaBlocks.length === 0) {
+      return {
+        success: false,
+        newVersion: mainMeta.version || '1.0.0',
+        error: 'No delta blocks found'
+      };
+    }
+
+    // 应用 Delta
+    const result = applyDelta(mainSpecContent, deltaBlocks);
+
+    // 更新版本号和时间戳
+    const newVersion = bumpVersion(mainMeta.version || '1.0.0', deltaBlocks);
+    const updatedMeta = {
+      ...mainMeta,
+      version: newVersion,
+      updated_at: new Date().toISOString()
+    };
+
+    // 重新组装 frontmatter
+    const yamlLines = Object.entries(updatedMeta).map(([k, v]) => `${k}: "${v}"`);
+    const newContent = `---\n${yamlLines.join('\n')}\n---\n${result.split('---\n')[2] || result}`;
+
+    // 写回文件
+    fs.writeFileSync(mainSpecPath, newContent, 'utf-8');
+
+    return { success: true, newVersion };
+
+  } catch (error) {
+    return {
+      success: false,
+      newVersion: '',
+      error: error instanceof Error ? error.message : String(error)
+    };
+  }
+}
+
+// ============================================================================
 // CLI Interface
 // ============================================================================
 
@@ -485,8 +574,9 @@ if (require.main === module) {
   if (args.length < 1) {
     console.error('Usage: delta-parser.ts <command> [args]');
     console.error('Commands:');
-    console.error('  parse <delta-file>           Parse delta file and output JSON');
-    console.error('  apply <prd-file> <delta-file> Apply delta to PRD and output result');
+    console.error('  parse <delta-file>              Parse delta file and output JSON');
+    console.error('  apply <prd-file> <delta-file>   Apply delta to PRD and output result');
+    console.error('  merge <main-spec> <delta-spec>  Merge delta to project-level spec.md');
     process.exit(1);
   }
 
@@ -517,6 +607,26 @@ if (require.main === module) {
       const blocks = parseDelta(deltaContent);
       const result = applyDelta(prdContent, blocks);
       console.log(result);
+      break;
+    }
+
+    case 'merge': {
+      const mainSpecPath = args[1];
+      const deltaSpecPath = args[2];
+      if (!mainSpecPath || !deltaSpecPath) {
+        console.error('Error: main-spec and delta-spec required');
+        process.exit(1);
+      }
+
+      const result = mergeDeltaToMainSpec(mainSpecPath, deltaSpecPath);
+
+      if (result.success) {
+        console.log(`✅ Delta merged successfully`);
+        console.log(`📦 New version: ${result.newVersion}`);
+      } else {
+        console.error(`❌ Merge failed: ${result.error}`);
+        process.exit(1);
+      }
       break;
     }
 
