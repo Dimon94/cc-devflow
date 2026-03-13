@@ -7,6 +7,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.3.0] - 2026-03-13
+
+### ✨ TDD Enforcement + OpenSpec Interop
+
+v4.3.0 adds automatic TDD order validation and bidirectional OpenSpec conversion to solve requirement drift problems.
+
+#### Added
+
+- **TDD Order Validation**
+  - Added `validateTDDOrder()` in `lib/harness/planner.js` to enforce Constitution Article VI
+  - Validates that [IMPL] tasks depend on corresponding [TEST] tasks
+  - Validates that [TEST] tasks don't depend on [IMPL] tasks
+  - Intelligent feature name matching with fuzzy algorithm (removes suffixes like "测试", "实现", "功能")
+  - Extended `TaskSchema` in `lib/harness/schemas.js` with `type` field (TEST/IMPL/OTHER)
+  - Comprehensive test coverage in `lib/harness/__tests__/planner.tdd.test.js` (10 tests, all passing)
+
+- **OpenSpec Interoperability**
+  - Added `.claude/scripts/import-openspec.js` for OpenSpec → CC-DevFlow conversion
+    - Parses OpenSpec format (Purpose + Requirements + BDD scenarios)
+    - Auto-generates TDD tasks (TEST + IMPL pairs with correct dependencies)
+    - Adds Design section with [NEEDS CLARIFICATION] markers
+    - Generates Verification checklist
+  - Added `.claude/scripts/export-openspec.js` for CC-DevFlow → OpenSpec conversion
+    - Strips YAML frontmatter and metadata
+    - Removes Design, Tasks, Verification sections
+    - Removes [NEEDS CLARIFICATION] markers
+    - Outputs pure Requirements in OpenSpec format
+  - Added `.claude/commands/flow/import-openspec.md` command documentation
+  - Added `.claude/commands/flow/export-openspec.md` command documentation
+  - Comprehensive test coverage in `.claude/scripts/__tests__/openspec.test.js` (5 tests, all passing)
+  - Round-trip conversion preserves requirements integrity
+
+#### Benefits
+
+- ✅ Automatic enforcement of TDD order (Constitution Article VI)
+- ✅ Prevents implementation before tests at parse time
+- ✅ Bidirectional OpenSpec compatibility
+- ✅ Automatic TDD task generation during import
+- ✅ Clean requirement export without implementation details
+
 ## [4.2.0] - 2026-02-19
 
 ### 🧠 Long-Running Harness Protocol Alignment
