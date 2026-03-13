@@ -357,11 +357,11 @@ v4.1.0 introduces Claude Team functionality for multi-agent parallel development
 
 ---
 
-## [4.3.0] - 2026-02-07
+## [4.2.1] - 2026-02-07
 
 ### 🌿 Git Worktree Integration: Parallel Development Support
 
-v4.3.0 introduces Git Worktree integration for parallel development with isolated Claude Code sessions.
+v4.2.1 introduces Git Worktree integration for parallel development with isolated Claude Code sessions.
 
 #### Added
 
@@ -417,11 +417,11 @@ v4.3.0 introduces Git Worktree integration for parallel development with isolate
 
 ---
 
-## [4.1.0] - 2026-02-07
+## [4.0.1] - 2026-02-07
 
 ### 🎯 Unified Specification Phase: /flow-spec Command
 
-v4.1.0 merges flow-prd/flow-tech/flow-ui/flow-epic into a single `/flow-spec` command with parallel execution of Tech + UI agents.
+v4.0.1 merges flow-prd/flow-tech/flow-ui/flow-epic into a single `/flow-spec` command with parallel execution of Tech + UI agents.
 
 #### Added
 
