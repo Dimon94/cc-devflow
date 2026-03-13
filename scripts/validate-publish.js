@@ -75,7 +75,7 @@ function validateTemplate(errors) {
   ensurePath('.claude/commands', 'dir', errors);
   ensurePath('.claude/skills', 'dir', errors);
   ensurePath('.claude/scripts', 'dir', errors);
-  ensurePath('.claude/commands/flow/new.md', 'file', errors);
+  // flow/new.md deprecated in v4.3.0, removed from validation
   ensurePath('.claude/skills/cc-devflow-orchestrator/SKILL.md', 'file', errors);
   ensurePath('.claude/scripts/verify-setup.sh', 'file', errors);
   ensurePath('bin/adapt.js', 'file', errors);
@@ -228,7 +228,7 @@ function validatePackTarball(errors) {
     'package/lib/compiler/index.js',
     'package/config/adapters.yml',
     'package/.claude/CLAUDE.md',
-    'package/.claude/commands/flow/new.md',
+    // flow/new.md deprecated in v4.3.0, removed from validation
     'package/.claude/scripts/verify-setup.sh',
     'package/.claude/skills/cc-devflow-orchestrator/SKILL.md',
     'package/README.md',
