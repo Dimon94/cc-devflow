@@ -1,0 +1,7 @@
+{"file": "devflow/requirements/REQ-011/design.md", "reason": "Technical design and implementation plan", "optional": false}
+{"file": "devflow/requirements/REQ-011/specs/auth/spec.md", "reason": "Delta specs for auth module changes", "optional": true}
+{"file": "devflow/requirements/REQ-011/specs/payments/spec.md", "reason": "Delta specs for payments module changes", "optional": true}
+{"file": "devflow/requirements/REQ-011/specs/ui/spec.md", "reason": "Delta specs for UI component changes", "optional": true}
+{"file": "src/api/auth/login.ts", "reason": "Related implementation code", "optional": true}
+{"file": "src/api/auth/logout.ts", "reason": "Related implementation code", "optional": true}
+{"file": ".claude/rules/project-constitution.md", "reason": "Article I: Quality First, Article VI: Test-First Development", "optional": false}
