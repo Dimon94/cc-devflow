@@ -1,10 +1,12 @@
-#!/bin/bash
-# [INPUT]: 依赖 run-quality-gates.sh
-# [OUTPUT]: 快速质量验证结果
-# [POS]: scripts 的快速质量验证脚本，被 /flow:verify 调用
+#!/usr/bin/env bash
+# =============================================================================
+# [INPUT]: 依赖 common.sh 与 run-quality-gates.sh 的快速模式检查。
+# [OUTPUT]: 生成快速质量报告，并把结果同步到 report-card / harness-state / compatibility status。
+# [POS]: 旧 shell quick verify 入口的兼容实现，确保快速门禁也写回当前 harness 主线。
 # [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+# =============================================================================
 
-set -e
+set -euo pipefail
 
 # ============================================================================
 # Configuration
@@ -12,6 +14,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+source "$SCRIPT_DIR/common.sh"
 
 # ============================================================================
 # Detect REQ-ID
@@ -105,15 +108,11 @@ DURATION=$((END_TIME - START_TIME))
 echo ""
 echo "Duration: ${DURATION}s"
 
-# Update orchestration status if REQ_ID is set
+# Sync quality result back to current truth sources if REQ_ID is set
 if [[ -n "$REQ_ID" ]]; then
-    STATUS_FILE="$PROJECT_ROOT/devflow/requirements/$REQ_ID/orchestration_status.json"
-    if [[ -f "$STATUS_FILE" ]]; then
-        # Backward compatibility: keep qa_complete flag for old release gates.
-        TMP_FILE="${STATUS_FILE}.tmp"
-        jq '.status = "quality_complete" | .phase = "quality" | .quality_complete = true | .qa_complete = true | .quality_mode = "quick" | .quality_timestamp = now' "$STATUS_FILE" > "$TMP_FILE"
-        mv "$TMP_FILE" "$STATUS_FILE"
+    if [[ -d "$REQ_DIR" ]]; then
+        sync_quality_gate_success "$PROJECT_ROOT" "$REQ_ID" "quick"
         echo ""
-        echo "✅ Updated orchestration_status.json"
+        echo "✅ Synced report-card.json, harness-state.json, and orchestration_status.json"
     fi
 fi

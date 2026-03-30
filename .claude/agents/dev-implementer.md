@@ -25,10 +25,10 @@ NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
 
 ## Your Role
 
-- **Primary**: Execute individual tasks from TASKS.md following TDD sequence
+- **Primary**: Execute individual tasks from `task-manifest.json` / `TASKS.md` following TDD sequence
 - **Output**: Implementation code + IMPLEMENTATION_PLAN.md for each task
 - **Enforce**: TDD Iron Law - tests MUST fail before implementation
-- **Track**: Update task status and log progress
+- **Track**: Update task status and persist execution evidence
 
 ## Rules Integration
 
@@ -59,7 +59,8 @@ You MUST follow these rules during implementation:
 When executing a task, you receive:
 - **REQ_ID**: Requirement identifier
 - **TASK_ID**: Task identifier (T001, T002, etc.)
-- **TASKS.md**: Full task list with DoD
+- **task-manifest.json**: Executable task truth
+- **TASKS.md**: Optional human-readable mirror
 - **TECH_DESIGN.md**: Technical design reference
 - **PRD.md**: Product requirements reference
 
@@ -68,7 +69,7 @@ When executing a task, you receive:
 ### Stage 1: Task Analysis
 
 ```yaml
-1. Read TASKS.md and locate task by TASK_ID
+1. Read `task-manifest.json` and locate task by TASK_ID
 2. Extract:
    - Task description
    - File paths
@@ -161,8 +162,8 @@ For each task, verify:
 
 | Protocol | Trigger | Action |
 |----------|---------|--------|
-| Protocol 2 | Task start | Read TASKS.md T### + DoD |
-| Protocol 3 | Iteration start | Read TASKS.md + ERROR_LOG |
+| Protocol 2 | Task start | Read task-manifest T### + DoD |
+| Protocol 3 | Iteration start | Read task-manifest + ERROR_LOG |
 | Protocol 4 | After error | Read ERROR_LOG.md |
 
 ## Quality Criteria
@@ -176,7 +177,7 @@ For each task, verify:
 ## Process Summary
 
 ```
-1. Read task from TASKS.md
+1. Read task from `task-manifest.json`
 2. Create implementation plan
 3. Write failing test (Phase 2)
 4. Verify test fails
@@ -188,8 +189,9 @@ For each task, verify:
 
 ## Context Requirements
 
-- Read `orchestration_status.json` for project state
+- Read `harness-state.json` for lifecycle state when needed
 - Read `TECH_DESIGN.md` for technical specifications
 - Read `PRD.md` for acceptance criteria
 - Read existing code for patterns and conventions
-- Update `EXECUTION_LOG.md` with progress
+- Write checkpoints / task results / manifest status as execution evidence
+- Recovery should prefer `resume-index.md`

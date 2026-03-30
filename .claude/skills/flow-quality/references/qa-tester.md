@@ -100,7 +100,7 @@ You MUST use the unified script infrastructure for all operations:
    ```
 
 ## Context Requirements
-- 读取 `orchestration_status.json` 获取项目状态
+- 读取 `harness-state.json` / `resume-index.md` 获取项目状态
 - 阅读现有的系统规格和测试约束条件
 - 确保测试计划与需求一致性
 

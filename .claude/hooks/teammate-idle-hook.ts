@@ -1,6 +1,6 @@
 #!/usr/bin/env npx ts-node
 /**
- * [INPUT]: 依赖 quality-gates.yml 的 teammate_idle 配置，依赖 orchestration_status.json 的 Team 状态
+ * [INPUT]: 依赖 quality-gates.yml 的 teammate_idle 配置与 Team 状态存储
  * [OUTPUT]: 对外提供 TeammateIdle Hook，在 Teammate 空闲时验证任务并分配下一个任务
  * [POS]: hooks/ 的 Team 任务调度器，被 Claude Team 的 TeammateIdle 事件触发
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
@@ -13,7 +13,7 @@
  * - Teammate 空闲时执行任务验证
  * - 验证通过后分配下一个任务
  * - 所有任务完成且所有 Teammate 空闲时触发 shutdown
- * - 状态持久化到 orchestration_status.json
+ * - 状态持久化到 Team 状态文件
  *
  * 触发条件：TeammateIdle 事件
  */
@@ -21,6 +21,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { execSync } from 'child_process';
+const {
+  readTeamStateSync,
+  writeTeamStateSync
+} = require('../../lib/harness/team-state');
 
 // =============================================================================
 // 类型定义
@@ -256,24 +260,14 @@ function getIdleChecks(config: QualityGatesConfig): string[] {
 }
 
 /**
- * 读取 orchestration_status.json
+ * 读取 Team 状态文件
  */
 function loadOrchestrationStatus(repoRoot: string, reqId: string): OrchestrationStatus | null {
-  const statusPath = path.join(repoRoot, 'devflow', 'requirements', reqId, 'orchestration_status.json');
-  if (!fs.existsSync(statusPath)) {
-    return null;
-  }
-
-  try {
-    const content = fs.readFileSync(statusPath, 'utf-8');
-    return JSON.parse(content);
-  } catch {
-    return null;
-  }
+  return readTeamStateSync(repoRoot, reqId);
 }
 
 /**
- * 更新 orchestration_status.json 中的 Teammate 状态
+ * 更新 Team 状态文件中的 Teammate 状态
  */
 function updateTeammateStatus(
   repoRoot: string,
@@ -282,32 +276,21 @@ function updateTeammateStatus(
   status: string,
   currentTask: string | null
 ): void {
-  const statusPath = path.join(repoRoot, 'devflow', 'requirements', reqId, 'orchestration_status.json');
-  if (!fs.existsSync(statusPath)) {
+  const statusObj = readTeamStateSync(repoRoot, reqId);
+  if (!statusObj?.team) {
     return;
   }
 
-  try {
-    const content = fs.readFileSync(statusPath, 'utf-8');
-    const statusObj: OrchestrationStatus = JSON.parse(content);
-
-    if (!statusObj.team) {
-      return;
-    }
-
-    const now = new Date().toISOString();
-    const teammate = statusObj.team.teammates.find(t => t.id === teammateId);
-    if (teammate) {
-      teammate.status = status as TeammateState['status'];
-      teammate.currentTask = currentTask;
-      teammate.lastActiveAt = now;
-    }
-    statusObj.team.updatedAt = now;
-
-    fs.writeFileSync(statusPath, JSON.stringify(statusObj, null, 2), 'utf-8');
-  } catch {
-    // 忽略更新错误
+  const now = new Date().toISOString();
+  const teammate = statusObj.team.teammates.find(t => t.id === teammateId);
+  if (teammate) {
+    teammate.status = status as TeammateState['status'];
+    teammate.currentTask = currentTask;
+    teammate.lastActiveAt = now;
   }
+  statusObj.updatedAt = now;
+  statusObj.team.updatedAt = now;
+  writeTeamStateSync(repoRoot, reqId, statusObj);
 }
 
 /**
@@ -319,35 +302,24 @@ function markTaskComplete(
   teammateId: string,
   taskId: string
 ): void {
-  const statusPath = path.join(repoRoot, 'devflow', 'requirements', reqId, 'orchestration_status.json');
-  if (!fs.existsSync(statusPath)) {
+  const statusObj = readTeamStateSync(repoRoot, reqId);
+  if (!statusObj?.team) {
     return;
   }
 
-  try {
-    const content = fs.readFileSync(statusPath, 'utf-8');
-    const statusObj: OrchestrationStatus = JSON.parse(content);
-
-    if (!statusObj.team) {
-      return;
+  const now = new Date().toISOString();
+  const teammate = statusObj.team.teammates.find(t => t.id === teammateId);
+  if (teammate) {
+    if (!teammate.completedTasks.includes(taskId)) {
+      teammate.completedTasks.push(taskId);
     }
-
-    const now = new Date().toISOString();
-    const teammate = statusObj.team.teammates.find(t => t.id === teammateId);
-    if (teammate) {
-      if (!teammate.completedTasks.includes(taskId)) {
-        teammate.completedTasks.push(taskId);
-      }
-      teammate.currentTask = null;
-      teammate.status = 'idle';
-      teammate.lastActiveAt = now;
-    }
-    statusObj.team.updatedAt = now;
-
-    fs.writeFileSync(statusPath, JSON.stringify(statusObj, null, 2), 'utf-8');
-  } catch {
-    // 忽略更新错误
+    teammate.currentTask = null;
+    teammate.status = 'idle';
+    teammate.lastActiveAt = now;
   }
+  statusObj.updatedAt = now;
+  statusObj.team.updatedAt = now;
+  writeTeamStateSync(repoRoot, reqId, statusObj);
 }
 
 /**
@@ -521,34 +493,23 @@ function assignTask(
   taskId: string,
   teammateId: string
 ): void {
-  const statusPath = path.join(repoRoot, 'devflow', 'requirements', reqId, 'orchestration_status.json');
-  if (!fs.existsSync(statusPath)) {
+  const statusObj = readTeamStateSync(repoRoot, reqId);
+  if (!statusObj?.team) {
     return;
   }
 
-  try {
-    const content = fs.readFileSync(statusPath, 'utf-8');
-    const statusObj: OrchestrationStatus = JSON.parse(content);
+  const now = new Date().toISOString();
+  statusObj.team.taskAssignments[taskId] = teammateId;
 
-    if (!statusObj.team) {
-      return;
-    }
-
-    const now = new Date().toISOString();
-    statusObj.team.taskAssignments[taskId] = teammateId;
-
-    const teammate = statusObj.team.teammates.find(t => t.id === teammateId);
-    if (teammate) {
-      teammate.currentTask = taskId;
-      teammate.status = 'working';
-      teammate.lastActiveAt = now;
-    }
-    statusObj.team.updatedAt = now;
-
-    fs.writeFileSync(statusPath, JSON.stringify(statusObj, null, 2), 'utf-8');
-  } catch {
-    // 忽略更新错误
+  const teammate = statusObj.team.teammates.find(t => t.id === teammateId);
+  if (teammate) {
+    teammate.currentTask = taskId;
+    teammate.status = 'working';
+    teammate.lastActiveAt = now;
   }
+  statusObj.updatedAt = now;
+  statusObj.team.updatedAt = now;
+  writeTeamStateSync(repoRoot, reqId, statusObj);
 }
 
 // =============================================================================
@@ -611,12 +572,12 @@ function main(): void {
   const idleChecks = getIdleChecks(config);
   const idleTimeout = config.teammate_idle?.idle_timeout || 300; // 默认 5 分钟
 
-  // 加载 orchestration_status.json
+  // 加载 Team 状态文件
   const status = loadOrchestrationStatus(repoRoot, reqId);
   if (!status) {
     const output: TeammateIdleOutput = {
       action: 'wait',
-      message: 'orchestration_status.json not found'
+      message: 'team-state not found'
     };
     console.log(JSON.stringify(output, null, 0));
     process.exit(0);

@@ -284,25 +284,25 @@ Suggestion: Re-sample or manually select compatible styles
 ### Recovery
 - 如果UI生成失败,检查EXECUTION_LOG.md
 - 如果Constitution检查失败,根据报告修复HTML
-- 重新运行: `/flow-ui "REQ-123"`
+- 先回到 `/flow:spec "REQ-123"` 收敛 UI 决策，再重新触发本 Agent
 
 ## Integration with Other Commands
 
 ### Workflow Integration
 ```text
-/flow-init     → 初始化结构 ✅
+/flow:init     → 初始化结构 ✅
   ↓
-/flow-prd      → 生成PRD.md ✅
+/flow:spec     → 收敛需求/交互/任务边界 ✅
   ↓
-/flow-ui       → 生成UI原型 ← YOU ARE HERE (条件触发)
+/flow-ui       → 生成UI原型 ← YOU ARE HERE (条件触发的 sidecar)
   ↓
-/flow-epic     → 生成EPIC和TASKS (参考UI原型)
+/flow:dev      → 实现代码 (参考UI原型与 spec 产物)
   ↓
-/flow-dev      → 实现代码 (基于UI原型)
+/flow:verify   → 质量验证
   ↓
-/flow-qa       → 质量保证
+/flow:prepare-pr → 生成提审材料
   ↓
-/flow-release  → 创建PR
+/flow:release  → 发布/合并
 ```
 
 ### Conditional Trigger Logic
@@ -313,7 +313,7 @@ Suggestion: Re-sample or manually select compatible styles
 
 **检测逻辑**:
 ```bash
-# 在 /flow-new 或 /flow-prd 完成后执行
+# 在 /flow:spec 收敛后执行
 has_ui_requirements=$(grep -iE "用户界面|前端|Web页面|UI|界面设计" "$PRD_FILE")
 has_frontend_stack=$(ls -d src/components 2>/dev/null || ls package.json 2>/dev/null)
 
@@ -328,7 +328,7 @@ fi
 ## Best Practices
 
 ### Before Running
-1. 确保PRD.md已生成且包含完整用户故事
+1. 确保 `/flow:spec` 已完成，且需求里已有明确的交互/界面信息
 2. 确认项目类型(前端/全栈/纯后端)
 3. 检查现有设计系统文档(如有)
 
@@ -343,7 +343,7 @@ fi
 2. 验证响应式布局(Chrome DevTools)
 3. 检查可访问性(Lighthouse/axe DevTools)
 4. 与产品/设计团队评审(若需要)
-5. 原型确认后再执行 `/flow-epic`
+5. 原型确认后继续 `/flow:dev`
 
 ## Output Example Structure
 

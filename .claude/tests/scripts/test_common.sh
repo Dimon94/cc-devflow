@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
-# test_common.sh - 测试 common.sh 的所有函数
+# =============================================================================
+# [INPUT]: 依赖 .claude/tests/test-framework.sh 与 .claude/scripts/common.sh。
+# [OUTPUT]: 回归验证 common.sh 的基础路径解析、REQ 识别与日志辅助行为。
+# [POS]: .claude/tests/scripts 的底层契约测试，用于守住脚本共享 helper 的当前语义。
+# [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+# =============================================================================
 
 # 加载测试框架
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -69,43 +74,57 @@ test_get_current_req_id_from_env() {
     unset DEVFLOW_REQ_ID
 }
 
-test_get_current_req_id_from_git_branch() {
-    describe "get_current_req_id should extract from git branch name"
+test_get_current_req_id_from_workspace_file() {
+    describe "get_current_req_id should prefer devflow/workspace/.current-req"
 
-    # Mock git branch command
-    mock_git "rev-parse --abbrev-ref HEAD" "feature/REQ-123-test-feature"
+    mkdir -p "$TEST_TMP_DIR/devflow/workspace"
+    printf "REQ-123\n" > "$TEST_TMP_DIR/devflow/workspace/.current-req"
 
-    # Act
-    local result=$(get_current_req_id)
+    local result
+    result=$(
+        cd "$TEST_TMP_DIR"
+        git init -q >/dev/null 2>&1
+        get_current_req_id
+    )
 
-    # Assert
-    assert_equals "$result" "REQ-123" "Should extract REQ-123 from branch"
+    assert_equals "$result" "REQ-123" "Should read workspace .current-req first"
 }
 
-test_get_current_req_id_bug_format() {
-    describe "get_current_req_id should extract BUG-XXX format"
+test_get_current_req_id_from_latest_requirement_dir() {
+    describe "get_current_req_id should fall back to latest requirement directory"
 
-    # Mock git branch command
-    mock_git "rev-parse --abbrev-ref HEAD" "bugfix/BUG-456-fix-login"
+    mkdir -p \
+        "$TEST_TMP_DIR/devflow/workspace" \
+        "$TEST_TMP_DIR/devflow/requirements/REQ-007" \
+        "$TEST_TMP_DIR/devflow/requirements/REQ-011" \
+        "$TEST_TMP_DIR/devflow/requirements/BUG-002"
+    printf "not-a-valid-id\n" > "$TEST_TMP_DIR/devflow/workspace/.current-req"
 
-    # Act
-    local result=$(get_current_req_id)
+    local result
+    result=$(
+        cd "$TEST_TMP_DIR"
+        git init -q >/dev/null 2>&1
+        get_current_req_id
+    )
 
-    # Assert
-    assert_equals "$result" "BUG-456" "Should extract BUG-456 from branch"
+    assert_equals "$result" "REQ-011" "Should choose latest valid requirement directory when workspace pointer is invalid"
 }
 
 test_get_current_req_id_no_match() {
-    describe "get_current_req_id should return empty when no match found"
+    describe "get_current_req_id should return empty when no req context is found"
 
-    # Mock git branch without REQ/BUG pattern
-    mock_git "rev-parse --abbrev-ref HEAD" "main"
+    local isolated_root
+    isolated_root=$(mktemp -d "${TEST_TMP_DIR}/no-req.XXXXXX")
+    mkdir -p "$isolated_root/devflow/requirements"
 
-    # Act
-    local result=$(get_current_req_id)
+    local result
+    result=$(
+        cd "$isolated_root"
+        git init -q >/dev/null 2>&1
+        get_current_req_id
+    )
 
-    # Assert
-    assert_equals "$result" "" "Should return empty string when no match"
+    assert_equals "$result" "" "Should return empty string when no env, workspace file, or requirement dirs exist"
 }
 
 # ============================================================================
@@ -230,8 +249,8 @@ run_tests \
     test_get_repo_root_in_git_repo \
     test_get_repo_root_not_git_repo \
     test_get_current_req_id_from_env \
-    test_get_current_req_id_from_git_branch \
-    test_get_current_req_id_bug_format \
+    test_get_current_req_id_from_workspace_file \
+    test_get_current_req_id_from_latest_requirement_dir \
     test_get_current_req_id_no_match \
     test_validate_req_id_valid_req \
     test_validate_req_id_valid_bug \

@@ -8,6 +8,19 @@ description: CC-DevFlow workflow router and agent recommender. Use when starting
 ## Purpose
 Guide users to the correct command/skill without duplicating detailed implementation standards.
 
+## Default Product Story
+
+`cc-devflow` 的默认路径是：
+
+1. 模糊目标先走 `/flow:autopilot`
+2. `autopilot` 在 repo 内沉淀 Markdown-first 记忆和计划
+3. 批准计划后，再调用 `/flow:init / /flow:spec / /flow:dev / /flow:verify / /flow:prepare-pr / /flow:release` 这些薄原语
+
+结论：
+- `autopilot` 是前门
+- `flow-*` 是原语
+- Team 是升级路径，不是默认路径
+
 ## Workflow Map
 
 ### Project-Level (run once per project)
@@ -46,7 +59,7 @@ For `/core:*` commands, enforce a two-session model before declaring completion:
 
 ```text
 /flow:init    → harness:init + harness:pack
-             → context-package.md + harness-state.json
+             → context-package.md (bootstrap bridge) + harness-state.json
      ↓
 /flow:spec    → harness:plan
              → task-manifest.json
@@ -56,6 +69,9 @@ For `/core:*` commands, enforce a two-session model before declaring completion:
      ↓
 /flow:verify  → harness:verify
              → report-card.json (quick/strict gates)
+     ↓
+/flow:prepare-pr → harness:prepare-pr
+             → devflow/intent/<REQ>/artifacts/pr-brief.md
      ↓
 /flow:release → harness:release + harness:janitor
              → RELEASE_NOTE.md + released state
@@ -67,24 +83,18 @@ For `/core:*` commands, enforce a two-session model before declaring completion:
 /flow:fix "BUG-123|描述" → 系统化调试与修复
 ```
 
-### Deprecated Migrations (keep for compatibility)
-
-```text
-/flow:new       → /flow:init → /flow:spec → /flow:dev → /flow:verify → /flow:release
-/flow:clarify   → merged into /flow:spec
-/flow:checklist → merged into /flow:verify --strict
-/flow:quality   → merged into /flow:verify
-```
-
 ## Routing Guide
 
 ### Requirement kickoff
-- Recommend: `/flow:init "REQ-123|Title|URLs?"`
+- 如果用户给的是模糊目标、聊天记录、想法堆、希望系统先理清再自动推进：
+  - Recommend: `/flow:autopilot "REQ-123|目标描述"`
+- 如果目标已经收敛、只需要接入主链 runtime：
+  - Recommend: `/flow:init "REQ-123|Title|URLs?"`
 - Then: `/flow:spec "REQ-123"`
 
 ### Planning/specification questions
 - Recommend: `/flow:spec`
-- Notes: this is the unified planning stage for executable task-manifest generation.
+- Notes: this is the unified planning stage for executable task-manifest generation; intent memory stays in `devflow/intent/<REQ>/`, while `TASKS.md` is only a direct planner input when present.
 
 ### Development execution / interrupted execution
 - Recommend: `/flow:dev "REQ-123"`
@@ -95,6 +105,7 @@ For `/core:*` commands, enforce a two-session model before declaring completion:
 - Strict gate: `/flow:verify "REQ-123" --strict`
 
 ### Release
+- Recommend: `/flow:prepare-pr "REQ-123"` when you need review-ready evidence or a PR handoff artifact.
 - Recommend: `/flow:release "REQ-123"`
 - Release is blocked when report-card overall is fail.
 
@@ -106,7 +117,7 @@ For `/core:*` commands, enforce a two-session model before declaring completion:
 
 ### Entry Gates
 - `flow:init`: repository and requirement id are valid.
-- `flow:spec`: `context-package.md` and `harness-state.json` exist.
+- `flow:spec`: `context-package.md` and `harness-state.json` exist; explicit task source should come from intent memory or `TASKS.md`.
 - `flow:dev`: `task-manifest.json` exists and is schema-valid.
 - `flow:verify`: task dispatch completed or at least one dispatch/resume run exists.
 - `flow:release`: `report-card.json.overall == pass`.
@@ -124,7 +135,7 @@ For `/core:*` commands, enforce a two-session model before declaring completion:
 no_requirement_context:
   recommend: /flow:init
 
-initialized_or_context_packed:
+initialized:
   recommend: /flow:spec
 
 manifest_exists_with_pending_or_failed:
@@ -139,6 +150,9 @@ report_card_fail:
   then: /flow:verify --strict
 
 report_card_pass:
+  recommend: /flow:prepare-pr
+
+pr_ready:
   recommend: /flow:release
 
 released:
@@ -162,7 +176,7 @@ released:
 This skill only does routing:
 - Which command to run next
 - Which gate blocks progress
-- Which migration path applies for deprecated commands
+- Prefer `/flow:autopilot` when the request is still fuzzy
 - Prefer incremental convergence over one-shot generation
 - Require artifact-backed completion for long-running sessions
 

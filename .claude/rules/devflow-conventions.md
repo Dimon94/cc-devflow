@@ -1,231 +1,114 @@
 # CC-DevFlow 工作流约定
 
-> **类型**: 工作流约定 (Workflow Conventions)
-> **适用**: CC-DevFlow 需求开发流程
-> **层级**: Rules Layer (具体约定和格式)
-> **前置**: 遵循 Constitution 和 Core Patterns
+> **类型**: Workflow Conventions
+> **适用**: CC-DevFlow 当前主链
+> **前置**: 遵循 Constitution 与 `.claude/DRIFT_AUDIT.md`
 
 ---
 
 ## 🎯 核心约定
 
-### REQ-ID 格式规范
-- **格式**: `REQ-\d+` (例如: REQ-123, REQ-001)
-- **唯一性**: 在当前仓库范围内必须唯一
-- **禁止**: 重复使用已存在的 REQ-ID
+### REQ-ID 格式
+- 使用 `REQ-\d+`，例如 `REQ-123`
+- 在当前仓库范围内必须唯一
 
-### 命令参数格式
+### 命令入口
 ```bash
-# 标准格式
-/flow-new "REQ-123|支持用户下单|https://plan.example.com/Q1"
+# 模糊目标，先收敛
+/flow:autopilot "REQ-123|支持用户下单"
 
-# 多文档格式
-/flow-new "REQ-124|权限管理|https://spec.doc,https://api.doc"
-
-# 无外部文档
-/flow-new "REQ-125|数据导出"
+# 已收敛需求，走手动主链
+/flow:init "REQ-123|支持用户下单|https://plan.example.com/Q1"
+/flow:spec "REQ-123"
+/flow:dev "REQ-123"
+/flow:verify "REQ-123" --strict
+/flow:prepare-pr "REQ-123"
+/flow:release "REQ-123"
 ```
 
 ---
 
 ## 📁 文件组织约定
 
-### 目录结构
+### 主状态面
 ```text
+devflow/intent/${reqId}/
+├── summary.md
+├── facts.md
+├── decision-log.md
+├── plan.md
+├── resume-index.md
+├── delegation-map.md
+├── checkpoints/
+└── artifacts/
+    ├── results/
+    └── pr-brief.md
+
 devflow/requirements/${reqId}/
-├── PRD.md                      # 产品需求文档
-├── UI_PROTOTYPE.html           # UI原型 ⚡️ 条件生成 (仅UI需求)
-├── EPIC.md                     # Epic 规划
-├── TASKS.md                    # 任务分解 (单文件管理所有任务)
-├── tasks/                      # 任务执行文档
-│   └── IMPLEMENTATION_PLAN.md  # dev-implementer 输出
-├── research/                   # 研究资料
-│   ├── ${reqId}_plan_1.md
-│   ├── ${reqId}_plan_2.md
-│   └── ui_design_strategy.md   # UI设计策略 (可选)
-├── TEST_PLAN.md                # 测试计划
-├── TEST_REPORT.md              # 测试报告
-├── SECURITY_PLAN.md            # 安全计划
-├── SECURITY_REPORT.md          # 安全报告
-├── RELEASE_PLAN.md             # 发布计划
-└── EXECUTION_LOG.md            # 执行日志
+├── context-package.md         # bootstrap bridge artifact
+├── harness-state.json
+├── TASKS.md                   # 可选，planner 直接输入 / 人类镜像
+├── task-manifest.json         # 执行真相源
+├── report-card.json
+└── RELEASE_NOTE.md
 ```
 
-### 文档命名约定
-- **PRD 文件**: `PRD.md`
-- **Epic 文件**: `EPIC.md`
-- **Tasks 文件**: `TASKS.md` (所有任务集中在一个文件，通过 checkbox 标记完成状态)
-- **研究文件**: `${reqId}_plan_{序号}.md`
-- **测试报告**: `TEST_REPORT.md`
-- **执行日志**: `EXECUTION_LOG.md`
+### 真相源约定
+- 模糊目标与恢复入口：优先看 `devflow/intent/${reqId}/`
+- requirement 生命周期：优先看 `harness-state.json`
+- 执行状态：优先看 `task-manifest.json` 和 `.harness/runtime/`
+- 验证结论：优先看 `report-card.json`
+- `context-package.md` 只负责 bootstrap，不承载长期产品判断
+- `TASKS.md` 不是必需真相源；若存在，只是 planner 输入或可读镜像
 
 ---
 
-## 🌿 Git 约定
+## 🤖 委派约定
 
-> Git 分支、worktree、PR、合并由用户自行管理，DevFlow 不参与 Git 拓扑管理。
-
----
-
-## 💬 提交信息约定
-
-### 提交格式
+### 默认执行梯
 ```text
-{type}({reqId}): {taskTitle}
-
-{详细描述}
-
-- 实现功能点1
-- 实现功能点2
-
-Co-authored-by: Claude <claude@anthropic.com>
+direct -> delegate -> team
 ```
 
-### 提交类型
-- `feat(REQ-xxx)`: 新功能
-- `fix(REQ-xxx)`: 错误修复
-- `docs(REQ-xxx)`: 文档更新
-- `test(REQ-xxx)`: 测试添加/修改
-- `refactor(REQ-xxx)`: 重构
-- `chore(REQ-xxx)`: 构建、配置等杂务
+- `direct`: 默认路径，适合小任务和短上下文
+- `delegate`: 任务边界清晰、可并行时使用本地 worker/subagent
+- `team`: 仅在多角色判断明显有价值时升级，不是默认系统
 
----
-
-## 🤖 子代理调用约定
-
-### 调用顺序 (7个阶段)
-```text
-1. flow-init      → 初始化需求结构
-   ↓
-2. flow-prd       → prd-writer (研究型) → PRD.md
-   ↓
-2.5 flow-ui       → ui-designer (研究型) → UI_PROTOTYPE.html ⚡️ 条件触发
-   ↓              仅在检测到UI需求时自动执行
-3. flow-epic      → planner (研究型) → EPIC.md + TASKS.md
-   ↓              如存在UI_PROTOTYPE.html, 自动集成UI上下文
-4. flow-dev       → dev-implementer (研究型, 每个任务) → IMPLEMENTATION_PLAN.md
-                  → main-agent (执行型) → 代码实现
-   ↓              前端任务会引用UI_PROTOTYPE.html
-5. flow-qa        → qa-tester (研究型) → TEST_PLAN.md
-                  → security-reviewer (研究型) → SECURITY_PLAN.md
-                  → main-agent (执行型) → 运行测试、安全扫描
-   ↓
-6. flow-release   → release-manager (研究型) → RELEASE_PLAN.md
-                  → main-agent (执行型) → 创建PR、合并
-```
-
-### 状态同步约定
-- 每个阶段完成后更新 `orchestration_status.json`
-- 每个任务完成后更新 `TASKS.md` 中的 checkbox (`- [ ]` → `- [x]`)
-- 所有重要操作记录到 `EXECUTION_LOG.md`
+### 状态同步
+- worker handoff 与结果写入 `devflow/intent/${reqId}/artifacts/`
+- 每个任务完成后必须回写 manifest 状态或 task result
+- 所有恢复优先读 `resume-index.md`
 
 ---
 
 ## ⚠️ 错误处理约定
 
-### 错误分类
-1. **参数错误**: 命令格式、REQ-ID 格式等
-2. **环境错误**: Git状态、权限、依赖等
-3. **网络错误**: URL访问失败
-4. **质量闸错误**: 代码质量不达标
-5. **系统错误**: 子代理异常、文件操作失败
-
-### 错误恢复命令
+### 错误恢复
 ```bash
-# 从特定阶段继续
-/flow-restart "REQ-123" --from=prd
-/flow-restart "REQ-123" --from=dev
-/flow-restart "REQ-123" --from=qa
+/flow:autopilot "REQ-123|继续当前自动驾驶" --resume
+/flow:dev "REQ-123" --resume
+/flow:restart "REQ-123" --from=dev
 ```
 
-### 错误日志格式
-```yaml
----
-error_type: parameter_error
-timestamp: 2024-01-15T10:30:00Z
-req_id: REQ-123
-step: parameter_parsing
----
-
-# 错误详情
-参数格式不正确：缺少标题部分
-
-## 解决方案
-请使用正确格式：/flow-new "REQ-123|需求标题|计划URL"
-```
+### 原则
+- 不靠聊天历史猜状态
+- 不跳过验证闸门
+- 没有 artifact 证据，不算完成
 
 ---
 
-## 📊 文档元数据约定
+## 🌿 Git 约定
 
-### YAML Frontmatter 格式
-```yaml
----
-req_id: "REQ-123"
-title: "支持用户下单"
-created_at: "2024-01-15T10:00:00Z"
-updated_at: "2024-01-15T15:30:00Z"
-version: "1.0.0"
-status: "completed"
-author: "prd-writer"
----
-```
-
----
-
-## 🎯 性能指标约定
-
-### 时间要求
-- **整个流程**: 90% 情况下在 15 分钟内完成
-- **单个任务**: 实施时间不超过 5 分钟
-- **质量闸检查**: 不超过 2 分钟
-
-### 资源约束
-- **内存占用**: < 500MB (峰值)
-- **并发需求**: 支持 3 个并发需求
-- **文档数量**: 支持 1000 个需求文档
-
----
-
-## ⚙️ 配置约定
-
-### .claude/settings.json 配置项
-```json
-{
-  "devflow": {
-    "baseBranch": "main",
-    "autoApprove": false,
-    "qualityGate": {
-      "minCoverage": 80,
-      "strictMode": true
-    },
-    "templates": {
-      "customPrdTemplate": ".claude/templates/custom-prd.md"
-    }
-  }
-}
-```
-
-### 环境变量
-```bash
-# 调试模式
-export FLOW_DEBUG=1
-
-# 超时设置 (秒)
-export FLOW_TIMEOUT=300
-
-# 最小测试覆盖率
-export MIN_COVERAGE=80
-```
+> Git 分支、worktree、PR、合并由用户自行管理；DevFlow 只产出可审计工件与 PR-ready 材料。
 
 ---
 
 ## 🔧 工具集成约定
 
 ### 钩子脚本
-- `pre-push-guard.sh`: 推送前质量检查
-- `markdown_formatter.py`: 文档格式化
-- `auto-progress-update.py`: 进度自动更新
+- `.claude/hooks/inject-agent-context.ts`: 注入当前 agent 上下文
+- `.claude/hooks/inject-skill-context.ts`: 注入当前 skill 上下文
+- `.claude/hooks/ralph-loop.ts`: Team 协作循环与节奏控制
 
 ### 测试脚本
 - `.claude/tests/run-all-tests.sh`: 运行所有测试
@@ -252,11 +135,14 @@ ls -la .claude/
 
 ### 日志查看
 ```bash
-# 查看执行日志
-tail -f devflow/requirements/REQ-123/EXECUTION_LOG.md
+# 查看恢复入口
+cat devflow/intent/REQ-123/resume-index.md
 
-# 查看错误日志
-tail -f .claude/logs/flow-*.log
+# 查看 task 结果工件
+ls -la devflow/intent/REQ-123/artifacts/results/
+
+# 查看 runtime 事件
+ls -la .harness/runtime/REQ-123/
 ```
 
 ---

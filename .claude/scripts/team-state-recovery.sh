@@ -22,7 +22,11 @@ source "$SCRIPT_DIR/common.sh"
 can_recover_state() {
     local repo_root="$1"
     local req_id="$2"
-    local status_file="$repo_root/devflow/requirements/$req_id/orchestration_status.json"
+    local status_file
+    status_file=$(resolve_team_state_file "$repo_root" "$req_id") || {
+        echo "false"
+        return 0
+    }
 
     if [[ ! -f "$status_file" ]]; then
         echo "false"
@@ -45,21 +49,32 @@ can_recover_state() {
 get_recovery_summary() {
     local repo_root="$1"
     local req_id="$2"
-    local status_file="$repo_root/devflow/requirements/$req_id/orchestration_status.json"
+    local status_file
+    status_file=$(resolve_team_state_file "$repo_root" "$req_id") || {
+        echo '{"canRecover": false, "reason": "Status file not found"}'
+        return 0
+    }
 
     if [[ ! -f "$status_file" ]]; then
         echo '{"canRecover": false, "reason": "Status file not found"}'
         return 0
     fi
 
+    local pending_tasks
+    pending_tasks=$(get_unassigned_tasks "$repo_root" "$req_id" | sed '/^$/d')
+    local pending_count=0
+    if [[ -n "$pending_tasks" ]]; then
+        pending_count=$(printf '%s\n' "$pending_tasks" | wc -l | tr -d ' ')
+    fi
+
     local team_data
-    team_data=$(jq '{
+    team_data=$(jq --argjson pending "$pending_count" '{
         canRecover: (.team.mode != null and .team.mode != "none"),
         mode: .team.mode,
         lead: .team.lead,
         teammateCount: (.team.teammates | length),
-        completedTasks: [.team.teammates[].completedTasks | length] | add,
-        pendingTasks: (.team.taskAssignments | keys | length),
+        completedTasks: (([.team.teammates[].completedTasks | length] | add) // 0),
+        pendingTasks: $pending,
         lastActiveAt: ([.team.teammates[].lastActiveAt] | max),
         ralphLoop: {
             globalIteration: .ralphLoop.globalIteration,
@@ -75,17 +90,13 @@ get_recovery_summary() {
 recover_state() {
     local repo_root="$1"
     local req_id="$2"
-    local status_file="$repo_root/devflow/requirements/$req_id/orchestration_status.json"
 
     echo "Recovering Team state for $req_id..."
 
-    # Reset teammate statuses to idle
-    local updated
-    updated=$(jq '
+    # Reset teammate statuses to idle in truth state, then mirror back to compatibility file
+    mutate_team_state_with_jq "$repo_root" "$req_id" '
         .team.teammates = [.team.teammates[] | .status = "idle" | .currentTask = null]
-    ' "$status_file")
-
-    echo "$updated" > "$status_file"
+    '
 
     # Get pending tasks
     local pending_tasks
@@ -100,7 +111,8 @@ recover_state() {
 create_snapshot() {
     local repo_root="$1"
     local req_id="$2"
-    local status_file="$repo_root/devflow/requirements/$req_id/orchestration_status.json"
+    local status_file
+    status_file=$(ensure_team_state_file "$repo_root" "$req_id") || true
     local snapshot_dir="$repo_root/devflow/requirements/$req_id/.snapshots"
     local timestamp
     timestamp=$(date +%Y%m%d_%H%M%S)
@@ -108,8 +120,8 @@ create_snapshot() {
     mkdir -p "$snapshot_dir"
 
     if [[ -f "$status_file" ]]; then
-        cp "$status_file" "$snapshot_dir/orchestration_status_$timestamp.json"
-        echo "Snapshot created: $snapshot_dir/orchestration_status_$timestamp.json"
+        cp "$status_file" "$snapshot_dir/team-state_$timestamp.json"
+        echo "Snapshot created: $snapshot_dir/team-state_$timestamp.json"
     else
         echo "No status file to snapshot"
     fi
@@ -121,23 +133,26 @@ restore_snapshot() {
     local repo_root="$1"
     local req_id="$2"
     local timestamp="${3:-}"
-    local status_file="$repo_root/devflow/requirements/$req_id/orchestration_status.json"
+    local status_file
+    status_file=$(ensure_team_state_file "$repo_root" "$req_id") || return 1
     local snapshot_dir="$repo_root/devflow/requirements/$req_id/.snapshots"
 
     if [[ -z "$timestamp" ]]; then
         # Get latest snapshot
         local latest
-        latest=$(ls -t "$snapshot_dir"/orchestration_status_*.json 2>/dev/null | head -1)
+        latest=$(ls -t "$snapshot_dir"/team-state_*.json 2>/dev/null | head -1)
         if [[ -z "$latest" ]]; then
             echo "No snapshots found"
             return 1
         fi
         cp "$latest" "$status_file"
+        sync_team_state_mirror "$repo_root" "$req_id" >/dev/null 2>&1 || true
         echo "Restored from: $latest"
     else
-        local snapshot_file="$snapshot_dir/orchestration_status_$timestamp.json"
+        local snapshot_file="$snapshot_dir/team-state_$timestamp.json"
         if [[ -f "$snapshot_file" ]]; then
             cp "$snapshot_file" "$status_file"
+            sync_team_state_mirror "$repo_root" "$req_id" >/dev/null 2>&1 || true
             echo "Restored from: $snapshot_file"
         else
             echo "Snapshot not found: $snapshot_file"
@@ -159,10 +174,10 @@ list_snapshots() {
     fi
 
     local snapshots='[]'
-    for file in "$snapshot_dir"/orchestration_status_*.json; do
+    for file in "$snapshot_dir"/team-state_*.json; do
         if [[ -f "$file" ]]; then
             local timestamp
-            timestamp=$(basename "$file" | sed 's/orchestration_status_//' | sed 's/.json//')
+            timestamp=$(basename "$file" | sed 's/team-state_//' | sed 's/.json//')
             snapshots=$(echo "$snapshots" | jq --arg ts "$timestamp" '. + [$ts]')
         fi
     done

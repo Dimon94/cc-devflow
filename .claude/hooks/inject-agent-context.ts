@@ -11,13 +11,13 @@
  *
  * 借鉴 Trellis 的 inject-subagent-context.py 实现
  *
- * 功能: 拦截 Task tool 调用，根据 subagent_type 注入对应的上下文
+ * 功能: 拦截 Task tool 调用，根据 subagent_type 注入当前 Skill/REQ 上下文
  *
  * 工作流程:
  * 1. 检测 Task tool 调用
  * 2. 获取 subagent_type 参数
  * 3. 定位当前任务目录 (从 .claude/.current-task 或环境变量或分支名)
- * 4. 读取对应的 {subagent_type}.jsonl 文件
+ * 4. 优先读取对应的 {subagent_type}.jsonl，回退到 Skill 的 context.jsonl
  * 5. 解析 JSONL，读取每个文件内容
  * 6. 注入到 prompt 参数中
  *
@@ -37,13 +37,14 @@ import { execSync } from 'child_process';
 // Constants
 // ============================================================================
 
-const DIR_WORKFLOW = '.claude';
-const DIR_SKILLS = 'skills/workflow';
+const DIR_CLAUDE = '.claude';
+const DIR_SKILLS = '.claude/skills';
 const DIR_REQUIREMENTS = 'devflow/requirements';
 const FILE_CURRENT_TASK = '.current-task';
 
 // Agent type to skill directory mapping
 const AGENT_SKILL_MAP: Record<string, string> = {
+  'clarify-analyst': 'flow-spec',
   'flow-researcher': 'flow-init',
   'prd-writer': 'flow-spec',
   'tech-architect': 'flow-spec',
@@ -53,19 +54,7 @@ const AGENT_SKILL_MAP: Record<string, string> = {
   'qa-tester': 'flow-verify',
   'security-reviewer': 'flow-verify',
   'release-manager': 'flow-release',
-};
-
-// Agent type to JSONL filename mapping
-const AGENT_JSONL_MAP: Record<string, string> = {
-  'flow-researcher': 'brainstorm.jsonl',
-  'prd-writer': 'spec.jsonl',
-  'tech-architect': 'spec.jsonl',
-  'ui-designer': 'spec.jsonl',
-  'planner': 'spec.jsonl',
-  'dev-implementer': 'dev.jsonl',
-  'qa-tester': 'dev.jsonl',
-  'security-reviewer': 'dev.jsonl',
-  'release-manager': 'dev.jsonl',
+  'bug-analyzer': 'flow-fix',
 };
 
 const MAX_FILE_SIZE = 50000; // 50KB per file
@@ -108,7 +97,7 @@ function findRepoRoot(startPath: string): string | null {
 }
 
 function getCurrentTask(repoRoot: string): string | null {
-  const currentTaskFile = join(repoRoot, DIR_WORKFLOW, FILE_CURRENT_TASK);
+  const currentTaskFile = join(repoRoot, DIR_CLAUDE, FILE_CURRENT_TASK);
   if (!existsSync(currentTaskFile)) {
     return null;
   }
@@ -401,14 +390,16 @@ function main() {
     }
 
     // Try to find JSONL file in multiple locations
-    const jsonlFilename = AGENT_JSONL_MAP[subagentType] || 'context.jsonl';
+    const jsonlFilename = `${subagentType}.jsonl`;
     const possiblePaths = [
       // 1. Requirement-specific context
       join(reqPath, 'context', jsonlFilename),
+      // 2. Requirement-specific default context
+      join(reqPath, 'context', 'context.jsonl'),
       // 2. Skill-specific context
-      join(repoRoot, DIR_WORKFLOW, DIR_SKILLS, skillDir, jsonlFilename),
+      join(repoRoot, DIR_SKILLS, skillDir, jsonlFilename),
       // 3. Skill default context.jsonl
-      join(repoRoot, DIR_WORKFLOW, DIR_SKILLS, skillDir, 'context.jsonl'),
+      join(repoRoot, DIR_SKILLS, skillDir, 'context.jsonl'),
     ];
 
     let entries: JsonlEntry[] = [];

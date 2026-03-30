@@ -1,48 +1,16 @@
 #!/usr/bin/env bash
+# =============================================================================
+# [INPUT]: 依赖 common.sh 提供 REQ 路径、时间与校验能力，依赖 jq 输出安全 JSON，接收 REQ_ID/title/description。
+# [OUTPUT]: 创建 requirement 或 bug 的最薄目录骨架；对 requirement 写入 harness-state 与 intent memory scaffold。
+# [POS]: flow-init/scripts 的 bootstrap 脚本，被 skill 与测试复用。
+# [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+# =============================================================================
 
-# Create new requirement structure for cc-devflow
-#
-# This script initializes a new requirement or BUG directory structure.
-# Based on spec-kit's create-new-feature.sh design.
-#
-# Usage: ./create-requirement.sh [REQ_ID] [OPTIONS]
-#
-# ARGUMENTS:
-#   REQ_ID              Requirement ID (REQ-XXX or BUG-XXX format)
-#                       Optional if --interactive mode is used
-#
-# OPTIONS:
-#   --title TITLE       Requirement title
-#   --branch-title TITLE Branch title (deprecated, ignored)
-#   --description DESC  Brief description (optional)
-#   --skip-git          Deprecated (git operations removed)
-#   --interactive, -i   Interactive mode (prompts for inputs)
-#   --json              Output in JSON format
-#   --help, -h          Show help message
-#
-# EXAMPLES:
-#   # Create requirement
-#   ./create-requirement.sh REQ-123 --title "User authentication"
-#
-#   # Interactive mode
-#   ./create-requirement.sh --interactive
-#
-#   # Create BUG structure
-#   ./create-requirement.sh BUG-456 --title "Fix login issue" --skip-git
-#
-#   # JSON output for automation
-#   ./create-requirement.sh REQ-123 --title "API Gateway" --json
+set -euo pipefail
 
-set -e
-
-# Parse command line arguments
 REQ_ID=""
 TITLE=""
-BRANCH_TITLE=""
 DESCRIPTION=""
-SKIP_GIT=false
-BRANCH_ONLY=false
-USE_WORKTREE=true
 INTERACTIVE=false
 JSON_MODE=false
 AUTO_ID=false
@@ -50,19 +18,21 @@ AUTO_ID=false
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --title)
-            TITLE="$2"
-            shift 2
-            ;;
-        --branch-title)
-            BRANCH_TITLE="$2"
+            TITLE="${2:-}"
             shift 2
             ;;
         --description)
-            DESCRIPTION="$2"
+            DESCRIPTION="${2:-}"
             shift 2
             ;;
-        --skip-git|--branch-only|--worktree)
-            # Deprecated: git operations removed from DevFlow
+        --branch-title|--worktree)
+            shift
+            if [[ $# -gt 0 && "$1" != --* ]]; then
+                shift
+            fi
+            ;;
+        --skip-git|--branch-only)
+            # Deprecated: kept for compatibility, ignored.
             shift
             ;;
         --interactive|-i)
@@ -78,56 +48,43 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         --help|-h)
-            cat << 'EOF'
+            cat <<'EOF'
 Usage: create-requirement.sh [REQ_ID] [OPTIONS]
 
-Create new requirement or BUG structure for cc-devflow.
+Create the thinnest CC-DevFlow requirement or bug scaffold.
 
 ARGUMENTS:
   REQ_ID              Requirement ID (REQ-XXX or BUG-XXX format)
-                      Optional if --interactive mode is used
 
 OPTIONS:
   --title TITLE       Requirement title
-  --branch-title TITLE Deprecated (ignored)
-  --description DESC  Brief description (optional)
-  --interactive, -i   Interactive mode (prompts for inputs)
-  --json              Output results in JSON format
+  --description DESC  Brief description
+  --interactive, -i   Prompt for missing values
+  --json              Output results as JSON
   --auto-id           Auto-select next available REQ-ID when missing or duplicated
   --help, -h          Show this help message
 
-EXAMPLES:
-  # Create requirement with worktree (default)
-  ./create-requirement.sh REQ-123 --title "User authentication"
+CANONICAL OUTPUT (REQ):
+  devflow/requirements/REQ-XXX/
+  ├── README.md
+  ├── harness-state.json
+  └── research/
 
-  # Create requirement with traditional branch
-  ./create-requirement.sh REQ-123 --title "User authentication" --branch-only
-
-  # Interactive mode
-  ./create-requirement.sh --interactive
-
-  # Create BUG structure
-  ./create-requirement.sh BUG-456 --title "Fix login issue"
-
-  # JSON output
-  ./create-requirement.sh REQ-123 --title "API Gateway" --json
-
-STRUCTURE CREATED:
-  Requirements (REQ-XXX):
-    devflow/requirements/REQ-XXX/
-    ├── research/              # External research materials
-    ├── EXECUTION_LOG.md       # Event log
-    └── orchestration_status.json  # Status tracking
-
-  BUG Fixes (BUG-XXX):
-    devflow/bugs/BUG-XXX/
-    ├── EXECUTION_LOG.md
-    └── status.json
+  devflow/intent/REQ-XXX/
+  ├── summary.md
+  ├── facts.md
+  ├── decision-log.md
+  ├── plan.md
+  ├── resume-index.md
+  ├── delegation-map.md
+  ├── checkpoints/
+  └── artifacts/
+      ├── briefs/
+      └── results/
 
 NOTE:
-  Git branch/worktree management is handled externally by the user.
-  DevFlow only creates the requirement directory structure.
-
+  Compatibility files such as EXECUTION_LOG.md / orchestration_status.json
+  are no longer created by default here.
 EOF
             exit 0
             ;;
@@ -147,30 +104,35 @@ EOF
     esac
 done
 
-# Source common functions
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 COMMON_SH="$SCRIPT_DIR/common.sh"
 if [[ ! -f "$COMMON_SH" ]]; then
     COMMON_SH="$SCRIPT_DIR/../../../../scripts/common.sh"
 fi
-if [[ ! -f "$COMMON_SH" ]]; then
-    echo "ERROR: common.sh not found (checked local + .claude/scripts)" >&2
-    exit 1
-fi
 source "$COMMON_SH"
-REPO_ROOT=$(get_repo_root)
 
-# Interactive mode
-if $INTERACTIVE; then
-    if ! $JSON_MODE; then
-        echo "=== Create New Requirement ==="
-        echo ""
+seed_file() {
+    local path="$1"
+    local content="$2"
+    if [[ ! -f "$path" ]]; then
+        printf '%s' "$content" > "$path"
     fi
+}
 
-    # Prompt for requirement ID if not provided
+build_goal() {
+    local req_id="$1"
+    local title="$2"
+    if [[ -n "$title" ]]; then
+        printf 'Deliver %s: %s' "$req_id" "$title"
+    else
+        printf 'Deliver %s safely with auditable checkpoints.' "$req_id"
+    fi
+}
+
+if $INTERACTIVE; then
     if [[ -z "$REQ_ID" ]]; then
-        suggested_req_id=$(next_available_req_id "$REPO_ROOT")
-        read -p "Requirement ID (REQ-XXX or BUG-XXX) [${suggested_req_id}]: " input_req_id
+        suggested_req_id=$(next_available_req_id "$(get_repo_root)")
+        read -r -p "Requirement ID (REQ-XXX or BUG-XXX) [${suggested_req_id}]: " input_req_id
         input_req_id=$(echo "${input_req_id}" | tr '[:lower:]' '[:upper:]')
         if [[ -z "$input_req_id" ]]; then
             AUTO_ID=true
@@ -180,107 +142,52 @@ if $INTERACTIVE; then
         fi
     fi
 
-    # Prompt for title if not provided
     if [[ -z "$TITLE" ]]; then
-        read -p "Requirement Title: " TITLE
+        read -r -p "Requirement Title: " TITLE
     fi
 
-    # Prompt for description
     if [[ -z "$DESCRIPTION" ]]; then
-        read -p "Brief Description (optional): " DESCRIPTION
-    fi
-
-    # Prompt for git branch creation
-    if ! $SKIP_GIT && has_git; then
-        read -p "Create git branch? (y/n): " create_branch
-        if [[ "$create_branch" != "y" && "$create_branch" != "Y" ]]; then
-            SKIP_GIT=true
-        fi
+        read -r -p "Brief Description (optional): " DESCRIPTION
     fi
 fi
 
-# Ensure requirement ID is set, auto-select when allowed
+REPO_ROOT=$(get_repo_root)
+
 if [[ -z "$REQ_ID" ]]; then
     AUTO_ID=true
     REQ_ID=$(next_available_req_id "$REPO_ROOT")
-    if [[ -z "$REQ_ID" ]]; then
-        echo "ERROR: Unable to determine next requirement ID" >&2
-        exit 1
-    fi
-    if ! $JSON_MODE; then
-        echo "Auto-selected requirement ID: $REQ_ID" >&2
-    fi
 fi
 
-# Normalize requirement ID to uppercase
-REQ_ID=$(echo "$REQ_ID" | tr '[:lower:]' '[:upper:]')
+if [[ -z "$REQ_ID" ]]; then
+    echo "ERROR: Unable to determine next requirement ID" >&2
+    exit 1
+fi
 
-# Validate requirement ID format
+REQ_ID=$(echo "$REQ_ID" | tr '[:lower:]' '[:upper:]')
 validate_req_id "$REQ_ID" || exit 1
 
-# Resolve conflicts when requirement ID already exists
 if req_id_in_use "$REPO_ROOT" "$REQ_ID"; then
     if $AUTO_ID; then
-        original_req_id="$REQ_ID"
         while req_id_in_use "$REPO_ROOT" "$REQ_ID"; do
-            next_candidate=$(next_available_req_id "$REPO_ROOT")
-            if [[ "$next_candidate" == "$REQ_ID" ]]; then
-                next_candidate="REQ-$(date +%Y%m%d%H%M%S)"
-            fi
-            REQ_ID="$next_candidate"
+            REQ_ID=$(next_available_req_id "$REPO_ROOT")
         done
-        if [[ "$REQ_ID" != "$original_req_id" ]] && ! $JSON_MODE; then
-            echo "Requirement ID in use; switched to $REQ_ID" >&2
-        fi
     else
-        suggested_req_id=$(next_available_req_id "$REPO_ROOT")
-        conflict_dir=$(get_req_dir "$REPO_ROOT" "$REQ_ID")
-        echo "ERROR: Requirement directory already exists: $conflict_dir" >&2
-        if [[ "$suggested_req_id" != "$REQ_ID" ]]; then
-            echo "Suggested next available ID: $suggested_req_id" >&2
-        fi
+        echo "ERROR: Requirement directory already exists: $(get_req_dir "$REPO_ROOT" "$REQ_ID")" >&2
         exit 1
     fi
 fi
 
-# Get requirement type and directory
 REQ_TYPE=$(get_req_type "$REQ_ID")
 REQ_DIR=$(get_req_dir "$REPO_ROOT" "$REQ_ID")
+INTENT_DIR="$REPO_ROOT/devflow/intent/$REQ_ID"
+INTENT_ARTIFACTS_DIR="$INTENT_DIR/artifacts"
+GOAL=$(build_goal "$REQ_ID" "$TITLE")
+NOW_ISO=$(get_beijing_time_iso)
+NOW_FULL=$(get_beijing_time_full)
 
-# Create directory structure
-if ! $JSON_MODE; then
-    echo "Creating requirement structure at $REQ_DIR..." >&2
-fi
-
-# Create directories
 mkdir -p "$REQ_DIR/research"
 
-# Initialize EXECUTION_LOG.md
-cat > "$REQ_DIR/EXECUTION_LOG.md" <<EOF
-# Execution Log: $REQ_ID
-
-**Title**: ${TITLE:-"To be defined"}
-**Type**: $REQ_TYPE
-**Created**: $(get_beijing_time_full)
-
-EOF
-
-if [[ -n "$DESCRIPTION" ]]; then
-    cat >> "$REQ_DIR/EXECUTION_LOG.md" <<EOF
-## Description
-$DESCRIPTION
-
-EOF
-fi
-
-cat >> "$REQ_DIR/EXECUTION_LOG.md" <<'EOF'
-## Events
-
-EOF
-
-# Initialize status file
 if [[ "$REQ_TYPE" == "bug" ]]; then
-    # BUG-specific status file
     cat > "$REQ_DIR/status.json" <<EOF
 {
   "bugId": "$REQ_ID",
@@ -288,31 +195,77 @@ if [[ "$REQ_TYPE" == "bug" ]]; then
   "status": "initialized",
   "phase": "analysis",
   "severity": "unknown",
-  "createdAt": "$(get_beijing_time_iso)",
-  "updatedAt": "$(get_beijing_time_iso)"
+  "createdAt": "$NOW_ISO",
+  "updatedAt": "$NOW_ISO"
 }
 EOF
 else
-    # Requirement status file
-    cat > "$REQ_DIR/orchestration_status.json" <<EOF
+    mkdir -p \
+        "$INTENT_DIR/checkpoints" \
+        "$INTENT_ARTIFACTS_DIR/briefs" \
+        "$INTENT_ARTIFACTS_DIR/results"
+
+    cat > "$REQ_DIR/harness-state.json" <<EOF
 {
-  "reqId": "$REQ_ID",
-  "title": "${TITLE:-"To be defined"}",
+  "changeId": "$REQ_ID",
+  "goal": "$GOAL",
   "status": "initialized",
-  "phase": "planning",
-  "createdAt": "$(get_beijing_time_iso)",
-  "updatedAt": "$(get_beijing_time_iso)"
+  "initializedAt": "$NOW_ISO",
+  "updatedAt": "$NOW_ISO"
 }
 EOF
+
+    seed_file "$INTENT_DIR/summary.md" "# Summary: $REQ_ID
+
+- Goal: $GOAL
+- Created: $NOW_FULL
+"
+
+    seed_file "$INTENT_DIR/facts.md" "# Facts: $REQ_ID
+
+- Initial title: ${TITLE:-"To be defined"}
+"
+
+    seed_file "$INTENT_DIR/decision-log.md" "# Decision Log
+
+## $NOW_ISO
+- Event: requirement_bootstrapped
+- Stage: converge
+- Reason: Created initial requirement and intent scaffold
+"
+
+    seed_file "$INTENT_DIR/plan.md" "# Plan: $REQ_ID
+
+## Current Intent
+
+- Goal: $GOAL
+- Next: refine plan, then compile executable tasks
+"
+
+    seed_file "$INTENT_DIR/delegation-map.md" "# Delegation Map: $REQ_ID
+
+- Default execution ladder: \`direct -> delegate -> team\`
+"
+
+    seed_file "$INTENT_DIR/resume-index.md" "# Resume Index: $REQ_ID
+
+- Stage: \`discover\`
+- Goal: $GOAL
+- Lifecycle: initialized
+- Updated At: $NOW_ISO
+
+## Next Action
+
+Run /flow:spec.
+"
 fi
 
-# Create README.md for the requirement
 cat > "$REQ_DIR/README.md" <<EOF
 # $REQ_ID: ${TITLE:-"To be defined"}
 
 **Status**: Initialized
 **Type**: $REQ_TYPE
-**Created**: $(get_beijing_time_full)
+**Created**: $NOW_FULL
 
 EOF
 
@@ -324,81 +277,65 @@ $DESCRIPTION
 EOF
 fi
 
-cat >> "$REQ_DIR/README.md" <<'EOF'
-## Documents
+cat >> "$REQ_DIR/README.md" <<EOF
+## Canonical State
 
-### Planning Phase
-- [ ] PRD.md - Product Requirements Document
-- [ ] EPIC.md - Epic Planning
-- [ ] TASKS.md - Task Breakdown
+- \`harness-state.json\` / \`status.json\`: lifecycle state
+- \`devflow/intent/<REQ>/\`: semantic memory and resume entry
+- \`context-package.md\`: bootstrap bridge artifact (created by harness pack)
 
-### Execution Phase
-- [ ] TEST_PLAN.md - Test Plan
-- [ ] SECURITY_PLAN.md - Security Plan
-- [ ] EXECUTION_LOG.md - Event Log
+## Next Step
 
-### Review Phase
-- [ ] TEST_REPORT.md - Test Report
-- [ ] SECURITY_REPORT.md - Security Report
-- [ ] RELEASE_PLAN.md - Release Plan
-
-## Research Materials
-Place external research materials in `research/` directory:
-- API documentation
-- Design specifications
-- Reference implementations
-- Planning documents
-
-## Workflow
-1. **Planning**: Create PRD → Generate EPIC → Break down TASKS
-2. **Development**: Implement tasks following TDD approach
-3. **Quality**: Execute test plan and security review
-4. **Release**: Create release plan and merge to main
-
+- Requirements: run \`/flow:spec "$REQ_ID"\`
+- Bugs: continue with analysis / \`/flow:fix\`
 EOF
 
-# Log the creation event
-log_event "$REQ_ID" "Requirement structure initialized"
+mkdir -p "$REPO_ROOT/devflow/workspace"
+printf '%s\n' "$REQ_ID" > "$REPO_ROOT/devflow/workspace/.current-req"
 
-if [[ -n "$TITLE" ]]; then
-    log_event "$REQ_ID" "Title: $TITLE"
-fi
-
-if [[ -n "$DESCRIPTION" ]]; then
-    log_event "$REQ_ID" "Description: $DESCRIPTION"
-fi
-
-# Set environment variable for REQ identification
 export DEVFLOW_REQ_ID="$REQ_ID"
 
-# Output results
 if $JSON_MODE; then
-    printf '{"req_id":"%s","req_type":"%s","req_dir":"%s","title":"%s","created_at":"%s"}\n' \
-        "$REQ_ID" \
-        "$REQ_TYPE" \
-        "$REQ_DIR" \
-        "${TITLE:-""}" \
-        "$(get_beijing_time_iso)"
+    if [[ "$REQ_TYPE" == "bug" ]]; then
+        jq -nc \
+            --arg req_id "$REQ_ID" \
+            --arg req_type "$REQ_TYPE" \
+            --arg req_dir "$REQ_DIR" \
+            --arg status_file "$REQ_DIR/status.json" \
+            --arg title "${TITLE:-}" \
+            --arg created_at "$NOW_ISO" \
+            '{req_id:$req_id, req_type:$req_type, req_dir:$req_dir, status_file:$status_file, title:$title, created_at:$created_at}'
+    else
+        jq -nc \
+            --arg req_id "$REQ_ID" \
+            --arg req_type "$REQ_TYPE" \
+            --arg req_dir "$REQ_DIR" \
+            --arg intent_dir "$INTENT_DIR" \
+            --arg harness_state_file "$REQ_DIR/harness-state.json" \
+            --arg title "${TITLE:-}" \
+            --arg created_at "$NOW_ISO" \
+            '{req_id:$req_id, req_type:$req_type, req_dir:$req_dir, intent_dir:$intent_dir, harness_state_file:$harness_state_file, title:$title, created_at:$created_at}'
+    fi
 else
     echo ""
-    echo "✅ Requirement structure created successfully!"
+    echo "✅ Requirement scaffold created successfully!"
     echo ""
     echo "Requirement ID:    $REQ_ID"
     echo "Type:              $REQ_TYPE"
     echo "Directory:         $REQ_DIR"
-    if [[ -n "$TITLE" ]]; then
-        echo "Title:             $TITLE"
-    fi
-    echo ""
-    echo "Next Steps:"
-    if [[ "$REQ_TYPE" == "bug" ]]; then
-        echo "  1. Run bug-analyzer agent to analyze the BUG"
-        echo "  2. Run /flow-fix to start BUG fix workflow"
-        echo "  3. Keep EXECUTION_LOG.md updated during fixes"
+    if [[ "$REQ_TYPE" != "bug" ]]; then
+        echo "Intent Memory:     $INTENT_DIR"
+        echo "Harness State:     $REQ_DIR/harness-state.json"
+        echo ""
+        echo "Next Steps:"
+        echo "  1. Refine intent memory if the goal is still fuzzy"
+        echo "  2. Run /flow:spec to compile executable tasks"
+        echo "  3. Continue with /flow:dev and subsequent flow commands"
     else
-        echo "  1. Add research materials to research/ (optional)"
-        echo "  2. Run prd-writer agent to create PRD.md"
-        echo "  3. Continue with planner and subsequent flow commands"
+        echo ""
+        echo "Next Steps:"
+        echo "  1. Run bug analysis"
+        echo "  2. Continue with /flow:fix"
     fi
     echo ""
 fi

@@ -1,6 +1,6 @@
 #!/usr/bin/env npx ts-node
 /**
- * [INPUT]: 依赖 quality-gates.yml 的 verify 命令配置, orchestration_status.json 的 Team 状态
+ * [INPUT]: 依赖 quality-gates.yml 的 verify 命令配置与 Team 状态存储
  * [OUTPUT]: 对外提供 SubagentStop 钩子，拦截子 Agent 停止并执行程序化验证
  * [POS]: hooks/ 的 Ralph Loop 控制器，支持单 Agent 和多 Teammate 模式
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
@@ -13,7 +13,7 @@
  * - 子 Agent 尝试停止时执行程序化验证
  * - 验证失败则阻止停止，返回错误信息
  * - 最多迭代 N 次，防止无限循环
- * - 状态持久化到 .ralph-state.json (单 Agent) 或 orchestration_status.json (Team)
+ * - 状态持久化到 .ralph-state.json (单 Agent) 或 Team 状态文件 (Team)
  *
  * v4.7 Team 模式支持：
  * - Teammate 级别验证：每个 teammate 停止时验证自己的改动
@@ -26,6 +26,11 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { execSync } from 'child_process';
+const {
+  findLatestTeamStatePath,
+  readTeamStateSync,
+  writeTeamStateSync
+} = require('../../lib/harness/team-state');
 
 // =============================================================================
 // 类型定义
@@ -488,61 +493,38 @@ function formatFailures(failures: FailureRecord[]): string {
 // =============================================================================
 
 /**
- * 查找当前需求的 orchestration_status.json
+ * 查找当前需求的 Team 状态文件
  */
 function findOrchestrationStatus(repoRoot: string): string | null {
-  const devflowDir = path.join(repoRoot, 'devflow', 'requirements');
-  if (!fs.existsSync(devflowDir)) return null;
+  return findLatestTeamStatePath(repoRoot);
+}
 
-  // 查找最近修改的需求目录
-  const reqDirs = fs.readdirSync(devflowDir)
-    .filter(d => d.startsWith('REQ-') || d.startsWith('BUG-'))
-    .map(d => ({
-      name: d,
-      path: path.join(devflowDir, d),
-      mtime: fs.statSync(path.join(devflowDir, d)).mtime.getTime()
-    }))
-    .sort((a, b) => b.mtime - a.mtime);
-
-  for (const reqDir of reqDirs) {
-    const statusFile = path.join(reqDir.path, 'orchestration_status.json');
-    if (fs.existsSync(statusFile)) {
-      return statusFile;
-    }
+function getChangeIdFromStatePath(statusPath: string): string {
+  if (statusPath.endsWith('team-state.json')) {
+    return path.basename(path.dirname(path.dirname(statusPath)));
   }
-
-  return null;
+  return path.basename(path.dirname(statusPath));
 }
 
 /**
- * 加载 orchestration_status.json
+ * 加载 Team 状态文件
  */
-function loadOrchestrationStatus(statusPath: string): OrchestrationStatus | null {
-  try {
-    const content = fs.readFileSync(statusPath, 'utf-8');
-    return JSON.parse(content);
-  } catch {
-    return null;
-  }
+function loadOrchestrationStatus(repoRoot: string, statusPath: string): OrchestrationStatus | null {
+  return readTeamStateSync(repoRoot, getChangeIdFromStatePath(statusPath));
 }
 
 /**
- * 保存 orchestration_status.json
+ * 保存 Team 状态文件
  */
-function saveOrchestrationStatus(statusPath: string, status: OrchestrationStatus): void {
-  try {
-    status.updatedAt = new Date().toISOString();
-    fs.writeFileSync(statusPath, JSON.stringify(status, null, 2), 'utf-8');
-  } catch {
-    // 忽略写入错误
-  }
+function saveOrchestrationStatus(repoRoot: string, statusPath: string, status: OrchestrationStatus): void {
+  writeTeamStateSync(repoRoot, getChangeIdFromStatePath(statusPath), status);
 }
 
 /**
  * 检查是否启用 Team 模式
  */
 function isTeamModeEnabled(status: OrchestrationStatus | null, config: QualityGatesConfig): boolean {
-  // 检查 orchestration_status.json 中是否有 team 状态
+  // 检查 Team 状态文件中是否有 team 状态
   if (!status?.team) return false;
 
   // 检查配置中是否启用 team_mode
@@ -711,9 +693,9 @@ function main(): void {
   // 加载配置
   const config = loadConfig(repoRoot);
 
-  // 查找 orchestration_status.json
+  // 查找 Team 状态文件
   const statusPath = findOrchestrationStatus(repoRoot);
-  const orchestrationStatus = statusPath ? loadOrchestrationStatus(statusPath) : null;
+  const orchestrationStatus = statusPath ? loadOrchestrationStatus(repoRoot, statusPath) : null;
 
   // 检查是否启用 Team 模式
   if (teammateId && isTeamModeEnabled(orchestrationStatus, config)) {
@@ -801,7 +783,7 @@ function handleTeamMode(
 
   if (!teammatePassed) {
     // Teammate 验证失败
-    saveOrchestrationStatus(statusPath, status);
+    saveOrchestrationStatus(repoRoot, statusPath, status);
 
     const failureDetails = formatFailures(teammateFailures);
     const currentIteration = getTeammateIteration(status, teammateId);
@@ -827,7 +809,7 @@ function handleTeamMode(
 
     if (!globalPassed) {
       // 全局验证失败
-      saveOrchestrationStatus(statusPath, status);
+      saveOrchestrationStatus(repoRoot, statusPath, status);
 
       const failureDetails = formatFailures(globalFailures);
       const output: HookOutput = {
@@ -840,7 +822,7 @@ function handleTeamMode(
     }
 
     // 全局验证通过
-    saveOrchestrationStatus(statusPath, status);
+    saveOrchestrationStatus(repoRoot, statusPath, status);
     const output: HookOutput = {
       decision: 'allow',
       reason: `All verifications passed. Teammate ${teammateId} (last active) completed successfully.`
@@ -850,7 +832,7 @@ function handleTeamMode(
   }
 
   // 不是最后一个 Teammate，允许停止
-  saveOrchestrationStatus(statusPath, status);
+  saveOrchestrationStatus(repoRoot, statusPath, status);
   const output: HookOutput = {
     decision: 'allow',
     reason: `Teammate ${teammateId} verification passed. Other teammates still active.`

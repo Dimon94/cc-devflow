@@ -69,11 +69,11 @@ Actual execution is handled by Claude's Task tool.
 Execution Flow:
 ---------------
 
-1. PRD Generation (Sequential - Must complete first)
-   Agent: prd-writer
-   Output: PRD.md
+1. Fact Capture (Sequential - Must complete first)
+   Agent: clarify-analyst
+   Output: facts.md
 
-2. Parallel Execution (After PRD completes)
+2. Parallel Execution (After fact capture completes)
 
    ┌─────────────────────────────────────────────────────┐
    │                                                     │
@@ -86,9 +86,9 @@ Execution Flow:
    │  │                 │    │ PRD             │        │
    │  │                 │    │                 │        │
    │  │ Output:         │    │ Output:         │        │
-   │  │ - TECH_DESIGN   │    │ - UI_PROTOTYPE  │        │
-   │  │ - data-model    │    │ - ui_design_    │        │
-   │  │ - contracts/    │    │   strategy.md   │        │
+   │  │ - architecture  │    │ - ui.md         │        │
+   │  │ - interfaces    │    │ - UX constraints│        │
+   │  │ - risks         │    │ - component cues│        │
    │  └────────┬────────┘    └────────┬────────┘        │
    │           │                      │                 │
    │           └──────────┬───────────┘                 │
@@ -98,10 +98,10 @@ Execution Flow:
    │                                                    │
    └─────────────────────────────────────────────────────┘
 
-3. Epic Generation (After parallel stage completes)
+3. Plan Compile (After parallel stage completes)
    Agent: planner
-   Input: PRD.md + TECH_DESIGN.md (optional) + UI_PROTOTYPE.html (optional)
-   Output: EPIC.md + TASKS.md
+   Input: facts.md + architecture.md (optional) + ui.md (optional)
+   Output: plan.md + task-manifest.json
 
 Claude Task Tool Usage:
 -----------------------
@@ -157,18 +157,18 @@ EOF
 # ============================================================================
 
 echo ""
-echo "Checking PRD for UI keywords..."
+echo "Checking planning inputs for UI keywords..."
 
 if [[ -f "$PRD_FILE" ]]; then
     if grep -qiE '用户界面|前端|页面|交互|UI|界面设计|Web页面' "$PRD_FILE"; then
-        echo "✓ UI keywords detected in PRD"
+        echo "✓ UI keywords detected in planning inputs"
         echo "  ui-designer will be invoked (unless --skip-ui)"
     else
-        echo "⊘ No UI keywords in PRD"
+        echo "⊘ No UI keywords in planning inputs"
         echo "  ui-designer will be skipped"
     fi
 else
-    echo "✗ PRD.md not found"
+    echo "✗ Primary planning input not found"
 fi
 
 # ============================================================================
@@ -180,8 +180,8 @@ echo "============================================"
 echo "Execution Plan for $REQ_ID"
 echo "============================================"
 echo ""
-echo "Stage 1: PRD Generation"
-echo "  Agent: prd-writer"
+echo "Stage 1: Fact Capture"
+echo "  Agent: clarify-analyst"
 echo "  Status: Pending"
 echo ""
 echo "Stage 2: Parallel Execution"
@@ -196,7 +196,7 @@ else
     echo "  [B] ui-designer: Skipped (--skip-ui)"
 fi
 echo ""
-echo "Stage 3: Epic Generation"
+echo "Stage 3: Plan Compile"
 echo "  Agent: planner"
 echo "  Status: Pending"
 echo ""

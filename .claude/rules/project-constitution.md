@@ -583,7 +583,7 @@ MAXIMUM 3 PROJECTS/MODULES:
   Rule: Use ≤3 distinct projects/services
 
   If >3 needed:
-    → Must fill Complexity Tracking table in EPIC.md
+    → Must record complexity justification in current plan artifacts (`plan.md` or equivalent)
     → Justify why simpler alternative insufficient
     → Document mitigation strategy
 ```
@@ -806,7 +806,7 @@ STORY ISOLATION:
 ```
 
 **Enforcement**:
-- PRD anti-expansion validation checklist (prd-writer agent)
+- Scope anti-expansion validation checklist (planning reviewer)
 - validate-scope-boundary.sh script
 
 ---
@@ -815,7 +815,9 @@ STORY ISOLATION:
 
 ### Workflow Constraints
 
-1. **Standard Flow Mandate**: All development through `/flow-init` → `/flow-prd` → `/flow-epic` → `/flow-dev` → `/flow-qa` → `/flow-release`
+1. **Standard Flow Mandate**:
+   - 模糊目标默认走 `/flow:autopilot`
+   - 已收敛需求走 `/flow:init` → `/flow:spec` → `/flow:dev` → `/flow:verify` → `/flow:prepare-pr` → `/flow:release`
 2. **No Gate Skipping**: Quality gates (Entry/Exit) cannot be bypassed
 3. **Document-Driven**: Important decisions must be documented
 4. **Version Control**: All changes through Git
@@ -823,8 +825,8 @@ STORY ISOLATION:
 ### Agent Behavior Constraints
 
 1. **Main Agent Authority**: Only main agent (Claude) may execute code modifications
-2. **Research Agent Role**: Research agents (prd-writer, planner, etc.) only analyze and output documents
-3. **Coordination**: Agents must coordinate via `orchestration_status.json`
+2. **Research Agent Role**: Planning and review agents only analyze and output artifacts, not direct code changes
+3. **Coordination**: Agents must coordinate via current Markdown memory and harness artifacts
 4. **Error Handling**: Agents must stop and report errors, not ignore
 
 ### Technology Choice Constraints
@@ -874,7 +876,7 @@ Amendment Workflow:
 
   2. Review:
      - Community discussion (minimum 7 days)
-     - Impact analysis (compatibility-checker agent)
+     - Impact analysis (designated review agent or reviewer)
      - Test amendment in isolated environment
 
   3. Approval:
@@ -919,9 +921,9 @@ PATCH (e.g., 2.1.0 → 2.1.1):
 ```text
 Layer 1: Template Hard Constraints
   ↓
-  - PRD_TEMPLATE.md: ANTI-EXPANSION RULES (Article X)
-  - EPIC_TEMPLATE.md: Phase -1 Gates (Articles VII, VIII, IX)
-  - TASKS_TEMPLATE.md: TDD enforcement (Article VI)
+  - Planning artifacts: anti-expansion and boundary rules (Article X)
+  - Execution artifacts: phase gates and readiness checks (Articles VII, VIII, IX)
+  - Task artifacts: TDD enforcement (Article VI)
 
 Layer 2: Command-Level Enforcement
   ↓
@@ -930,11 +932,11 @@ Layer 2: Command-Level Enforcement
 
 Layer 3: Agent-Level Constraints
   ↓
-  - prd-writer: Anti-Expansion Validation Checklist
-  - planner: Phase -1 Gate Enforcement
-  - dev-implementer: TDD Sequence Validation
-  - qa-tester: Test Quality Standards
-  - security-reviewer: Security Mandate Compliance
+  - planning reviewers: Anti-Expansion Validation Checklist
+  - planners: gate and dependency enforcement
+  - implementers: TDD sequence validation
+  - verification reviewers: test quality standards
+  - security reviewers: security mandate compliance
 
 Layer 4: Validation Scripts
   ↓

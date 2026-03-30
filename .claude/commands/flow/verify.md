@@ -1,12 +1,12 @@
 ---
 name: flow-verify
 description: 'Run layered quality gates and produce report-card. Usage: /flow:verify "REQ-123" [--strict] [--skip-review]'
-skill: workflow/flow-verify
+skill: flow-verify
 ---
 
 # Flow-Verify Command (Harness Gates)
 
-> 触发入口：执行细节由 `.claude/skills/workflow/flow-verify/SKILL.md` 定义。
+> 触发入口：执行细节由 `.claude/skills/flow-verify/SKILL.md` 定义。
 
 ## User Input
 
@@ -33,5 +33,5 @@ $ARGUMENTS = "REQ_ID [--strict] [--skip-review]"
 ## Next Step
 
 ```bash
-/flow:release "<REQ_ID>"
+/flow:prepare-pr "<REQ_ID>"
 ```

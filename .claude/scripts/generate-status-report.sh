@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
-# generate-status-report.sh - 生成跨需求状态报告
-# 基于 spec-kit 原则，提供跨需求的开发状态总览
+# =============================================================================
+# [INPUT]: 依赖 common.sh 的 harness/resume-index/status helper，扫描 requirements 与 intent 工件。
+# [OUTPUT]: 生成跨需求状态报告，优先展示 harness 主线阶段与恢复材料。
+# [POS]: flow:status 的聚合报告器，为人和 Agent 提供当前项目的状态总览。
+# [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+# =============================================================================
 
 set -euo pipefail
 
@@ -27,7 +31,8 @@ usage() {
   -h, --help              显示此帮助信息
   -o, --output FILE       输出报告到文件 (默认: 输出到标准输出)
   -f, --format FORMAT     输出格式: text|markdown|json (默认: text)
-  -s, --status STATUS     过滤特定状态: initialized|prd|epic|dev|qa|release|all (默认: all)
+  -s, --status STATUS     过滤阶段: init|spec|dev|verify|prepare-pr|release|all
+                         兼容: initialized|prd|epic|quality|qa|released|completed
   -v, --verbose           详细模式，显示更多信息
   --no-color              禁用颜色输出
 
@@ -35,6 +40,7 @@ usage() {
   $0                                    # 生成所有需求的文本报告
   $0 -o status.md -f markdown           # 生成Markdown格式报告
   $0 -s dev                             # 只显示开发中的需求
+  $0 -s prepare-pr                      # 只显示待提审需求
   $0 -f json -o status.json             # 生成JSON格式报告
 
 EOF
@@ -98,8 +104,9 @@ if [[ ! "$FORMAT" =~ ^(text|markdown|json)$ ]]; then
 fi
 
 # 验证状态过滤器
-if [[ ! "$FILTER_STATUS" =~ ^(all|initialized|prd|epic|dev|qa|release)$ ]]; then
-    echo "错误: 无效的状态 '$FILTER_STATUS'" >&2
+RAW_FILTER_STATUS="$FILTER_STATUS"
+if ! FILTER_STATUS=$(normalize_stage_filter "$FILTER_STATUS"); then
+    echo "错误: 无效的状态 '$RAW_FILTER_STATUS'" >&2
     exit 1
 fi
 
@@ -112,45 +119,6 @@ if [[ ! -d "$REQUIREMENTS_DIR" ]]; then
     exit 1
 fi
 
-# 阶段显示名称映射
-get_phase_display_name() {
-    local phase="$1"
-    case "$phase" in
-        initialized) echo "初始化" ;;
-        planning) echo "规划中" ;;
-        prd_generation_in_progress) echo "PRD生成中" ;;
-        prd_complete) echo "PRD完成" ;;
-        epic_planning) echo "Epic规划" ;;
-        epic_complete) echo "Epic完成" ;;
-        development) echo "开发中" ;;
-        dev_complete) echo "开发完成" ;;
-        quality|qa) echo "质量验证" ;;
-        quality_complete|qa_complete) echo "质量完成" ;;
-        release) echo "发布中" ;;
-        release_complete) echo "发布完成" ;;
-        completed) echo "已完成" ;;
-        *) echo "$phase" ;;
-    esac
-}
-
-# 阶段进度百分比
-get_phase_percentage() {
-    local phase="$1"
-    case "$phase" in
-        initialized|planning) echo "0" ;;
-        prd_generation_in_progress) echo "10" ;;
-        prd_complete|epic_planning) echo "20" ;;
-        epic_complete) echo "30" ;;
-        development) echo "40" ;;
-        dev_complete) echo "70" ;;
-        quality|qa) echo "80" ;;
-        quality_complete|qa_complete) echo "90" ;;
-        release|release_complete) echo "95" ;;
-        completed) echo "100" ;;
-        *) echo "0" ;;
-    esac
-}
-
 # 收集所有需求信息
 collect_requirements() {
     local requirements=()
@@ -162,41 +130,68 @@ collect_requirements() {
 
         local req_id=$(basename "$req_dir")
         local status_file="$req_dir/orchestration_status.json"
+        local harness_state_file
+        harness_state_file=$(get_harness_state_file "$REPO_ROOT" "$req_id")
 
-        if [[ ! -f "$status_file" ]]; then
+        local status="unknown"
+        local phase="unknown"
+        local title=""
+        local updated_at=""
+        local tasks_total=0
+        local tasks_completed=0
+        local progress_percent=0
+
+        if [[ -f "$harness_state_file" ]]; then
+            local snapshot
+            snapshot=$(get_harness_snapshot "$REPO_ROOT" "$req_id")
+            local raw_stage
+            raw_stage=$(echo "$snapshot" | jq -r '.lifecycle.stage // "unknown"' 2>/dev/null || echo "unknown")
+            if has_resume_index "$REPO_ROOT" "$req_id"; then
+                raw_stage=$(read_resume_index_stage "$REPO_ROOT" "$req_id" || echo "$raw_stage")
+            fi
+
+            status=$(echo "$snapshot" | jq -r '.lifecycle.status // "unknown"' 2>/dev/null || echo "unknown")
+            phase=$(normalize_mainline_stage "$raw_stage")
+            updated_at=$(echo "$snapshot" | jq -r '.lifecycle.updatedAt // ""' 2>/dev/null || echo "")
+            tasks_total=$(echo "$snapshot" | jq -r '.progress.totalTasks // 0' 2>/dev/null || echo "0")
+            tasks_completed=$(echo "$snapshot" | jq -r '.progress.completedTasks // 0' 2>/dev/null || echo "0")
+            title=$(jq -r '.goal // ""' "$harness_state_file" 2>/dev/null || echo "")
+            progress_percent=$(get_mainline_stage_progress "$phase")
+
+            if [[ $tasks_total -gt 0 && "$phase" == "dev" ]]; then
+                progress_percent=$((30 + (tasks_completed * 40 / tasks_total)))
+            elif [[ $tasks_total -gt 0 && "$phase" == "verify" ]]; then
+                progress_percent=$((80 + (tasks_completed * 10 / tasks_total)))
+            fi
+        elif [[ -f "$status_file" ]]; then
+            status=$(jq -r '.status // "unknown"' "$status_file" 2>/dev/null || echo "unknown")
+            local raw_phase
+            raw_phase=$(jq -r '.phase // ""' "$status_file" 2>/dev/null || echo "")
+            if [[ -z "$raw_phase" || "$raw_phase" == "null" || "$raw_phase" == "unknown" ]]; then
+                raw_phase="$status"
+            fi
+            phase=$(normalize_mainline_stage "$raw_phase")
+            title=$(jq -r '.title // ""' "$status_file" 2>/dev/null || echo "")
+            updated_at=$(jq -r '.updatedAt // ""' "$status_file" 2>/dev/null || echo "")
+            progress_percent=$(get_mainline_stage_progress "$phase")
+        else
             continue
         fi
 
-        # 读取状态文件
-        local status=$(jq -r '.status // "unknown"' "$status_file" 2>/dev/null || echo "unknown")
-        local phase=$(jq -r '.phase // "unknown"' "$status_file" 2>/dev/null || echo "unknown")
-        local title=$(jq -r '.title // ""' "$status_file" 2>/dev/null || echo "")
-        local updated_at=$(jq -r '.updatedAt // ""' "$status_file" 2>/dev/null || echo "")
+        if [[ -z "$title" && -f "$status_file" ]]; then
+            title=$(jq -r '.title // ""' "$status_file" 2>/dev/null || echo "")
+        fi
 
         # 状态过滤
         if [[ "$FILTER_STATUS" != "all" ]]; then
-            # 简化状态匹配逻辑
-            local simplified_status="$phase"
-            case "$phase" in
-                initialized|planning) simplified_status="initialized" ;;
-                prd_*|epic_planning) simplified_status="prd" ;;
-                epic_complete) simplified_status="epic" ;;
-                development|dev_complete) simplified_status="dev" ;;
-                qa*) simplified_status="qa" ;;
-                release*|completed) simplified_status="release" ;;
-            esac
-
-            if [[ "$simplified_status" != "$FILTER_STATUS" ]]; then
+            if [[ "$phase" != "$FILTER_STATUS" ]]; then
                 continue
             fi
         fi
 
-        # 统计任务进度
-        local tasks_total=0
-        local tasks_completed=0
+        # 兼容旧流程：无 harness 时退回 TASKS.md 统计
         local tasks_file="$req_dir/TASKS.md"
-
-        if [[ -f "$tasks_file" ]]; then
+        if [[ "$tasks_total" -eq 0 && -f "$tasks_file" ]]; then
             # 统计已完成任务 (- [x] 标记)
             tasks_completed=$(grep -c "^\- \[x\]" "$tasks_file" 2>/dev/null || echo "0")
 
@@ -205,13 +200,7 @@ collect_requirements() {
 
             # 计算任务总数
             tasks_total=$((tasks_completed + tasks_pending))
-        fi
-
-        # 计算进度百分比
-        local progress_percent=$(get_phase_percentage "$phase")
-        if [[ $tasks_total -gt 0 ]]; then
-            # 开发阶段使用任务完成度计算更精确的百分比
-            if [[ "$phase" == "development" ]]; then
+            if [[ "$tasks_total" -gt 0 && ( "$progress_percent" -eq 0 || "$phase" == "dev" ) ]]; then
                 progress_percent=$((30 + (tasks_completed * 40 / tasks_total)))
             fi
         fi
@@ -242,28 +231,28 @@ output_text() {
     fi
 
     # 统计各阶段需求数量
-    local count_init=0 count_prd=0 count_epic=0 count_dev=0 count_qa=0 count_release=0
+    local count_init=0 count_spec=0 count_dev=0 count_verify=0 count_prepare_pr=0 count_release=0
 
     for req_data in "${requirements[@]}"; do
         IFS='|' read -r req_id title status phase updated_at tasks_completed tasks_total progress_percent <<< "$req_data"
 
         case "$phase" in
-            initialized|planning) ((count_init++)) ;;
-            prd_*|epic_planning) ((count_prd++)) ;;
-            epic_complete) ((count_epic++)) ;;
-            development|dev_complete) ((count_dev++)) ;;
-            qa*) ((count_qa++)) ;;
-            release*|completed) ((count_release++)) ;;
+            init) ((count_init++)) ;;
+            spec) ((count_spec++)) ;;
+            dev) ((count_dev++)) ;;
+            verify) ((count_verify++)) ;;
+            prepare-pr) ((count_prepare_pr++)) ;;
+            release) ((count_release++)) ;;
         esac
     done
 
     echo -e "${BOLD}阶段分布:${NC}"
     echo -e "  初始化阶段:   $count_init"
-    echo -e "  PRD阶段:      $count_prd"
-    echo -e "  Epic阶段:     $count_epic"
+    echo -e "  规格阶段:     $count_spec"
     echo -e "  开发阶段:     $count_dev"
-    echo -e "  QA阶段:       $count_qa"
-    echo -e "  发布/完成:    $count_release"
+    echo -e "  验证阶段:     $count_verify"
+    echo -e "  提审阶段:     $count_prepare_pr"
+    echo -e "  发布阶段:     $count_release"
     echo ""
     echo -e "${BOLD}${CYAN}───────────────────────────────────────────────────────────────${NC}"
     echo ""
@@ -272,15 +261,17 @@ output_text() {
     for req_data in "${requirements[@]}"; do
         IFS='|' read -r req_id title status phase updated_at tasks_completed tasks_total progress_percent <<< "$req_data"
 
-        local phase_display=$(get_phase_display_name "$phase")
+        local phase_display
+        phase_display=$(get_mainline_stage_display_name "$phase")
         local progress_bar=$(generate_progress_bar "$progress_percent")
 
         # 根据阶段选择颜色
         local color="$CYAN"
         case "$phase" in
-            initialized|planning) color="$YELLOW" ;;
-            *complete|completed) color="$GREEN" ;;
-            development|dev_*) color="$BLUE" ;;
+            init|spec) color="$YELLOW" ;;
+            release) color="$GREEN" ;;
+            dev) color="$BLUE" ;;
+            prepare-pr) color="$GREEN" ;;
         esac
 
         echo -e "${BOLD}${color}${req_id}${NC}: ${title:-无标题}"
@@ -336,18 +327,18 @@ output_markdown() {
     fi
 
     # 统计各阶段需求数量
-    local count_init=0 count_prd=0 count_epic=0 count_dev=0 count_qa=0 count_release=0
+    local count_init=0 count_spec=0 count_dev=0 count_verify=0 count_prepare_pr=0 count_release=0
 
     for req_data in "${requirements[@]}"; do
         IFS='|' read -r req_id title status phase updated_at tasks_completed tasks_total progress_percent <<< "$req_data"
 
         case "$phase" in
-            initialized|planning) ((count_init++)) ;;
-            prd_*|epic_planning) ((count_prd++)) ;;
-            epic_complete) ((count_epic++)) ;;
-            development|dev_complete) ((count_dev++)) ;;
-            qa*) ((count_qa++)) ;;
-            release*|completed) ((count_release++)) ;;
+            init) ((count_init++)) ;;
+            spec) ((count_spec++)) ;;
+            dev) ((count_dev++)) ;;
+            verify) ((count_verify++)) ;;
+            prepare-pr) ((count_prepare_pr++)) ;;
+            release) ((count_release++)) ;;
         esac
     done
 
@@ -356,11 +347,11 @@ output_markdown() {
     echo "| 阶段 | 数量 |"
     echo "|------|------|"
     echo "| 初始化阶段 | $count_init |"
-    echo "| PRD阶段 | $count_prd |"
-    echo "| Epic阶段 | $count_epic |"
+    echo "| 规格阶段 | $count_spec |"
     echo "| 开发阶段 | $count_dev |"
-    echo "| QA阶段 | $count_qa |"
-    echo "| 发布/完成 | $count_release |"
+    echo "| 验证阶段 | $count_verify |"
+    echo "| 提审阶段 | $count_prepare_pr |"
+    echo "| 发布阶段 | $count_release |"
     echo ""
 
     echo "## 需求详情"
@@ -371,7 +362,8 @@ output_markdown() {
     for req_data in "${requirements[@]}"; do
         IFS='|' read -r req_id title status phase updated_at tasks_completed tasks_total progress_percent <<< "$req_data"
 
-        local phase_display=$(get_phase_display_name "$phase")
+        local phase_display
+        phase_display=$(get_mainline_stage_display_name "$phase")
         local tasks_display="-"
 
         if [[ $tasks_total -gt 0 ]]; then
@@ -392,7 +384,8 @@ output_markdown() {
         for req_data in "${requirements[@]}"; do
             IFS='|' read -r req_id title status phase updated_at tasks_completed tasks_total progress_percent <<< "$req_data"
 
-            local phase_display=$(get_phase_display_name "$phase")
+            local phase_display
+            phase_display=$(get_mainline_stage_display_name "$phase")
 
             echo "### $req_id: ${title:-无标题}"
             echo ""
@@ -443,7 +436,7 @@ output_json() {
         echo "      \"title\": \"${title:-}\","
         echo "      \"status\": \"$status\","
         echo "      \"phase\": \"$phase\","
-        echo "      \"phase_display\": \"$(get_phase_display_name "$phase")\","
+        echo "      \"phase_display\": \"$(get_mainline_stage_display_name "$phase")\","
         echo "      \"progress_percent\": $progress_percent,"
         echo "      \"tasks\": {"
         echo "        \"total\": $tasks_total,"
@@ -489,12 +482,16 @@ generate_progress_bar() {
 # 主逻辑
 main() {
     # 收集需求信息
-    local requirements_data=$(collect_requirements)
+    local requirements_data_raw
+    requirements_data_raw=$(collect_requirements)
+    local requirements_data=()
 
-    if [[ -z "$requirements_data" ]]; then
+    if [[ -z "$requirements_data_raw" ]]; then
         requirements_data=()
     else
-        mapfile -t requirements_data <<< "$requirements_data"
+        while IFS= read -r line; do
+            requirements_data+=("$line")
+        done <<< "$requirements_data_raw"
     fi
 
     # 根据格式输出

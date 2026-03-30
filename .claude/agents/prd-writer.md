@@ -98,7 +98,7 @@ You MUST use the unified script infrastructure for all path and setup operations
    ```
 
 ## Context Requirements
-- 读取 `orchestration_status.json` 获取项目状态
+- 读取 `devflow/intent/${REQ_ID}/summary.md` / `plan.md` 获取目标与计划上下文
 - 阅读现有的系统规格和约束条件
 - 在 PRD 中确保需求可追溯性和一致性
 
@@ -153,17 +153,14 @@ Before outputting PRD.md, you MUST verify:
 ```text
 devflow/requirements/${reqId}/
 ├── PRD.md                 # 产品需求文档 (完整，通过Constitution Check)
-├── EPIC.md               # Epic 规划 (待生成)
-├── TASKS.md              # 任务列表 (单一文档，待生成)
 ├── research/             # 外部研究材料
-│   ├── ${reqId}_plan_1.md
-│   └── ${reqId}_plan_2.md
-├── TEST_PLAN.md          # 测试计划 (待生成)
-├── SECURITY_PLAN.md      # 安全计划 (待生成)
-├── TEST_REPORT.md        # 测试报告 (待生成)
-├── SECURITY_REPORT.md    # 安全报告 (待生成)
-├── EXECUTION_LOG.md      # 执行日志 (自动更新)
-└── orchestration_status.json  # 状态跟踪 (自动更新)
+└── context-package.md    # bootstrap bridge artifact (如存在)
+
+devflow/intent/${reqId}/
+├── summary.md            # 模糊目标收敛摘要
+├── facts.md              # 事实与调研沉淀
+├── plan.md               # 计划版本
+└── resume-index.md       # 恢复入口
 ```
 
 ## Enhanced Process for Intent-driven Inputs
@@ -184,7 +181,7 @@ devflow/requirements/${reqId}/
    - See `${DEVFLOW_CLAUDE_DIR:-.claude}/rules/project-constitution.md` for all 10 Articles
 9. **Validate Completeness**: Use Validation Checklist from template
 10. **Write Complete PRD**: Output PRD.md with all sections filled, no placeholders
-11. **Log Event**: `log_event "$REQ_ID" "PRD generation completed"`
+11. **Persist Evidence**: write the completed PRD and let later stages refresh resume / artifacts
 ### Clarification Process (Ambiguous Inputs):
 **Phase 1: Initial Analysis**
 1. Analyze the ambiguous input for intent, domain, and completeness

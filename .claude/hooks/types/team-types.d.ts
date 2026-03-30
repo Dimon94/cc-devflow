@@ -102,7 +102,7 @@ export interface RalphLoopTeamState {
 }
 
 // =============================================================================
-// 扩展的 orchestration_status.json 类型
+// 共享 Team 状态载荷类型
 // =============================================================================
 
 export interface OrchestrationStatus {

@@ -11,6 +11,11 @@ description: 'One-shot BUG fix flow with systematic debugging. Usage: /flow-fix 
 
 系统化 BUG 修复流程，遵循 4 阶段调试法。
 
+规则：
+
+- bug 流程默认写 Markdown 工件
+- 修复完成以验证证据为准
+
 ## The Iron Law
 
 ```
@@ -40,7 +45,7 @@ NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST
 
 1. 解析 BUG_ID、TITLE
 2. 创建 `devflow/bugs/${BUG_ID}/` 目录
-3. 创建分支: `bugfix/${BUG_ID}-${slug}`
+3. 准备最小分析工件与验证入口
 
 ### Stage 1: Root Cause Investigation
 
@@ -59,7 +64,7 @@ NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST
 2. 与参考实现对比
 3. 调用 planner 生成 PLAN.md
 
-输出: PLAN.md, tasks/, TEST_PLAN.md
+输出: `PLAN.md`
 
 ### Stage 3: Fix Execution (TDD)
 
@@ -71,9 +76,8 @@ NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST
 ### Stage 4: Verification
 
 1. TEST_REPORT.md (必须全部通过)
-2. SECURITY_REPORT.md
-3. RELEASE_PLAN.md
-4. Status: `fix_complete`
+2. 必要时补充额外验证报告
+3. 通过验证后标记 `fix_complete`
 
 ## Output
 
@@ -81,12 +85,9 @@ NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST
 devflow/bugs/${BUG_ID}/
 ├── ANALYSIS.md
 ├── PLAN.md
-├── tasks/
-├── TEST_PLAN.md
+├── TASKS.md
 ├── TEST_REPORT.md
-├── SECURITY_REPORT.md
-├── RELEASE_PLAN.md
-└── orchestration_status.json
+└── LOG.md
 ```
 
 ## Red Flags - STOP

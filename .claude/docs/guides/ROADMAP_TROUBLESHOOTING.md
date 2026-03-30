@@ -111,8 +111,8 @@ diff devflow/ROADMAP.md.bak devflow/ROADMAP.md
 ### Velocity 数据错误
 ```bash
 # 验证完成需求数量
-ls devflow/requirements/REQ-*/orchestration_status.json | \
-  xargs -I {} jq -r 'select(.status=="merged") | .reqId' {} | \
+ls devflow/requirements/REQ-*/harness-state.json | \
+  xargs -I {} jq -r 'select(.status=="released") | .changeId' {} | \
   wc -l
 
 # 在对话中手动修正容量估算

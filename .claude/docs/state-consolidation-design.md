@@ -30,6 +30,8 @@ harness-state.json     → 生命周期状态 (initialized/released)
 task-manifest.json     → 任务定义与进度 (tasks[].status)
 checkpoint.json        → 会话恢复点 (per task)
 report-card.json       → 质量验证结果
+resume-index.md        → 人和 Agent 共读的恢复入口
+pr-brief.md            → review-ready handoff artifact
 ```
 
 ---
@@ -125,12 +127,12 @@ report-card.json       → 质量验证结果
 
 ## 旧文件映射分析
 
-### orchestration_status.json → 已被替代
+### orchestration_status.json → 降级为 compatibility mirror
 ```json
 {
   "reqId": "REQ-006",
-  "status": "release_complete",        // → harness-state.json: status
-  "phase": "release",                  // → harness-state.json: status
+  "status": "released",                // ← 由 harness/team truth 镜像而来
+  "phase": "release",                  // ← 由主链阶段归一后镜像而来
   "completedSteps": [...],             // → task-manifest.json: tasks[].status
   "documents": {...},                  // → 文件系统本身就是真相源
   "research": {...},                   // → 文件系统
@@ -140,7 +142,7 @@ report-card.json       → 质量验证结果
 }
 ```
 
-**结论**：orchestration_status.json 是冗余的，所有信息已在新架构中表达。
+**结论**：`orchestration_status.json` 不再是主状态源，但仍保留为兼容镜像，供旧脚本和平滑迁移使用。
 
 ### session-checklist.json → 已被替代
 ```json
@@ -196,14 +198,14 @@ const lastCheckpoint = readJson(`checkpoint-${lastTaskId}.json`);
 
 ### Phase 1: 废弃旧文件（不破坏兼容性）
 
-1. **标记为 deprecated**：
-   - 在 flow-init/flow-spec skills 中移除对 session-* 文件的引用
-   - 添加迁移警告：检测到旧文件时输出 deprecation warning
+1. **标记为 compatibility only**：
+   - 在 flow-init/flow-spec skills 中移除对 session-* 文件的主流程依赖
+   - 检测到旧文件时输出 compatibility warning，而不是把它们当成 canonical source
 
 2. **迁移脚本**（可选）：
    ```bash
    # .claude/scripts/migrate-legacy-state.sh
-   # 将 orchestration_status.json 转换为 harness-state.json
+   # 将旧状态收敛为 harness-state.json + resume-index.md，并保留 compatibility mirror
    ```
 
 ### Phase 2: 增强 harness-state.json（最小化扩展）

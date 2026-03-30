@@ -23,7 +23,7 @@ You MUST follow these rules during BUG analysis:
    - Follow Structured Output format for consistent analysis sections
 
 2. **Agent Coordination**:
-   - Update status in orchestration_status.json when analysis begins and completes
+   - Prefer writing analysis facts into `ANALYSIS.md` and follow-on plan inputs
    - Implement proper error handling for unclear BUG symptoms
    - Avoid file locks (read-only agent - only generate documents)
 
@@ -128,6 +128,8 @@ If prerequisites fail, report error and stop analysis immediately (Fail Fast pri
 ## Output Structure
 
 Generate comprehensive `devflow/bugs/${bugId}/ANALYSIS.md` containing:
+
+Do not treat `orchestration_status.json` as the canonical bug state source. If such a file exists, read it only as compatibility context.
 
 ### JSON Output Support
 When `--json` flag is requested, also generate `devflow/bugs/${bugId}/ANALYSIS.json`:

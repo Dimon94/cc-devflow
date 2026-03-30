@@ -41,7 +41,7 @@ init_dev_team() {
 
     echo "Initializing dev-team for $req_id with $num_agents agents..."
 
-    # Initialize Team state in orchestration_status.json
+    # Initialize Team truth state and keep compatibility mirror in sync
     init_team_state "$repo_root" "$req_id" "parallel" "dev-lead"
 
     # Add developer teammates
@@ -240,12 +240,12 @@ get_team_config() {
         quality_gates: {
             entry: {
                 required_files: ["TASKS.md", "TECH_DESIGN.md", "quickstart.md"],
-                status_check: ["epic_complete", "development_in_progress"]
+                status_check: ["planned", "in_progress"]
             },
             exit: {
                 all_tasks_complete: true,
                 tests_pass: true,
-                status_update: "development_complete"
+                status_update: "verified"
             }
         }
     }'

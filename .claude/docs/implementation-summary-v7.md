@@ -223,7 +223,7 @@
   - dev.jsonl: design.md + Delta specs/ + 相关代码 + Constitution Article I, VI
 - 更新 inject-agent-context.ts 的 agent 到 JSONL 映射：
   - flow-researcher → brainstorm.jsonl
-  - prd-writer/tech-architect/ui-designer/planner → spec.jsonl
+  - clarify-analyst/tech-architect/ui-designer/planner → spec.jsonl
   - dev-implementer/qa-tester/security-reviewer/release-manager → dev.jsonl
 - Hook 已支持从 `devflow/requirements/${REQ_ID}/context/` 读取 JSONL
 - 实现分阶段隔离：每个阶段只加载必要的上下文，避免注意力分散
@@ -263,25 +263,23 @@
 
 ---
 
-### ⏳ Task #10: Phase 3.2 - 合并状态文件到 .harness/state.json
-**Status**: Not Started
+### ✅ Task #10: Phase 3.2 - 状态收敛为 harness spine + intent memory
+**Status**: Superseded by current implementation
 **Target Files**:
-- Modify `lib/harness/store.js`
-- Create unified `.harness/state.json` schema
-- Deprecate `orchestration_status.json`, `session-checklist.json`, `session-progress.md`, `session-handoff.md`
+- `devflow/requirements/<REQ>/harness-state.json`
+- `devflow/requirements/<REQ>/task-manifest.json`
+- `devflow/requirements/<REQ>/report-card.json`
+- `devflow/intent/<REQ>/resume-index.md`
+- `devflow/intent/<REQ>/artifacts/pr-brief.md`
+- `devflow/requirements/<REQ>/orchestration_status.json` (compatibility mirror only)
 
 **Required Changes**:
-1. 设计统一状态文件 schema：
-   ```json
-   {
-     "changeId": "REQ-123",
-     "lifecycle": { "stage": "dev", "status": "in_progress" },
-     "session": { "currentSessionId": "...", "checkpoints": [...] },
-     "progress": { "totalTasks": 6, "completedTasks": 2 },
-     "deltas": [...]
-   }
-   ```
-2. 迁移现有状态读写逻辑到统一文件
+1. 保持“单一真相源 ≠ 单一文件”：
+   - lifecycle 放在 `harness-state.json`
+   - task execution 放在 `task-manifest.json`
+   - verify gate 放在 `report-card.json`
+   - human/agent resume 放在 `resume-index.md`
+2. 将 `orchestration_status.json` 降级为 compatibility mirror，而非主状态源
 
 ---
 

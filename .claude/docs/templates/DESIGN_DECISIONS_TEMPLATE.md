@@ -14,7 +14,7 @@ participants: ["tech-architect", "ui-designer", "planner"]
 
 # Design Decisions for ${REQ_ID}
 
-本文档记录 spec-design-team 在设计阶段的共享决策。
+本文档记录 spec-alignment-team 在设计阶段的共享决策。
 
 ## Decision Log
 

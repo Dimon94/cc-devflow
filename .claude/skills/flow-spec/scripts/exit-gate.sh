@@ -53,6 +53,7 @@ UI_FILE="${REQ_DIR}/UI_PROTOTYPE.html"
 EPIC_FILE="${REQ_DIR}/EPIC.md"
 TASKS_FILE="${REQ_DIR}/TASKS.md"
 STATUS_FILE="${REQ_DIR}/orchestration_status.json"
+HARNESS_STATE_FILE="${REQ_DIR}/harness-state.json"
 
 ERRORS=()
 WARNINGS=()
@@ -177,7 +178,7 @@ fi
 # ============================================================================
 
 if [[ ${#ERRORS[@]} -eq 0 ]]; then
-    echo "Updating orchestration_status.json..."
+    echo "Updating lifecycle state..."
 
     # 构建输出文件列表
     OUTPUTS='["PRD.md", "EPIC.md", "TASKS.md"'
@@ -189,16 +190,23 @@ if [[ ${#ERRORS[@]} -eq 0 ]]; then
     fi
     OUTPUTS+=']'
 
-    # 更新状态文件
+    # 优先更新 harness-state，compatibility 只做镜像
+    if [[ -f "$HARNESS_STATE_FILE" ]]; then
+        jq --arg status "planned" \
+           '.status = $status | .updatedAt = (now | todateiso8601) | .plannedAt = (now | todateiso8601)' \
+           "$HARNESS_STATE_FILE" > "${HARNESS_STATE_FILE}.tmp" && mv "${HARNESS_STATE_FILE}.tmp" "$HARNESS_STATE_FILE"
+    fi
+
+    # 更新 compatibility 状态文件
     if [[ -f "$STATUS_FILE" ]]; then
-        jq --arg status "spec_complete" \
+        jq --arg status "planned" \
            --arg phase "spec" \
            --argjson outputs "$OUTPUTS" \
-           '.status = $status | .phase = $phase | .outputs = $outputs | .updated_at = now | .spec_completed_at = now' \
+           '.status = $status | .phase = $phase | .outputs = $outputs | .updated_at = now | .planned_at = now' \
            "$STATUS_FILE" > "${STATUS_FILE}.tmp" && mv "${STATUS_FILE}.tmp" "$STATUS_FILE"
     fi
 
-    echo "✓ Status updated to spec_complete"
+    echo "✓ Lifecycle updated to planned"
 fi
 
 # ============================================================================

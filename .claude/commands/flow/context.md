@@ -1,150 +1,64 @@
 ---
 name: flow-context
-description: Manage staged context injection for agents (RM-015)
-version: 3.0.0
+description: Manage context injection for current CC-DevFlow agents and workers. Usage: /flow:context init [REQ-ID] | add [agent] [path] [purpose] | validate [REQ-ID]
+version: 6.2.0
 ---
 
-# /flow-context
+# /flow:context
 
 > **[PROTOCOL]**: 变更时更新此头部，然后检查 CLAUDE.md
 
 ## Purpose
 
-Manage context injection configuration for CC-DevFlow agents.
-Each agent type has a JSONL file defining what context to load.
+管理当前 CC-DevFlow 的上下文注入配置。
+
+默认语义：
+
+- 主阅读面优先指向 `devflow/intent/<REQ>/` 和 `devflow/requirements/<REQ>/`
+- 优先注入 `plan.md / resume-index.md / task-manifest.json / report-card.json`
+- 任何补充设计资料都只能作为次级输入，不能盖过当前主工件
 
 ## Usage
 
 ```bash
-# Initialize context directory for a requirement
-/flow-context init [REQ-ID] [--type backend|frontend|fullstack]
-
-# Add entry to context file
-/flow-context add [agent] [path] [purpose] [--optional]
-
-# List current context configuration
-/flow-context list [agent]
-
-# Validate context paths exist
-/flow-context validate [REQ-ID]
+/flow:context init REQ-007
+/flow:context add dev "devflow/intent/REQ-007/plan.md" "Current approved plan"
+/flow:context list dev
+/flow:context validate REQ-007
 ```
 
-## Subcommands
+## 推荐上下文面
 
-### init
+### Controller / autopilot
 
-Initialize context directory with templates.
+- `devflow/intent/<REQ>/summary.md`
+- `devflow/intent/<REQ>/facts.md`
+- `devflow/intent/<REQ>/plan.md`
+- `devflow/intent/<REQ>/resume-index.md`
 
-```bash
-/flow-context init REQ-007 --type backend
-```
+### Execution / dev
 
-Creates:
-- `devflow/requirements/REQ-007/context/`
-- Copies templates from `.claude/docs/templates/context/*.jsonl.template`
-- Customizes based on `--type` (backend removes frontend specs, etc.)
+- `devflow/requirements/<REQ>/task-manifest.json`
+- `.harness/runtime/<REQ>/**/checkpoint.json`
+- `devflow/intent/<REQ>/artifacts/results/*.md`
 
-### add
+### Verification / release
 
-Add an entry to a context JSONL file.
-
-```bash
-/flow-context add dev "src/utils/auth.ts" "Authentication utilities" --optional
-```
-
-Appends to `context/dev.jsonl`:
-```json
-{"type": "file", "path": "src/utils/auth.ts", "purpose": "Authentication utilities", "optional": true}
-```
-
-### list
-
-Show current context configuration.
-
-```bash
-/flow-context list dev
-```
-
-Output:
-```
-Context for 'dev' agent (REQ-007):
-
-  1. [file] TASKS.md - Current task list and progress
-  2. [file] EPIC.md - Epic overview and phases
-  3. [file] TECH_DESIGN.md - Technical implementation guide
-  4. [file] ERROR_LOG.md - Previous errors to avoid (optional)
-  5. [spec] devflow/spec/frontend/style.md - Frontend style guide (optional)
-
-Total: 5 entries (3 required, 2 optional)
-```
-
-### validate
-
-Validate all context paths exist.
-
-```bash
-/flow-context validate REQ-007
-```
-
-Output:
-```
-Validating context for REQ-007...
-
-  ✓ dev.jsonl: 5/5 paths valid
-  ✓ epic.jsonl: 4/4 paths valid
-  ✗ review.jsonl: 3/4 paths valid
-    - Missing: contracts/api.yaml
-
-Overall: 12/13 paths valid (92%)
-```
-
-## Integration
-
-### With flow-init
-
-When `/flow:init` creates a new requirement, it automatically runs:
-```bash
-/flow-context init {REQ-ID} --type {detected-type}
-```
-
-### With Agent Invocation
-
-The `inject-agent-context.ts` hook automatically:
-1. Detects current REQ-ID from environment or git branch
-2. Reads `context/{agent}.jsonl`
-3. Injects resolved content into agent prompt
+- `devflow/requirements/<REQ>/report-card.json`
+- `devflow/intent/<REQ>/artifacts/pr-brief.md`
+- `devflow/requirements/<REQ>/RELEASE_NOTE.md`
 
 ## Context Entry Format
 
 ```jsonl
-{"type": "file", "path": "PRD.md", "purpose": "Product requirements"}
-{"type": "directory", "path": "contracts/", "purpose": "API contracts", "depth": 2}
-{"type": "spec", "path": "devflow/spec/backend/api.md", "purpose": "API conventions"}
+{"type": "file", "path": "devflow/intent/REQ-123/plan.md", "purpose": "Current approved plan"}
+{"type": "file", "path": "devflow/requirements/REQ-123/task-manifest.json", "purpose": "Executable task graph"}
+{"type": "file", "path": "devflow/intent/REQ-123/resume-index.md", "purpose": "Resume pointer", "optional": true}
 ```
 
-### Entry Types
+## Secondary Inputs
 
-| Type | Path Resolution | Use Case |
-|------|-----------------|----------|
-| `file` | Relative to requirement dir | Requirement-specific files |
-| `directory` | Relative to requirement dir | Load all files in directory |
-| `spec` | Relative to project root | Project-level specifications |
+如果仓库中仍存在补充设计资产：
 
-### Optional Entries
-
-Add `"optional": true` for files that may not exist:
-```json
-{"type": "file", "path": "ERROR_LOG.md", "purpose": "Previous errors", "optional": true}
-```
-
-## Scripts
-
-- `.claude/scripts/flow-context-init.sh` - Initialize context directory
-- `.claude/scripts/flow-context-add.sh` - Add entry to JSONL
-- `.claude/scripts/flow-context-validate.sh` - Validate paths
-
-## Related
-
-- **Hook**: `.claude/hooks/inject-agent-context.ts`
-- **Types**: `.claude/hooks/types/context-injection.d.ts`
-- **Templates**: `.claude/docs/templates/context/*.jsonl.template`
+- 可以按需注入到特定 worker 或 review 场景
+- 但必须明确标注用途，不能替代 `intent + harness artifacts` 的主阅读面

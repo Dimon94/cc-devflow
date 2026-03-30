@@ -10,14 +10,14 @@
 ## 成员清单
 
 analyze-upgrade-impact.sh: 升级影响分析脚本。
-archive-requirement.sh: 需求归档与清理脚本。
+archive-requirement.sh: 需求归档与清理脚本；优先读取 harness-state/resume-index，并维护 archive compatibility metadata，restore 时清理 archive-only 残留字段。
 calculate-checklist-completion.sh: Checklist 完成度统计脚本。
 calculate-quarter.sh: 时间季度计算脚本。
 check-dependencies.sh: 依赖关系检查脚本。
 check-prerequisites.sh: 流程前置条件统一校验脚本。
 check-task-status.sh: TASKS 完成状态统计脚本。
 checklist-errors.sh: Checklist 错误码与诊断脚本。
-common.sh: 脚本公共函数库（REQ 识别、日志工具等）。
+common.sh: 脚本公共函数库；统一 REQ/intent/harness 路径、日志工具与 Team truth/mirror 状态读写。
 consolidate-research.sh: research 结果汇总脚本。
 create-requirement.sh: 创建需求目录与初始状态；同步 workspace 的 `.current-req`。
 delta-parser.ts: Delta 解析器。
@@ -32,15 +32,15 @@ flow-delta-archive.sh: Delta 归档脚本。
 flow-delta-create.sh: Delta 创建脚本。
 flow-delta-list.sh: Delta 列表脚本。
 flow-delta-status.sh: Delta 状态脚本。
-flow-quality-full.sh: 全量质量检查脚本。
-flow-quality-quick.sh: 快速质量检查脚本。
+flow-quality-full.sh: 全量质量检查脚本；兼容 shell verify，但会同步回 report-card 与 harness-state。
+flow-quality-quick.sh: 快速质量检查脚本；兼容 shell verify，但会同步回 report-card 与 harness-state。
 flow-workspace-init.sh: 开发者 workspace 初始化脚本。
 flow-workspace-record.sh: workspace journal 追加记录脚本。
 generate-clarification-questions.sh: Clarify 问题生成脚本。
 generate-clarification-report.sh: Clarify 报告生成脚本。
 generate-quickstart.sh: quickstart 文档生成脚本。
 generate-research-tasks.sh: research 任务生成脚本。
-generate-status-report.sh: 状态报告聚合脚本。
+generate-status-report.sh: 状态报告聚合脚本；优先读取 harness-state 与 resume-index，再回退兼容状态。
 generate-tech-analysis.sh: 技术分析生成脚本。
 get-workflow-status.sh: 工作流状态读取脚本。
 locate-requirement-in-roadmap.sh: roadmap 需求定位脚本。
@@ -49,17 +49,17 @@ mark-task-complete.sh: 任务完成标记脚本。
 parse-task-dependencies.js: 任务依赖解析器。
 populate-research-tasks.sh: research 任务填充脚本。
 record-quality-error.sh: 质量错误记录脚本。
-recover-workflow.sh: 中断恢复脚本。
+recover-workflow.sh: 中断恢复脚本；优先根据 resume-index 与 harness-state 推断主链恢复阶段。
 run-clarify-scan.sh: Clarify 扫描执行脚本。
 run-high-review.sh: 高强度 review 执行脚本。
 run-problem-analysis.sh: 问题分析执行脚本。
 run-quality-gates.sh: 质量门禁执行脚本。
 setup-epic.sh: Epic 初始化脚本。
 setup-ralph-loop.sh: Ralph Loop 初始化脚本。
-sync-roadmap-progress.sh: roadmap 进度同步脚本。
+sync-roadmap-progress.sh: roadmap 进度同步脚本；优先读取 harness-state/resume-index，再回退兼容状态。
 sync-task-marks.sh: TASKS 勾选同步脚本。
-team-dev-init.sh: Team 开发并行初始化脚本。
-team-state-recovery.sh: Team 状态恢复脚本。
+team-dev-init.sh: Team 开发并行初始化脚本；初始化 team-state truth 并同步 compatibility mirror。
+team-state-recovery.sh: Team 状态恢复脚本；优先基于 team-state truth 做 snapshot/recover/restore。
 test-clarify-scan.sh: Clarify 扫描测试脚本。
 update-agent-context.sh: Agent 上下文更新脚本。
 validate-constitution.sh: Constitution 校验脚本。

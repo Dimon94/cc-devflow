@@ -433,7 +433,7 @@ TECH_DESIGN.md must include:
 **1. PRD not found or incomplete**
 ```
 ERROR: PRD.md not found or incomplete
-Run /flow-prd first to generate PRD
+Run /flow:spec first to converge the requirement and planning artifacts
 ```
 
 **2. Existing codebase analysis failed**
@@ -450,44 +450,44 @@ Proceeding with generic design - manual review required
   Location: Module design - BaseController
   Issue: Direct Express usage recommended per Article VIII
 
-Review and simplify before proceeding to /flow-epic
+Review and simplify before proceeding to /flow:dev
 ```
 
 ## Integration with Other Commands
 
 ### Workflow Integration
 ```text
-/flow-init     → Initialize structure ✅
+/flow:init     → Initialize structure ✅
   ↓
-/flow-prd      → Generate PRD.md ✅
+/flow:spec     → Converge product + technical plan ✅
   ↓
-/flow-tech     → Generate TECH_DESIGN.md ← YOU ARE HERE
+/flow-tech     → Generate TECH_DESIGN.md ← YOU ARE HERE (sidecar artifact)
   ↓
-/flow-epic     → Generate EPIC.md (uses TECH_DESIGN.md)
+/flow:dev      → Implement tasks
   ↓
-/flow-dev      → Implement tasks
+/flow:verify   → Quality assurance
   ↓
-/flow-qa       → Quality assurance
+/flow:prepare-pr → Generate review-ready brief
   ↓
-/flow-release  → Create PR and merge
+/flow:release  → Create PR and merge
 ```
 
-### Dependency on /flow-prd
-This agent requires /flow-prd to have been run first:
-- PRD.md must exist with complete functional requirements
-- orchestration_status.json must show status="prd_complete"
+### Dependency on /flow:spec
+This agent requires `/flow:spec` to have converged the requirement first:
+- planning artifacts must already describe the functional requirements
+- the requirement should already be in a plannable state, not raw ideation
 
-### Enables /flow-epic
+### Feeds /flow:dev
 After successful technical design:
-- TECH_DESIGN.md becomes input for Epic planning
-- planner agent uses TECH_DESIGN.md to generate comprehensive TASKS.md
-- Ensures task breakdown includes all technical layers
+- TECH_DESIGN.md becomes a sidecar reference for implementation
+- implementers can use it to refine task execution without adding a second planning flow
+- it should sharpen architecture choices, not fork the mainline
 
 ## Best Practices
 
 ### Before Running
-1. Ensure /flow-prd completed successfully
-2. Review PRD.md to understand functional requirements
+1. Ensure `/flow:spec` completed successfully
+2. Review current planning artifacts to understand functional requirements
 3. Analyze existing codebase for reusable patterns
 4. Consider non-functional requirements (performance, security, scalability)
 
@@ -502,14 +502,14 @@ After successful technical design:
 1. **Review TECH_DESIGN.md thoroughly**
 2. Verify all technologies are compatible
 3. Check Constitution compliance
-4. Validate completeness before /flow-epic
+4. Validate completeness before `/flow:dev`
 5. Update TECH_DESIGN.md manually if needed
 
 ### Troubleshooting
 1. Check agent output for errors
 2. Review EXECUTION_LOG.md for detailed steps
 3. Use validate-constitution.sh to check specific issues
-4. Re-run /flow-tech after fixing PRD or codebase issues
+4. Re-run /flow-tech after fixing spec artifacts or codebase issues
 
 ---
 

@@ -23,7 +23,7 @@ You MUST follow these rules during BUG analysis:
    - Follow Structured Output format for consistent analysis sections
 
 2. **Agent Coordination**:
-   - Update status in orchestration_status.json when analysis begins and completes
+   - Update runtime status via current harness/intent flow when analysis begins and completes
    - Implement proper error handling for unclear BUG symptoms
    - Avoid file locks (read-only agent - only generate documents)
 

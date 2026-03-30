@@ -14,7 +14,13 @@ set -euo pipefail
 # Configuration
 # ============================================================================
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../../../../.." && pwd)"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../../../.." && pwd)"
+COMMON_SH="${PROJECT_ROOT}/.claude/scripts/common.sh"
+
+if [[ -f "$COMMON_SH" ]]; then
+    # shellcheck source=/dev/null
+    source "$COMMON_SH"
+fi
 
 # ============================================================================
 # Functions
@@ -65,7 +71,9 @@ main() {
     [[ ! -f "${req_dir}/TASKS.md" ]] && missing_files+=("TASKS.md")
     [[ ! -f "${req_dir}/EPIC.md" ]] && missing_files+=("EPIC.md")
     [[ ! -f "${req_dir}/PRD.md" ]] && missing_files+=("PRD.md")
-    [[ ! -f "${req_dir}/orchestration_status.json" ]] && missing_files+=("orchestration_status.json")
+    if [[ ! -f "${req_dir}/harness-state.json" && ! -f "${req_dir}/orchestration_status.json" ]]; then
+        missing_files+=("harness-state.json|orchestration_status.json")
+    fi
 
     if [[ ${#missing_files[@]} -gt 0 ]]; then
         local files_json=$(printf '"%s",' "${missing_files[@]}" | sed 's/,$//')
@@ -74,27 +82,50 @@ main() {
     fi
 
     # 4. 状态检查
-    local status_file="${req_dir}/orchestration_status.json"
+    local harness_state_file="${req_dir}/harness-state.json"
     local current_status
+    local current_phase=""
+    local normalized_stage=""
 
-    if command -v jq &> /dev/null; then
+    if [[ -f "$harness_state_file" ]] && command -v jq &> /dev/null; then
+        current_status=$(jq -r '.status // "unknown"' "$harness_state_file" 2>/dev/null || echo "unknown")
+        current_phase=$(jq -r '.phase // ""' "$harness_state_file" 2>/dev/null || echo "")
+    elif command -v jq &> /dev/null; then
+        local status_file="${req_dir}/orchestration_status.json"
         current_status=$(jq -r '.status // "unknown"' "$status_file" 2>/dev/null || echo "unknown")
+        current_phase=$(jq -r '.phase // ""' "$status_file" 2>/dev/null || echo "")
     else
+        local status_file="${req_dir}/orchestration_status.json"
         current_status=$(grep -o '"status"[[:space:]]*:[[:space:]]*"[^"]*"' "$status_file" | head -1 | sed 's/.*"\([^"]*\)"$/\1/')
     fi
 
-    local valid_statuses=("spec_complete" "epic_complete" "development_in_progress" "development_failed")
+    local primary_valid_statuses=("planned" "in_progress")
     local status_valid=false
 
-    for valid in "${valid_statuses[@]}"; do
+    for valid in "${primary_valid_statuses[@]}"; do
         if [[ "$current_status" == "$valid" ]]; then
             status_valid=true
             break
         fi
     done
 
+    if [[ "$status_valid" != "true" && ! -f "$harness_state_file" && $(declare -F normalize_mainline_stage >/dev/null 2>&1; echo $?) -eq 0 ]]; then
+        local raw_stage="$current_phase"
+        if [[ -z "$raw_stage" || "$raw_stage" == "null" || "$raw_stage" == "unknown" ]]; then
+            raw_stage="$current_status"
+        fi
+
+        normalized_stage=$(normalize_mainline_stage "$raw_stage")
+        case "$normalized_stage" in
+            spec|dev)
+                log_info "Compatibility state detected; normalized stage: ${normalized_stage}"
+                status_valid=true
+                ;;
+        esac
+    fi
+
     if [[ "$status_valid" != "true" ]]; then
-        output_json "error" "Invalid status for flow-dev: ${current_status}. Expected: spec_complete, epic_complete, development_in_progress, or development_failed"
+        output_json "error" "Invalid status for flow-dev: ${current_status}. Expected lifecycle: planned or in_progress."
         exit 1
     fi
 

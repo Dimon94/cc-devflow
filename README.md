@@ -345,7 +345,7 @@ graph TB
 **Workflow Notes**:
 - **Project-Level Commands** (light blue): Execute once at project initialization, establish global standards (SSOT)
 - **Requirement-Level Commands** (light orange): Execute once per requirement (REQ-XXX)
-- **Canonical Mainline**: `/flow:init` → `/flow:spec` → `/flow:dev` → `/flow:verify` → `/flow:release`
+- **Canonical Mainline**: `/flow:autopilot` → `/flow:init` → `/flow:spec` → `/flow:dev` → `/flow:verify` → `/flow:prepare-pr` → `/flow:release`
 - **Harness Runtime Chain**: Each stage delegates to `npm run harness:*` operations with persisted checkpoints
 - **Unified /flow:spec**: Consolidates planning output into a task manifest
 - **Report Card Gate**: `/flow:verify --strict` blocks release when quality gates fail
@@ -356,8 +356,8 @@ graph TB
 
 ## 🏗️ System Architecture
 
-**Execution Model**: Research Agents (11, read-only) + Main Agent (execution)
-**Document Structure**: Single-track architecture, one requirement directory contains all artifacts
+**Execution Model**: Autopilot controller + local subagents/workers + thin harness runtime
+**Document Structure**: `intent/` + `requirements/` dual-surface architecture, markdown memory first
 **Quality Assurance**: Constitution v2.0.0 + TDD Enforcement + Real-time Guardrail
 
 <details>
@@ -366,45 +366,40 @@ graph TB
 ### Sub-Agents Workflow
 
 ```text
-clarify-analyst     → Clarification questions (11-dimension scan)
-prd-writer          → PRD generation (must use PRD_TEMPLATE)
-checklist-agent     → Requirement quality validation (5 dimensions, 6 types) ⭐ NEW
-ui-designer         → UI prototype (conditional trigger)
-tech-architect      → Technical design (Anti-Tech-Creep enforcement)
-planner             → EPIC & TASKS (must use EPIC_TEMPLATE, TASKS_TEMPLATE)
-dev-implementer     → Implementation plan (research only)
-qa-tester           → Test plan + Test report
-security-reviewer   → Security plan + Security report
-release-manager     → Release plan
+clarify-analyst     → Clarify constraints and unresolved questions
+tech-architect      → Summarize implementation boundaries and interfaces
+ui-designer         → Add UI/UX constraints when needed
+planner             → Compile approved plan into executable tasks
+dev-implementer     → Execute manifest tasks and write result artifacts
+security-reviewer   → Add focused security verification when risk justifies it
 ```
 
-### Single-Track Architecture
+### Current Artifact Surfaces
 
 ```text
 devflow/
-├── ROADMAP.md               # Product roadmap
-├── ARCHITECTURE.md          # System architecture design
-├── BACKLOG.md               # Requirement backlog
+├── intent/REQ-123/
+│   ├── summary.md
+│   ├── facts.md
+│   ├── decision-log.md
+│   ├── plan.md
+│   ├── resume-index.md
+│   └── artifacts/
+│       ├── results/
+│       └── pr-brief.md
 └── requirements/REQ-123/
-    ├── PRD.md
-    ├── EPIC.md
+    ├── context-package.md
+    ├── harness-state.json
     ├── TASKS.md
-    ├── EXECUTION_LOG.md
-    ├── checklists/          # Requirement quality checklists
-    │   ├── ux.md
-    │   ├── api.md
-    │   └── security.md
-    ├── TEST_PLAN.md
-    ├── TEST_REPORT.md
-    ├── SECURITY_PLAN.md
-    ├── SECURITY_REPORT.md
-    └── RELEASE_PLAN.md
+    ├── task-manifest.json
+    ├── report-card.json
+    └── RELEASE_NOTE.md
 ```
 
 ### Quality Gates
 
 - Pre-push Guard (TypeScript, tests, linting, security, build)
-- Report Card Gate (`/flow:verify --strict` before `/flow:release`)
+- Report Card Gate (`/flow:verify --strict` before `/flow:prepare-pr` and `/flow:release`)
 - Constitution Compliance (enforced at every stage)
 - TDD Checkpoint (TEST VERIFICATION CHECKPOINT)
 - Guardrail Hooks (PreToolUse real-time blocking of non-compliant operations)
@@ -583,7 +578,7 @@ v4.3.0 introduces Git Worktree integration for parallel development with isolate
   - Shell aliases template (za/zl/zm/zw)
 
 - **Modified Commands**
-  - `/flow:init` - Default worktree mode, `--branch-only` for compatibility
+  - `/flow:init` - Default worktree mode, `--branch-only` for direct branch mode
   - `/flow:release` - Automatic worktree cleanup
 
 **📊 v4.3 Improvements**:
@@ -597,13 +592,12 @@ v4.3.0 introduces Git Worktree integration for parallel development with isolate
 
 **🎯 Unified Specification Phase: /flow:spec Command**
 
-v4.1.0 merges flow-prd/flow-tech/flow-ui/flow-epic into a single `/flow:spec` command with parallel execution:
+v4.1.0 establishes `/flow:spec` as the unified planning entry that later evolves into today's manifest-first planning chain:
 
 - **Unified /flow:spec Command** - One command for entire specification phase
-  - Full Mode: PRD → Tech + UI (parallel) → Epic/Tasks
-  - Quick Mode: `--skip-tech --skip-ui` for small requirements
-  - Backend Only: `--skip-ui`
-  - Frontend Only: `--skip-tech`
+  - Compiles clarified requirement context into executable planning output
+  - Supports lighter planning paths for smaller requirements
+  - Keeps optional design analysis subordinate to the task graph
 
 - **Parallel Agent Execution** - Tech + UI agents run concurrently
   - ~35% time reduction in design phase
@@ -611,12 +605,10 @@ v4.1.0 merges flow-prd/flow-tech/flow-ui/flow-epic into a single `/flow:spec` co
 
 - **Simplified Workflows** (v4.1)
   ```
-  Quick (3 steps):    /flow:init --quick → /flow:spec --skip-tech --skip-ui → /flow:dev → /flow:release
-  Standard (4 steps): /flow:init → /flow:spec → /flow:dev → /flow:verify → /flow:release
-  Full (5 steps):     /flow:init → /flow:spec → /flow:dev → /flow:verify --strict → /flow:release
+  Quick:    /flow:init → /flow:spec → /flow:dev
+  Standard: /flow:init → /flow:spec → /flow:dev → /flow:verify
+  Full:     /flow:autopilot → /flow:init → /flow:spec → /flow:dev → /flow:verify → /flow:prepare-pr → /flow:release
   ```
-
-- **Deprecations**: `/flow-prd`, `/flow-tech`, `/flow-ui`, `/flow-epic` now deprecated (use `/flow:spec`)
 
 **📊 v4.1 Improvements**:
 | Metric | Before (v4.0) | After (v4.1) | Improvement |
@@ -675,7 +667,7 @@ v4.0.0 introduces a major architectural refactor, reorganizing 135 files into a 
 **📁 New Files**:
 - `.claude/skills/workflow.yaml` - Skill dependency graph
 - `.claude/hooks/inject-skill-context.ts` - Context injection hook
-- `.claude/skills/workflow/*/context.jsonl` - Per-Skill context definitions
+- `.claude/skills/*/context.jsonl` - Per-Skill context definitions
 - `devflow/spec/{frontend,backend,shared}/index.md` - Specification indexes
 - `lib/compiler/context-expander.js` - Context.jsonl expansion module
 - `lib/compiler/__tests__/multi-module-emitters.test.js` - Multi-module tests
@@ -746,7 +738,7 @@ v2.3.0 upgrades the Constitution from a "document" to an "executable discipline 
 - `.claude/docs/templates/ATTEMPT_TEMPLATE.md` - Research attempt log format
 - `.claude/agents/spec-reviewer.md` - Stage 1 spec compliance reviewer
 - `.claude/agents/code-quality-reviewer.md` - Stage 2 code quality reviewer
-- `.claude/commands/flow-review.md` - Two-stage review command (legacy, replaced by `.claude/commands/flow/quality.md`)
+- `.claude/commands/flow-review.md` - Historical two-stage review command, superseded by current flow review/verify chain
 - `.claude/rules/rationalization-library.md` - Centralized rationalization defense
 - `.claude/scripts/verify-gate.sh` - Exit gate verification script
 - `.claude/skills/flow-brainstorming/` - Brainstorming skill

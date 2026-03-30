@@ -1,7 +1,7 @@
 # Research Summary — {FEATURE_NAME}
 
 > **Purpose**: Document all technical decisions made during requirement initialization
-> **Owner**: prd-writer / planner agents
+> **Owner**: clarify-analyst / planner agents
 > **Status**: Living document (updated until PRD finalized)
 > **Template Version**: v1.0.0
 > **Constitution Compliance**: Article X.1 (Forced Clarification), Article X.2 (No Speculation)
@@ -96,7 +96,7 @@ Generated: {GENERATED_AT}
 
 ## Usage Instructions
 
-### For AI Agents (prd-writer, planner)
+### For AI Agents (clarify-analyst, planner)
 
 1. **Initialize from Template**:
    ```bash

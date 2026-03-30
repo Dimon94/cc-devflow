@@ -1,5 +1,5 @@
 # flow-verify/
-> L2 | 父级: /Users/dimon/001Area/80-CodeWorld/002-devflow/cc-devflow/.claude/skills/workflow/CLAUDE.md
+> L2 | 父级: /Users/dimon/.codex/worktrees/03a4/cc-devflow/.claude/CLAUDE.md
 
 成员清单
 SKILL.md: flow:verify 的核心指令，定义 quick/strict gate 与 release 前准入规则。

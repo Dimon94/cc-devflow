@@ -1,304 +1,151 @@
 #!/usr/bin/env bash
-# test_recover_workflow.sh - 测试 recover-workflow.sh (基础测试)
+# =============================================================================
+# [INPUT]: 依赖 .claude/tests/test-framework.sh 与 recover-workflow.sh/common.sh 副本，在临时仓库中构造 harness/resume-index 夹具。
+# [OUTPUT]: 回归验证 recover-workflow.sh 会从 resume-index 与 harness-state 推导当前恢复阶段和下一步动作。
+# [POS]: .claude/tests/scripts 的恢复入口测试，用于守住 restart 分析器贴合当前主链阶段语义。
+# [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+# =============================================================================
 
-# 加载测试框架
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../test-framework.sh"
 
-# 脚本路径
-REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-RECOVER_SCRIPT="$REPO_ROOT/scripts/recover-workflow.sh"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+SCRIPT_SOURCE_DIR="$REPO_ROOT/.claude/scripts"
 
-# 注意: recover-workflow.sh 依赖真实的仓库环境
-# 这里只测试基本功能和帮助信息
+setup_recover_fixture() {
+    local test_repo
+    test_repo=$(mktemp -d "${TEST_TMP_DIR}/recover-repo.XXXXXX")
+    mkdir -p "$test_repo/.claude/scripts" "$test_repo/lib/harness"
 
-# ============================================================================
-# 辅助函数
-# ============================================================================
+    cp "$SCRIPT_SOURCE_DIR/common.sh" "$test_repo/.claude/scripts/common.sh"
+    cp "$SCRIPT_SOURCE_DIR/recover-workflow.sh" "$test_repo/.claude/scripts/recover-workflow.sh"
+    chmod +x "$test_repo/.claude/scripts/recover-workflow.sh"
 
-# 创建测试专用的 common.sh
-create_test_common() {
-    local test_common="$TEST_TMP_DIR/scripts/common.sh"
-    mkdir -p "$(dirname "$test_common")"
-
-    sed '/^get_repo_root()/,/^}/c\
-get_repo_root() {\
-    echo "'"$TEST_TMP_DIR"'"\
-}' "$REPO_ROOT/scripts/common.sh" > "$test_common"
+    cat > "$test_repo/lib/harness/query.js" <<'EOF'
+async function getFullState(repoRoot, changeId) {
+  if (changeId === 'REQ-123') {
+    return {
+      lifecycle: {
+        status: 'verified',
+        stage: 'execute',
+        updatedAt: '2026-03-26T02:00:00Z'
+      },
+      progress: {
+        totalTasks: 4,
+        completedTasks: 4
+      }
+    };
+  }
+  return {
+    lifecycle: {
+      status: 'unknown',
+      stage: 'unknown',
+      updatedAt: ''
+    },
+    progress: {
+      totalTasks: 0,
+      completedTasks: 0
+    }
+  };
 }
 
-# 创建需求环境（带状态）
-setup_requirement_with_status() {
-    local req_id="$1"
-    local status="$2"
-    local phase="$3"
+module.exports = { getFullState };
+EOF
 
-    local req_dir="$TEST_TMP_DIR/devflow/requirements/$req_id"
-    mkdir -p "$req_dir"/{research,tasks}
+    (
+        cd "$test_repo"
+        git init -q
+    )
 
-    # 创建状态文件
-    cat > "$req_dir/orchestration_status.json" << EOF
+    mkdir -p \
+        "$test_repo/devflow/requirements/REQ-123" \
+        "$test_repo/devflow/intent/REQ-123"
+
+    cat > "$test_repo/devflow/requirements/REQ-123/harness-state.json" <<'EOF'
 {
-  "reqId": "$req_id",
-  "title": "Test Requirement",
-  "status": "$status",
-  "phase": "$phase",
-  "createdAt": "2025-10-01T00:00:00Z",
-  "updatedAt": "2025-10-01T00:00:00Z"
+  "changeId": "REQ-123",
+  "goal": "Ship checkout",
+  "status": "verified",
+  "updatedAt": "2026-03-26T02:00:00Z"
 }
 EOF
 
-    # 创建基础文档
-    echo "# PRD" > "$req_dir/PRD.md"
-    echo "# Execution Log" > "$req_dir/EXECUTION_LOG.md"
+    cat > "$test_repo/devflow/intent/REQ-123/resume-index.md" <<'EOF'
+# Resume Index: REQ-123
 
-    echo "$req_dir"
+- Stage: prepare-pr
+- Goal: Ship checkout
+- Lifecycle: verified
+- Updated At: 2026-03-26T02:00:00Z
+
+## Last Good Checkpoint
+
+- Verification completed.
+
+## Next Action
+
+运行 `/flow:prepare-pr "REQ-123"` 进入提审准备。
+EOF
+
+    echo "# PRD" > "$test_repo/devflow/requirements/REQ-123/PRD.md"
+    echo "# TASKS" > "$test_repo/devflow/requirements/REQ-123/TASKS.md"
+    echo "# TEST REPORT" > "$test_repo/devflow/requirements/REQ-123/TEST_REPORT.md"
+
+    echo "$test_repo"
 }
 
-# 运行 recover-workflow.sh
 run_recover() {
-    local req_id="$1"
+    local test_repo="$1"
     shift
-    local args=("$@")
-
-    export DEVFLOW_REQ_ID="$req_id"
-
-    local test_scripts_dir="$TEST_TMP_DIR/scripts"
-    mkdir -p "$test_scripts_dir"
-
-    create_test_common
-    cp "$RECOVER_SCRIPT" "$test_scripts_dir/"
-
     (
-        cd "$TEST_TMP_DIR"
-        bash "$test_scripts_dir/recover-workflow.sh" "${args[@]}" 2>&1
+        cd "$test_repo"
+        bash ".claude/scripts/recover-workflow.sh" "$@"
     )
 }
-
-# ============================================================================
-# 测试帮助信息
-# ============================================================================
 
 test_help_flag() {
     describe "Should show help with --help"
 
-    # Act - 直接运行脚本
-    local output=$(bash "$RECOVER_SCRIPT" --help 2>&1)
+    local test_repo
+    test_repo=$(setup_recover_fixture)
 
-    # Assert
+    local output
+    output=$(run_recover "$test_repo" --help 2>&1)
+
     assert_contains "$output" "用法:" "Should show usage"
-    assert_contains "$output" "恢复" "Should mention recovery"
+    assert_contains "$output" "--from STAGE" "Should mention --from option"
 }
 
-test_script_executes() {
-    describe "Should execute without critical errors"
+test_dry_run_prefers_resume_index_stage() {
+    describe "dry-run should prefer resume-index stage over runtime stage"
 
-    # Act
-    local exit_code=0
-    bash "$RECOVER_SCRIPT" --help >/dev/null 2>&1 || exit_code=$?
+    local test_repo
+    test_repo=$(setup_recover_fixture)
 
-    # Assert
-    assert_equals "$exit_code" "0" "Script should be executable"
+    local output
+    output=$(run_recover "$test_repo" REQ-123 --dry-run 2>&1)
+
+    assert_contains "$output" "下一步唯一动作" "Should surface next action from resume-index"
+    assert_contains "$output" "/flow:prepare-pr \"REQ-123\"" "Should include prepare-pr next action"
+    assert_contains "$output" "阶段:     prepare-pr" "Should report mapped phase from resume-index"
+    assert_contains "$output" "起始阶段: prepare-pr" "Should recover from prepare-pr instead of falling back to dev/verify"
 }
 
-test_has_required_options() {
-    describe "Help should document required options"
+test_from_qa_normalizes_to_verify() {
+    describe "compatibility --from qa should normalize to verify"
 
-    # Act
-    local output=$(bash "$RECOVER_SCRIPT" --help 2>&1)
+    local test_repo
+    test_repo=$(setup_recover_fixture)
 
-    # Assert
-    assert_contains "$output" "--from" "Should have --from option"
-    assert_contains "$output" "--dry-run" "Should have --dry-run option"
-    assert_contains "$output" "--force" "Should have --force option"
+    local output
+    output=$(run_recover "$test_repo" REQ-123 --from qa --dry-run 2>&1)
+
+    assert_contains "$output" "用户指定从阶段恢复: qa" "Should show original compatibility stage"
+    assert_contains "$output" "起始阶段: verify" "Should normalize qa to verify"
+    assert_contains "$output" "/flow:verify \"REQ-123\" --strict" "Should plan verify command"
 }
-
-# ============================================================================
-# 测试状态检测
-# ============================================================================
-
-test_detect_workflow_status() {
-    describe "Should detect workflow status correctly"
-
-    # Arrange
-    setup_requirement_with_status "REQ-001" "prd_complete" "epic_planning"
-
-    # Act
-    local output=$(run_recover "REQ-001" --dry-run 2>&1)
-
-    # Assert
-    assert_contains "$output" "REQ-001" "Should show requirement ID"
-    assert_contains "$output" "prd_complete\|epic" "Should show status or phase"
-}
-
-# ============================================================================
-# 测试恢复策略
-# ============================================================================
-
-test_recovery_from_prd_complete() {
-    describe "Should suggest Epic stage from prd_complete"
-
-    # Arrange
-    setup_requirement_with_status "REQ-002" "prd_complete" "epic_planning"
-
-    # Act
-    local output=$(run_recover "REQ-002" --dry-run 2>&1)
-
-    # Assert
-    assert_contains "$output" "epic\|Epic\|EPIC" "Should mention Epic stage"
-}
-
-test_recovery_from_initialized() {
-    describe "Should suggest PRD stage from initialized"
-
-    # Arrange
-    setup_requirement_with_status "REQ-003" "initialized" "planning"
-
-    # Act
-    local output=$(run_recover "REQ-003" --dry-run 2>&1)
-
-    # Assert
-    assert_contains "$output" "prd\|PRD" "Should mention PRD stage"
-}
-
-test_recovery_from_epic_complete() {
-    describe "Should suggest dev stage from epic_complete"
-
-    # Arrange
-    setup_requirement_with_status "REQ-004" "epic_complete" "epic_complete"
-
-    # Act
-    local output=$(run_recover "REQ-004" --dry-run 2>&1)
-
-    # Assert
-    assert_contains "$output" "dev\|开发" "Should mention dev stage"
-}
-
-# ============================================================================
-# 测试 --from 选项
-# ============================================================================
-
-test_from_option_override() {
-    describe "Should respect --from option to override detection"
-
-    # Arrange
-    setup_requirement_with_status "REQ-005" "prd_complete" "epic_planning"
-
-    # Act
-    local output=$(run_recover "REQ-005" --from dev --dry-run 2>&1)
-
-    # Assert
-    assert_contains "$output" "dev\|开发" "Should start from dev as specified"
-}
-
-# ============================================================================
-# 测试 dry-run 模式
-# ============================================================================
-
-test_dry_run_mode() {
-    describe "Should show recovery plan in dry-run mode"
-
-    # Arrange
-    setup_requirement_with_status "REQ-006" "prd_complete" "epic_planning"
-
-    # Act
-    local output=$(run_recover "REQ-006" --dry-run 2>&1)
-
-    # Assert
-    assert_contains "$output" "恢复计划\|Recovery Plan\|执行步骤" "Should show recovery plan"
-    assert_contains "$output" "flow-\|/flow" "Should show flow commands"
-}
-
-# ============================================================================
-# 测试文档完整性检查
-# ============================================================================
-
-test_check_prd_exists() {
-    describe "Should check for PRD.md existence"
-
-    # Arrange
-    local req_dir=$(setup_requirement_with_status "REQ-007" "prd_complete" "epic_planning")
-
-    # Act
-    local output=$(run_recover "REQ-007" --dry-run 2>&1)
-
-    # Assert
-    assert_contains "$output" "PRD\|文档" "Should mention PRD or documents"
-}
-
-test_check_epic_if_exists() {
-    describe "Should check for EPIC.md if it exists"
-
-    # Arrange
-    local req_dir=$(setup_requirement_with_status "REQ-008" "epic_complete" "epic_complete")
-    echo "# EPIC" > "$req_dir/EPIC.md"
-
-    # Act
-    local output=$(run_recover "REQ-008" --dry-run 2>&1)
-
-    # Assert
-    assert_contains "$output" "EPIC\|Epic\|文档" "Should detect EPIC presence"
-}
-
-# ============================================================================
-# 测试错误处理
-# ============================================================================
-
-test_missing_requirement_dir() {
-    describe "Should fail when requirement directory doesn't exist"
-
-    # Arrange - 不创建需求目录
-
-    # Act
-    local exit_code=0
-    local output=$(run_recover "REQ-NOTEXIST" --dry-run 2>&1) || exit_code=$?
-
-    # Assert
-    assert_not_equals "$exit_code" "0" "Should fail when dir missing"
-}
-
-test_missing_status_file() {
-    describe "Should handle missing status file gracefully"
-
-    # Arrange - 创建目录但不创建状态文件
-    local req_id="REQ-009"
-    local req_dir="$TEST_TMP_DIR/devflow/requirements/$req_id"
-    mkdir -p "$req_dir"
-    echo "# PRD" > "$req_dir/PRD.md"
-
-    # Act
-    local exit_code=0
-    local output=$(run_recover "REQ-009" --dry-run 2>&1) || exit_code=$?
-
-    # Assert
-    assert_not_equals "$exit_code" "0" "Should fail without status file"
-}
-
-# ============================================================================
-# 测试已完成需求
-# ============================================================================
-
-test_completed_requirement() {
-    describe "Should indicate no recovery needed for completed requirement"
-
-    # Arrange
-    setup_requirement_with_status "REQ-010" "completed" "completed"
-
-    # Act
-    local exit_code=0
-    local output=$(run_recover "REQ-010" --dry-run 2>&1) || exit_code=$?
-
-    # Assert - 已完成应该退出成功但提示无需恢复
-    if [[ $exit_code -eq 0 ]]; then
-        assert_contains "$output" "完成\|complete" "Should mention completion"
-    fi
-}
-
-# ============================================================================
-# 运行所有测试 (仅基础测试，完整测试需要真实Git环境)
-# ============================================================================
 
 run_tests \
     test_help_flag \
-    test_script_executes \
-    test_has_required_options
+    test_dry_run_prefers_resume_index_stage \
+    test_from_qa_normalizes_to_verify

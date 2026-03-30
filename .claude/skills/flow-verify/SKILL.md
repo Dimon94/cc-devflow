@@ -11,6 +11,11 @@ description: 'Run layered quick/strict gates and emit report-card for a requirem
 
 执行质量门禁并输出 `report-card.json`，作为发布前唯一准入依据。
 
+规则：
+
+- `report-card.json` 是验证真相源
+- 若需要提交审查材料，verify 之后优先进入 `prepare-pr`
+
 ## Input Format
 
 ```bash
@@ -49,5 +54,5 @@ npm run harness:verify -- --change-id "${REQ_ID}" [--strict] [--skip-review]
 ## Next Step
 
 ```bash
-/flow:release "${REQ_ID}"
+/flow:prepare-pr "${REQ_ID}"
 ```

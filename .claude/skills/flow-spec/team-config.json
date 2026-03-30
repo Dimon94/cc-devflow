@@ -1,160 +1,183 @@
 {
-  "name": "spec-design-team",
-  "version": "1.0.0",
-  "description": "并行规格设计团队 - tech-architect 和 ui-designer 可实时协商共享决策",
-
+  "name": "spec-alignment-team",
+  "version": "2.0.0",
+  "description": "flow-spec 的本地 Team 对齐配置：先澄清事实，再收敛计划，最后产出可执行任务图。",
   "mode": "parallel",
   "lead": "spec-lead",
-
   "members": [
     {
-      "id": "prd-writer",
+      "id": "clarify-analyst",
       "role": "analyst",
-      "agent_type": "prd-writer",
-      "description": "PRD 生成，需求分析",
-      "agent_reference": "flow-prd/references/prd-writer.md",
-      "outputs": ["PRD.md"]
+      "description": "梳理目标、约束与未知项",
+      "outputs": [
+        "devflow/intent/{REQ}/facts.md"
+      ]
     },
     {
       "id": "tech-architect",
       "role": "architect",
-      "agent_type": "tech-architect",
-      "description": "技术设计，架构方案",
-      "agent_reference": "flow-tech/references/tech-architect.md",
-      "outputs": ["TECH_DESIGN.md", "data-model.md", "contracts/openapi.yaml"]
+      "description": "给出实现边界、接口和风险",
+      "outputs": [
+        "devflow/intent/{REQ}/artifacts/results/architecture.md"
+      ]
     },
     {
       "id": "ui-designer",
       "role": "designer",
-      "agent_type": "ui-designer",
-      "description": "UI 原型，交互设计",
-      "agent_reference": "flow-ui/references/ui-designer.md",
-      "outputs": ["UI_PROTOTYPE.html", "ui_design_strategy.md"]
+      "description": "补充界面与交互约束",
+      "outputs": [
+        "devflow/intent/{REQ}/artifacts/results/ui.md"
+      ]
     },
     {
       "id": "planner",
       "role": "planner",
-      "agent_type": "planner",
-      "description": "Epic 规划，任务分解",
-      "agent_reference": "flow-epic/references/planner.md",
-      "outputs": ["EPIC.md", "TASKS.md"]
+      "description": "将确认后的范围编译成执行计划和任务图",
+      "outputs": [
+        "devflow/intent/{REQ}/plan.md",
+        "devflow/requirements/{REQ}/task-manifest.json"
+      ]
     }
   ],
-
   "workflow": {
     "stages": [
       {
         "id": "stage-1",
-        "name": "PRD Generation",
-        "description": "生成产品需求文档",
-        "agents": ["prd-writer"],
+        "name": "Fact Capture",
+        "description": "收敛目标、约束与未决问题",
+        "agents": [
+          "clarify-analyst"
+        ],
         "parallel": false,
-        "outputs": ["PRD.md"],
+        "outputs": [
+          "devflow/intent/{REQ}/facts.md"
+        ],
         "wait_for": []
       },
       {
         "id": "stage-2",
-        "name": "Design Parallel",
-        "description": "技术设计和 UI 原型并行执行，支持实时协商",
-        "agents": ["tech-architect", "ui-designer"],
+        "name": "Design Alignment",
+        "description": "技术与界面角色并行补充实施边界",
+        "agents": [
+          "tech-architect",
+          "ui-designer"
+        ],
         "parallel": true,
-        "outputs": ["TECH_DESIGN.md", "UI_PROTOTYPE.html"],
-        "wait_for": ["stage-1"],
+        "outputs": [
+          "devflow/intent/{REQ}/artifacts/results/architecture.md",
+          "devflow/intent/{REQ}/artifacts/results/ui.md"
+        ],
+        "wait_for": [
+          "stage-1"
+        ],
         "negotiate": {
           "enabled": true,
-          "topics": ["api_format", "field_naming", "auth_strategy", "state_management"]
+          "topics": [
+            "scope_boundary",
+            "interface_shape",
+            "risk_hotspots"
+          ]
         }
       },
       {
         "id": "stage-3",
-        "name": "Epic Planning",
-        "description": "基于 PRD 和设计文档生成 Epic 和任务",
-        "agents": ["planner"],
+        "name": "Plan Compile",
+        "description": "把对齐后的结论编译为计划与任务图",
+        "agents": [
+          "planner"
+        ],
         "parallel": false,
-        "outputs": ["EPIC.md", "TASKS.md"],
-        "wait_for": ["stage-2"]
+        "outputs": [
+          "devflow/intent/{REQ}/plan.md",
+          "devflow/requirements/{REQ}/task-manifest.json"
+        ],
+        "wait_for": [
+          "stage-2"
+        ]
       }
     ]
   },
-
   "communication": {
-    "protocol": "direct_message",
+    "protocol": "append_only_markdown_bus",
     "negotiate_topics": [
       {
-        "id": "api_format",
-        "name": "API 响应格式",
-        "description": "确定 API 响应格式 (REST/GraphQL, JSON structure, pagination)",
-        "participants": ["tech-architect", "ui-designer"],
+        "id": "scope_boundary",
+        "name": "范围边界",
+        "description": "明确本轮必须完成与明确不做的部分",
+        "participants": [
+          "clarify-analyst",
+          "tech-architect",
+          "planner"
+        ],
+        "decision_owner": "spec-lead",
+        "template": "建议本轮范围锁定为 {scope}，非目标为 {non_goals}，原因是 {reason}。"
+      },
+      {
+        "id": "interface_shape",
+        "name": "接口形状",
+        "description": "统一输入输出、状态边界与调用约定",
+        "participants": [
+          "tech-architect",
+          "ui-designer",
+          "planner"
+        ],
         "decision_owner": "tech-architect",
-        "template": "我建议 API 响应格式采用 {format}，因为 {reason}。你的前端需求是否有特殊要求？"
+        "template": "建议接口形状采用 {shape}，关键字段包括 {fields}，以保证实现与界面一致。"
       },
       {
-        "id": "field_naming",
-        "name": "数据字段命名",
-        "description": "统一数据字段命名规范 (camelCase/snake_case, 字段名称)",
-        "participants": ["tech-architect", "ui-designer", "planner"],
-        "decision_owner": "tech-architect",
-        "template": "数据模型中的字段命名建议：{fields}。请确认是否与 UI 组件 props 一致。"
-      },
-      {
-        "id": "auth_strategy",
-        "name": "认证策略",
-        "description": "确定认证方案 (JWT, Session, OAuth)",
-        "participants": ["tech-architect", "ui-designer"],
-        "decision_owner": "tech-architect",
-        "template": "认证策略建议采用 {strategy}。前端需要处理的 token 存储和刷新逻辑是 {logic}。"
-      },
-      {
-        "id": "state_management",
-        "name": "状态管理方案",
-        "description": "前端状态管理方案 (Redux, Context, Zustand)",
-        "participants": ["tech-architect", "ui-designer"],
-        "decision_owner": "ui-designer",
-        "template": "前端状态管理建议采用 {solution}，全局状态包括 {states}。"
-      },
-      {
-        "id": "component_granularity",
-        "name": "组件粒度",
-        "description": "UI 组件粒度和任务拆分依据",
-        "participants": ["ui-designer", "planner"],
-        "decision_owner": "ui-designer",
-        "template": "UI 组件拆分为 {components}，每个组件的复杂度和预估时间是 {estimates}。"
+        "id": "risk_hotspots",
+        "name": "风险热点",
+        "description": "识别最容易拖慢自动驾驶的高风险点",
+        "participants": [
+          "tech-architect",
+          "planner"
+        ],
+        "decision_owner": "planner",
+        "template": "当前最高风险是 {risk}，缓解动作是 {mitigation}，若失败则回退到 {fallback}。"
       }
     ],
     "decision_record": {
-      "path": "devflow/requirements/{REQ}/research/design_decisions.md",
+      "path": "devflow/intent/{REQ}/decision-log.md",
       "format": "markdown",
-      "template": "## {topic_name}\n\n**决策**: {decision}\n**参与者**: {participants}\n**原因**: {reason}\n**时间**: {timestamp}\n"
+      "template": "## {topic_name}\n\n**Decision**: {decision}\n**Participants**: {participants}\n**Reason**: {reason}\n**Time**: {timestamp}\n"
     }
   },
-
   "quality_gates": {
     "entry": {
-      "required_files": ["BRAINSTORM.md", "research/research.md"],
-      "status_check": ["initialized", "spec_failed"]
+      "required_files": [
+        "devflow/intent/{REQ}/summary.md"
+      ],
+      "optional_files": [
+        "devflow/intent/{REQ}/facts.md"
+      ]
     },
     "exit": {
-      "required_files": ["PRD.md", "EPIC.md", "TASKS.md"],
-      "optional_files": ["TECH_DESIGN.md", "UI_PROTOTYPE.html"],
-      "status_update": "spec_complete"
+      "required_files": [
+        "devflow/intent/{REQ}/plan.md",
+        "devflow/requirements/{REQ}/task-manifest.json"
+      ],
+      "optional_files": [
+        "devflow/intent/{REQ}/artifacts/results/architecture.md",
+        "devflow/intent/{REQ}/artifacts/results/ui.md"
+      ],
+      "status_update": "planned"
     }
   },
-
   "error_handling": {
     "stage_failure": {
       "stage-1": {
         "action": "abort",
-        "status": "spec_failed",
-        "message": "PRD generation failed"
+        "status": "planning_failed",
+        "message": "Fact capture failed"
       },
       "stage-2": {
         "action": "continue_partial",
-        "message": "Design stage partially failed, continuing with available outputs"
+        "message": "Design alignment partially failed, continue with available evidence"
       },
       "stage-3": {
         "action": "abort",
-        "status": "spec_failed",
-        "message": "Epic planning failed"
+        "status": "planning_failed",
+        "message": "Plan compile failed"
       }
     },
     "teammate_failure": {

@@ -1,6 +1,6 @@
 ---
 name: flow-restart
-description: 'Restart interrupted cc-devflow requirement development. Usage: /flow:restart "REQ-123" [--from=stage]'
+description: 'Recover interrupted requirement work from current artifacts. Usage: /flow:restart "REQ-123" [--from=init|spec|dev|verify|prepare-pr|release]'
 scripts:
   prereq: .claude/scripts/check-prerequisites.sh
   recover: .claude/scripts/recover-workflow.sh
@@ -9,89 +9,71 @@ scripts:
 
 # Flow-Restart - 中断恢复命令
 
+## 定位
+
+恢复优先读取现有工件，而不是重新猜。
+
+优先级：
+
+1. `devflow/intent/<REQ>/resume-index.md`
+2. `devflow/requirements/<REQ>/harness-state.json`
+3. `devflow/requirements/<REQ>/task-manifest.json`
+4. `devflow/requirements/<REQ>/report-card.json`
+
 ## User Input
+
 ```text
 $ARGUMENTS = "REQ_ID [--from=stage] [--force] [--backup]"
 ```
 
 ## 支持阶段
+
+```text
+init | spec | dev | verify | prepare-pr | release
 ```
-init | spec | dev | verify | release
-```
-兼容别名：`research->init`、`prd/planning->spec`、`development->dev`、`qa/quality->verify`。
+
+阶段别名：
+
+- `planning -> spec`
+- `development -> dev`
+- `qa|quality -> verify`
 
 ## 执行流程
 
-### 阶段 1: Entry Gate
-```
-1. 参数解析
-   → 校验 REQ_ID（REQ-\d+）、阶段枚举。
+### 1. 检测
 
-2. 状态自检
-   → Run: {SCRIPT:prereq} --json --paths-only
-   → 确认 devflow/requirements/${REQ_ID}/ 存在
-   → orchestration_status.json.status ∈ {failed, paused, *_failed}
-   → 若 status 已完成且未使用 --force → 拒绝重启。
+1. 校验 `REQ_ID`
+2. 读取当前恢复工件
+3. 若 `resume-index.md` 存在，优先采用其中的 `当前阶段` 和 `下一步唯一动作`
+4. 若用户显式指定 `--from`，以用户指定为准
 
-3. 中断点检测
-   → 调用 {SCRIPT:recover} --detect "${REQ_ID}"
-   → 解析中断原因、推荐恢复阶段、待恢复的产物。
+### 2. 清理
 
-4. 备份（可选）
-   → 如果 --backup，则创建 `${REQ_DIR}/backup/${timestamp}` 目录复制关键文件。
-```
+- `init`: 清理损坏的初始化残留
+- `spec`: 重建 planning 输入，必要时重新生成 manifest
+- `dev`: 使用 `/flow:dev --resume`
+- `verify`: 重新跑 quality gates
+- `prepare-pr`: 重建 `pr-brief.md`
+- `release`: 重新检查 `report-card` 和 `RELEASE_NOTE`
 
-### 阶段 2: 清理与重置
-```
-1. 根据阶段执行清理动作:
-   • init: 清理临时 research/mcp 缓存、保留 summary
-   • spec: 备份 PRD.md/EPIC.md/TASKS.md，重置 planning 状态
-   • dev: 检查未完成任务、生成 git stash 建议
-   • verify: 删除过期 TEST_REPORT/SECURITY_REPORT
-   • release: 关闭未完成 PR 草稿、重置 release 状态
+### 3. 输出下一步
 
-2. 更新 orchestration_status:
-   → status = "${stage}_restart_in_progress"
-   → restartStage = stage
-   → restartAt = timestamp
-
-3. EXECUTION_LOG.md 记录恢复动作和备份路径。
-```
-
-### 阶段 3: 恢复执行
-```
-1. 根据 stage 自动触发后续命令提示：
-   → init（兼容 research）→ `/flow:init "REQ_ID|TITLE|URLS?"`
-   → spec（兼容 prd/planning）→ `/flow:spec "REQ_ID"`
-   → dev（兼容 development）→ `/flow:dev "REQ_ID" --resume`
-   → verify（兼容 qa/quality）→ `/flow:verify "REQ_ID" --strict`
-   → release → `/flow:release "REQ_ID"`
-
-2. 若 {SCRIPT:recover} 支持自动修复（如重建 TASKS），执行对应脚本。
-```
-
-### 阶段 4: Exit Gate
-```
-1. 验证关键产物是否存在（与阶段相符）。
-2. orchestration_status:
-   → status = "${stage}_restart_ready"
-   → completedSteps 不剥夺已完成阶段
-3. 输出下一步指引。
-```
-
-## 错误处理
-- 检测不到中断 → 提示使用 `/flow:status` 查看当前状态，或需 --force。
-- 备份失败 → 终止并保留原样。
-- 清理动作报错 → 输出日志路径，允许用户手动处理后重试。
+- `init` -> `/flow:init "REQ_ID|TITLE|URLS?"`
+- `spec` -> `/flow:spec "REQ_ID"`
+- `dev` -> `/flow:dev "REQ_ID" --resume`
+- `verify` -> `/flow:verify "REQ_ID" --strict`
+- `prepare-pr` -> `/flow:prepare-pr "REQ_ID"`
+- `release` -> `/flow:release "REQ_ID"`
 
 ## 输出
-```
-✅ backup/ 时间戳目录（若启用备份）
-✅ orchestration_status.json 更新（restartStage, restartAt, status）
-✅ EXECUTION_LOG.md 恢复条目
-```
 
-## 下一步
-1. 按提示执行下一阶段命令。
-2. 使用 `/flow:status REQ_ID --detailed` 确认状态恢复正确。
-3. 如多次失败，考虑跑 `/flow:verify` 或手动 review 产物。
+- 可选 `backup/` 目录
+- 恢复建议
+
+## 建议
+
+若需求本身已经很复杂，优先直接：
+
+```text
+/flow:autopilot "REQ-123|继续当前自动驾驶" --resume
+```

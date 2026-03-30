@@ -24,27 +24,40 @@ $ARGUMENTS = "[REQ_ID?] [--all] [--bugs] [--detailed] [--summary]"
 ```
 1. 运行 {SCRIPT:prereq} --json --paths-only
 2. 扫描:
-   → devflow/requirements/*/orchestration_status.json
-   → devflow/bugs/*/orchestration_status.json
-3. 读取每个状态文件及 EXECUTION_LOG.md 头部，提取:
-   → status, phase, completedSteps, phase0/phase1 flag, lastUpdated
-   → 是否存在 context-package/task-manifest/report-card/RELEASE_NOTE
+   → devflow/requirements/*/harness-state.json
+   → devflow/requirements/*/task-manifest.json
+   → devflow/requirements/*/report-card.json
+   → devflow/intent/*/resume-index.md
+   → devflow/intent/*/artifacts/pr-brief.md
+3. 聚合读取当前 requirement 的主状态，提取:
+   → harness lifecycle/status/updatedAt
+   → task 统计、next task、verify 结论
+   → 是否存在 resume-index / pr-brief
 4. 若 `--branches`: 读取 git 分支与 upstream 状态
-5. 若 `--detailed`: 关联 task-manifest 任务统计、report-card 结论、release note
+5. 若 `--detailed`: 关联 runtime checkpoint、report-card、pr-brief 与 release note
 ```
 
 ### 3. 输出格式
 - **默认概览**: 表格显示 ID、标题、当前阶段、关键产物完成度、最近更新时间。
-- **详细模式**: 列出各阶段产物路径、phase0/phase1 标志、剩余步骤与下一命令建议。
+- **详细模式**: 列出主链产物路径、下一步唯一动作、剩余步骤与下一命令建议。
 - **Summary/All**: 使用 {SCRIPT:generate_status} 生成聚合报告。
 
 ### 4. 建议动作
   - 根据状态字段提示下一命令（优先主链）：
-    - `status=initialized` 或 `status=context_packed` → `/flow:spec`
-    - `status=planned` 或 `status=spec_complete` → `/flow:dev`
-    - `status=development_in_progress` 且有失败任务 → `/flow:dev --resume`
-    - `status=development_complete` → `/flow:verify --strict`
-    - `status=quality_complete` 或 `status=verified` → `/flow:release`
+    - `status=initialized` → `/flow:spec`
+    - `status=planned` → `/flow:dev`
+    - `status=in_progress` 且有失败任务 → `/flow:dev --resume`
+    - `status=in_progress` 且任务已收敛 → `/flow:verify --strict`
+    - `status=verified` 或 `report-card.json.overall == pass` → `/flow:prepare-pr`
+    - `status=prepare-pr` 或已存在 `pr-brief.md` → `/flow:release`
+  - 兼容旧状态字段时，统一映射到同一主链建议，不把历史阶段名当标准答案。
+
+## 读取优先级
+
+1. `devflow/intent/<REQ>/resume-index.md`
+2. `devflow/requirements/<REQ>/harness-state.json`
+3. `devflow/requirements/<REQ>/task-manifest.json`
+4. `devflow/requirements/<REQ>/report-card.json`
 
 ## 输出样例
 ```
@@ -52,8 +65,8 @@ $ARGUMENTS = "[REQ_ID?] [--all] [--bugs] [--detailed] [--summary]"
 ┌─────────┬──────────────┬───────────────┬────────────┬──────────┐
 │ ID      │ Title        │ Status        │ Phase      │ Next     │
 ├─────────┼──────────────┼───────────────┼────────────┼──────────┤
-│ REQ-123 │ 下单流程优化   │ planned        │ planning   │ /flow:dev │
-│ REQ-124 │ 权限矩阵       │ quality_complete │ verify  │ /flow:release │
+│ REQ-123 │ 下单流程优化   │ planned        │ spec       │ /flow:dev │
+│ REQ-124 │ 权限矩阵       │ verified       │ prepare-pr │ /flow:release │
 │ REQ-125 │ 账单导出       │ initialized    │ init       │ /flow:spec │
 └─────────┴──────────────┴───────────────┴────────────┴──────────┘
 ```

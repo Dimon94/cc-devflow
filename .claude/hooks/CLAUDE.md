@@ -1,342 +1,41 @@
-# hooks/ - Claude Code Hooks
+# hooks/
+> L2 | 父级: /Users/dimon/.codex/worktrees/03a4/cc-devflow/.claude/CLAUDE.md
 
-> L2 | 父级: `.claude/CLAUDE.md`
+用途
+`hooks/` 是 CC-DevFlow 的薄执行脊柱：在工具调用前后补上下文、守护写入边界、记录改动，并在需要时支持本地 Team 协调。
 
-## Purpose
+成员清单
+inject-agent-context.ts: Task/subagent 上下文注入器，优先读取 `REQ context/*.jsonl`，回退到 `.claude/skills/<skill>/`.
+inject-skill-context.ts: Skill 上下文注入器，按 `context.jsonl` 自动装配 Skill 所需文件。
+pre-tool-use-guardrail.sh: Edit/Write 前置守护，阻止越界或高风险修改。
+post-tool-use-tracker.sh: Edit/Write 后置追踪，记录修改过的文件。
+skill-activation-prompt.sh: 在用户触发 Skill 时补充激活提示。
+error-handling-reminder.sh: 停止阶段提醒错误处理与验证责任。
+ralph-loop.ts: SubagentStop 程序化验证器，负责本地循环验证与停止闸门。
+teammate-idle-hook.ts: TeammateIdle 调度器，给本地 Team 分派下一步任务或等待。
+task-completed-hook.ts: TaskCompleted 验证器，任务完成时跑质量检查并写回 Team 状态。
+checklist-gate.js: Checklist 质量门，执行定制检查表规则。
+types/team-types.d.ts: Team 协议相关类型定义。
 
-Claude Code CLI 钩子脚本，在工具调用前后执行自定义逻辑。
+主协议
+1. 默认路径是上下文注入 + 守护 + 追踪，不依赖 Team。
+2. Team hooks 只服务本地 Team/subagent 协调，不构成第二套主流程。
+3. 上下文优先来自 `devflow/intent/<REQ>/` 与 `devflow/requirements/<REQ>/` 当前工件。
+4. Team 真相源优先写入 `devflow/intent/<REQ>/artifacts/team-state.json`，旧 requirement 状态文件仅作镜像。
+5. 验证失败必须阻断或回写明确原因，不能静默放过。
 
-## Members
+注册概览
+`PreToolUse`: `inject-agent-context.ts`、`inject-skill-context.ts`、`pre-tool-use-guardrail.sh`
+`PostToolUse`: `post-tool-use-tracker.sh`
+`SubagentStop`: `ralph-loop.ts`
+`TeammateIdle`: `teammate-idle-hook.ts`
+`TaskCompleted`: `task-completed-hook.ts`
 
-| File | Purpose | Trigger |
-|------|---------|---------|
-| `inject-agent-context.ts` | Task 工具上下文注入 [v4.4] | PreToolUse(Task) |
-| `inject-skill-context.ts` | Skill 上下文注入 | PreToolUse(Skill) |
-| `pre-tool-use-guardrail.sh` | Edit/Write 前置检查 | PreToolUse(Edit\|Write) |
-| `post-tool-use-tracker.sh` | 文件修改追踪 | PostToolUse(Edit\|Write) |
-| `skill-activation-prompt.sh` | Skill 激活提示 | UserPromptSubmit |
-| `error-handling-reminder.sh` | 错误处理提醒 | Stop |
-| `ralph-loop.ts` | Ralph Loop 程序化验证 [v4.7 Team 模式] | SubagentStop |
-| `teammate-idle-hook.ts` | Team 任务调度器 [v4.7] | TeammateIdle |
-| `task-completed-hook.ts` | 任务完成验证器 [v4.7] | TaskCompleted |
-| `checklist-gate.js` | Checklist 质量门 | Custom |
-| `types/team-types.d.ts` | Team 状态 TypeScript 类型定义 [v4.7] | N/A |
+说明
+- `inject-agent-context.ts` 依据 `subagent_type` 推断目标 Skill，并加载最贴近当前 REQ 的 JSONL。
+- `inject-skill-context.ts` 让 Skill 保持 markdown-first，不需要把上下文硬编码进提示词。
+- `ralph-loop.ts`、`teammate-idle-hook.ts`、`task-completed-hook.ts` 属于可选 Team 能力，默认主链仍然是 `autopilot -> init/spec/dev/verify/prepare-pr/release`。
 
-## Hook Registration (settings.json)
-
-```json
-{
-  "hooks": {
-    "PreToolUse": [
-      {"matcher": "Edit|Write", "command": "pre-tool-use-guardrail.sh"},
-      {"matcher": "Task", "command": "inject-agent-context.ts"}
-    ],
-    "PostToolUse": [
-      {"matcher": "Edit|Write", "command": "post-tool-use-tracker.sh"}
-    ],
-    "SubagentStop": [
-      {"command": "ralph-loop.ts"}
-    ],
-    "TeammateIdle": [
-      {"command": "teammate-idle-hook.ts"}
-    ],
-    "TaskCompleted": [
-      {"command": "task-completed-hook.ts"}
-    ]
-  }
-}
-```
-
-## inject-agent-context.ts (v4.4)
-
-借鉴 Trellis 的 `inject-subagent-context.py` 实现。
-
-### 工作流程
-
-```
-Task(subagent_type="dev-implementer", prompt="...")
-    ↓
-Hook 检测到 Task 工具调用
-    ↓
-获取 REQ-ID (环境变量 > .current-task > 分支名)
-    ↓
-查找 JSONL 文件:
-  1. devflow/requirements/{REQ}/context/dev-implementer.jsonl
-  2. .claude/skills/workflow/flow-dev/dev-implementer.jsonl
-  3. .claude/skills/workflow/flow-dev/context.jsonl
-    ↓
-解析 JSONL，读取文件内容
-    ↓
-注入到 prompt 参数中
-```
-
-### JSONL 格式 (Trellis 风格)
-
-```jsonl
-{"file": "devflow/requirements/{REQ}/TASKS.md", "reason": "Task list"}
-{"file": "devflow/spec/frontend/index.md", "reason": "Frontend conventions", "optional": true}
-{"file": "src/components/", "type": "directory", "reason": "Existing patterns"}
-```
-
-### Agent 映射
-
-| subagent_type | Skill Directory | JSONL File |
-|---------------|-----------------|------------|
-| dev-implementer | flow-dev | dev-implementer.jsonl |
-| prd-writer | flow-spec | prd-writer.jsonl |
-| tech-architect | flow-spec | tech-architect.jsonl |
-| planner | flow-spec | planner.jsonl |
-| qa-tester | flow-verify | qa-tester.jsonl |
-
-## ralph-loop.ts (v4.7 Team 模式)
-
-SubagentStop 钩子，支持单 Agent 和多 Teammate 两种模式。
-
-### 单 Agent 模式 (原有逻辑)
-
-```
-SubagentStop Event
-    ↓
-加载 .ralph-state.json
-    ↓
-检查超时/最大迭代
-    ↓
-执行 verify 命令
-    ↓
-通过 → allow | 失败 → block
-```
-
-### Team 模式 (v4.7 新增)
-
-```
-SubagentStop Event (with teammate_id)
-    ↓
-加载 orchestration_status.json
-    ↓
-检查 Team 模式是否启用
-    ↓
-检查 Teammate 迭代次数 / 全局迭代次数
-    ↓
-执行 Teammate 级别验证 (teammate_verify)
-    ↓
-验证失败 → block (更新 ralphLoop.teammates[id])
-验证通过 → 检查是否最后一个活跃 Teammate
-    ↓
-是最后一个 → 执行全局验证 (global_verify)
-    ↓
-全局通过 → allow | 全局失败 → block
-不是最后一个 → allow
-```
-
-### 输入格式 (Team 模式扩展)
-
-```typescript
-interface HookInput {
-  hook_event_name: 'SubagentStop';
-  cwd: string;
-  session_id: string;
-  // Team 模式扩展
-  teammate_id?: string;
-  teammate_role?: string;
-}
-```
-
-### 配置 (quality-gates.yml)
-
-```yaml
-ralph_loop:
-  max_iterations: 5
-  timeout_minutes: 30
-
-  team_mode:
-    enabled: true
-    scope: teammate
-
-    teammate_verify:
-      dev-frontend:
-        - npm run lint -- --files-changed
-        - npm run typecheck --if-present
-      dev-backend:
-        - npm run lint -- --files-changed
-        - npm test -- --changed
-
-    global_verify:
-      - npm run lint
-      - npm run typecheck --if-present
-      - npm test -- --passWithNoTests
-
-    max_iterations_per_teammate: 3
-    max_global_iterations: 10
-```
-
-### 状态存储
-
-**单 Agent 模式**: `.ralph-state.json`
-```json
-{
-  "agent_id": "session-xxx",
-  "iteration": 2,
-  "last_failures": [...],
-  "started_at": "2026-02-07T10:00:00Z"
-}
-```
-
-**Team 模式**: `orchestration_status.json` 中的 `ralphLoop` 字段
-```json
-{
-  "ralphLoop": {
-    "enabled": true,
-    "teammates": {
-      "dev-frontend": {
-        "iteration": 2,
-        "lastVerifyResult": "passed",
-        "lastVerifyAt": "2026-02-07T10:00:00Z"
-      }
-    },
-    "globalIteration": 5,
-    "maxIterations": 10,
-    "startedAt": "2026-02-07T09:00:00Z"
-  }
-}
-```
-
-## teammate-idle-hook.ts (v4.7)
-
-Team 模式下的任务调度器，在 Teammate 空闲时触发。
-
-### 工作流程
-
-```
-TeammateIdle Event
-    ↓
-验证 hook_event_name === 'TeammateIdle'
-    ↓
-如果有 last_task_id，执行 idle_checks 验证
-    ↓
-验证失败 → 返回 assign_task (继续修复)
-验证通过 → 标记任务完成
-    ↓
-查找下一个未分配任务
-    ↓
-有任务 → 返回 assign_task
-无任务 + 所有 Teammate 空闲 → 返回 shutdown
-无任务 + 有 Teammate 工作中 → 返回 wait
-```
-
-### 输入格式 (TeammateIdleInput)
-
-```typescript
-{
-  hook_event_name: 'TeammateIdle',
-  teammate_id: string,
-  teammate_role: string,
-  last_task_id?: string,
-  idle_reason: 'task_complete' | 'waiting_dependency' | 'no_tasks' | 'error',
-  cwd: string,
-  session_id: string
-}
-```
-
-### 输出格式 (TeammateIdleOutput)
-
-```typescript
-{
-  action: 'assign_task' | 'wait' | 'shutdown',
-  task_id?: string,
-  message?: string
-}
-```
-
-### 配置 (quality-gates.yml)
-
-```yaml
-teammate_idle:
-  idle_checks:
-    - npm run lint --if-present
-    - npm run typecheck --if-present
-    - npm test -- --passWithNoTests
-  assignment_strategy: priority_first
-```
-
-## task-completed-hook.ts (v4.7)
-
-任务完成时的质量验证钩子。
-
-### 工作流程
-
-```
-TaskCompleted Event
-    ↓
-验证 hook_event_name === 'TaskCompleted'
-    ↓
-加载 quality-gates.yml 配置
-    ↓
-执行 task_completed.verify 命令
-    ↓
-    ├── 通过 → accept + 更新 Team 状态
-    └── 失败 → block_on_failure?
-                ├── true → reject
-                └── false → accept (with warning)
-    ↓
-记录失败到 ERROR_LOG.md
-    ↓
-检查阶段转换
-```
-
-### 配置 (quality-gates.yml)
-
-```yaml
-task_completed:
-  verify:
-    - npm run lint --if-present
-    - npm run typecheck --if-present
-    - npm test -- --passWithNoTests
-  block_on_failure: true
-  max_retries: 3
-```
-
-### 输入格式
-
-```typescript
-interface TaskCompletedInput {
-  hook_event_name: 'TaskCompleted';
-  task_id: string;
-  task_subject: string;
-  completed_by: string;
-  completion_time: string;
-  cwd: string;
-  session_id: string;
-}
-```
-
-### 输出格式
-
-```typescript
-interface TaskCompletedOutput {
-  decision: 'accept' | 'reject';
-  reason: string;
-  next_actions?: string[];
-}
-```
-
-## types/ - TypeScript 类型定义 (v4.7)
-
-### team-types.d.ts
-
-Team 集成的核心类型定义，被 teammate-idle-hook.ts 和 task-completed-hook.ts 消费。
-
-**主要类型**:
-
-| Type | Purpose |
-|------|---------|
-| `TeammateState` | Teammate 状态 (id, role, status, currentTask, completedTasks) |
-| `TeamState` | Team 状态 (mode, lead, teammates, taskAssignments) |
-| `RalphLoopTeamState` | Ralph Loop Team 模式状态 |
-| `OrchestrationStatus` | 扩展的 orchestration_status.json 类型 |
-| `TeammateIdleInput/Output` | TeammateIdle Hook 输入/输出 |
-| `TaskCompletedInput/Output` | TaskCompleted Hook 输入/输出 |
-| `QualityGatesTeamConfig` | quality-gates.yml Team 配置 |
-
----
+法则: 上下文最小·守护前置·验证阻断·Team 可选
 
 [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md

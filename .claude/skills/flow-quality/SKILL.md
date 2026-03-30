@@ -1,7 +1,7 @@
 ---
 name: flow-quality
-description: 'Combined quality verification (replaces flow-review + flow-qa). Usage: /flow-quality [REQ-ID] [--full]'
-version: 3.0.0
+description: 'Quality verification skill for current CC-DevFlow. Usage: /flow-quality [REQ-ID] [--full]'
+version: 6.2.0
 ---
 
 # Flow-Quality Skill
@@ -10,7 +10,7 @@ version: 3.0.0
 
 ## Purpose
 
-合并的质量验证命令，替代 `/flow-review` 和 `/flow-qa`。
+为当前 CC-DevFlow 提供质量验证能力，聚合程序化检查与更深一层的质量证据。
 
 ## Input Format
 
@@ -43,9 +43,9 @@ version: 3.0.0
 
 ## Entry Gate
 
-1. **development_complete**: true
-2. **TASKS.md**: 所有任务标记 [x]
-3. **Tests**: 全部通过
+1. `task-manifest.json` 已存在
+2. 当前执行前沿已稳定
+3. 相关测试可运行
 
 ## Exit Gate
 
@@ -85,14 +85,8 @@ Reports Generated:
   - TEST_REPORT.md
 ```
 
-## Deprecation Notice
-
-v3.0 废弃命令:
-- `/flow-review` → 使用 `/flow-quality --full`
-- `/flow-qa` → 使用 `/flow-quality --full`
-
 ## Next Step
 
 ```
-/flow-release "${REQ_ID}"
+/flow:verify "${REQ_ID}" 或 /flow:prepare-pr "${REQ_ID}"
 ```

@@ -148,10 +148,10 @@ consistency, simplicity, and quality.
 
 #### 机制3.1: 代理指令嵌入 Constitution 引用
 
-**prd-writer 示例**:
+**clarify-analyst 示例**:
 ```markdown
 6. **Constitution** (.claude/rules/project-constitution.md):
-   - **Quality First**: Ensure PRD completeness, no partial requirements
+   - **Quality First**: Ensure facts/requirements completeness, no partial requirements
    - **Security First**: Identify and document security requirements
    - **Architecture Consistency**: Align with existing system architecture
 ```

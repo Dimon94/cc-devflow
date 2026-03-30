@@ -81,7 +81,7 @@ function findRepoRoot(startPath: string): string | null {
 }
 
 /**
- * 从 orchestration_status.json 获取当前 REQ-ID
+ * 推断当前 REQ-ID
  */
 function getCurrentReqId(repoRoot: string): string | null {
   // 方法1: 从最近修改的 requirements 目录推断
@@ -223,10 +223,10 @@ function findSkillPath(repoRoot: string, skillName: string): string | null {
     }
   }
 
-  // 兼容旧结构：直接在 skills/ 下
-  const legacyPath = path.join(repoRoot, DIR_SKILLS, skillName);
-  if (fs.existsSync(legacyPath) && fs.existsSync(path.join(legacyPath, 'SKILL.md'))) {
-    return legacyPath;
+  // 回退查找：skills 根级目录结构
+  const rootLevelPath = path.join(repoRoot, DIR_SKILLS, skillName);
+  if (fs.existsSync(rootLevelPath) && fs.existsSync(path.join(rootLevelPath, 'SKILL.md'))) {
+    return rootLevelPath;
   }
 
   return null;

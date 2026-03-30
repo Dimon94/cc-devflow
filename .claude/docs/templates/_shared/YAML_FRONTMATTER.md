@@ -23,7 +23,7 @@ status: "Draft"
 created_at: "{{ISO_8601_TIMESTAMP}}"
 updated_at: "{{ISO_8601_TIMESTAMP}}"
 version: "1.0.0"
-author: "prd-writer"
+author: "clarify-analyst"
 constitution_version: "v2.1.0"
 ---
 ```

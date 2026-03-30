@@ -18,7 +18,7 @@
  *   1 - FAIL (completion below threshold)
  *   2 - ERROR (configuration or file error)
  *
- * Reference: contracts/hook-interface.md, TECH_DESIGN.md Section 4.3
+ * Reference: contracts/hook-interface.md, quality gate contract
  * ============================================================================
  */
 

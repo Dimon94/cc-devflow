@@ -9,8 +9,8 @@ TDD RED Phase: Define scenarios to test agent behavior WITHOUT the skill.
 
 **Setup**:
 - REQ-007 declares `dependencies: ["RM-006", "RM-007"]`
-- RM-006 (REQ-004) is `release_complete`
-- RM-007 (REQ-005) is `release_complete`
+- RM-006 (REQ-004) is `released`
+- RM-007 (REQ-005) is `released`
 - But REQ-005's actual output doesn't match what REQ-007 expects
 
 **Pressure**:
@@ -25,7 +25,7 @@ User: "REQ-007 开发完成了，请帮我检查一下"
 
 **Desired Behavior (WITH skill)**:
 - Agent reads REQ-007's `dependencies` field
-- Agent reads REQ-005's actual output (from TECH_DESIGN or contracts)
+- Agent reads REQ-005's actual output (from task-manifest, contracts, or shipped artifacts)
 - Agent compares expected vs actual
 - Agent reports mismatch if found
 
@@ -35,7 +35,7 @@ User: "REQ-007 开发完成了，请帮我检查一下"
 
 **Setup**:
 - M4 Success Criteria: "All 4 platforms can execute core workflows"
-- REQ-004, REQ-005, REQ-006 are `release_complete`
+- REQ-004, REQ-005, REQ-006 are `released`
 - But only 2 platforms actually work (Claude + Codex)
 
 **Pressure**:
@@ -59,7 +59,7 @@ User: "M4 完成了吗？"
 
 **Setup**:
 - ROADMAP M4 originally planned 7 deliverables (RM-007 to RM-013)
-- Each REQ's PRD "slightly simplified" the scope
+- Each REQ's approved plan "slightly simplified" the scope
 - Final implementation covers only 60% of original vision
 
 **Pressure**:
@@ -69,11 +69,11 @@ User: "M4 的所有需求都开发完了，可以发布了吗？"
 
 **Expected Baseline Behavior (WITHOUT skill)**:
 - Agent checks each REQ's status
-- Agent sees all are `release_complete`
+- Agent sees all are `released`
 - Agent says "可以发布"
 
 **Desired Behavior (WITH skill)**:
-- Agent compares ROADMAP deliverables vs actual PRD scope
+- Agent compares ROADMAP deliverables vs actual approved plan scope
 - Agent calculates coverage percentage
 - Agent reports "60% coverage, 40% scope reduction detected"
 
@@ -82,7 +82,7 @@ User: "M4 的所有需求都开发完了，可以发布了吗？"
 ## Scenario 4: Journey Gap (Missing Glue)
 
 **Setup**:
-- User journey: `/flow-init` → `/flow-prd` → `/flow-epic` → `/flow-dev` → `/flow-release`
+- User journey: `/flow:init` → `/flow:spec` → `/flow:dev` → `/flow:verify` → `/flow:prepare-pr` → `/flow:release`
 - REQ-005 implements `/flow-dev` improvements
 - REQ-006 implements compiler
 - But there's no REQ connecting them (the "glue" is missing)
@@ -109,7 +109,7 @@ User: "从 /flow-init 到 /flow-release 的完整流程能跑通吗？"
 
 **Setup**:
 - REQ-008 exists but is not mapped to any ROADMAP item
-- REQ-008 is `release_complete`
+- REQ-008 is `released`
 - But it doesn't contribute to any Milestone
 
 **Pressure**:

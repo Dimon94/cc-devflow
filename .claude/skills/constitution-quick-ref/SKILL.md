@@ -189,8 +189,8 @@ Default to simplicity; complexity requires justification.
 - **VII.4**: Direct framework usage (avoid custom abstractions)
 
 ### Enforcement
-- **Phase -1 Gates**: planner agent enforces BEFORE generating EPIC
-- **EPIC.md**: Contains "Phase -1 Simplicity Gate" check section
+- **Phase -1 Gates**: planner/spec stage enforces BEFORE finalizing executable tasks
+- **plan.md / TASKS.md**: should carry the simplicity check evidence
 
 ### Example Violations
 ```yaml
@@ -215,8 +215,8 @@ Prefer concrete code over abstractions until three+ use cases proven.
 - **VIII.4**: Inline before extract (copy-paste OK until 3rd repetition)
 
 ### Enforcement
-- **Phase -1 Gates**: planner agent enforces BEFORE generating EPIC
-- **EPIC.md**: Contains "Phase -1 Anti-Abstraction Gate" check section
+- **Phase -1 Gates**: planner/spec stage enforces BEFORE finalizing executable tasks
+- **plan.md / TASKS.md**: should carry the anti-abstraction check evidence
 
 ### Example Violations
 ```typescript
@@ -266,16 +266,16 @@ Prevent scope creep; enforce strict requirement boundaries.
 - **X.1**: One REQ-ID, one bounded context (no "also add X")
 - **X.2**: No feature expansion during implementation
 - **X.3**: Separate REQ-IDs for separate concerns
-- **X.4**: Explicit scope documentation in PRD.md
+- **X.4**: Explicit scope documentation in current planning artifacts
 
 ### Enforcement
-- **PRD generation**: prd-writer agent enforces Anti-Expansion mandate
+- **Planning generation**: current planning stage enforces Anti-Expansion mandate
 - **Scope validation**: validate-scope-boundary.sh
 - **Code review**: code-reviewer agent checks for scope violations
 
 ### Example Violations
 ```markdown
-❌ PRD.md: "User Registration (also add social login)"    # Scope creep
+❌ plan.md: "User Registration (also add social login)"   # Scope creep
 ❌ Adding unplanned features during /flow-dev             # Feature expansion
 ```
 
@@ -285,7 +285,7 @@ Prevent scope creep; enforce strict requirement boundaries.
 
 ## Phase -1 Gates
 
-**Executed by**: planner agent BEFORE generating EPIC and TASKS
+**Executed by**: planning stage BEFORE finalizing TASKS and manifest
 
 ### Gate 1: Simplicity Check (Article VII)
 - [ ] Project count ≤3
@@ -305,7 +305,7 @@ Prevent scope creep; enforce strict requirement boundaries.
 - [ ] External dependency tests included
 - [ ] E2E critical paths covered
 
-**Documented in**: EPIC.md contains "Phase -1 Gates" check section
+**Documented in**: current planning artifacts (`plan.md`, `TASKS.md`, or equivalent) should carry the Phase -1 Gates check section
 
 **For Details**: See [planner agent](.claude/agents/planner.md) Phase -1 Gates Enforcement Sequence
 
@@ -352,7 +352,7 @@ Prevent scope creep; enforce strict requirement boundaries.
 
 ### Scenario: "Can I add social login to user registration?"
 **Answer**: ❌ NO (Article X.1 - Requirement Boundary)
-**Enforcement**: prd-writer agent Anti-Expansion mandate
+**Enforcement**: clarify-analyst agent Anti-Expansion mandate
 **Alternative**: Create separate REQ-ID for social login
 
 ---

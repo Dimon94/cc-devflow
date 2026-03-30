@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Sync roadmap progress from requirements orchestration_status.json
-# Updates devflow/ROADMAP.md Implementation Tracking table with:
-# - Mapped REQ-IDs when requirements are created
-# - Current status from orchestration_status
-# - Progress percentage based on completed phases
-# Usage: ./sync-roadmap-progress.sh
+# =============================================================================
+# [INPUT]: 依赖 common.sh 的 harness/resume-index helper，扫描 requirements 与 roadmap 文档。
+# [OUTPUT]: 更新 ROADMAP.md 中的 Implementation Tracking 表，优先反映 harness 主线进度。
+# [POS]: roadmap 的进度同步器，把 requirement 运行时状态折叠成路线图上的执行概览。
+# [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+# =============================================================================
 
 set -euo pipefail
 
@@ -22,104 +22,153 @@ fi
 # Progress Calculation Functions (进度计算函数)
 # =============================================================================
 
-# Calculate progress percentage based on completed phases
-# Args: $1 = path to orchestration_status.json
+# Calculate progress percentage from current runtime state
+# Args: $1 = repo root, $2 = req id, $3 = fallback orchestration_status path
 # Returns: integer percentage (0-100)
 calculate_progress() {
-    local status_file="$1"
+    local repo_root="$1"
+    local req_id="$2"
+    local status_file="$3"
+
+    local harness_file
+    harness_file=$(get_harness_state_file "$repo_root" "$req_id")
+
+    if [[ -f "$harness_file" ]]; then
+        local snapshot
+        snapshot=$(get_harness_snapshot "$repo_root" "$req_id")
+        local raw_stage
+        raw_stage=$(echo "$snapshot" | jq -r '.lifecycle.stage // "unknown"' 2>/dev/null || echo "unknown")
+        if has_resume_index "$repo_root" "$req_id"; then
+            raw_stage=$(read_resume_index_stage "$repo_root" "$req_id" || echo "$raw_stage")
+        fi
+
+        local phase
+        phase=$(normalize_mainline_stage "$raw_stage")
+        local progress
+        progress=$(get_mainline_stage_progress "$phase")
+
+        local tasks_total tasks_completed
+        tasks_total=$(echo "$snapshot" | jq -r '.progress.totalTasks // 0' 2>/dev/null || echo "0")
+        tasks_completed=$(echo "$snapshot" | jq -r '.progress.completedTasks // 0' 2>/dev/null || echo "0")
+
+        if [[ "$tasks_total" -gt 0 && "$phase" == "dev" ]]; then
+            progress=$((30 + (tasks_completed * 40 / tasks_total)))
+        elif [[ "$tasks_total" -gt 0 && "$phase" == "verify" ]]; then
+            progress=$((80 + (tasks_completed * 10 / tasks_total)))
+        fi
+
+        echo "$progress"
+        return
+    fi
 
     if [[ ! -f "$status_file" ]]; then
         echo "0"
         return
     fi
 
-    # Read JSON and extract completion flags
-    local json=$(cat "$status_file")
-
-    # Phase completion weights (total = 100%)
-    # phase0 (research): 10%
-    # prd: 10%
-    # ui: 5%
-    # tech_design: 10%
-    # epic: 10%
-    # dev: 30%
-    # qa: 15%
-    # release: 10%
-    # merged: bonus completion
-
-    local progress=0
-
-    # Check each phase completion
-    if echo "$json" | grep -q '"phase0_complete".*:.*true'; then
-        progress=$((progress + 10))
+    local json
+    json=$(cat "$status_file")
+    local status phase raw_phase
+    status=$(echo "$json" | jq -r '.status // "unknown"' 2>/dev/null || echo "unknown")
+    raw_phase=$(echo "$json" | jq -r '.phase // ""' 2>/dev/null || echo "")
+    if [[ -z "$raw_phase" || "$raw_phase" == "null" || "$raw_phase" == "unknown" ]]; then
+        raw_phase="$status"
     fi
+    phase=$(normalize_mainline_stage "$raw_phase")
 
-    if echo "$json" | grep -q '"prd_complete".*:.*true'; then
-        progress=$((progress + 10))
-    fi
-
-    if echo "$json" | grep -q '"ui_complete".*:.*true'; then
-        progress=$((progress + 5))
-    fi
-
-    if echo "$json" | grep -q '"tech_design_complete".*:.*true'; then
-        progress=$((progress + 10))
-    fi
-
-    if echo "$json" | grep -q '"epic_complete".*:.*true'; then
-        progress=$((progress + 10))
-    fi
-
-    if echo "$json" | grep -q '"dev_complete".*:.*true'; then
-        progress=$((progress + 30))
-    fi
-
-    if echo "$json" | grep -q '"qa_complete".*:.*true'; then
-        progress=$((progress + 15))
-    fi
-
-    if echo "$json" | grep -q '"release_complete".*:.*true'; then
-        progress=$((progress + 10))
-    fi
-
-    # If merged, consider 100%
-    if echo "$json" | grep -q '"status".*:.*"merged"'; then
-        progress=100
-    fi
-
-    echo "$progress"
+    case "$phase" in
+        init|spec|dev|verify|prepare-pr|release)
+            echo "$(get_mainline_stage_progress "$phase")"
+            ;;
+        *)
+            local progress=0
+            if echo "$json" | grep -q '"phase0_complete".*:.*true'; then progress=$((progress + 10)); fi
+            if echo "$json" | grep -q '"prd_complete".*:.*true'; then progress=$((progress + 10)); fi
+            if echo "$json" | grep -q '"ui_complete".*:.*true'; then progress=$((progress + 5)); fi
+            if echo "$json" | grep -q '"tech_design_complete".*:.*true'; then progress=$((progress + 10)); fi
+            if echo "$json" | grep -q '"epic_complete".*:.*true'; then progress=$((progress + 10)); fi
+            if echo "$json" | grep -q '"dev_complete".*:.*true'; then progress=$((progress + 30)); fi
+            if echo "$json" | grep -q '"qa_complete".*:.*true'; then progress=$((progress + 15)); fi
+            if echo "$json" | grep -q '"release_complete".*:.*true'; then progress=$((progress + 10)); fi
+            if echo "$json" | grep -q '"status".*:.*"merged"'; then progress=100; fi
+            echo "$progress"
+            ;;
+    esac
 }
 
-# Get status from orchestration_status.json
-# Args: $1 = path to orchestration_status.json
+# Get roadmap status from current runtime state
+# Args: $1 = repo root, $2 = req id, $3 = fallback orchestration_status path
 # Returns: status string
 get_status() {
-    local status_file="$1"
+    local repo_root="$1"
+    local req_id="$2"
+    local status_file="$3"
+
+    local harness_file
+    harness_file=$(get_harness_state_file "$repo_root" "$req_id")
+
+    if [[ -f "$harness_file" ]]; then
+        local snapshot
+        snapshot=$(get_harness_snapshot "$repo_root" "$req_id")
+        local lifecycle_status
+        lifecycle_status=$(echo "$snapshot" | jq -r '.lifecycle.status // "unknown"' 2>/dev/null || echo "unknown")
+        local raw_stage
+        raw_stage=$(echo "$snapshot" | jq -r '.lifecycle.stage // "unknown"' 2>/dev/null || echo "unknown")
+        if has_resume_index "$repo_root" "$req_id"; then
+            raw_stage=$(read_resume_index_stage "$repo_root" "$req_id" || echo "$raw_stage")
+        fi
+        local phase
+        phase=$(normalize_mainline_stage "$raw_stage")
+
+        case "$phase" in
+            release)
+                echo "Completed"
+                ;;
+            init|spec)
+                echo "Planned"
+                ;;
+            *)
+                echo "In Progress"
+                ;;
+        esac
+        return
+    fi
 
     if [[ ! -f "$status_file" ]]; then
         echo "Planned"
         return
     fi
 
-    local json=$(cat "$status_file")
-    local status=$(echo "$json" | grep -o '"status"[[:space:]]*:[[:space:]]*"[^"]*"' | cut -d'"' -f4)
+    local json
+    json=$(cat "$status_file")
+    local status raw_phase phase
+    status=$(echo "$json" | grep -o '"status"[[:space:]]*:[[:space:]]*"[^"]*"' | cut -d'"' -f4)
+    raw_phase=$(echo "$json" | jq -r '.phase // ""' 2>/dev/null || echo "")
+    if [[ -z "$raw_phase" || "$raw_phase" == "null" || "$raw_phase" == "unknown" ]]; then
+        raw_phase="$status"
+    fi
+    phase=$(normalize_mainline_stage "$raw_phase")
 
-    # Map orchestration status to roadmap status
     case "$status" in
-        "initialized"|"planning")
-            echo "Planned"
-            ;;
-        "in_progress"|"development")
-            echo "In Progress"
-            ;;
-        "merged"|"complete")
-            echo "Completed"
-            ;;
         "blocked")
             echo "Blocked"
+            return
             ;;
         "cancelled")
             echo "Cancelled"
+            return
+            ;;
+    esac
+
+    case "$phase" in
+        init|spec)
+            echo "Planned"
+            ;;
+        dev|verify|prepare-pr)
+            echo "In Progress"
+            ;;
+        release)
+            echo "Completed"
             ;;
         *)
             echo "Planned"
@@ -127,11 +176,25 @@ get_status() {
     esac
 }
 
-# Get requirement title from orchestration_status.json
-# Args: $1 = path to orchestration_status.json
+# Get requirement title from current runtime state
+# Args: $1 = repo root, $2 = req id, $3 = fallback orchestration_status path
 # Returns: title string
 get_title() {
-    local status_file="$1"
+    local repo_root="$1"
+    local req_id="$2"
+    local status_file="$3"
+
+    local harness_file
+    harness_file=$(get_harness_state_file "$repo_root" "$req_id")
+
+    if [[ -f "$harness_file" ]]; then
+        local title
+        title=$(jq -r '.goal // ""' "$harness_file" 2>/dev/null)
+        if [[ -n "$title" && "$title" != "null" ]]; then
+            echo "$title"
+            return
+        fi
+    fi
 
     if [[ ! -f "$status_file" ]]; then
         echo "-"
@@ -152,6 +215,30 @@ get_title() {
 # Roadmap Update Functions (路线图更新函数)
 # =============================================================================
 
+rewrite_tracking_row() {
+    local file="$1"
+    local rm_id="$2"
+    local status="$3"
+    local req_id="$4"
+    local progress="$5"
+    local temp_file="${file}.rewrite"
+
+    awk -F'|' -v OFS='|' -v rm="$rm_id" -v new_status="$status" -v new_req="$req_id" -v new_progress="${progress}%" '
+        {
+            line = $0
+            if ($0 ~ "\\| " rm " \\|") {
+                $6 = " " new_status " "
+                $7 = " " new_req " "
+                $8 = " " new_progress " "
+                line = $1 OFS $2 OFS $3 OFS $4 OFS $5 OFS $6 OFS $7 OFS $8 OFS $9 OFS $10
+            }
+            print line
+        }
+    ' "$file" > "$temp_file"
+
+    mv "$temp_file" "$file"
+}
+
 # Scan all requirements and build progress map
 # Returns: associative array of REQ-ID -> progress data
 scan_requirements() {
@@ -169,9 +256,12 @@ scan_requirements() {
             local req_id=$(basename "$req_dir")
             local status_file="$req_dir/orchestration_status.json"
 
-            local title=$(get_title "$status_file")
-            local status=$(get_status "$status_file")
-            local progress=$(calculate_progress "$status_file")
+            local title
+            title=$(get_title "$repo_root" "$req_id" "$status_file")
+            local status
+            status=$(get_status "$repo_root" "$req_id" "$status_file")
+            local progress
+            progress=$(calculate_progress "$repo_root" "$req_id" "$status_file")
 
             echo "$req_id|$title|$status|$progress"
         fi
@@ -207,13 +297,7 @@ update_roadmap() {
 
         if [[ -n "$rm_id" ]]; then
             # Update existing mapping
-            # Find the line and update Status and Progress columns
-
-            # Use sed to update the line
-            # Match pattern: | RM-XXX | ... | ... | OLD_STATUS | REQ-XXX | OLD_PROGRESS |
-            # Replace with: | RM-XXX | ... | ... | NEW_STATUS | REQ-XXX | NEW_PROGRESS% |
-
-            sed -i.bak -E "/\\| $rm_id \\|/s/\\| [^|]+ \\| $req_id \\| [^|]+ \\|/| $status | $req_id | ${progress}% |/g" "$temp_file"
+            rewrite_tracking_row "$temp_file" "$rm_id" "$status" "$req_id" "$progress"
         else
             # Check if there's an RM-ID row with "-" as Mapped REQ that matches derived_from
             # This is a new requirement that should be linked
@@ -223,17 +307,13 @@ update_roadmap() {
 
             if [[ -n "$potential_rm" ]]; then
                 # Update this RM-ID row to link to this REQ-ID
-                sed -i.bak -E "/\\| $potential_rm \\|/s/\\| [^|]+ \\| - \\| [^|]+ \\|/| $status | $req_id | ${progress}% |/g" "$temp_file"
+                rewrite_tracking_row "$temp_file" "$potential_rm" "$status" "$req_id" "$progress"
             fi
         fi
     done <<< "$req_data"
 
     # Replace original file with updated version
     mv "$temp_file" "$roadmap_file"
-
-    # Clean up backup file
-    # 修复: sed -i.bak 对 temp_file 操作会创建 temp_file.bak，而不是 roadmap_file.bak
-    rm -f "${temp_file}.bak"
 
     echo "✅ Updated ROADMAP.md Implementation Tracking table"
 }

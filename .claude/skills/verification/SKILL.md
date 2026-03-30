@@ -55,11 +55,11 @@ NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
 
 | Flow | Verification Command | Success Criteria |
 |------|---------------------|------------------|
-| /flow-prd | `validate-constitution --type prd` | Exit 0, no violations |
-| /flow-epic | `validate-constitution --type epic` | Exit 0, no violations |
-| /flow-dev | `npm test && npm run build` | All tests pass, build succeeds |
-| /flow-qa | `npm test && npm run lint` | All pass, no blockers |
-| /flow-release | `gh pr checks` | All checks pass |
+| /flow:spec | `npm run harness:plan -- --change-id <REQ> --overwrite` | Manifest regenerated and schema-valid |
+| /flow:dev | `npm test && npm run build` | All tests pass, build succeeds |
+| /flow:verify | `npm run harness:verify -- --change-id <REQ> --strict` | `report-card.json.overall == pass` |
+| /flow:prepare-pr | 检查 `devflow/intent/<REQ>/artifacts/pr-brief.md` | PR-ready artifact exists |
+| /flow:release | 检查 `RELEASE_NOTE.md` 与 `harness-state.json.status` | Release note exists and status is `released` |
 
 ### Common Development Tasks
 

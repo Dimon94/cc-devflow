@@ -8,7 +8,7 @@ description: Real-time Constitution compliance checker for devflow documents. Bl
 ## Purpose
 Enforce CC-DevFlow Constitution compliance by detecting violations in real-time during document editing, preventing non-compliant content from being saved.
 
-**Trigger**: PreToolUse hook when editing devflow documents (PRD.md, EPIC.md, TASKS.md, TECH_DESIGN.md)
+**Trigger**: PreToolUse hook when editing current devflow documents (`plan.md`, `context-package.md`, `TASKS.md`, `task-manifest.json`, `report-card.json`)
 
 ## Enforcement Scope
 
@@ -130,7 +130,7 @@ I.1 Complete Implementation Mandate:
 ```
 
 **Enforcement**:
-- **Generation time**: prd-writer, tech-architect, planner agents check output
+- **Generation time**: clarify-analyst, tech-architect, planner agents check output
 - **Edit time**: constitution-guardian guardrail blocks save (this skill)
 - **Phase completion**: validate-constitution.sh batch validation
 
@@ -183,7 +183,7 @@ Users can bypass Constitution guardian in specific scenarios:
 ### validate-constitution.sh (Script)
 - **Purpose**: Batch validation of all 10 Constitutional Articles
 - **Scope**: Complete document/codebase scan
-- **Timing**: Phase completion (e.g., /flow-prd Exit Gate)
+- **Timing**: Phase completion (e.g., `/flow:spec` or `/flow:verify` Exit Gate)
 - **Articles**: I, II, III, IV, V, VI, VII, VIII, IX, X
 
 ### constitution-guardian (Guardrail)
@@ -214,14 +214,13 @@ In `.claude/skills/skill-rules.json`:
     "priority": "critical",
     "description": "Real-time Constitution compliance, extracted from Constitution v2.0.0",
     "fileTriggers": {
-      "pathPatterns": [
-        "devflow/requirements/**/PRD.md",
-        "devflow/requirements/**/EPIC.md",
+                "pathPatterns": [
+        "devflow/intent/**/plan.md",
+        "devflow/requirements/**/context-package.md",
         "devflow/requirements/**/TASKS.md",
-        "devflow/requirements/**/TECH_DESIGN.md",
-        "devflow/requirements/**/contracts/**/*.yaml",
-        "devflow/requirements/**/data-model.md"
-      ],
+        "devflow/requirements/**/task-manifest.json",
+        "devflow/requirements/**/report-card.json"
+                ],
       "contentPatterns": [
         "TODO.*later",
         "FIXME",

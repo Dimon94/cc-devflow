@@ -1,10 +1,12 @@
-#!/bin/bash
-# [INPUT]: 依赖 run-quality-gates.sh, spec-reviewer, code-quality-reviewer, security-reviewer
-# [OUTPUT]: 完整质量验证结果和报告
-# [POS]: scripts 的完整质量验证脚本，被 /flow:verify --strict 调用
+#!/usr/bin/env bash
+# =============================================================================
+# [INPUT]: 依赖 common.sh、run-quality-gates.sh 与严格模式审查约定。
+# [OUTPUT]: 生成严格模式质量报告，并把结果同步到 report-card / harness-state / compatibility status。
+# [POS]: 旧 shell verify 入口的兼容实现，避免旁路验证结果脱离当前 harness 主线。
 # [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+# =============================================================================
 
-set -e
+set -euo pipefail
 
 # ============================================================================
 # Configuration
@@ -12,6 +14,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+source "$SCRIPT_DIR/common.sh"
 
 # ============================================================================
 # Detect REQ-ID
@@ -203,13 +206,6 @@ echo "  - $REQ_DIR/TEST_REPORT.md"
 echo ""
 echo "Duration: ${DURATION}s"
 
-# Update orchestration status
-STATUS_FILE="$REQ_DIR/orchestration_status.json"
-if [[ -f "$STATUS_FILE" ]]; then
-    TMP_FILE="${STATUS_FILE}.tmp"
-    # Backward compatibility: keep qa_complete flag for old release gates.
-    jq '.status = "quality_complete" | .phase = "quality" | .quality_complete = true | .qa_complete = true | .quality_mode = "full" | .quality_timestamp = now' "$STATUS_FILE" > "$TMP_FILE"
-    mv "$TMP_FILE" "$STATUS_FILE"
-    echo ""
-    echo "✅ Updated orchestration_status.json"
-fi
+sync_quality_gate_success "$PROJECT_ROOT" "$REQ_ID" "full"
+echo ""
+echo "✅ Synced report-card.json, harness-state.json, and orchestration_status.json"

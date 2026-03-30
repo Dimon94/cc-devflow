@@ -10,6 +10,15 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../../../.." && pwd)"
+COMMON_SH="${REPO_ROOT}/.claude/scripts/common.sh"
+
+if [[ -f "$COMMON_SH" ]]; then
+    # shellcheck source=/dev/null
+    source "$COMMON_SH"
+fi
+
 # ============================================================================
 # 参数解析
 # ============================================================================
@@ -52,7 +61,14 @@ done
 # ============================================================================
 
 if [[ -z "$REQ_ID" ]]; then
-    # 尝试从分支名推断
+    # 优先复用当前主线的 REQ 检测
+    if declare -F get_current_req_id >/dev/null 2>&1; then
+        REQ_ID="$(get_current_req_id)"
+    fi
+fi
+
+if [[ -z "$REQ_ID" ]]; then
+    # 兼容历史分支命名推断
     BRANCH=$(git branch --show-current 2>/dev/null || echo "")
     if [[ "$BRANCH" =~ feature/(REQ-[0-9]+) ]]; then
         REQ_ID="${BASH_REMATCH[1]}"
@@ -60,11 +76,11 @@ if [[ -z "$REQ_ID" ]]; then
 fi
 
 if [[ -z "$REQ_ID" ]]; then
-    # 尝试从 orchestration_status.json 获取
-    STATUS_FILE="devflow/requirements/*/orchestration_status.json"
-    for f in $STATUS_FILE; do
+    # 最后回退兼容状态扫描
+    STATUS_GLOB="devflow/requirements/*/orchestration_status.json"
+    for f in $STATUS_GLOB; do
         if [[ -f "$f" ]]; then
-            REQ_ID=$(jq -r '.req_id // empty' "$f" 2>/dev/null || echo "")
+            REQ_ID=$(jq -r '.reqId // .req_id // empty' "$f" 2>/dev/null || echo "")
             if [[ -n "$REQ_ID" ]]; then
                 break
             fi
@@ -86,6 +102,7 @@ REQ_DIR="devflow/requirements/${REQ_ID}"
 BRAINSTORM_FILE="${REQ_DIR}/BRAINSTORM.md"
 RESEARCH_FILE="${REQ_DIR}/research/research.md"
 STATUS_FILE="${REQ_DIR}/orchestration_status.json"
+HARNESS_STATE_FILE="${REQ_DIR}/harness-state.json"
 
 # ============================================================================
 # 检查 1: REQ_ID 格式
@@ -145,22 +162,45 @@ echo "✓ Research file exists"
 # 检查 5: Status Check
 # ============================================================================
 
-if [[ -f "$STATUS_FILE" ]]; then
+if [[ -f "$HARNESS_STATE_FILE" ]]; then
+    CURRENT_STATUS=$(jq -r '.status // "unknown"' "$HARNESS_STATE_FILE")
+    PRIMARY_VALID_STATUSES=("initialized" "planned" "spec_failed")
+    if [[ "$RETRY" == "true" ]]; then
+        echo "✓ Retry mode: bypassing status check"
+    elif [[ ! " ${PRIMARY_VALID_STATUSES[*]} " =~ " ${CURRENT_STATUS} " ]]; then
+        echo "ERROR: Invalid harness status for /flow-spec: $CURRENT_STATUS"
+        echo "Valid statuses: ${PRIMARY_VALID_STATUSES[*]}"
+        exit 1
+    else
+        echo "✓ Harness status valid: $CURRENT_STATUS"
+    fi
+elif [[ -f "$STATUS_FILE" ]]; then
     CURRENT_STATUS=$(jq -r '.status // "unknown"' "$STATUS_FILE")
-
-    VALID_STATUSES=("initialized" "spec_failed" "prd_complete" "tech_design_complete" "ui_complete")
+    PRIMARY_VALID_STATUSES=("initialized" "planned" "spec_failed")
+    RAW_COMPAT_PHASE=$(jq -r '.phase // ""' "$STATUS_FILE")
+    RAW_COMPAT_STAGE="$RAW_COMPAT_PHASE"
+    if [[ -z "$RAW_COMPAT_STAGE" || "$RAW_COMPAT_STAGE" == "null" || "$RAW_COMPAT_STAGE" == "unknown" ]]; then
+        RAW_COMPAT_STAGE="$CURRENT_STATUS"
+    fi
+    NORMALIZED_COMPAT_STAGE=""
+    if declare -F normalize_mainline_stage >/dev/null 2>&1; then
+        NORMALIZED_COMPAT_STAGE=$(normalize_mainline_stage "$RAW_COMPAT_STAGE")
+    fi
 
     if [[ "$RETRY" == "true" ]]; then
         echo "✓ Retry mode: bypassing status check"
-    elif [[ ! " ${VALID_STATUSES[*]} " =~ " ${CURRENT_STATUS} " ]]; then
-        echo "ERROR: Invalid status for /flow-spec: $CURRENT_STATUS"
-        echo "Valid statuses: ${VALID_STATUSES[*]}"
-        exit 1
+    elif [[ " ${PRIMARY_VALID_STATUSES[*]} " =~ " ${CURRENT_STATUS} " ]]; then
+        echo "✓ Compatibility status valid: $CURRENT_STATUS"
+    elif [[ "$NORMALIZED_COMPAT_STAGE" == "spec" ]]; then
+        echo "WARNING: Compatibility state detected; normalized stage: $NORMALIZED_COMPAT_STAGE"
+        echo "Proceeding via compatibility fallback; current mainline should prefer initialized/planned."
     else
-        echo "✓ Status valid: $CURRENT_STATUS"
+        echo "ERROR: Invalid status for /flow-spec: $CURRENT_STATUS"
+        echo "Valid statuses: ${PRIMARY_VALID_STATUSES[*]}"
+        exit 1
     fi
 else
-    echo "WARNING: orchestration_status.json not found, creating..."
+    echo "WARNING: no harness-state/orchestration_status compatibility file found"
 fi
 
 # ============================================================================
@@ -175,7 +215,7 @@ echo "REQ_ID: $REQ_ID"
 echo "REQ_DIR: $REQ_DIR"
 echo "SKIP_TECH: $SKIP_TECH"
 echo "SKIP_UI: $SKIP_UI"
-echo "FROM_STAGE: ${FROM_STAGE:-prd}"
+echo "FROM_STAGE: ${FROM_STAGE:-spec}"
 echo "============================================"
 
 # 输出 JSON 供后续脚本使用
@@ -185,7 +225,7 @@ cat << EOF
   "req_dir": "$REQ_DIR",
   "skip_tech": $SKIP_TECH,
   "skip_ui": $SKIP_UI,
-  "from_stage": "${FROM_STAGE:-prd}",
+  "from_stage": "${FROM_STAGE:-spec}",
   "brainstorm_file": "$BRAINSTORM_FILE",
   "research_file": "$RESEARCH_FILE"
 }

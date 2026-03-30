@@ -35,18 +35,16 @@
                     "devflow",
                     "requirement",
                     "REQ-",
-                    "flow-init",
-                    "flow-prd",
-                    "flow-tech",
-                    "flow-ui",
-                    "flow-epic",
-                    "flow-dev",
-                    "flow-qa",
-                    "flow-release",
-                    "flow-verify",
-                    "how to write PRD",
-                    "how to design",
-                    "how to plan tasks",
+                    "flow:autopilot",
+                    "flow:init",
+                    "flow:spec",
+                    "flow:dev",
+                    "flow:verify",
+                    "flow:prepare-pr",
+                    "flow:release",
+                    "task-manifest",
+                    "resume-index",
+                    "pr-brief",
                     "create requirement",
                     "start requirement",
                     "workflow",
@@ -55,15 +53,18 @@
                 "intentPatterns": [
                     "(start|create|begin|init).*?(requirement|project|REQ)",
                     "(run|execute).*?(flow|command)",
-                    "(how to|guide|explain).*?(PRD|EPIC|TASKS|design|prototype)",
-                    "what is.*?(phase gate|workflow|orchestration_status)",
+                    "(how to|guide|explain).*?(plan|task-manifest|resume|verify|release)",
+                    "what is.*?(phase gate|workflow|resume-index|task-manifest|harness-state)",
                     "(which|what).*?(command|flow|agent|next step)"
                 ]
             },
             "fileTriggers": {
                 "pathPatterns": [
                     "devflow/requirements/**/*.md",
-                    "devflow/requirements/**/orchestration_status.json"
+                    "devflow/requirements/**/harness-state.json",
+                    "devflow/requirements/**/task-manifest.json",
+                    "devflow/requirements/**/report-card.json",
+                    "devflow/intent/**/*.md"
                 ]
             }
         },
@@ -97,12 +98,11 @@
             "description": "Real-time Constitution compliance checker. Blocks partial implementations (Article I.1) and hardcoded secrets (Article III.1)",
             "fileTriggers": {
                 "pathPatterns": [
-                    "devflow/requirements/**/PRD.md",
-                    "devflow/requirements/**/EPIC.md",
+                    "devflow/intent/**/plan.md",
+                    "devflow/requirements/**/context-package.md",
                     "devflow/requirements/**/TASKS.md",
-                    "devflow/requirements/**/TECH_DESIGN.md",
-                    "devflow/requirements/**/contracts/**/*.yaml",
-                    "devflow/requirements/**/data-model.md"
+                    "devflow/requirements/**/task-manifest.json",
+                    "devflow/requirements/**/report-card.json"
                 ],
                 "contentPatterns": [
                     "TODO.*later",
@@ -216,24 +216,28 @@
                     "task ID",
                     "directory structure",
                     "file naming",
-                    "orchestration_status",
+                    "harness-state",
+                    "task-manifest",
+                    "resume-index",
                     "YAML frontmatter",
-                    "contract file",
-                    "where does PRD go",
+                    "where does plan go",
+                    "where does task manifest go",
                     "file standards"
                 ],
                 "intentPatterns": [
                     "what is.*?(format|pattern).*?(REQ|task|requirement|ID)",
-                    "where (does|should).*?(PRD|EPIC|TASKS|file|document)",
+                    "where (does|should).*?(plan|TASKS|manifest|resume|file|document)",
                     "(how to|what is).*?(name|structure|organize).*?file",
-                    "what fields.*?(orchestration_status|frontmatter|YAML)"
+                    "what fields.*?(harness-state|task-manifest|frontmatter|YAML)"
                 ]
             },
             "fileTriggers": {
                 "pathPatterns": [
                     "devflow/requirements/**/*.md",
-                    "devflow/requirements/**/orchestration_status.json",
-                    "devflow/requirements/**/contracts/**"
+                    "devflow/requirements/**/harness-state.json",
+                    "devflow/requirements/**/task-manifest.json",
+                    "devflow/requirements/**/report-card.json",
+                    "devflow/intent/**/*.md"
                 ]
             }
         },
@@ -301,7 +305,10 @@
             "fileTriggers": {
                 "pathPatterns": [
                     "devflow/ROADMAP.md",
-                    "devflow/requirements/**/orchestration_status.json"
+                    "devflow/requirements/**/harness-state.json",
+                    "devflow/requirements/**/task-manifest.json",
+                    "devflow/requirements/**/report-card.json",
+                    "devflow/intent/**/resume-index.md"
                 ]
             }
         },

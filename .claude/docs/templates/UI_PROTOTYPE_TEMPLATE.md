@@ -324,7 +324,7 @@ UI_PROTOTYPE.html (Output)
 ### For Main Agent (Claude):
 
 1. **条件触发**: 检测PRD关键词前使用grep -i(忽略大小写)
-2. **状态管理**: 更新orchestration_status.json中的phase
+2. **状态管理**: 更新主链产物与运行时阶段，不把 compatibility mirror 当真相源
 3. **错误处理**: 记录详细错误到EXECUTION_LOG.md
 
 ---

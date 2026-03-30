@@ -1,12 +1,12 @@
 ---
 name: flow-release
 description: 'Release requirement after verify pass. Usage: /flow:release "REQ-123" [--janitor-hours N]'
-skill: workflow/flow-release
+skill: flow-release
 ---
 
 # Flow-Release Command (Harness Release)
 
-> 触发入口：执行细节由 `.claude/skills/workflow/flow-release/SKILL.md` 定义。
+> 触发入口：执行细节由 `.claude/skills/flow-release/SKILL.md` 定义。
 
 ## User Input
 
@@ -33,4 +33,4 @@ $ARGUMENTS = "REQ_ID [--janitor-hours N]"
 
 ## Completion
 
-- 主链闭环：`init → spec → dev → verify → release`
+- 主链闭环：`init → spec → dev → verify → prepare-pr → release`

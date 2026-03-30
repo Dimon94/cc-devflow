@@ -240,7 +240,7 @@ bash .claude/scripts/sync-task-marks.sh --auto-mark
 **A**: 脚本提供：
 - ✅ 标准化的格式（避免手动编辑错误）
 - ✅ 自动记录到 EXECUTION_LOG.md
-- ✅ 更新 orchestration_status.json
+- ✅ 更新 TASKS.md / 相关运行时进度视图
 - ✅ 实时进度反馈
 - ✅ 错误检查和验证
 

@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # =============================================================================
+# [INPUT]: 依赖 common.sh、harness-state/report-card/resume-index 与 compatibility archive metadata。
+# [OUTPUT]: 归档或恢复 requirement 目录，并让 archive metadata 与当前主线事实保持一致。
+# [POS]: scripts 的生命周期收尾器，被 /flow:archive 调用，用于已发布或已废弃需求的归档/恢复。
+# [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+# =============================================================================
 # archive-requirement.sh - 需求归档脚本 (v4.5 增强版)
 # 将已完成或废弃的需求移动到归档目录
 # 支持 Delta Specs 集成
-# =============================================================================
-# [INPUT]: 依赖 common.sh, orchestration_status.json
-# [OUTPUT]: 移动需求到 devflow/archive/{YYYY-MM}/
-# [POS]: scripts 的归档脚本，被 /flow:archive 调用
-# [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
 
 set -euo pipefail
 
@@ -94,6 +94,104 @@ done
 
 REPO_ROOT=$(get_repo_root)
 
+derive_restore_next_action() {
+    local req_dir="$1"
+    local req_id="$2"
+    local harness_file="$req_dir/harness-state.json"
+    local report_file="$req_dir/report-card.json"
+
+    if [[ -f "$report_file" ]]; then
+        local overall
+        overall=$(jq -r '.overall // ""' "$report_file" 2>/dev/null)
+        if [[ "$overall" == "pass" ]]; then
+            echo "运行 \`/flow:prepare-pr \"$req_id\"\` 或先查看 \`/flow:status $req_id --detailed\`。"
+            return 0
+        fi
+    fi
+
+    if [[ -f "$harness_file" ]]; then
+        local lifecycle
+        lifecycle=$(jq -r '.status // "unknown"' "$harness_file" 2>/dev/null)
+        case "$lifecycle" in
+            initialized)
+                echo "运行 \`/flow:spec \"$req_id\"\` 继续收敛计划。"
+                return 0
+                ;;
+            planned)
+                echo "运行 \`/flow:dev \"$req_id\"\` 开始执行任务。"
+                return 0
+                ;;
+            in_progress)
+                echo "运行 \`/flow:dev \"$req_id\" --resume\` 恢复未完成执行。"
+                return 0
+                ;;
+            verified)
+                echo "运行 \`/flow:prepare-pr \"$req_id\"\` 进入提审准备。"
+                return 0
+                ;;
+            released)
+                echo "当前需求此前已发布；先查看 \`/flow:status $req_id --detailed\`，再决定是否开启下一轮增量。"
+                return 0
+                ;;
+        esac
+    fi
+
+    echo "先运行 \`/flow:status $req_id --detailed\`，确认当前恢复点与下一步。"
+}
+
+sync_restore_resume_index() {
+    local repo_root="$1"
+    local req_id="$2"
+    local req_dir="$3"
+    local resume_file
+    resume_file=$(get_resume_index_file "$repo_root" "$req_id")
+    local req_title
+    req_title=$(get_requirement_goal_or_title_from_dir "$req_dir")
+    local lifecycle
+    lifecycle=$(get_requirement_primary_status_from_dir "$req_dir")
+    local stage="converge"
+
+    case "$lifecycle" in
+        initialized) stage="discover" ;;
+        planned) stage="delegate" ;;
+        in_progress) stage="execute" ;;
+        verified) stage="prepare-pr" ;;
+        released) stage="released" ;;
+    esac
+
+    local next_action
+    next_action=$(derive_restore_next_action "$req_dir" "$req_id")
+    local now
+    now=$(get_utc_time_iso)
+
+    mkdir -p "$(dirname "$resume_file")"
+    cat > "$resume_file" <<EOF
+# Resume Index: $req_id
+
+- Stage: $stage
+- Goal: $req_title
+- Lifecycle: $lifecycle
+- Updated At: $now
+
+## Last Good Checkpoint
+
+- Restored from archive at $(get_beijing_time_iso)
+
+## Blockers
+
+- None
+
+## Next Action
+
+$next_action
+
+## Suggested Commands
+
+- /flow:status $req_id --detailed
+- /flow:autopilot "$req_id|继续当前工作" --resume
+EOF
+}
+
 # =============================================================================
 # 列出归档模式
 # =============================================================================
@@ -111,21 +209,22 @@ if [[ "$LIST_MODE" == "true" ]]; then
                     [[ -d "$req_dir" ]] || continue
                     req_id=$(basename "$req_dir")
                     status_file="$req_dir/orchestration_status.json"
-                    reason="completed"
+                    reason=$(get_requirement_archive_reason_from_dir "$req_dir")
                     archived_at=""
-                    title=""
+                    title=$(get_requirement_goal_or_title_from_dir "$req_dir")
+                    previous_status=$(get_requirement_primary_status_from_dir "$req_dir")
+                    updated_at=$(get_requirement_updated_at_from_dir "$req_dir")
                     if [[ -f "$status_file" ]]; then
-                        reason=$(jq -r '.archivedReason // "completed"' "$status_file" 2>/dev/null)
                         archived_at=$(jq -r '.archivedAt // ""' "$status_file" 2>/dev/null)
-                        title=$(jq -r '.title // ""' "$status_file" 2>/dev/null)
+                        previous_status=$(jq -r '.statusBeforeArchive // empty' "$status_file" 2>/dev/null || echo "$previous_status")
                     fi
                     if [[ "$first" == "true" ]]; then
                         first=false
                     else
                         echo ","
                     fi
-                    printf '  {"reqId": "%s", "title": "%s", "month": "%s", "reason": "%s", "archivedAt": "%s"}' \
-                        "$req_id" "$title" "$month" "$reason" "$archived_at"
+                    printf '  {"reqId": "%s", "title": "%s", "month": "%s", "reason": "%s", "previousStatus": "%s", "archivedAt": "%s", "updatedAt": "%s"}' \
+                        "$req_id" "$title" "$month" "$reason" "$previous_status" "$archived_at" "$updated_at"
                 done
             done
         fi
@@ -136,8 +235,8 @@ if [[ "$LIST_MODE" == "true" ]]; then
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         echo "📦 归档需求列表"
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        printf "%-10s | %-12s | %-12s | %s\n" "月份" "需求ID" "归档原因" "标题"
-        echo "───────────────────────────────────────────────────────────────"
+        printf "%-10s | %-12s | %-12s | %-12s | %s\n" "月份" "需求ID" "归档原因" "归档前状态" "标题"
+        echo "─────────────────────────────────────────────────────────────────────────────"
         archive_base="$REPO_ROOT/devflow/archive"
         found=false
         if [[ -d "$archive_base" ]]; then
@@ -148,13 +247,13 @@ if [[ "$LIST_MODE" == "true" ]]; then
                     [[ -d "$req_dir" ]] || continue
                     req_id=$(basename "$req_dir")
                     status_file="$req_dir/orchestration_status.json"
-                    reason="completed"
-                    title=""
+                    reason=$(get_requirement_archive_reason_from_dir "$req_dir")
+                    title=$(get_requirement_goal_or_title_from_dir "$req_dir")
+                    previous_status=$(get_requirement_primary_status_from_dir "$req_dir")
                     if [[ -f "$status_file" ]]; then
-                        reason=$(jq -r '.archivedReason // "completed"' "$status_file" 2>/dev/null)
-                        title=$(jq -r '.title // ""' "$status_file" 2>/dev/null)
+                        previous_status=$(jq -r '.statusBeforeArchive // empty' "$status_file" 2>/dev/null || echo "$previous_status")
                     fi
-                    printf "%-10s | %-12s | %-12s | %s\n" "$month" "$req_id" "$reason" "$title"
+                    printf "%-10s | %-12s | %-12s | %-12s | %s\n" "$month" "$req_id" "$reason" "${previous_status:-unknown}" "$title"
                     found=true
                 done
             done
@@ -219,14 +318,16 @@ if [[ "$RESTORE" == "true" ]]; then
     status_file="$target_dir/orchestration_status.json"
     if [[ -f "$status_file" ]]; then
         # 恢复到归档前的状态
-        original_status=$(jq -r '.statusBeforeArchive // "release_complete"' "$status_file")
+        original_status=$(jq -r '.statusBeforeArchive // "released"' "$status_file")
         jq --arg status "$original_status" \
            --arg updated "$(get_beijing_time_iso)" \
-           'del(.archivedAt, .archivedReason, .archiveLocation, .statusBeforeArchive) |
+           'del(.archivedAt, .archivedReason, .archiveLocation, .statusBeforeArchive, .deltaCount) |
             .status = $status |
             .updatedAt = $updated' \
            "$status_file" > "${status_file}.tmp" && mv "${status_file}.tmp" "$status_file"
     fi
+
+    sync_restore_resume_index "$REPO_ROOT" "$REQ_ID" "$target_dir"
 
     # 记录日志
     log_event "$REQ_ID" "需求从归档恢复: $archived_path → $target_dir"
@@ -323,9 +424,12 @@ mkdir -p "$archive_dir"
 
 # 读取当前状态
 status_file="$source_dir/orchestration_status.json"
-current_status="unknown"
-if [[ -f "$status_file" ]]; then
-    current_status=$(jq -r '.status // "unknown"' "$status_file")
+current_status=$(get_requirement_primary_status_from_dir "$source_dir")
+
+if [[ "$REASON" == "completed" && "$current_status" != "released" ]]; then
+    echo "ERROR: completed 归档要求当前生命周期为 released，实际为: $current_status" >&2
+    echo "如需求已废弃，请使用 --reason deprecated|obsolete|superseded" >&2
+    exit 1
 fi
 
 # 移动目录
@@ -333,14 +437,17 @@ mv "$source_dir" "$target_dir"
 
 # 更新状态文件
 status_file="$target_dir/orchestration_status.json"
+target_title=$(get_requirement_goal_or_title_from_dir "$target_dir")
 if [[ -f "$status_file" ]]; then
     jq --arg reason "$REASON" \
        --arg archived_at "$(get_beijing_time_iso)" \
        --arg location "$target_dir" \
        --arg prev_status "$current_status" \
        --arg updated "$(get_beijing_time_iso)" \
+       --arg title "$target_title" \
        --argjson delta_count "$delta_count" \
        '.status = "archived" |
+        .title = ($title | select(length > 0) // .title) |
         .archivedReason = $reason |
         .archivedAt = $archived_at |
         .archiveLocation = $location |
@@ -348,6 +455,27 @@ if [[ -f "$status_file" ]]; then
         .deltaCount = $delta_count |
         .updatedAt = $updated' \
        "$status_file" > "${status_file}.tmp" && mv "${status_file}.tmp" "$status_file"
+else
+    jq -n \
+       --arg req_id "$REQ_ID" \
+       --arg title "$target_title" \
+       --arg reason "$REASON" \
+       --arg archived_at "$(get_beijing_time_iso)" \
+       --arg location "$target_dir" \
+       --arg prev_status "$current_status" \
+       --arg updated "$(get_beijing_time_iso)" \
+       --argjson delta_count "$delta_count" \
+       '{
+            reqId: $req_id,
+            title: $title,
+            status: "archived",
+            archivedReason: $reason,
+            archivedAt: $archived_at,
+            archiveLocation: $location,
+            statusBeforeArchive: $prev_status,
+            deltaCount: $delta_count,
+            updatedAt: $updated
+        }' > "$status_file"
 fi
 
 # 记录日志

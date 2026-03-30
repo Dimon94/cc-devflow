@@ -9,10 +9,13 @@ tests/
 ├── run-all-tests.sh       # 运行所有测试
 ├── scripts/               # 脚本单元测试
 │   ├── test_common.sh
+│   ├── test_archive_requirement.sh
+│   ├── test_create_requirement.sh
 │   ├── test_check_prerequisites.sh
 │   ├── test_setup_epic.sh
 │   ├── test_mark_task_complete.sh
 │   ├── test_check_task_status.sh
+│   ├── test_recover_workflow.sh
 │   ├── test_validate_constitution.sh
 │   └── test_generate_status_report.sh
 ├── commands/              # 命令集成测试
@@ -134,6 +137,7 @@ run_tests \
 | 脚本 | 目标覆盖率 | 当前状态 | 测试文件 |
 |------|-----------|---------|---------|
 | common.sh | ≥ 80% | ⏳ 待实现 | test_common.sh |
+| create-requirement.sh | ≥ 80% | ⏳ 待实现 | test_create_requirement.sh |
 | check-prerequisites.sh | ≥ 80% | ⏳ 待实现 | test_check_prerequisites.sh |
 | setup-epic.sh | ≥ 80% | ⏳ 待实现 | test_setup_epic.sh |
 | mark-task-complete.sh | ≥ 80% | ⏳ 待实现 | test_mark_task_complete.sh |
@@ -145,12 +149,12 @@ run_tests \
 
 | 命令 | 目标覆盖率 | 当前状态 | 测试文件 |
 |------|-----------|---------|---------|
-| /flow-init | ≥ 80% | ⏳ 待实现 | test_flow_init.sh |
-| /flow-prd | ≥ 80% | ⏳ 待实现 | test_flow_prd.sh |
-| /flow-epic | ≥ 80% | ⏳ 待实现 | test_flow_epic.sh |
-| /flow-dev | ≥ 80% | ⏳ 待实现 | test_flow_dev.sh |
-| /flow-qa | ≥ 80% | ⏳ 待实现 | test_flow_qa.sh |
-| /flow-release | ≥ 80% | ⏳ 待实现 | test_flow_release.sh |
+| /flow:init | ≥ 80% | ⏳ 待实现 | test_flow_init.sh |
+| /flow:spec | ≥ 80% | ⏳ 待实现 | test_flow_spec.sh |
+| /flow:dev | ≥ 80% | ⏳ 待实现 | test_flow_dev.sh |
+| /flow:verify | ≥ 80% | ⏳ 待实现 | test_flow_verify.sh |
+| /flow:prepare-pr | ≥ 80% | ⏳ 待实现 | test_flow_prepare_pr.sh |
+| /flow:release | ≥ 80% | ⏳ 待实现 | test_flow_release.sh |
 
 ### 端到端测试
 
@@ -202,12 +206,12 @@ test_get_repo_root_no_git() {
 ```bash
 test_flow_init_creates_structure() {
     # Act
-    /flow-init "REQ-123|Test Requirement"
+    /flow:init "REQ-123|Test Requirement"
 
     # Assert
-    assert_file_exists "$REQ_DIR/orchestration_status.json"
-    assert_file_exists "$REQ_DIR/EXECUTION_LOG.md"
-    assert_json_valid "$(cat $REQ_DIR/orchestration_status.json)"
+    assert_file_exists "$REQ_DIR/harness-state.json"
+    assert_file_exists "$REQ_DIR/context-package.md"
+    assert_json_valid "$(cat $REQ_DIR/harness-state.json)"
 }
 ```
 
@@ -228,15 +232,18 @@ test_full_workflow_simple_requirement() {
     setup_mock_git_repo
 
     # Act - 执行完整流程
-    /flow-init "REQ-123|Simple Feature"
-    /flow-prd "REQ-123"
-    /flow-epic "REQ-123"
+    /flow:init "REQ-123|Simple Feature"
+    /flow:spec "REQ-123"
+    /flow:dev "REQ-123"
+    /flow:verify "REQ-123" --strict
+    /flow:prepare-pr "REQ-123"
+    /flow:release "REQ-123"
     # ... (简化，实际测试会 mock 子代理输出)
 
     # Assert
-    assert_file_exists "$REQ_DIR/PRD.md"
-    assert_file_exists "$REQ_DIR/EPIC.md"
-    assert_file_exists "$REQ_DIR/TASKS.md"
+    assert_file_exists "$REQ_DIR/task-manifest.json"
+    assert_file_exists "$REQ_DIR/report-card.json"
+    assert_file_exists "$INTENT_DIR/artifacts/pr-brief.md"
 }
 ```
 

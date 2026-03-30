@@ -58,8 +58,10 @@ digraph when {
 ```yaml
 read:
   - ROADMAP.md: 只读 Milestone 的 Success Criteria 段落
-  - orchestration_status.json: 只读 status, dependencies, roadmap_item 字段
-  - PRD.md: 只读 User Stories 标题列表（不读内容）
+  - harness-state.json: 只读 status, updatedAt
+  - task-manifest.json: 只读 tasks, dependsOn, status
+  - report-card.json: 只读 overall, blockingFindings
+  - devflow/intent/<REQ>/resume-index.md: 只读 current stage / next action
 ```
 
 **禁止**: 读取完整文档。上下文越多，偏差越大。
@@ -69,8 +71,8 @@ read:
 ```
 对于每个声明的依赖:
   1. 找到依赖的 REQ
-  2. 读取依赖 REQ 的 contracts/ 或 TECH_DESIGN.md 的"输出"章节
-  3. 读取当前 REQ 的 PRD.md 的"输入假设"章节
+  2. 读取依赖 REQ 的 task result / report-card / release note
+  3. 读取当前 REQ 的 manifest / resume-index / decision-log 中的输入假设
   4. 比较: 输出 ⊇ 输入期望？
 
   如果不匹配:
@@ -85,8 +87,8 @@ read:
   1. 读取 Success Criteria
   2. 对于每个 Criterion:
      - 找到负责的 REQ
-     - 验证 REQ 的实现是否满足 Criterion
-     - 不是看状态，是看实际输出
+     - 验证 REQ 的实际输出是否满足 Criterion
+     - 不是看口头状态，而是看 manifest/report/release/pr-brief
 
   如果有 Criterion 未满足:
     → 报告: "M4 Success Criteria 'X' 未满足"
@@ -115,7 +117,7 @@ read:
 ```
 对于每个 Milestone:
   1. 读取 ROADMAP 中的原始 Deliverables
-  2. 读取每个 REQ 的 PRD 中的实际 Scope
+  2. 读取每个 REQ 的 plan / manifest / pr-brief 中的实际 Scope
   3. 计算: 实际覆盖 / 原始计划
 
   如果覆盖率 < 80%:
@@ -137,9 +139,9 @@ read:
 ### 旅程完整性 ✅/❌
 | 旅程 | 步骤 | 负责 REQ | 状态 |
 |------|------|---------|------|
-| 开发者旅程 | /flow-init | REQ-001 | ✅ |
-| 开发者旅程 | /flow-prd | REQ-002 | ✅ |
-| 开发者旅程 | /flow-dev → /flow-release | ❓ | ⚠️ 空隙 |
+| 开发者旅程 | /flow:autopilot | REQ-001 | ✅ |
+| 开发者旅程 | /flow:init → /flow:spec | REQ-002 | ✅ |
+| 开发者旅程 | /flow:verify → /flow:prepare-pr | REQ-003 | ✅ |
 
 ### Success Criteria ✅/❌
 | Milestone | Criterion | 验证结果 | 状态 |
@@ -174,7 +176,7 @@ read:
 ## Red Flags - STOP
 
 如果你发现自己：
-- 只看 `orchestration_status.json` 的 `status` 字段就说"完成了"
+- 只看单个状态字段就说"完成了"
 - 没有比较依赖的输出和当前需求的输入期望
 - 没有验证 Success Criteria 的每一条
 - 没有检查旅程步骤之间的衔接
@@ -185,7 +187,7 @@ read:
 ## Integration
 
 ### 触发点
-- `/flow-release` Exit Gate（发布前强制检查）
+- `/flow:release` Exit Gate（发布前强制检查）
 - `/flow-verify --global`（全局验证模式）
 - 用户询问里程碑进度时
 

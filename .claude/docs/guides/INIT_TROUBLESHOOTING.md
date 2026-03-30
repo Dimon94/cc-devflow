@@ -59,14 +59,15 @@ git branch -D feature/REQ-123-*
 ### Recover from Interruption
 ```bash
 # 检查当前状态
-cat devflow/requirements/REQ-123/orchestration_status.json | jq '.phase0_complete'
+jq . devflow/requirements/REQ-123/harness-state.json
+cat devflow/intent/REQ-123/resume-index.md
 
-# 如果 false，补充研究材料
+# 如果 research 仍未完成，补充研究材料
 # 手动编辑 research/research.md → 添加 Decision blocks
 
-# 更新状态
-jq '.phase0_complete = true' devflow/requirements/REQ-123/orchestration_status.json > tmp.json
-mv tmp.json devflow/requirements/REQ-123/orchestration_status.json
+# 如需最小修复，确保 harness 生命周期至少为 initialized/planned
+jq '.status = "planned"' devflow/requirements/REQ-123/harness-state.json > tmp.json
+mv tmp.json devflow/requirements/REQ-123/harness-state.json
 
 # 继续下一阶段
 /flow:spec "REQ-123"

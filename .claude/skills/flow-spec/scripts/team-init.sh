@@ -3,7 +3,7 @@
 # Team Mode Initialization for flow-spec
 # =============================================================================
 # [INPUT]: 依赖 common.sh 的 Team 函数
-# [OUTPUT]: 初始化 Team 状态，创建 spec-design-team
+# [OUTPUT]: 初始化 Team 状态，创建 spec-alignment-team
 # [POS]: flow-spec/scripts/ 的 Team 初始化器
 # [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
 # =============================================================================
@@ -11,8 +11,9 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/../../../../.." && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
 source "$REPO_ROOT/.claude/scripts/common.sh"
+TEAM_CONFIG_FILE="$SCRIPT_DIR/../team-config.json"
 
 # =============================================================================
 # Mode Detection
@@ -38,24 +39,39 @@ detect_execution_mode() {
 # Team Initialization
 # =============================================================================
 
-# Initialize spec-design-team
+# Initialize spec-alignment-team
 # Args: $1 - repo root, $2 - requirement ID
 init_spec_team() {
     local repo_root="$1"
     local req_id="$2"
+    local config_file="$TEAM_CONFIG_FILE"
 
-    echo "Initializing spec-design-team for $req_id..."
+    if [[ ! -f "$config_file" ]]; then
+        echo "ERROR: Team config not found: $config_file" >&2
+        return 1
+    fi
 
-    # Initialize Team state in orchestration_status.json
-    init_team_state "$repo_root" "$req_id" "parallel" "spec-lead"
+    local team_name
+    team_name=$(jq -r '.name // "spec-team"' "$config_file")
+    local team_mode
+    team_mode=$(jq -r '.mode // "parallel"' "$config_file")
+    local team_lead
+    team_lead=$(jq -r '.lead // "spec-lead"' "$config_file")
 
-    # Add teammates
-    add_teammate "$repo_root" "$req_id" "prd-writer" "analyst"
-    add_teammate "$repo_root" "$req_id" "tech-architect" "architect"
-    add_teammate "$repo_root" "$req_id" "ui-designer" "designer"
-    add_teammate "$repo_root" "$req_id" "planner" "planner"
+    echo "Initializing ${team_name} for $req_id..."
 
-    echo "Team initialized with 4 teammates"
+    # Initialize Team truth state and keep compatibility mirror in sync
+    init_team_state "$repo_root" "$req_id" "$team_mode" "$team_lead"
+
+    # Add teammates from canonical config
+    while IFS='|' read -r teammate_id teammate_role; do
+        [[ -n "$teammate_id" ]] || continue
+        add_teammate "$repo_root" "$req_id" "$teammate_id" "$teammate_role"
+    done < <(jq -r '.members[] | "\(.id)|\(.role)"' "$config_file")
+
+    local teammate_count
+    teammate_count=$(jq '.members | length' "$config_file")
+    echo "Team initialized with ${teammate_count} teammates"
 }
 
 # =============================================================================
@@ -64,98 +80,7 @@ init_spec_team() {
 
 # Get team configuration as JSON
 get_team_config() {
-    cat <<'EOF'
-{
-  "name": "spec-design-team",
-  "description": "并行规格设计团队",
-  "mode": "parallel",
-  "lead": "spec-lead",
-  "members": [
-    {
-      "id": "prd-writer",
-      "role": "analyst",
-      "agent_type": "prd-writer",
-      "description": "PRD 生成，需求分析"
-    },
-    {
-      "id": "tech-architect",
-      "role": "architect",
-      "agent_type": "tech-architect",
-      "description": "技术设计，架构方案"
-    },
-    {
-      "id": "ui-designer",
-      "role": "designer",
-      "agent_type": "ui-designer",
-      "description": "UI 原型，交互设计"
-    },
-    {
-      "id": "planner",
-      "role": "planner",
-      "agent_type": "planner",
-      "description": "Epic 规划，任务分解"
-    }
-  ],
-  "workflow": {
-    "stages": [
-      {
-        "name": "PRD Generation",
-        "agents": ["prd-writer"],
-        "parallel": false,
-        "outputs": ["PRD.md"]
-      },
-      {
-        "name": "Design Parallel",
-        "agents": ["tech-architect", "ui-designer"],
-        "parallel": true,
-        "outputs": ["TECH_DESIGN.md", "UI_PROTOTYPE.html"],
-        "wait_for": ["PRD Generation"],
-        "negotiate": {
-          "enabled": true,
-          "topics": ["api_format", "field_naming", "auth_strategy", "state_management"]
-        }
-      },
-      {
-        "name": "Epic Planning",
-        "agents": ["planner"],
-        "parallel": false,
-        "outputs": ["EPIC.md", "TASKS.md"],
-        "wait_for": ["Design Parallel"]
-      }
-    ]
-  },
-  "communication": {
-    "protocol": "direct_message",
-    "negotiate_topics": [
-      {
-        "id": "api_format",
-        "description": "API 响应格式 (REST/GraphQL, JSON structure)",
-        "participants": ["tech-architect", "ui-designer"]
-      },
-      {
-        "id": "field_naming",
-        "description": "数据字段命名规范",
-        "participants": ["tech-architect", "ui-designer", "planner"]
-      },
-      {
-        "id": "auth_strategy",
-        "description": "认证策略 (JWT, Session, OAuth)",
-        "participants": ["tech-architect", "ui-designer"]
-      },
-      {
-        "id": "state_management",
-        "description": "前端状态管理方案",
-        "participants": ["tech-architect", "ui-designer"]
-      },
-      {
-        "id": "component_granularity",
-        "description": "组件粒度和任务拆分",
-        "participants": ["ui-designer", "planner"]
-      }
-    ]
-  }
-}
-EOF
+    cat "$TEAM_CONFIG_FILE"
 }
 
 # =============================================================================
@@ -182,7 +107,7 @@ main() {
         *)
             echo "Usage: $0 {detect|init|config} [args...]" >&2
             echo "  detect [skip_tech] [skip_ui]  - Detect execution mode" >&2
-            echo "  init [repo_root] [req_id]    - Initialize Team state" >&2
+            echo "  init [repo_root] [req_id]    - Initialize Team truth state" >&2
             echo "  config                        - Output Team config JSON" >&2
             exit 1
             ;;

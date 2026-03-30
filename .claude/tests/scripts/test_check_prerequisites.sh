@@ -1,511 +1,323 @@
 #!/usr/bin/env bash
-# test_check_prerequisites.sh - 测试 check-prerequisites.sh
-# 注意: check-prerequisites.sh 通过环境变量 DEVFLOW_REQ_ID 或 Git 分支获取 REQ_ID
+# =============================================================================
+# [INPUT]: 依赖 .claude/tests/test-framework.sh 与 .claude/scripts/check-prerequisites.sh。
+# [OUTPUT]: 回归验证 bootstrap-only requirement、canonical path 输出与 task source 判定语义。
+# [POS]: .claude/tests/scripts 的前置条件契约测试，守住 check-prerequisites 已切到 harness/intent 主线。
+# [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+# =============================================================================
 
-# 加载测试框架
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../test-framework.sh"
 
-# 脚本路径
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 CHECK_PREREQ_SCRIPT="$REPO_ROOT/scripts/check-prerequisites.sh"
+COMMON_SCRIPT="$REPO_ROOT/scripts/common.sh"
 
-# ============================================================================
-# 辅助函数
-# ============================================================================
+setup_test() {
+    unset DEVFLOW_REQ_ID
+}
 
-# 创建完整的模拟需求目录结构
-setup_full_requirement() {
+prepare_test_scripts() {
+    local test_scripts_dir="$TEST_TMP_DIR/.claude/scripts"
+    mkdir -p "$test_scripts_dir"
+    cp "$CHECK_PREREQ_SCRIPT" "$test_scripts_dir/"
+    cp "$COMMON_SCRIPT" "$test_scripts_dir/"
+}
+
+req_dir_for() {
     local req_id="$1"
-    local req_dir="$TEST_TMP_DIR/devflow/requirements/$req_id"
+    if [[ "$req_id" == BUG-* ]]; then
+        echo "$TEST_TMP_DIR/devflow/bugs/$req_id"
+    else
+        echo "$TEST_TMP_DIR/devflow/requirements/$req_id"
+    fi
+}
 
-    mkdir -p "$req_dir"/{research,tasks}
+bootstrap_requirement() {
+    local req_id="$1"
+    local req_dir
+    req_dir=$(req_dir_for "$req_id")
+    local intent_dir="$TEST_TMP_DIR/devflow/intent/$req_id"
 
-    # 创建状态文件
-    cat > "$req_dir/orchestration_status.json" << EOF
+    mkdir -p "$req_dir/research" "$intent_dir"
+
+    cat > "$req_dir/harness-state.json" <<EOF
 {
-  "reqId": "$req_id",
-  "title": "Test Requirement",
-  "status": "prd_complete",
-  "phase": "epic_planning",
-  "createdAt": "2025-10-01T00:00:00Z",
-  "updatedAt": "2025-10-01T00:00:00Z"
+  "changeId": "$req_id",
+  "goal": "Deliver $req_id safely",
+  "status": "initialized"
 }
 EOF
 
-    # 创建必需文档
-    echo "# PRD" > "$req_dir/PRD.md"
-    echo "# Execution Log" > "$req_dir/EXECUTION_LOG.md"
+    cat > "$req_dir/context-package.md" <<EOF
+# Context Package: $req_id
+EOF
+
+    cat > "$intent_dir/resume-index.md" <<EOF
+# Resume Index: $req_id
+EOF
+
+    mkdir -p "$TEST_TMP_DIR/devflow/workspace"
+    printf '%s\n' "$req_id" > "$TEST_TMP_DIR/devflow/workspace/.current-req"
 
     echo "$req_dir"
 }
 
-# 创建测试专用的 common.sh（覆盖 get_repo_root 函数）
-create_test_common() {
-    local test_common="$TEST_TMP_DIR/scripts/common.sh"
-    mkdir -p "$(dirname "$test_common")"
-
-    # 复制原始 common.sh 到临时文件
-    cp "$REPO_ROOT/scripts/common.sh" "$test_common"
-
-    # 使用 awk 替换 get_repo_root 函数
-    awk -v tmpdir="$TEST_TMP_DIR" '
-    /^get_repo_root\(\)/ {
-        print "get_repo_root() {"
-        print "    echo \"" tmpdir "\""
-        print "}"
-        in_function = 1
-        next
-    }
-    in_function && /^}/ {
-        in_function = 0
-        next
-    }
-    !in_function {
-        print
-    }
-    ' "$REPO_ROOT/scripts/common.sh" > "$test_common.tmp"
-
-    mv "$test_common.tmp" "$test_common"
-}
-
-# 在测试环境中运行脚本并捕获退出码
-run_check_prereq_with_exit() {
+full_requirement() {
     local req_id="$1"
-    shift
-    local args=("$@")
-
-    # 设置环境
-    export DEVFLOW_REQ_ID="$req_id"
-
-    # 创建测试专用的脚本副本
-    local test_scripts_dir="$TEST_TMP_DIR/scripts"
-    mkdir -p "$test_scripts_dir"
-
-    # 创建测试专用的 common.sh
-    create_test_common
-
-    # 复制 check-prerequisites.sh 到测试目录
-    cp "$CHECK_PREREQ_SCRIPT" "$test_scripts_dir/"
-
-    # 运行脚本并保存输出和退出码
-    local output_file="$TEST_TMP_DIR/output.txt"
-    local exit_code_file="$TEST_TMP_DIR/exitcode.txt"
-
-    (
-        cd "$TEST_TMP_DIR"
-        bash "$test_scripts_dir/check-prerequisites.sh" "${args[@]}" > "$output_file" 2>&1
-        echo $? > "$exit_code_file"
-    )
-
-    # 返回输出（退出码需要从文件读取）
-    cat "$output_file"
+    local req_dir
+    req_dir=$(bootstrap_requirement "$req_id")
+    mkdir -p "$req_dir/tasks"
+    echo "# PRD" > "$req_dir/PRD.md"
+    echo "$req_dir"
 }
 
-# 获取最后一次运行的退出码
-get_last_exit_code() {
-    cat "$TEST_TMP_DIR/exitcode.txt" 2>/dev/null || echo "0"
-}
-
-# 在测试环境中运行脚本（旧版本，向后兼容）
 run_check_prereq() {
     local req_id="$1"
     shift
     local args=("$@")
+    local output_file="$TEST_TMP_DIR/output.txt"
+    local exit_code_file="$TEST_TMP_DIR/exitcode.txt"
 
-    # 设置环境
-    export DEVFLOW_REQ_ID="$req_id"
+    prepare_test_scripts
 
-    # 创建测试专用的脚本副本
-    local test_scripts_dir="$TEST_TMP_DIR/scripts"
-    mkdir -p "$test_scripts_dir"
-
-    # 创建测试专用的 common.sh
-    create_test_common
-
-    # 复制 check-prerequisites.sh 到测试目录
-    cp "$CHECK_PREREQ_SCRIPT" "$test_scripts_dir/"
-
-    # 在测试目录中运行脚本
     (
         cd "$TEST_TMP_DIR"
-        bash "$test_scripts_dir/check-prerequisites.sh" "${args[@]}" 2>&1
+        export DEVFLOW_REQ_ID="$req_id"
+        bash "$TEST_TMP_DIR/.claude/scripts/check-prerequisites.sh" "${args[@]}" > "$output_file" 2>&1
+        echo $? > "$exit_code_file"
     )
+
+    cat "$output_file"
 }
 
-# ============================================================================
-# 测试帮助信息
-# ============================================================================
+last_exit_code() {
+    cat "$TEST_TMP_DIR/exitcode.txt"
+}
 
 test_help_flag() {
     describe "Should show help with --help"
 
-    # Act
-    local output=$(bash "$CHECK_PREREQ_SCRIPT" --help 2>&1)
+    local output
+    output=$(bash "$CHECK_PREREQ_SCRIPT" --help 2>&1)
 
-    # Assert
     assert_contains "$output" "Usage:" "Should show usage"
-    assert_contains "$output" "check-prerequisites.sh" "Should mention script name"
-    assert_contains "$output" "--json" "Should document --json flag"
-    assert_contains "$output" "--paths-only" "Should document --paths-only flag"
+    assert_contains "$output" "--require-tasks" "Should document --require-tasks"
+    assert_contains "$output" "task-manifest.json" "Should mention canonical task source"
 }
-
-test_help_short_flag() {
-    describe "Should show help with -h"
-
-    # Act
-    local output=$(bash "$CHECK_PREREQ_SCRIPT" -h 2>&1)
-
-    # Assert
-    assert_contains "$output" "Usage:" "Should show usage with -h"
-}
-
-# ============================================================================
-# 测试无 REQ_ID 的情况
-# ============================================================================
 
 test_no_req_id_error() {
     describe "Should fail when no REQ_ID is available"
 
-    # Arrange - 创建测试脚本副本但不设置 REQ_ID
-    local test_scripts_dir="$TEST_TMP_DIR/scripts"
-    mkdir -p "$test_scripts_dir"
-    create_test_common
-    cp "$CHECK_PREREQ_SCRIPT" "$test_scripts_dir/"
+    local output
+    output=$(run_check_prereq "" 2>&1)
+    local exit_code
+    exit_code=$(last_exit_code)
 
-    # Act - 不设置 DEVFLOW_REQ_ID 环境变量
-    local output_file="$TEST_TMP_DIR/output.txt"
-    local exit_code_file="$TEST_TMP_DIR/exitcode.txt"
-
-    (
-        cd "$TEST_TMP_DIR"
-        unset DEVFLOW_REQ_ID
-        bash "$test_scripts_dir/check-prerequisites.sh" > "$output_file" 2>&1
-        echo $? > "$exit_code_file"
-    )
-
-    local output=$(cat "$output_file")
-    local exit_code=$(cat "$exit_code_file")
-
-    # Assert
     assert_not_equals "$exit_code" "0" "Should fail without REQ_ID"
-    assert_contains "$output" "ERROR" "Should show error message"
+    assert_contains "$output" "ERROR: No requirement ID found" "Should explain missing requirement context"
 }
 
-# ============================================================================
-# 测试 --paths-only 模式
-# ============================================================================
+test_paths_only_mode_lists_canonical_paths() {
+    describe "Should output canonical paths in --paths-only mode"
 
-test_paths_only_mode() {
-    describe "Should output paths in --paths-only mode"
-
-    # Arrange
     local req_id="REQ-001"
-    setup_full_requirement "$req_id"
+    bootstrap_requirement "$req_id" >/dev/null
 
-    # Act
-    local output=$(run_check_prereq "$req_id" --paths-only)
+    local output
+    output=$(run_check_prereq "$req_id" --paths-only)
 
-    # Assert
-    assert_contains "$output" "REPO_ROOT:" "Should output REPO_ROOT"
-    assert_contains "$output" "REQ_ID:" "Should output REQ_ID"
-    assert_contains "$output" "REQ_DIR:" "Should output REQ_DIR"
-    assert_contains "$output" "PRD_FILE:" "Should output PRD_FILE"
+    assert_contains "$output" "HARNESS_STATE_FILE:" "Should include HARNESS_STATE_FILE"
+    assert_contains "$output" "CONTEXT_PACKAGE_FILE:" "Should include CONTEXT_PACKAGE_FILE"
+    assert_contains "$output" "TASK_MANIFEST_FILE:" "Should include TASK_MANIFEST_FILE"
+    assert_contains "$output" "RESUME_INDEX_FILE:" "Should include RESUME_INDEX_FILE"
 }
 
-test_paths_only_json_mode() {
-    describe "Should output JSON in --paths-only --json mode"
+test_paths_only_json_mode_lists_canonical_paths() {
+    describe "Should output canonical paths in JSON with --paths-only --json"
 
-    # Arrange
     local req_id="REQ-002"
-    setup_full_requirement "$req_id"
+    bootstrap_requirement "$req_id" >/dev/null
 
-    # Act
-    local output=$(run_check_prereq "$req_id" --paths-only --json)
+    local output
+    output=$(run_check_prereq "$req_id" --paths-only --json)
 
-    # Assert
     assert_json_valid "$output" "Should output valid JSON"
-    assert_contains "$output" "\"REPO_ROOT\"" "Should have REPO_ROOT in JSON"
-    assert_contains "$output" "\"REQ_ID\"" "Should have REQ_ID in JSON"
-    assert_contains "$output" "\"REQ_DIR\"" "Should have REQ_DIR in JSON"
+    assert_json_field "$output" "HARNESS_STATE_FILE" "$TEST_TMP_DIR/devflow/requirements/$req_id/harness-state.json" "Should include harness-state path"
+    assert_json_field "$output" "CONTEXT_PACKAGE_FILE" "$TEST_TMP_DIR/devflow/requirements/$req_id/context-package.md" "Should include context-package path"
+    assert_json_field "$output" "RESUME_INDEX_FILE" "$TEST_TMP_DIR/devflow/intent/$req_id/resume-index.md" "Should include resume-index path"
 }
 
-# ============================================================================
-# 测试必需文件验证
-# ============================================================================
+test_bootstrap_only_requirement_succeeds() {
+    describe "Should succeed for bootstrap-only requirement without PRD"
 
-test_missing_req_dir() {
-    describe "Should fail when requirement directory doesn't exist"
-
-    # Arrange
-    local req_id="REQ-999"
-    # 不创建目录 - 使用合法ID格式但目录不存在
-
-    # Act
-    local output=$(run_check_prereq_with_exit "$req_id")
-    local exit_code=$(get_last_exit_code)
-
-    # Assert
-    assert_not_equals "$exit_code" "0" "Should fail when REQ_DIR missing"
-    assert_contains "$output" "ERROR" "Should show error"
-    assert_contains "$output" "directory not found" "Should mention missing directory"
-}
-
-test_missing_prd_file() {
-    describe "Should fail when PRD.md doesn't exist"
-
-    # Arrange
     local req_id="REQ-003"
-    local req_dir="$TEST_TMP_DIR/devflow/requirements/$req_id"
-    mkdir -p "$req_dir"
-    # 不创建 PRD.md
+    bootstrap_requirement "$req_id" >/dev/null
 
-    # Act
-    local exit_code=0
-    local output=$(run_check_prereq_with_exit "$req_id")
-    local exit_code=$(get_last_exit_code)
+    run_check_prereq "$req_id" >/dev/null
+    local exit_code
+    exit_code=$(last_exit_code)
 
-    # Assert
-    assert_not_equals "$exit_code" "0" "Should fail when PRD.md missing"
+    assert_equals "$exit_code" "0" "Should accept bootstrap-only requirement"
+}
+
+test_require_epic_needs_prd() {
+    describe "Should require PRD.md when --require-epic is used"
+
+    local req_id="REQ-004"
+    bootstrap_requirement "$req_id" >/dev/null
+
+    local output
+    output=$(run_check_prereq "$req_id" --require-epic)
+    local exit_code
+    exit_code=$(last_exit_code)
+
+    assert_not_equals "$exit_code" "0" "Should fail without PRD.md"
     assert_contains "$output" "PRD.md not found" "Should mention missing PRD"
 }
 
-test_valid_minimal_requirement() {
-    describe "Should succeed with minimal valid requirement"
+test_require_tasks_fails_without_task_input() {
+    describe "Should fail with --require-tasks when no task source exists"
 
-    # Arrange
-    local req_id="REQ-004"
-    setup_full_requirement "$req_id"
-
-    # Act
-    local exit_code=0
-    local output=$(run_check_prereq "$req_id" 2>&1) || exit_code=$?
-
-    # Assert
-    assert_equals "$exit_code" "0" "Should succeed with PRD.md present"
-}
-
-# ============================================================================
-# 测试 --require-epic 选项
-# ============================================================================
-
-test_require_epic_missing() {
-    describe "Should fail with --require-epic when EPIC.md missing"
-
-    # Arrange
     local req_id="REQ-005"
-    setup_full_requirement "$req_id"
-    # 不创建 EPIC.md
+    full_requirement "$req_id" >/dev/null
 
-    # Act
-    local exit_code=0
-    local output=$(run_check_prereq_with_exit "$req_id" --require-epic)
-    local exit_code=$(get_last_exit_code)
+    local output
+    output=$(run_check_prereq "$req_id" --require-tasks)
+    local exit_code
+    exit_code=$(last_exit_code)
 
-    # Assert
-    assert_not_equals "$exit_code" "0" "Should fail when EPIC.md required but missing"
-    assert_contains "$output" "EPIC.md not found" "Should mention missing EPIC"
+    assert_not_equals "$exit_code" "0" "Should fail without task sources"
+    assert_contains "$output" "Expected one of: task-manifest.json, TASKS.md, or non-empty tasks/ directory." "Should mention accepted task inputs"
 }
 
-test_require_epic_present() {
-    describe "Should succeed with --require-epic when EPIC.md exists"
+test_require_tasks_accepts_task_manifest() {
+    describe "Should accept task-manifest.json as executable task input"
 
-    # Arrange
     local req_id="REQ-006"
-    local req_dir=$(setup_full_requirement "$req_id")
-    echo "# EPIC" > "$req_dir/EPIC.md"
+    local req_dir
+    req_dir=$(full_requirement "$req_id")
+    cat > "$req_dir/task-manifest.json" <<'EOF'
+{"tasks":[{"id":"T-1","title":"Implement thin harness spine"}]}
+EOF
 
-    # Act
-    local exit_code=0
-    local output=$(run_check_prereq "$req_id" --require-epic 2>&1) || exit_code=$?
+    run_check_prereq "$req_id" --require-tasks >/dev/null
+    local exit_code
+    exit_code=$(last_exit_code)
 
-    # Assert
-    assert_equals "$exit_code" "0" "Should succeed when EPIC.md present"
+    assert_equals "$exit_code" "0" "Should accept task-manifest.json"
 }
 
-# ============================================================================
-# 测试 --require-tasks 选项
-# ============================================================================
+test_require_tasks_accepts_tasks_markdown() {
+    describe "Should accept TASKS.md as executable task input"
 
-test_require_tasks_empty_dir() {
-    describe "Should fail with --require-tasks when tasks/ is empty"
-
-    # Arrange
     local req_id="REQ-007"
-    local req_dir=$(setup_full_requirement "$req_id")
-    echo "# EPIC" > "$req_dir/EPIC.md"
-    # tasks/ 目录存在但为空
+    local req_dir
+    req_dir=$(full_requirement "$req_id")
+    echo "- [ ] Task 1" > "$req_dir/TASKS.md"
 
-    # Act
-    local exit_code=0
-    local output=$(run_check_prereq_with_exit "$req_id" --require-tasks)
-    local exit_code=$(get_last_exit_code)
+    run_check_prereq "$req_id" --require-tasks >/dev/null
+    local exit_code
+    exit_code=$(last_exit_code)
 
-    # Assert
-    assert_not_equals "$exit_code" "0" "Should fail when tasks/ empty"
-    assert_contains "$output" "tasks/ directory" "Should mention tasks directory issue"
+    assert_equals "$exit_code" "0" "Should accept TASKS.md"
 }
 
-test_require_tasks_with_files() {
-    describe "Should succeed with --require-tasks when tasks/ has files"
+test_require_tasks_accepts_non_empty_tasks_dir() {
+    describe "Should accept non-empty tasks/ as executable task input"
 
-    # Arrange
     local req_id="REQ-008"
-    local req_dir=$(setup_full_requirement "$req_id")
-    echo "# EPIC" > "$req_dir/EPIC.md"
-    echo "task" > "$req_dir/tasks/TASK_001.md"
+    local req_dir
+    req_dir=$(full_requirement "$req_id")
+    echo "# task" > "$req_dir/tasks/TASK_001.md"
 
-    # Act
-    local exit_code=0
-    local output=$(run_check_prereq "$req_id" --require-epic --require-tasks 2>&1) || exit_code=$?
+    run_check_prereq "$req_id" --require-tasks >/dev/null
+    local exit_code
+    exit_code=$(last_exit_code)
 
-    # Assert
-    assert_equals "$exit_code" "0" "Should succeed when tasks/ has files"
+    assert_equals "$exit_code" "0" "Should accept non-empty tasks directory"
 }
 
-# ============================================================================
-# 测试 JSON 输出
-# ============================================================================
+test_json_output_lists_canonical_docs() {
+    describe "Should list canonical docs in JSON output"
 
-test_json_output_valid() {
-    describe "Should output valid JSON with --json"
-
-    # Arrange
     local req_id="REQ-009"
-    setup_full_requirement "$req_id"
-
-    # Act
-    local output=$(run_check_prereq "$req_id" --json)
-
-    # Assert
-    assert_json_valid "$output" "Should be valid JSON"
-}
-
-test_json_output_has_req_id() {
-    describe "JSON should include REQ_ID field"
-
-    # Arrange
-    local req_id="REQ-010"
-    setup_full_requirement "$req_id"
-
-    # Act
-    local output=$(run_check_prereq "$req_id" --json)
-
-    # Assert
-    assert_contains "$output" "\"REQ_ID\"" "Should have REQ_ID field"
-    assert_contains "$output" "\"$req_id\"" "Should have correct REQ_ID value"
-}
-
-test_json_output_available_docs() {
-    describe "JSON should include AVAILABLE_DOCS array"
-
-    # Arrange
-    local req_id="REQ-011"
-    local req_dir=$(setup_full_requirement "$req_id")
-
-    # 添加一些文档
-    echo "test" > "$req_dir/research/test.md"
+    local req_dir
+    req_dir=$(full_requirement "$req_id")
     echo "# Test Plan" > "$req_dir/TEST_PLAN.md"
+    cat > "$req_dir/task-manifest.json" <<'EOF'
+{"tasks":[{"id":"T-1"}]}
+EOF
 
-    # Act
-    local output=$(run_check_prereq "$req_id" --json)
+    local output
+    output=$(run_check_prereq "$req_id" --json)
 
-    # Assert
-    assert_contains "$output" "\"AVAILABLE_DOCS\"" "Should have AVAILABLE_DOCS field"
-    assert_contains "$output" "research/" "Should list research/"
-    assert_contains "$output" "TEST_PLAN.md" "Should list TEST_PLAN.md"
+    assert_json_valid "$output" "Should output valid JSON"
+    assert_contains "$output" "\"harness-state.json\"" "Should include harness-state"
+    assert_contains "$output" "\"context-package.md\"" "Should include context-package"
+    assert_contains "$output" "\"task-manifest.json\"" "Should include task-manifest"
+    assert_contains "$output" "\"resume-index.md\"" "Should include resume-index"
+    assert_contains "$output" "\"TEST_PLAN.md\"" "Should include test plan"
 }
 
-# ============================================================================
-# 测试 BUG 类型需求
-# ============================================================================
+test_include_tasks_lists_task_sources() {
+    describe "Should list task sources when --include-tasks is enabled"
 
-test_bug_type_requirement() {
-    describe "Should handle BUG-XXX format"
+    local req_id="REQ-010"
+    local req_dir
+    req_dir=$(full_requirement "$req_id")
+    echo "# task" > "$req_dir/tasks/TASK_001.md"
 
-    # Arrange
-    local req_id="BUG-999"
-    local req_dir=$(setup_full_requirement "$req_id")
+    local output
+    output=$(run_check_prereq "$req_id" --include-tasks --json)
 
-    # Act
-    local exit_code=0
-    local output=$(run_check_prereq "$req_id" --json 2>&1) || exit_code=$?
-
-    # Assert
-    assert_equals "$exit_code" "0" "Should handle BUG format"
-    assert_contains "$output" "BUG-999" "Should preserve BUG ID"
+    assert_contains "$output" "\"tasks/\"" "Should include tasks directory in AVAILABLE_DOCS"
 }
 
-# ============================================================================
-# 测试 --include-tasks 选项
-# ============================================================================
+test_bug_requirement_uses_bug_directory() {
+    describe "Should resolve BUG requirements from devflow/bugs"
 
-test_include_tasks_in_output() {
-    describe "Should include tasks/ in output with --include-tasks"
+    local req_id="BUG-011"
+    local req_dir
+    req_dir=$(bootstrap_requirement "$req_id")
+    cat > "$req_dir/status.json" <<EOF
+{"bugId":"$req_id","status":"initialized"}
+EOF
 
-    # Arrange
-    local req_id="REQ-012"
-    local req_dir=$(setup_full_requirement "$req_id")
-    echo "task" > "$req_dir/tasks/TASK_001.md"
+    local output
+    output=$(run_check_prereq "$req_id" --json)
+    local exit_code
+    exit_code=$(last_exit_code)
 
-    # Act
-    local output=$(run_check_prereq "$req_id" --include-tasks --json)
-
-    # Assert
-    assert_contains "$output" "tasks/" "Should include tasks/ in AVAILABLE_DOCS"
+    assert_equals "$exit_code" "0" "Should accept bug requirements"
+    assert_contains "$output" "\"REQ_TYPE\":\"bug\"" "Should report bug type"
+    assert_contains "$output" "\"REQ_DIR\":\"$req_dir\"" "Should point to bug directory"
 }
-
-# ============================================================================
-# 测试错误处理
-# ============================================================================
 
 test_invalid_option() {
     describe "Should reject invalid options"
 
-    # Arrange - 创建测试脚本副本
-    local test_scripts_dir="$TEST_TMP_DIR/scripts"
-    mkdir -p "$test_scripts_dir"
-    create_test_common
-    cp "$CHECK_PREREQ_SCRIPT" "$test_scripts_dir/"
+    local output
+    output=$(run_check_prereq "REQ-012" --invalid-option)
+    local exit_code
+    exit_code=$(last_exit_code)
 
-    # Act - 使用 temp file 模式捕获 exit code
-    local output_file="$TEST_TMP_DIR/output.txt"
-    local exit_code_file="$TEST_TMP_DIR/exitcode.txt"
-
-    (
-        cd "$TEST_TMP_DIR"
-        bash "$test_scripts_dir/check-prerequisites.sh" --invalid-option > "$output_file" 2>&1
-        echo $? > "$exit_code_file"
-    )
-
-    local output=$(cat "$output_file")
-    local exit_code=$(cat "$exit_code_file")
-
-    # Assert
     assert_not_equals "$exit_code" "0" "Should fail on invalid option"
     assert_contains "$output" "Unknown option" "Should mention unknown option"
 }
 
-# ============================================================================
-# 运行所有测试
-# ============================================================================
-
 run_tests \
     test_help_flag \
-    test_help_short_flag \
     test_no_req_id_error \
-    test_paths_only_mode \
-    test_paths_only_json_mode \
-    test_missing_req_dir \
-    test_missing_prd_file \
-    test_valid_minimal_requirement \
-    test_require_epic_missing \
-    test_require_epic_present \
-    test_require_tasks_empty_dir \
-    test_require_tasks_with_files \
-    test_json_output_valid \
-    test_json_output_has_req_id \
-    test_json_output_available_docs \
-    test_bug_type_requirement \
-    test_include_tasks_in_output \
+    test_paths_only_mode_lists_canonical_paths \
+    test_paths_only_json_mode_lists_canonical_paths \
+    test_bootstrap_only_requirement_succeeds \
+    test_require_epic_needs_prd \
+    test_require_tasks_fails_without_task_input \
+    test_require_tasks_accepts_task_manifest \
+    test_require_tasks_accepts_tasks_markdown \
+    test_require_tasks_accepts_non_empty_tasks_dir \
+    test_json_output_lists_canonical_docs \
+    test_include_tasks_lists_task_sources \
+    test_bug_requirement_uses_bug_directory \
     test_invalid_option

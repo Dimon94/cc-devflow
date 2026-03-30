@@ -1,6 +1,6 @@
 #!/usr/bin/env npx ts-node
 /**
- * [INPUT]: 依赖 quality-gates.yml 的 task_completed.verify 配置，依赖 common.sh 的 mark_teammate_task_complete
+ * [INPUT]: 依赖 quality-gates.yml 的 task_completed.verify 配置与 Team 状态存储
  * [OUTPUT]: 对外提供 TaskCompleted 钩子，验证任务完成质量并更新状态
  * [POS]: hooks/ 的任务完成验证器，被 Claude Team 系统消费
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
@@ -21,6 +21,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { execSync } from 'child_process';
+const {
+  readTeamStateSync,
+  writeTeamStateSync
+} = require('../../lib/harness/team-state');
 
 // =============================================================================
 // 类型定义 (复用 team-types.d.ts 中的定义)
@@ -71,8 +75,6 @@ interface FailureRecord {
 
 const CONFIG_FILE = '.claude/config/quality-gates.yml';
 const COMMAND_TIMEOUT_MS = 120000; // 2 minutes per command
-const SCRIPTS_DIR = '.claude/scripts';
-
 // =============================================================================
 // 工具函数
 // =============================================================================
@@ -388,7 +390,7 @@ function detectReqId(repoRoot: string): string | null {
 }
 
 /**
- * 调用 common.sh 中的 mark_teammate_task_complete 函数
+ * 标记 teammate 任务完成
  */
 function markTeammateTaskComplete(
   repoRoot: string,
@@ -396,25 +398,27 @@ function markTeammateTaskComplete(
   teammateId: string,
   taskId: string
 ): boolean {
-  const commonShPath = path.join(repoRoot, SCRIPTS_DIR, 'common.sh');
-  if (!fs.existsSync(commonShPath)) {
+  const status = readTeamStateSync(repoRoot, reqId);
+  if (!status?.team) {
     return false;
   }
 
-  try {
-    const script = `
-      source "${commonShPath}"
-      mark_teammate_task_complete "${repoRoot}" "${reqId}" "${teammateId}" "${taskId}"
-    `;
-    execSync(`bash -c '${script}'`, {
-      cwd: repoRoot,
-      timeout: 10000,
-      stdio: ['pipe', 'pipe', 'pipe']
-    });
-    return true;
-  } catch {
+  const teammate = status.team.teammates.find((item: { id: string }) => item.id === teammateId);
+  if (!teammate) {
     return false;
   }
+
+  const now = new Date().toISOString();
+  if (!teammate.completedTasks.includes(taskId)) {
+    teammate.completedTasks.push(taskId);
+  }
+  teammate.currentTask = null;
+  teammate.status = 'idle';
+  teammate.lastActiveAt = now;
+  status.updatedAt = now;
+  status.team.updatedAt = now;
+  writeTeamStateSync(repoRoot, reqId, status);
+  return true;
 }
 
 /**
@@ -426,38 +430,26 @@ function checkPhaseTransition(
 ): string[] {
   const nextActions: string[] = [];
 
-  // 读取 orchestration_status.json
-  const statusPath = path.join(repoRoot, 'devflow', 'requirements', reqId, 'orchestration_status.json');
-  if (!fs.existsSync(statusPath)) {
+  // 读取 Team 状态文件
+  const status = readTeamStateSync(repoRoot, reqId);
+  if (!status?.team) {
     return nextActions;
   }
 
-  try {
-    const content = fs.readFileSync(statusPath, 'utf-8');
-    const status = JSON.parse(content);
+  const allTasksCompleted = status.team.teammates.every(
+    (t: { completedTasks?: string[]; currentTask?: string | null }) =>
+      !t.currentTask && (t.completedTasks?.length ?? 0) > 0
+  );
 
-    // 检查是否所有任务都已完成
-    const team = status.team;
-    if (!team) return nextActions;
+  if (allTasksCompleted) {
+    nextActions.push('All tasks completed. Consider running /flow:verify');
+  }
 
-    const allTasksCompleted = team.teammates.every(
-      (t: { completedTasks?: string[]; currentTask?: string | null }) =>
-        !t.currentTask && (t.completedTasks?.length ?? 0) > 0
-    );
-
-    if (allTasksCompleted) {
-      nextActions.push('All tasks completed. Consider running /flow:quality');
-    }
-
-    // 检查是否有空闲的 teammate 可以分配新任务
-    const idleTeammates = team.teammates.filter(
-      (t: { status: string }) => t.status === 'idle'
-    );
-    if (idleTeammates.length > 0) {
-      nextActions.push(`${idleTeammates.length} teammate(s) idle. Check for unassigned tasks.`);
-    }
-  } catch {
-    // 忽略解析错误
+  const idleTeammates = status.team.teammates.filter(
+    (t: { status: string }) => t.status === 'idle'
+  );
+  if (idleTeammates.length > 0) {
+    nextActions.push(`${idleTeammates.length} teammate(s) idle. Check for unassigned tasks.`);
   }
 
   return nextActions;

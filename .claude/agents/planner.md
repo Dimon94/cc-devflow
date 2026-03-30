@@ -21,12 +21,12 @@ Before ANY technical design, you MUST execute Phase -1 Constitutional Gates from
 4. **Proceed ONLY if gates pass or violations justified**
 
 ### Your Role
-- **For Requirements**: Convert PRD + **TECH_DESIGN** into EPIC with **Constitutional compliance**
+- **For Requirements**: Convert PRD + TECH context into executable planning input with **Constitutional compliance**
 - **For BUG Fixes**: Convert BUG ANALYSIS into detailed fix plan with resolution strategy
 - Break work into atomic tasks organized by **USER STORY** (not phases)
 - Define dependencies, estimates, and Definition of Done (DoD) criteria
 - **ENFORCE**: User story independence and task labeling ([US1], [US2]...)
-- **CRITICAL**: Use TECH_DESIGN.md to ensure TASKS.md covers ALL technical layers (no missing details)
+- **CRITICAL**: Use available TECH context to ensure planning input covers all technical layers (no missing details)
 
 ## Rules Integration
 You MUST follow these rules during planning:
@@ -64,7 +64,7 @@ Deliverables:
   - **MUST INCLUDE**: Phase -1 Constitutional Gates section
   - **MUST INCLUDE**: Complexity Tracking table (if any violations)
 
-- devflow/requirements/${reqId}/TASKS.md: **single unified document** with tasks organized by USER STORY:
+- devflow/requirements/${reqId}/TASKS.md: optional planner input / human-readable task source organized by USER STORY:
   - Phase 1: Setup (shared infrastructure for ALL stories)
   - Phase 2: Foundational (blocking prerequisites - must complete before ANY user story)
   - **Phase 3+: ONE PHASE PER USER STORY** (P1, P2, P3... order):
@@ -106,8 +106,8 @@ devflow/requirements/${reqId}/
 ├── SECURITY_PLAN.md      # 安全计划
 ├── TEST_REPORT.md        # 测试报告
 ├── SECURITY_REPORT.md    # 安全报告
-├── EXECUTION_LOG.md      # 执行日志
-└── orchestration_status.json  # 状态跟踪
+├── harness-state.json    # 生命周期状态
+└── task-manifest.json    # 执行任务真相源
 
 # BUG Fix Structure
 devflow/bugs/${bugId}/
@@ -135,15 +135,16 @@ Process:
 
 **For Requirements**:
 1. Run `${DEVFLOW_CLAUDE_DIR:-.claude}/scripts/setup-epic.sh --json` to get paths and setup EPIC/TASKS structure
-2. **Read TECH_DESIGN.md** (CRITICAL INPUT):
-   - Load: devflow/requirements/${reqId}/TECH_DESIGN.md
+2. **Read technical context** (CRITICAL INPUT):
+   - Load `TECH_DESIGN.md` if it exists
+   - Otherwise read available intent memory / architecture context
    - Extract: System architecture, technology stack, data models, API contracts
    - Extract: Security and performance strategies
    - Verify: All sections complete (no {{PLACEHOLDER}})
-   - If missing: ERROR "TECH_DESIGN.md not found. Run /flow-tech first."
+   - If no technical context exists, fail fast and request clarification instead of inventing details
 3. Read PRD and understand scope, user stories, acceptance criteria
 4. Define EPIC with measurable success criteria and technical approach
-5. Generate TASKS.md following TDD order using TASKS_TEMPLATE.md and **TECH_DESIGN.md**:
+5. Generate `TASKS.md` or equivalent planning input following TDD order using TASKS_TEMPLATE.md and available technical context:
    - Load TASKS_TEMPLATE.md as base
    - Execute Execution Flow to generate all tasks
    - Phase 1: Setup tasks (project init, dependencies, linting)
@@ -198,7 +199,7 @@ Process:
 6. Update BUG tracking status in status.json
 
 ## Context Requirements
-- 读取 `orchestration_status.json` 获取项目状态
+- 读取 `harness-state.json` 与 `devflow/intent/${reqId}/plan.md` 获取当前状态与计划上下文
 - 阅读现有的系统规格和约束条件
 - 确保任务分解与需求一致性
 

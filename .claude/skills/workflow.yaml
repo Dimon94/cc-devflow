@@ -1,26 +1,50 @@
 # =============================================================================
-# CC-DevFlow Workflow Schema v6.0.0 (Harness-First)
+# CC-DevFlow Workflow Schema v6.1.1 (Skill-First Autopilot)
 # =============================================================================
 # [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
 # =============================================================================
 
 name: cc-devflow
-version: "6.0.0"
-description: CC-DevFlow Harness-First workflow schema
+version: "6.1.1"
+description: CC-DevFlow skill-first workflow schema
 
 # =============================================================================
 # 工件定义 (Artifacts)
 # =============================================================================
-# 主链：init -> spec -> dev -> verify -> release
-# 产物最小集：context-package / task-manifest / report-card / release-note
+# 主链：init -> spec -> dev -> verify -> prepare-pr -> release
+# 产物最小集：intent summary/plan/resume + bootstrap context + manifest + report + pr-brief + release-note
 
 artifacts:
+  - id: autopilot_summary
+    generates: devflow/intent/{GOAL}/summary.md
+    requires: []
+    skill: autopilot
+    optional: true
+    instruction: |
+      收敛模糊目标与聊天上下文，写入共享摘要。
+
+  - id: autopilot_plan
+    generates: devflow/intent/{GOAL}/plan.md
+    requires: [autopilot_summary]
+    skill: autopilot
+    optional: true
+    instruction: |
+      生成并维护自动驾驶计划版本。
+
+  - id: autopilot_resume
+    generates: devflow/intent/{GOAL}/resume-index.md
+    requires: [autopilot_plan]
+    skill: autopilot
+    optional: true
+    instruction: |
+      写入恢复入口与下一步唯一动作。
+
   - id: context_package
     generates: devflow/requirements/{REQ}/context-package.md
     requires: []
     skill: flow-init
     instruction: |
-      初始化需求并生成上下文包。
+      生成 requirement bootstrap context，作为 runtime bridge artifact。
 
   - id: harness_state
     generates: devflow/requirements/{REQ}/harness-state.json
@@ -51,6 +75,14 @@ artifacts:
     skill: flow-verify
     instruction: |
       执行 quick/strict 质量门禁并产出报告卡。
+
+  - id: pr_brief
+    generates: devflow/intent/{REQ}/artifacts/pr-brief.md
+    requires: [report_card]
+    skill: flow-prepare-pr
+    optional: true
+    instruction: |
+      将 verify 结果与任务证据收敛成 PR-ready 简报。
 
   - id: release_note
     generates: devflow/requirements/{REQ}/RELEASE_NOTE.md
@@ -95,57 +127,63 @@ detection:
 
 skills:
   workflow:
+    - id: autopilot
+      path: autopilot
+      description: 模糊目标到自动驾驶的总协议入口
     - id: flow-init
-      path: workflow/flow-init
+      path: flow-init
       description: 主链初始化 (context-package + harness-state)
     - id: flow-spec
-      path: workflow/flow-spec
+      path: flow-spec
       description: 主链规格阶段 (task-manifest)
     - id: flow-dev
-      path: workflow/flow-dev
+      path: flow-dev
       description: 主链开发执行 (dispatch/resume)
     - id: flow-verify
-      path: workflow/flow-verify
+      path: flow-verify
       description: 主链质量门禁 (report-card)
+    - id: flow-prepare-pr
+      path: flow-prepare-pr
+      description: 主链 PR-ready 收尾 (pr-brief)
     - id: flow-release
-      path: workflow/flow-release
+      path: flow-release
       description: 主链发布收尾 (release/janitor)
     - id: flow-quality
-      path: workflow/flow-quality
-      description: 旧质量流程 (deprecated)
+      path: flow-quality
+      description: 补充质量验证能力
     - id: flow-fix
-      path: workflow/flow-fix
+      path: flow-fix
       description: Bug 修复
 
   domain:
     - id: tdd
-      path: domain/tdd
+      path: tdd
       description: TDD Iron Law 执行
     - id: debugging
-      path: domain/debugging
+      path: debugging
       description: 系统化调试
     - id: brainstorming
-      path: domain/brainstorming
+      path: brainstorming
       description: 需求头脑风暴
     - id: attention-refresh
-      path: domain/attention-refresh
+      path: attention-refresh
       description: 注意力刷新协议
     - id: verification
-      path: domain/verification
+      path: verification
       description: 完成前验证
     - id: receiving-review
-      path: domain/receiving-review
+      path: receiving-review
       description: 处理代码审查反馈
     - id: finishing-branch
-      path: domain/finishing-branch
+      path: finishing-branch
       description: 分支完成决策
 
   guardrail:
     - id: constitution-guardian
-      path: guardrail/constitution-guardian
+      path: constitution-guardian
       description: Constitution 合规检查
     - id: tdd-enforcer
-      path: guardrail/tdd-enforcer
+      path: tdd-enforcer
       description: TDD 顺序强制执行
 
   utility:
@@ -153,19 +191,19 @@ skills:
       path: utility/npm-release
       description: NPM 包发布
     - id: fractal-docs
-      path: utility/fractal-docs
+      path: fractal-docs
       description: 分形文档生成
     - id: journey-checker
-      path: utility/journey-checker
+      path: journey-checker
       description: 跨需求一致性检查
     - id: skill-creator
-      path: utility/skill-creator
+      path: skill-creator
       description: Skill 创建向导
     - id: file-standards
-      path: utility/file-standards
+      path: file-standards
       description: 文件命名规范
     - id: constitution-quick-ref
-      path: utility/constitution-quick-ref
+      path: constitution-quick-ref
       description: Constitution 快速参考
 
 # =============================================================================
@@ -178,8 +216,17 @@ context:
 
   defaults:
     workflow:
+      - file: devflow/intent/{REQ}/summary.md
+        reason: Intent summary memory
+        optional: true
+      - file: devflow/intent/{REQ}/plan.md
+        reason: Intent plan memory
+        optional: true
+      - file: devflow/intent/{REQ}/resume-index.md
+        reason: Intent resume memory
+        optional: true
       - file: devflow/requirements/{REQ}/context-package.md
-        reason: Execution context package
+        reason: Bootstrap context package
         optional: true
       - file: devflow/requirements/{REQ}/task-manifest.json
         reason: Executable task graph
@@ -188,32 +235,3 @@ context:
       - file: devflow/requirements/{REQ}/task-manifest.json
         reason: Current task context
         optional: true
-
-# =============================================================================
-# 废弃命令/技能映射
-# =============================================================================
-deprecated:
-  - id: flow-new
-    replacement: flow-init
-    message: "Use /flow:init -> /flow:spec -> /flow:dev -> /flow:verify -> /flow:release"
-  - id: flow-clarify
-    replacement: flow-spec
-    message: "Clarification stage removed from default chain"
-  - id: flow-checklist
-    replacement: flow-verify
-    message: "Checklist stage merged into verification gates"
-  - id: flow-quality
-    replacement: flow-verify
-    message: "Use /flow:verify for quick/strict gates"
-  - id: flow-prd
-    replacement: flow-spec
-    message: "Use /flow:spec instead"
-  - id: flow-tech
-    replacement: flow-spec
-    message: "Use /flow:spec instead"
-  - id: flow-ui
-    replacement: flow-spec
-    message: "Use /flow:spec instead"
-  - id: flow-epic
-    replacement: flow-spec
-    message: "Use /flow:spec instead"

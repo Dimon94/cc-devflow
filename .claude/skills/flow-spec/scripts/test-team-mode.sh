@@ -11,7 +11,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/../../../../.." && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
 source "$REPO_ROOT/.claude/scripts/common.sh"
 
 # =============================================================================
@@ -132,9 +132,11 @@ assert_json_not_null() {
 # Setup test environment
 setup_test_env() {
     TEST_TEMP_DIR=$(mktemp -d)
-    mkdir -p "$TEST_TEMP_DIR/devflow/requirements/REQ-TEST"
+    mkdir -p \
+        "$TEST_TEMP_DIR/devflow/requirements/REQ-TEST" \
+        "$TEST_TEMP_DIR/devflow/intent/REQ-TEST/artifacts"
 
-    # Create minimal orchestration_status.json
+    # Create minimal compatibility mirror for bootstrap
     cat > "$TEST_TEMP_DIR/devflow/requirements/REQ-TEST/orchestration_status.json" <<EOF
 {
   "reqId": "REQ-TEST",
@@ -212,44 +214,49 @@ test_team_initialization() {
     # Test 2.1: Initialize team
     init_spec_team "$temp_dir" "REQ-TEST" > /dev/null 2>&1
 
-    local status_file="$temp_dir/devflow/requirements/REQ-TEST/orchestration_status.json"
+    local team_state_file="$temp_dir/devflow/intent/REQ-TEST/artifacts/team-state.json"
+    local compatibility_file="$temp_dir/devflow/requirements/REQ-TEST/orchestration_status.json"
 
-    # Test 2.2: Verify team mode
-    assert_json_field "$status_file" ".team.mode" "parallel" "Team mode should be parallel"
+    # Test 2.2: Verify truth/mirror files exist
+    assert_file_exists "$team_state_file" "Team truth state should exist"
+    assert_file_exists "$compatibility_file" "Compatibility mirror should exist"
 
-    # Test 2.3: Verify team lead
-    assert_json_field "$status_file" ".team.lead" "spec-lead" "Team lead should be spec-lead"
+    # Test 2.3: Verify team mode
+    assert_json_field "$team_state_file" ".team.mode" "parallel" "Team mode should be parallel"
 
-    # Test 2.4: Verify teammates count
+    # Test 2.4: Verify team lead
+    assert_json_field "$team_state_file" ".team.lead" "spec-lead" "Team lead should be spec-lead"
+
+    # Test 2.5: Verify teammates count
     local teammates_count
-    teammates_count=$(jq '.team.teammates | length' "$status_file")
+    teammates_count=$(jq '.team.teammates | length' "$team_state_file")
     assert_equals "$teammates_count" "4" "Should have 4 teammates"
 
-    # Test 2.5: Verify prd-writer exists
-    local prd_writer
-    prd_writer=$(jq -r '.team.teammates[] | select(.id == "prd-writer") | .role' "$status_file")
-    assert_equals "$prd_writer" "analyst" "prd-writer should have analyst role"
+    # Test 2.6: Verify clarify-analyst exists
+    local clarify_analyst
+    clarify_analyst=$(jq -r '.team.teammates[] | select(.id == "clarify-analyst") | .role' "$team_state_file")
+    assert_equals "$clarify_analyst" "analyst" "clarify-analyst should have analyst role"
 
-    # Test 2.6: Verify tech-architect exists
+    # Test 2.7: Verify tech-architect exists
     local tech_architect
-    tech_architect=$(jq -r '.team.teammates[] | select(.id == "tech-architect") | .role' "$status_file")
+    tech_architect=$(jq -r '.team.teammates[] | select(.id == "tech-architect") | .role' "$team_state_file")
     assert_equals "$tech_architect" "architect" "tech-architect should have architect role"
 
-    # Test 2.7: Verify ui-designer exists
+    # Test 2.8: Verify ui-designer exists
     local ui_designer
-    ui_designer=$(jq -r '.team.teammates[] | select(.id == "ui-designer") | .role' "$status_file")
+    ui_designer=$(jq -r '.team.teammates[] | select(.id == "ui-designer") | .role' "$team_state_file")
     assert_equals "$ui_designer" "designer" "ui-designer should have designer role"
 
-    # Test 2.8: Verify planner exists
+    # Test 2.9: Verify planner exists
     local planner
-    planner=$(jq -r '.team.teammates[] | select(.id == "planner") | .role' "$status_file")
+    planner=$(jq -r '.team.teammates[] | select(.id == "planner") | .role' "$team_state_file")
     assert_equals "$planner" "planner" "planner should have planner role"
 
-    # Test 2.9: Verify Ralph Loop initialized
-    assert_json_not_null "$status_file" ".ralphLoop" "Ralph Loop should be initialized"
+    # Test 2.10: Verify Ralph Loop initialized
+    assert_json_not_null "$team_state_file" ".ralphLoop" "Ralph Loop should be initialized"
 
-    # Test 2.10: Verify Ralph Loop enabled
-    assert_json_field "$status_file" ".ralphLoop.enabled" "true" "Ralph Loop should be enabled"
+    # Test 2.11: Verify Ralph Loop enabled
+    assert_json_field "$team_state_file" ".ralphLoop.enabled" "true" "Ralph Loop should be enabled"
 
     cleanup_test_env
 }
@@ -275,7 +282,7 @@ test_team_configuration() {
     fi
 
     # Test 3.3: Verify required fields
-    assert_json_field "$config_file" ".name" "spec-design-team" "Config name should be spec-design-team"
+    assert_json_field "$config_file" ".name" "spec-alignment-team" "Config name should be spec-alignment-team"
     assert_json_field "$config_file" ".mode" "parallel" "Config mode should be parallel"
     assert_json_field "$config_file" ".lead" "spec-lead" "Config lead should be spec-lead"
 
@@ -363,9 +370,9 @@ test_common_team_functions() {
 
     # Test 4.6: assign_task_to_teammate
     assign_task_to_teammate "$temp_dir" "REQ-TEST" "T002" "test-dev"
-    local status_file="$temp_dir/devflow/requirements/REQ-TEST/orchestration_status.json"
+    local team_state_file="$temp_dir/devflow/intent/REQ-TEST/artifacts/team-state.json"
     local assigned_to
-    assigned_to=$(jq -r '.team.taskAssignments.T002' "$status_file")
+    assigned_to=$(jq -r '.team.taskAssignments.T002' "$team_state_file")
     assert_equals "$assigned_to" "test-dev" "assign_task_to_teammate should update taskAssignments"
 
     # Test 4.7: get_unassigned_tasks
@@ -397,11 +404,11 @@ test_common_team_functions() {
     # Test 4.9: update_teammate_ralph_state
     update_teammate_ralph_state "$temp_dir" "REQ-TEST" "test-dev" "passed"
     local ralph_iteration
-    ralph_iteration=$(jq -r '.ralphLoop.teammates["test-dev"].iteration' "$status_file")
+    ralph_iteration=$(jq -r '.ralphLoop.teammates["test-dev"].iteration' "$team_state_file")
     assert_equals "$ralph_iteration" "1" "update_teammate_ralph_state should increment iteration"
 
     local ralph_result
-    ralph_result=$(jq -r '.ralphLoop.teammates["test-dev"].lastVerifyResult' "$status_file")
+    ralph_result=$(jq -r '.ralphLoop.teammates["test-dev"].lastVerifyResult' "$team_state_file")
     assert_equals "$ralph_result" "passed" "update_teammate_ralph_state should update lastVerifyResult"
 
     # Test 4.10: cleanup_team_state
@@ -446,8 +453,8 @@ test_cli_interface() {
 
     # Test 5.3: init command
     "$SCRIPT_DIR/team-init.sh" init "$temp_dir" "REQ-TEST" > /dev/null 2>&1
-    local status_file="$temp_dir/devflow/requirements/REQ-TEST/orchestration_status.json"
-    assert_json_not_null "$status_file" ".team" "CLI init command should create team state"
+    local team_state_file="$temp_dir/devflow/intent/REQ-TEST/artifacts/team-state.json"
+    assert_json_not_null "$team_state_file" ".team" "CLI init command should create team truth state"
 
     cleanup_test_env
 }
