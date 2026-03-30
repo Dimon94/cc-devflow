@@ -1,0 +1,5 @@
+{"file": "devflow/ROADMAP.md", "reason": "Project roadmap context", "optional": true}
+{"file": "devflow/ARCHITECTURE.md", "reason": "Architecture context", "optional": true}
+{"file": "devflow/requirements/{REQ}/harness-state.json", "reason": "Existing harness state", "optional": true}
+{"file": "devflow/requirements/{REQ}/context-package.md", "reason": "Existing context package", "optional": true}
+{"file": ".claude/rules/project-constitution.md", "reason": "Quality rules and constraints"}

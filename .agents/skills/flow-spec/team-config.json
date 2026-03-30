@@ -1,0 +1,165 @@
+{
+  "name": "spec-design-team",
+  "version": "1.0.0",
+  "description": "并行规格设计团队 - tech-architect 和 ui-designer 可实时协商共享决策",
+
+  "mode": "parallel",
+  "lead": "spec-lead",
+
+  "members": [
+    {
+      "id": "prd-writer",
+      "role": "analyst",
+      "agent_type": "prd-writer",
+      "description": "PRD 生成，需求分析",
+      "agent_reference": "flow-prd/references/prd-writer.md",
+      "outputs": ["PRD.md"]
+    },
+    {
+      "id": "tech-architect",
+      "role": "architect",
+      "agent_type": "tech-architect",
+      "description": "技术设计，架构方案",
+      "agent_reference": "flow-tech/references/tech-architect.md",
+      "outputs": ["TECH_DESIGN.md", "data-model.md", "contracts/openapi.yaml"]
+    },
+    {
+      "id": "ui-designer",
+      "role": "designer",
+      "agent_type": "ui-designer",
+      "description": "UI 原型，交互设计",
+      "agent_reference": "flow-ui/references/ui-designer.md",
+      "outputs": ["UI_PROTOTYPE.html", "ui_design_strategy.md"]
+    },
+    {
+      "id": "planner",
+      "role": "planner",
+      "agent_type": "planner",
+      "description": "Epic 规划，任务分解",
+      "agent_reference": "flow-epic/references/planner.md",
+      "outputs": ["EPIC.md", "TASKS.md"]
+    }
+  ],
+
+  "workflow": {
+    "stages": [
+      {
+        "id": "stage-1",
+        "name": "PRD Generation",
+        "description": "生成产品需求文档",
+        "agents": ["prd-writer"],
+        "parallel": false,
+        "outputs": ["PRD.md"],
+        "wait_for": []
+      },
+      {
+        "id": "stage-2",
+        "name": "Design Parallel",
+        "description": "技术设计和 UI 原型并行执行，支持实时协商",
+        "agents": ["tech-architect", "ui-designer"],
+        "parallel": true,
+        "outputs": ["TECH_DESIGN.md", "UI_PROTOTYPE.html"],
+        "wait_for": ["stage-1"],
+        "negotiate": {
+          "enabled": true,
+          "topics": ["api_format", "field_naming", "auth_strategy", "state_management"]
+        }
+      },
+      {
+        "id": "stage-3",
+        "name": "Epic Planning",
+        "description": "基于 PRD 和设计文档生成 Epic 和任务",
+        "agents": ["planner"],
+        "parallel": false,
+        "outputs": ["EPIC.md", "TASKS.md"],
+        "wait_for": ["stage-2"]
+      }
+    ]
+  },
+
+  "communication": {
+    "protocol": "direct_message",
+    "negotiate_topics": [
+      {
+        "id": "api_format",
+        "name": "API 响应格式",
+        "description": "确定 API 响应格式 (REST/GraphQL, JSON structure, pagination)",
+        "participants": ["tech-architect", "ui-designer"],
+        "decision_owner": "tech-architect",
+        "template": "我建议 API 响应格式采用 {format}，因为 {reason}。你的前端需求是否有特殊要求？"
+      },
+      {
+        "id": "field_naming",
+        "name": "数据字段命名",
+        "description": "统一数据字段命名规范 (camelCase/snake_case, 字段名称)",
+        "participants": ["tech-architect", "ui-designer", "planner"],
+        "decision_owner": "tech-architect",
+        "template": "数据模型中的字段命名建议：{fields}。请确认是否与 UI 组件 props 一致。"
+      },
+      {
+        "id": "auth_strategy",
+        "name": "认证策略",
+        "description": "确定认证方案 (JWT, Session, OAuth)",
+        "participants": ["tech-architect", "ui-designer"],
+        "decision_owner": "tech-architect",
+        "template": "认证策略建议采用 {strategy}。前端需要处理的 token 存储和刷新逻辑是 {logic}。"
+      },
+      {
+        "id": "state_management",
+        "name": "状态管理方案",
+        "description": "前端状态管理方案 (Redux, Context, Zustand)",
+        "participants": ["tech-architect", "ui-designer"],
+        "decision_owner": "ui-designer",
+        "template": "前端状态管理建议采用 {solution}，全局状态包括 {states}。"
+      },
+      {
+        "id": "component_granularity",
+        "name": "组件粒度",
+        "description": "UI 组件粒度和任务拆分依据",
+        "participants": ["ui-designer", "planner"],
+        "decision_owner": "ui-designer",
+        "template": "UI 组件拆分为 {components}，每个组件的复杂度和预估时间是 {estimates}。"
+      }
+    ],
+    "decision_record": {
+      "path": "devflow/requirements/{REQ}/research/design_decisions.md",
+      "format": "markdown",
+      "template": "## {topic_name}\n\n**决策**: {decision}\n**参与者**: {participants}\n**原因**: {reason}\n**时间**: {timestamp}\n"
+    }
+  },
+
+  "quality_gates": {
+    "entry": {
+      "required_files": ["BRAINSTORM.md", "research/research.md"],
+      "status_check": ["initialized", "spec_failed"]
+    },
+    "exit": {
+      "required_files": ["PRD.md", "EPIC.md", "TASKS.md"],
+      "optional_files": ["TECH_DESIGN.md", "UI_PROTOTYPE.html"],
+      "status_update": "spec_complete"
+    }
+  },
+
+  "error_handling": {
+    "stage_failure": {
+      "stage-1": {
+        "action": "abort",
+        "status": "spec_failed",
+        "message": "PRD generation failed"
+      },
+      "stage-2": {
+        "action": "continue_partial",
+        "message": "Design stage partially failed, continuing with available outputs"
+      },
+      "stage-3": {
+        "action": "abort",
+        "status": "spec_failed",
+        "message": "Epic planning failed"
+      }
+    },
+    "teammate_failure": {
+      "max_retries": 2,
+      "retry_delay_seconds": 5
+    }
+  }
+}

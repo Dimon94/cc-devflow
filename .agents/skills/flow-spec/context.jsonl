@@ -1,0 +1,5 @@
+{"file": "devflow/requirements/{REQ}/context-package.md", "reason": "Execution context package"}
+{"file": "devflow/requirements/{REQ}/TASKS.md", "reason": "Task source", "optional": true}
+{"file": "devflow/requirements/{REQ}/task-manifest.json", "reason": "Previous manifest", "optional": true}
+{"file": "devflow/requirements/{REQ}/harness-state.json", "reason": "Lifecycle status", "optional": true}
+{"file": ".claude/rules/project-constitution.md", "reason": "Quality rules and constraints"}

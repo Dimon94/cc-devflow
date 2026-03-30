@@ -1,0 +1,6 @@
+{"file": "devflow/bugs/{BUG}/ANALYSIS.md", "reason": "Root cause analysis", "optional": true}
+{"file": "devflow/bugs/{BUG}/PLAN.md", "reason": "Fix plan", "optional": true}
+{"file": "devflow/bugs/{BUG}/ERROR_LOG.md", "reason": "Previous errors", "optional": true}
+{"file": ".claude/skills/flow-debugging/SKILL.md", "reason": "Debugging methodology"}
+{"file": ".claude/skills/flow-tdd/SKILL.md", "reason": "TDD principles"}
+{"file": ".claude/rules/project-constitution.md", "reason": "Quality rules"}

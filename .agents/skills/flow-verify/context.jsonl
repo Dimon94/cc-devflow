@@ -1,0 +1,5 @@
+{"file": "devflow/requirements/{REQ}/task-manifest.json", "reason": "Task status baseline"}
+{"file": "devflow/requirements/{REQ}/report-card.json", "reason": "Previous verification result", "optional": true}
+{"file": "devflow/requirements/{REQ}/harness-state.json", "reason": "Lifecycle status", "optional": true}
+{"file": "devflow/requirements/{REQ}/context-package.md", "reason": "Constraints and next commands", "optional": true}
+{"file": ".claude/rules/project-constitution.md", "reason": "Quality rules and constraints"}
