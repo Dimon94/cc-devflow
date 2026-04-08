@@ -256,8 +256,8 @@ bash .claude/tests/constitution/run_all_constitution_tests.sh
 
 | Command | Purpose | Quick Example | Detailed Docs |
 |---------|---------|---------------|---------------|
-| `/core-roadmap` | 🗺️ Generate Product Roadmap | `/core-roadmap` | [→](docs/commands/core-roadmap.md) |
-| `/core-architecture` | 🏗️ Generate System Architecture | `/core-architecture` | [→](docs/commands/core-architecture.md) |
+| `/core:roadmap` | 🗺️ Generate Product Roadmap | `/core:roadmap` | [→](docs/commands/core-roadmap.md) |
+| `/core:architecture` | 🏗️ Generate System Architecture | `/core:architecture` | [→](docs/commands/core-architecture.md) |
 | `/core-guidelines` | 📘 Generate Project Guidelines | `/core-guidelines` | [→](docs/commands/core-guidelines.md) |
 
 ### 📦 Requirement-Level Commands
@@ -286,8 +286,8 @@ bash .claude/tests/constitution/run_all_constitution_tests.sh
 
 ```
 Your Scenario:
-├─ Plan product direction? → /core-roadmap
-├─ Design system architecture? → /core-architecture
+├─ Plan product direction? → /core:roadmap
+├─ Design system architecture? → /core:architecture
 ├─ Establish coding standards? → /core-guidelines
 ├─ Start requirement delivery on the recommended path? → /flow:autopilot "REQ-123|Feature|URLs"
 ├─ Need manual stage control? → /flow:init "REQ-123|Feature|URLs"
@@ -313,8 +313,8 @@ The following Mermaid diagram illustrates the complete cc-devflow workflow, incl
 graph TB
     Start([Start Project]) --> ProjectLevel{Project-Level Setup}
 
-    ProjectLevel --> CoreRoadmap["/core-roadmap<br/>ROADMAP.md & BACKLOG.md"]
-    ProjectLevel --> CoreArch["/core-architecture<br/>ARCHITECTURE.md"]
+    ProjectLevel --> CoreRoadmap["/core:roadmap<br/>ROADMAP.md & BACKLOG.md"]
+    ProjectLevel --> CoreArch["/core:architecture<br/>ARCHITECTURE.md"]
     ProjectLevel --> CoreGuidelines["/core-guidelines<br/>frontend/backend guidelines"]
     ProjectLevel --> CoreStyle["/core-style<br/>STYLE.md"]
 
@@ -798,8 +798,8 @@ npm run adapt -- --verbose           # Show detailed output
 v2.1.0's core breakthrough is the introduction of **Project-Level Commands**, forming a two-tier system with previous **Requirement-Level Commands**:
 
 - **Project-Level Commands** - Project-wide planning and architecture design (executed once per project at the beginning)
-  - `/core-roadmap` - Interactive product roadmap generation (6-stage dialogue)
-  - `/core-architecture` - 4 architecture diagram generation (Mermaid format)
+  - `/core:roadmap` - Interactive product roadmap generation (6-stage dialogue)
+  - `/core:architecture` - 4 architecture diagram generation (Mermaid format)
   - `/core-guidelines` - Project guidelines generation (frontend/backend separation)
 
 - **Requirement-Level Commands Enhancement** - Stage 1.5 Roadmap & Architecture context loading (flow-init)
