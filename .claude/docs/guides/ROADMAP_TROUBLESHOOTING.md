@@ -1,6 +1,6 @@
 # Core-Roadmap Troubleshooting Guide
 
-> Quick reference for `/core-roadmap` dialogue errors and recovery
+> Quick reference for `/core:roadmap` dialogue errors and recovery
 
 ---
 
@@ -11,7 +11,7 @@
 用户输入: cancel
 → 对话取消
 ```
-**Fix**: `/core-roadmap --resume` → 从草稿恢复，选择继续的 Stage
+**Fix**: `/core:roadmap --resume` → 从草稿恢复，选择继续的 Stage
 
 ---
 
@@ -63,7 +63,7 @@
 ❌ ERROR: roadmap-planner execution failed (Cannot read property 'candidates')
 ```
 **Diagnose**: `cat .roadmap-context.json | jq .` → 检查 context 完整性
-**Fix**: `cp .roadmap-draft.json .roadmap-context.json` → `/core-roadmap --regenerate`
+**Fix**: `cp .roadmap-draft.json .roadmap-context.json` → `/core:roadmap --regenerate`
 
 ---
 
@@ -79,7 +79,7 @@
 ```bash
 ❌ ERROR: Cannot generate ARCHITECTURE.md (No requirements found)
 ```
-**Fix**: 跳过 ARCHITECTURE.md 生成，完成第一个需求后运行 `/core-architecture`
+**Fix**: 跳过 ARCHITECTURE.md 生成，完成第一个需求后运行 `/core:architecture`
 
 ---
 
@@ -91,7 +91,7 @@
 cat .roadmap-draft.json | jq '.candidates | length'
 
 # 恢复对话
-/core-roadmap --resume
+/core:roadmap --resume
 
 # 选择从哪个阶段继续 (2: 头脑风暴, 3: 依赖分析, ...)
 ```
@@ -102,7 +102,7 @@ cat .roadmap-draft.json | jq '.candidates | length'
 cp devflow/ROADMAP.md devflow/ROADMAP.md.bak
 
 # 重新生成 (使用保存的 context)
-/core-roadmap --regenerate
+/core:roadmap --regenerate
 
 # 对比新旧文件
 diff devflow/ROADMAP.md.bak devflow/ROADMAP.md
@@ -124,7 +124,7 @@ ls devflow/requirements/REQ-*/harness-state.json | \
 
 ### --regenerate 模式
 ```bash
-/core-roadmap --regenerate
+/core:roadmap --regenerate
 
 # 执行步骤:
 # 1. 读取现有 ROADMAP.md
@@ -139,7 +139,7 @@ ls devflow/requirements/REQ-*/harness-state.json | \
 
 ### --resume 模式
 ```bash
-/core-roadmap --resume
+/core:roadmap --resume
 
 # 执行步骤:
 # 1. 读取 .roadmap-draft.json
@@ -175,7 +175,7 @@ ls devflow/requirements/REQ-*/harness-state.json | \
 ## FAQ
 
 **Q: 如何修改已生成的路线图？**
-A: 手动编辑 `vim devflow/ROADMAP.md` 或重新运行 `/core-roadmap`
+A: 手动编辑 `vim devflow/ROADMAP.md` 或重新运行 `/core:roadmap`
 
 **Q: 如何添加新的 RM 项目？**
 A: 编辑 ROADMAP.md 或重新运行对话并在 Stage 3 添加

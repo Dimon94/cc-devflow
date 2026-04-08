@@ -1,16 +1,16 @@
 # Core-Roadmap Dialogue Template
 
-> 6-stage interactive dialogue script for `/core-roadmap`
+> 6-stage interactive dialogue script for `/core:roadmap`
 
 <!-- ============================================================
      调用上下文声明 (Invocation Context Declaration)
      ============================================================
 
-本模板由 `/core-roadmap` 命令通过 {TEMPLATE:dialogue} 引用加载。
+本模板由 `/core:roadmap` 命令通过 {TEMPLATE:dialogue} 引用加载。
 
-模板中的 {SCRIPT:xxx} 占位符引用 core-roadmap.md 头文件中的 scripts 定义：
+模板中的 {SCRIPT:xxx} 占位符引用 core/roadmap.md 头文件中的 scripts 定义：
 ```yaml
-# 来源: .claude/commands/core-roadmap.md 头文件
+# 来源: .claude/commands/core/roadmap.md 头文件
 scripts:
   calculate_quarter: .claude/scripts/calculate-quarter.sh
   sync_progress: .claude/scripts/sync-roadmap-progress.sh
@@ -178,7 +178,7 @@ Prompt: "Generate ARCHITECTURE.md with 4 diagrams..."
 下一步建议:
 1. 审查路线图
 2. 开始首个需求: /flow:init "REQ-XXX|{RM-title}"
-3. 定期更新: /core-roadmap --regenerate
+3. 定期更新: /core:roadmap --regenerate
 4. 监控进度: /flow:status --all
 ```
 

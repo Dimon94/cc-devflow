@@ -1,6 +1,6 @@
 ---
-name: core-roadmap
-description: 'Generate product roadmap through 6-stage dialogue. Usage: /core-roadmap'
+name: core:roadmap
+description: 'Generate product roadmap through 6-stage dialogue. Usage: /core:roadmap'
 scripts:
   calculate_quarter: .claude/scripts/calculate-quarter.sh
   sync_progress: .claude/scripts/sync-roadmap-progress.sh
@@ -58,13 +58,13 @@ guides:
 规则: 遇到 {TYPE:key} 占位符时，去头文件 YAML 中找对应类型的 key，获取文件路径并执行/加载。
 ============================================================ -->
 
-# Core-Roadmap - 路线图规划命令
+# Core:Roadmap - 路线图规划命令
 
 ## 命令格式
 ```
-/core-roadmap                # 6阶段对话式规划
-/core-roadmap --regenerate   # 更新现有路线图
-/core-roadmap --resume       # 从草稿恢复
+/core:roadmap                # 6阶段对话式规划
+/core:roadmap --regenerate   # 更新现有路线图
+/core:roadmap --resume       # 从草稿恢复
 ```
 
 ---
@@ -86,7 +86,7 @@ guides:
 
 **架构模式**:
 ```
-用户 ↔ core-roadmap (6-stage dialogue) ← 你在这里
+用户 ↔ core:roadmap (6-stage dialogue) ← 你在这里
               ↓
        ├─→ roadmap-planner (research, no dialogue)
        │         ↓
@@ -98,13 +98,13 @@ guides:
 ```
 
 **职责划分**:
-- **core-roadmap (命令)**: 对话引导，收集用户输入
+- **core:roadmap (命令)**: 对话引导，收集用户输入
 - **roadmap-planner (Agent)**: 根据上下文生成文档，无对话
 - **architecture-designer (Agent)**: 生成架构图，无对话
 
 ## Harness Engineering 增强（OpenAI + Anthropic 实践融合）
 
-为避免长会话中的“半成品漂移 / 提前宣布完成 / 上下文断片”，`/core-roadmap` 强制采用双阶段执行。
+为避免长会话中的“半成品漂移 / 提前宣布完成 / 上下文断片”，`/core:roadmap` 强制采用双阶段执行。
 
 ### Stage -1: Initializer Session（只做地基，不做全量生成）
 
@@ -298,7 +298,7 @@ guides:
 下一步建议:
   1. 审查路线图
   2. 开始首个需求: /flow:init "REQ-XXX|{RM-title}"
-  3. 定期更新: /core-roadmap --regenerate
+  3. 定期更新: /core:roadmap --regenerate
   4. 监控进度: /flow:status --all
 
 → 详见 {TEMPLATE:dialogue} Stage 8
@@ -337,7 +337,7 @@ devflow/
 **用途**: 更新现有路线图，无需重新对话
 
 ```bash
-/core-roadmap --regenerate
+/core:roadmap --regenerate
 
 执行:
 1. 读取现有 ROADMAP.md
@@ -358,7 +358,7 @@ devflow/
 **用途**: 从保存的草稿恢复对话
 
 ```bash
-/core-roadmap --resume
+/core:roadmap --resume
 
 执行:
 1. 读取 .roadmap-draft.json
@@ -426,7 +426,7 @@ devflow/
 **定期更新**:
 ```bash
 # 每周运行一次
-/core-roadmap --regenerate
+/core:roadmap --regenerate
 ```
 
 **需求完成后**:
@@ -435,7 +435,7 @@ devflow/
 bash {SCRIPT:sync_progress}
 
 # 更新路线图
-/core-roadmap --regenerate
+/core:roadmap --regenerate
 ```
 
 **季度回顾**:
@@ -444,7 +444,7 @@ bash {SCRIPT:sync_progress}
 grep "Status: Completed" devflow/ROADMAP.md | wc -l
 
 # 重新规划下一季度
-/core-roadmap
+/core:roadmap
 # 更新愿景和候选项目
 ```
 

@@ -1,16 +1,16 @@
 ---
-name: core-architecture
-description: 'Generate or update ARCHITECTURE.md with 4 architecture diagrams. Usage: /core-architecture'
+name: core:architecture
+description: 'Generate or update ARCHITECTURE.md with 4 architecture diagrams. Usage: /core:architecture'
 scripts:
   sync_progress: .claude/scripts/sync-roadmap-progress.sh
 ---
 
-# Flow-Architecture - 架构文档生成命令
+# Core:Architecture - 架构文档生成命令
 
 ## 命令格式
 ```text
-/core-architecture              # Generate or update architecture documentation
-/core-architecture --force      # Force regenerate even if ARCHITECTURE.md exists
+/core:architecture              # Generate or update architecture documentation
+/core:architecture --force      # Force regenerate even if ARCHITECTURE.md exists
 ```
 
 ## 核心原则
@@ -22,7 +22,7 @@ scripts:
 ```
 用户
   ↓
-core-architecture (minimal interaction)
+core:architecture (minimal interaction)
   ↓
 architecture-designer (research, no dialogue)
   ↓
@@ -71,7 +71,7 @@ ARCHITECTURE.md (4 diagrams)
       ERROR: "ROADMAP.md not found at: devflow/ROADMAP.md"
       ""
       "Architecture generation requires a roadmap first."
-      "Please run /core-roadmap to create a roadmap."
+      "Please run /core:roadmap to create a roadmap."
       ""
       EXIT
 
@@ -281,7 +281,7 @@ Else:
 "    • Module structure changes significantly"
 "  - Keep ADRs up-to-date for team alignment"
 ""
-"To regenerate: /core-architecture --force"
+"To regenerate: /core:architecture --force"
 ""
 "==================================================================="
 ```
@@ -295,10 +295,10 @@ Else:
    ERROR: "ROADMAP.md not found at: devflow/ROADMAP.md"
    ""
    "Architecture generation requires a roadmap first."
-   "Please run /core-roadmap to create a roadmap."
+   "Please run /core:roadmap to create a roadmap."
    ""
    "If you want to create a basic architecture without a roadmap,"
-   "consider creating a minimal ROADMAP.md manually or using /core-roadmap."
+   "consider creating a minimal ROADMAP.md manually or using /core:roadmap."
    ```
 
 2. **Agent 调用失败**:
@@ -315,7 +315,7 @@ Else:
    "  2. Ensure at least 1 requirement exists (recommended)"
    "  3. Check file permissions"
    ""
-   "Retry with: /core-architecture --force"
+   "Retry with: /core:architecture --force"
    ```
 
 3. **生成文件包含占位符**:
@@ -352,10 +352,10 @@ Else:
 
 ## 与其他命令的集成
 
-### 在 /core-roadmap 中的调用
+### 在 /core:roadmap 中的调用
 ```
-/core-roadmap 在 Stage 7 会自动调用 architecture-designer
-无需单独运行 /core-architecture
+/core:roadmap 在 Stage 7 会自动调用 architecture-designer
+无需单独运行 /core:architecture
 ```
 
 ### 在 /flow:init 中的使用
@@ -368,7 +368,7 @@ Else:
 
 ### 手动更新架构
 ```
-When to run /core-architecture manually:
+When to run /core:architecture manually:
   - ROADMAP.md 更新后
   - 新增重要需求后
   - 技术栈变化后
@@ -396,7 +396,7 @@ When to run /core-architecture manually:
 
 ### --force 模式
 ```
-/core-architecture --force
+/core:architecture --force
 
 行为:
   - 跳过 "文件已存在" 确认
@@ -415,15 +415,15 @@ When to run /core-architecture manually:
 
 ### 场景 1: 首次生成架构文档
 ```
-前提: 已完成 /core-roadmap
-操作: /core-architecture
+前提: 已完成 /core:roadmap
+操作: /core:architecture
 结果: 生成包含 4 种架构图的完整文档
 ```
 
 ### 场景 2: 更新现有架构文档
 ```
 前提: ARCHITECTURE.md 已存在，ROADMAP 有更新
-操作: /core-architecture
+操作: /core:architecture
 提示: 确认覆盖
 结果: 重新生成架构文档，反映最新状态
 ```
@@ -431,14 +431,14 @@ When to run /core-architecture manually:
 ### 场景 3: 自动化/CI 场景
 ```
 前提: 在 CI pipeline 中
-操作: /core-architecture --force
+操作: /core:architecture --force
 结果: 无交互，直接生成/覆盖
 ```
 
 ## 最佳实践
 
 1. **何时生成架构文档**:
-   - 创建路线图后立即生成（/core-roadmap 会自动调用）
+   - 创建路线图后立即生成（/core:roadmap 会自动调用）
    - 每个季度开始时更新
    - 重大架构决策后更新
 

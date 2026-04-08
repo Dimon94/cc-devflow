@@ -43,7 +43,7 @@ You are a **RESEARCH-TYPE AGENT**. You do NOT engage in dialogue with users. You
    - Extract all RM-IDs and their titles
    - Parse Dependency Graph section for relationships
    - Identify current project vision
-   - If ROADMAP.md doesn't exist: ERROR "ROADMAP.md not found. Run /core-roadmap first."
+   - If ROADMAP.md doesn't exist: ERROR "ROADMAP.md not found. Run /core:roadmap first."
 
 2. **Read devflow/project.md** (if exists):
    - Extract project name
@@ -378,7 +378,7 @@ Next Steps:
    ERROR: ROADMAP.md not found at: devflow/ROADMAP.md
 
    Architecture generation requires a roadmap first.
-   Please run /core-roadmap to create a roadmap.
+   Please run /core:roadmap to create a roadmap.
    ```
 
 2. **No Requirements Found**:

@@ -180,7 +180,7 @@ $ /core-guidelines
 
 ⚠️  ARCHITECTURE.md may be outdated:
    - Directories exist but not in ARCHITECTURE.md: packages/
-     Recommendation: Run /core-architecture to update
+     Recommendation: Run /core:architecture to update
 
 ⚠️  Proceeding with available data, but results may be inaccurate.
 ```
@@ -190,7 +190,7 @@ $ /core-guidelines
 如果你的项目结构或技术栈发生变化，运行：
 
 ```bash
-/core-architecture
+/core:architecture
 ```
 
 这会重新生成 `devflow/ARCHITECTURE.md`，包括最新的：

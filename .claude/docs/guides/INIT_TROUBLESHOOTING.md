@@ -108,7 +108,7 @@ bash .claude/scripts/validate-research.sh "$REQ_DIR"
 A: `SKIP_MCP_RESEARCH=1 /flow:init "REQ-123|..."`
 
 **Q: Context Loading 阶段找不到 ROADMAP.md 怎么办？**
-A: 可选步骤，不影响执行。如需路线图，先运行 `/core-roadmap`
+A: 可选步骤，不影响执行。如需路线图，先运行 `/core:roadmap`
 
 **Q: Research.md 格式要求？**
 A: 至少包含 1 个 `### Decision:` block，每个 block 有 Rationale/Alternatives/Source

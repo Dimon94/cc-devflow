@@ -1142,7 +1142,7 @@ async function detectOutdatedArchitecture(archData, project_root) {
         warnings.push({
             type: 'missing_in_architecture',
             message: `Directories exist but not in ARCHITECTURE.md: ${missingInArch.join(', ')}`,
-            recommendation: 'Run /core-architecture to update ARCHITECTURE.md'
+            recommendation: 'Run /core:architecture to update ARCHITECTURE.md'
         });
     }
 
