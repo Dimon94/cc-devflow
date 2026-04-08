@@ -1,6 +1,6 @@
 # 🚀 cc-devflow
 
-> Harness-First Requirement Development Flow for Claude Code
+> Autopilot-First Requirement Development Flow for Claude Code
 
 A comprehensive development workflow system built on Claude Code's official sub-agents, hooks, and settings mechanisms. Transform requirements from planning to code delivery with a deterministic command chain.
 
@@ -10,22 +10,22 @@ A comprehensive development workflow system built on Claude Code's official sub-
 
 ## 🎯 One-Line Introduction
 
-Harness-first five-stage workflow from requirement setup to release: `/flow:init` → `/flow:spec` → `/flow:dev` → `/flow:verify` → `/flow:release`.
+Autopilot-first requirement delivery: `/flow:autopilot` converges intent into executable work, drives the thin harness chain, emits a PR-ready brief, then hands off to `/flow:release`.
 
 ---
 
 ## ✨ Core Features
 
-- 🎯 **Harness-First Mainline** - Default chain is `/flow:init` → `/flow:spec` → `/flow:dev` → `/flow:verify` → `/flow:release`
-- 🔄 **NPM Command Chain** - Flow commands map to `harness:*` runtime operations with checkpoints and resume
-- 📋 **Document-Driven** - Automatic PRD → UI Prototype → EPIC → TASKS → Implementation chain
-- 📝 **Template-Driven** - Self-executable templates (PRD_TEMPLATE, EPIC_TEMPLATE, TASKS_TEMPLATE)
-- 🔄 **Smart Recovery** - `harness:resume` restores interrupted dispatch from persisted checkpoints
+- 🎯 **Autopilot-First Mainline** - Recommended path is `/flow:autopilot` → `/flow:prepare-pr` → `/flow:release`
+- 🔄 **Thin Harness Spine** - Flow commands map to `harness:*` runtime operations with checkpoints, resume, and auditable artifacts
+- 📝 **Markdown-First Memory** - `devflow/intent/*` stores summary, facts, decision log, plan, delegation map, resume index, and PR brief
+- 📋 **Manifest-Driven Execution** - Requirements converge into `task-manifest.json`, then execute through dispatch, delegated workers, and verify gates
+- 🔄 **Smart Recovery** - `harness:resume` and intent checkpoints restore interrupted execution from persisted state instead of chat history
 - 🛡️ **Quality Gates** - Automated TypeScript checking, testing, linting, and security scanning
-- 🤖 **Sub-Agent Orchestration** - 12 specialized research agents for different development phases
+- 🤖 **Local Subagents and Workers** - Autopilot can hand off scoped tasks to local workers while keeping one truth surface
 - 🎨 **UI Prototype Generation** - Conditional HTML prototype with artistic design inspiration
-- 🔗 **GitHub Integration** - Automated PR creation, branch management, and conventional commits
-- 📊 **Progress Tracking** - Real-time status monitoring and intelligent restart points
+- 🔗 **GitHub Integration** - PR-ready brief generation, release notes, and conventional commit support
+- 📊 **Progress Tracking** - Real-time status monitoring, stage derivation, and intelligent restart points
 - 🔍 **Consistency Verification** - Enterprise-grade consistency checking with intelligent conflict detection
 - 🧪 **TDD Enforced** - Strict Test-Driven Development with automatic TDD order validation in harness planner
 - 📜 **Constitution** - 10 Articles governing quality, security, and architecture
@@ -33,8 +33,6 @@ Harness-first five-stage workflow from requirement setup to release: `/flow:init
 - 🔄 **Autonomous Development** - Ralph × Manus Integration for memory-enhanced continuous iteration
 - 🔌 **Multi-Platform Support** - Compile workflows for Codex, Cursor, Qwen, Antigravity via `npm run adapt`
 - 🔄 **Multi-Module Compiler** - Full module compilation: skills, commands, agents, rules, hooks
-- 🌿 **Git Worktree Integration** - Parallel development with isolated worktrees for 3-5 concurrent Claude sessions
-- 🤝 **Claude Team Integration** - Multi-agent parallel collaboration with automatic task scheduling and conflict detection
 
 ---
 
@@ -114,19 +112,19 @@ Intelligent knowledge base activation with grouped Skills and automatic context 
 
 ### Agent Orchestration
 
-Dual-layer execution model: Research Agents (11, read-only analysis) + Main Agent (execution).
+Current execution model: autopilot controller + local subagents/workers + thin harness runtime.
 
 <details>
 <summary>📖 Agent Orchestration Details (Click to Expand)</summary>
 
 **Execution Model**:
-- **Research Agents**: Read-only analysis, generate Markdown plans and reports
-- **Main Agent (Claude)**: Executes all code operations, owns complete context
-- **Workflow**: Agent Research → Output Plans → Main Agent Executes → Iterate
+- **Autopilot controller**: Converges intent, advances stages, and maintains the markdown truth surface
+- **Local subagents/workers**: Execute scoped tasks through delegated worker handoffs when the task boundary is clear
+- **Thin harness runtime**: Persists checkpoints, report-card, PR brief, and release artifacts
 
 **Tool Distribution**:
-- Research Agents: Read, Grep, Glob (analysis)
-- Main Agent: Edit, Write, Bash, Git (execution)
+- Controller/runtime: state derivation, artifact sync, stage transitions
+- Workers/subagents: scoped execution, verification, and result materialization
 
 📚 [Execution Model Details](docs/architecture/execution-model.md)
 </details>
@@ -208,10 +206,8 @@ pip install pypinyin
 ### First Requirement
 
 ```bash
-/flow:init "REQ-001|User Authentication|https://docs.example.com/auth"
-/flow:spec "REQ-001"
-/flow:dev "REQ-001"
-/flow:verify "REQ-001" --strict
+/flow:autopilot "REQ-001|User Authentication|https://docs.example.com/auth"
+/flow:prepare-pr "REQ-001"
 /flow:release "REQ-001"
 ```
 
@@ -270,13 +266,15 @@ bash .claude/tests/constitution/run_all_constitution_tests.sh
 
 | Command | Purpose | Quick Example | Detailed Docs |
 |---------|---------|---------------|---------------|
+| `/flow:autopilot` | 🤖 Converge intent and drive the recommended mainline | `/flow:autopilot "REQ-123\|Feature"` | [→](.claude/commands/flow/autopilot.md) |
 | `/flow:init` | 📦 Initialize Requirement Context | `/flow:init "REQ-123\|Feature"` | [→](.claude/commands/flow/init.md) |
 | `/flow:spec` | 📋 Build Task Manifest | `/flow:spec "REQ-123"` | [→](.claude/commands/flow/spec.md) |
 | `/flow:dev` | 🛠️ Dispatch and Execute Tasks | `/flow:dev "REQ-123"` | [→](.claude/commands/flow/dev.md) |
 | `/flow:verify` | ✅ Run Report Card Gates | `/flow:verify "REQ-123" --strict` | [→](.claude/commands/flow/verify.md) |
+| `/flow:prepare-pr` | 🧾 Generate PR-ready brief from verified artifacts | `/flow:prepare-pr "REQ-123"` | [→](.claude/commands/flow/prepare-pr.md) |
 | `/flow:release` | 🚢 Release + Cleanup | `/flow:release "REQ-123"` | [→](.claude/commands/flow/release.md) |
 | `/flow:fix` | 🐛 Systematic Bug Fix | `/flow:fix "BUG-123\|Description"` | [→](.claude/commands/flow/fix.md) |
-| `/flow:new` | ⚠️ Deprecated alias | Use `/flow:init` mainline | [→](.claude/commands/flow/new.md) |
+| `/flow:new` | ⚠️ Deprecated alias | Use `/flow:autopilot` (recommended) or `/flow:init` (manual control) | [→](.claude/commands/flow/new.md) |
 | `/flow:clarify` | ⚠️ Deprecated | Merged into `/flow:spec` | [→](.claude/commands/flow/clarify.md) |
 | `/flow:checklist` | ⚠️ Deprecated | Use `/flow:verify --strict` | [→](.claude/commands/flow/checklist.md) |
 | `/flow:quality` | ⚠️ Deprecated | Use `/flow:verify` | [→](.claude/commands/flow/quality.md) |
@@ -291,10 +289,12 @@ Your Scenario:
 ├─ Plan product direction? → /core-roadmap
 ├─ Design system architecture? → /core-architecture
 ├─ Establish coding standards? → /core-guidelines
-├─ Start requirement delivery? → /flow:init "REQ-123|Feature|URLs"
-├─ Generate task manifest? → /flow:spec "REQ-123"
-├─ Execute planned tasks? → /flow:dev "REQ-123"
+├─ Start requirement delivery on the recommended path? → /flow:autopilot "REQ-123|Feature|URLs"
+├─ Need manual stage control? → /flow:init "REQ-123|Feature|URLs"
+├─ Generate task manifest manually? → /flow:spec "REQ-123"
+├─ Execute planned tasks manually? → /flow:dev "REQ-123"
 ├─ Run strict quality gate? → /flow:verify "REQ-123" --strict
+├─ Generate PR materials after verify? → /flow:prepare-pr "REQ-123"
 ├─ Continue interrupted development? → /flow:restart "REQ-123"
 ├─ Check development progress? → /flow:status REQ-123
 ├─ Re-check consistency anytime? → /flow:verify "REQ-123"
@@ -323,21 +323,25 @@ graph TB
     CoreGuidelines --> ReqLevel
     CoreStyle --> ReqLevel
 
-    ReqLevel([Requirement-Level Development]) --> FlowInit["/flow:init<br/>harness:init + harness:pack"]
+    ReqLevel([Requirement-Level Development]) --> FlowAutopilot["/flow:autopilot<br/>controller + intent memory"]
+    FlowAutopilot --> FlowInit["/flow:init<br/>harness:init + harness:pack"]
     FlowInit --> FlowSpec["/flow:spec<br/>harness:plan<br/>task-manifest"]
     FlowSpec --> FlowDev["/flow:dev<br/>harness:dispatch/resume<br/>runtime-events"]
     FlowDev --> FlowVerify["/flow:verify<br/>harness:verify<br/>report-card"]
-    FlowVerify --> FlowRelease["/flow:release<br/>harness:release/janitor<br/>release-note"]
+    FlowVerify --> FlowPreparePr["/flow:prepare-pr<br/>harness:prepare-pr<br/>pr-brief"]
+    FlowPreparePr --> FlowRelease["/flow:release<br/>harness:release/janitor<br/>release-note"]
     FlowRelease --> End([Release Complete])
 
     FlowVerify -.->|Can be re-run at any stage| ReqLevel
 
     style ProjectLevel fill:#e1f5ff
     style ReqLevel fill:#fff4e1
+    style FlowAutopilot fill:#fff3e0
     style FlowInit fill:#e8f5e9
     style FlowSpec fill:#e8f5e9
     style FlowDev fill:#f3e5f5
     style FlowVerify fill:#e1bee7
+    style FlowPreparePr fill:#fce4ec
     style FlowRelease fill:#e0f2f1
     style End fill:#e3f2fd
 ```
@@ -492,13 +496,13 @@ Note: entries before v6.0.0 keep their original command syntax for historical ac
 
 ### v6.0.0 (2026-02-18) - Latest Release
 
-**🧩 Harness-First Mainline: Simpler default flow with auditable runtime state**
+**🧩 Harness-First Mainline: Historical bridge into today's autopilot-first spine**
 
-v6.0.0 simplifies cc-devflow around a single default chain and internal runtime engine:
+Historical note: this release standardized the harness runtime around a five-stage chain. The current recommended entrypoint has since moved to `/flow:autopilot` + `/flow:prepare-pr`, but v6.0.0 remains the transition point that made the thin runtime possible.
 
-- **Default Command Chain**
+- **Default Command Chain at v6.0.0**
   - `/flow:init` → `/flow:spec` → `/flow:dev` → `/flow:verify` → `/flow:release`
-  - Every stage maps to `npm run harness:*` operations for deterministic orchestration
+  - This later evolved into today's `/flow:autopilot` → `/flow:prepare-pr` → `/flow:release` recommendation
 
 - **Runtime Artifacts**
   - `context-package.md` + `harness-state.json` for bootstrap state
@@ -506,22 +510,22 @@ v6.0.0 simplifies cc-devflow around a single default chain and internal runtime 
   - `report-card.json` + `release-note.md` for quality and release evidence
 
 - **Deprecated Command Migrations**
-  - `/flow:new` → run the 5-stage mainline explicitly
+  - `/flow:new` → at the time, run the 5-stage mainline explicitly
   - `/flow:clarify` → merged into `/flow:spec` planning loop
   - `/flow:checklist` and `/flow:quality` → replaced by `/flow:verify`
 
 **📊 v6.0 Improvements**:
 | Metric | Before | After | Improvement |
 |--------|--------|-------|-------------|
-| Default requirement commands | 8+ mixed paths | 5-stage fixed chain | Simplified |
+| Default requirement commands | 8+ mixed paths | 5-stage fixed chain at the time | Simplified |
 | Resume capability | Command-specific | Unified `harness:resume` | Deterministic |
 | Quality evidence | Fragmented outputs | Single report card gate | Auditable |
 
 ### v4.7.0 (2026-02-07)
 
-**🤝 Claude Team Integration: Multi-Agent Parallel Collaboration**
+**🤝 Claude Team Integration: historical parallel-dev branch**
 
-v4.7.0 introduces Claude Team integration for multi-agent parallel development:
+Historical note: this was an exploratory team-mode branch. The current canonical path is still `direct -> delegate -> team`, but team is no longer the headline default and should be read here as version history, not current setup guidance.
 
 - **Team Mode for /flow:dev** - Parallel task execution with multiple agents
   - `--team` flag enables Team mode (default 3 agents)
@@ -560,9 +564,9 @@ v4.7.0 introduces Claude Team integration for multi-agent parallel development:
 
 ### v4.3.0 (2026-02-07)
 
-**🌿 Git Worktree Integration: Parallel Development Support**
+**🌿 Git Worktree Integration: historical experiment, later removed**
 
-v4.3.0 introduces Git Worktree integration for parallel development with isolated Claude Code sessions:
+Historical note: built-in worktree management was later removed from the canonical workflow. This entry is kept only to explain the v4.3.0 shape of the project.
 
 - **Git Worktree Mode (Default)** - Isolated development environments
   - Creates `../repo-name-REQ-xxx/` worktree directories
