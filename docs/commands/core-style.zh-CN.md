@@ -13,7 +13,7 @@
 
 ## 定位
 
-`/core-style` 是项目级命令（与 `/core-roadmap` 同级），并服务于主链交付：
+`/core-style` 是项目级命令（与 `/core:roadmap` 同级），并服务于主链交付：
 
 - `/flow:spec`：读取 STYLE 约束，形成可执行的 UI/UX 验收标准。
 - `/flow:dev`：实现阶段强制遵循 STYLE 的 token 与组件规范。

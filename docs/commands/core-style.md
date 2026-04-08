@@ -13,7 +13,7 @@ Generate or update `devflow/STYLE.md` as project-level design SSOT.
 
 ## Positioning
 
-`/core-style` is a project command (same level as `/core-roadmap`) and feeds the delivery mainline:
+`/core-style` is a project command (same level as `/core:roadmap`) and feeds the delivery mainline:
 
 - `/flow:spec`: reads STYLE guidance for UI/UX acceptance criteria.
 - `/flow:dev`: enforces STYLE tokens and component conventions in implementation.

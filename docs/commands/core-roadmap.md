@@ -1,4 +1,4 @@
-# `/core-roadmap` - Generate Product Roadmap
+# `/core:roadmap` - Generate Product Roadmap
 
 [中文文档](./core-roadmap.zh-CN.md) | [English](./core-roadmap.md)
 
@@ -11,7 +11,7 @@ Generate comprehensive product roadmap and requirement priority planning through
 ## 🎯 Syntax
 
 ```bash
-/core-roadmap
+/core:roadmap
 ```
 
 ## 🎬 Use Cases
@@ -95,7 +95,7 @@ User: Target users are Tech Leads and senior engineers in development teams.
 
 ## 🔗 Related Commands
 
-- [`/core-architecture`](./core-architecture.md) - Generate architecture based on roadmap
+- [`/core:architecture`](./core-architecture.md) - Generate architecture based on roadmap
 - [`/flow:init`](./flow-init.md) - Initialize requirement based on roadmap
 - `.claude/scripts/sync-roadmap-progress.sh` - Sync progress to roadmap
 
