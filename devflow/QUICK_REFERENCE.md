@@ -53,8 +53,8 @@
 
 | 命令 | 用途 | 输出 |
 |------|------|------|
-| `/core-roadmap` | 产品路线图 | ROADMAP.md, BACKLOG.md |
-| `/core-architecture` | 系统架构 | ARCHITECTURE.md |
+| `/core:roadmap` | 产品路线图 | ROADMAP.md, BACKLOG.md |
+| `/core:architecture` | 系统架构 | ARCHITECTURE.md |
 | `/core-guidelines` | 开发规范 | frontend/backend-guidelines.md |
 | `/core-style` | 设计风格 | STYLE.md |
 

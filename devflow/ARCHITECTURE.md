@@ -89,8 +89,8 @@ cc-devflow 采用三层功能架构:
 ```mermaid
 graph TB
     subgraph "核心层 Core - 项目级命令"
-        CoreRoadmap["/core-roadmap<br/>产品路线图"]
-        CoreArch["/core-architecture<br/>系统架构"]
+        CoreRoadmap["/core:roadmap<br/>产品路线图"]
+        CoreArch["/core:architecture<br/>系统架构"]
         CoreGuidelines["/core-guidelines<br/>项目规范"]
         CoreStyle["/core-style<br/>设计风格"]
     end
@@ -171,7 +171,7 @@ cc-devflow 采用四层技术架构:
 ```mermaid
 graph TB
     subgraph "命令层 Command Layer"
-        CoreCmds[Core Commands<br/>/core-roadmap, /core-architecture<br/>/core-guidelines, /core-style]
+        CoreCmds[Core Commands<br/>/core:roadmap, /core:architecture<br/>/core-guidelines, /core-style]
         FlowCmds[Flow Commands<br/>/flow-init, /flow-prd, /flow-epic<br/>/flow-dev, /flow-qa, /flow-release]
         NewCmds[New Commands<br/>/flow-clarify, /flow-checklist]
     end
