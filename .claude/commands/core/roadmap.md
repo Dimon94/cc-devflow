@@ -111,16 +111,22 @@ guides:
 - 默认推荐完整实现，不推荐为了“省一点点时间”而拆出廉价 shortcut。
 - 如果一件事在 LLM-Native 口径下是一个可在单季度内完成、边界清晰、无需平台级迁移的 `lake`，就优先煮沸整个湖泊。
 - 如果一件事需要跨季度重写、系统迁移、基础设施翻修或组织级协同，它是 `ocean`，必须显式标记并拆成多个 `lake`，不能伪装成单个 roadmap item。
+- `completeness_score` 表示范围完整性，不表示当前进度：
+  - `10`: 当前定义已经是一个完整可交付闭环
+  - `7`: 只覆盖主路径，仍缺少关键配套或边界场景
+  - `3`: 明显是 shortcut / demo / 碎片，不能假装是完整需求
 - 每个候选项目都必须给出:
   - `human_effort`
   - `llm_effort`
   - `completeness_score` (1-10)
   - `scope_shape` (`lake` | `ocean`)
+  - `acceptance_criteria` (2-3 条，可验证、可观察的完成标准)
 
 ### 模板兼容层
 
 - 下游模板若出现 `effort_weeks`、`周数`、`季度容量=90天/平均天数` 等旧口径，统一解释为 `human baseline`，不得作为最终排期真相源。
 - 最终 roadmap/backlog 必须以 `llm_effort` 作为主排期单位，以 `human_effort` 作为风险解释与对外沟通参考。
+- 最终 roadmap/backlog 必须保留每个 RM 的 item-level `Acceptance Criteria`，不得只保留里程碑级成功标准。
 - 若历史 Velocity 与 LLM-native 估算冲突，以 LLM-native 为默认排期，历史数据仅用于识别异常项与校准风险。
 
 ---
@@ -247,6 +253,7 @@ guides:
     - 预估工作量 (human_effort + llm_effort)
     - 完整度分数 (completeness_score)
     - 范围形态 (lake / ocean)
+    - 验收标准 (acceptance_criteria, 2-3 条)
 
   分配 RM-ID: RM-001, RM-002, ...
 
@@ -329,7 +336,7 @@ guides:
 1. 保存上下文到 .roadmap-context.json
 
 2. 调用 roadmap-planner Agent
-   Prompt: "Generate ROADMAP.md and BACKLOG.md based on context. Use llm_effort as the primary planning unit, keep human_effort as reference, boil lakes instead of recommending shortcuts, and explicitly flag or split oceans."
+   Prompt: "Generate ROADMAP.md and BACKLOG.md based on context. Use llm_effort as the primary planning unit, keep human_effort as reference, preserve item-level acceptance criteria for every RM, explain completeness as scope integrity instead of progress, boil lakes instead of recommending shortcuts, and explicitly flag or split oceans."
    → 生成 devflow/ROADMAP.md
    → 生成 devflow/BACKLOG.md
 
@@ -346,8 +353,8 @@ guides:
 
 ```
 展示生成文件:
-  ✅ devflow/ROADMAP.md (路线图项目, 依赖图, 双尺度工时, Completeness 结论)
-  ✅ devflow/BACKLOG.md (所有候选项目详情, human/llm 工时, lake/ocean 标记)
+  ✅ devflow/ROADMAP.md (路线图项目, 依赖图, 双尺度工时, Completeness 结论, item-level Acceptance Criteria)
+  ✅ devflow/BACKLOG.md (所有候选项目详情, human/llm 工时, lake/ocean 标记, item-level Acceptance Criteria)
   ✅ devflow/ARCHITECTURE.md (4个架构图表)
 
 下一步建议:
@@ -372,10 +379,11 @@ devflow/
 │   ├── Dependency Graph (Mermaid)
 │   ├── Velocity Tracking (human baseline + llm-native)
 │   ├── Completeness / Lake-Ocean Review
+│   ├── Item-level Acceptance Criteria
 │   └── Implementation Tracking
 │
 ├── BACKLOG.md           # 产品积压清单
-│   └── 所有 RM-ID 详情 (优先级, human/llm 工作量, completeness, 状态)
+│   └── 所有 RM-ID 详情 (优先级, human/llm 工作量, completeness, acceptance criteria, 状态)
 │
 └── ARCHITECTURE.md      # 架构文档
     ├── Feature Architecture Diagram

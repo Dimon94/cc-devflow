@@ -14,17 +14,24 @@
 **Status**: {{STATUS}}
 
 **Input**:
-- 6 阶段对话的结果（candidates 含 human_effort / llm_effort / completeness_score / scope_shape, dependencies, timeline, velocity, quarter_info）
+- 6 阶段对话的结果（candidates 含 human_effort / llm_effort / completeness_score / scope_shape / acceptance_criteria, dependencies, timeline, velocity, quarter_info）
 - devflow/requirements/ 已有需求分析
 - 用户愿景声明
 
 **Prerequisites**: core-roadmap 命令已完成 6 阶段对话，收集完整上下文
 
+## Reading Guide
+
+- `LLM Effort` 是主排期单位，`Human Effort` 只作为风险、沟通和异常校准参考。
+- `Completeness` 表示范围完整性，不表示进度百分比。它回答的是“这个定义是不是一个完整闭环”，不是“已经做了多少”。
+- `Acceptance Criteria` 是每个 RM 的完成标准，和 `Success Criteria` 不同：前者针对单项交付，后者针对季度里程碑。
+- `lake` 默认追求完整交付；`ocean` 必须拆分，不能伪装成一个季度就能闭环的单项。
+
 ## Execution Flow (Roadmap 生成流程)
 ```
 1. Load context from command
    → Parse JSON context (candidates, dependencies, timeline, velocity, quarter_info)
-   → Validate candidate fields: human_effort, llm_effort, completeness_score, scope_shape
+   → Validate candidate fields: human_effort, llm_effort, completeness_score, scope_shape, acceptance_criteria
    → Validate velocity fields: human_baseline, llm_capacity, risk_notes
    → Validate all required fields present
    → If missing fields: ERROR "Incomplete context from command"
@@ -59,6 +66,7 @@
       • Identify dependencies from dependencies list
       • Calculate estimated effort (sum of llm_effort, keep human_effort as reference)
       • Surface completeness_score and scope_shape for every RM
+      • Preserve item-level acceptance_criteria for every RM
       • Generate success criteria based on candidate titles
 
 7. Generate Dependency Graph
@@ -107,6 +115,7 @@
     → Dependencies correctly mapped
     → Mermaid syntax valid
     → LLM-native timeline is the primary schedule truth
+    → Every RM keeps item-level Acceptance Criteria
     → No ocean item silently treated as a single complete milestone
     → If incomplete: ERROR "Complete missing sections"
 
@@ -166,6 +175,10 @@ _填充规则:_
   - 预计工时: LLM {{LLM_EFFORT_1}} | Human {{HUMAN_EFFORT_1}}
   - Completeness: {{COMPLETENESS_1}}/10
   - Scope Shape: {{SCOPE_SHAPE_1}}
+  - Acceptance Criteria:
+    - [ ] {{ACCEPTANCE_1_1}}
+    - [ ] {{ACCEPTANCE_1_2}}
+    - [ ] {{ACCEPTANCE_1_3}}
 
 - **{{RM_ID_2}}**: {{TITLE_2}} ({{DERIVED_FROM_2}})
   - 描述: {{DESCRIPTION_2}}
@@ -173,6 +186,10 @@ _填充规则:_
   - 预计工时: LLM {{LLM_EFFORT_2}} | Human {{HUMAN_EFFORT_2}}
   - Completeness: {{COMPLETENESS_2}}/10
   - Scope Shape: {{SCOPE_SHAPE_2}}
+  - Acceptance Criteria:
+    - [ ] {{ACCEPTANCE_2_1}}
+    - [ ] {{ACCEPTANCE_2_2}}
+    - [ ] {{ACCEPTANCE_2_3}}
 
 **Feature Cluster 2: {{CLUSTER_NAME_2}}**
 - **{{RM_ID_3}}**: {{TITLE_3}} ({{DERIVED_FROM_3}})
@@ -181,6 +198,10 @@ _填充规则:_
   - 预计工时: LLM {{LLM_EFFORT_3}} | Human {{HUMAN_EFFORT_3}}
   - Completeness: {{COMPLETENESS_3}}/10
   - Scope Shape: {{SCOPE_SHAPE_3}}
+  - Acceptance Criteria:
+    - [ ] {{ACCEPTANCE_3_1}}
+    - [ ] {{ACCEPTANCE_3_2}}
+    - [ ] {{ACCEPTANCE_3_3}}
 
 **Dependencies**:
 - **Blocks**: {{BLOCKED_RM_IDS}} (此里程碑完成后可以解锁的需求)
@@ -333,6 +354,7 @@ _填充规则:_
 
 - [ ] 愿景声明清晰且可操作
 - [ ] 所有里程碑有明确的成功标准
+- [ ] 所有 RM 保留 item-level Acceptance Criteria
 - [ ] 所有意向需求已分配优先级 (P1/P2/P3)
 - [ ] 依赖关系已映射并可视化
 - [ ] 基于 llm-native 的现实时间线
@@ -360,7 +382,8 @@ _填充规则:_
 - **Feature Cluster**: 功能集群，将相关的意向项分组便于理解和管理
 - **Milestone**: 里程碑，一个季度内要完成的一组功能集群
 - **Velocity**: 速度，这里分为 human baseline 与 llm-native capacity 两个口径
-- **Completeness**: 完整度，衡量该项是否在当前周期内真正做完而非只做 shortcut
+- **Completeness**: 完整度，衡量该项定义本身是否是完整闭环，而不是当前已经完成了多少
+- **Acceptance Criteria**: 单个 RM 的可验证完成标准，用来判断这项是否真正做完
 - **Lake**: 单季度可完整煮沸的范围
 - **Ocean**: 必须拆分的跨季度系统级范围
 
@@ -373,3 +396,4 @@ _填充规则:_
 4. 进度百分比应准确反映实际状态
 5. 依赖关系应与 BACKLOG.md 保持一致
 6. `llm_effort` 是主排期单位，`human_effort` 只做解释与风险参考
+7. 每个 RM 都必须保留 2-3 条 item-level `Acceptance Criteria`

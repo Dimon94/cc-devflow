@@ -104,6 +104,7 @@ bash {SCRIPT:calculate_quarter}
   - llm_effort
   - completeness_score (1-10)
   - scope_shape (lake / ocean)
+  - acceptance_criteria (2-3 条, 必须可观察、可验证)
 
 分配 RM-ID: RM-001, RM-002, ...
 
@@ -112,6 +113,7 @@ bash {SCRIPT:calculate_quarter}
   - `ocean` 项必须拆分或显式标红
   - 总 llm_effort vs llm_capacity (警告超容量 30%)
   - 如果某项是 lake 且 completeness_score < 8，继续追问为何保留 shortcut
+  - 如果 acceptance_criteria 仍是“写代码/改一下/支持某功能”这类空话，继续追问直到可验证
 ```
 
 **收集**: `candidates[]`
@@ -165,6 +167,7 @@ bash {SCRIPT:calculate_quarter}
 - 依赖关系
 - 容量评估 (human baseline vs llm-native)
 - Completeness 汇总 (lake 是否完整，ocean 是否已拆分)
+- Acceptance Criteria 汇总 (每个 RM 是否具备 2-3 条可验证完成标准)
 
 用户确认 → Stage 7
 用户修改 → 跳转到对应 Stage
@@ -179,7 +182,7 @@ bash {SCRIPT:calculate_quarter}
 → .roadmap-context.json
 
 # 2. 调用 roadmap-planner Agent
-Prompt: "Generate ROADMAP.md and BACKLOG.md based on context. Use llm_effort as the primary planning unit, keep human_effort as reference, boil lakes instead of recommending shortcuts, and explicitly flag or split oceans."
+Prompt: "Generate ROADMAP.md and BACKLOG.md based on context. Use llm_effort as the primary planning unit, keep human_effort as reference, preserve item-level acceptance criteria for every RM, explain completeness as scope integrity instead of progress, boil lakes instead of recommending shortcuts, and explicitly flag or split oceans."
 → 生成 devflow/ROADMAP.md
 → 生成 devflow/BACKLOG.md
 
@@ -194,8 +197,8 @@ Prompt: "Generate ARCHITECTURE.md with 4 diagrams. Reflect the roadmap decomposi
 
 **展示生成文件**:
 ```
-✅ devflow/ROADMAP.md (路线图项目, 依赖图, 双尺度工时, Completeness 结论)
-✅ devflow/BACKLOG.md (所有候选项目详情, human/llm 工时, lake/ocean 标记)
+✅ devflow/ROADMAP.md (路线图项目, 依赖图, 双尺度工时, Completeness 结论, item-level Acceptance Criteria)
+✅ devflow/BACKLOG.md (所有候选项目详情, human/llm 工时, lake/ocean 标记, item-level Acceptance Criteria)
 ✅ devflow/ARCHITECTURE.md (4个架构图表)
 
 下一步建议:
@@ -211,8 +214,8 @@ Prompt: "Generate ARCHITECTURE.md with 4 diagrams. Reflect the roadmap decomposi
 
 ```
 devflow/
-├── ROADMAP.md           # 路线图 (Milestones, Dependency Graph, Dual-Scale Velocity, Completeness)
-├── BACKLOG.md           # 积压清单 (所有 RM-ID 详情 + lake/ocean 判断)
+├── ROADMAP.md           # 路线图 (Milestones, Dependency Graph, Dual-Scale Velocity, Completeness, Acceptance Criteria)
+├── BACKLOG.md           # 积压清单 (所有 RM-ID 详情 + lake/ocean 判断 + Acceptance Criteria)
 └── ARCHITECTURE.md      # 架构文档 (4个Mermaid图表)
 ```
 
