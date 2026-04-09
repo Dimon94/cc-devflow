@@ -29,6 +29,7 @@
         "harness:init": "node bin/harness.js init",
         "harness:pack": "node bin/harness.js pack",
         "harness:plan": "node bin/harness.js plan",
+        "harness:approve": "node bin/harness.js approve",
         "harness:dispatch": "node bin/harness.js dispatch",
         "harness:autopilot": "node bin/harness.js autopilot",
         "harness:worker": "node bin/harness.js worker",
