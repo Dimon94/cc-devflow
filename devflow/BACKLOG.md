@@ -1,625 +1,265 @@
-# CC-DevFlow v2.x Backlog
+# CC-DevFlow vNext Backlog
 
-**Last Updated:** 2025-12-26 (Google ecosystem: Antigravity IDE only)
-**Total Items:** 14
-**Estimated Effort:** 13.0 weeks
+**Last Updated:** 2026-04-09
+**Status:** Draft
+**Scope:** RM-015 ~ RM-020 reprioritized around `Autopilot Minimal Loop`
+
+## Backlog Principles
+
+- 先打通主闭环，再做配套能力
+- 先解决状态边界，再做更多自动化
+- 先把能力移入 skill/runtime，再考虑扩大 repo 侧资产
+- executable dev task 默认强制 TDD
+- `team` 是 capability，不是 milestone gating item
 
 ## Priority Legend
 
 | Priority | Description | Delivery Target |
 |----------|-------------|-----------------|
-| **P0** | Critical - Core quality shift-left features | Q4-2025 ~ Q1-2026 |
-| **P1** | High - Important enhancements and fixes | Q1-2026 |
-| **P2** | Medium - Multi-platform support | Q1-2026 ~ Q2-2026 |
+| P0 | 必须形成最小可用闭环 | 2026 Q2 |
+| P1 | 为主闭环减负、减侵入 | 2026 Q2-Q3 |
+| P2 | 在主闭环稳定后补强 | 2026 Q3 |
 
----
+## P0: Core Loop
 
-借鉴源码：
-OpenSpec：/Users/dimon/001Area/80-CodeWorld/002-devflow/OpenSpec 和
-Trellis：/Users/dimon/001Area/80-CodeWorld/002-devflow/Trellis
+### RM-020: Autopilot Minimal Loop
 
-## P0: Critical Priority
-
-### RM-001: /flow-clarify 需求澄清命令
-
-**Status:** 🟢 Completed
+**Status:** Draft
+**Priority:** P0
 **Effort:** 2 weeks
-**Quarter:** Q4-2025
-**Milestone:** M1 (MVP)
-**Dependencies:** None
-**Merged:** 2025-12-15 (PR #4)
+**Quarter:** 2026 Q2
+**Dependencies:** Existing `autopilot` skill baseline
+**Reframed From:** Flow Simplification
 
 **Description:**
-实现需求澄清命令，通过 11 维度歧义扫描引擎在 PRD 生成前消除需求模糊性。
+
+把旧的“flow simplification”重新定义为真正的用户闭环：
+
+`discover/converge -> approve -> execute -> checkpoint -> resume -> verify`
+
+这不是再加一个命令，而是把 `autopilot` 从“一个入口”提升为真正的
+产品前门，把其余 `flow-*` 命令降为编排原语。
 
 **Acceptance Criteria:**
-- [x] 实现 11 维度歧义检测算法
-  - 业务目标模糊
-  - 用户角色不明确
-  - 功能边界不清
-  - 非功能需求缺失
-  - 数据定义模糊
-  - 流程步骤不完整
-  - 异常场景未覆盖
-  - 依赖关系不明
-  - 验收标准缺失
-  - 技术约束未知
-  - 优先级冲突
-- [x] 构建交互式澄清对话流程
-- [x] 生成结构化澄清报告（Markdown 格式）
-- [x] 与 `/flow-prd` 命令集成
-- [ ] 支持澄清历史记录查询 (P3, deferred to future release)
+
+- [ ] `/flow:autopilot` 成为模糊目标的默认入口
+- [ ] `plan.md` 未获批准前，不能进入 execute
+- [ ] 批准后可按配置进入 `direct`、`delegate` 或 `team`
+- [ ] 默认执行梯清晰可见：`direct -> delegate -> team`
+- [ ] `team` 默认关闭，只有显式配置才升级
+- [ ] 每次阶段推进都会刷新 `resume-index.md`
+- [ ] 执行失败时可以回到上一个稳定 checkpoint
 
 **Technical Notes:**
-- 基于 LLM 的语义分析
-- 规则引擎 + 机器学习混合模式
-- 输出格式: `docs/clarifications/[timestamp]-[feature].md`
 
-**Related Files:**
-- `core/clarify.js` (new)
-- `prompts/clarify-prompt.md` (new)
-- `templates/clarification-report.md` (new)
+- Reuse existing `autopilot` skill and `devflow/intent/<REQ>/` artifacts
+- Keep harness thin, avoid new orchestrator layer
+- State transitions should be explicit in docs and runtime outputs
+
+**Non-Goals:**
+
+- [ ] 不为 `team` 单独造第二套控制面
+- [ ] 不要求一次性统一所有旧 flow 命令实现
 
 ---
 
-### RM-002: /flow-checklist 需求质量检查命令
+### RM-016: Verification + TDD Gate
 
-**Status:** 🟢 Completed
+**Status:** Draft
+**Priority:** P0
+**Effort:** 1.5 weeks
+**Quarter:** 2026 Q2
+**Dependencies:** RM-020
+**Reframed From:** Quality Gate Enhancement
+
+**Description:**
+
+把 quality gate 从“流程末端检查”升级为 autopilot 的刹车系统。
+verify 的重点不只是 lint/test 是否通过，而是确保自动执行没有滑成
+“先写代码，最后补测试”。
+
+**Acceptance Criteria:**
+
+- [ ] executable dev task 默认强制 TDD
+- [ ] 非 TDD 任务必须显式记录 `non_tdd_reason`
+- [ ] verify pipeline 至少覆盖 lint、typecheck、tests、artifact completeness
+- [ ] 缺失验证证据时不能声明完成
+- [ ] `resume-index` 能指出最近一次失败 gate 和下一步唯一动作
+- [ ] review / challenge / codex review 能作为可选对抗验证接入
+
+**Technical Notes:**
+
+- Integrate with existing quality gates and constitution rules
+- Promote TDD from cultural rule to executable gate
+- Prefer evidence files over plain-text completion markers
+
+**Non-Goals:**
+
+- [ ] 不要求所有任务都写成重型测试矩阵
+- [ ] 不把纯文档/调研任务硬塞进 TDD
+
+---
+
+### RM-018: Global Runtime + Resume Boundary
+
+**Status:** Draft
+**Priority:** P0
 **Effort:** 2 weeks
-**Quarter:** Q1-2026
-**Milestone:** M2 (Quality Gates)
-**Dependencies:** RM-001
-**Merged:** 2025-12-16 (PR #5)
+**Quarter:** 2026 Q2
+**Dependencies:** RM-020
+**Reframed From:** Workspace & Session Persistence
 
 **Description:**
-实现需求单元测试命令，在任务分解前对需求完整性和可测试性进行质量门禁检查。
+
+重写 runtime 与 repo 的职责边界。
+
+- `~/.cc-devflow/` 保存运行态、缓存、学习记录、临时事件流
+- repo 只保留长期真相源：`devflow/intent/`、`ROADMAP`、`BACKLOG`、
+  checkpoints、verification evidence
+
+这一步是“低侵入”承诺的关键，不做清楚，后面所有自动化都会继续污染
+用户仓库和平台目录。
 
 **Acceptance Criteria:**
-- [x] 需求单元测试框架
-  - 6 种 Checklist 类型 (ux, api, security, performance, data, general)
-  - 5 质量维度 (Completeness, Clarity, Consistency, Measurability, Coverage)
-  - Anti-Example 规则防止生成实现测试
-- [x] 质量检查清单引擎
-  - 可配置检查规则（YAML）: `.claude/config/quality-rules.yml`
-  - 权重和评分机制: 80% 门禁阈值
-  - 阻断阈值设置: 支持 `--skip-gate --reason` 跳过
-- [x] 需求覆盖率分析
-  - 完成度计算脚本: `calculate-checklist-completion.sh`
-  - 可视化报告: `--status` 表格输出
-  - JSON 格式输出: `--json` 参数
-- [x] 与 `/flow-epic` 集成 （检查不通过则阻断）
-  - Entry Gate 集成: `checklist-gate.js` Hook
-  - 审计日志: Gate 跳过记录到 EXECUTION_LOG.md
+
+- [ ] `~/.cc-devflow/` 成为 runtime state 默认落点
+- [ ] repo 内只保留用户和 agent 都值得读的工件
+- [ ] 恢复优先级明确：repo artifacts first, runtime support second
+- [ ] 平台目录只保留最薄入口，不新增厚资产
+- [ ] `workspace` 从“真相源”降级为可读辅助记录
+- [ ] 中断恢复路径文档化并可被脚本/skill 复用
 
 **Technical Notes:**
-- 检查规则存储: `.claude/config/quality-rules.yml`
-- Checklist 输出: `devflow/requirements/{REQ}/checklists/*.md`
-- 最低通过分数: 80% (可配置)
 
-**Related Files:**
-- `.claude/commands/flow-checklist.md` (new, 255 lines)
-- `.claude/agents/checklist-agent.md` (new, 175 lines)
-- `.claude/hooks/checklist-gate.js` (new, 397 lines)
-- `.claude/scripts/calculate-checklist-completion.sh` (new, 243 lines)
-- `.claude/config/quality-rules.yml` (new, 161 lines)
-- `.claude/docs/templates/CHECKLIST_TEMPLATE.md` (new, 52 lines)
-- `.claude/commands/flow-epic.md` (modified, Entry Gate)
+- Align with plugin-style packaging seen in gstack/superpowers
+- Avoid repo-local cache growth
+- Keep resume contract simple and auditable
+
+**Non-Goals:**
+
+- [ ] 不把所有历史日志都塞回 repo
+- [ ] 不要求 workspace/journal 继续担当唯一恢复入口
+
+## P1: Thin Surface
+
+### RM-015: Staged Context Injection
+
+**Status:** Draft
+**Priority:** P1
+**Effort:** 1.5 weeks
+**Quarter:** 2026 Q2-Q3
+**Dependencies:** RM-016, RM-018
+
+**Description:**
+
+上下文注入改为阶段化、最小化。不是“把更多东西喂给 agent”，而是让
+每个阶段只拿到它真正需要的 intent、facts、plan、spec index 和少量
+实现参考。
+
+**Acceptance Criteria:**
+
+- [ ] 不同阶段存在明确的 context profile
+- [ ] 自动排除与当前阶段无关的大块上下文
+- [ ] intent artifacts 成为默认注入核心
+- [ ] context files 可以验证有效性与缺失项
+- [ ] 注入策略不依赖 repo 中新增大量平台专属目录
+
+**Technical Notes:**
+
+- Keep JSONL-style context lists if useful, but subordinate to autopilot loop
+- Favor reuse of `devflow/spec/` indexes and intent artifacts
+
+**Non-Goals:**
+
+- [ ] 不为了 context injection 再造新规格系统
+- [ ] 不默认共享整包项目上下文
 
 ---
 
-## P1: High Priority
+### RM-019: Skill-Packaged Specs & Templates
 
-### RM-003: 分支命名优化 (中文转拼音)
-
-**Status:** 🟢 Completed
-**Effort:** 0.5 weeks
-**Quarter:** Q1-2026
-**Milestone:** M3 (v2.0 Release)
-**Dependencies:** None
-**Merged:** 2025-12-16 (PR #6)
-
-**Description:**
-优化 Git 分支命名逻辑，自动将中文特性名转换为拼音，避免 Git 工具兼容性问题。
-
-**Acceptance Criteria:**
-- [x] 集成 pinyin 库（使用 `pypinyin`）
-- [x] 支持多音字智能选择（使用 lazy_pinyin 进行词组识别）
-- [x] 保留英文和数字
-- [x] 转换规则：
-  - 中文 → 拼音小写（通过 pypinyin）
-  - 空格 → 连字符（slugify 函数处理）
-  - 特殊字符 → 移除
-- [x] 示例: "用户登录功能" → "yong-hu-deng-lu-gong-neng"
-- [x] 向后兼容现有分支命名（英文输入行为不变）
-
-**Technical Notes:**
-- Library: `pypinyin` (Python 库，通过 python3 调用)
-- Update: `.claude/scripts/common.sh` (slugify 函数增强)
-- 添加了完整的单元测试套件: `.claude/tests/slugify.bats` (10 个测试用例)
-
-**Related Files:**
-- `.claude/scripts/common.sh` (modified, +71 lines)
-- `.claude/tests/slugify.bats` (new, 82 lines)
-- `README.md` (modified, 添加 pypinyin 可选依赖说明)
-
----
-
-### RM-004: GitHub API 限流处理
-
-**Status:** 🔵 Planned
-**Effort:** 0.5 weeks
-**Quarter:** Q1-2026
-**Milestone:** M3 (v2.0 Release)
-**Dependencies:** None
-
-**Description:**
-实现 GitHub API 限流检测和自动重试机制，提升工具在高频使用场景下的稳定性。
-
-**Acceptance Criteria:**
-- [ ] 检测 GitHub API rate limit headers
-  - X-RateLimit-Limit
-  - X-RateLimit-Remaining
-  - X-RateLimit-Reset
-- [ ] 实现指数退避重试策略
-  - 初始延迟: 1s
-  - 最大重试: 3 次
-  - 退避因子: 2x
-- [ ] 友好的用户提示
-  - 显示剩余配额
-  - 预计恢复时间
-- [ ] 可选的 token 轮换机制（多 token 支持）
-
-**Technical Notes:**
-- Update: `lib/github-api.js`
-- Add retry logic with `axios-retry` or custom implementation
-- Log rate limit events for monitoring
-
-**Related Files:**
-- `lib/github-api.js`
-- `config/github-tokens.yml` (optional, for token rotation)
-
----
-
-### RM-005: Coverage Summary Table 增强
-
-**Status:** 🔵 Planned
+**Status:** Draft
+**Priority:** P1
 **Effort:** 1 week
-**Quarter:** Q1-2026
-**Milestone:** M3 (v2.0 Release)
-**Dependencies:** None
+**Quarter:** 2026 Q2-Q3
+**Dependencies:** RM-018
+**Reframed From:** Spec Guidelines System
 
 **Description:**
-增强测试覆盖率汇总表功能，提供更丰富的可视化和趋势分析能力。
+
+规范目录继续保留，但模板、脚本、自动化提示词尽可能向 skill assets
+与 plugin 侧收束，减少用户仓库内与平台规范无关的文件扩张。
 
 **Acceptance Criteria:**
-- [ ] 增强可视化
-  - ASCII 图表（趋势线）
-  - 颜色编码（红/黄/绿）
-  - 覆盖率热力图
-- [ ] 趋势分析
-  - 历史对比（最近 5 次提交）
-  - 覆盖率变化百分比
-  - 新增/减少代码的覆盖情况
-- [ ] 导出能力
-  - Markdown 格式（默认）
-  - JSON 格式（API 集成）
-  - HTML 格式（可选）
-- [ ] 集成到 `/flow-test` 命令
+
+- [ ] 通用模板优先住在 skill assets，而不是 repo 零散目录
+- [ ] repo 中只保留项目真的需要长期维护的 spec/guideline
+- [ ] skill 可以自带模板与自动化逻辑，不要求用户复制一堆脚本
+- [ ] 平台入口保持最薄，只做路由和必要配置
 
 **Technical Notes:**
-- Use `cli-table3` for enhanced tables
-- Store historical data in `.devflow/coverage-history.json`
-- Generate visualizations with `asciichart`
 
-**Related Files:**
-- `core/test.js`
-- `lib/coverage-reporter.js` (new)
-- `.devflow/coverage-history.json` (data)
+- Borrow packaging philosophy from gstack and superpowers
+- Keep project-specific specs in `devflow/spec/`
+- Move reusable automation content toward skills, not user `.claude` sprawl
 
----
+**Non-Goals:**
 
-### RM-014: Context Contract & Slimming（Context Pack）
+- [ ] 不移除 repo 中真正属于项目的规范文档
+- [ ] 不追求“所有东西都全局化”
 
-**Status:** 🔵 Planned
-**Effort:** 1 week
-**Quarter:** Q1-2026
-**Milestone:** M3 (v2.0 Release)
-**Dependencies:** RM-001, RM-002
+## P2: Change Discipline
 
-**Description:**
-为上下文工程加上“最小契约 + 轻量护栏”，避免上下文膨胀成新规格系统，确保上下文仅记录被消费的信息。
+### RM-017: Delta Specs Engine
 
-**Acceptance Criteria:**
-- [ ] 定义 Context Pack schema（Intent/Constraints/Assumptions/Non-goals/Decision log/Open questions）
-- [ ] 每一项字段必须声明消费点（/flow-clarify, /flow-prd, /flow-dev, /flow-test）
-- [ ] Context Budget：每段限额（条目/字数）+ 超限精简提示
-- [ ] TTL：假设/约束过期提示，要求确认或删除
-- [ ] SSOT：requirements/orchestration_status.json 作为唯一事实源
-- [ ] flow-audit：schema 校验 + 对齐审计（requirements vs ROADMAP/BACKLOG 差异报告）
-- [ ] flow-generate：从 SSOT 生成 ROADMAP/BACKLOG（禁止手改）
-- [ ] PR gate：触达 requirements 或 ROADMAP/BACKLOG 时强制 strict audit
-- [ ] 规范化状态字段：补齐 roadmap_item/milestone/quarter；completedSteps 词汇统一
-- [ ] 增量迁移：仅对变更触达的 REQ 严格校验，legacy 仅告警
-- [ ] CONTEXT.md + DECISIONS.md 模板并挂载到 PRD 输出
-- [ ] `context-refresh` 触发：需求变更时更新上下文并记录原因
-
-**Technical Notes:**
-- Config: `.claude/config/context-contract.yml`, `config/orchestration-schema.yml`
-- Validator: `lib/context/validator.js`
-- Templates: `.claude/docs/templates/CONTEXT.md`, `.claude/docs/templates/DECISIONS.md`
-- Hook: `.claude/hooks/context-budget-gate.js`, `.claude/hooks/flow-audit-gate.js`
-- Audit: `bin/flow-audit.js`
-- Generate: `bin/flow-generate.js`
-- Report: `devflow/.generated/audit-report.json`
-
-**Related Files:**
-- `.claude/commands/flow-prd.md` (modified)
-- `.claude/commands/flow-dev.md` (modified)
-- `lib/context/validator.js` (new)
-- `.claude/config/context-contract.yml` (new)
-- `.claude/docs/templates/CONTEXT.md` (new)
-- `.claude/docs/templates/DECISIONS.md` (new)
-- `bin/flow-audit.js` (new)
-- `bin/flow-generate.js` (new)
-- `config/orchestration-schema.yml` (new)
-- `.claude/hooks/flow-audit-gate.js` (new)
-
----
-
-## P2: Medium Priority
-
-### RM-006: Agent 适配层架构
-
-**Status:** 🟢 Completed
+**Status:** Draft
+**Priority:** P2
 **Effort:** 2 weeks
-**Quarter:** Q1-2026
-**Milestone:** M3 (v2.0 Release)
-**Dependencies:** None
-**Merged:** 2025-12-17 (PR #7)
+**Quarter:** 2026 Q3
+**Dependencies:** RM-015, RM-019
 
 **Description:**
-设计并实现多平台 Agent 适配层架构，为后续支持 Codex CLI、Antigravity、Cursor、Qwen Code 等平台奠定基础。
+
+为稳定后的模块提供增量规格跟踪。它很有价值，但不是短期闭环的第一推动器。
+如果现在就把它拉到 P0，很容易重新走回“规格系统先膨胀，执行闭环后补”。
 
 **Acceptance Criteria:**
-- [x] 定义 Adapter 接口规范
-  ```typescript
-  interface AgentAdapter {
-    name: string;
-    version: string;
-    detect(): boolean;
-    executeCommand(cmd: string, args: object): Promise<Result>;
-    getContext(): Promise<Context>;
-    setContext(ctx: Context): Promise<void>;
-  }
-  ```
-- [x] 设计插件系统
-  - 动态加载机制
-  - 配置文件格式
-  - 生命周期钩子
-- [x] 创建 Adapter Registry
-  - 平台自动检测
-  - 优先级排序
-  - Fallback 机制
-- [x] 实现默认 Adapter（Claude Code CLI）
-- [x] 编写 Adapter 开发指南
+
+- [ ] 支持 ADDED / MODIFIED / REMOVED 形式记录增量规格
+- [ ] 可以从 delta 同步到 SSOT spec
+- [ ] 归档和 diff 行为可审计
+- [ ] 不阻塞主环路最小可用版本
 
 **Technical Notes:**
-- Architecture: Strategy Pattern
-- Config: `config/adapters.yml`
-- Documentation: `docs/ADAPTER_GUIDE.md`
 
-**Related Files:**
-- `lib/adapters/adapter-interface.js` (new)
-- `lib/adapters/registry.js` (new)
-- `lib/adapters/claude-adapter.js` (new, default)
-- `docs/ADAPTER_GUIDE.md` (new)
+- Reuse OpenSpec-style delta format where helpful
+- Defer wide rollout until main loop is stable
 
----
+**Non-Goals:**
 
-### RM-007: 命令转译器（Command Emitter）
+- [ ] 不在第一波交付里覆盖所有模块
+- [ ] 不把 delta specs 当作 execute/resume 的前置条件
 
-**Status:** 🟢 Completed
-**Effort:** 1 week
-**Quarter:** Q2-2026
-**Milestone:** M4 (Multi-Platform)
-**Dependencies:** RM-006
+## Cross-Cutting Decisions Locked By Office-Hours
 
-**Description:**
-实现命令转译/发射器：以 `.claude/commands/*.md` 为单一事实源（SSOT），生成各平台可消费的命令/工作流文件，并对 `{SCRIPT:*}` / `{AGENT_SCRIPT}` / `$ARGUMENTS` 等占位符做确定性展开。
+- [x] `team` 不是必选项，由配置决定是否启用
+- [x] executable dev task 默认强制 TDD
+- [x] 非 TDD 任务必须显式记录 `non_tdd_reason`
+- [x] runtime 和缓存放 `~/.cc-devflow/`
+- [x] repo 内只保留有长期价值的 Markdown 工件
+- [x] 自动化能力优先进入 skill/plugin，而不是继续扩张用户平台目录
 
-**Acceptance Criteria:**
-- [x] 以 `.claude/commands/*.md` 为输入生成平台命令/工作流
-  - Codex: `.codex/prompts/{core-*,flow-*}.md`
-  - Cursor: `.cursor/commands/{core-*,flow-*}.md`
-  - Qwen: `.qwen/commands/{core-*,flow-*}.toml`
-  - Antigravity: `.agent/workflows/{core-*,flow-*}.md`
-- [x] 统一 args 占位符策略
-  - Markdown targets: `$ARGUMENTS`
-  - TOML targets: `{{args}}`
-- [x] 展开 cc-devflow 占位符（frontmatter 驱动）
-  - `{SCRIPT:<alias>}` → `scripts.<alias>`
-  - `{AGENT_SCRIPT}` → `agent_scripts`（并替换 `__AGENT__`）
-  - 兼容过渡：`{SCRIPT:<path-with-slash>}` 视为脚本路径直跑（并在输出中提示迁移为 alias）
-- [x] 生成命令清单与来源映射（manifest）
-  - 记录：source path、target path、hash、生成时间
-- [x] 文件名保持原名
-  - 不强制增加 `devflow.*` 前缀（cc-devflow 已通过 `core-*` / `flow-*` 自带命名空间）
+## Draft Rollout Order
 
-**Technical Notes:**
-- Prefer deterministic transforms over complex templating
-- Optional: Handlebars helpers only if needed for placeholders
+1. RM-020
+2. RM-016
+3. RM-018
+4. RM-015
+5. RM-019
+6. RM-017
 
-**Related Files:**
-- `lib/compiler/command-emitter.js` (new)
-- `lib/compiler/platform-spec.js` (new)
-- `devflow/.generated/manifest.json` (new)
+## Open Questions
 
----
-
-### RM-008: Adapter Compiler（Dynamic Context Compiler）
-
-**Status:** 🟢 Completed
-**Effort:** 1 week
-**Quarter:** Q2-2026
-**Milestone:** M4 (Multi-Platform)
-**Dependencies:** RM-006, RM-007
-**Merged:** 2025-12-19 (PR #10)
-
-**Description:**
-实现编译式多平台适配入口：扫描 `.claude/`（commands/agents/hooks/scripts/skills/rules/constitution/guides），生成目标平台目录产物（`.codex/.cursor/.qwen/.agent` 等），并以 Skills Registry + Loader 实现渐进加载。
-
-**Acceptance Criteria:**
-- [x] CLI 入口
-  - `npm run adapt -- --platform <name>` / `--all` / `--check`
-- [x] 生成平台规则入口文件（Context/Roles）
-  - Cursor: `.cursorrules`
-  - Codex: `.codex/prompts/devflow.context.md`
-  - Antigravity: `.agent/rules/rules.md`
-  - Qwen: 平台约定入口文件（TBD）
-- [x] Skills 渐进加载
-  - 生成 `Skill Registry`（name/description/triggers/path）并注入到入口文件
-  - 提供 `load_skill <name>` 脚本工具（按需输出对应 `SKILL.md`）
-- [x] Cursor 脚本入口
-  - 生成 `.vscode/tasks.json`，将关键 `/flow-*` 与校验脚本暴露为 tasks
-- [x] 增量更新
-  - 基于 manifest hash，避免无意义重写
-- [x] Antigravity 文件限制处理
-  - Rules/Workflows 单文件 ≤ 12,000 chars（超过则拆分并用 `@` 引用）
-  - Rules 支持 trigger（Manual / Always On / Model Decision / Glob）
-  - Rules 支持 `@filename` 引用（相对路径按 rules 文件位置解析）
-- [x] 通过一种方式打包，让用户快捷使用，并且后续的版本的更新，也可以提示用户更新，与快速使用并且在 README 和 READM.zh-CN 里更新快捷使用的操作指引
-
-**Technical Notes:**
-- Script: `scripts/adapt.js` (or `scripts/update-agent-context.js` as entrypoint)
-- Generated outputs treated as build artifacts (rebuildable)
-
-**Implementation Notes:**
-- Runtime entry currently lives in `.claude/scripts/update-agent-context.sh`; it can be invoked with an optional agent argument and no longer relies on `.specify` or spec-kit helpers.
-- Plan metadata is best-effort: supply `DEVFLOW_CONTEXT_SOURCE` or `DEVFLOW_PLAN_PATH` to point to a plan, otherwise the script falls back to `devflow/ROADMAP.md`. Missing plan data only logs warnings, never aborts.
-- Branch detection honors `DEVFLOW_BRANCH` or live Git state, so feature context still surfaces even outside spec-kit workflows.
-- Use `DEVFLOW_AGENT_CONTEXT_TEMPLATE` to override the embedded placeholder template; otherwise the script writes a built-in context outline that matches the placeholder replacements used elsewhere.
-
-**Related Files:**
-- `scripts/adapt.js` (new)
-- `lib/compiler/index.js` (new)
-- `lib/compiler/skill-registry.js` (new)
-- `.claude/scripts/update-agent-context.sh` (existing)
-
----
-
-### RM-009: Codex CLI 适配
-
-**Status:** 🔵 Planned
-**Effort:** 0.5 weeks
-**Quarter:** Q2-2026
-**Milestone:** M4 (Multi-Platform)
-**Dependencies:** RM-006, RM-008
-**Platform Priority:** #1
-
-**Description:**
-实现 Codex CLI 平台适配器，作为多平台支持的首个外部平台。
-
-**Acceptance Criteria:**
-- [ ] Codex 平台产物生成
-  - `.codex/prompts/devflow.context.md` + `.codex/prompts/{core-*,flow-*}.md`
-- [ ] 核心工作流验证
-  - `/flow-prd`
-  - `/flow-epic`
-  - `/flow-dev`
-  - `/flow-pr`
-- [ ] Codex 特性适配
-  - 工具调用格式
-  - 上下文管理
-  - 错误处理
-- [ ] 集成测试套件
-
-**Technical Notes:**
-- Target folder aligns with spec-kit: `.codex/prompts/`
-
-**Related Files:**
-- `lib/adapters/codex-adapter.js` (new)
-- `templates/adapters/codex/` (new)
-- `tests/adapters/codex.test.js` (new)
-
----
-
-### RM-010: Antigravity IDE 适配
-
-**Status:** 🔵 Planned
-**Effort:** 1 week
-**Quarter:** Q2-2026
-**Milestone:** M4 (Multi-Platform)
-**Dependencies:** RM-006, RM-008
-**Platform Priority:** #2
-
-**Description:**
-实现 Antigravity IDE 平台适配：生成 `.agent/rules/rules.md` 与 `.agent/workflows/*.md`，让非 Claude 平台也能消费 cc-devflow 的 workflow/skills/hooks。
-
-**Acceptance Criteria:**
-- [ ] 生成 Antigravity 目录结构
-  - `.agent/rules/rules.md`
-  - `.agent/workflows/{core-*,flow-*}.md`
-- [ ] Skills Registry + load_skill 用法注入到 `.agent/rules/rules.md`
-- [ ] 核心工作流验证（同 RM-009）
-
-**Technical Notes:**
-- Antigravity 与 Gemini CLI 分离；谷歌体系只适配 Antigravity IDE
-
-**Related Files:**
-- `lib/adapters/antigravity-adapter.js` (new)
-- `templates/adapters/antigravity/` (new)
-- `tests/adapters/antigravity.test.js` (new)
-
----
-
-### RM-011: Cursor 适配
-
-**Status:** 🔵 Planned
-**Effort:** 0.5 weeks
-**Quarter:** Q2-2026
-**Milestone:** M4 (Multi-Platform)
-**Dependencies:** RM-006, RM-008
-**Platform Priority:** #3
-
-**Description:**
-实现 Cursor IDE 平台适配器，支持在 IDE 环境中使用 CC-DevFlow 工作流。
-
-**Acceptance Criteria:**
-- [ ] 生成 `.cursorrules`（硬规则 + Skills Registry + Loader 用法）
-- [ ] 生成 `.vscode/tasks.json`（暴露关键脚本/flow 入口）
-- [ ] 可选生成 `.cursor/commands/{core-*,flow-*}.md`
-- [ ] 核心工作流验证（同 RM-009）
-
-**Technical Notes:**
-- Cursor API: Extension API
-- Context file: `.cursor/commands.json`
-- IDE considerations: File watchers, workspace state
-
-**Related Files:**
-- `lib/adapters/cursor-adapter.js` (new)
-- `templates/adapters/cursor/` (new)
-- `tests/adapters/cursor.test.js` (new)
-
----
-
-### RM-012: Qwen Code 适配
-
-**Status:** 🔵 Planned
-**Effort:** 0.5 weeks
-**Quarter:** Q2-2026
-**Milestone:** M4 (Multi-Platform)
-**Dependencies:** RM-006, RM-008
-**Platform Priority:** #4
-
-**Description:**
-实现通义千问 Qwen Code 平台适配器，优化对中文开发场景的支持。
-
-**Acceptance Criteria:**
-- [ ] 生成 `.qwen/commands/{core-*,flow-*}.toml`
-- [ ] 生成 Qwen 入口规则文件（以 Qwen CLI 实际约定为准）
-- [ ] 核心工作流验证（同 RM-009）
-- [ ] 中文提示词优化（可选）
-
-**Technical Notes:**
-- Qwen API: [link TBD]
-- Context file: `.qwen/config.toml`
-- Chinese language optimizations in prompts
-
-**Related Files:**
-- `lib/adapters/qwen-adapter.js` (new)
-- `templates/adapters/qwen/` (new)
-- `tests/adapters/qwen.test.js` (new)
-
----
-
-### RM-013: Skills Bridge（Registry + Loader + MCP 可选）
-
-**Status:** 🔵 Planned
-**Effort:** 0.5 weeks
-**Quarter:** Q2-2026
-**Milestone:** M4 (Multi-Platform)
-**Dependencies:** RM-008
-
-**Description:**
-让 `.claude/skills` 在非 Claude 平台可用：通过 Skills Registry（摘要）+ Loader（按需加载）实现渐进披露；对支持 MCP 的平台可选提供本地 Skills MCP Server。
-
-**Acceptance Criteria:**
-- [ ] `list_skills` 输出：name + description + triggers
-- [ ] `load_skill <name>` 输出：对应 `SKILL.md` 原文
-- [ ] 编译器能把 Registry 注入到各平台规则入口文件
-- [ ] （可选）MCP server：提供 `list_skills/get_skill` 两个 tools
-
-**Technical Notes:**
-- Default path: `.claude/skills/*/SKILL.md`
-- Local-only server, no network exposure by default
-
-**Related Files:**
-- `scripts/load-skill.sh` or `bin/load-skill.js` (new)
-- `lib/mcp/skills-server.js` (new)
-
----
-
-## Progress Tracking
-
-### Overall Progress
-
-| Priority | Completed | In Progress | Planned | Total | Completion % |
-|----------|-----------|-------------|---------|-------|--------------|
-| P0       | 2         | 0           | 0       | 2     | 100%         |
-| P1       | 1         | 0           | 3       | 4     | 25.0%        |
-| P2       | 2         | 0           | 6       | 8     | 25.0%        |
-| **Total**| **5**     | **0**       | **9**   | **14**| **35.7%**    |
-
-### Milestone Progress
-
-| Milestone | Target       | Items | Completed | Status |
-|-----------|--------------|-------|-----------|--------|
-| M1        | Q4-2025 End  | 1     | 1/1       | 🟢 Completed |
-| M2        | Q1-2026 Mid  | 1     | 1/1       | 🟢 Completed |
-| M3        | Q1-2026 End  | 5     | 2/5       | 🟡 In Progress |
-| M4        | Q2-2026 End  | 7     | 2/7       | � In Progress |
-
-### Effort Distribution
-
-| Quarter   | Planned Effort | Items | Focus Area              |
-|-----------|----------------|-------|-------------------------|
-| Q4-2025   | 2.0 weeks      | 1     | /flow-clarify           |
-| Q1-2026   | 7.0 weeks      | 6     | Quality + P1 + Arch     |
-| Q2-2026   | 4.0 weeks      | 7     | Multi-platform adapters |
-| **Total** | **13.0 weeks** | **14**|                         |
-
-### Dependency Status
-
-| Item    | Depends On | Blocker Status | Ready to Start |
-|---------|------------|----------------|----------------|
-| RM-001  | -          | N/A            | ✅ Yes (🟢 Completed) |
-| RM-002  | RM-001     | 🟢 Completed   | ✅ Yes         |
-| RM-003  | -          | N/A            | ✅ Yes         |
-| RM-004  | -          | N/A            | ✅ Yes         |
-| RM-005  | -          | N/A            | ✅ Yes         |
-| RM-014  | RM-001, RM-002 | 🟢 Completed | ✅ Yes         |
-| RM-006  | -          | N/A            | ✅ Yes (🟢 Completed) |
-| RM-007  | RM-006     | 🟢 Completed   | ✅ Yes (🟢 Completed) |
-| RM-008  | RM-006, RM-007 | � Completed | ✅ Yes (🟢 Completed) |
-| RM-009  | RM-006, RM-008 | � Completed | ✅ Yes         |
-| RM-010  | RM-006, RM-008 | � Completed | ✅ Yes         |
-| RM-011  | RM-006, RM-008 | � Completed | ✅ Yes         |
-| RM-012  | RM-006, RM-008 | � Completed | ✅ Yes         |
-| RM-013  | RM-008     | � Completed   | ✅ Yes         |
-
----
-
-## Status Legend
-
-- 🔵 **Planned** - Defined, not yet started
-- 🟡 **In Progress** - Actively being worked on
-- 🟢 **Completed** - Done and verified
-- 🔴 **Blocked** - Waiting on dependencies or decisions
-- ⚪ **On Hold** - Deprioritized temporarily
-
----
-
-**Document Status:** Living Document
-**Owner:** CC-DevFlow Team
-**Next Review:** Weekly during active development
-
+- `~/.cc-devflow/` 的 runtime schema 需要做到多轻，才能既可恢复又不变厚平台？
+- `non_tdd_reason` 应该挂在 plan task、manifest task 还是 verify evidence 里，还是三者镜像？
+- `team` 的配置入口应该出现在 autopilot plan、repo config，还是全局 runtime config？
