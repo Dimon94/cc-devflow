@@ -1,5 +1,12 @@
 # Core-Roadmap Dialogue Template
 
+<!--
+[INPUT]: 依赖 /core:roadmap 命令头文件中的脚本定义与 roadmap 上下文约束。
+[OUTPUT]: 对外提供路线图对话的阶段脚本、LLM-native 估算字段与生成提示。
+[POS]: .claude/docs/templates 的路线图对话真相源，被 /core:roadmap 在 Stage 0-8 直接引用。
+[PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+-->
+
 > 6-stage interactive dialogue script for `/core:roadmap`
 
 <!-- ============================================================
@@ -34,13 +41,20 @@ scripts:
 bash {SCRIPT:calculate_quarter}
 → 获取: current_quarter, current_year, next_quarters[]
 
-# 3. 扫描 requirements/ 计算 Velocity
-→ 完成需求数、平均天数、季度容量
+# 3. 扫描 requirements/ 计算基线 Velocity
+→ 完成需求数、平均天数、季度容量 (human baseline)
+→ 基于压缩倍率推导 llm_capacity
+→ 标记 risk_notes，说明哪些历史数据不能直接外推
 
 # 4. 初始化 context 对象
 {
   "mode": "create",
-  "velocity": {...},
+  "planning_mode": "llm-native",
+  "velocity": {
+    "human_baseline": {...},
+    "llm_capacity": {...},
+    "risk_notes": [...]
+  },
   "quarter_info": {...}
 }
 ```
@@ -86,13 +100,18 @@ bash {SCRIPT:calculate_quarter}
   - 来源 (从哪个需求延伸)
   - 描述
   - 优先级 (P1/P2/P3)
-  - 预估工作量 (周数)
+  - human_effort
+  - llm_effort
+  - completeness_score (1-10)
+  - scope_shape (lake / ocean)
 
 分配 RM-ID: RM-001, RM-002, ...
 
 验证:
   - 至少 1 个 P1 项目
-  - 总工作量 vs 容量 (警告超容量 30%)
+  - `ocean` 项必须拆分或显式标红
+  - 总 llm_effort vs llm_capacity (警告超容量 30%)
+  - 如果某项是 lake 且 completeness_score < 8，继续追问为何保留 shortcut
 ```
 
 **收集**: `candidates[]`
@@ -124,9 +143,12 @@ bash {SCRIPT:calculate_quarter}
 
 验证:
   - 依赖约束 (被依赖项在同季度或更早)
-  - 容量约束 (每季度 ≤ 150% 容量)
+  - 容量约束 (每季度 ≤ 150% llm_capacity)
+  - `lake` 默认单季度完整交付
+  - `ocean` 必须拆成多个 lake，不能直接进季度
 
 生成时间线预览
+→ 同时展示 human vs llm 双尺度容量占用
 ```
 
 **收集**: `timeline{}`
@@ -141,7 +163,8 @@ bash {SCRIPT:calculate_quarter}
 - 项目总览 (按优先级)
 - 季度分布
 - 依赖关系
-- 容量评估
+- 容量评估 (human baseline vs llm-native)
+- Completeness 汇总 (lake 是否完整，ocean 是否已拆分)
 
 用户确认 → Stage 7
 用户修改 → 跳转到对应 Stage
@@ -156,12 +179,12 @@ bash {SCRIPT:calculate_quarter}
 → .roadmap-context.json
 
 # 2. 调用 roadmap-planner Agent
-Prompt: "Generate ROADMAP.md and BACKLOG.md based on context..."
+Prompt: "Generate ROADMAP.md and BACKLOG.md based on context. Use llm_effort as the primary planning unit, keep human_effort as reference, boil lakes instead of recommending shortcuts, and explicitly flag or split oceans."
 → 生成 devflow/ROADMAP.md
 → 生成 devflow/BACKLOG.md
 
 # 3. 调用 architecture-designer Agent
-Prompt: "Generate ARCHITECTURE.md with 4 diagrams..."
+Prompt: "Generate ARCHITECTURE.md with 4 diagrams. Reflect the roadmap decomposition that turns oceans into executable lakes."
 → 生成 devflow/ARCHITECTURE.md (4个Mermaid图表)
 ```
 
@@ -171,8 +194,8 @@ Prompt: "Generate ARCHITECTURE.md with 4 diagrams..."
 
 **展示生成文件**:
 ```
-✅ devflow/ROADMAP.md (路线图项目, 依赖图, 速度指标)
-✅ devflow/BACKLOG.md (所有候选项目详情)
+✅ devflow/ROADMAP.md (路线图项目, 依赖图, 双尺度工时, Completeness 结论)
+✅ devflow/BACKLOG.md (所有候选项目详情, human/llm 工时, lake/ocean 标记)
 ✅ devflow/ARCHITECTURE.md (4个架构图表)
 
 下一步建议:
@@ -188,11 +211,11 @@ Prompt: "Generate ARCHITECTURE.md with 4 diagrams..."
 
 ```
 devflow/
-├── ROADMAP.md           # 路线图 (Milestones, Dependency Graph, Velocity)
-├── BACKLOG.md           # 积压清单 (所有 RM-ID 详情)
+├── ROADMAP.md           # 路线图 (Milestones, Dependency Graph, Dual-Scale Velocity, Completeness)
+├── BACKLOG.md           # 积压清单 (所有 RM-ID 详情 + lake/ocean 判断)
 └── ARCHITECTURE.md      # 架构文档 (4个Mermaid图表)
 ```
 
 ---
 
-**Last Updated**: 2025-12-19
+**Last Updated**: 2026-04-09

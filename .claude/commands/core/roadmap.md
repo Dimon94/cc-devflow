@@ -12,6 +12,13 @@ guides:
   troubleshoot: .claude/docs/guides/ROADMAP_TROUBLESHOOTING.md
 ---
 
+<!--
+[INPUT]: 依赖 roadmap 对话模板、路线图/积压模板、季度脚本与进度同步脚本提供上下文骨架。
+[OUTPUT]: 对外提供 /core:roadmap 的阶段约束、LLM-native 估算规则、文档生成要求。
+[POS]: .claude/commands/core 的项目级规划入口，连接用户对话、roadmap-planner 与 architecture-designer。
+[PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+-->
+
 <!-- ============================================================
      头文件引用语法规范 (Header File Reference Syntax)
      ============================================================
@@ -82,6 +89,42 @@ guides:
 
 ---
 
+## LLM Native Planning Override
+
+`/core:roadmap` 必须使用 LLM 时代的规划口径，禁止把历史人类开发速度直接当作未来排期。
+
+### 双尺度工时模型
+
+在讨论工作量、容量、风险、优先级时，始终同时展示两套数据：
+
+| 任务类型 | Human Team | LLM-Native | Compression |
+|----------|------------|------------|-------------|
+| Boilerplate / Scaffolding | 2 days | 15 min | ~100x |
+| Test Writing | 1 day | 15 min | ~50x |
+| Feature Implementation | 1 week | 30 min | ~30x |
+| Bug Fix + Regression Test | 4 hours | 15 min | ~20x |
+| Architecture / Design | 2 days | 4 hours | ~5x |
+| Research / Exploration | 1 day | 3 hours | ~3x |
+
+### Completeness Principle
+
+- 默认推荐完整实现，不推荐为了“省一点点时间”而拆出廉价 shortcut。
+- 如果一件事在 LLM-Native 口径下是一个可在单季度内完成、边界清晰、无需平台级迁移的 `lake`，就优先煮沸整个湖泊。
+- 如果一件事需要跨季度重写、系统迁移、基础设施翻修或组织级协同，它是 `ocean`，必须显式标记并拆成多个 `lake`，不能伪装成单个 roadmap item。
+- 每个候选项目都必须给出:
+  - `human_effort`
+  - `llm_effort`
+  - `completeness_score` (1-10)
+  - `scope_shape` (`lake` | `ocean`)
+
+### 模板兼容层
+
+- 下游模板若出现 `effort_weeks`、`周数`、`季度容量=90天/平均天数` 等旧口径，统一解释为 `human baseline`，不得作为最终排期真相源。
+- 最终 roadmap/backlog 必须以 `llm_effort` 作为主排期单位，以 `human_effort` 作为风险解释与对外沟通参考。
+- 若历史 Velocity 与 LLM-native 估算冲突，以 LLM-native 为默认排期，历史数据仅用于识别异常项与校准风险。
+
+---
+
 ## 核心原则
 
 **架构模式**:
@@ -145,10 +188,14 @@ guides:
 2. Run: {SCRIPT:calculate_quarter}
    → 获取当前季度信息
 
-3. 扫描 requirements/ 计算 Velocity
-   → 完成需求数、平均天数、季度容量
+3. 扫描 requirements/ 计算基线 Velocity
+   → 完成需求数、平均天数、季度容量 (human baseline)
+   → 基于任务类型压缩倍率推导 llm_capacity
+   → 明确: 历史数据只做校准, 不直接主导未来排期
 
 4. 初始化 context 对象
+   → 包含 planning_mode="llm-native"
+   → 包含 velocity.human_baseline / velocity.llm_capacity / velocity.risk_notes
 
 → 详见 {TEMPLATE:dialogue} Stage 0
 ```
@@ -197,13 +244,17 @@ guides:
     - 来源 (从哪个需求延伸)
     - 描述
     - 优先级 (P1/P2/P3)
-    - 预估工作量 (周数)
+    - 预估工作量 (human_effort + llm_effort)
+    - 完整度分数 (completeness_score)
+    - 范围形态 (lake / ocean)
 
   分配 RM-ID: RM-001, RM-002, ...
 
   验证:
     - 至少 1 个 P1 项目
-    - 总工作量 vs 容量 (警告超容量 30%)
+    - `ocean` 项必须拆分或显式标红
+    - 总 llm_effort vs llm_capacity (警告超容量 30%)
+    - 如果某项是 lake 且 completeness_score < 8, 追问为何仍保留 shortcut
 
 收集: candidates[]
 
@@ -239,9 +290,12 @@ guides:
 
   验证:
     - 依赖约束 (被依赖项在同季度或更早)
-    - 容量约束 (每季度 ≤ 150% 容量)
+    - 容量约束 (每季度 ≤ 150% llm_capacity)
+    - `lake` 默认在单季度内完整交付, 不能被随意拆成低完整度碎片
+    - `ocean` 不得直接塞进单季度, 必须拆成多个可执行 lake
 
   生成时间线预览
+  → 预览必须同时展示 human vs llm 双尺度工时与容量占用
 
 收集: timeline{}
 
@@ -258,7 +312,8 @@ guides:
   - 项目总览 (按优先级)
   - 季度分布
   - 依赖关系
-  - 容量评估
+  - 容量评估 (human baseline vs llm-native)
+  - Completeness 汇总 (哪些 lake 被完整煮沸, 哪些 ocean 被拆解)
 
 用户确认 → Stage 7
 用户修改 → 跳转到对应 Stage
@@ -274,12 +329,12 @@ guides:
 1. 保存上下文到 .roadmap-context.json
 
 2. 调用 roadmap-planner Agent
-   Prompt: "Generate ROADMAP.md and BACKLOG.md based on context..."
+   Prompt: "Generate ROADMAP.md and BACKLOG.md based on context. Use llm_effort as the primary planning unit, keep human_effort as reference, boil lakes instead of recommending shortcuts, and explicitly flag or split oceans."
    → 生成 devflow/ROADMAP.md
    → 生成 devflow/BACKLOG.md
 
 3. 调用 architecture-designer Agent
-   Prompt: "Generate ARCHITECTURE.md with 4 diagrams..."
+   Prompt: "Generate ARCHITECTURE.md with 4 diagrams. Reflect the roadmap decomposition that turns oceans into executable lakes."
    → 生成 devflow/ARCHITECTURE.md (4个Mermaid图表)
 
 → 详见 {TEMPLATE:dialogue} Stage 7
@@ -291,8 +346,8 @@ guides:
 
 ```
 展示生成文件:
-  ✅ devflow/ROADMAP.md (路线图项目, 依赖图, 速度指标)
-  ✅ devflow/BACKLOG.md (所有候选项目详情)
+  ✅ devflow/ROADMAP.md (路线图项目, 依赖图, 双尺度工时, Completeness 结论)
+  ✅ devflow/BACKLOG.md (所有候选项目详情, human/llm 工时, lake/ocean 标记)
   ✅ devflow/ARCHITECTURE.md (4个架构图表)
 
 下一步建议:
@@ -315,11 +370,12 @@ devflow/
 │   ├── Milestone Overview
 │   ├── Q{n} {YYYY} Milestones (详细)
 │   ├── Dependency Graph (Mermaid)
-│   ├── Velocity Tracking
+│   ├── Velocity Tracking (human baseline + llm-native)
+│   ├── Completeness / Lake-Ocean Review
 │   └── Implementation Tracking
 │
 ├── BACKLOG.md           # 产品积压清单
-│   └── 所有 RM-ID 详情 (优先级, 工作量, 状态)
+│   └── 所有 RM-ID 详情 (优先级, human/llm 工作量, completeness, 状态)
 │
 └── ARCHITECTURE.md      # 架构文档
     ├── Feature Architecture Diagram
@@ -342,7 +398,7 @@ devflow/
 执行:
 1. 读取现有 ROADMAP.md
 2. Run: {SCRIPT:sync_progress}
-3. 更新 Velocity 指标
+3. 更新 human baseline 与 llm-native 双尺度指标
 4. 重新生成文档 (保持原有结构)
 ```
 
@@ -389,6 +445,8 @@ devflow/
 7. Agent invocation failed → 检查 context 文件, 重新生成
 8. Mermaid syntax error → 修复 Node ID 格式
 9. Architecture generation failed → 跳过或手动创建
+10. Human 与 LLM 估算冲突 → 以 llm-native 排期, human 口径仅记录风险说明
+11. Ocean item 卡住季度规划 → 立即拆分为多个 lake, 不允许直接硬排
 
 **恢复步骤**:
 → 详见 `{GUIDE:troubleshoot}` Recovery Procedures
@@ -403,20 +461,23 @@ devflow/
 - [ ] 准备愿景声明草稿
 - [ ] 列出候选项目清单
 - [ ] 识别项目间依赖关系
-- [ ] 预估工作量
+- [ ] 预估双尺度工作量 (human + llm)
+- [ ] 判断哪些是 lake, 哪些是 ocean
 
 ### 执行中注意
 
 - [ ] 耐心回答每个阶段的问题
 - [ ] 使用 'modify' 命令修正错误输入
 - [ ] 关注容量警告，及时调整
+- [ ] 优先煮沸 lake，不要为了省几分钟制造 shortcut backlog
 - [ ] 依赖分析时绘制简单图表辅助
 
 ### 执行后审查
 
 - [ ] 审查生成的 ROADMAP.md
 - [ ] 检查 Dependency Graph 是否正确
-- [ ] 验证 Velocity 指标合理性
+- [ ] 验证双尺度工时与容量结论是否合理
+- [ ] 检查是否仍有伪装成单项的 ocean
 - [ ] 分享给团队审查
 
 ---

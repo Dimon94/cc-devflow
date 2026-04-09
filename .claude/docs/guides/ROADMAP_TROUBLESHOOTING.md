@@ -1,5 +1,12 @@
 # Core-Roadmap Troubleshooting Guide
 
+<!--
+[INPUT]: 依赖 /core:roadmap 的阶段定义、双尺度工时模型与恢复工件。
+[OUTPUT]: 对外提供 roadmap 对话与文档生成时的错误诊断、恢复路径与容量校准说明。
+[POS]: .claude/docs/guides 的路线图排障入口，帮助 /core:roadmap 在失败时恢复一致状态。
+[PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+-->
+
 > Quick reference for `/core:roadmap` dialogue errors and recovery
 
 ---
@@ -25,11 +32,13 @@
 
 ### E3: Over-Capacity Warning
 ```bash
-⚠️ WARNING: 总工作量 150% (计划 18 项 vs 容量 12 项)
+⚠️ WARNING: LLM 工作量 45h / 容量 30h (150%)
+参考: Human baseline 约 10 items / quarter
 ```
 **Fix**:
 - 降低优先级: 将部分 P2 改为 P3
-- 缩减工作量: 重新评估项目估算
+- 优先拆解 ocean: 把跨季度大项拆成多个 lake
+- 提升完整度判断: 如果 lake 被切成 shortcut，合并回完整项后再排期
 - 延长规划周期: 从 3 个月延长到 6 个月
 
 ---
@@ -108,14 +117,14 @@ cp devflow/ROADMAP.md devflow/ROADMAP.md.bak
 diff devflow/ROADMAP.md.bak devflow/ROADMAP.md
 ```
 
-### Velocity 数据错误
+### Capacity Calibration 数据错误
 ```bash
 # 验证完成需求数量
 ls devflow/requirements/REQ-*/harness-state.json | \
   xargs -I {} jq -r 'select(.status=="released") | .changeId' {} | \
   wc -l
 
-# 在对话中手动修正容量估算
+# 在对话中手动修正 human baseline 与 llm_capacity
 ```
 
 ---
@@ -129,7 +138,7 @@ ls devflow/requirements/REQ-*/harness-state.json | \
 # 执行步骤:
 # 1. 读取现有 ROADMAP.md
 # 2. 运行 sync-roadmap-progress.sh
-# 3. 更新 Velocity 指标
+# 3. 更新 human baseline 与 llm-native 双尺度指标
 # 4. 重新生成文档
 
 # 适用场景:
@@ -180,9 +189,9 @@ A: 手动编辑 `vim devflow/ROADMAP.md` 或重新运行 `/core:roadmap`
 **Q: 如何添加新的 RM 项目？**
 A: 编辑 ROADMAP.md 或重新运行对话并在 Stage 3 添加
 
-**Q: Velocity 计算不准确怎么办？**
-A: 在对话 Stage 0 中会显示预估容量，如不准确可在后续阶段调整工作量和时间线
+**Q: Velocity / LLM 容量估算不准确怎么办？**
+A: 在对话 Stage 0 中会同时显示 human baseline 与 llm-native capacity。若冲突，以 llm-native 排期为主，并把历史数据差异写入 risk_notes。
 
 ---
 
-**Last Updated**: 2025-12-19
+**Last Updated**: 2026-04-09

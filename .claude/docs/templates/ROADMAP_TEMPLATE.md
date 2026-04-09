@@ -1,5 +1,12 @@
 # Product Roadmap: {{PROJECT_NAME}}
 
+<!--
+[INPUT]: 依赖 /core:roadmap 输出的 candidates、dependencies、timeline、velocity、quarter_info、vision_statement。
+[OUTPUT]: 对外提供 ROADMAP.md 的完整结构，包含双尺度工时、容量校准与 lake-ocean review。
+[POS]: .claude/docs/templates 的路线图生成模板，被 roadmap-planner 作为 ROADMAP.md 的唯一蓝图。
+[PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+-->
+
 **Version**: {{VERSION}}
 **Created**: {{CREATED_DATE}} 北京时间
 **Updated**: {{UPDATED_DATE}} 北京时间
@@ -7,7 +14,7 @@
 **Status**: {{STATUS}}
 
 **Input**:
-- 6 阶段对话的结果（candidates, dependencies, timeline, velocity, quarter_info）
+- 6 阶段对话的结果（candidates 含 human_effort / llm_effort / completeness_score / scope_shape, dependencies, timeline, velocity, quarter_info）
 - devflow/requirements/ 已有需求分析
 - 用户愿景声明
 
@@ -17,6 +24,8 @@
 ```
 1. Load context from command
    → Parse JSON context (candidates, dependencies, timeline, velocity, quarter_info)
+   → Validate candidate fields: human_effort, llm_effort, completeness_score, scope_shape
+   → Validate velocity fields: human_baseline, llm_capacity, risk_notes
    → Validate all required fields present
    → If missing fields: ERROR "Incomplete context from command"
 
@@ -48,7 +57,8 @@
       • List all RM-IDs assigned to this quarter
       • Extract descriptions from candidates
       • Identify dependencies from dependencies list
-      • Calculate estimated effort (sum of effort_weeks)
+      • Calculate estimated effort (sum of llm_effort, keep human_effort as reference)
+      • Surface completeness_score and scope_shape for every RM
       • Generate success criteria based on candidate titles
 
 7. Generate Dependency Graph
@@ -63,37 +73,49 @@
 8. Fill Velocity Tracking
    → Extract metrics from velocity object
    → Format as markdown table
-   → Include: completed_reqs, avg_days_per_req, quarterly_capacity
+   → Include: completed_reqs, avg_days_per_req, human_baseline_capacity, llm_capacity, risk_notes
 
-9. Generate Implementation Tracking
+9. Generate Completeness / Lake-Ocean Review
+   → Group roadmap items into lakes and oceans
+   → Verify every lake is planned as complete work, not a shortcut shard
+   → Verify every ocean is split or explicitly flagged with migration risk
+   → Summarize review in markdown bullets/table
+
+10. Generate Implementation Tracking
    → For each candidate:
       • RM-ID
       • Feature title
       • Derived From (from candidate.derived_from)
+      • Human Effort
+      • LLM Effort
+      • Completeness Score
+      • Scope Shape
       • Status = "Planned"
       • Mapped REQ = "-" (empty initially)
       • Progress = "0%"
    → Format as markdown table
 
-10. Constitution Check (Article VII, VIII, IX)
+11. Constitution Check (Article VII, VIII, IX)
     → Simplicity Gate: Check if any milestone has >3 major projects
     → Anti-Abstraction Gate: Verify no premature infrastructure items
     → Integration-First Gate: Check if contract-first design mentioned in candidates
     → Document any violations with justification
 
-11. Validate completeness
+12. Validate completeness
     → All sections filled (no {{PLACEHOLDER}} remaining)
     → All RM-IDs from context included
     → Dependencies correctly mapped
     → Mermaid syntax valid
+    → LLM-native timeline is the primary schedule truth
+    → No ocean item silently treated as a single complete milestone
     → If incomplete: ERROR "Complete missing sections"
 
-12. Write devflow/ROADMAP.md
+13. Write devflow/ROADMAP.md
     → Write complete ROADMAP.md file
     → Use UTF-8 encoding
     → Ensure markdown formatting correct
 
-13. Return: SUCCESS (ROADMAP.md generated)
+14. Return: SUCCESS (ROADMAP.md generated)
 ```
 
 **重要**: 这是一个自执行模板。roadmap-planner agent 应该按照 Execution Flow 生成完整的 ROADMAP.md 文件。
@@ -141,18 +163,24 @@ _填充规则:_
 - **{{RM_ID_1}}**: {{TITLE_1}} ({{DERIVED_FROM_1}})
   - 描述: {{DESCRIPTION_1}}
   - 优先级: {{PRIORITY_1}}
-  - 预计工作量: {{EFFORT_1}}
+  - 预计工时: LLM {{LLM_EFFORT_1}} | Human {{HUMAN_EFFORT_1}}
+  - Completeness: {{COMPLETENESS_1}}/10
+  - Scope Shape: {{SCOPE_SHAPE_1}}
 
 - **{{RM_ID_2}}**: {{TITLE_2}} ({{DERIVED_FROM_2}})
   - 描述: {{DESCRIPTION_2}}
   - 优先级: {{PRIORITY_2}}
-  - 预计工作量: {{EFFORT_2}}
+  - 预计工时: LLM {{LLM_EFFORT_2}} | Human {{HUMAN_EFFORT_2}}
+  - Completeness: {{COMPLETENESS_2}}/10
+  - Scope Shape: {{SCOPE_SHAPE_2}}
 
 **Feature Cluster 2: {{CLUSTER_NAME_2}}**
 - **{{RM_ID_3}}**: {{TITLE_3}} ({{DERIVED_FROM_3}})
   - 描述: {{DESCRIPTION_3}}
   - 优先级: {{PRIORITY_3}}
-  - 预计工作量: {{EFFORT_3}}
+  - 预计工时: LLM {{LLM_EFFORT_3}} | Human {{HUMAN_EFFORT_3}}
+  - Completeness: {{COMPLETENESS_3}}/10
+  - Scope Shape: {{SCOPE_SHAPE_3}}
 
 **Dependencies**:
 - **Blocks**: {{BLOCKED_RM_IDS}} (此里程碑完成后可以解锁的需求)
@@ -165,7 +193,7 @@ _填充规则:_
 - **Risk 2**: {{RISK_DESCRIPTION_2}}
   - **Mitigation**: {{MITIGATION_PLAN_2}}
 
-**Estimated Effort**: {{TOTAL_EFFORT}} ({{BREAKDOWN}})
+**Estimated Effort**: LLM {{TOTAL_LLM_EFFORT}} | Human {{TOTAL_HUMAN_EFFORT}} ({{BREAKDOWN}})
 
 _填充规则:_
 - Feature Cluster: 将相关功能分组（例如: "用户管理升级", "数据处理模块"）
@@ -204,35 +232,66 @@ _填充规则:_
 
 ## Velocity Tracking
 
-| Metric | Value | Source |
-|--------|-------|--------|
-| Completed REQs | {{COMPLETED_COUNT}} | devflow/requirements/ |
-| Avg Time per REQ | {{AVG_DAYS}} days | EXECUTION_LOG.md analysis |
-| Quarterly Capacity | {{CAPACITY}} REQs | Calculated (90 days / avg days) |
-| Estimated REQs/Quarter | {{ESTIMATED_CAPACITY}} | Based on remaining days |
+| Metric | Value | Source | Role |
+|--------|-------|--------|------|
+| Completed REQs | {{COMPLETED_COUNT}} | devflow/requirements/ | 历史样本数 |
+| Avg Time per REQ | {{AVG_DAYS}} days | EXECUTION_LOG.md analysis | human baseline |
+| Human Baseline Capacity | {{HUMAN_CAPACITY}} REQs | Calculated from historical throughput | 风险参考 |
+| LLM-Native Capacity | {{LLM_CAPACITY}} roadmap items | Compression-calibrated estimate | 主排期单位 |
+| Planning Mode | llm-native | /core:roadmap context | 真相源 |
+| Risk Notes | {{RISK_NOTES}} | Velocity calibration | 解释异常与不确定性 |
 
 _填充规则:_
 - Completed Count: 从 requirements/ 目录统计
 - Avg Time: 从 EXECUTION_LOG.md 中提取 phase complete 时间戳计算
-- Quarterly Capacity: 90 天 / 平均天数（标准季度容量）
-- Estimated Capacity: 当前季度剩余天数 / 平均天数（当前季度预估容量）
+- Human Baseline Capacity: 历史节奏推导的传统季度容量，仅作参考
+- LLM-Native Capacity: 基于任务类型压缩倍率与当前上下文推导的主容量
+- Risk Notes: 说明为什么某些条目不能简单套用压缩倍率
 
-_说明: 此表用于追踪项目速度，帮助评估时间线的合理性_
+_说明: 此表用来校准风险，不再把历史人类速度当作唯一排期真相源。_
+
+---
+
+## Completeness / Lake-Ocean Review
+
+### Lakes To Boil
+
+| RM-ID | Title | LLM Effort | Completeness | Decision |
+|-------|-------|------------|--------------|----------|
+| {{LAKE_RM_ID_1}} | {{LAKE_TITLE_1}} | {{LAKE_LLM_EFFORT_1}} | {{LAKE_COMPLETENESS_1}}/10 | {{LAKE_DECISION_1}} |
+| {{LAKE_RM_ID_2}} | {{LAKE_TITLE_2}} | {{LAKE_LLM_EFFORT_2}} | {{LAKE_COMPLETENESS_2}}/10 | {{LAKE_DECISION_2}} |
+
+### Oceans To Split
+
+| RM-ID | Title | Reason It Is An Ocean | Decomposition Plan | Status |
+|-------|-------|------------------------|--------------------|--------|
+| {{OCEAN_RM_ID_1}} | {{OCEAN_TITLE_1}} | {{OCEAN_REASON_1}} | {{OCEAN_PLAN_1}} | {{OCEAN_STATUS_1}} |
+| {{OCEAN_RM_ID_2}} | {{OCEAN_TITLE_2}} | {{OCEAN_REASON_2}} | {{OCEAN_PLAN_2}} | {{OCEAN_STATUS_2}} |
+
+_填充规则:_
+- Lake: 单季度可完整交付、边界清晰、无平台级迁移的项
+- Ocean: 需要跨季度重写、迁移、基础设施翻修或组织协作的项
+- Decision: 明确写 "完整交付"、"提升 completeness 后交付" 或 "推迟"
+- Oceans To Split 中不能留空 decomposition plan
 
 ---
 
 ## Implementation Tracking
 
-| RM-ID | Feature | Derived From | Status | Mapped REQ | Progress |
-|-------|---------|--------------|--------|------------|----------|
-| {{RM_ID_1}} | {{FEATURE_1}} | {{SOURCE_1}} | {{STATUS_1}} | {{REQ_ID_1}} | {{PROGRESS_1}} |
-| {{RM_ID_2}} | {{FEATURE_2}} | {{SOURCE_2}} | {{STATUS_2}} | {{REQ_ID_2}} | {{PROGRESS_2}} |
-| {{RM_ID_3}} | {{FEATURE_3}} | {{SOURCE_3}} | {{STATUS_3}} | {{REQ_ID_3}} | {{PROGRESS_3}} |
+| RM-ID | Feature | Derived From | Human Effort | LLM Effort | Completeness | Scope Shape | Status | Mapped REQ | Progress |
+|-------|---------|--------------|--------------|------------|--------------|-------------|--------|------------|----------|
+| {{RM_ID_1}} | {{FEATURE_1}} | {{SOURCE_1}} | {{HUMAN_EFFORT_ROW_1}} | {{LLM_EFFORT_ROW_1}} | {{COMPLETENESS_ROW_1}}/10 | {{SCOPE_SHAPE_ROW_1}} | {{STATUS_1}} | {{REQ_ID_1}} | {{PROGRESS_1}} |
+| {{RM_ID_2}} | {{FEATURE_2}} | {{SOURCE_2}} | {{HUMAN_EFFORT_ROW_2}} | {{LLM_EFFORT_ROW_2}} | {{COMPLETENESS_ROW_2}}/10 | {{SCOPE_SHAPE_ROW_2}} | {{STATUS_2}} | {{REQ_ID_2}} | {{PROGRESS_2}} |
+| {{RM_ID_3}} | {{FEATURE_3}} | {{SOURCE_3}} | {{HUMAN_EFFORT_ROW_3}} | {{LLM_EFFORT_ROW_3}} | {{COMPLETENESS_ROW_3}}/10 | {{SCOPE_SHAPE_ROW_3}} | {{STATUS_3}} | {{REQ_ID_3}} | {{PROGRESS_3}} |
 
 _填充规则:_
 - RM-ID: 路线图项目标识符 (RM-001, RM-002, ...)
 - Feature: 功能简短标题
 - Derived From: 来源需求 ID (REQ-001) 或其他来源 (Tech Stack, User Feedback)
+- Human Effort: 传统团队口径的估算，只用于风险解释
+- LLM Effort: 主排期工时，直接参与容量计算
+- Completeness: 1-10，10 表示完整交付，7 表示快乐路径，3 表示明显 shortcut
+- Scope Shape: `lake` | `ocean`
 - Status: Planned | In Progress | Completed | Blocked | Cancelled
 - Mapped REQ: 关联的正式需求 ID（初始为 "-"，运行 /flow:init 后填充）
 - Progress: 完成百分比 (0%, 20%, 80%, 100%)
@@ -276,7 +335,9 @@ _填充规则:_
 - [ ] 所有里程碑有明确的成功标准
 - [ ] 所有意向需求已分配优先级 (P1/P2/P3)
 - [ ] 依赖关系已映射并可视化
-- [ ] 基于历史速度的现实时间线
+- [ ] 基于 llm-native 的现实时间线
+- [ ] 所有 lake 达到可接受 completeness，未被切成廉价碎片
+- [ ] 所有 ocean 已拆分或显式标红
 - [ ] Constitution Check 通过
 - [ ] 无循环依赖
 - [ ] 风险缓解计划已制定
@@ -298,7 +359,10 @@ _填充规则:_
 - **Mapped REQ**: 映射需求，当意向项通过 /flow:init 正式创建为需求后，记录其 REQ-ID
 - **Feature Cluster**: 功能集群，将相关的意向项分组便于理解和管理
 - **Milestone**: 里程碑，一个季度内要完成的一组功能集群
-- **Velocity**: 速度，团队完成需求的平均速率（天数/需求）
+- **Velocity**: 速度，这里分为 human baseline 与 llm-native capacity 两个口径
+- **Completeness**: 完整度，衡量该项是否在当前周期内真正做完而非只做 shortcut
+- **Lake**: 单季度可完整煮沸的范围
+- **Ocean**: 必须拆分的跨季度系统级范围
 
 ---
 
@@ -308,3 +372,4 @@ _填充规则:_
 3. 所有日期使用北京时间 + ISO 8601 格式
 4. 进度百分比应准确反映实际状态
 5. 依赖关系应与 BACKLOG.md 保持一致
+6. `llm_effort` 是主排期单位，`human_effort` 只做解释与风险参考
