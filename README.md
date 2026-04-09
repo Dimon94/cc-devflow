@@ -10,17 +10,17 @@ A comprehensive development workflow system built on Claude Code's official sub-
 
 ## 🎯 One-Line Introduction
 
-Autopilot-first requirement delivery: `/flow:autopilot` converges intent into executable work, drives the thin harness chain, emits a PR-ready brief, then hands off to `/flow:release`.
+Autopilot-first requirement delivery: `/flow:autopilot` converges intent into an executable plan, stops at explicit approval, then resumes execution/verify/PR prep through the thin harness chain.
 
 ---
 
 ## ✨ Core Features
 
-- 🎯 **Autopilot-First Mainline** - Recommended path is `/flow:autopilot` → `/flow:prepare-pr` → `/flow:release`
+- 🎯 **Autopilot-First Mainline** - Recommended path is `/flow:autopilot` → `harness:approve` → `/flow:autopilot --resume` → `/flow:prepare-pr` → `/flow:release`
 - 🔄 **Thin Harness Spine** - Flow commands map to `harness:*` runtime operations with checkpoints, resume, and auditable artifacts
 - 📝 **Markdown-First Memory** - `devflow/intent/*` stores summary, facts, decision log, plan, delegation map, resume index, and PR brief
 - 📋 **Manifest-Driven Execution** - Requirements converge into `task-manifest.json`, then execute through dispatch, delegated workers, and verify gates
-- 🔄 **Smart Recovery** - `harness:resume` and intent checkpoints restore interrupted execution from persisted state instead of chat history
+- 🔄 **Smart Recovery** - `harness:resume --from-checkpoint stable` restores execution from the last stable checkpoint instead of guessing from chat history
 - 🛡️ **Quality Gates** - Automated TypeScript checking, testing, linting, and security scanning
 - 🤖 **Local Subagents and Workers** - Autopilot can hand off scoped tasks to local workers while keeping one truth surface
 - 🎨 **UI Prototype Generation** - Conditional HTML prototype with artistic design inspiration
@@ -207,6 +207,9 @@ pip install pypinyin
 
 ```bash
 /flow:autopilot "REQ-001|User Authentication|https://docs.example.com/auth"
+# autopilot pauses at approval and refreshes devflow/intent/REQ-001/plan.md
+npm run harness:approve -- --change-id REQ-001 --execution-mode delegate
+/flow:autopilot "REQ-001|User Authentication|https://docs.example.com/auth" --resume
 /flow:prepare-pr "REQ-001"
 /flow:release "REQ-001"
 ```
@@ -295,7 +298,7 @@ Your Scenario:
 ├─ Execute planned tasks manually? → /flow:dev "REQ-123"
 ├─ Run strict quality gate? → /flow:verify "REQ-123" --strict
 ├─ Generate PR materials after verify? → /flow:prepare-pr "REQ-123"
-├─ Continue interrupted development? → /flow:restart "REQ-123"
+├─ Continue interrupted development? → /flow:autopilot "REQ-123|Feature|URLs" --resume
 ├─ Check development progress? → /flow:status REQ-123
 ├─ Re-check consistency anytime? → /flow:verify "REQ-123"
 ├─ Fix production bug? → /flow:fix "BUG-001|Description"
@@ -349,8 +352,10 @@ graph TB
 **Workflow Notes**:
 - **Project-Level Commands** (light blue): Execute once at project initialization, establish global standards (SSOT)
 - **Requirement-Level Commands** (light orange): Execute once per requirement (REQ-XXX)
-- **Canonical Mainline**: `/flow:autopilot` → `/flow:init` → `/flow:spec` → `/flow:dev` → `/flow:verify` → `/flow:prepare-pr` → `/flow:release`
+- **Canonical Mainline**: `/flow:autopilot` → `harness:approve` → `/flow:autopilot --resume` → `/flow:prepare-pr` → `/flow:release`
 - **Harness Runtime Chain**: Each stage delegates to `npm run harness:*` operations with persisted checkpoints
+- **Approval Gate**: `plan.md` stays human-readable, but `harness-state.json.approval` is the runtime truth before execute
+- **Stable Recovery**: `harness:resume --from-checkpoint stable` requeues unresolved work behind the last good checkpoint
 - **Unified /flow:spec**: Consolidates planning output into a task manifest
 - **Report Card Gate**: `/flow:verify --strict` blocks release when quality gates fail
 - **TDD Checkpoint**: `/flow:dev` keeps fail-first verification before implementation
@@ -447,7 +452,7 @@ devflow/
 
 ```bash
 # Flow behavior
-export FLOW_AUTO_APPROVE=false
+# Approval is explicit via `npm run harness:approve`; no auto-approve env toggle
 export MIN_TEST_COVERAGE=80
 export STRICT_TYPE_CHECKING=true
 
@@ -498,11 +503,11 @@ Note: entries before v6.0.0 keep their original command syntax for historical ac
 
 **🧩 Harness-First Mainline: Historical bridge into today's autopilot-first spine**
 
-Historical note: this release standardized the harness runtime around a five-stage chain. The current recommended entrypoint has since moved to `/flow:autopilot` + `/flow:prepare-pr`, but v6.0.0 remains the transition point that made the thin runtime possible.
+Historical note: this release standardized the harness runtime around a five-stage chain. The current recommended entrypoint has since moved to `/flow:autopilot` + explicit `harness:approve` + `/flow:autopilot --resume`, but v6.0.0 remains the transition point that made the thin runtime possible.
 
 - **Default Command Chain at v6.0.0**
   - `/flow:init` → `/flow:spec` → `/flow:dev` → `/flow:verify` → `/flow:release`
-  - This later evolved into today's `/flow:autopilot` → `/flow:prepare-pr` → `/flow:release` recommendation
+  - This later evolved into today's `/flow:autopilot` → `harness:approve` → `/flow:autopilot --resume` → `/flow:prepare-pr` → `/flow:release` recommendation
 
 - **Runtime Artifacts**
   - `context-package.md` + `harness-state.json` for bootstrap state
@@ -611,7 +616,7 @@ v4.1.0 establishes `/flow:spec` as the unified planning entry that later evolves
   ```
   Quick:    /flow:init → /flow:spec → /flow:dev
   Standard: /flow:init → /flow:spec → /flow:dev → /flow:verify
-  Full:     /flow:autopilot → /flow:init → /flow:spec → /flow:dev → /flow:verify → /flow:prepare-pr → /flow:release
+  Full:     /flow:autopilot → harness:approve → /flow:autopilot --resume → /flow:prepare-pr → /flow:release
   ```
 
 **📊 v4.1 Improvements**:

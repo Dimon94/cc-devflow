@@ -63,7 +63,7 @@ skills/plugin 体系里，把仓库内保留为真正的长期真相源：
 
 | Milestone | Quarter | Theme | Success Criteria | Status |
 |-----------|---------|-------|------------------|--------|
-| M1 | 2026 Q2 | Front Door | `RM-020` 定义并落成 autopilot 最小闭环，计划批准后可进入自动执行 | Planned |
+| M1 | 2026 Q2 | Front Door | `RM-020` 定义并落成 autopilot 最小闭环，计划批准后可进入自动执行 | Completed |
 | M2 | 2026 Q2 | Brake System | `RM-016` + `RM-018` 打通 verify/resume，形成可恢复执行链 | Planned |
 | M3 | 2026 Q2-Q3 | Thin Surface | `RM-015` + `RM-019` 压薄上下文与平台侵入，能力收敛到 skill/runtime | Planned |
 | M4 | 2026 Q3 | Change Discipline | `RM-017` 在主环路稳定后接入增量规格追踪 | Planned |
@@ -88,18 +88,26 @@ skills/plugin 体系里，把仓库内保留为真正的长期真相源：
 
 **Success Criteria:**
 
-- [ ] 用户可通过一个前门启动模糊目标收敛与自动执行
-- [ ] `plan.md` 获批前不会进入 execute
-- [ ] 获批后按配置进入 `direct` / `delegate` / `team`
-- [ ] `team` 默认关闭，只有显式配置才升级
+- [x] 用户可通过一个前门启动模糊目标收敛与自动执行
+- [x] `plan.md` 获批前不会进入 execute
+- [x] 获批后按配置进入 `direct` / `delegate` / `team`
+- [x] `team` 默认关闭，只有显式配置才升级
+
+**Progress Update (2026-04-09):**
+
+- 已落地显式 approval gate：`/flow:autopilot` 先停在批准闸，再通过 `harness:approve` 放行执行
+- 已落地单一 approval truth source：`harness-state.json.approval`，并镜像到 `plan.md` / `resume-index.md`
+- 已落地执行梯约束：默认 `direct -> delegate -> team`，`team` 只在显式配置时升级
+- 已落地稳定恢复动作：`harness:resume --from-checkpoint stable` 会把失败/阻塞任务重排到最近稳定 checkpoint 之后继续执行
 
 **Feature Cluster: Autopilot Minimal Loop**
 
 - **RM-020**: Flow Simplification -> Autopilot Minimal Loop
   - 描述: 将旧的“workflow simplification”重写为真正的最小闭环：
-    `discover/converge -> approve -> execute -> resume -> verify`
+    `discover/converge -> approve -> delegate/execute -> resume -> verify`
   - 关键变化:
     - `/flow:autopilot` 成为默认前门
+    - `harness:approve` 显式绑定 `plan_version + execution_mode`
     - `flow-init / flow-spec / flow-dev / flow-verify / flow-release`
       退到编排原语
     - `team` 从主叙事降级为可选策略

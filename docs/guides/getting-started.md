@@ -146,8 +146,8 @@ Edit `.claude/settings.json`:
 export MIN_TEST_COVERAGE=80
 export STRICT_TYPE_CHECKING=true
 
-# Flow behavior
-export FLOW_AUTO_APPROVE=false
+# Approval is explicit
+# Run: npm run harness:approve -- --change-id REQ-123 --execution-mode delegate
 ```
 
 ## 📚 Next Steps

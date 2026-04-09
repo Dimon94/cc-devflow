@@ -11,7 +11,7 @@ skill: autopilot
 ## User Input
 
 ```text
-$ARGUMENTS = "REQ_ID|模糊目标 [--resume] [--from=discover|converge|delegate|execute|verify|document|prepare-pr]"
+$ARGUMENTS = "REQ_ID|模糊目标 [--resume] [--from=discover|converge|approve|delegate|execute|verify|document|prepare-pr]"
 ```
 
 ## Usage
@@ -19,6 +19,7 @@ $ARGUMENTS = "REQ_ID|模糊目标 [--resume] [--from=discover|converge|delegate|
 ```bash
 /flow:autopilot "REQ-123|把当前聊天和模糊目标沉淀成可自动执行的计划"
 /flow:autopilot "REQ-123|继续当前自动驾驶" --resume
+/flow:autopilot "REQ-123|从批准闸继续当前自动驾驶" --from=approve
 /flow:autopilot "REQ-123|从验证阶段恢复" --from=verify
 /flow:autopilot "REQ-123|继续当前自动驾驶" --worker-provider codex
 ```
@@ -38,7 +39,10 @@ $ARGUMENTS = "REQ_ID|模糊目标 [--resume] [--from=discover|converge|delegate|
 - 这是总编排入口，不是新 runtime
 - 计划批准后，按需调用 `flow-init / flow-spec / flow-dev / flow-verify / flow-release`
 - 默认执行梯：`direct -> delegate -> team`
-- 当前最薄实现已接到 `harness autopilot`，可顺序推进 `init -> pack -> plan -> delegate -> dispatch/resume -> verify -> prepare-pr`
+- 当前最薄实现已接到 `harness autopilot`，可顺序推进 `init -> pack -> plan -> approve -> delegate -> dispatch/resume -> verify -> prepare-pr`
+- `plan.md` 未获批准前，autopilot 会明确停在 `approve`，不会越过到 execute
+- 显式批准入口：`npm run harness:approve -- --change-id <REQ> --execution-mode direct|delegate|team`
+- 显式恢复入口：`npm run harness:resume -- --change-id <REQ> --from-checkpoint stable`
 - delegate worker 的 handoff 准备入口是 `node bin/harness.js worker --change-id <REQ> --worker <id>`
 - delegate worker 的本地执行入口是 `node bin/harness.js worker-run --change-id <REQ> --worker <id> [--task <TASK>] --command "<local agent command>"`
 - provider launcher 入口是 `node bin/harness.js worker-run --change-id <REQ> --worker <id> [--task <TASK>] --provider codex|claude`

@@ -24,7 +24,7 @@
 
 ### RM-020: Autopilot Minimal Loop
 
-**Status:** Draft
+**Status:** Done
 **Priority:** P0
 **Effort:** 2 weeks
 **Quarter:** 2026 Q2
@@ -35,20 +35,29 @@
 
 把旧的“flow simplification”重新定义为真正的用户闭环：
 
-`discover/converge -> approve -> execute -> checkpoint -> resume -> verify`
+`discover/converge -> approve -> delegate/execute -> checkpoint -> resume -> verify`
 
 这不是再加一个命令，而是把 `autopilot` 从“一个入口”提升为真正的
 产品前门，把其余 `flow-*` 命令降为编排原语。
 
 **Acceptance Criteria:**
 
-- [ ] `/flow:autopilot` 成为模糊目标的默认入口
-- [ ] `plan.md` 未获批准前，不能进入 execute
-- [ ] 批准后可按配置进入 `direct`、`delegate` 或 `team`
-- [ ] 默认执行梯清晰可见：`direct -> delegate -> team`
-- [ ] `team` 默认关闭，只有显式配置才升级
-- [ ] 每次阶段推进都会刷新 `resume-index.md`
-- [ ] 执行失败时可以回到上一个稳定 checkpoint
+- [x] `/flow:autopilot` 成为模糊目标的默认入口
+- [x] `plan.md` 未获批准前，不能进入 execute
+- [x] 批准后可按配置进入 `direct`、`delegate` 或 `team`
+- [x] 默认执行梯清晰可见：`direct -> delegate -> team`
+- [x] `team` 默认关闭，只有显式配置才升级
+- [x] 每次阶段推进都会刷新 `resume-index.md`
+- [x] 执行失败时可以回到上一个稳定 checkpoint
+
+**Progress Snapshot (2026-04-09):**
+
+- 已新增显式批准原语 `harness:approve`
+- 已把 approval 变成 `harness-state.json.approval` 的单一 runtime truth source
+- 已让 `autopilot` 在 `converge` 后停在 approval gate，不再自动滑进 execute
+- 已让 `dispatch` / `resume` 共享同一批准闸，避免绕过 autopilot 直接执行
+- 已把 `resume-index.md`、`plan.md`、query stage 与 command docs 对齐到新 contract
+- 已把恢复入口收敛为 `harness:resume --from-checkpoint stable`，并允许在失败/重试耗尽/依赖阻塞后回到最近稳定 checkpoint
 
 **Technical Notes:**
 
@@ -58,8 +67,8 @@
 
 **Non-Goals:**
 
-- [ ] 不为 `team` 单独造第二套控制面
-- [ ] 不要求一次性统一所有旧 flow 命令实现
+- [x] 不为 `team` 单独造第二套控制面
+- [x] 不要求一次性统一所有旧 flow 命令实现
 
 ---
 
