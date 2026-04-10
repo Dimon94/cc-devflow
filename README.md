@@ -21,6 +21,8 @@ CC-DevFlow exposes only five visible skills:
 ## ✨ Core Features
 
 - **Minimal visible surface**: one roadmap skill plus four PDCA stages
+- **Canonical in `.claude/skills/`**: five canonical skills own the workflow; `.agents/skills/` mirrors them for distribution
+- **Skill-local resources**: each skill carries its own templates, references, and scripts
 - **Explicit, not hidden**: no default context injection, read the files you actually need
 - **Task-template first**: keep `TASKS.md` and `task-manifest.json` as the execution backbone
 - **Thin runtime**: `harness:*` stays as internal runtime support, not a user-facing CLI
@@ -87,6 +89,6 @@ You only need the skills.
 ## Verification
 
 ```bash
-.claude/scripts/verify-setup.sh
-bash .claude/tests/scripts/test_workflow_skill_alignment.sh
+find .claude/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort
+find .claude/skills -mindepth 2 -maxdepth 3 -type f | sort
 ```

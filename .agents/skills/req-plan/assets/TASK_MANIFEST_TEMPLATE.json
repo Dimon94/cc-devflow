@@ -1,0 +1,15 @@
+{
+  "requirementId": "REQ-XXX",
+  "status": "planned",
+  "currentTaskId": "T001",
+  "tasks": [
+    {
+      "id": "T001",
+      "title": "Describe the first executable unit",
+      "phase": 1,
+      "files": [],
+      "verification": [],
+      "evidence": []
+    }
+  ]
+}

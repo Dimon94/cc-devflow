@@ -21,6 +21,8 @@ CC-DevFlow 只暴露 5 个可见 Skill：
 ## ✨ 核心特性
 
 - **可见面极小**：1 个 roadmap Skill + 4 个 PDCA Skill
+- **`.claude/skills/` 是真相源**：五个 canonical Skill 拥有流程解释权，`.agents/skills/` 只做镜像分发
+- **资源内化到 Skill**：每个 Skill 自带模板、参考资料和脚本
 - **白盒优先**：默认不做上下文注入，需要什么文件就显式读取什么文件
 - **任务模板保留**：继续以 `TASKS.md` 和 `task-manifest.json` 作为执行骨架
 - **薄运行时**：`harness:*` 只作为内部运行时支持，不再是用户心智
@@ -87,6 +89,6 @@ npx skills add Dimon94/cc-devflow
 ## 验证
 
 ```bash
-.claude/scripts/verify-setup.sh
-bash .claude/tests/scripts/test_workflow_skill_alignment.sh
+find .claude/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort
+find .claude/skills -mindepth 2 -maxdepth 3 -type f | sort
 ```
