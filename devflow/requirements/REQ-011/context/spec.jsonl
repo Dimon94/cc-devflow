@@ -1,6 +1,0 @@
-{"file": "devflow/requirements/REQ-011/proposal.md", "reason": "Original intent and requirements", "optional": false}
-{"file": "devflow/specs/auth/spec.md", "reason": "Current auth module specification", "optional": true}
-{"file": "devflow/specs/payments/spec.md", "reason": "Current payments module specification", "optional": true}
-{"file": "devflow/specs/ui/spec.md", "reason": "Current UI components specification", "optional": true}
-{"file": ".claude/rules/project-constitution.md", "reason": "Article I: Quality First, Article X: Requirement Boundary", "optional": false}
-{"file": ".claude/docs/spec-format-guide.md", "reason": "Spec.md format guidelines", "optional": false}

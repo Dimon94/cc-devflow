@@ -24,6 +24,7 @@ build/
 .harness/
 devflow/.generated/
 .refresh/
+devflow/
 
 # OS
 .DS_Store
