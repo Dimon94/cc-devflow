@@ -80,10 +80,11 @@ check_hook_permissions() {
     log_section "📋 检查 Hooks 执行权限"
 
     local hooks=(
-        "pre-tool-use-guardrail.ts"
+        "skill-activation-prompt.sh"
+        "pre-tool-use-guardrail.sh"
         "post-tool-use-tracker.sh"
-        "error-handling-reminder.ts"
-        "skill-activation-prompt.ts"
+        "error-handling-reminder.sh"
+        "ralph-loop.ts"
     )
 
     for hook in "${hooks[@]}"; do
@@ -137,7 +138,7 @@ check_hooks_config() {
         log_success "hooks 配置存在"
 
         # 检查各个事件类型
-        local events=("UserPromptSubmit" "PreToolUse" "PostToolUse" "Stop")
+        local events=("UserPromptSubmit" "PreToolUse" "PostToolUse" "Stop" "SubagentStop")
         for event in "${events[@]}"; do
             if jq -e ".hooks[\"$event\"]" "$settings_file" > /dev/null 2>&1; then
                 local hook_count=$(jq ".hooks[\"$event\"] | length" "$settings_file")
@@ -149,7 +150,7 @@ check_hooks_config() {
     else
         log_error "settings.json 缺少 hooks 配置"
         log_info "Hooks 必须在 settings.json 中显式配置才能自动触发"
-        log_info "参考: .claude/hooks/HOOKS_CONFIGURATION_GUIDE.md"
+        log_info "参考: .claude/hooks/CLAUDE.md"
         ((ERROR_COUNT++))
     fi
 }
@@ -178,7 +179,7 @@ check_skill_rules() {
     log_success "skill-rules.json 格式正确"
 
     # 检查必需的 skills
-    local required_skills=("devflow-tdd-enforcer" "constitution-guardian" "cc-devflow-orchestrator")
+    local required_skills=("roadmap" "req-plan" "req-do" "req-check" "req-act" "task-order-guard" "artifact-guard")
 
     for skill in "${required_skills[@]}"; do
         if jq -e ".skills[\"$skill\"]" "$rules_file" > /dev/null 2>&1; then

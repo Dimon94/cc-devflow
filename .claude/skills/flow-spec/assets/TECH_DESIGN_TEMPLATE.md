@@ -1,1 +1,0 @@
-../../../../docs/templates/TECH_DESIGN_TEMPLATE.md

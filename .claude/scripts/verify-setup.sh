@@ -28,10 +28,12 @@ require_file() {
   fi
 }
 
-require_dir "$CLAUDE_DIR/commands"
 require_dir "$CLAUDE_DIR/skills"
 require_dir "$CLAUDE_DIR/scripts"
-require_file "$CLAUDE_DIR/commands/flow/new.md"
-require_file "$CLAUDE_DIR/skills/cc-devflow-orchestrator/SKILL.md"
+require_file "$CLAUDE_DIR/skills/roadmap/SKILL.md"
+require_file "$CLAUDE_DIR/skills/req-plan/SKILL.md"
+require_file "$CLAUDE_DIR/skills/req-do/SKILL.md"
+require_file "$CLAUDE_DIR/skills/req-check/SKILL.md"
+require_file "$CLAUDE_DIR/skills/req-act/SKILL.md"
 
 echo "cc-devflow setup OK."

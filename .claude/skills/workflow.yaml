@@ -1,237 +1,156 @@
 # =============================================================================
-# CC-DevFlow Workflow Schema v6.1.1 (Skill-First Autopilot)
+# CC-DevFlow Workflow Schema v9.1.0 (Roadmap + PDCA)
 # =============================================================================
 # [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
 # =============================================================================
 
 name: cc-devflow
-version: "6.1.1"
-description: CC-DevFlow skill-first workflow schema
-
-# =============================================================================
-# 工件定义 (Artifacts)
-# =============================================================================
-# 主链：init -> spec -> dev -> verify -> prepare-pr -> release
-# 产物最小集：intent summary/plan/resume + bootstrap context + manifest + report + pr-brief + release-note
+version: "9.1.0"
+description: CC-DevFlow roadmap plus PDCA skill schema
 
 artifacts:
-  - id: autopilot_summary
-    generates: devflow/intent/{GOAL}/summary.md
+  - id: project_roadmap
+    generates: ROADMAP.md
     requires: []
-    skill: autopilot
+    skill: roadmap
     optional: true
     instruction: |
-      收敛模糊目标与聊天上下文，写入共享摘要。
+      在项目尺度定义方向、阶段与优先级。
 
-  - id: autopilot_plan
-    generates: devflow/intent/{GOAL}/plan.md
-    requires: [autopilot_summary]
-    skill: autopilot
+  - id: project_backlog
+    generates: BACKLOG.md
+    requires: [project_roadmap]
+    skill: roadmap
     optional: true
     instruction: |
-      生成并维护自动驾驶计划版本。
+      把路线图沉成可进入 req-plan 的 backlog。
 
-  - id: autopilot_resume
-    generates: devflow/intent/{GOAL}/resume-index.md
-    requires: [autopilot_plan]
-    skill: autopilot
+  - id: requirement_brainstorm
+    generates: devflow/requirements/{REQ}/BRAINSTORM.md
+    requires: []
+    skill: req-plan
     optional: true
     instruction: |
-      写入恢复入口与下一步唯一动作。
+      澄清目标、约束、成功标准与不做项。
+
+  - id: requirement_design
+    generates: devflow/requirements/{REQ}/DESIGN.md
+    requires: [requirement_brainstorm]
+    skill: req-plan
+    optional: true
+    instruction: |
+      冻结 requirement 方案与范围边界。
 
   - id: context_package
     generates: devflow/requirements/{REQ}/context-package.md
     requires: []
-    skill: flow-init
+    skill: req-plan
+    optional: true
     instruction: |
-      生成 requirement bootstrap context，作为 runtime bridge artifact。
+      在需要 bootstrap 时补齐桥接上下文。
 
-  - id: harness_state
-    generates: devflow/requirements/{REQ}/harness-state.json
-    requires: [context_package]
-    skill: flow-init
+  - id: requirement_tasks
+    generates: devflow/requirements/{REQ}/TASKS.md
+    requires: [requirement_design]
+    skill: req-plan
+    optional: true
     instruction: |
-      记录 requirement 生命周期状态。
+      把设计落成可执行任务表。
 
   - id: task_manifest
     generates: devflow/requirements/{REQ}/task-manifest.json
-    requires: [context_package]
-    skill: flow-spec
+    requires: [requirement_tasks]
+    skill: req-plan
     instruction: |
-      生成依赖可执行的任务清单。
+      生成执行阶段真相源。
+
+  - id: resume_index
+    generates: devflow/intent/{REQ}/resume-index.md
+    requires: [task_manifest]
+    skill: req-plan
+    optional: true
+    instruction: |
+      写出唯一恢复入口。
 
   - id: runtime_events
     generates: .harness/runtime/{REQ}/**
     requires: [task_manifest]
-    skill: flow-dev
+    skill: req-do
     glob: true
     optional: true
     instruction: |
-      执行任务并写入 checkpoint/events。
-
-  - id: report_card
-    generates: devflow/requirements/{REQ}/report-card.json
-    requires: [task_manifest]
-    skill: flow-verify
-    instruction: |
-      执行 quick/strict 质量门禁并产出报告卡。
-
-  - id: pr_brief
-    generates: devflow/intent/{REQ}/artifacts/pr-brief.md
-    requires: [report_card]
-    skill: flow-prepare-pr
-    optional: true
-    instruction: |
-      将 verify 结果与任务证据收敛成 PR-ready 简报。
-
-  - id: release_note
-    generates: devflow/requirements/{REQ}/RELEASE_NOTE.md
-    requires: [report_card]
-    skill: flow-release
-    optional: true
-    instruction: |
-      发布通过后生成发布说明。
+      执行任务并写入 checkpoint 与事件流。
 
   - id: bug_analysis
     generates: devflow/bugs/{BUG}/ANALYSIS.md
     requires: []
-    skill: flow-fix
+    skill: req-do
     optional: true
     instruction: |
-      分析 Bug 根因并沉淀修复输入。
+      在 bug 场景中记录根因调查。
 
   - id: bug_plan
     generates: devflow/bugs/{BUG}/PLAN.md
     requires: [bug_analysis]
-    skill: flow-fix
+    skill: req-do
     optional: true
     instruction: |
-      生成 Bug 修复计划。
+      在 bug 场景中记录最小修复路径。
 
-# =============================================================================
-# 状态检测配置
-# =============================================================================
+  - id: report_card
+    generates: devflow/requirements/{REQ}/report-card.json
+    requires: [task_manifest]
+    skill: req-check
+    instruction: |
+      运行验收与质量门，产出明确结论。
+
+  - id: pr_brief
+    generates: devflow/intent/{REQ}/artifacts/pr-brief.md
+    requires: [report_card]
+    skill: req-act
+    optional: true
+    instruction: |
+      将通过的结果整理成交付简报。
+
+  - id: release_note
+    generates: devflow/requirements/{REQ}/RELEASE_NOTE.md
+    requires: [report_card]
+    skill: req-act
+    optional: true
+    instruction: |
+      在需要发布时生成收尾说明。
+
+  - id: backlog_feedback
+    generates: BACKLOG.md
+    requires: [report_card]
+    skill: req-act
+    optional: true
+    instruction: |
+      在交付后把 learnings、优先级变化与下一轮入口回写进 backlog。
+
 detection:
   method: file_existence
-  fallback: harness-state.json
+  fallback: report-card.json
   glob_options:
     ignore:
       - "**/.DS_Store"
       - "**/*.bak"
       - "**/node_modules/**"
 
-# =============================================================================
-# Skill 分类定义
-# =============================================================================
-# 仅登记仓库内实际存在的 skill 目录
-
 skills:
   workflow:
-    - id: autopilot
-      path: autopilot
-      description: 模糊目标到自动驾驶的总协议入口
-    - id: flow-init
-      path: flow-init
-      description: 主链初始化 (context-package + harness-state)
-    - id: flow-spec
-      path: flow-spec
-      description: 主链规格阶段 (task-manifest)
-    - id: flow-dev
-      path: flow-dev
-      description: 主链开发执行 (dispatch/resume)
-    - id: flow-verify
-      path: flow-verify
-      description: 主链质量门禁 (report-card)
-    - id: flow-prepare-pr
-      path: flow-prepare-pr
-      description: 主链 PR-ready 收尾 (pr-brief)
-    - id: flow-release
-      path: flow-release
-      description: 主链发布收尾 (release/janitor)
-    - id: flow-quality
-      path: flow-quality
-      description: 补充质量验证能力
-    - id: flow-fix
-      path: flow-fix
-      description: Bug 修复
-
-  domain:
-    - id: tdd
-      path: tdd
-      description: TDD Iron Law 执行
-    - id: debugging
-      path: debugging
-      description: 系统化调试
-    - id: brainstorming
-      path: brainstorming
-      description: 需求头脑风暴
-    - id: attention-refresh
-      path: attention-refresh
-      description: 注意力刷新协议
-    - id: verification
-      path: verification
-      description: 完成前验证
-    - id: receiving-review
-      path: receiving-review
-      description: 处理代码审查反馈
-    - id: finishing-branch
-      path: finishing-branch
-      description: 分支完成决策
-
-  guardrail:
-    - id: constitution-guardian
-      path: constitution-guardian
-      description: Constitution 合规检查
-    - id: tdd-enforcer
-      path: tdd-enforcer
-      description: TDD 顺序强制执行
-
-  utility:
-    - id: npm-release
-      path: utility/npm-release
-      description: NPM 包发布
-    - id: fractal-docs
-      path: fractal-docs
-      description: 分形文档生成
-    - id: journey-checker
-      path: journey-checker
-      description: 跨需求一致性检查
-    - id: skill-creator
-      path: skill-creator
-      description: Skill 创建向导
-    - id: file-standards
-      path: file-standards
-      description: 文件命名规范
-    - id: constitution-quick-ref
-      path: constitution-quick-ref
-      description: Constitution 快速参考
-
-# =============================================================================
-# 上下文注入配置
-# =============================================================================
-context:
-  global:
-    - file: .claude/rules/project-constitution.md
-      reason: Quality rules and constraints
-
-  defaults:
-    workflow:
-      - file: devflow/intent/{REQ}/summary.md
-        reason: Intent summary memory
-        optional: true
-      - file: devflow/intent/{REQ}/plan.md
-        reason: Intent plan memory
-        optional: true
-      - file: devflow/intent/{REQ}/resume-index.md
-        reason: Intent resume memory
-        optional: true
-      - file: devflow/requirements/{REQ}/context-package.md
-        reason: Bootstrap context package
-        optional: true
-      - file: devflow/requirements/{REQ}/task-manifest.json
-        reason: Executable task graph
-        optional: true
-    domain:
-      - file: devflow/requirements/{REQ}/task-manifest.json
-        reason: Current task context
-        optional: true
+    - id: roadmap
+      path: roadmap
+      description: 路线图阶段，负责项目中长期规划与优先级。
+    - id: req-plan
+      path: req-plan
+      description: Plan 阶段，负责需求澄清、方案设计与任务拆解。
+    - id: req-do
+      path: req-do
+      description: Do 阶段，负责编码、调试、恢复与回改。
+    - id: req-check
+      path: req-check
+      description: Check 阶段，负责验证、质量门与完成判定。
+    - id: req-act
+      path: req-act
+      description: Act 阶段，负责交付、发布、文档收口与闭环校正。

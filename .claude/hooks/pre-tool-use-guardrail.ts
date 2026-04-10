@@ -4,10 +4,15 @@
  * PreToolUse Hook: Guardrail Enforcer
  * ==============================================
  *
- * 功能: 在文件编辑前检查 Guardrail Skills 的触发条件
- *      如果匹配到 guardrail 且 enforcement="block"，返回 exit code 2 阻止操作
+ * [INPUT]: 依赖 .claude/skills/skill-rules.json 的 guardrail 配置，依赖 hook payload 提供 file_path/content/tool_name。
+ * [OUTPUT]: 对 Edit/Write 操作给出 allow 或 block 决策，命中时输出对应 blockMessage。
+ * [POS]: .claude/hooks 的前置守门员，在 req-plan/req-do/req-check/req-act 写文件前兜住关键违规。
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  *
- * 集成: devflow-tdd-enforcer, constitution-guardian
+ * 功能: 在文件编辑前检查 guardrail 的触发条件。
+ *      如果匹配到 enforcement="block" 的规则，返回 exit code 2 阻止操作。
+ *
+ * 集成: task-order-guard, artifact-guard
  *
  * Exit Codes:
  *   0 - Allow (no violations)

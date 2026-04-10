@@ -1,1 +1,0 @@
-../../../../docs/templates/TASKS_TEMPLATE.md

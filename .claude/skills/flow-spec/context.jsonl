@@ -1,8 +1,0 @@
-{"file": "devflow/intent/{REQ}/summary.md", "reason": "Intent summary memory", "optional": true}
-{"file": "devflow/intent/{REQ}/facts.md", "reason": "Intent facts memory", "optional": true}
-{"file": "devflow/intent/{REQ}/plan.md", "reason": "Intent plan memory", "optional": true}
-{"file": "devflow/requirements/{REQ}/context-package.md", "reason": "Execution context package"}
-{"file": "devflow/requirements/{REQ}/TASKS.md", "reason": "Task source", "optional": true}
-{"file": "devflow/requirements/{REQ}/task-manifest.json", "reason": "Previous manifest", "optional": true}
-{"file": "devflow/requirements/{REQ}/harness-state.json", "reason": "Lifecycle status", "optional": true}
-{"file": ".claude/rules/project-constitution.md", "reason": "Quality rules and constraints"}

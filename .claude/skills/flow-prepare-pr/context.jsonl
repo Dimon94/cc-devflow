@@ -1,7 +1,0 @@
-{"file": "devflow/requirements/{REQ}/report-card.json", "reason": "Verified gate result"}
-{"file": "devflow/requirements/{REQ}/task-manifest.json", "reason": "Task execution summary"}
-{"file": "devflow/intent/{REQ}/artifacts/results", "reason": "Task result evidence", "optional": true}
-{"file": "devflow/intent/{REQ}/artifacts/pr-brief.md", "reason": "Previous PR brief", "optional": true}
-{"file": "devflow/intent/{REQ}/resume-index.md", "reason": "Resume handoff state", "optional": true}
-{"file": "devflow/intent/{REQ}/decision-log.md", "reason": "Decision memory", "optional": true}
-{"file": ".claude/rules/project-constitution.md", "reason": "Quality rules and constraints"}

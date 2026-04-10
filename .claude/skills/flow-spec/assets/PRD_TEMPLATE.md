@@ -1,1 +1,0 @@
-../../../../docs/templates/PRD_TEMPLATE.md

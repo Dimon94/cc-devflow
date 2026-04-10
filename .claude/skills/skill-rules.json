@@ -1,108 +1,150 @@
 {
-    "version": "1.0",
-    "description": "Skill activation triggers for CC-DevFlow. Controls when skills automatically suggest or block actions.",
+    "version": "4.1",
+    "description": "Skill activation triggers for CC-DevFlow. Keep the visible surface to roadmap plus the PDCA loop.",
     "skills": {
-        "skill-developer": {
-            "type": "domain",
+        "roadmap": {
+            "type": "workflow",
             "enforcement": "suggest",
             "priority": "high",
-            "description": "Meta-skill for creating and managing Claude Code skills",
+            "description": "路线图阶段。处理项目愿景、阶段目标、长期优先级与 backlog 主线。",
             "promptTriggers": {
                 "keywords": [
-                    "skill system",
-                    "create skill",
-                    "add skill",
-                    "skill triggers",
-                    "skill rules",
-                    "hook system",
-                    "skill development",
-                    "skill-rules.json"
+                    "roadmap",
+                    "product direction",
+                    "project strategy",
+                    "long term plan",
+                    "mid term plan",
+                    "backlog"
                 ],
                 "intentPatterns": [
-                    "(how do|how does|explain).*?skill",
-                    "(create|add|modify|build).*?skill",
-                    "skill.*?(work|trigger|activate|system)"
+                    "(plan|define|reset|rethink).*?(roadmap|direction|strategy|backlog|project)",
+                    "(what|which).*?(next quarter|next stage|roadmap|direction)",
+                    "(project|product).*?(future|wedge|focus|priority)"
                 ]
             }
         },
-        "cc-devflow-orchestrator": {
-            "type": "domain",
+        "req-plan": {
+            "type": "workflow",
             "enforcement": "suggest",
             "priority": "high",
-            "description": "CC-DevFlow workflow router and agent recommender. Routes users to correct commands/agents.",
+            "description": "Plan 阶段。处理需求澄清、方案设计、任务拆解。",
             "promptTriggers": {
                 "keywords": [
-                    "devflow",
-                    "requirement",
-                    "REQ-",
-                    "flow:autopilot",
-                    "flow:init",
-                    "flow:spec",
-                    "flow:dev",
-                    "flow:verify",
-                    "flow:prepare-pr",
-                    "flow:release",
+                    "clarify requirement",
+                    "scope this",
+                    "design this",
+                    "brainstorm",
+                    "TASKS.md",
                     "task-manifest",
-                    "resume-index",
-                    "pr-brief",
-                    "create requirement",
-                    "start requirement",
-                    "workflow",
-                    "phase gate"
+                    "plan this",
+                    "REQ-"
                 ],
                 "intentPatterns": [
-                    "(start|create|begin|init).*?(requirement|project|REQ)",
-                    "(run|execute).*?(flow|command)",
-                    "(how to|guide|explain).*?(plan|task-manifest|resume|verify|release)",
-                    "what is.*?(phase gate|workflow|resume-index|task-manifest|harness-state)",
-                    "(which|what).*?(command|flow|agent|next step)"
-                ]
-            },
-            "fileTriggers": {
-                "pathPatterns": [
-                    "devflow/requirements/**/*.md",
-                    "devflow/requirements/**/harness-state.json",
-                    "devflow/requirements/**/task-manifest.json",
-                    "devflow/requirements/**/report-card.json",
-                    "devflow/intent/**/*.md"
+                    "(plan|clarify|scope|design|brainstorm|break down).*?(requirement|feature|bug|task|req)",
+                    "(what|why).*?(build|fix|plan).*?(requirement|feature|bug)",
+                    "(generate|refresh|rebuild).*?(tasks\\.md|task-manifest)"
                 ]
             }
         },
-        "devflow-tdd-enforcer": {
+        "req-do": {
+            "type": "workflow",
+            "enforcement": "suggest",
+            "priority": "high",
+            "description": "Do 阶段。处理编码、调试、恢复执行、review 回改。",
+            "promptTriggers": {
+                "keywords": [
+                    "implement",
+                    "build this",
+                    "code this",
+                    "fix bug",
+                    "debug",
+                    "resume work",
+                    "review feedback",
+                    "failing test"
+                ],
+                "intentPatterns": [
+                    "(implement|build|code|develop|resume).*?(feature|task|req|requirement)",
+                    "(fix|debug|investigate|root cause).*?(bug|error|issue|failure)",
+                    "(address|handle|apply).*?(review|feedback|comments)"
+                ]
+            }
+        },
+        "req-check": {
+            "type": "workflow",
+            "enforcement": "suggest",
+            "priority": "high",
+            "description": "Check 阶段。处理验证、质量门、完成判定。",
+            "promptTriggers": {
+                "keywords": [
+                    "verify",
+                    "quality gate",
+                    "run tests",
+                    "is this done",
+                    "ship ready",
+                    "review diff",
+                    "done?"
+                ],
+                "intentPatterns": [
+                    "(verify|check|validate|review).*?(done|ready|quality|release)",
+                    "(can we|is it).*?(ship|release|done|ready)",
+                    "(run|execute).*?(tests|lint|typecheck|checks)"
+                ]
+            }
+        },
+        "req-act": {
+            "type": "workflow",
+            "enforcement": "suggest",
+            "priority": "high",
+            "description": "Act 阶段。处理交付、发布、文档同步、下一轮回写。",
+            "promptTriggers": {
+                "keywords": [
+                    "prepare pr",
+                    "release",
+                    "ship this",
+                    "handoff",
+                    "release note",
+                    "pr brief",
+                    "sync docs"
+                ],
+                "intentPatterns": [
+                    "(ship|release|deliver|handoff|merge).*?(req|feature|branch|work)",
+                    "(prepare|create|write).*?(pr|brief|release|handoff|docs)",
+                    "(what).*?(after check|next after verify|final step)"
+                ]
+            }
+        },
+        "task-order-guard": {
             "type": "guardrail",
             "enforcement": "block",
             "priority": "critical",
-            "description": "Enforces TDD order in TASKS.md - Tests MUST be marked complete before Implementation tasks",
+            "description": "阻止 TASKS.md 中出现实现先于测试完成的顺序错误。",
             "fileTriggers": {
                 "pathPatterns": [
                     "devflow/requirements/**/TASKS.md"
                 ],
                 "contentPatterns": [
                     "\\[x\\].*Implementation.*\\n.*\\[ \\].*Test",
-                    "\\[x\\].*\\[US\\d+\\].*Implement.*\\n.*\\[ \\].*\\[US\\d+\\].*Test"
+                    "\\[x\\].*Implement.*\\n.*\\[ \\].*Test"
                 ]
             },
-            "blockMessage": "⚠️ BLOCKED - TDD Violation Detected\n\n📋 REQUIRED ACTION:\n1. Re-order TASKS.md to follow TDD sequence\n2. Mark test tasks [x] BEFORE implementation tasks\n3. Review Constitution Article VI - Test-First Development\n\nReason: CC-DevFlow enforces TDD (Tests First → Implementation)\nSource: planner agent mandate + Constitution Article VI\nFile: {file_path}\n\nCurrent Issue:\n  Implementation task marked complete\n  Test task NOT marked complete\n\n💡 SKIP: Add `@skip-tdd-check` comment or set SKIP_TDD_ENFORCER=1",
-            "skipConditions": {
-                "sessionSkillUsed": true,
-                "fileMarkers": [
-                    "@skip-tdd-check"
-                ],
-                "envOverride": "SKIP_TDD_ENFORCER"
-            }
+            "blockMessage": "⚠️ BLOCKED - Task order violation\\n\\n在 TASKS.md 中发现实现先于测试完成。先修正任务顺序，再继续进入 req-do。"
         },
-        "constitution-guardian": {
+        "artifact-guard": {
             "type": "guardrail",
             "enforcement": "block",
             "priority": "critical",
-            "description": "Real-time Constitution compliance checker. Blocks partial implementations (Article I.1) and hardcoded secrets (Article III.1)",
+            "description": "阻止半成品文档或疑似秘密进入规划、验证与交付工件。",
             "fileTriggers": {
                 "pathPatterns": [
-                    "devflow/intent/**/plan.md",
-                    "devflow/requirements/**/context-package.md",
+                    "ROADMAP.md",
+                    "BACKLOG.md",
+                    "devflow/requirements/**/BRAINSTORM.md",
+                    "devflow/requirements/**/DESIGN.md",
                     "devflow/requirements/**/TASKS.md",
                     "devflow/requirements/**/task-manifest.json",
-                    "devflow/requirements/**/report-card.json"
+                    "devflow/requirements/**/report-card.json",
+                    "devflow/requirements/**/RELEASE_NOTE.md",
+                    "devflow/intent/**/artifacts/pr-brief.md"
                 ],
                 "contentPatterns": [
                     "TODO.*later",
@@ -110,257 +152,13 @@
                     "\\[placeholder\\]",
                     "simplified for now",
                     "defer to v\\d",
-                    "will complete in v\\d",
                     "API_KEY\\s*=\\s*['\"]?[a-zA-Z0-9_-]{10,}",
                     "SECRET\\s*=\\s*['\"]?[a-zA-Z0-9_-]+",
                     "PASSWORD\\s*=\\s*['\"]?[^\\s]+",
-                    "TOKEN\\s*=\\s*['\"]?[a-zA-Z0-9_-]{10,}",
-                    "apiKey:\\s*['\"][^'\"]+['\"]",
-                    "password:\\s*['\"][^'\"]+['\"]",
-                    "secret:\\s*['\"][^'\"]+['\"]"
+                    "TOKEN\\s*=\\s*['\"]?[a-zA-Z0-9_-]{10,}"
                 ]
             },
-            "blockMessage": "⚠️ BLOCKED - Constitution Violation\n\nDetected:\n- Partial implementation (Article I.1 - NO PARTIAL IMPLEMENTATION)\n- OR Hardcoded secrets (Article III.1 - NO HARDCODED SECRETS)\n\n📋 ACTION:\n1. Complete all TODOs/FIXMEs before saving\n2. Move secrets to environment variables (.env, not committed)\n3. Review .claude/rules/project-constitution.md v2.0.0\n4. Run /flow-verify for comprehensive check\n\nSource: Constitution Articles I.1, III.1\nFile: {file_path}\n\n💡 SKIP: Add `@constitution-verified` comment or set SKIP_CONSTITUTION_CHECK=1",
-            "skipConditions": {
-                "sessionSkillUsed": true,
-                "fileMarkers": [
-                    "@constitution-verified"
-                ],
-                "envOverride": "SKIP_CONSTITUTION_CHECK"
-            }
-        },
-        "fractal-docs-generator": {
-            "type": "domain",
-            "enforcement": "suggest",
-            "priority": "high",
-            "description": "分形文档生成器。创建目录时自动生成目录级 CLAUDE.md，实现 GEB 式递归架构文档",
-            "promptTriggers": {
-                "keywords": [
-                    "创建目录",
-                    "新建文件夹",
-                    "mkdir",
-                    "add folder",
-                    "create directory",
-                    "目录结构",
-                    "CLAUDE.md",
-                    "架构文档",
-                    "分形文档"
-                ],
-                "intentPatterns": [
-                    "(创建|新建|添加).*?(目录|文件夹|folder|directory)",
-                    "(mkdir|create|add).*?(folder|directory|dir)",
-                    "目录.*?(结构|变更|调整)",
-                    "(更新|同步).*?CLAUDE\\.md"
-                ]
-            },
-            "fileTriggers": {
-                "pathPatterns": [
-                    "**/CLAUDE.md"
-                ]
-            }
-        },
-        "file-header-guardian": {
-            "type": "domain",
-            "enforcement": "suggest",
-            "priority": "high",
-            "description": "文件头注释守护者。创建/修改代码文件时确保 @input/@output/@pos 三行契约注释存在",
-            "promptTriggers": {
-                "keywords": [
-                    "创建文件",
-                    "新建文件",
-                    "write file",
-                    "create file",
-                    "add file",
-                    "文件头注释",
-                    "头注释",
-                    "@input",
-                    "@output",
-                    "@pos"
-                ],
-                "intentPatterns": [
-                    "(创建|新建|添加|编写).*?(文件|模块|组件)",
-                    "(create|write|add).*?(file|module|component)",
-                    "(检查|更新|添加).*?(头注释|header comment)",
-                    "文件.*?(注释|documentation)"
-                ]
-            },
-            "fileTriggers": {
-                "pathPatterns": [
-                    "**/*.ts",
-                    "**/*.tsx",
-                    "**/*.js",
-                    "**/*.jsx",
-                    "**/*.py",
-                    "**/*.go",
-                    "**/*.rs",
-                    "**/*.sh"
-                ],
-                "pathExclusions": [
-                    "**/*.test.ts",
-                    "**/*.spec.ts",
-                    "**/*.d.ts",
-                    "**/node_modules/**",
-                    "**/.claude/**"
-                ]
-            }
-        },
-        "devflow-file-standards": {
-            "type": "domain",
-            "enforcement": "suggest",
-            "priority": "medium",
-            "description": "File naming conventions, directory structure, and YAML frontmatter standards for CC-DevFlow",
-            "promptTriggers": {
-                "keywords": [
-                    "REQ-ID format",
-                    "requirement ID",
-                    "task ID",
-                    "directory structure",
-                    "file naming",
-                    "harness-state",
-                    "task-manifest",
-                    "resume-index",
-                    "YAML frontmatter",
-                    "where does plan go",
-                    "where does task manifest go",
-                    "file standards"
-                ],
-                "intentPatterns": [
-                    "what is.*?(format|pattern).*?(REQ|task|requirement|ID)",
-                    "where (does|should).*?(plan|TASKS|manifest|resume|file|document)",
-                    "(how to|what is).*?(name|structure|organize).*?file",
-                    "what fields.*?(harness-state|task-manifest|frontmatter|YAML)"
-                ]
-            },
-            "fileTriggers": {
-                "pathPatterns": [
-                    "devflow/requirements/**/*.md",
-                    "devflow/requirements/**/harness-state.json",
-                    "devflow/requirements/**/task-manifest.json",
-                    "devflow/requirements/**/report-card.json",
-                    "devflow/intent/**/*.md"
-                ]
-            }
-        },
-        "devflow-constitution-quick-ref": {
-            "type": "domain",
-            "enforcement": "suggest",
-            "priority": "medium",
-            "description": "Quick reference guide to CC-DevFlow Constitution v2.0.0 with links to full text",
-            "promptTriggers": {
-                "keywords": [
-                    "constitution",
-                    "constitutional",
-                    "article",
-                    "phase -1 gate",
-                    "simplicity gate",
-                    "anti-abstraction",
-                    "integration-first",
-                    "TDD mandate",
-                    "quality first",
-                    "security first",
-                    "no partial implementation",
-                    "no hardcoded secrets"
-                ],
-                "intentPatterns": [
-                    "what is.*?(constitution|article|phase -1|gate)",
-                    "(explain|show|tell me).*?(constitution|article)",
-                    "can I.*?(TODO|hardcode|BaseController|abstraction)",
-                    "should I.*?(test first|write implementation)"
-                ]
-            }
-        },
-        "journey-coherence-checker": {
-            "type": "domain",
-            "enforcement": "suggest",
-            "priority": "high",
-            "description": "Use when completing a requirement, checking milestone progress, or asking about project status. Detects gaps between requirements, unmet dependencies, and cumulative scope drift.",
-            "promptTriggers": {
-                "keywords": [
-                    "需求完成",
-                    "REQ完成",
-                    "里程碑",
-                    "milestone",
-                    "项目进度",
-                    "可以发布",
-                    "发布前检查",
-                    "全局检查",
-                    "M1进度",
-                    "M2进度",
-                    "M3进度",
-                    "M4进度",
-                    "所有需求",
-                    "依赖满足",
-                    "journey check",
-                    "coherence check"
-                ],
-                "intentPatterns": [
-                    "(需求|REQ|requirement).*?(完成|done|finished)",
-                    "(里程碑|milestone).*?(进度|status|完成)",
-                    "(项目|project).*?(进度|status|如何)",
-                    "(可以|ready).*?(发布|release)",
-                    "(所有|all).*?(需求|requirement).*?(完成|done)",
-                    "(检查|check).*?(全局|global|依赖|dependency)"
-                ]
-            },
-            "fileTriggers": {
-                "pathPatterns": [
-                    "devflow/ROADMAP.md",
-                    "devflow/requirements/**/harness-state.json",
-                    "devflow/requirements/**/task-manifest.json",
-                    "devflow/requirements/**/report-card.json",
-                    "devflow/intent/**/resume-index.md"
-                ]
-            }
-        },
-        "npm-release": {
-            "type": "domain",
-            "enforcement": "suggest",
-            "priority": "high",
-            "description": "Standardized release process for cc-devflow npm package. Handles version bumping, changelog updates, and publishing checks.",
-            "promptTriggers": {
-                "keywords": [
-                    "publish npm",
-                    "release version",
-                    "npm publish",
-                    "bump version",
-                    "new release",
-                    "publish package",
-                    "update changelog",
-                    "release workflow"
-                ],
-                "intentPatterns": [
-                    "(publish|release).*?(npm|package|version)",
-                    "(bump|update).*?(version|semver)",
-                    "(create|generate).*?(release|changelog)",
-                    "ready to publish",
-                    "deploy to npm"
-                ]
-            },
-            "fileTriggers": {
-                "pathPatterns": [
-                    "package.json",
-                    "CHANGELOG.md"
-                ]
-            }
-        }
-    },
-    "notes": {
-        "enforcement_types": {
-            "suggest": "Skill suggestion appears but doesn't block execution",
-            "block": "Requires skill to be used before proceeding (guardrail)",
-            "warn": "Shows warning but allows proceeding"
-        },
-        "priority_levels": {
-            "critical": "Highest - Always trigger when matched, can block operations",
-            "high": "Important - Trigger for most matches",
-            "medium": "Moderate - Trigger for clear matches",
-            "low": "Optional - Trigger only for explicit matches"
-        },
-        "cc_devflow_customization": {
-            "pathPatterns": "All patterns match devflow/requirements/** structure",
-            "keywords": "CC-DevFlow specific terms (REQ-, flow-*, constitution, etc.)",
-            "guardra ils": "devflow-tdd-enforcer and constitution-guardian are critical guardrails",
-            "skip_conditions": "All guardrails support session skip, file markers, and env override"
+            "blockMessage": "⚠️ BLOCKED - Artifact guard\\n\\n检测到半成品内容或疑似硬编码秘密。先清理，再进入 req-check / req-act。"
         }
     }
 }

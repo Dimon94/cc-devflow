@@ -1,5 +1,0 @@
-{"file": "devflow/requirements/{REQ}/report-card.json", "reason": "Gate results before release"}
-{"file": "devflow/requirements/{REQ}/task-manifest.json", "reason": "Task completion summary"}
-{"file": "devflow/requirements/{REQ}/harness-state.json", "reason": "Lifecycle status", "optional": true}
-{"file": "devflow/requirements/{REQ}/RELEASE_NOTE.md", "reason": "Previous release note", "optional": true}
-{"file": ".claude/rules/project-constitution.md", "reason": "Quality rules and constraints"}

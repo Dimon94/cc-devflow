@@ -1,6 +1,0 @@
-{"file": "devflow/intent/{GOAL}/summary.md", "reason": "Current goal summary", "optional": true}
-{"file": "devflow/intent/{GOAL}/facts.md", "reason": "Confirmed, open, and rejected facts", "optional": true}
-{"file": "devflow/intent/{GOAL}/plan.md", "reason": "Approved or draft execution plan", "optional": true}
-{"file": "devflow/intent/{GOAL}/delegation-map.md", "reason": "Current delegation ladder and worker ownership", "optional": true}
-{"file": "devflow/intent/{GOAL}/resume-index.md", "reason": "Resume entry point", "optional": true}
-{"file": "devflow/requirements/{REQ}/task-manifest.json", "reason": "Reusable harness task graph", "optional": true}

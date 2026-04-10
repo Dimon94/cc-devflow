@@ -1,31 +1,11 @@
 {
     "name": "cc-devflow",
     "version": "4.3.0",
-    "description": "DevFlow CLI tool",
-    "main": "bin/cc-devflow.js",
-    "bin": {
-        "cc-devflow": "bin/cc-devflow-cli.js"
-    },
-    "files": [
-        "bin/",
-        "lib/",
-        "config/",
-        ".claude/",
-        "docs/",
-        "README.md",
-        "README.zh-CN.md",
-        "CHANGELOG.md",
-        "LICENSE",
-        "package.json"
-    ],
-    "publishConfig": {
-        "access": "public"
-    },
+    "description": "Roadmap plus PDCA skill pack for agent coding",
+    "private": true,
     "license": "MIT",
     "scripts": {
-        "prepublishOnly": "node scripts/validate-publish.js",
         "test": "jest",
-        "start": "node bin/cc-devflow.js",
         "harness:init": "node bin/harness.js init",
         "harness:pack": "node bin/harness.js pack",
         "harness:plan": "node bin/harness.js plan",
@@ -38,19 +18,9 @@
         "harness:prepare-pr": "node bin/harness.js prepare-pr",
         "harness:release": "node bin/harness.js release",
         "harness:resume": "node bin/harness.js resume",
-        "harness:janitor": "node bin/harness.js janitor",
-        "adapt": "node bin/adapt.js",
-        "adapt:check": "node bin/adapt.js --check",
-        "adapt:skills": "node bin/adapt.js --skills",
-        "adapt:rules": "node bin/adapt.js --rules",
-        "adapt:codex": "node bin/adapt.js --platform codex",
-        "adapt:cursor": "node bin/adapt.js --platform cursor",
-        "adapt:qwen": "node bin/adapt.js --platform qwen",
-        "adapt:antigravity": "node bin/adapt.js --platform antigravity"
+        "harness:janitor": "node bin/harness.js janitor"
     },
     "dependencies": {
-        "@iarna/toml": "^2.2.5",
-        "gray-matter": "^4.0.3",
         "js-yaml": "^4.1.0",
         "zod": "^3.22.4"
     },

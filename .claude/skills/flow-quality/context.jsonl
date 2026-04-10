@@ -1,7 +1,0 @@
-{"file": "devflow/requirements/{REQ}/TASKS.md", "reason": "Task completion status"}
-{"file": "devflow/intent/{REQ}/plan.md", "reason": "Approved plan and acceptance intent"}
-{"file": "devflow/requirements/{REQ}/task-manifest.json", "reason": "Executable task graph"}
-{"file": "devflow/requirements/{REQ}/report-card.json", "reason": "Latest verification result", "optional": true}
-{"file": "devflow/requirements/{REQ}/ERROR_LOG.md", "reason": "Previous errors", "optional": true}
-{"file": ".claude/config/quality-gates.yml", "reason": "Quality gate rules", "optional": true}
-{"file": ".claude/rules/project-constitution.md", "reason": "Quality rules"}

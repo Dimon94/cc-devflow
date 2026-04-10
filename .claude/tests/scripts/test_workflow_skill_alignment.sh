@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # =============================================================================
-# [INPUT]: 依赖 .claude/tests/test-framework.sh、workflow.yaml 与 flow-prepare-pr skill 目录。
-# [OUTPUT]: 回归验证 prepare-pr 在 schema、skill 目录与 .claude 文档中的同构对齐。
-# [POS]: .claude/tests/scripts 的 workflow schema 漂移测试，防止 command/skill/harness 再次失配。
+# [INPUT]: 依赖 .claude/tests/test-framework.sh、workflow.yaml 与 roadmap + PDCA 结构。
+# [OUTPUT]: 回归验证 roadmap Skill 与 PDCA 四闭环 Skill 在 schema、目录与 .claude 文档中的同构对齐。
+# [POS]: .claude/tests/scripts 的 workflow schema 漂移测试，防止主链重新膨胀。
 # [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
 # =============================================================================
 
@@ -12,62 +12,74 @@ source "$SCRIPT_DIR/../test-framework.sh"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 WORKFLOW_YAML="$REPO_ROOT/.claude/skills/workflow.yaml"
 CLAUDE_DOC="$REPO_ROOT/.claude/CLAUDE.md"
-FLOW_PREPARE_PR_DIR="$REPO_ROOT/.claude/skills/flow-prepare-pr"
+ROADMAP_DIR="$REPO_ROOT/.claude/skills/roadmap"
+REQ_PLAN_DIR="$REPO_ROOT/.claude/skills/req-plan"
+REQ_DO_DIR="$REPO_ROOT/.claude/skills/req-do"
+REQ_CHECK_DIR="$REPO_ROOT/.claude/skills/req-check"
+REQ_ACT_DIR="$REPO_ROOT/.claude/skills/req-act"
 
-test_flow_prepare_pr_skill_scaffold_exists() {
-    describe "flow-prepare-pr skill scaffold should exist"
+test_skill_scaffolds_exist() {
+    describe "roadmap plus PDCA requirement skills should exist"
 
-    assert_file_exists "$FLOW_PREPARE_PR_DIR/SKILL.md" "Should create flow-prepare-pr SKILL"
-    assert_file_exists "$FLOW_PREPARE_PR_DIR/CLAUDE.md" "Should create flow-prepare-pr CLAUDE"
-    assert_file_exists "$FLOW_PREPARE_PR_DIR/context.jsonl" "Should create flow-prepare-pr context"
+    assert_file_exists "$ROADMAP_DIR/SKILL.md" "Should create roadmap SKILL"
+    assert_file_exists "$REQ_PLAN_DIR/SKILL.md" "Should create req-plan SKILL"
+    assert_file_exists "$REQ_DO_DIR/SKILL.md" "Should create req-do SKILL"
+    assert_file_exists "$REQ_CHECK_DIR/SKILL.md" "Should create req-check SKILL"
+    assert_file_exists "$REQ_ACT_DIR/SKILL.md" "Should create req-act SKILL"
+    assert_file_not_exists "$ROADMAP_DIR/context.jsonl" "roadmap should not rely on default context injection"
+    assert_file_not_exists "$REQ_PLAN_DIR/context.jsonl" "req-plan should not rely on default context injection"
+    assert_file_not_exists "$REQ_DO_DIR/context.jsonl" "req-do should not rely on default context injection"
+    assert_file_not_exists "$REQ_CHECK_DIR/context.jsonl" "req-check should not rely on default context injection"
+    assert_file_not_exists "$REQ_ACT_DIR/context.jsonl" "req-act should not rely on default context injection"
 }
 
-test_workflow_schema_maps_pr_brief_to_flow_prepare_pr() {
-    describe "workflow schema should map pr_brief to flow-prepare-pr"
+test_workflow_schema_maps_pdca_loop() {
+    describe "workflow schema should map roadmap and the PDCA loop"
 
-    if ! node - "$WORKFLOW_YAML" <<'EOF'
-const fs = require('fs');
-const yaml = require('js-yaml');
+    local content
+    content=$(cat "$WORKFLOW_YAML")
 
-const schemaPath = process.argv[2];
-const schema = yaml.load(fs.readFileSync(schemaPath, 'utf8'));
-
-const prBrief = schema.artifacts.find((artifact) => artifact.id === 'pr_brief');
-if (!prBrief) {
-  console.error('Missing pr_brief artifact');
-  process.exit(1);
+    assert_contains "$content" "skill: roadmap" "workflow should reference roadmap"
+    assert_contains "$content" "skill: req-plan" "workflow should reference req-plan"
+    assert_contains "$content" "skill: req-do" "workflow should reference req-do"
+    assert_contains "$content" "skill: req-check" "workflow should reference req-check"
+    assert_contains "$content" "skill: req-act" "workflow should reference req-act"
+    assert_contains "$content" "- id: backlog_feedback" "workflow should allow act stage to feed backlog"
+    assert_contains "$content" "- id: roadmap" "skills.workflow should register roadmap"
+    assert_contains "$content" "- id: req-plan" "skills.workflow should register req-plan"
+    assert_contains "$content" "- id: req-do" "skills.workflow should register req-do"
+    assert_contains "$content" "- id: req-check" "skills.workflow should register req-check"
+    assert_contains "$content" "- id: req-act" "skills.workflow should register req-act"
 }
 
-if (prBrief.skill !== 'flow-prepare-pr') {
-  console.error(`Expected pr_brief.skill=flow-prepare-pr, got ${prBrief.skill}`);
-  process.exit(2);
-}
-
-const registered = (schema.skills.workflow || []).some(
-  (skill) => skill.id === 'flow-prepare-pr' && skill.path === 'flow-prepare-pr'
-);
-
-if (!registered) {
-  console.error('flow-prepare-pr missing from skills.workflow');
-  process.exit(3);
-}
-EOF
-    then
-        return 1
-    fi
-}
-
-test_claude_directory_map_mentions_flow_prepare_pr() {
-    describe ".claude directory map should mention flow-prepare-pr"
+test_claude_directory_map_mentions_pdca_loop() {
+    describe ".claude directory map should mention roadmap and PDCA"
 
     local content
     content=$(cat "$CLAUDE_DOC")
 
-    assert_contains "$content" "flow-prepare-pr/" "Should list flow-prepare-pr in .claude map"
-    assert_contains "$content" '`/flow:prepare-pr`' "Should list /flow:prepare-pr in active flow modules"
+    assert_contains "$content" "roadmap/" "Should list roadmap in .claude map"
+    assert_contains "$content" "req-plan/" "Should list req-plan in .claude map"
+    assert_contains "$content" "req-do/" "Should list req-do in .claude map"
+    assert_contains "$content" "req-check/" "Should list req-check in .claude map"
+    assert_contains "$content" "req-act/" "Should list req-act in .claude map"
+}
+
+test_req_plan_stays_requirement_scoped() {
+    describe "req-plan should stay requirement scoped"
+
+    local content
+    content=$(cat "$REQ_PLAN_DIR/SKILL.md")
+
+    assert_not_contains "$content" "ARCHITECTURE.md" "req-plan should not own project architecture docs"
+    assert_not_contains "$content" "GUIDELINES.md" "req-plan should not own project guidelines docs"
+    assert_not_contains "$content" "STYLE.md" "req-plan should not own project style docs"
+    assert_not_contains "$content" "ROADMAP.md" "req-plan should not regenerate roadmap"
+    assert_not_contains "$content" "BACKLOG.md" "req-plan should not own backlog planning"
 }
 
 run_tests \
-    test_flow_prepare_pr_skill_scaffold_exists \
-    test_workflow_schema_maps_pr_brief_to_flow_prepare_pr \
-    test_claude_directory_map_mentions_flow_prepare_pr
+    test_skill_scaffolds_exist \
+    test_workflow_schema_maps_pdca_loop \
+    test_claude_directory_map_mentions_pdca_loop \
+    test_req_plan_stays_requirement_scoped
