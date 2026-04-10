@@ -68,6 +68,8 @@ describe('cc-devflow cli distribution bootstrap', () => {
 
     expect(fs.existsSync(path.join(repoRoot, '.claude', 'skills', 'roadmap', 'SKILL.md'))).toBe(true);
     expect(fs.existsSync(path.join(repoRoot, '.claude', 'skills', 'req-plan', 'SKILL.md'))).toBe(true);
+    expect(fs.existsSync(path.join(repoRoot, '.claude', 'skills', 'docs-sync'))).toBe(false);
+    expect(fs.existsSync(path.join(repoRoot, '.claude', 'skills', 'npm-release'))).toBe(false);
     expect(fs.existsSync(path.join(repoRoot, '.claude', 'tsc-cache'))).toBe(false);
   });
 

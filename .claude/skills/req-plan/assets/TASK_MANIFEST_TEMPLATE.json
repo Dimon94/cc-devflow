@@ -1,15 +1,72 @@
 {
+  "changeId": "REQ-XXX",
   "requirementId": "REQ-XXX",
+  "requirementVersion": "REQ-XXX.v1",
+  "sourceRoadmap": {
+    "itemId": "RM-001",
+    "roadmapVersion": "1.0",
+    "roadmapSkillVersion": "2.0.0",
+    "sourceStage": "Stage 1",
+    "successSignal": "",
+    "killSignal": "",
+    "dependencies": [],
+    "nonGoals": []
+  },
+  "planningMeta": {
+    "reqPlanSkillVersion": "2.0.0",
+    "designVersion": "design.v1",
+    "approvedAt": "",
+    "approvedBy": "",
+    "basedOnOption": "Option A"
+  },
   "status": "planned",
+  "designMode": "tiny-design",
+  "approvedOption": "Option A",
+  "designStatus": "approved",
+  "reviewStatus": "approved",
+  "tasteDecisions": [],
+  "userChallenges": [],
   "currentTaskId": "T001",
+  "activePhase": 1,
+  "frozenDecisions": [],
   "tasks": [
     {
       "id": "T001",
-      "title": "Describe the first executable unit",
+      "title": "[TEST] Describe the first failing test",
       "phase": 1,
+      "status": "pending",
+      "dependsOn": [],
+      "parallel": false,
+      "touches": [],
       "files": [],
-      "verification": [],
-      "evidence": []
+      "acceptance": [
+        "Describe what reality must change when this task is done"
+      ],
+      "verification": [
+        "npm test -- path/to/test"
+      ],
+      "evidence": [
+        "Failing test output",
+        "Passing test output"
+      ],
+      "context": {
+        "readFiles": [
+          "DESIGN.md",
+          "context-package.md"
+        ],
+        "commands": [
+          "npm test -- path/to/test"
+        ],
+        "notes": [
+          "Write the failing test first"
+        ]
+      },
+      "reviews": {
+        "spec": "pending",
+        "code": "pending"
+      }
     }
-  ]
+  ],
+  "openQuestions": [],
+  "deferredQuestions": []
 }

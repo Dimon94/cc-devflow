@@ -36,6 +36,10 @@ cat > "$REQ_DIR/ANALYSIS.md" <<EOF
 
 $INPUT
 
+## Failing Test To Add First
+
+- 
+
 ## Reproduction
 
 - 
@@ -49,6 +53,10 @@ $INPUT
 - 
 
 ## Fix Direction
+
+- 
+
+## Guardrail Test After Fix
 
 - 
 EOF

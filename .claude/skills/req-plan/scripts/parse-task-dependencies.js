@@ -11,6 +11,7 @@ const fs = require('fs');
 const phaseRegex = /^##\s+Phase\s+(\d+):\s*(.+)$/;
 const taskRegex = /^-\s+\[([ xX])\]\s+(?:\*\*)?(T\d+)(?:\*\*)?\s+(.*)$/;
 const fileRegex = /`([^`]+)`/g;
+const dependsOnRegex = /\(dependsOn:([^)]+)\)/;
 
 function parse(content) {
   const lines = content.replace(/\r\n?/g, '\n').split('\n');
@@ -29,13 +30,24 @@ function parse(content) {
 
     const [, box, id, rest] = taskMatch;
     const files = [...rest.matchAll(fileRegex)].map((m) => m[1]);
+    const dependsOnMatch = rest.match(dependsOnRegex);
+    const dependsOnValue = dependsOnMatch ? dependsOnMatch[1].trim() : '';
+    const dependsOn = !dependsOnValue || dependsOnValue === 'none'
+      ? []
+      : dependsOnValue.split(',').map((item) => item.trim()).filter(Boolean);
     tasks.push({
       id,
       phase,
       completed: box.toLowerCase() === 'x',
       parallel: rest.includes('[P]'),
+      dependsOn,
       files,
-      title: rest.replace(/\[P\]/g, '').replace(fileRegex, '').replace(/\*\*/g, '').trim()
+      title: rest
+        .replace(/\[P\]/g, '')
+        .replace(dependsOnRegex, '')
+        .replace(fileRegex, '')
+        .replace(/\*\*/g, '')
+        .trim()
     });
   }
 
@@ -50,8 +62,10 @@ function main() {
   }
 
   const tasks = parse(fs.readFileSync(file, 'utf8'));
-  const nextPhase = tasks.filter((t) => !t.completed).reduce((min, t) => Math.min(min, t.phase), Infinity);
-  const nextTasks = Number.isFinite(nextPhase) ? tasks.filter((t) => t.phase === nextPhase && !t.completed) : [];
+  const completedIds = new Set(tasks.filter((t) => t.completed).map((t) => t.id));
+  const runnableTasks = tasks.filter((t) => !t.completed && t.dependsOn.every((dep) => completedIds.has(dep)));
+  const nextPhase = runnableTasks.reduce((min, t) => Math.min(min, t.phase), Infinity);
+  const nextTasks = Number.isFinite(nextPhase) ? runnableTasks.filter((t) => t.phase === nextPhase) : [];
 
   process.stdout.write(JSON.stringify({ tasks, nextTasks }, null, 2));
 }

@@ -5,7 +5,9 @@ const zlib = require('zlib');
 const { spawnSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
-const REQUIRED_SKILLS = ['roadmap', 'req-plan', 'req-do', 'req-check', 'req-act'];
+const DISTRIBUTION_CONFIG = require(path.join(ROOT, 'config', 'distributable-skills.json'));
+const PUBLIC_SKILLS = DISTRIBUTION_CONFIG.publicSkills || [];
+const INTERNAL_SKILLS = DISTRIBUTION_CONFIG.internalSkills || [];
 
 function statType(stat) {
   if (stat.isFile()) {
@@ -77,7 +79,13 @@ function validatePackageJson(errors) {
   ensureArrayIncludes(pkg.files, 'bin/', errors, 'package.json files');
   ensureArrayIncludes(pkg.files, 'lib/', errors, 'package.json files');
   ensureArrayIncludes(pkg.files, 'config/', errors, 'package.json files');
-  ensureArrayIncludes(pkg.files, '.claude/skills/', errors, 'package.json files');
+  for (const skillName of PUBLIC_SKILLS) {
+    ensureArrayIncludes(pkg.files, `.claude/skills/${skillName}/`, errors, 'package.json files');
+  }
+
+  if (pkg.files.includes('.claude/skills/')) {
+    errors.push('package.json files should not include broad ".claude/skills/" entry');
+  }
 }
 
 function validateTemplate(errors) {
@@ -89,7 +97,7 @@ function validateTemplate(errors) {
   ensurePath('config/adapters.yml', 'file', errors);
   ensurePath('config/schema/adapters.schema.json', 'file', errors);
   ensurePath('lib/compiler', 'dir', errors);
-  for (const skillName of REQUIRED_SKILLS) {
+  for (const skillName of PUBLIC_SKILLS) {
     ensurePath(`.claude/skills/${skillName}`, 'dir', errors);
     ensurePath(`.claude/skills/${skillName}/SKILL.md`, 'file', errors);
     ensurePath(`.claude/skills/${skillName}/PLAYBOOK.md`, 'file', errors);
@@ -253,7 +261,7 @@ function validatePackTarball(errors) {
     'package/package.json'
   ];
 
-  for (const skillName of REQUIRED_SKILLS) {
+  for (const skillName of PUBLIC_SKILLS) {
     requiredEntries.push(`package/.claude/skills/${skillName}/SKILL.md`);
     requiredEntries.push(`package/.claude/skills/${skillName}/PLAYBOOK.md`);
   }
@@ -267,6 +275,14 @@ function validatePackTarball(errors) {
   for (const entry of entries) {
     if (entry.includes('/.DS_Store') || entry.includes('.claude/tsc-cache/')) {
       errors.push(`Tarball should not include transient file: ${entry}`);
+    }
+  }
+
+  for (const skillName of INTERNAL_SKILLS) {
+    for (const entry of entries) {
+      if (entry.startsWith(`package/.claude/skills/${skillName}/`)) {
+        errors.push(`Tarball should not include internal skill: ${entry}`);
+      }
     }
   }
 

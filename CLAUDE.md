@@ -91,3 +91,14 @@ KISS, YAGNI, DRY & SOLID, and use ask-question tool if you are not clear about m
 注释规范：中文 + ASCII 风格分块注释,使代码看起来像高度优化的顶级开源库作品
 核心信念：代码是写给人看的,只是顺便让机器运行
 </interaction_protocol>
+
+<skill_maintenance_protocol>
+如果改动触达 `.claude/skills/<skill>/`，提交前必须同步：
+1. 该 skill `SKILL.md` frontmatter 里的 `version`
+2. 该 skill 本地 `CHANGELOG.md`
+3. 被这次变更影响到的 `README*`、`CONTRIBUTING*`、`docs/**/*.md`
+
+优先使用 `.claude/skills/docs-sync/` 作为仓库内的文档收口流程。
+
+注意：`docs-sync` 是维护类 Skill，不属于 `roadmap -> req-plan -> req-do -> req-check -> req-act` 这条 5 步主 workflow。
+</skill_maintenance_protocol>

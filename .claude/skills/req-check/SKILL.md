@@ -17,6 +17,7 @@ description: Use when a planned change needs fresh verification evidence, qualit
 
 1. `PLAYBOOK.md`
 2. `references/gate-contract.md`
+3. `references/review-contract.md`
 
 ## Use This Skill When
 
@@ -32,6 +33,7 @@ description: Use when a planned change needs fresh verification evidence, qualit
 1. 先读 `DESIGN.md`、`TASKS.md`、`task-manifest.json`。
 2. 明确本次要验证哪些事实，不做含糊验收。
 3. 所有通过结论都必须来自本次新鲜命令输出。
+4. 已完成任务必须能拿出 `spec/code` review 证据。
 
 ## Loop
 
@@ -39,16 +41,19 @@ description: Use when a planned change needs fresh verification evidence, qualit
 2. 失败项必须回指 `req-plan` 或 `req-do`。
 3. 只给三种结论：通过、不通过、阻塞。
 4. 通过后才允许进入 `req-act`。
+5. 验收至少覆盖两层：任务级 review gate，需求级 diff review gate。
 
 ## Output
 
 - `report-card.json`
 - 验证结果输出
 - review 结论
+- reroute 结论
 
 ## Bundled Resources
 
 - 契约：`references/gate-contract.md`
+- 审查契约：`references/review-contract.md`
 - 模板：`assets/REPORT_CARD_TEMPLATE.json`
 - 质量门执行：`scripts/run-quality-gates.sh`
 - 结论校验：`scripts/verify-gate.sh`

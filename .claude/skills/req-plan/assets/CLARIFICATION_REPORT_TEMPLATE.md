@@ -1,10 +1,20 @@
 # Clarification Report
 
+## Document Meta
+
+- Requirement version:
+- Req-Plan skill version:
+- Source roadmap item:
+- Source roadmap version:
+- Date:
+
 ## Summary
 
 - Requirement:
 - Date:
 - Status:
+- Track:
+- Next question:
 
 ## Open Questions
 
@@ -19,3 +29,9 @@
 ## Deferred
 
 - 
+
+## Gate Check
+
+- Enough to recommend an option:
+- Enough to write `DESIGN.md`:
+- Version trace updated:

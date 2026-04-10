@@ -29,7 +29,7 @@ if [[ -z "$REPORT" || ! -f "$REPORT" ]]; then
   exit 1
 fi
 
-jq -e '.verdict and .summary and .evidence and .gaps and .reroute' "$REPORT" >/dev/null
+jq -e '.overall and .verdict and .summary and .reroute' "$REPORT" >/dev/null
 
 for file in "${requires[@]}"; do
   [[ -f "$file" ]] || { echo "Missing required file: $file" >&2; exit 1; }

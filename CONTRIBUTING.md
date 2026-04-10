@@ -20,6 +20,8 @@ Public surface:
 
 Internal implementation details may still live under `lib/harness/`, but they are not the user-facing CLI anymore.
 
+Maintenance helpers may also exist under `.claude/skills/`, such as `docs-sync`, but they do not change the public five-step workflow story.
+
 ---
 
 ## Development Setup
@@ -112,6 +114,14 @@ Each shipped skill should keep its own folder:
 └── scripts/
 ```
 
+If you touch a shipped skill, treat these files as one contract:
+
+- `SKILL.md`
+- local `CHANGELOG.md`
+- any referenced `PLAYBOOK.md`, `assets/`, `references/`, `scripts/`
+
+Do not change one part of the contract and leave the others stale.
+
 ### 3. Keep Distribution Clean
 
 Do not ship transient files in templates or tarballs.
@@ -164,6 +174,8 @@ This should confirm:
 - `skills.sh` should be documented only as a single-skill distribution path
 - do not describe `.claude/commands/` as required structure
 - do not describe harness CLI as supported public workflow
+- if a shipped skill changes, update that skill's `version`, local `CHANGELOG.md`, and affected public docs in the same PR
+- keep the workflow story as five visible skills; document maintenance helpers separately
 
 ---
 

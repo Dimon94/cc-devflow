@@ -4,6 +4,14 @@
 
 - 
 
+## What Is New
+
+- 
+
+## Verification
+
+- 
+
 ## Ops Notes
 
 - 

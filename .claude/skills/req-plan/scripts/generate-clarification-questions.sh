@@ -13,7 +13,7 @@ EOF
 }
 
 INPUT=""
-MAX=5
+MAX=1
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -44,6 +44,11 @@ for pattern in "${patterns[@]}"; do
 done
 
 awk -F: '!seen[$1 ":" $2]++ {print}' "$tmp" | head -n "$MAX" | \
-awk -F: '{printf "- Q%02d: 第 %s 行仍不明确 -> %s\n", NR, $2, substr($0, index($0, $3))}'
+awk -F: '{
+  printf "- Q%02d: 第 %s 行仍不明确 -> %s\n", NR, $2, substr($0, index($0, $3))
+  if (NR == 1) {
+    printf "  Next action: 只问这一题，拿到答案后再继续。\n"
+  }
+}'
 
 rm -f "$tmp"

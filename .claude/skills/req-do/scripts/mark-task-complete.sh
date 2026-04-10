@@ -3,20 +3,24 @@
 set -euo pipefail
 
 # ------------------------------------------------------------
-# 把 TASKS.md 中指定任务勾为完成
+# 把任务标记为完成，并同步 manifest / TASKS
 # ------------------------------------------------------------
 
 usage() {
   cat <<'EOF'
-Usage: mark-task-complete.sh --tasks TASKS.md --task T001
+Usage:
+  mark-task-complete.sh --manifest task-manifest.json [--tasks TASKS.md] --task T001
 EOF
 }
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+MANIFEST=""
 TASKS=""
 TASK_ID=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --manifest) MANIFEST="$2"; shift 2 ;;
     --tasks) TASKS="$2"; shift 2 ;;
     --task) TASK_ID="$(echo "$2" | tr '[:lower:]' '[:upper:]')"; shift 2 ;;
     -h|--help) usage; exit 0 ;;
@@ -24,12 +28,59 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ -z "$TASKS" || -z "$TASK_ID" || ! -f "$TASKS" ]]; then
+if [[ -z "$TASK_ID" || (-z "$MANIFEST" && -z "$TASKS") ]]; then
   usage
   exit 1
 fi
 
-tmp="$(mktemp)"
-sed -E "0,/^- \[ \] (\*\*)?${TASK_ID}(\*\*)?/{s//- [x] \1${TASK_ID}\2/}" "$TASKS" > "$tmp"
-mv "$tmp" "$TASKS"
+if [[ -n "$MANIFEST" ]]; then
+  if [[ ! -f "$MANIFEST" ]]; then
+    usage
+    exit 1
+  fi
+
+  req_dir="$(cd "$(dirname "$MANIFEST")" && pwd)"
+  "$SCRIPT_DIR/verify-task-gates.sh" --dir "$req_dir" --task "$TASK_ID" >/dev/null
+
+  tmp_manifest="$(mktemp)"
+  jq --arg task "$TASK_ID" '
+    .tasks |= map(
+      if .id == $task then
+        . + {
+          status: "passed",
+          reviews: ((.reviews // {}) + {spec: ((.reviews.spec // "pass") | tostring), code: ((.reviews.code // "pass") | tostring)})
+        }
+      else
+        .
+      end
+    )
+  ' "$MANIFEST" > "$tmp_manifest"
+  mv "$tmp_manifest" "$MANIFEST"
+
+  next_task="$("$SCRIPT_DIR/select-ready-tasks.sh" --manifest "$MANIFEST" | jq -r '.readyTasks[0].id // empty')"
+
+  tmp_manifest="$(mktemp)"
+  jq --arg next "$next_task" '
+    .currentTaskId = (if $next == "" then null else $next end)
+    | .status = (
+        if ([.tasks[] | select((.status // "pending") != "passed" and (.status // "pending") != "completed" and (.status // "pending") != "done" and (.status // "pending") != "verified")] | length) == 0
+        then "implemented"
+        else "in_progress"
+        end
+      )
+  ' "$MANIFEST" > "$tmp_manifest"
+  mv "$tmp_manifest" "$MANIFEST"
+fi
+
+if [[ -n "$TASKS" ]]; then
+  if [[ ! -f "$TASKS" ]]; then
+    usage
+    exit 1
+  fi
+
+  tmp_tasks="$(mktemp)"
+  sed -E "0,/^- \[ \] (\*\*)?${TASK_ID}(\*\*)?/{s//- [x] \1${TASK_ID}\2/}" "$TASKS" > "$tmp_tasks"
+  mv "$tmp_tasks" "$TASKS"
+fi
+
 echo "Marked $TASK_ID complete"

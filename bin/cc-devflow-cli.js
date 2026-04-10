@@ -5,9 +5,11 @@ const { spawnSync } = require('child_process');
 
 const PACKAGE_ROOT = path.resolve(__dirname, '..');
 const TEMPLATE_DIR = path.join(PACKAGE_ROOT, '.claude');
+const DISTRIBUTION_CONFIG = require(path.join(PACKAGE_ROOT, 'config', 'distributable-skills.json'));
 const ADAPT_BIN = path.join(PACKAGE_ROOT, 'bin', 'adapt.js');
 const ADAPTER_BIN = path.join(PACKAGE_ROOT, 'bin', 'cc-devflow.js');
 const TEMPLATE_IGNORES = new Set(['.DS_Store', 'tsc-cache']);
+const PUBLIC_SKILLS = new Set(DISTRIBUTION_CONFIG.publicSkills || []);
 
 function shouldIncludeTemplatePath(src) {
   const relativePath = path.relative(TEMPLATE_DIR, src);
@@ -17,6 +19,15 @@ function shouldIncludeTemplatePath(src) {
   }
 
   const segments = relativePath.split(path.sep);
+  const skillIndex = segments.indexOf('skills');
+
+  if (skillIndex !== -1 && segments.length > skillIndex + 1) {
+    const skillName = segments[skillIndex + 1];
+    if (!PUBLIC_SKILLS.has(skillName)) {
+      return false;
+    }
+  }
+
   return !segments.some((segment) => TEMPLATE_IGNORES.has(segment));
 }
 

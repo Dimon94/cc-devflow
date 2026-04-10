@@ -1,0 +1,13 @@
+{
+  "publicSkills": [
+    "roadmap",
+    "req-plan",
+    "req-do",
+    "req-check",
+    "req-act"
+  ],
+  "internalSkills": [
+    "docs-sync",
+    "npm-release"
+  ]
+}

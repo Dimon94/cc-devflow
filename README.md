@@ -113,7 +113,7 @@ CC-DevFlow keeps the `.claude` skill folders compatible with skills.sh single-sk
 - `name` and `description` in that frontmatter
 - bundled local resources beside the skill, such as `PLAYBOOK.md`, `assets/`, `scripts/`, and `references/`
 
-In this repository, the published skills are:
+In this repository, the distributed skill folders are:
 
 - `.claude/skills/roadmap/`
 - `.claude/skills/req-plan/`
@@ -138,7 +138,7 @@ You do not need to remember command names.
 
 The `cc-devflow` CLI remains the whole-pack installation and adaptation path.
 
-skills.sh remains the single-skill distribution path for `.claude/skills/*`.
+skills.sh remains the single-skill distribution path for distributed `.claude/skills/*`.
 
 ## 📦 Outputs
 

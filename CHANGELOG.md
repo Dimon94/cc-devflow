@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Added
+
+- Added `.claude/skills/docs-sync/` as a maintenance skill for syncing skill versions, skill changelogs, and affected public docs before commit or ship.
+- Added `config/distributable-skills.json` so CLI/template distribution uses an explicit public-skill allowlist.
+
+### Changed
+
+- Documented the repository rule that changes to shipped skills must update the skill `version`, local `CHANGELOG.md`, and impacted README / CONTRIBUTING / docs content together.
+- `cc-devflow init` and npm packaging now distribute only public workflow skills; maintainer-only skills such as `docs-sync` and `npm-release` stay out of the shipped template.
+
 ## [4.3.0] - 2026-03-13
 
 ### ✨ TDD Enforcement + OpenSpec Interop
