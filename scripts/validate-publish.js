@@ -220,7 +220,14 @@ function listTarEntries(tarBuffer) {
 
 function validatePackTarball(errors) {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-devflow-pack-'));
-  const packResult = runCommand('npm', ['pack', '--pack-destination', tmpDir], { cwd: ROOT });
+  const packEnv = { ...process.env };
+  delete packEnv.npm_config_dry_run;
+  delete packEnv.NPM_CONFIG_DRY_RUN;
+
+  const packResult = runCommand('npm', ['pack', '--pack-destination', tmpDir], {
+    cwd: ROOT,
+    env: packEnv
+  });
 
   if (!packResult.ok) {
     errors.push(`npm pack failed: ${packResult.error}`);

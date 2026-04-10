@@ -9,15 +9,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.4.0] - 2026-04-10
+
+### 🚀 Review-Gated Delivery + Distribution Cleanup
+
+v4.4.0 tightens the requirement runtime contract so planning, dispatch, verify, and release operate on the same execution state, while npm distribution now ships only the public workflow surface.
+
 ### Added
 
+- Added richer task manifest metadata, including phase, parallelism, acceptance, verification, evidence, review state, and execution cursor tracking.
+- Added native review aggregation in `lib/harness/review.js` so verify/release can block on missing or failed task review proof.
 - Added `.claude/skills/docs-sync/` as a maintenance skill for syncing skill versions, skill changelogs, and affected public docs before commit or ship.
 - Added `config/distributable-skills.json` so CLI/template distribution uses an explicit public-skill allowlist.
 
 ### Changed
 
+- `planner`, `dispatch`, `resume`, and `query` now derive the same ready task and active phase from manifest state instead of guessing from the first pending item.
+- `verify` and release-facing outputs now emit explicit verdicts, review summaries, reroute hints, and blocking findings tied to review artifacts.
 - Documented the repository rule that changes to shipped skills must update the skill `version`, local `CHANGELOG.md`, and impacted README / CONTRIBUTING / docs content together.
 - `cc-devflow init` and npm packaging now distribute only public workflow skills; maintainer-only skills such as `docs-sync` and `npm-release` stay out of the shipped template.
+
+### Benefits
+
+- ✅ Review proof is now a first-class gate instead of tribal process
+- ✅ Requirement execution state is resumable and dependency-aware
+- ✅ Packaged output exposes a cleaner public surface for npm consumers
 
 ## [4.3.0] - 2026-03-13
 
