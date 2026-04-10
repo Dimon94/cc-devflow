@@ -23,6 +23,7 @@ build/
 .qwen/
 .harness/
 devflow/.generated/
+.refresh/
 
 # OS
 .DS_Store
