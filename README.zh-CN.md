@@ -21,11 +21,12 @@ CC-DevFlow 只暴露 5 个可见 Skill：
 ## ✨ 核心特性
 
 - **可见面极小**：1 个 roadmap Skill + 4 个 PDCA Skill
-- **`.claude/skills/` 是真相源**：五个 canonical Skill 拥有流程解释权，`.agents/skills/` 只做镜像分发
+- **多平台 CLI 已恢复**：`cc-devflow` 已重新回到可分发 CLI 入口，用于 `.claude` 安装与 Codex、Cursor、Qwen、Antigravity 多平台适配
+- **skills.sh 兼容布局**：`.claude/skills/<skill>/SKILL.md` 继续保持可被 skills.sh 单 Skill 分发的结构
 - **资源内化到 Skill**：每个 Skill 自带模板、参考资料和脚本
 - **白盒优先**：默认不做上下文注入，需要什么文件就显式读取什么文件
 - **任务模板保留**：继续以 `TASKS.md` 和 `task-manifest.json` 作为执行骨架
-- **薄运行时**：`harness:*` 只作为内部运行时支持，不再是用户心智
+- **Skill Pack 优先**：仓库以整包形式分发 `.claude` Skill、playbook 和资源文件
 - **先证据后完成**：验证、文档同步、PR brief、release note 都在闭环末端
 - **roadmap 先行**：先定中长期方向，再让 requirement 按 PDCA 执行
 
@@ -43,17 +44,81 @@ req-plan -> req-do -> req-check -> req-act
 
 ## 🚀 安装
 
-CC-DevFlow 设计成通过 `skills` CLI 安装：
+内置 CLI 已回到经典的 `init + adapt` 模式。
+
+对外打包后的默认入口应保持简洁：
 
 ```bash
-npx skills add Dimon94/cc-devflow
+npx cc-devflow init --dir /path/to/your/project
 ```
 
-这遵循官方 [skills.sh CLI 文档](https://skills.sh/docs/cli) 给出的默认模式：`npx skills add <owner>/<skill-name>`。
+安装后，恢复后的 CLI 同时支持整包安装和多平台适配：
+
+```bash
+npx cc-devflow init --dir /path/to/your/project
+npx cc-devflow init --dir /path/to/your/project --force
+npx cc-devflow adapt --cwd /path/to/your/project --platform codex
+npx cc-devflow adapt --cwd /path/to/your/project --platform cursor
+npx cc-devflow adapt --cwd /path/to/your/project --platform qwen
+npx cc-devflow adapt --cwd /path/to/your/project --platform antigravity
+```
+
+如果你不是通过已安装包，而是在源码仓库里调试 CLI，本地运行请用 `node bin/cc-devflow-cli.js ...` 或 `npm exec -- cc-devflow ...`。
+
+## 🧩 skills.sh 分发
+
+[skills.sh](https://skills.sh/) 只作为新的 `.claude` Skill 分发渠道使用。
+
+因为 skills.sh 是按单个 Skill 安装，所以按需拉取对应 Skill：
+
+```bash
+npx skills add https://github.com/Dimon94/cc-devflow --skill roadmap
+npx skills add https://github.com/Dimon94/cc-devflow --skill req-plan
+npx skills add https://github.com/Dimon94/cc-devflow --skill req-do
+npx skills add https://github.com/Dimon94/cc-devflow --skill req-check
+npx skills add https://github.com/Dimon94/cc-devflow --skill req-act
+```
+
+当你想拿整包 `.claude` 时，用 `cc-devflow init`。
+
+当你想生成多平台产物时，用 `cc-devflow adapt`。
+
+skills.sh 仍然用于按单个 Skill 安装或刷新。
+
+## 🔁 升级
+
+通过最新版 CLI 刷新整包并重新执行适配：
+
+```bash
+npx cc-devflow@latest init --dir /path/to/your/project
+npx cc-devflow@latest adapt --cwd /path/to/your/project --all
+npx skills check
+npx skills update
+```
+
+如果你只想立刻刷新某一个 Skill，直接重跑它对应的 `npx skills add ... --skill ...` 命令即可。
+
+## 🧱 skills.sh 项目格式
+
+CC-DevFlow 让 `.claude` Skill 目录保持与 skills.sh 单 Skill 分发兼容：
+
+- 一个 Skill 一个目录
+- 每个分发 Skill 都有自己的 `SKILL.md`
+- `SKILL.md` 顶部使用 YAML frontmatter
+- frontmatter 至少声明 `name` 和 `description`
+- Skill 的本地资源与说明文件放在同级目录，比如 `PLAYBOOK.md`、`assets/`、`scripts/`、`references/`
+
+这个仓库当前发布的 Skill 源如下：
+
+- `.claude/skills/roadmap/`
+- `.claude/skills/req-plan/`
+- `.claude/skills/req-do/`
+- `.claude/skills/req-check/`
+- `.claude/skills/req-act/`
 
 ## 🛠️ 使用
 
-推荐顺序只有这一条：
+Skill 顺序仍然是：
 
 ```text
 1. roadmap
@@ -66,9 +131,9 @@ npx skills add Dimon94/cc-devflow
 
 你不需要记命令名。
 
-你不需要自带的 cc-devflow CLI。
+`cc-devflow` CLI 仍然是整包安装与适配路径。
 
-你只需要 Skill。
+skills.sh 则是 `.claude/skills/*` 的分发路径。
 
 ## 📦 产物
 

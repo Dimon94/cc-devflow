@@ -4,202 +4,126 @@
 
 ---
 
-## 📋 Overview
+## Overview
 
-This guide will help you get started with cc-devflow, from installation to your first requirement development.
+CC-DevFlow has two entry paths:
 
-## 🚀 Prerequisites
+- `cc-devflow init`: install the whole `.claude` pack into your project
+- `cc-devflow adapt`: generate platform outputs such as Codex rules
 
-- [Claude Code](https://claude.ai/code) installed and configured
-- Git repository initialized
-- Node.js project (optional, for additional quality checks)
+The workflow itself is driven by five visible skills:
 
-## 📦 Installation
+```text
+roadmap
 
-### Quick Install
+req-plan -> req-do -> req-check -> req-act
+```
+
+## Prerequisites
+
+- Node.js 18+
+- A Git repository
+- Claude Code or another supported agent environment
+
+## Install
+
+### Whole Pack Install
 
 ```bash
-# Clone .claude configuration to your project
-pnpm dlx tiged Dimon94/cc-devflow/.claude .claude
+npx cc-devflow init --dir /path/to/your/project
 ```
 
-### Manual Install
+### Single Skill Install
 
 ```bash
-# Download and extract
-curl -L https://github.com/Dimon94/cc-devflow/archive/main.zip -o cc-devflow.zip
-unzip cc-devflow.zip
-cp -r cc-devflow-main/.claude .claude
-rm -rf cc-devflow.zip cc-devflow-main
+npx skills add https://github.com/Dimon94/cc-devflow --skill roadmap
 ```
 
-## ✅ Verify Installation
-
-Run the verification script:
+## Adapt For A Platform
 
 ```bash
-.claude/scripts/verify-setup.sh
+npx cc-devflow adapt --cwd /path/to/your/project --platform codex
+npx cc-devflow adapt --cwd /path/to/your/project --platform cursor
+npx cc-devflow adapt --cwd /path/to/your/project --platform qwen
+npx cc-devflow adapt --cwd /path/to/your/project --platform antigravity
 ```
 
-This script will check:
-- All required files and directories exist
-- Scripts have execute permissions
-- Git repository is properly configured
+## Verify Installation
 
-## 🎯 Your First Requirement
-
-### Step 1: Run the Mainline Flow
+Check that the expected skill folders exist:
 
 ```bash
-/flow:init "REQ-001|User Authentication|https://docs.example.com/auth"
-/flow:spec "REQ-001"
-/flow:dev "REQ-001"
-/flow:verify "REQ-001" --strict
-/flow:release "REQ-001"
+find .claude/skills -mindepth 1 -maxdepth 1 -type d | sort
+find .claude/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort
 ```
 
-This will:
-1. Initialize requirement context package
-2. Generate executable task-manifest
-3. Dispatch task execution with checkpoints
-4. Run quick/strict quality gates
-5. Generate release note and cleanup runtime logs
-
-### Step 2: Check Progress
+If you adapted for Codex, verify the generated rule file:
 
 ```bash
-/flow:status REQ-001
+find .codex/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort
 ```
 
-### Step 3: Resume If Interrupted
+## First Workflow
+
+Use the skills in this order:
+
+```text
+1. roadmap
+2. req-plan
+3. req-do
+4. req-check
+5. req-act
+6. repeat
+```
+
+Typical outputs:
+
+- `roadmap` writes `ROADMAP.md` and `BACKLOG.md`
+- `req-plan` writes `BRAINSTORM.md`, `DESIGN.md`, `TASKS.md`, `task-manifest.json`
+- `req-check` writes `report-card.json`
+- `req-act` writes `RELEASE_NOTE.md` and `pr-brief.md`
+
+## Upgrade
+
+Refresh the whole pack with the latest packaged CLI:
 
 ```bash
-/flow:dev "REQ-001" --resume
+npx cc-devflow@latest init --dir /path/to/your/project
 ```
 
-## 🛠️ Core Scripts
-
-### Environment Check
-```bash
-bash .claude/scripts/check-prerequisites.sh
-```
-
-### View Task Status
-```bash
-bash .claude/scripts/check-task-status.sh --verbose
-```
-
-### Mark Task Complete
-```bash
-bash .claude/scripts/mark-task-complete.sh T001
-```
-
-### Generate Status Report
-```bash
-bash .claude/scripts/generate-status-report.sh --format markdown
-```
-
-## 🧪 Running Tests
-
-### Script Tests
-```bash
-# Run all tests
-bash .claude/tests/run-all-tests.sh --scripts
-
-# Run specific test
-bash .claude/tests/scripts/test_check_prerequisites.sh
-```
-
-### Constitution Tests
-```bash
-bash .claude/tests/constitution/run_all_constitution_tests.sh
-```
-
-## 📊 Interactive Demo
-
-Run the interactive demo to see the complete workflow:
+Refresh generated platform outputs:
 
 ```bash
-python3 .claude/scripts/demo.py
+npx cc-devflow adapt --cwd /path/to/your/project --all
 ```
 
-## 🔧 Configuration
-
-### Minimum Configuration
-
-Edit `.claude/settings.json`:
-
-```json
-{
-  "permissions": {
-    "allowGitOperations": true,
-    "allowNetworkRequests": true,
-    "allowSubprocesses": true
-  }
-}
-```
-
-### Environment Variables
+Refresh one installed skill:
 
 ```bash
-# Quality gates
-export MIN_TEST_COVERAGE=80
-export STRICT_TYPE_CHECKING=true
-
-# Approval is explicit
-# Run: npm run harness:approve -- --change-id REQ-123 --execution-mode delegate
+npx skills update
 ```
 
-## 📚 Next Steps
+## Troubleshooting
 
-- [Command Reference](../commands/README.md) - Learn all available commands
-- [Workflow Guide](./workflow-guide.md) - Understand the development workflow
-- [Best Practices](./best-practices.md) - Follow recommended practices
-
-## 🚨 Troubleshooting
-
-### Issue: Scripts not executable
+### `.claude` already exists
 
 ```bash
-chmod +x .claude/scripts/*.sh
-chmod +x .claude/hooks/*.sh
+npx cc-devflow init --dir /path/to/your/project --force
 ```
 
-### Issue: Git not initialized
+### No Codex output generated
+
+Run:
 
 ```bash
-git init
-git add .
-git commit -m "Initial commit"
+npx cc-devflow adapt --cwd /path/to/your/project --platform codex
 ```
 
-### Issue: Tests failing
+If your project has no optional `.claude/commands/` input, this is expected: the compiler will still generate the skills registry and rules entry files.
 
-```bash
-# Check prerequisites
-bash .claude/scripts/check-prerequisites.sh
+## Next Steps
 
-# Run tests with verbose output
-VERBOSE=true bash .claude/tests/run-all-tests.sh --scripts
-```
-
-## 💡 Tips
-
-1. **Always check progress** with `/flow:status` before continuing work
-2. **Use `/flow:verify`** to check quality gates and consistency
-3. **Enable debug mode** if you encounter issues: `export FLOW_DEBUG=1`
-4. **Read the Constitution** to understand quality standards
-
-## 🆘 Getting Help
-
-- [GitHub Issues](https://github.com/Dimon94/cc-devflow/issues)
-- [Documentation](../../docs/)
-- [Contributing Guide](../../CONTRIBUTING.md)
-
----
-
-**Ready to start? Run your first command:**
-
-```bash
-/flow:init "REQ-001|My First Feature"
-```
+- [CLI And Skills](../commands/README.md)
+- [Workflow Guide](./workflow-guide.md)
+- [Best Practices](./best-practices.md)
+- [Project README](../../README.md)

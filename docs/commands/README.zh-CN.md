@@ -1,8 +1,15 @@
-# 命令参考已退役
+# CLI 与 Skill
 
-CC-DevFlow 不再把命令当成用户入口。
+CC-DevFlow 不再把旧的 `/flow:*` 命令面当作主要用户接口。
 
-直接使用 Skill：
+整包安装和多平台适配，使用仓库自带 CLI：
+
+```bash
+npx cc-devflow init --dir /path/to/your/project
+npx cc-devflow adapt --cwd /path/to/your/project --platform codex
+```
+
+真正的工作流直接使用 Skill：
 
 ```text
 roadmap
@@ -10,8 +17,8 @@ roadmap
 req-plan -> req-do -> req-check -> req-act
 ```
 
-通过 [skills.sh CLI](https://skills.sh/docs/cli) 安装这个 skill pack：
+如果你只想安装单个 Skill，再使用 [skills.sh CLI](https://skills.sh/docs/cli)：
 
 ```bash
-npx skills add Dimon94/cc-devflow
+npx skills add https://github.com/Dimon94/cc-devflow --skill roadmap
 ```

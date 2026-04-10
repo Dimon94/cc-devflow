@@ -2,158 +2,130 @@
 
 ## Canonical Positioning
 
-CC-DevFlow 当前的默认路线是：
+CC-DevFlow 当前的对外形态是：
 
 - skill-first
-- autopilot-first
-- markdown-first
-- local-first
-- thin harness spine
+- roadmap + PDCA
+- packaged CLI for distribution
+- multi-platform adaptation
+- harness as an internal runtime library, not a user-facing CLI
 
-系统目标不是堆厚平台，而是把：
+用户真正看见的入口只有两类：
 
-- 模糊目标收敛
-- Markdown 记忆沉淀
-- 本地 subagent / team 委派
-- 执行 / 验证 / PR-ready 收尾
-
-串成一条可恢复、可审计、可自治的主链。
+- `cc-devflow init` / `cc-devflow adapt`
+- `roadmap -> req-plan -> req-do -> req-check -> req-act`
 
 ---
 
-## Canonical Flow
+## Visible Flow
 
-### 模糊目标入口
+### Distribution Layer
 
 ```bash
-/flow:autopilot "REQ-123|支持用户下单"
+npx cc-devflow init --dir /path/to/project
+npx cc-devflow adapt --cwd /path/to/project --platform codex
 ```
 
-### 手动主链
+`init` 负责把 `.claude/skills/*` 整包放进目标项目。
 
-```bash
-/flow:init "REQ-123|支持用户下单|https://plan.example.com/Q1"
-/flow:spec "REQ-123"
-/flow:dev "REQ-123"
-/flow:verify "REQ-123" --strict
-/flow:prepare-pr "REQ-123"
-/flow:release "REQ-123"
-```
+`adapt` 负责把 `.claude` 内容编译成 Codex、Cursor、Qwen、Antigravity 的平台产物。
 
----
-
-## State Surfaces
-
-### 语义记忆层
+### Workflow Layer
 
 ```text
-devflow/intent/${reqId}/
-├── summary.md
-├── facts.md
-├── decision-log.md
-├── plan.md
-├── resume-index.md
-├── delegation-map.md
-├── checkpoints/
-└── artifacts/
-    ├── briefs/
-    ├── results/
-    └── pr-brief.md
+roadmap
+
+req-plan -> req-do -> req-check -> req-act
 ```
 
-### requirement runtime 层
+`skills.sh` 只负责单个 Skill 的分发，不承担整包安装或多平台适配。
+
+---
+
+## Repository Truth
+
+### Source Of Distribution
 
 ```text
-devflow/requirements/${reqId}/
-├── context-package.md     # bootstrap bridge artifact
-├── harness-state.json     # lifecycle truth
-├── TASKS.md               # optional planner input / human mirror
-├── task-manifest.json     # executable task truth
-├── report-card.json       # verify truth
-└── RELEASE_NOTE.md
+.claude/skills/
+├── roadmap/
+├── req-plan/
+├── req-do/
+├── req-check/
+└── req-act/
 ```
 
-### runtime 执行层
+这五个 Skill 目录是当前仓库的主要分发源。
+
+### Source Of Platform Outputs
 
 ```text
-.harness/runtime/${reqId}/
-├── events.jsonl
-├── checkpoints/
-└── workers/
+bin/
+├── cc-devflow-cli.js
+├── adapt.js
+└── cc-devflow.js
+
+lib/compiler/
+config/
 ```
 
-### compatibility artifacts
+多平台适配由 compiler + adapters 完成。
 
-旧脚本或旧需求目录中可能仍会出现：
-
-- `orchestration_status.json`
-- `EXECUTION_LOG.md`
-
-它们只应被视为 compatibility mirror / append-only audit，不再是主状态面。
-
----
-
-## Truth Sources
-
-- 目标、计划、恢复：优先读 `devflow/intent/${reqId}/`
-- 生命周期：优先读 `harness-state.json`
-- 执行状态：优先读 `task-manifest.json` 与 `.harness/runtime/`
-- 验证结论：优先读 `report-card.json`
-- PR-ready 收尾：优先读 `devflow/intent/${reqId}/artifacts/pr-brief.md`
-
-额外原则：
-
-- `context-package.md` 只负责 bootstrap，不承载长期产品判断
-- `TASKS.md` 不是必需真相源；若存在，只是 planner 输入或可读镜像
-- 没有 artifact 证据，不算完成
-
----
-
-## Execution Ladder
+### Internal Runtime Layer
 
 ```text
-direct -> delegate -> team
+lib/harness/
 ```
 
-- `direct`: 默认路径，适合小任务和短上下文
-- `delegate`: 任务边界清晰、可并行时使用本地 worker/subagent
-- `team`: 只在多角色判断明显有价值时升级
+`lib/harness/` 仍然存在，但它是内部运行时能力层：
 
-Team 的共享记忆与协作状态，应继续写回 `devflow/intent/${reqId}/` 与 team-state truth，而不是另起一套编排中心。
-
----
-
-## Harness Mapping
-
-| Command | Harness Op | Core Output |
-|---------|------------|-------------|
-| `/flow:init` | `harness:init` + `harness:pack` | `harness-state.json`, `context-package.md` |
-| `/flow:spec` | `harness:plan` | `task-manifest.json` |
-| `/flow:dev` | `harness:dispatch` / `harness:resume` | runtime checkpoints + events |
-| `/flow:verify` | `harness:verify` | `report-card.json` |
-| `/flow:prepare-pr` | `harness:prepare-pr` | `artifacts/pr-brief.md` |
-| `/flow:release` | `harness:release` + `harness:janitor` | `RELEASE_NOTE.md` |
+- 可被测试覆盖
+- 可被 Skill 或内部模块调用
+- 不再作为独立 CLI 对外分发
 
 ---
 
-## Active References
+## Output Model
+
+常见工作流产物：
+
+- `ROADMAP.md`
+- `BACKLOG.md`
+- `BRAINSTORM.md`
+- `DESIGN.md`
+- `TASKS.md`
+- `task-manifest.json`
+- `report-card.json`
+- `pr-brief.md`
+- `RELEASE_NOTE.md`
+
+常见平台产物：
+
+- `.codex/skills/*`
+- `.cursor/rules/*`
+- `.qwen/*`
+- `.antigravity/*`
+- generated skills registry
+
+---
+
+## Compatibility Rules
+
+- `.claude/commands/` 现在只是可选兼容输入，不是默认结构
+- 旧 `/flow:*` 只允许作为历史语境出现，不应再写进新的用户文档
+- `harness:*` 现在是内部实现词汇，不应再写成用户操作手册
+- 分发文档默认写 `cc-devflow` CLI；源码开发文档才写 `node bin/...` 或 `npm exec --`
+
+---
+
+## Practical Reading Order
 
 优先参考这些文件理解当前系统：
 
-- `.claude/CLAUDE.md`
-- `.claude/DRIFT_AUDIT.md`
-- `.claude/rules/devflow-conventions.md`
-- `.claude/skills/workflow.yaml`
-- `lib/harness/CLAUDE.md`
-
----
-
-## Recovery Shortcuts
-
-```bash
-cat devflow/intent/REQ-123/resume-index.md
-ls -la devflow/intent/REQ-123/artifacts/results/
-ls -la .harness/runtime/REQ-123/
-```
-
-如果这些存在，就优先依赖它们继续推进，而不是重新扫描整仓库并猜测上下文。
+- `README.md`
+- `README.zh-CN.md`
+- `docs/guides/getting-started.md`
+- `bin/cc-devflow-cli.js`
+- `bin/adapt.js`
+- `lib/compiler/index.js`
+- `config/adapters.yml`

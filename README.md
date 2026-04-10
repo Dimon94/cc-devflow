@@ -21,11 +21,12 @@ CC-DevFlow exposes only five visible skills:
 ## ✨ Core Features
 
 - **Minimal visible surface**: one roadmap skill plus four PDCA stages
-- **Canonical in `.claude/skills/`**: five canonical skills own the workflow; `.agents/skills/` mirrors them for distribution
+- **Multi-platform CLI restored**: `cc-devflow` is back as the distributable CLI for `.claude` installation plus multi-platform adaptation for Codex, Cursor, Qwen, and Antigravity
+- **skills.sh-compatible skill layout**: `.claude/skills/<skill>/SKILL.md` stays compatible with single-skill distribution on skills.sh
 - **Skill-local resources**: each skill carries its own templates, references, and scripts
 - **Explicit, not hidden**: no default context injection, read the files you actually need
 - **Task-template first**: keep `TASKS.md` and `task-manifest.json` as the execution backbone
-- **Thin runtime**: `harness:*` stays as internal runtime support, not a user-facing CLI
+- **Skill pack first**: the repository distributes `.claude` skills, playbooks, and assets as one pack
 - **Evidence before done**: verification, doc sync, PR brief, and release note live at the end of the loop
 - **Roadmap-first**: decide medium-range direction once, then execute through PDCA
 
@@ -43,17 +44,86 @@ Use the PDCA loop to execute one roadmap item at a time.
 
 ## 🚀 Install
 
-CC-DevFlow is meant to be installed through the `skills` CLI:
+The built-in CLI is back to the classic `init + adapt` model.
+
+For the packaged CLI, the default entry stays simple:
 
 ```bash
-npx skills add Dimon94/cc-devflow
+npx cc-devflow init --dir /path/to/your/project
 ```
 
-This follows the official [skills.sh CLI docs](https://skills.sh/docs/cli), which define the default install flow as `npx skills add <owner>/<skill-name>`.
+After installation, the restored CLI supports both pack installation and multi-platform adaptation:
+
+```bash
+npx cc-devflow init --dir /path/to/your/project
+npx cc-devflow init --dir /path/to/your/project --force
+npx cc-devflow adapt --cwd /path/to/your/project --platform codex
+npx cc-devflow adapt --cwd /path/to/your/project --platform cursor
+npx cc-devflow adapt --cwd /path/to/your/project --platform qwen
+npx cc-devflow adapt --cwd /path/to/your/project --platform antigravity
+```
+
+If you are running from a source checkout instead of an installed package, use `node bin/cc-devflow-cli.js ...` or `npm exec -- cc-devflow ...`.
+
+## 🧩 skills.sh Distribution
+
+[skills.sh](https://skills.sh/) is supported only as a distribution channel for the new `.claude` skills.
+
+Because skills.sh installs skills one by one, use it to pull the specific skills you want:
+
+```bash
+npx skills add https://github.com/Dimon94/cc-devflow --skill roadmap
+npx skills add https://github.com/Dimon94/cc-devflow --skill req-plan
+npx skills add https://github.com/Dimon94/cc-devflow --skill req-do
+npx skills add https://github.com/Dimon94/cc-devflow --skill req-check
+npx skills add https://github.com/Dimon94/cc-devflow --skill req-act
+```
+
+Use `cc-devflow init` when you want the whole `.claude` pack.
+
+Use `cc-devflow adapt` when you want generated multi-platform outputs.
+
+Use skills.sh when you want to install or refresh a single skill.
+
+## 🔁 Upgrade
+
+Refresh the packaged `.claude` bundle with the latest CLI:
+
+```bash
+npx cc-devflow@latest init --dir /path/to/your/project
+npx cc-devflow@latest adapt --cwd /path/to/your/project --all
+```
+
+Upgrade installed skills with the skills CLI lifecycle commands:
+
+```bash
+npx skills check
+npx skills update
+```
+
+If you only want to refresh one skill immediately, re-run its `npx skills add ... --skill ...` command.
+
+## 🧱 Repository Format
+
+CC-DevFlow keeps the `.claude` skill folders compatible with skills.sh single-skill distribution:
+
+- one skill per folder
+- one `SKILL.md` per distributed skill
+- YAML frontmatter at the top of each `SKILL.md`
+- `name` and `description` in that frontmatter
+- bundled local resources beside the skill, such as `PLAYBOOK.md`, `assets/`, `scripts/`, and `references/`
+
+In this repository, the published skills are:
+
+- `.claude/skills/roadmap/`
+- `.claude/skills/req-plan/`
+- `.claude/skills/req-do/`
+- `.claude/skills/req-check/`
+- `.claude/skills/req-act/`
 
 ## 🛠️ Use
 
-The intended sequence is:
+The skill sequence remains:
 
 ```text
 1. roadmap
@@ -66,9 +136,9 @@ The intended sequence is:
 
 You do not need to remember command names.
 
-You do not need a custom cc-devflow CLI.
+The `cc-devflow` CLI remains the whole-pack installation and adaptation path.
 
-You only need the skills.
+skills.sh remains the single-skill distribution path for `.claude/skills/*`.
 
 ## 📦 Outputs
 
