@@ -3,7 +3,7 @@
 
 成员清单
 runtime.test.js: 在临时仓库中执行 harness 主链，验证 manifest/report/release-note 的最小闭环。
-cli-bootstrap.test.js: 调用 cc-devflow CLI 验证 init/adapt 自动补齐 harness npm scripts，并覆盖回归缺口。
+cli-bootstrap.test.js: 调用 cc-devflow CLI 验证 .claude 分发、覆盖式增量更新与多平台入口回归。
 
 法则: 成员完整·一行一文件·父级链接·技术词前置
 

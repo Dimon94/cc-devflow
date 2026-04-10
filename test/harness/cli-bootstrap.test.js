@@ -1,7 +1,7 @@
 /**
- * [INPUT]: 依赖 child_process 调用 CLI，依赖临时仓库夹具与 package.json 读写。
- * [OUTPUT]: 验证 init/adapt 阶段会自动补齐并修复 harness npm scripts。
- * [POS]: test/harness 的 CLI 回归测试，防止 /flow:release 再次降级到 fallback-manual。
+ * [INPUT]: 依赖 child_process 调用 CLI，依赖临时仓库夹具与 .claude 模板文件。
+ * [OUTPUT]: 验证恢复后的多平台 CLI 会安装 .claude，并按原版策略覆盖差异文件。
+ * [POS]: test/harness 的 CLI 分发回归测试。
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
 
@@ -11,17 +11,7 @@ const path = require('path');
 const { spawnSync } = require('child_process');
 
 const CLI_BIN = path.resolve(__dirname, '../../bin/cc-devflow-cli.js');
-const HARNESS_BIN = path.resolve(__dirname, '../../bin/harness.js');
-const HARNESS_KEYS = [
-  'harness:init',
-  'harness:pack',
-  'harness:plan',
-  'harness:dispatch',
-  'harness:verify',
-  'harness:release',
-  'harness:resume',
-  'harness:janitor'
-];
+const TEMPLATE_ROOT = path.resolve(__dirname, '../../.claude');
 
 function runCli(args, cwd) {
   const result = spawnSync(process.execPath, [CLI_BIN, ...args], {
@@ -41,7 +31,7 @@ function readPackageJson(repoRoot) {
   return JSON.parse(fs.readFileSync(packagePath, 'utf8'));
 }
 
-describe('cc-devflow cli harness bootstrap', () => {
+describe('cc-devflow cli distribution bootstrap', () => {
   let repoRoot;
 
   beforeEach(() => {
@@ -66,61 +56,48 @@ describe('cc-devflow cli harness bootstrap', () => {
     fs.rmSync(repoRoot, { recursive: true, force: true });
   });
 
-  test('init adds all required harness scripts for non-runtime repos', () => {
+  test('init installs .claude without mutating unrelated package scripts', () => {
     const result = runCli(['init', '--dir', repoRoot], repoRoot);
     expect(result.status).toBe(0);
 
     const packageJson = readPackageJson(repoRoot);
     expect(packageJson.scripts.test).toBe('node -e "process.exit(0)"');
+    expect(packageJson.scripts).toEqual({
+      test: 'node -e "process.exit(0)"'
+    });
 
-    for (const key of HARNESS_KEYS) {
-      expect(packageJson.scripts[key]).toBeDefined();
-      const command = key.replace('harness:', '');
-      expect(packageJson.scripts[key]).toBe(`cc-devflow harness ${command}`);
-    }
+    expect(fs.existsSync(path.join(repoRoot, '.claude', 'skills', 'roadmap', 'SKILL.md'))).toBe(true);
+    expect(fs.existsSync(path.join(repoRoot, '.claude', 'skills', 'req-plan', 'SKILL.md'))).toBe(true);
+    expect(fs.existsSync(path.join(repoRoot, '.claude', 'tsc-cache'))).toBe(false);
   });
 
-  test('adapt backfills missing harness scripts on existing project', () => {
+  test('init overwrites diverged .claude files with packaged content', () => {
     expect(runCli(['init', '--dir', repoRoot], repoRoot).status).toBe(0);
 
-    const packageJson = readPackageJson(repoRoot);
-    delete packageJson.scripts['harness:release'];
-    delete packageJson.scripts['harness:janitor'];
-    fs.writeFileSync(path.join(repoRoot, 'package.json'), `${JSON.stringify(packageJson, null, 2)}\n`);
-
-    const adaptResult = runCli(['adapt', '--platform', 'codex', '--cwd', repoRoot], repoRoot);
-    expect(adaptResult.status).toBe(0);
-
-    const nextPackageJson = readPackageJson(repoRoot);
-    expect(nextPackageJson.scripts['harness:release']).toBe('cc-devflow harness release');
-    expect(nextPackageJson.scripts['harness:janitor']).toBe('cc-devflow harness janitor');
-  });
-
-  test('adapt repairs legacy absolute-path harness scripts to portable commands', () => {
-    expect(runCli(['init', '--dir', repoRoot], repoRoot).status).toBe(0);
-
-    const packageJson = readPackageJson(repoRoot);
-    packageJson.scripts['harness:release'] = `node "${HARNESS_BIN}" release || cc-devflow harness release`;
-    packageJson.scripts['harness:janitor'] = `node "${HARNESS_BIN}" janitor`;
-    fs.writeFileSync(path.join(repoRoot, 'package.json'), `${JSON.stringify(packageJson, null, 2)}\n`);
-
-    const adaptResult = runCli(['adapt', '--platform', 'codex', '--cwd', repoRoot], repoRoot);
-    expect(adaptResult.status).toBe(0);
-
-    const nextPackageJson = readPackageJson(repoRoot);
-    expect(nextPackageJson.scripts['harness:release']).toBe('cc-devflow harness release');
-    expect(nextPackageJson.scripts['harness:janitor']).toBe('cc-devflow harness janitor');
-  });
-
-  test('init prefers local harness runtime when bin/harness.js exists', () => {
-    fs.mkdirSync(path.join(repoRoot, 'bin'), { recursive: true });
-    fs.writeFileSync(path.join(repoRoot, 'bin', 'harness.js'), 'console.log("stub harness");\n');
+    const targetSkill = path.join(repoRoot, '.claude', 'skills', 'roadmap', 'SKILL.md');
+    fs.writeFileSync(targetSkill, '# local override\n');
 
     const result = runCli(['init', '--dir', repoRoot], repoRoot);
     expect(result.status).toBe(0);
 
-    const packageJson = readPackageJson(repoRoot);
-    expect(packageJson.scripts['harness:release']).toBe('node bin/harness.js release');
-    expect(packageJson.scripts['harness:janitor']).toBe('node bin/harness.js janitor');
+    expect(fs.existsSync(`${targetSkill}.new`)).toBe(false);
+    expect(fs.readFileSync(targetSkill, 'utf8')).toBe(
+      fs.readFileSync(path.join(TEMPLATE_ROOT, 'skills', 'roadmap', 'SKILL.md'), 'utf8')
+    );
+  });
+
+  test('force re-initialization resets .claude to the packaged template', () => {
+    expect(runCli(['init', '--dir', repoRoot], repoRoot).status).toBe(0);
+
+    const targetSkill = path.join(repoRoot, '.claude', 'skills', 'roadmap', 'SKILL.md');
+    fs.writeFileSync(targetSkill, '# local override\n');
+
+    const result = runCli(['init', '--dir', repoRoot, '--force'], repoRoot);
+    expect(result.status).toBe(0);
+
+    expect(fs.readFileSync(targetSkill, 'utf8')).toBe(
+      fs.readFileSync(path.join(TEMPLATE_ROOT, 'skills', 'roadmap', 'SKILL.md'), 'utf8')
+    );
+    expect(fs.existsSync(`${targetSkill}.new`)).toBe(false);
   });
 });
