@@ -2,15 +2,15 @@
 
 ## Hard Rules
 
-1. `cc-plan` 默认只产出 3 个文件：`DESIGN.md`、`TASKS.md`、`task-manifest.json`。
-2. clarification / brainstorm / review 结论必须并入 `DESIGN.md`，不能再默认拆独立文档。
-3. 执行 handoff 必须写进 `TASKS.md` 顶部，不能依赖单独的 `context-package.md`。
-4. `task-manifest.json` 必须和 `TASKS.md` 同步，且能告诉 `cc-do` 当前任务是谁。
-5. `DESIGN.md`、`TASKS.md`、`task-manifest.json` 必须记录来源版本链。
+1. `cc-plan` 默认只产出 3 个文件：`planning/design.md`、`planning/tasks.md`、`planning/task-manifest.json`。
+2. clarification / brainstorm / review 结论必须并入 `planning/design.md`，不能再默认拆独立文档。
+3. 执行 handoff 必须写进 `planning/tasks.md` 顶部，不能依赖单独的 `context-package.md`。
+4. `planning/task-manifest.json` 必须和 `planning/tasks.md` 同步，且能告诉 `cc-do` 当前任务是谁。
+5. `planning/design.md`、`planning/tasks.md`、`planning/task-manifest.json` 必须记录来源版本链。
 6. 计划里出现 placeholder 词，就说明还没想清楚。
 7. 一次只推进一个澄清问题，不允许问题轰炸。
 8. 推荐方案没获批前，不允许继续拆执行任务。
-9. `DESIGN.md` 通过 review gate 前，不允许宣称计划完成。
+9. `planning/design.md` 通过 review gate 前，不允许宣称计划完成。
 10. 如果来自 `roadmap`，planning 不得悄悄丢掉 source constraints / non-goals / success signal。
 
 ## Design Modes
@@ -43,7 +43,7 @@
 
 ## Review Gate
 
-`DESIGN.md` 至少完成：
+`planning/design.md` 至少完成：
 
 1. Placeholder scan
 2. Consistency scan

@@ -63,8 +63,8 @@
       ],
       "context": {
         "readFiles": [
-          "DESIGN.md",
-          "TASKS.md"
+          "design.md",
+          "tasks.md"
         ],
         "commands": [
           "npm test -- src/feature/feature.test.ts"

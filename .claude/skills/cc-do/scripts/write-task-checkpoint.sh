@@ -3,16 +3,18 @@
 set -euo pipefail
 
 # ------------------------------------------------------------
-# 写入 task checkpoint.json / checkpoint.md / events.jsonl
+# 写入 task checkpoint.json / events.jsonl
 # ------------------------------------------------------------
 
 usage() {
   cat <<'EOF'
 Usage:
-  write-task-checkpoint.sh --dir path/to/req --task T001 --status pending|running|passed|failed|skipped --summary "..." [--event context_ready] [--attempt 0] [--session session-id] [--next-action "..."]
+  write-task-checkpoint.sh --dir path/to/change --task T001 --status pending|running|passed|failed|skipped --summary "..." [--event context_ready] [--attempt 0] [--session session-id] [--next-action "..."]
 EOF
 }
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/cc-do-common.sh"
 REQ_DIR=""
 TASK_ID=""
 STATUS=""
@@ -42,12 +44,12 @@ if [[ -z "$REQ_DIR" || -z "$TASK_ID" || -z "$STATUS" || -z "$SUMMARY" ]]; then
   exit 1
 fi
 
-manifest="$REQ_DIR/task-manifest.json"
+CHANGE_DIR="$(req_do_resolve_change_dir "$REQ_DIR")"
+manifest="$(req_do_manifest_path "$CHANGE_DIR")"
 change_id="$(jq -r '.changeId // .requirementId // "REQ-UNKNOWN"' "$manifest" 2>/dev/null || basename "$REQ_DIR")"
 plan_version="$(jq -r '.metadata.planVersion // 1' "$manifest" 2>/dev/null || echo 1)"
-repo_root="$(git -C "$REQ_DIR" rev-parse --show-toplevel 2>/dev/null || (cd "$REQ_DIR" && pwd))"
-runtime_task_dir="$repo_root/.harness/runtime/$change_id/$TASK_ID"
 timestamp="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+runtime_task_dir="$(req_do_task_runtime_dir "$CHANGE_DIR" "$TASK_ID")"
 
 mkdir -p "$runtime_task_dir"
 
@@ -75,22 +77,9 @@ jq -nc \
     attempt: ($attempt | tonumber)
   }' > "$runtime_task_dir/checkpoint.json"
 
-cat > "$runtime_task_dir/checkpoint.md" <<EOF
-# Checkpoint
-
-- Timestamp: $timestamp
-- Change: $change_id
-- Task: $TASK_ID
-- Status: $STATUS
-- Summary: $SUMMARY
-- Session: $SESSION_ID
-- Attempt: $ATTEMPT
-- Next action: ${NEXT_ACTION:-none}
-EOF
-
-if [[ -n "$EVENT_TYPE" ]]; then
+if [[ -n "$EVENT_TYPE" || "$STATUS" == "failed" ]]; then
   jq -nc \
-    --arg type "$EVENT_TYPE" \
+    --arg type "${EVENT_TYPE:-status_$STATUS}" \
     --arg changeId "$change_id" \
     --arg taskId "$TASK_ID" \
     --arg sessionId "$SESSION_ID" \

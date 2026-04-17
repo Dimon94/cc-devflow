@@ -13,7 +13,8 @@
 8. 6-12 个月后会长成什么
 9. 给出 2-3 条路线图形状并明确推荐
 10. 冻结 1-3 个阶段，写 exit signal / kill signal / non-goals
-11. 标出哪些事项真的 ready for `cc-plan`
+11. 画出 `RM dependency graph`，标出串行主链和 parallel-ready wave
+12. 标出哪些事项真的 ready for `cc-plan`
 
 ## Question Rules
 
@@ -31,5 +32,6 @@
 
 - 只定 1-3 个阶段
 - 每个阶段都要有 exit signal、kill signal、non-goals
+- `RM` 必须带 `Depends On`，并在 roadmap 里显式画出 dependency graph
 - backlog 只收下一轮真会进入 `cc-plan` 的事项
-- ready 项必须带成功信号和下一决策
+- ready 项必须带成功信号、下一决策、`Depends On`、`Parallel With`

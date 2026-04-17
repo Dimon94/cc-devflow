@@ -26,11 +26,9 @@
 
 运行态证据按任务落在：
 
-- `.harness/runtime/<REQ>/<TASK>/events.jsonl`
-- `.harness/runtime/<REQ>/<TASK>/checkpoint.json`
-- `.harness/runtime/<REQ>/<TASK>/checkpoint.md`
-- `.harness/runtime/<REQ>/<TASK>/review-spec.md`
-- `.harness/runtime/<REQ>/<TASK>/review-code.md`
+- `devflow/changes/<change-key>/execution/tasks/<task-id>/checkpoint.json`
+- `devflow/changes/<change-key>/execution/tasks/<task-id>/events.jsonl`（仅 debug / failed 默认保留）
+- `planning/task-manifest.json` 里的 `tasks[*].reviews`
 
 ## Required Event Spine
 
@@ -43,7 +41,7 @@
 5. `spec_review_pass`
 6. `code_review_pass`
 
-没有这条骨架，说明执行闭环是断的。
+如果 `events.jsonl` 没开启，至少仍要有最新 `checkpoint.json` 和 manifest review verdict。
 
 ## Bug Rule
 

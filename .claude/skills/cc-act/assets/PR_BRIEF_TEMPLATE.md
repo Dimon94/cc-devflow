@@ -30,19 +30,19 @@
 
 ## Verification Evidence
 
-- `report-card.json` verdict:
+- `review/report-card.json` verdict:
 - Fresh evidence:
 
 ## Documentation Sync
 
 - `CLAUDE.md`:
 - `README.md`:
-- `RELEASE_NOTE.md`:
+- `release-note.md`:
 - `resume-index.md`:
 
 ## Consolidated Memory
 
-- `status-report.md`:
+- `handoff path`: 
 - latest checkpoint / review summary:
 - handoff entry for the next maintainer:
 

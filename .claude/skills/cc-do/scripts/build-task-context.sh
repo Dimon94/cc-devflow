@@ -9,11 +9,12 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  build-task-context.sh --dir path/to/req --task T001
+  build-task-context.sh --dir path/to/change --task T001
 EOF
 }
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/cc-do-common.sh"
 REQ_DIR=""
 TASK_ID=""
 
@@ -31,10 +32,11 @@ if [[ -z "$REQ_DIR" || -z "$TASK_ID" || ! -d "$REQ_DIR" ]]; then
   exit 1
 fi
 
-manifest="$REQ_DIR/task-manifest.json"
-design_file="$REQ_DIR/DESIGN.md"
-tasks_file="$REQ_DIR/TASKS.md"
-resume_index="$REQ_DIR/resume-index.md"
+CHANGE_DIR="$(req_do_resolve_change_dir "$REQ_DIR")"
+manifest="$(req_do_manifest_path "$CHANGE_DIR")"
+design_file="$(req_do_contract_path "$CHANGE_DIR")"
+tasks_file="$(req_do_tasks_path "$CHANGE_DIR")"
+resume_index="$(req_do_resume_index_path "$CHANGE_DIR")"
 
 if [[ ! -f "$manifest" ]]; then
   echo "Missing $manifest" >&2
@@ -48,8 +50,7 @@ if [[ -z "$task_json" ]]; then
 fi
 
 change_id="$(jq -r '.changeId // .requirementId // "REQ-UNKNOWN"' "$manifest")"
-repo_root="$(git -C "$REQ_DIR" rev-parse --show-toplevel 2>/dev/null || (cd "$REQ_DIR" && pwd))"
-runtime_task_dir="$repo_root/.harness/runtime/$change_id/$TASK_ID"
+runtime_task_dir="$(req_do_task_runtime_dir "$CHANGE_DIR" "$TASK_ID")"
 output_path="$runtime_task_dir/context.md"
 ready_json="$("$SCRIPT_DIR/select-ready-tasks.sh" --manifest "$manifest")"
 
@@ -136,9 +137,9 @@ active_phase="$(echo "$ready_json" | jq -r '.activePhase // "unknown"')"
   echo
   echo "## Canonical Planning Files"
   echo
-  [[ -f "$design_file" ]] && echo "- DESIGN.md"
-  [[ -f "$tasks_file" ]] && echo "- TASKS.md"
-  echo "- task-manifest.json"
+  [[ -f "$design_file" ]] && echo "- ${design_file#$CHANGE_DIR/}"
+  [[ -f "$tasks_file" ]] && echo "- ${tasks_file#$CHANGE_DIR/}"
+  echo "- planning/task-manifest.json"
   echo
   echo "## Context Reset"
   echo
@@ -153,11 +154,10 @@ active_phase="$(echo "$ready_json" | jq -r '.activePhase // "unknown"')"
 } > "$output_path"
 
 "$SCRIPT_DIR/write-task-checkpoint.sh" \
-  --dir "$REQ_DIR" \
+  --dir "$CHANGE_DIR" \
   --task "$TASK_ID" \
   --status pending \
   --summary "Task context assembled" \
-  --event context_ready \
   --next-action "Write the failing test for $TASK_ID" >/dev/null
 
 cat "$output_path"

@@ -8,10 +8,12 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-Usage: run-problem-analysis.sh --dir path/to/req --input "symptom"
+Usage: run-problem-analysis.sh --dir path/to/change --input "symptom"
 EOF
 }
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/cc-do-common.sh"
 REQ_DIR=""
 INPUT=""
 
@@ -29,8 +31,12 @@ if [[ -z "$REQ_DIR" || -z "$INPUT" || ! -d "$REQ_DIR" ]]; then
   exit 1
 fi
 
-cat > "$REQ_DIR/ANALYSIS.md" <<EOF
-# ANALYSIS
+CHANGE_DIR="$(req_do_resolve_change_dir "$REQ_DIR")"
+analysis_file="$(req_do_planning_dir "$CHANGE_DIR")/analysis.md"
+mkdir -p "$(dirname "$analysis_file")"
+
+cat > "$analysis_file" <<EOF
+# analysis
 
 ## Symptom
 
@@ -61,4 +67,4 @@ $INPUT
 - 
 EOF
 
-echo "Wrote $REQ_DIR/ANALYSIS.md"
+echo "Wrote $analysis_file"

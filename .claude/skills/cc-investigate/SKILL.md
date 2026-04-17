@@ -18,16 +18,22 @@ reads:
   - "assets/TASKS_TEMPLATE.md"
   - "assets/TASK_MANIFEST_TEMPLATE.json"
 writes:
-  - "ANALYSIS.md"
-  - "TASKS.md"
-  - "task-manifest.json"
+  - path: "devflow/changes/<change-key>/planning/analysis.md"
+    durability: "durable"
+    required: true
+  - path: "devflow/changes/<change-key>/planning/tasks.md"
+    durability: "durable"
+    required: true
+  - path: "devflow/changes/<change-key>/planning/task-manifest.json"
+    durability: "durable"
+    required: true
 entry_gate:
   - "Read the current bug report, existing requirement artifacts, relevant code, tests, and recent history before forming any hypothesis."
   - "Reproduce or narrow the symptom first, then freeze the evidence chain before proposing repair tasks."
-  - "Do not write production code here; this stage ends with ANALYSIS.md plus executable repair tasks for cc-do."
+  - "Do not write production code here; this stage ends with planning/analysis.md plus executable repair tasks for cc-do."
 exit_criteria:
-  - "ANALYSIS.md records symptom, reproduction, evidence chain, confirmed root cause, and repair boundary."
-  - "TASKS.md and task-manifest.json are explicit enough that cc-do can repair the bug without chat memory."
+  - "planning/analysis.md records symptom, reproduction, evidence chain, confirmed root cause, and repair boundary."
+  - "planning/tasks.md and planning/task-manifest.json are explicit enough that cc-do can repair the bug without chat memory."
   - "The honest next step is cc-do, cc-plan, or roadmap."
 reroutes:
   - when: "The issue is actually a new feature, a scope redesign, or a product decision instead of a bug investigation."
@@ -42,7 +48,7 @@ recovery_modes:
     action: "Drop the narrative, rebuild the reproduction from canonical artifacts and fresh output, then restate the symptom before testing hypotheses."
   - name: "re-open-investigation"
     when: "New execution evidence disproves the current root-cause contract or widens the suspected blast radius."
-    action: "Reopen ANALYSIS.md, update the evidence chain, and regenerate repair tasks only after the new root cause is frozen."
+    action: "Reopen planning/analysis.md, update the evidence chain, and regenerate repair tasks only after the new root cause is frozen."
 tool_budget:
   read_files: 10
   search_steps: 6
@@ -103,7 +109,7 @@ tool_budget:
 
 ## Harness Contract
 
-- Allowed actions: reproduce, collect evidence, trace code paths, test hypotheses, freeze root cause, and write only `ANALYSIS.md`, `TASKS.md`, `task-manifest.json`.
+- Allowed actions: reproduce, collect evidence, trace code paths, test hypotheses, freeze root cause, and write only `planning/analysis.md`, `planning/tasks.md`, `planning/task-manifest.json`.
 - Forbidden actions: writing production code, disguising guesses as root cause, or skipping directly from symptoms to repair.
 - Required evidence: every root-cause claim must point to reproduction evidence, code facts, recent history, or explicit user confirmation.
 - Reroute rule: product/scope changes go to `cc-plan`; strategy questions go to `roadmap`; only confirmed repair handoff goes to `cc-do`.
@@ -112,17 +118,17 @@ tool_budget:
 
 `cc-investigate` 只允许产出 3 个主文件：
 
-1. `ANALYSIS.md`
+1. `planning/analysis.md`
    - 现象
    - 复现
    - 证据链
    - 假设表
    - 已确认根因
    - 修复边界
-2. `TASKS.md`
+2. `planning/tasks.md`
    - 只保留真正要执行的修复任务
-   - 顶部明确 canonical contract 是 `ANALYSIS.md`
-3. `task-manifest.json`
+   - 顶部明确 canonical contract 是 `planning/analysis.md`
+3. `planning/task-manifest.json`
    - 机器真相源
    - 标记当前任务、依赖、验证命令、调查版本链
 
@@ -132,7 +138,7 @@ tool_budget:
 
 1. 先确认当前对象仍然属于一个 requirement，而不是整个项目级故障。
 2. 先收症状事实：错误、触发条件、影响面、复现路径。
-3. 先读现有 requirement 目录里的 `DESIGN.md` / `ANALYSIS.md` / `TASKS.md` / `task-manifest.json`，不要假设自己是第一位调查者。
+3. 先读现有 change 目录里的 `planning/design.md` / `planning/analysis.md` / `planning/tasks.md` / `planning/task-manifest.json`，不要假设自己是第一位调查者。
 4. 先读代码、测试、日志和最近提交，再下任何假设。
 5. 如果复现都不稳定，先不要写根因。
 
@@ -153,9 +159,9 @@ tool_budget:
    - 用复现、日志、断言、最小探针验证
    - 三次假设都失败，就停下重建上下文
 5. **Freeze repair contract**
-   - 根因确认后，写进 `ANALYSIS.md`
+   - 根因确认后，写进 `planning/analysis.md`
    - 只保留最小修复边界
-   - 输出 `TASKS.md` + `task-manifest.json`
+   - 输出 `planning/tasks.md` + `planning/task-manifest.json`
 6. **Hand off**
    - 下一步明确写成 `cc-do`
    - 如果 repair contract 越过当前 requirement，就 reroute 到 `cc-plan`
@@ -165,7 +171,7 @@ tool_budget:
 - 看完第一屏就知道 bug 是什么、怎么复现、为什么会坏
 - 根因不是感觉，而是被证据钉死的具体断点
 - 修复边界清楚到 `cc-do` 不需要二次调查
-- `TASKS.md` 只包含修复任务，不夹带新需求
+- `planning/tasks.md` 只包含修复任务，不夹带新需求
 - 如果应该回 `cc-plan`，理由写清楚，不假装还能继续 patch
 
 ## Bundled Resources
@@ -182,15 +188,15 @@ tool_budget:
 1. 没有复现，不准声称找到了根因。
 2. 没有证据，不准把猜测写成结论。
 3. 先根因，再修复；先调查，再编码。
-4. `TASKS.md` 必须足够让 `cc-do` 在脱离当前对话后继续推进。
+4. `planning/tasks.md` 必须足够让 `cc-do` 在脱离当前对话后继续推进。
 5. 如果修复方案已经变成新 feature 设计，停止 debug，回 `cc-plan`。
 6. 三次假设失败后，默认说明你的调查入口错了，不准继续硬猜。
 7. 好的调查不是“找了很多可能性”，而是把错误世界缩成一个可信的 repair contract。
 
 ## Exit Criteria
 
-- `ANALYSIS.md` 已冻结症状、复现、证据链、根因和修复边界
-- `TASKS.md` / `task-manifest.json` 可直接交给 `cc-do`
+- `planning/analysis.md` 已冻结症状、复现、证据链、根因和修复边界
+- `planning/tasks.md` / `planning/task-manifest.json` 可直接交给 `cc-do`
 - 下一步唯一答案是 `cc-do`、`cc-plan` 或 `roadmap`
 
 ## Do Not

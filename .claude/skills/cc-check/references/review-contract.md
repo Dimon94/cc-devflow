@@ -9,7 +9,7 @@
 1. **Task Review Layer**
    - 每个已完成任务都必须有 `spec review`
    - 每个已完成任务都必须有 `code review`
-   - review 证据默认落在 `.harness/runtime/<REQ>/<TASK>/review-spec.md` / `review-code.md`
+   - review 真相源默认落在 `planning/task-manifest.json` 的 `tasks[*].reviews`
 
 2. **Requirement Diff Layer**
    - 需求级 diff 必须有独立 review 结论

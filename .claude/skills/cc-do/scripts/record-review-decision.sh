@@ -9,10 +9,12 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  record-review-decision.sh --dir path/to/req --task T001 --gate spec|code --verdict pass|fail|blocked --summary "..."
+  record-review-decision.sh --dir path/to/change --task T001 --gate spec|code --verdict pass|fail|blocked --summary "..."
 EOF
 }
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/cc-do-common.sh"
 REQ_DIR=""
 TASK_ID=""
 GATE=""
@@ -41,43 +43,14 @@ if [[ "$GATE" != "spec" && "$GATE" != "code" ]]; then
   exit 1
 fi
 
-manifest="$REQ_DIR/task-manifest.json"
-change_id="$(jq -r '.changeId // .requirementId // "REQ-UNKNOWN"' "$manifest" 2>/dev/null || basename "$REQ_DIR")"
-repo_root="$(git -C "$REQ_DIR" rev-parse --show-toplevel 2>/dev/null || (cd "$REQ_DIR" && pwd))"
-runtime_task_dir="$repo_root/.harness/runtime/$change_id/$TASK_ID"
+CHANGE_DIR="$(req_do_resolve_change_dir "$REQ_DIR")"
+manifest="$(req_do_manifest_path "$CHANGE_DIR")"
+change_id="$(jq -r '.changeId // .requirementId // "REQ-UNKNOWN"' "$manifest" 2>/dev/null || basename "$CHANGE_DIR")"
+runtime_task_dir="$(req_do_task_runtime_dir "$CHANGE_DIR" "$TASK_ID")"
 timestamp="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
-review_file="$runtime_task_dir/review-$GATE.md"
 event_name="${GATE}_review_${VERDICT}"
-title_kind="$(printf '%s' "$GATE" | tr '[:lower:]' '[:upper:]')"
 
 mkdir -p "$runtime_task_dir"
-
-cat > "$review_file" <<EOF
-# ${title_kind} Review
-
-- Timestamp: $timestamp
-- Task: $TASK_ID
-- Verdict: $VERDICT
-- Summary: $SUMMARY
-EOF
-
-jq -nc \
-  --arg type "$event_name" \
-  --arg changeId "$change_id" \
-  --arg taskId "$TASK_ID" \
-  --arg gate "$GATE" \
-  --arg verdict "$VERDICT" \
-  --arg summary "$SUMMARY" \
-  --arg timestamp "$timestamp" \
-  '{
-    type: $type,
-    changeId: $changeId,
-    taskId: $taskId,
-    gate: $gate,
-    verdict: $verdict,
-    summary: $summary,
-    timestamp: $timestamp
-  }' >> "$runtime_task_dir/events.jsonl"
 
 if [[ -f "$manifest" ]]; then
   tmp_manifest="$(mktemp)"
@@ -91,6 +64,26 @@ if [[ -f "$manifest" ]]; then
     )
   ' "$manifest" > "$tmp_manifest"
   mv "$tmp_manifest" "$manifest"
+fi
+
+if [[ -f "$runtime_task_dir/events.jsonl" || "$VERDICT" != "pass" ]]; then
+  jq -nc \
+    --arg type "$event_name" \
+    --arg changeId "$change_id" \
+    --arg taskId "$TASK_ID" \
+    --arg gate "$GATE" \
+    --arg verdict "$VERDICT" \
+    --arg summary "$SUMMARY" \
+    --arg timestamp "$timestamp" \
+    '{
+      type: $type,
+      changeId: $changeId,
+      taskId: $taskId,
+      gate: $gate,
+      verdict: $verdict,
+      summary: $summary,
+      timestamp: $timestamp
+    }' >> "$runtime_task_dir/events.jsonl"
 fi
 
 echo "Recorded $event_name for $TASK_ID"

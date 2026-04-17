@@ -15,8 +15,13 @@ EOF
 }
 
 TARGET="${1:-}"
-ROADMAP_FILE="ROADMAP.md"
-BACKLOG_FILE="BACKLOG.md"
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+DEFAULT_ROADMAP_FILE="$REPO_ROOT/ROADMAP.md"
+LEGACY_ROADMAP_FILE="$REPO_ROOT/devflow/roadmap/roadmap.md"
+DEFAULT_BACKLOG_FILE="$REPO_ROOT/BACKLOG.md"
+LEGACY_BACKLOG_FILE="$REPO_ROOT/devflow/roadmap/backlog.md"
+ROADMAP_FILE="$DEFAULT_ROADMAP_FILE"
+BACKLOG_FILE="$DEFAULT_BACKLOG_FILE"
 
 if [[ -z "$TARGET" ]]; then
   usage
@@ -32,6 +37,14 @@ while [[ $# -gt 0 ]]; do
     *) echo "Unknown arg: $1" >&2; usage; exit 1 ;;
   esac
 done
+
+if [[ "$ROADMAP_FILE" == "$DEFAULT_ROADMAP_FILE" && ! -f "$ROADMAP_FILE" && -f "$LEGACY_ROADMAP_FILE" ]]; then
+  ROADMAP_FILE="$LEGACY_ROADMAP_FILE"
+fi
+
+if [[ "$BACKLOG_FILE" == "$DEFAULT_BACKLOG_FILE" && ! -f "$BACKLOG_FILE" && -f "$LEGACY_BACKLOG_FILE" ]]; then
+  BACKLOG_FILE="$LEGACY_BACKLOG_FILE"
+fi
 
 found=false
 

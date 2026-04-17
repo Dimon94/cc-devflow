@@ -64,8 +64,8 @@ Use this when the only thing you know is the file in front of you.
 
 | If the main file you have is... | You are probably here | Read this first |
 | --- | --- | --- |
-| `ROADMAP.md` | `roadmap` | [pdca-loop/ROADMAP.md](./pdca-loop/ROADMAP.md) |
-| `BACKLOG.md` | `roadmap` -> `cc-plan` handoff | [pdca-loop/BACKLOG.md](./pdca-loop/BACKLOG.md) |
+| `ROADMAP.md` | `cc-roadmap` | [pdca-loop/ROADMAP.md](./pdca-loop/ROADMAP.md) |
+| `BACKLOG.md` | `cc-roadmap` -> `cc-plan` handoff | [pdca-loop/BACKLOG.md](./pdca-loop/BACKLOG.md) |
 | `design.md` | `cc-plan` | [pdca-loop/design.md](./pdca-loop/changes/REQ-001-copy-invite-link/planning/design.md) or [full-design-blocked/design.md](./full-design-blocked/changes/REQ-002-bulk-invite-import/planning/design.md) |
 | `tasks.md` | `cc-plan` or `cc-do` | [pdca-loop/tasks.md](./pdca-loop/changes/REQ-001-copy-invite-link/planning/tasks.md) |
 | `task-manifest.json` | `cc-do` | [pdca-loop/task-manifest.json](./pdca-loop/changes/REQ-001-copy-invite-link/planning/task-manifest.json) |
@@ -98,7 +98,7 @@ If both are true, you are usually in `cc-act` local handoff territory, not back 
 - Read: [pdca-loop/README.md](./pdca-loop/README.md)
 - Best when:
   - you want to understand the straight-through loop once
-  - you need a clean example of `roadmap -> cc-plan -> cc-do -> cc-check -> cc-act`
+  - you need a clean example of `cc-roadmap -> cc-plan -> cc-do -> cc-check -> cc-act`
 
 ### 2. Counterexample: `full-design` + `blocked` + reroute to `cc-plan`
 

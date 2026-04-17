@@ -8,6 +8,7 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const { spawnSync } = require('child_process');
 
 const { runInit } = require('../../lib/skill-runtime/operations/init');
 const { runPlanningSnapshot } = require('../../lib/skill-runtime/operations/snapshot');
@@ -24,6 +25,20 @@ const {
   readJson,
   readText
 } = require('../../lib/skill-runtime/store');
+const { getChangePaths } = require('../../lib/skill-runtime/paths');
+
+const WRITE_TASK_CHECKPOINT = path.resolve(
+  __dirname,
+  '../../.claude/skills/cc-do/scripts/write-task-checkpoint.sh'
+);
+const RECORD_REVIEW_DECISION = path.resolve(
+  __dirname,
+  '../../.claude/skills/cc-do/scripts/record-review-decision.sh'
+);
+const VERIFY_TASK_GATES = path.resolve(
+  __dirname,
+  '../../.claude/skills/cc-do/scripts/verify-task-gates.sh'
+);
 
 describe('Skill runtime', () => {
   let repoRoot;
@@ -147,5 +162,84 @@ describe('Skill runtime', () => {
     const report = await readJson(getReportCardPath(repoRoot, changeId));
     expect(report.review.status).toBe('blocked');
     expect(report.blockingFindings.some((item) => item.includes('missing spec review proof'))).toBe(true);
+  });
+
+  test('cc-do shell helpers write runtime artifacts into devflow/changes instead of legacy flat paths', async () => {
+    const changeId = 'REQ-2001';
+    await runInit({ repoRoot, changeId, goal: 'Verify shell helper layout' });
+
+    const change = getChangePaths(repoRoot, changeId, { goal: 'Verify shell helper layout' });
+    const manifestPath = getTaskManifestPath(repoRoot, changeId, { goal: 'Verify shell helper layout' });
+    fs.writeFileSync(
+      manifestPath,
+      `${JSON.stringify(
+        {
+          changeId,
+          tasks: [
+            {
+              id: 'T001',
+              title: 'Verify helper layout',
+              reviews: { spec: 'pending', code: 'pending' }
+            }
+          ]
+        },
+        null,
+        2
+      )}\n`
+    );
+
+    const checkpoint = spawnSync(WRITE_TASK_CHECKPOINT, [
+      '--dir',
+      change.changeDir,
+      '--task',
+      'T001',
+      '--status',
+      'passed',
+      '--summary',
+      'task finished'
+    ], { encoding: 'utf8' });
+    expect(checkpoint.status).toBe(0);
+
+    const specReview = spawnSync(RECORD_REVIEW_DECISION, [
+      '--dir',
+      change.changeDir,
+      '--task',
+      'T001',
+      '--gate',
+      'spec',
+      '--verdict',
+      'pass',
+      '--summary',
+      'spec ok'
+    ], { encoding: 'utf8' });
+    expect(specReview.status).toBe(0);
+
+    const codeReview = spawnSync(RECORD_REVIEW_DECISION, [
+      '--dir',
+      change.changeDir,
+      '--task',
+      'T001',
+      '--gate',
+      'code',
+      '--verdict',
+      'pass',
+      '--summary',
+      'code ok'
+    ], { encoding: 'utf8' });
+    expect(codeReview.status).toBe(0);
+
+    const verify = spawnSync(VERIFY_TASK_GATES, [
+      '--dir',
+      change.changeDir,
+      '--task',
+      'T001'
+    ], { encoding: 'utf8' });
+    expect(verify.status).toBe(0);
+
+    expect(fs.existsSync(path.join(change.tasksDir, 'T001', 'checkpoint.json'))).toBe(true);
+    expect(fs.existsSync(path.join(repoRoot, '.harness', 'runtime', changeId))).toBe(false);
+    expect(fs.existsSync(path.join(change.tasksDir, 'T001', 'checkpoint.md'))).toBe(false);
+    expect(fs.existsSync(path.join(change.tasksDir, 'T001', 'review-spec.md'))).toBe(false);
+    expect(fs.existsSync(path.join(change.tasksDir, 'T001', 'review-code.md'))).toBe(false);
   });
 });

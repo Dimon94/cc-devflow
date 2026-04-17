@@ -8,7 +8,7 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-Usage: render-pr-brief.sh --dir path/to/req [--out path/to/pr-brief.md] [--repo-root path/to/repo]
+Usage: render-pr-brief.sh --dir path/to/change [--out path/to/pr-brief.md] [--repo-root path/to/repo]
 EOF
 }
 
@@ -35,23 +35,22 @@ if [[ -z "$REPO_ROOT" ]]; then
   REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 fi
 
-if [[ -z "$OUT_FILE" ]]; then
-  OUT_FILE="$REQ_DIR/pr-brief.md"
-fi
-
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$script_dir/cc-act-common.sh"
-report_card="$REQ_DIR/report-card.json"
-manifest="$REQ_DIR/task-manifest.json"
-tasks_file="$REQ_DIR/TASKS.md"
-design_file="$REQ_DIR/DESIGN.md"
-release_note="$REQ_DIR/RELEASE_NOTE.md"
-resume_index="$REQ_DIR/resume-index.md"
-doc_sync_report="$REQ_DIR/doc-sync-report.md"
+CHANGE_DIR="$(req_act_change_dir "$REQ_DIR")"
+if [[ -z "$OUT_FILE" ]]; then
+  OUT_FILE="$(req_act_handoff_dir "$CHANGE_DIR")/pr-brief.md"
+fi
+report_card="$(req_act_report_path "$CHANGE_DIR")"
+manifest="$(req_act_manifest_path "$CHANGE_DIR")"
+tasks_file="$(req_act_tasks_path "$CHANGE_DIR")"
+design_file="$(req_act_contract_path "$CHANGE_DIR")"
+release_note="$(req_act_release_note_path "$CHANGE_DIR")"
+resume_index="$(req_act_resume_index_path "$CHANGE_DIR")"
+doc_sync_report="$(req_act_doc_sync_report_path "$CHANGE_DIR")"
 
-"$script_dir/verify-act-gate.sh" --dir "$REQ_DIR" >/dev/null
-"$script_dir/generate-status-report.sh" --dir "$REQ_DIR" >/dev/null
-"$script_dir/sync-act-docs.sh" --dir "$REQ_DIR" --repo-root "$REPO_ROOT" >/dev/null
+"$script_dir/verify-act-gate.sh" --dir "$CHANGE_DIR" >/dev/null
+"$script_dir/sync-act-docs.sh" --dir "$CHANGE_DIR" --repo-root "$REPO_ROOT" >/dev/null
 
 ship_context="$("$script_dir/detect-ship-target.sh" 2>/dev/null || true)"
 current_branch="$(req_act_ship_field "$ship_context" "CURRENT_BRANCH")"
@@ -60,7 +59,7 @@ ship_mode="$(req_act_ship_field "$ship_context" "DECISION_HINT")"
 pr_status="$(req_act_ship_field "$ship_context" "PR_STATUS")"
 pr_url="$(req_act_ship_field "$ship_context" "PR_URL")"
 
-requirement_id="$(req_act_requirement_id "$manifest" "$REQ_DIR")"
+requirement_id="$(req_act_requirement_id "$manifest" "$CHANGE_DIR")"
 report_summary="$(req_act_report_summary "$report_card")"
 report_verdict="$(req_act_report_verdict "$report_card")"
 design_goal="$(req_act_design_goal "$design_file")"
@@ -154,9 +153,9 @@ fi
   echo "- \`CLAUDE.md\`: $claude_status"
   echo "- \`README.md\`: $readme_status"
   if [[ -f "$release_note" ]]; then
-    echo "- \`RELEASE_NOTE.md\`: refreshed"
+    echo "- \`release-note.md\`: refreshed"
   else
-    echo "- \`RELEASE_NOTE.md\`: missing"
+    echo "- \`release-note.md\`: missing"
   fi
   if [[ -f "$resume_index" ]]; then
     echo "- \`resume-index.md\`: refreshed"
@@ -171,7 +170,7 @@ fi
       echo "- \`$cmd\`"
     done < "$tmp_verify"
   else
-    echo "- See \`report-card.json\` evidence."
+    echo "- See \`review/report-card.json\` evidence."
   fi
   echo
   echo "## Follow-Ups"
@@ -189,7 +188,7 @@ fi
   if [[ -n "$main_risk" ]]; then
     echo "- $main_risk"
   else
-    echo "- No additional risk captured in DESIGN.md."
+    echo "- No additional risk captured in planning/design.md."
   fi
 } > "$OUT_FILE"
 

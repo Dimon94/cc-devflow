@@ -19,16 +19,22 @@ reads:
   - "assets/TASK_MANIFEST_TEMPLATE.json"
   - "references/planning-contract.md"
 writes:
-  - "DESIGN.md"
-  - "TASKS.md"
-  - "task-manifest.json"
+  - path: "devflow/changes/<change-key>/planning/design.md"
+    durability: "durable"
+    required: true
+  - path: "devflow/changes/<change-key>/planning/tasks.md"
+    durability: "durable"
+    required: true
+  - path: "devflow/changes/<change-key>/planning/task-manifest.json"
+    durability: "durable"
+    required: true
 entry_gate:
   - "Read roadmap handoff, current requirement files, code, docs, and tests before drafting design."
   - "Freeze problem, constraints, non-goals, and success criteria before proposing implementation tasks."
-  - "Do not generate TASKS.md or task-manifest.json until the recommended design is approved."
+  - "Do not generate planning/tasks.md or planning/task-manifest.json until the recommended design is approved."
 exit_criteria:
-  - "DESIGN.md captures the approved solution, boundaries, review conclusions, and execution edge cases."
-  - "TASKS.md and task-manifest.json are explicit enough that cc-do can continue without chat memory."
+  - "planning/design.md captures the approved solution, boundaries, review conclusions, and execution edge cases."
+  - "planning/tasks.md and planning/task-manifest.json are explicit enough that cc-do can continue without chat memory."
   - "Only one next step remains: enter cc-do."
 reroutes:
   - when: "The discussion is still about project direction or stage order instead of one requirement."
@@ -38,7 +44,7 @@ reroutes:
 recovery_modes:
   - name: "re-open-design"
     when: "Execution feedback, review findings, or user correction invalidates the current design contract."
-    action: "Return to DESIGN.md, reopen the approved decision explicitly, and regenerate tasks only after the design is stable again."
+    action: "Return to planning/design.md, reopen the approved decision explicitly, and regenerate tasks only after the design is stable again."
 tool_budget:
   read_files: 10
   search_steps: 6
@@ -80,7 +86,7 @@ tool_budget:
 
 | 现实状态 | 先走什么路径 |
 | --- | --- |
-| 需求还模糊，边界和成功标准都不稳 | `clarify-first`，先补 `DESIGN.md` 的问题定义与约束 |
+| 需求还模糊，边界和成功标准都不稳 | `clarify-first`，先补 `planning/design.md` 的问题定义与约束 |
 | 变更很小，但仍需要冻结做法和任务 | `tiny-design` |
 | 跨模块、高风险、会逼执行者二次设计 | `full-design` |
 
@@ -88,7 +94,7 @@ tool_budget:
 
 ## Harness Contract
 
-- Allowed actions: clarify scope, compare designs, freeze decisions, and write only `DESIGN.md`, `TASKS.md`, and `task-manifest.json`.
+- Allowed actions: clarify scope, compare designs, freeze decisions, and write only `planning/design.md`, `planning/tasks.md`, and `planning/task-manifest.json`.
 - Forbidden actions: writing production code, splitting planning into new side documents, or emitting tasks before approval.
 - Required evidence: design choices, task boundaries, and verification commands must point back to repo facts or explicit user approval.
 - Reroute rule: if the problem expands to project strategy go back to `roadmap`; if the plan is already frozen move straight to `cc-do`.
@@ -97,14 +103,14 @@ tool_budget:
 
 `cc-plan` 只允许产出 3 个主文件，向 `gstack` / `superpowers` 学习“少文档、强文档”：
 
-1. `DESIGN.md`
+1. `planning/design.md`
    - 吸收原来的 clarification / brainstorm / review 结论
    - 记录 source handoff、问题定义、备选方案、批准方案、设计决策、review gate、执行边界
-2. `TASKS.md`
+2. `planning/tasks.md`
    - 只保留可执行任务和执行 handoff
    - 顶部写清 frozen decisions、read first、commands to trust、并行边界
-3. `task-manifest.json`
-   - 从 `TASKS.md` 编译出的机器真相源
+3. `planning/task-manifest.json`
+   - 从 `planning/tasks.md` 编译出的机器真相源
    - 只服务执行与调度，不再承担人类阅读的叙事职责
 
 以下文件不再是 `cc-plan` 的默认交付物：
@@ -113,15 +119,15 @@ tool_budget:
 - `BRAINSTORM.md`
 - `PLAN_REVIEW.md`
 - `context-package.md`
-- `resume-index.md`
+- `handoff/resume-index.md`
 
-这些信息如果仍然需要，必须并入 `DESIGN.md` 或 `TASKS.md`，而不是再拆新文件。
+这些信息如果仍然需要，必须并入 `planning/design.md` 或 `planning/tasks.md`，而不是再拆新文件。
 
 ## Entry Gate
 
 1. 先确认当前对象是一个 requirement，而不是整个项目路线图。
-2. 如果来源于 `roadmap`，必须先定位对应的 `RM-ID`，读清 `ROADMAP.md` / `BACKLOG.md` 的版本、证据、约束、success signal、next decision。
-3. 先读当前 requirement 目录现状。旧目录里如果还有 `BRAINSTORM.md` / `PLAN_REVIEW.md` / `context-package.md`，把有效信息吸收进新的 `DESIGN.md`，不要继续增殖。
+2. 如果来源于 `roadmap`，必须先定位对应的 `RM-ID`，读清 `devflow/roadmap/roadmap.md` / `devflow/roadmap/backlog.md` 的版本、证据、约束、success signal、next decision。
+3. 先读当前 change 目录现状。旧目录里如果还有 `BRAINSTORM.md` / `PLAN_REVIEW.md` / `context-package.md`，把有效信息吸收进新的 `planning/design.md`，不要继续增殖。
 4. 先看代码、文档、测试和最近提交，再谈拆任务。
 5. 先写不做什么，再写做什么。
 
@@ -130,8 +136,8 @@ tool_budget:
 进入 planning 前，至少主动收这些事实：
 
 1. 当前对象对应的 `RM-ID`、roadmap version、roadmap skill version
-2. `ROADMAP.md` / `BACKLOG.md` 中该事项的阶段来源、证据、dependencies、success signal、kill signal、next decision
-3. 当前 requirement 目录已有的 `DESIGN.md`、`TASKS.md`、`task-manifest.json` 与历史 planning 文档
+2. `devflow/roadmap/roadmap.md` / `devflow/roadmap/backlog.md` 中该事项的阶段来源、证据、dependencies、success signal、kill signal、next decision
+3. 当前 change 目录已有的 `planning/design.md`、`planning/tasks.md`、`planning/task-manifest.json` 与历史 planning 文档
 4. `CLAUDE.md`、README、相关 docs / specs / ADR / 最近提交
 5. 当前代码、测试、发布、迁移、依赖的现实边界
 
@@ -142,17 +148,17 @@ tool_budget:
 1. 先探索上下文，再写结论。
 2. 澄清时一次只问一个关键问题，不做问题轰炸。
 3. 先写问题、目标、约束、非目标、成功标准，再写方案。
-4. 如果方向仍不稳，给 2-3 个方案，带 trade-off 和推荐，但这些内容都写进 `DESIGN.md`。
-5. 推荐方案没有得到用户明确批准前，不允许生成 `TASKS.md`。
+4. 如果方向仍不稳，给 2-3 个方案，带 trade-off 和推荐，但这些内容都写进 `planning/design.md`。
+5. 推荐方案没有得到用户明确批准前，不允许生成 `planning/tasks.md`。
 6. 批准后先判断这次用 `tiny-design` 还是 `full-design`。
-7. 把批准后的唯一方案冻结进 `DESIGN.md`。
-8. 在 `DESIGN.md` 内完成 review loop 与 final gate，不再额外拆出 `PLAN_REVIEW.md`。
-9. 只有 design gate 真正通过，才能写 `TASKS.md` 和 `task-manifest.json`。
+7. 把批准后的唯一方案冻结进 `planning/design.md`。
+8. 在 `planning/design.md` 内完成 review loop 与 final gate，不再额外拆出 `PLAN_REVIEW.md`。
+9. 只有 design gate 真正通过，才能写 `planning/tasks.md` 和 `planning/task-manifest.json`。
 10. 计划完成后，下一步唯一答案是 `cc-do`。
 
 ## Design Modes
 
-`cc-plan` 永远保留 `DESIGN.md`，但允许两种密度：
+`cc-plan` 永远保留 `planning/design.md`，但允许两种密度：
 
 - `tiny-design`：超小需求的冻结设计卡片
 - `full-design`：需要完整架构说明的正式设计
@@ -173,7 +179,7 @@ tool_budget:
 
 ## Review Loop
 
-`DESIGN.md` 内至少完成这些 review 结论：
+`planning/design.md` 内至少完成这些 review 结论：
 
 1. Placeholder scan：不能留下 TBD / TODO / 之后再补
 2. Consistency scan：目标、方案、任务、验证口径不能互相打架
@@ -183,14 +189,14 @@ tool_budget:
 6. Source alignment：仍然对齐上游 roadmap 的 success signal、constraints、non-goals
 7. Final gate：明确 auto-decided items、taste decisions、user challenges 和最终 recommendation
 
-如果有 UI / interaction 明显范围，在 `DESIGN.md` 里补一段 design review 结论。
-如果有 API / CLI / developer-facing scope，在 `DESIGN.md` 里补一段 DX review 结论。
+如果有 UI / interaction 明显范围，在 `planning/design.md` 里补一段 design review 结论。
+如果有 API / CLI / developer-facing scope，在 `planning/design.md` 里补一段 DX review 结论。
 
 ## Good Output
 
-- `DESIGN.md` 一份就讲清：为什么做、做什么、不做什么、备选方案、批准方案、设计模式、风险、review gate、执行边界
-- `TASKS.md` 只保留能直接执行的任务和 handoff，不再承载重复背景介绍
-- `task-manifest.json` 是 `cc-do` 的真相源，要写清 `dependsOn`、并行资格、触点、验证命令，以及继承了哪版 roadmap / design
+- `planning/design.md` 一份就讲清：为什么做、做什么、不做什么、备选方案、批准方案、设计模式、风险、review gate、执行边界
+- `planning/tasks.md` 只保留能直接执行的任务和 handoff，不再承载重复背景介绍
+- `planning/task-manifest.json` 是 `cc-do` 的真相源，要写清 `dependsOn`、并行资格、触点、验证命令，以及继承了哪版 roadmap / design
 - 看完第一屏，执行者就知道这次属于 `tiny-design` 还是 `full-design`，以及为什么
 
 ## Bundled Resources
@@ -210,19 +216,19 @@ tool_budget:
 1. 没有证据时写 assumption，不准冒充事实。
 2. 一次只推进一个关键未知点。
 3. 旧文档里的有效信息要吸收，不要复制粘贴出新文件。
-4. `DESIGN.md` 和 `TASKS.md` 必须足够让 `cc-do` 在不继承当前会话的前提下继续工作。
+4. `planning/design.md` 和 `planning/tasks.md` 必须足够让 `cc-do` 在不继承当前会话的前提下继续工作。
 5. 版本、来源、冻结决策必须可追踪。
 6. 任务少而硬，胜过任务多而虚。
 7. 任务一旦超过 2-5 分钟粒度就继续拆，直到可以稳定交给执行者。
-8. 三层以上判断说明设计还没压平，应回到 `DESIGN.md` 继续简化。
+8. 三层以上判断说明设计还没压平，应回到 `planning/design.md` 继续简化。
 
 ## Exit Criteria
 
 - 范围边界清楚
-- 上游 roadmap handoff 已被显式装进 `DESIGN.md`
+- 上游 roadmap handoff 已被显式装进 `planning/design.md`
 - 成功标准可验证
 - 推荐方案已被批准
-- review gate 已在 `DESIGN.md` 里闭合
+- review gate 已在 `planning/design.md` 里闭合
 - 任务顺序没有歧义
 - `cc-do` 不需要再靠会话记忆恢复背景
 

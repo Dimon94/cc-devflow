@@ -3,7 +3,7 @@
 'use strict';
 
 // ------------------------------------------------------------
-// 解析 TASKS.md 里的 phase / [P] / 文件触点
+// 解析 tasks.md 里的 phase / [P] / 文件触点
 // ------------------------------------------------------------
 
 const fs = require('fs');
@@ -57,7 +57,7 @@ function parse(content) {
 function main() {
   const file = process.argv[2];
   if (!file) {
-    console.error('Usage: parse-task-dependencies.js TASKS.md');
+    console.error('Usage: parse-task-dependencies.js tasks.md');
     process.exit(1);
   }
 

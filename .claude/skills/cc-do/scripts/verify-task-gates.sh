@@ -9,10 +9,12 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  verify-task-gates.sh --dir path/to/req --task T001
+  verify-task-gates.sh --dir path/to/change --task T001
 EOF
 }
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/cc-do-common.sh"
 REQ_DIR=""
 TASK_ID=""
 
@@ -30,78 +32,63 @@ if [[ -z "$REQ_DIR" || -z "$TASK_ID" ]]; then
   exit 1
 fi
 
-manifest="$REQ_DIR/task-manifest.json"
-change_id="$(jq -r '.changeId // .requirementId // "REQ-UNKNOWN"' "$manifest" 2>/dev/null || basename "$REQ_DIR")"
-repo_root="$(git -C "$REQ_DIR" rev-parse --show-toplevel 2>/dev/null || (cd "$REQ_DIR" && pwd))"
-runtime_task_dir="$repo_root/.harness/runtime/$change_id/$TASK_ID"
+CHANGE_DIR="$(req_do_resolve_change_dir "$REQ_DIR")"
+manifest="$(req_do_manifest_path "$CHANGE_DIR")"
+runtime_task_dir="$(req_do_task_runtime_dir "$CHANGE_DIR" "$TASK_ID")"
 events_file="$runtime_task_dir/events.jsonl"
-spec_review="$runtime_task_dir/review-spec.md"
-code_review="$runtime_task_dir/review-code.md"
+checkpoint_file="$runtime_task_dir/checkpoint.json"
 
-if [[ ! -f "$events_file" ]]; then
-  echo "Missing $events_file" >&2
+if [[ ! -f "$checkpoint_file" ]]; then
+  echo "Missing $checkpoint_file" >&2
   exit 1
 fi
 
-events=()
-while IFS= read -r event; do
-  events+=("$event")
-done < <(jq -r --arg task "$TASK_ID" 'select(.taskId == $task) | .type' "$events_file")
-
-if [[ ${#events[@]} -eq 0 ]]; then
-  echo "No runtime events found for $TASK_ID" >&2
+checkpoint_status="$(jq -r '.status // "unknown"' "$checkpoint_file" 2>/dev/null || echo unknown)"
+[[ "$checkpoint_status" == "passed" ]] || {
+  echo "Task $TASK_ID checkpoint status is not passed" >&2
   exit 1
-fi
+}
 
-first_index() {
-  local target="$1"
-  local index=0
-  for event in "${events[@]}"; do
-    if [[ "$event" == "$target" ]]; then
-      echo "$index"
-      return
+spec_verdict="$(jq -r --arg task "$TASK_ID" '.tasks[] | select(.id == $task) | .reviews.spec // "pending"' "$manifest" 2>/dev/null || echo pending)"
+code_verdict="$(jq -r --arg task "$TASK_ID" '.tasks[] | select(.id == $task) | .reviews.code // "pending"' "$manifest" 2>/dev/null || echo pending)"
+
+[[ "$spec_verdict" == "pass" ]] || {
+  echo "Task $TASK_ID spec review verdict is not pass" >&2
+  exit 1
+}
+
+[[ "$code_verdict" == "pass" ]] || {
+  echo "Task $TASK_ID code review verdict is not pass" >&2
+  exit 1
+}
+
+if [[ -f "$events_file" ]]; then
+  events=()
+  while IFS= read -r event; do
+    events+=("$event")
+  done < <(jq -r --arg task "$TASK_ID" 'select(.taskId == $task) | .type' "$events_file")
+
+  if [[ ${#events[@]} -gt 0 ]]; then
+    first_index() {
+      local target="$1"
+      local index=0
+      for event in "${events[@]}"; do
+        if [[ "$event" == "$target" ]]; then
+          echo "$index"
+          return
+        fi
+        index=$((index + 1))
+      done
+      echo "-1"
+    }
+
+    red_idx="$(first_index "red_failed")"
+    green_idx="$(first_index "green_passed")"
+    if [[ "$red_idx" != "-1" && "$green_idx" != "-1" && "$red_idx" -ge "$green_idx" ]]; then
+      echo "Task $TASK_ID gate order is invalid" >&2
+      exit 1
     fi
-    index=$((index + 1))
-  done
-  echo "-1"
-}
-
-context_idx="$(first_index "context_ready")"
-red_idx="$(first_index "red_failed")"
-green_idx="$(first_index "green_passed")"
-refactor_done_idx="$(first_index "refactor_done")"
-refactor_skip_idx="$(first_index "refactor_not_needed")"
-spec_idx="$(first_index "spec_review_pass")"
-code_idx="$(first_index "code_review_pass")"
-
-refactor_idx="$refactor_done_idx"
-if [[ "$refactor_idx" == "-1" || ("$refactor_skip_idx" != "-1" && "$refactor_skip_idx" -lt "$refactor_idx") ]]; then
-  refactor_idx="$refactor_skip_idx"
+  fi
 fi
-
-if [[ "$context_idx" == "-1" || "$red_idx" == "-1" || "$green_idx" == "-1" || "$refactor_idx" == "-1" || "$spec_idx" == "-1" || "$code_idx" == "-1" ]]; then
-  echo "Task $TASK_ID is missing required gate events" >&2
-  exit 1
-fi
-
-if ! [[ "$context_idx" -lt "$red_idx" && "$red_idx" -lt "$green_idx" && "$green_idx" -lt "$refactor_idx" && "$refactor_idx" -lt "$spec_idx" && "$spec_idx" -lt "$code_idx" ]]; then
-  echo "Task $TASK_ID gate order is invalid" >&2
-  exit 1
-fi
-
-if [[ ! -f "$spec_review" || ! -f "$code_review" ]]; then
-  echo "Task $TASK_ID is missing review markdown evidence" >&2
-  exit 1
-fi
-
-grep -Eq 'Verdict:\s*pass' "$spec_review" || {
-  echo "Task $TASK_ID spec review markdown is not pass" >&2
-  exit 1
-}
-
-grep -Eq 'Verdict:\s*pass' "$code_review" || {
-  echo "Task $TASK_ID code review markdown is not pass" >&2
-  exit 1
-}
 
 echo "Task $TASK_ID gates verified"

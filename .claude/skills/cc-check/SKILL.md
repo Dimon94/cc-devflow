@@ -17,13 +17,15 @@ reads:
   - "references/review-contract.md"
   - "assets/REPORT_CARD_TEMPLATE.json"
 writes:
-  - "report-card.json"
+  - path: "devflow/changes/<change-key>/review/report-card.json"
+    durability: "durable"
+    required: true
 entry_gate:
-  - "Read DESIGN.md or ANALYSIS.md, then TASKS.md, task-manifest.json, and the latest runtime evidence before selecting a verdict."
+  - "Read planning/design.md or planning/analysis.md, then planning/tasks.md, planning/task-manifest.json, and the latest runtime evidence before selecting a verdict."
   - "Re-run fresh commands instead of inheriting cc-do narration."
   - "If evidence is stale or missing, reset context and rebuild the verdict from canonical artifacts."
 exit_criteria:
-  - "report-card.json records pass, fail, or blocked using fresh evidence and honest reroute."
+  - "review/report-card.json records pass, fail, or blocked using fresh evidence and honest reroute."
   - "Task-level review and requirement-level diff review are separated clearly."
   - "The next step is unambiguous: cc-act, cc-do, cc-investigate, or cc-plan."
 reroutes:
@@ -36,7 +38,7 @@ reroutes:
 recovery_modes:
   - name: "clean-room-reset"
     when: "The current verdict is contaminated by stale chat memory or old command output."
-    action: "Discard narrative memory, reload canonical artifacts, rerun fresh gates, and rebuild report-card.json from current evidence only."
+    action: "Discard narrative memory, reload canonical artifacts, rerun fresh gates, and rebuild review/report-card.json from current evidence only."
 tool_budget:
   read_files: 8
   search_steps: 4
@@ -90,14 +92,14 @@ tool_budget:
 
 ## Entry Gate
 
-1. 先读 `DESIGN.md` 或 `ANALYSIS.md`，再读 `TASKS.md`、`task-manifest.json`。
+1. 先读 `planning/design.md` 或 `planning/analysis.md`，再读 `planning/tasks.md`、`planning/task-manifest.json`。
 2. 明确本次要验证哪些事实，不做含糊验收。
 3. 所有通过结论都必须来自本次新鲜命令输出。
 4. 已完成任务必须能拿出 `spec/code` review 证据。
 
 ## Loop
 
-1. 对照 `DESIGN.md` 或 `ANALYSIS.md`、`TASKS.md`、`task-manifest.json` 验证现实。
+1. 对照 `planning/design.md` 或 `planning/analysis.md`、`planning/tasks.md`、`planning/task-manifest.json` 验证现实。
 2. 失败项必须回指 `cc-do`、`cc-investigate` 或 `cc-plan`。
 3. 只给三种结论：通过、不通过、阻塞。
 4. 通过后才允许进入 `cc-act`。
@@ -143,7 +145,7 @@ tool_budget:
 
 ## Good Output
 
-最小高质量 `report-card.json` 至少应该长这样：
+最小高质量 `review/report-card.json` 至少应该长这样：
 
 ### Pass
 
@@ -205,7 +207,7 @@ tool_budget:
 
 ## Output
 
-- `report-card.json`
+- `review/report-card.json`
 - 验证结果输出
 - review 结论
 - reroute 结论

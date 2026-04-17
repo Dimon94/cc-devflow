@@ -8,7 +8,7 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-Usage: generate-status-report.sh --dir path/to/req
+Usage: generate-status-report.sh --dir path/to/change
 EOF
 }
 
@@ -26,26 +26,30 @@ if [[ -z "$REQ_DIR" || ! -d "$REQ_DIR" ]]; then
   exit 1
 fi
 
-report="$REQ_DIR/status-report.md"
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$script_dir/cc-act-common.sh"
+CHANGE_DIR="$(req_act_change_dir "$REQ_DIR")"
+report_card="$(req_act_report_path "$CHANGE_DIR")"
+tasks_file="$(req_act_tasks_path "$CHANGE_DIR")"
+handoff_dir="$(req_act_handoff_dir "$CHANGE_DIR")"
 
 verdict="unknown"
 reroute="unknown"
 evidence_count="0"
 gap_count="0"
 
-if [[ -f "$REQ_DIR/report-card.json" ]]; then
-  verdict="$(jq -r '.verdict // "unknown"' "$REQ_DIR/report-card.json" 2>/dev/null || echo unknown)"
-  reroute="$(jq -r '.reroute // "unknown"' "$REQ_DIR/report-card.json" 2>/dev/null || echo unknown)"
-  evidence_count="$(jq -r '(.evidence // []) | length' "$REQ_DIR/report-card.json" 2>/dev/null || echo 0)"
-  gap_count="$(jq -r '(.gaps // []) | length' "$REQ_DIR/report-card.json" 2>/dev/null || echo 0)"
+if [[ -f "$report_card" ]]; then
+  verdict="$(jq -r '.verdict // "unknown"' "$report_card" 2>/dev/null || echo unknown)"
+  reroute="$(jq -r '.reroute // "unknown"' "$report_card" 2>/dev/null || echo unknown)"
+  evidence_count="$(jq -r '(.evidence // []) | length' "$report_card" 2>/dev/null || echo 0)"
+  gap_count="$(jq -r '(.gaps // []) | length' "$report_card" 2>/dev/null || echo 0)"
 fi
 
 remaining_tasks="0"
 done_tasks="0"
-if [[ -f "$REQ_DIR/TASKS.md" ]]; then
-  remaining_tasks="$(awk '/^- \[ \]/{c++} END{print c+0}' "$REQ_DIR/TASKS.md" 2>/dev/null || echo 0)"
-  done_tasks="$(awk '/^- \[[xX]\]/{c++} END{print c+0}' "$REQ_DIR/TASKS.md" 2>/dev/null || echo 0)"
+if [[ -f "$tasks_file" ]]; then
+  remaining_tasks="$(awk '/^- \[ \]/{c++} END{print c+0}' "$tasks_file" 2>/dev/null || echo 0)"
+  done_tasks="$(awk '/^- \[[xX]\]/{c++} END{print c+0}' "$tasks_file" 2>/dev/null || echo 0)"
 fi
 
 ship_context="$("$script_dir/detect-ship-target.sh" 2>/dev/null || true)"
@@ -59,7 +63,7 @@ pr_url="$(printf '%s\n' "$ship_context" | awk -F= '/^PR_URL=/{print $2}')"
 {
   echo "# Status Report"
   echo
-  echo "- Requirement dir: $REQ_DIR"
+  echo "- Change dir: $CHANGE_DIR"
   echo "- Check result: $verdict"
   echo "- Gate reroute: $reroute"
   echo "- Evidence items: $evidence_count"
@@ -72,12 +76,8 @@ pr_url="$(printf '%s\n' "$ship_context" | awk -F= '/^PR_URL=/{print $2}')"
   [[ -n "$decision_hint" ]] && echo "- Ship mode hint: $decision_hint"
   [[ -n "$pr_status" ]] && echo "- PR status: $pr_status"
   [[ -n "$pr_url" ]] && echo "- PR url: $pr_url"
-  [[ -f "$REQ_DIR/pr-brief.md" ]] && echo "- PR brief: ready"
-  [[ -f "$REQ_DIR/RELEASE_NOTE.md" ]] && echo "- Release note: ready"
-  [[ -f "$REQ_DIR/resume-index.md" ]] && echo "- Resume index: ready"
-  [[ -f "$REQ_DIR/doc-sync-report.md" ]] && echo "- Doc sync report: ready"
-  [[ -f "$REQ_DIR/BACKLOG.md" ]] && echo "- Requirement backlog file: present"
-  [[ -f "$REQ_DIR/ROADMAP.md" ]] && echo "- Requirement roadmap file: present"
-} > "$report"
-
-echo "Wrote $report"
+  [[ -f "$handoff_dir/pr-brief.md" ]] && echo "- PR brief: ready"
+  [[ -f "$handoff_dir/release-note.md" ]] && echo "- Release note: ready"
+  [[ -f "$handoff_dir/resume-index.md" ]] && echo "- Resume index: ready"
+  [[ -f "$handoff_dir/doc-sync-report.md" ]] && echo "- Doc sync report: ready"
+}

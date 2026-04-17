@@ -8,7 +8,7 @@ REQ_DIR=""
 
 usage() {
   cat <<'EOF'
-Usage: bootstrap-analysis.sh --dir <requirement-dir>
+Usage: bootstrap-analysis.sh --dir <change-dir>
 EOF
 }
 
@@ -25,6 +25,14 @@ if [[ -z "$REQ_DIR" ]]; then
   exit 1
 fi
 
-mkdir -p "$REQ_DIR"
-cp "$TEMPLATE" "$REQ_DIR/ANALYSIS.md"
-echo "Wrote $REQ_DIR/ANALYSIS.md"
+CHANGE_DIR="${REQ_DIR%/}"
+case "$(basename "$CHANGE_DIR")" in
+  planning|execution|review|handoff|meta)
+    CHANGE_DIR="$(dirname "$CHANGE_DIR")"
+    ;;
+esac
+
+PLANNING_DIR="$CHANGE_DIR/planning"
+mkdir -p "$PLANNING_DIR"
+cp "$TEMPLATE" "$PLANNING_DIR/analysis.md"
+echo "Wrote $PLANNING_DIR/analysis.md"

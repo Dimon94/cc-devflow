@@ -5,7 +5,7 @@
 1. `report-card.json` 必须是 `pass`
 2. `reroute` 必须是 `none`
 3. `evidence` 必须非空
-4. `TASKS.md` 不能还有未完成项
+4. `planning/tasks.md` 不能还有未完成项
 5. 交付材料必须只总结现实，不补编故事
 6. 如果文件结构变了，就同步对应目录的 `CLAUDE.md`
 
@@ -31,9 +31,9 @@
 
 进入 ship 动作前，先把分散事实压缩进：
 
-- `status-report.md`
-- `pr-brief.md`
-- `resume-index.md`（需要 handoff 时）
+- `handoff/pr-brief.md`
+- `handoff/resume-index.md`（需要 handoff 时）
+- `handoff/release-note.md`（需要发布时）
 
 如果下一位接手者还得去翻零散 checkpoint 才知道从哪接，说明 act 还没收口。
 

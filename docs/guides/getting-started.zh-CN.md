@@ -14,7 +14,7 @@ CC-DevFlow 现在有两条入口：
 真正的工作流由 6 个可见 Skill 组成：
 
 ```text
-roadmap
+cc-roadmap
 
 PDCA: cc-plan -> cc-do -> cc-check -> cc-act
 IDCA: cc-investigate -> cc-do -> cc-check -> cc-act
@@ -39,7 +39,7 @@ npx cc-devflow init --dir /path/to/your/project
 ### 单个 Skill 安装
 
 ```bash
-npx skills add https://github.com/Dimon94/cc-devflow --skill roadmap
+npx skills add https://github.com/Dimon94/cc-devflow --skill cc-roadmap
 ```
 
 ## 生成平台产物
@@ -71,7 +71,7 @@ find .codex/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort
 按这个顺序使用 Skill：
 
 ```text
-1. roadmap
+1. cc-roadmap
 2. 在 cc-plan 和 cc-investigate 里二选一
 3. cc-do
 4. cc-check
@@ -81,7 +81,7 @@ find .codex/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort
 
 常见产物：
 
-- `roadmap` 产出 `ROADMAP.md` 和 `BACKLOG.md`
+- `cc-roadmap` 产出 `ROADMAP.md` 和 `BACKLOG.md`
 - `cc-plan` 产出 `planning/design.md`、`planning/tasks.md`、`task-manifest.json`
 - `cc-investigate` 产出 `planning/analysis.md`、`planning/tasks.md`、`task-manifest.json`
 - `cc-check` 产出 `report-card.json`
@@ -94,7 +94,7 @@ durable truth 固定放在 `devflow/changes/<change>/`：
 
 公开契约字段的典型形状：
 
-- `triggers`、`reads`、`writes`
+- `triggers`、`reads`、结构化 `writes`、`effects`
 - `entry_gate`、`exit_criteria`
 - `reroutes`、`recovery_modes`、`tool_budget`
 
@@ -138,7 +138,7 @@ npx cc-devflow adapt --cwd /path/to/your/project --platform codex
 
 如果你的项目没有可选的 `.claude/commands/` 输入目录，这也是正常的；编译器仍然会生成 skills registry，并为 Codex 镜像公开 workflow skill。
 
-Codex 现在会把发现到的 `.claude/skills/<skill>/` 逐个镜像到 `.codex/skills/<skill>/`，并且不再保留单独的聚合 `cc-devflow` 入口。
+Codex 现在只会把公开 workflow skill 从 `.claude/skills/<skill>/` 镜像到 `.codex/skills/<skill>/`，并清理从 Claude 侧发现的非公开镜像；同时不再保留单独的聚合 `cc-devflow` 入口。
 
 ### 保持 skill 和样例同步
 

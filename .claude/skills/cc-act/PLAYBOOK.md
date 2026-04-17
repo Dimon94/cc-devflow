@@ -23,8 +23,8 @@
 开始前先做 3 件事：
 
 1. 运行 `scripts/verify-act-gate.sh --dir <requirement-dir>`
-2. 确认 `report-card.json` 是 `pass`，且没有未解释的 gaps / reroute
-3. 确认 `TASKS.md` 不再有未完成项
+2. 确认 `review/report-card.json` 是 `pass`，且没有未解释的 gaps / reroute
+3. 确认 `planning/tasks.md` 不再有未完成项
 
 如果 gate 没闭合，直接回 `cc-check` 或 `cc-do`，不要在 `cc-act` 自我安慰。
 
@@ -55,17 +55,16 @@ Ship 必须属于这 4 种模式之一：
 
 先按模式整理最小材料：
 
-- `create-pr`: `status-report.md` + `pr-brief.md`
-- `update-pr`: 更新后的 `pr-brief.md` + 最新状态摘要
-- `local-handoff`: `status-report.md` + `resume-index.md`
-- `post-merge-closeout`: doc sync 结果 + `RELEASE_NOTE.md`（需要发布时）
+- `create-pr`: `handoff/pr-brief.md`
+- `update-pr`: 更新后的 `handoff/pr-brief.md`
+- `local-handoff`: `handoff/resume-index.md`
+- `post-merge-closeout`: doc sync 结果 + `handoff/release-note.md`（需要发布时）
 
 然后再补下面这些扩展材料：
 
-- `status-report.md`
-- `pr-brief.md`
-- `RELEASE_NOTE.md`（需要发布时）
-- 更新后的 `resume-index.md`
+- `handoff/pr-brief.md`
+- `handoff/release-note.md`（需要发布时）
+- 更新后的 `handoff/resume-index.md`
 - `doc-sync-report.md`
 
 这些文件只允许写已经被证明过的事实，不准补编故事。
@@ -82,8 +81,8 @@ Ship 必须属于这 4 种模式之一：
 同步规则：
 
 1. 代码结构变了，就同步对应目录的 `CLAUDE.md`
-2. 用户可感知行为变了，就同步 `README.md` / `RELEASE_NOTE.md`
-3. handoff 路径变了，就同步 `resume-index.md`
+2. 用户可感知行为变了，就同步 `README.md` / `handoff/release-note.md`
+3. handoff 路径变了，就同步 `handoff/resume-index.md`
 4. reviewer 如果看文档还得猜，就说明 sync 失败
 
 ## Phase 4: Execute Integration
@@ -112,7 +111,7 @@ Ship 必须属于这 4 种模式之一：
 
 ## Phase 5: Write Back The Learning
 
-以下情况必须回写 `BACKLOG.md` / `ROADMAP.md`：
+以下情况必须回写 `devflow/roadmap/backlog.md` / `devflow/roadmap/roadmap.md`：
 
 1. 本次工作暴露了新的 follow-up
 2. 原有优先级被改变
@@ -120,8 +119,8 @@ Ship 必须属于这 4 种模式之一：
 
 原则：
 
-- 长期方向写 `ROADMAP.md`
-- 下一轮待排队动作写 `BACKLOG.md`
+- 长期方向写 `devflow/roadmap/roadmap.md`
+- 下一轮待排队动作写 `devflow/roadmap/backlog.md`
 - 不要把噪音和碎念回写成系统真相
 
 ## Phase 6: Declare The Next Entry
@@ -129,7 +128,7 @@ Ship 必须属于这 4 种模式之一：
 `cc-act` 结束时必须留下一个明确入口：
 
 - requirement 真闭环：可归档，下一轮入口在 backlog / roadmap
-- requirement 未完全闭环：`resume-index.md` 必须告诉下一位从哪里接、怎么验、当前卡点是什么
+- requirement 未完全闭环：`handoff/resume-index.md` 必须告诉下一位从哪里接、怎么验、当前卡点是什么
 
 ## Recommendation Test
 
@@ -138,18 +137,17 @@ Ship 必须属于这 4 种模式之一：
 1. 看完第一屏，别人能不能立刻知道 ship 模式？
 2. 材料是不是只覆盖当前模式真正需要的内容？
 3. reviewer / 接手者 还需不需要追问“所以我现在该看哪个文件”？
-4. 如果删掉 `RELEASE_NOTE.md` 或 PR 更新动作，是否仍然符合当前模式？
+4. 如果删掉 `handoff/release-note.md` 或 PR 更新动作，是否仍然符合当前模式？
 
 如果第 1 或第 3 题答案不是“能”，说明 `cc-act` 仍然太重或太糊。
 
 ## Required Outputs
 
-- `status-report.md`
-- `pr-brief.md`
-- `RELEASE_NOTE.md`（需要发布时）
-- 更新后的 `resume-index.md`
+- `handoff/pr-brief.md`
+- `handoff/release-note.md`（需要发布时）
+- 更新后的 `handoff/resume-index.md`
 - 更新后的 `CLAUDE.md` / README / 架构文档（如果结构或行为变了）
-- 必要时更新后的 `BACKLOG.md` / `ROADMAP.md`
+- 必要时更新后的 `devflow/roadmap/backlog.md` / `devflow/roadmap/roadmap.md`
 
 ## Local Kit
 

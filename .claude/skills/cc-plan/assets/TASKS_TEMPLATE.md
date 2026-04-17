@@ -10,7 +10,7 @@
 
 ## Execution Handoff
 
-- Canonical design: `DESIGN.md`
+- Canonical design: `planning/design.md`
 - Execution mode: `single-path` | `parallel-ready`
 - Frozen decisions:
 - Read first:
@@ -25,7 +25,7 @@
 - [ ] T001 [TEST] Write the first failing test (dependsOn:none) `path/to/test`
   Goal: 证明当前行为还没实现，必须先看到失败。
   Files: `path/to/test`
-  Read first: `DESIGN.md`, `TASKS.md`
+  Read first: `design.md`, `tasks.md`
   Verification: `npm test -- path/to/test`
   Evidence: failing output
   Ready when: 没有上游依赖，且测试路径已经确定
@@ -33,7 +33,7 @@
 - [ ] T002 [IMPL] Make the first test pass (dependsOn:T001) `path/to/file`
   Goal: 用最小实现让 T001 转绿。
   Files: `path/to/file`
-  Read first: `DESIGN.md`, `path/to/test`
+  Read first: `design.md`, `path/to/test`
   Verification: `npm test -- path/to/test`
   Evidence: passing output + checkpoint
   Ready when: T001 已经见红，且当前 touched files 不和其他并行任务冲突
@@ -43,7 +43,7 @@
 - [ ] T003 [P] [TEST] Add another independent failing test (dependsOn:T002) `path/to/other.test`
   Goal: 为独立行为补红灯。
   Files: `path/to/other.test`
-  Read first: `DESIGN.md`, `TASKS.md`
+  Read first: `design.md`, `tasks.md`
   Verification: `npm test -- path/to/other.test`
   Evidence: failing output
   Ready when: T002 完成，且该测试覆盖的是独立行为
@@ -51,7 +51,7 @@
 - [ ] T004 [P] [IMPL] Make the independent test pass (dependsOn:T003) `path/to/other-file`
   Goal: 用最小实现让 T003 转绿，并保留重构空间。
   Files: `path/to/other-file`
-  Read first: `DESIGN.md`, `path/to/other.test`
+  Read first: `design.md`, `path/to/other.test`
   Verification: `npm test -- path/to/other.test`
   Evidence: passing output + review notes
   Ready when: T003 已经见红，且文件触点与其他 `[P]` 任务不冲突
@@ -61,7 +61,7 @@
 - [ ] T005 Run checks and collect evidence (dependsOn:T002,T004) `command or file`
   Goal: 为 `cc-check` 准备新鲜证据。
   Files: `command or file`
-  Read first: `TASKS.md`, `task-manifest.json`
+  Read first: `tasks.md`, `task-manifest.json`
   Verification: `npm test && npm run lint`
   Evidence: gate output
   Ready when: 当前 requirement 的实现任务都已收口

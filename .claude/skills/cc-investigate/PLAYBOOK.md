@@ -5,7 +5,7 @@
 `cc-investigate -> cc-do -> cc-check`
 
 - Enter from: a bug, regression, or broken requirement whose root cause is still unclear.
-- Stay in: `cc-investigate` until `ANALYSIS.md` and the repair handoff are both frozen.
+- Stay in: `cc-investigate` until `planning/analysis.md` and the repair handoff are both frozen.
 - Exit to: `cc-do` only after root cause and repair boundary are explicit in canonical artifacts.
 - Reroute to: `cc-plan` for scope/design truth changes, or `roadmap` for project-level priority decisions.
 
@@ -14,14 +14,14 @@
 1. 先复现，再猜原因。
 2. 先看最近变化，再决定是不是 regression。
 3. 先证伪假设，再冻结根因。
-4. `ANALYSIS.md` 和 `TASKS.md` 必须足够让 `cc-do` 脱离当前会话继续工作。
+4. `planning/analysis.md` 和 `planning/tasks.md` 必须足够让 `cc-do` 脱离当前会话继续工作。
 5. 调查失败三次后先重建入口，不准继续乱补。
 
 ## Required Outputs
 
-- `ANALYSIS.md`
-- `TASKS.md`
-- `task-manifest.json`
+- `planning/analysis.md`
+- `planning/tasks.md`
+- `planning/task-manifest.json`
 
 ## Investigation Standard
 
@@ -39,7 +39,7 @@
 
 ## Exit Rule
 
-只有当下一位执行者读完 `ANALYSIS.md`、`TASKS.md`、`task-manifest.json` 就知道：
+只有当下一位执行者读完 `planning/analysis.md`、`planning/tasks.md`、`planning/task-manifest.json` 就知道：
 
 - 为什么坏
 - 该修什么

@@ -12,7 +12,7 @@ npx cc-devflow adapt --cwd /path/to/your/project --platform codex
 真正的工作流直接使用 Skill：
 
 ```text
-roadmap
+cc-roadmap
 
 PDCA: cc-plan -> cc-do -> cc-check -> cc-act
 IDCA: cc-investigate -> cc-do -> cc-check -> cc-act
@@ -21,5 +21,5 @@ IDCA: cc-investigate -> cc-do -> cc-check -> cc-act
 如果你只想安装单个 Skill，再使用 [skills.sh CLI](https://skills.sh/docs/cli)：
 
 ```bash
-npx skills add https://github.com/Dimon94/cc-devflow --skill roadmap
+npx skills add https://github.com/Dimon94/cc-devflow --skill cc-roadmap
 ```

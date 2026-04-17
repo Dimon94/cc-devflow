@@ -6,7 +6,7 @@
 
 - Enter from: an approved roadmap item, requirement, or bug that still needs design.
 - Stay in: `cc-plan` until the approved design and executable task breakdown are both frozen.
-- Exit to: `cc-do` only after `DESIGN.md` is approved and `TASKS.md` plus `task-manifest.json` are generated.
+- Exit to: `cc-do` only after `planning/design.md` is approved and `planning/tasks.md` plus `planning/task-manifest.json` are generated.
 - Reroute to: `roadmap` if the conversation expands back into project strategy.
 
 ## Core Rules
@@ -14,14 +14,14 @@
 1. 先读上游 handoff，再写 planning 结论。
 2. 没有证据时写 assumption，不准冒充事实。
 3. 一次只推进一个关键未知点。
-4. `DESIGN.md` 和 `TASKS.md` 必须足够让执行者脱离当前会话继续工作。
+4. `planning/design.md` 和 `planning/tasks.md` 必须足够让执行者脱离当前会话继续工作。
 5. 版本、来源、冻结决策必须可追踪。
 
 ## Required Outputs
 
-- `DESIGN.md`
-- `TASKS.md`
-- `task-manifest.json`
+- `planning/design.md`
+- `planning/tasks.md`
+- `planning/task-manifest.json`
 
 ## Local Kit
 
@@ -32,11 +32,11 @@
 
 ## Planning Standard
 
-1. 一份 `DESIGN.md` 讲清 clarification、方案、review 和 final gate。
-2. 一份 `TASKS.md` 讲清执行任务和 handoff。
-3. `task-manifest.json` 只做机器真相源，不再重复人类叙事。
-4. 推荐方案获批前，不得生成 `TASKS.md`。
-5. `TASKS.md` 之前，`DESIGN.md` 内的 review gate 必须闭合。
+1. 一份 `planning/design.md` 讲清 clarification、方案、review 和 final gate。
+2. 一份 `planning/tasks.md` 讲清执行任务和 handoff。
+3. `planning/task-manifest.json` 只做机器真相源，不再重复人类叙事。
+4. 推荐方案获批前，不得生成 `planning/tasks.md`。
+5. `planning/tasks.md` 之前，`planning/design.md` 内的 review gate 必须闭合。
 6. 每个任务都要写清：
    - 目标
    - dependsOn / 是否允许并行
@@ -44,16 +44,16 @@
    - 必读上下文
    - 验证方式
    - 完成证据
-7. `TASKS.md` 顶部必须写清 frozen decisions、commands to trust、do-not-re-decide。
-8. `task-manifest.json` 必须是 `cc-do` 的真相源，而不是装饰文件。
+7. `planning/tasks.md` 顶部必须写清 frozen decisions、commands to trust、do-not-re-decide。
+8. `planning/task-manifest.json` 必须是 `cc-do` 的真相源，而不是装饰文件。
 
 ## Approval Flow
 
 1. 先写 `Source Handoff` 和 requirement framing。
-2. 在 `DESIGN.md` 里记录备选方案和推荐。
+2. 在 `planning/design.md` 里记录备选方案和推荐。
 3. 用户批准推荐方案后，再冻结正式设计。
-4. 在 `DESIGN.md` 里完成 review loop 与 final gate。
-5. gate 通过后，再拆 `TASKS.md` 与 `task-manifest.json`。
+4. 在 `planning/design.md` 里完成 review loop 与 final gate。
+5. gate 通过后，再拆 `planning/tasks.md` 与 `planning/task-manifest.json`。
 
 ## Design Mode Switch
 
@@ -82,5 +82,5 @@
 ## Exit Rule
 
 只有当 `cc-do` 不需要临场补脑也能直接执行时，计划才算合格。
-如果执行者还得自己猜“这次到底碰哪些文件、为什么这么改”，说明 `DESIGN.md` 仍然不够。
-如果执行者还看不出哪些决策已经冻结，说明 `TASKS.md` 仍然不够。
+如果执行者还得自己猜“这次到底碰哪些文件、为什么这么改”，说明 `planning/design.md` 仍然不够。
+如果执行者还看不出哪些决策已经冻结，说明 `planning/tasks.md` 仍然不够。

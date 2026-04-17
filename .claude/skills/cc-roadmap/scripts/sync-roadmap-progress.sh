@@ -16,7 +16,10 @@ RM_ID=""
 STATUS=""
 REQ_ID=""
 PROGRESS=""
-FILE="ROADMAP.md"
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+DEFAULT_FILE="$REPO_ROOT/ROADMAP.md"
+LEGACY_FILE="$REPO_ROOT/devflow/roadmap/roadmap.md"
+FILE="$DEFAULT_FILE"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -30,6 +33,10 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+if [[ "$FILE" == "$DEFAULT_FILE" && ! -f "$FILE" && -f "$LEGACY_FILE" ]]; then
+  FILE="$LEGACY_FILE"
+fi
+
 if [[ -z "$RM_ID" || ! -f "$FILE" ]]; then
   usage
   exit 1
@@ -39,9 +46,9 @@ tmp="$(mktemp)"
 awk -F'|' -v OFS='|' -v rm="$RM_ID" -v status="$STATUS" -v req="$REQ_ID" -v progress="$PROGRESS" '
   {
     if ($0 ~ "\\|[[:space:]]*" rm "[[:space:]]*\\|") {
-      if (status != "") { $6 = " " status " " }
-      if (req != "") { $7 = " " req " " }
-      if (progress != "") { $8 = " " progress " " }
+      if (status != "") { $7 = " " status " " }
+      if (req != "") { $8 = " " req " " }
+      if (progress != "") { $9 = " " progress " " }
     }
     print
   }

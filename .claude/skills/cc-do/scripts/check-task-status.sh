@@ -10,7 +10,7 @@ usage() {
   cat <<'EOF'
 Usage:
   check-task-status.sh --manifest task-manifest.json [--task T001]
-  check-task-status.sh --tasks TASKS.md [--task T001]
+  check-task-status.sh --tasks tasks.md [--task T001]
 EOF
 }
 

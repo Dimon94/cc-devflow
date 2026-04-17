@@ -28,7 +28,7 @@
 
 进入 roadmap 对话前，至少摸清：
 
-1. 现有 `ROADMAP.md` / `BACKLOG.md`
+1. 现有 repo root `ROADMAP.md` / `BACKLOG.md`
 2. `CLAUDE.md`、`README*`、`TODOS.md`
 3. 最近相关 docs / specs / plans
 4. 最近相关提交、当前工作树状态、正在推进的 requirement
@@ -82,6 +82,13 @@
 6. `Non-goals`
 7. 可以自然长成下一轮 `cc-plan` 的候选事项
 
+## Dependency Contract
+
+1. `Depends On` 只写硬阻塞，不写“最好先做”的软顺序。
+2. 至少画出一份 `RM Dependency Graph`，让串行主链和并行分支一眼可见。
+3. 至少列出一组 `Parallel waves`，说明哪些事项可共享同一前置后并发推进。
+4. 如果图里出现环，说明阶段切分错了，先重切，不要硬解释。
+
 ## Output Contract
 
 `ROADMAP.md`
@@ -93,10 +100,12 @@
 - 每阶段 exit signal
 - 每阶段 kill signal
 - 非目标
+- `RM Dependency Graph`
+- `Parallel waves`
 
 `BACKLOG.md`
 - 只保留会真的进入下一轮 `cc-plan` 的事项
-- 每项注明来源阶段、优先级、证据、依赖、当前未知点、下一决策、是否 ready
+- 每项注明来源阶段、优先级、证据、`Depends On`、`Parallel With`、当前未知点、下一决策、是否 ready
 
 ## Review Loop
 
@@ -105,8 +114,9 @@
 1. 有没有 placeholder
 2. 阶段之间是否有因果链
 3. 阶段目标是否真能被当前资源支撑
-4. ready 项是否真能进入 `cc-plan`
-5. 本次版本相比上一版到底改了什么
+4. `RM Dependency Graph` 是否只有硬依赖、没有环
+5. ready 项是否真能进入 `cc-plan`
+6. 本次版本相比上一版到底改了什么
 
 ## Versioning
 

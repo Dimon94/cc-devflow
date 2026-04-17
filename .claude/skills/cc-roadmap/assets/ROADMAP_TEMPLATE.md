@@ -114,6 +114,26 @@
 - What must stay out:
 - Candidate roadmap items:
 
+## RM Dependency Graph
+
+```mermaid
+flowchart LR
+  RM_001["RM-001 ..."] --> RM_002["RM-002 ..."]
+  RM_001 --> RM_003["RM-003 ..."]
+  RM_003 --> RM_004["RM-004 ..."]
+```
+
+- Dependency rule: `Depends On` only lists hard blockers.
+- Serial spine:
+- Parallel-ready branches:
+
+## Parallel Waves
+
+| Wave | Ready when | Items | Why parallel |
+|------|------------|-------|--------------|
+| Wave 1 |  |  |  |
+| Wave 2 |  |  |  |
+
 ## Decision Notes
 
 - Rejected path A:
@@ -123,6 +143,6 @@
 
 ## Implementation Tracking
 
-| RM-ID | Item | Stage | Priority | Status | REQ | Progress |
-|------|------|-------|----------|--------|-----|----------|
-| RM-001 |  | Stage 1 | P1 | Planned | - | 0% |
+| RM-ID | Item | Stage | Priority | Depends On | Status | REQ | Progress |
+|------|------|-------|----------|------------|--------|-----|----------|
+| RM-001 |  | Stage 1 | P1 | - | Planned | - | 0% |

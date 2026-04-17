@@ -8,7 +8,7 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-Usage: sync-act-docs.sh --dir path/to/req [--repo-root path/to/repo]
+Usage: sync-act-docs.sh --dir path/to/change [--repo-root path/to/repo]
 EOF
 }
 
@@ -35,16 +35,17 @@ fi
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$script_dir/cc-act-common.sh"
-report_card="$REQ_DIR/report-card.json"
-manifest="$REQ_DIR/task-manifest.json"
-tasks_file="$REQ_DIR/TASKS.md"
-design_file="$REQ_DIR/DESIGN.md"
-resume_index="$REQ_DIR/resume-index.md"
-release_note="$REQ_DIR/RELEASE_NOTE.md"
-doc_sync_report="$REQ_DIR/doc-sync-report.md"
+CHANGE_DIR="$(req_act_change_dir "$REQ_DIR")"
+report_card="$(req_act_report_path "$CHANGE_DIR")"
+manifest="$(req_act_manifest_path "$CHANGE_DIR")"
+tasks_file="$(req_act_tasks_path "$CHANGE_DIR")"
+design_file="$(req_act_contract_path "$CHANGE_DIR")"
+resume_index="$(req_act_resume_index_path "$CHANGE_DIR")"
+release_note="$(req_act_release_note_path "$CHANGE_DIR")"
+doc_sync_report="$(req_act_doc_sync_report_path "$CHANGE_DIR")"
 
-"$script_dir/verify-act-gate.sh" --dir "$REQ_DIR" >/dev/null
-"$script_dir/generate-status-report.sh" --dir "$REQ_DIR" >/dev/null
+"$script_dir/verify-act-gate.sh" --dir "$CHANGE_DIR" >/dev/null
+mkdir -p "$(dirname "$resume_index")"
 
 ship_context="$("$script_dir/detect-ship-target.sh" 2>/dev/null || true)"
 current_branch="$(req_act_ship_field "$ship_context" "CURRENT_BRANCH")"
@@ -54,7 +55,7 @@ pr_status="$(req_act_ship_field "$ship_context" "PR_STATUS")"
 pr_url="$(req_act_ship_field "$ship_context" "PR_URL")"
 
 timestamp="$(date '+%Y-%m-%d %H:%M:%S %z')"
-requirement_id="$(req_act_requirement_id "$manifest" "$REQ_DIR")"
+requirement_id="$(req_act_requirement_id "$manifest" "$CHANGE_DIR")"
 report_summary="$(req_act_report_summary "$report_card")"
 report_verdict="$(req_act_report_verdict "$report_card")"
 design_goal="$(req_act_design_goal "$design_file")"
@@ -186,7 +187,7 @@ next_action="Refresh handoff and close the requirement."
 case "$ship_mode" in
   create-pr) next_action="Push current branch and create PR / MR from pr-brief.md." ;;
   update-pr) next_action="Refresh the open PR / MR body and resolve outstanding review feedback." ;;
-  local-handoff) next_action="Hand off with pr-brief.md, status-report.md, and this resume index." ;;
+  local-handoff) next_action="Hand off with pr-brief.md and this resume index." ;;
   post-merge-closeout) next_action="Finish release note, backlog writeback, and archive the requirement." ;;
 esac
 
@@ -208,7 +209,7 @@ esac
   if [[ -n "$report_summary" ]]; then
     echo "- $report_summary"
   else
-    echo "- Req-Check passed; see report-card.json for evidence."
+    echo "- Req-Check passed; see review/report-card.json for evidence."
   fi
   echo "- Ship mode decided as \`$ship_mode\`."
   [[ -n "$pr_url" ]] && echo "- Active PR / MR: $pr_url"
@@ -246,8 +247,7 @@ esac
   echo
   echo "## Synced Requirement Artifacts"
   echo
-  echo "- \`status-report.md\`: refreshed"
-  echo "- \`RELEASE_NOTE.md\`: refreshed"
+  echo "- \`handoff/release-note.md\`: refreshed"
   echo "- \`resume-index.md\`: refreshed"
   echo
   echo "## Touched Files"

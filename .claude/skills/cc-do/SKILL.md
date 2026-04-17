@@ -5,7 +5,7 @@ description: "Use when implementing planned tasks, resuming interrupted work, ap
 triggers:
   - "开始做 T003"
   - "继续上次做到一半的任务"
-  - "按 TASKS.md 开始实现"
+  - "按 planning/tasks.md 开始实现"
   - "修这个 review comment"
   - "implement this task"
   - "resume this requirement"
@@ -16,15 +16,23 @@ reads:
   - "references/execution-recovery.md"
   - "references/parallel-dispatch.md"
 writes:
+  - path: "devflow/changes/<change-key>/execution/tasks/<task-id>/checkpoint.json"
+    durability: "durable"
+    required: true
+  - path: "devflow/changes/<change-key>/execution/tasks/<task-id>/events.jsonl"
+    durability: "durable"
+    required: false
+    when: "debug mode is enabled or the task execution fails"
+  - path: "devflow/changes/<change-key>/execution/team-state.json"
+    durability: "durable"
+    required: false
+    when: "execution mode uses delegated or team workers"
+effects:
   - "code changes"
   - "test changes"
-  - ".harness/runtime/<REQ>/<TASK>/events.jsonl"
-  - ".harness/runtime/<REQ>/<TASK>/checkpoint.json"
-  - ".harness/runtime/<REQ>/<TASK>/checkpoint.md"
-  - ".harness/runtime/<REQ>/<TASK>/review-spec.md"
-  - ".harness/runtime/<REQ>/<TASK>/review-code.md"
+  - "workspace scratch runtime updates"
 entry_gate:
-  - "Read DESIGN.md or ANALYSIS.md, then TASKS.md, task-manifest.json, and the latest checkpoint before changing code."
+  - "Read planning/design.md or planning/analysis.md, then planning/tasks.md, planning/task-manifest.json, and the latest checkpoint before changing code."
   - "Select only ready tasks whose dependencies and file ownership are clear."
   - "If the current task cannot be restated from canonical artifacts, run a context reset before coding."
 exit_criteria:
@@ -44,7 +52,7 @@ recovery_modes:
     action: "Reload the latest checkpoint, rebuild task context, and continue from the last confirmed red/green/review milestone."
   - name: "context-reset"
     when: "The conversation history is noisy, stale, or cannot reproduce the exact task state."
-    action: "Discard chat memory, reread DESIGN.md or ANALYSIS.md plus TASKS.md/task-manifest.json and the latest checkpoint, then restate the next action before coding."
+    action: "Discard chat memory, reread planning/design.md or planning/analysis.md plus planning/tasks.md/planning/task-manifest.json and the latest checkpoint, then restate the next action before coding."
 tool_budget:
   read_files: 9
   search_steps: 6
@@ -65,8 +73,8 @@ tool_budget:
 
 上游冻结合同可以来自两条路：
 
-- `cc-plan` 产出的 `DESIGN.md`
-- `cc-investigate` 产出的 `ANALYSIS.md`
+- `cc-plan` 产出的 `planning/design.md`
+- `cc-investigate` 产出的 `planning/analysis.md`
 
 ## Read First
 
@@ -77,7 +85,7 @@ tool_budget:
 
 ## Use This Skill When
 
-- 要实现 `TASKS.md` / `task-manifest.json`
+- 要实现 `planning/tasks.md` / `planning/task-manifest.json`
 - 执行被中断，需要恢复
 - bug 根因已经在 `cc-investigate` 里冻结，准备开始修
 - review feedback 要落成代码
@@ -107,11 +115,11 @@ tool_budget:
 
 ## Entry Gate
 
-1. 先读 `DESIGN.md` 或 `ANALYSIS.md`，再读 `TASKS.md`、`task-manifest.json`；如果是恢复执行，再补读最近 checkpoint 或已有 `resume-index.md`。
+1. 先读 `planning/design.md` 或 `planning/analysis.md`，再读 `planning/tasks.md`、`planning/task-manifest.json`；如果是恢复执行，再补读最近 checkpoint 或已有 `handoff/resume-index.md`。
 2. 先用 `scripts/select-ready-tasks.sh` 判断现在到底哪几个任务真的 ready。
 3. 只锁定当前 ready task，或一组经依赖与触点校验后可并行的 ready tasks。
-4. 如果这次来自 `cc-investigate`，必须把 `ANALYSIS.md` 当成 canonical contract，而不是一边实现一边重新调查。
-5. 没有任务上下文，不准把任务扔给 subagent；先用 `scripts/build-task-context.sh` 从 `DESIGN.md` 或 `ANALYSIS.md`、`TASKS.md`、`task-manifest.json` 组装上下文。
+4. 如果这次来自 `cc-investigate`，必须把 `planning/analysis.md` 当成 canonical contract，而不是一边实现一边重新调查。
+5. 没有任务上下文，不准把任务扔给 subagent；先用 `scripts/build-task-context.sh` 从 `planning/design.md` 或 `planning/analysis.md`、`planning/tasks.md`、`planning/task-manifest.json` 组装上下文。
 
 ## Loop
 
@@ -128,11 +136,9 @@ tool_budget:
 
 - 代码变更
 - 测试变更
-- `.harness/runtime/<REQ>/<TASK>/events.jsonl`
-- `.harness/runtime/<REQ>/<TASK>/checkpoint.json`
-- `.harness/runtime/<REQ>/<TASK>/checkpoint.md`
-- `.harness/runtime/<REQ>/<TASK>/review-spec.md`
-- `.harness/runtime/<REQ>/<TASK>/review-code.md`
+- `devflow/changes/<change-key>/execution/tasks/<task-id>/checkpoint.json`
+- `devflow/changes/<change-key>/execution/tasks/<task-id>/events.jsonl`（仅 debug / failed 默认保留）
+- `planning/task-manifest.json` 里的 task review verdict
 
 ## Good Output
 
@@ -171,7 +177,7 @@ tool_budget:
 
 - 当前任务有 Red/Green 证据
 - 当前任务有 `spec review` / `code review` 两道门证据
-- 恢复点已更新到 `.harness/runtime/<REQ>/<TASK>/`
+- 恢复点已更新到 `devflow/changes/<change-key>/execution/tasks/<task-id>/`
 - 阻塞原因已写清楚
 - 下一步应进入 `cc-check`，或明确退回 `cc-investigate` / `cc-plan`
 

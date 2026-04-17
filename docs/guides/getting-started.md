@@ -14,7 +14,7 @@ CC-DevFlow has two entry paths:
 The workflow itself is driven by six visible skills:
 
 ```text
-roadmap
+cc-roadmap
 
 PDCA: cc-plan -> cc-do -> cc-check -> cc-act
 IDCA: cc-investigate -> cc-do -> cc-check -> cc-act
@@ -39,7 +39,7 @@ npx cc-devflow init --dir /path/to/your/project
 ### Single Skill Install
 
 ```bash
-npx skills add https://github.com/Dimon94/cc-devflow --skill roadmap
+npx skills add https://github.com/Dimon94/cc-devflow --skill cc-roadmap
 ```
 
 ## Adapt For A Platform
@@ -71,7 +71,7 @@ find .codex/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort
 Use the skills in this order:
 
 ```text
-1. roadmap
+1. cc-roadmap
 2. choose cc-plan or cc-investigate
 3. cc-do
 4. cc-check
@@ -81,7 +81,7 @@ Use the skills in this order:
 
 Typical outputs:
 
-- `roadmap` writes `ROADMAP.md` and `BACKLOG.md`
+- `cc-roadmap` writes `ROADMAP.md` and `BACKLOG.md`
 - `cc-plan` writes `planning/design.md`, `planning/tasks.md`, `task-manifest.json`
 - `cc-investigate` writes `planning/analysis.md`, `planning/tasks.md`, `task-manifest.json`
 - `cc-check` writes `report-card.json`
@@ -94,7 +94,7 @@ The durable truth lives in `devflow/changes/<change>/`.
 
 Typical public contract fields:
 
-- `triggers`, `reads`, `writes`
+- `triggers`, `reads`, structured `writes`, `effects`
 - `entry_gate`, `exit_criteria`
 - `reroutes`, `recovery_modes`, `tool_budget`
 
@@ -138,7 +138,7 @@ npx cc-devflow adapt --cwd /path/to/your/project --platform codex
 
 If your project has no optional `.claude/commands/` input, this is expected: the compiler will still generate the skills registry and mirror the public workflow skills for Codex.
 
-Codex mirrors every discovered `.claude/skills/<skill>/` folder into `.codex/skills/<skill>/`, and no longer keeps a separate aggregate `cc-devflow` skill entry.
+Codex mirrors only the public workflow skills from `.claude/skills/<skill>/` into `.codex/skills/<skill>/`, and removes non-public mirrors discovered from the Claude tree. It no longer keeps a separate aggregate `cc-devflow` skill entry.
 
 ### Keep skills and examples in sync
 

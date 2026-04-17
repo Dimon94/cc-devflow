@@ -8,7 +8,7 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-Usage: verify-act-gate.sh --dir path/to/req
+Usage: verify-act-gate.sh --dir path/to/change
 EOF
 }
 
@@ -26,8 +26,11 @@ if [[ -z "$REQ_DIR" || ! -d "$REQ_DIR" ]]; then
   exit 1
 fi
 
-report_card="$REQ_DIR/report-card.json"
-tasks_file="$REQ_DIR/TASKS.md"
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$script_dir/cc-act-common.sh"
+CHANGE_DIR="$(req_act_change_dir "$REQ_DIR")"
+report_card="$(req_act_report_path "$CHANGE_DIR")"
+tasks_file="$(req_act_tasks_path "$CHANGE_DIR")"
 
 [[ -f "$report_card" ]] || { echo "Gate open: missing report-card.json" >&2; exit 1; }
 

@@ -17,14 +17,25 @@ reads:
   - "assets/PR_BRIEF_TEMPLATE.md"
   - "assets/RELEASE_NOTE_TEMPLATE.md"
 writes:
-  - "status-report.md"
-  - "pr-brief.md"
-  - "RELEASE_NOTE.md"
-  - "resume-index.md"
-  - "BACKLOG.md"
-  - "ROADMAP.md"
+  - path: "devflow/changes/<change-key>/handoff/pr-brief.md"
+    durability: "durable"
+    required: false
+    when: "handoff mode is create-pr or update-pr"
+    exclusive_group: "handoff"
+  - path: "devflow/changes/<change-key>/handoff/resume-index.md"
+    durability: "durable"
+    required: false
+    when: "handoff mode is local resume"
+    exclusive_group: "handoff"
+  - path: "devflow/changes/<change-key>/handoff/release-note.md"
+    durability: "durable"
+    required: false
+    when: "handoff mode is release"
+    exclusive_group: "handoff"
+effects:
+  - "roadmap or backlog follow-up updates when needed"
 entry_gate:
-  - "Accept only a passing report-card.json with reroute=none."
+  - "Accept only a passing review/report-card.json with reroute=none."
   - "Freeze current branch, PR, and ship-mode facts before writing delivery materials."
   - "If act changes code or verification scope, return to cc-check immediately."
 exit_criteria:
@@ -39,10 +50,10 @@ reroutes:
 recovery_modes:
   - name: "memory-consolidation"
     when: "Delivery evidence is scattered across checkpoints, reviews, and prior handoff notes."
-    action: "Compress the current truth into status-report.md, pr-brief.md, and resume-index.md before any ship action continues."
+    action: "Compress the current truth into handoff/pr-brief.md, handoff/resume-index.md, and handoff/release-note.md before any ship action continues."
   - name: "local-handoff-refresh"
     when: "Remote push or PR tooling is unavailable but the requirement is otherwise ready to land."
-    action: "Switch to local-handoff mode, refresh resume-index.md and status-report.md, and leave a verified next entry for the maintainer."
+    action: "Switch to local-handoff mode, refresh handoff/resume-index.md, and leave a verified next entry for the maintainer."
 tool_budget:
   read_files: 8
   search_steps: 4
@@ -72,10 +83,10 @@ tool_budget:
 - `cc-check` 已通过
 - 需要决定这次是 `create-pr`、`update-pr`、`local-handoff`，还是 `post-merge-closeout`
 - 需要同步最终文档、handoff、release note
-- 需要把遗留 follow-up / 优先级变化回写 `BACKLOG.md` 或 `ROADMAP.md`
+- 需要把遗留 follow-up / 优先级变化回写 `devflow/roadmap/backlog.md` 或 `devflow/roadmap/roadmap.md`
 - 需要让下一轮入口比现在更清楚
 
-如果 `report-card.json` 不是 `pass`，或者仍指向 `cc-do` / `cc-plan`，停止在这里，不准 ship。
+如果 `review/report-card.json` 不是 `pass`，或者仍指向 `cc-do` / `cc-plan`，停止在这里，不准 ship。
 
 ## Quick Start
 
@@ -99,8 +110,8 @@ tool_budget:
 
 ## Entry Gate
 
-1. 先读 `report-card.json`，只接受已通过且有证据的现实。
-2. 再读 `DESIGN.md`、`TASKS.md`、`task-manifest.json`；如果已有 `resume-index.md`，一并读取，确认这次到底完成了什么。
+1. 先读 `review/report-card.json`，只接受已通过且有证据的现实。
+2. 再读 `planning/design.md` 或 `planning/analysis.md`、`planning/tasks.md`、`planning/task-manifest.json`；如果已有 `handoff/resume-index.md`，一并读取，确认这次到底完成了什么。
 3. 运行 `scripts/verify-act-gate.sh --dir <requirement-dir>`，确认 gate 真的闭合。
 4. 运行 `scripts/detect-ship-target.sh`，识别当前分支、base branch、PR 状态与推荐 ship 路径。
 5. 如果在 `cc-act` 期间又改了代码、修了 review、补了测试，必须回 `cc-check`，不能带着旧证明继续 ship。
@@ -132,21 +143,19 @@ tool_budget:
 先做最小必要交付，再补充可选材料：
 
 1. `create-pr`
-   - 必须有 `status-report.md`
-   - 必须有 `pr-brief.md`
+   - 必须有 `handoff/pr-brief.md`
    - 必须完成需要同步的 doc updates
 2. `update-pr`
-   - 必须有更新后的 `pr-brief.md`
+   - 必须有更新后的 `handoff/pr-brief.md`
    - 必须说明这次新增了什么验证或文档同步
    - 必须避免重复创建 PR / MR
 3. `local-handoff`
-   - 必须有 `status-report.md`
-   - 必须有更新后的 `resume-index.md`
+   - 必须有更新后的 `handoff/resume-index.md`
    - 必须写清接手入口、验证方式、当前阻塞
 4. `post-merge-closeout`
    - 必须完成 doc sync
-   - 需要对外说明时生成 `RELEASE_NOTE.md`
-   - 必须把 follow-up 回写到 `BACKLOG.md` / `ROADMAP.md`
+   - 需要对外说明时生成 `handoff/release-note.md`
+   - 必须把 follow-up 回写到 `devflow/roadmap/backlog.md` / `devflow/roadmap/roadmap.md`
 
 不是每次都要把所有文件生成一遍。材料必须服务于当前 ship 模式，而不是为了流程好看。
 
@@ -156,9 +165,9 @@ tool_budget:
 2. 只使用 `cc-check` 已经证明过的事实写交付材料，不编故事，不补脑。
 3. 同步文档：
    - 结构变了，更新对应目录的 `CLAUDE.md`
-   - 用户可感知行为变了，更新 `README.md` / `RELEASE_NOTE.md`
-   - handoff 变了，更新 `resume-index.md`
-4. 生成 `pr-brief.md`，把需求、变更、验证证据、风险、文档同步状态一次写清。
+   - 用户可感知行为变了，更新 `README.md` / `handoff/release-note.md`
+   - handoff 变了，更新 `handoff/resume-index.md`
+4. 生成 `handoff/pr-brief.md`，把需求、变更、验证证据、风险、文档同步状态一次写清。
    - 优先运行 `scripts/sync-act-docs.sh --dir <requirement-dir>`
    - 再运行 `scripts/render-pr-brief.sh --dir <requirement-dir>`
 5. 执行分支集成动作：
@@ -167,7 +176,7 @@ tool_budget:
    - `local-handoff`：不假装已经发出，只生成可接手材料
    - `post-merge-closeout`：跳过 PR，完成发布与闭环回写
 6. 处理 doc sync：如果 ship 结果改变了代码地图、用法、架构边界，文档必须跟上。
-7. 回写 `BACKLOG.md` / `ROADMAP.md`：
+7. 回写 `devflow/roadmap/backlog.md` / `devflow/roadmap/roadmap.md`：
    - 新发现的 follow-up
    - 被推迟但必须保留的事项
    - 因本次结果而改变优先级的事项
@@ -175,12 +184,11 @@ tool_budget:
 
 ## Output
 
-- `status-report.md`
-- `pr-brief.md`
-- `RELEASE_NOTE.md`（需要对外发布时）
-- 更新后的 `resume-index.md`
+- `handoff/pr-brief.md`
+- `handoff/release-note.md`（需要对外发布时）
+- 更新后的 `handoff/resume-index.md`
 - 同步后的 `CLAUDE.md` / README / 架构文档
-- 必要时更新后的 `BACKLOG.md` / `ROADMAP.md`
+- 必要时更新后的 `devflow/roadmap/backlog.md` / `devflow/roadmap/roadmap.md`
 - 必要时创建或更新的 PR / MR
 
 ## Good Output
@@ -189,7 +197,7 @@ tool_budget:
 
 - 这次到底选了哪种 ship 模式，为什么不是另外三种
 - 哪些材料已经准备好，哪些刻意不需要
-- 现在谁都可以顺着 `pr-brief.md` 或 `resume-index.md` 继续往前走
+- 现在谁都可以顺着 `handoff/pr-brief.md` 或 `handoff/resume-index.md` 继续往前走
 - 文档、PR 描述、release note 说的是同一套现实
 
 ## Bundled Resources
@@ -214,7 +222,7 @@ tool_budget:
 5. 分支决策必须明确属于 4 种模式之一，不要含糊。
 6. 已存在 PR / MR 时，优先更新，不重复创建。
 7. 如果 Act 阶段修改了代码、测试或验证口径，必须回 `cc-check`。
-8. `BACKLOG.md` / `ROADMAP.md` 只回写真正改变优先级或产生 follow-up 的事项，不写噪音。
+8. `devflow/roadmap/backlog.md` / `devflow/roadmap/roadmap.md` 只回写真正改变优先级或产生 follow-up 的事项，不写噪音。
 9. `local-handoff` 不是偷懒模式，它仍然必须让下一位接手者知道做什么、怎么验证、卡在哪。
 
 ## Exit Criteria

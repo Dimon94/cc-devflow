@@ -1,6 +1,6 @@
 ---
-name: roadmap
-version: 2.2.0
+name: cc-roadmap
+version: 3.0.0
 description: "Use when defining, resetting, or narrowing project direction, stage order, or backlog priority before a concrete requirement enters the PDCA loop."
 triggers:
   - "帮我定路线图"
@@ -18,8 +18,12 @@ reads:
   - "assets/BACKLOG_TEMPLATE.md"
   - "references/roadmap-dialogue.md"
 writes:
-  - "ROADMAP.md"
-  - "BACKLOG.md"
+  - path: "ROADMAP.md"
+    durability: "durable"
+    required: true
+  - path: "BACKLOG.md"
+    durability: "durable"
+    required: true
 entry_gate:
   - "Read current roadmap, backlog, and surrounding repo context before proposing direction."
   - "Confirm this is a project-direction problem, not a single requirement execution problem."
@@ -27,6 +31,7 @@ entry_gate:
 exit_criteria:
   - "The next 1-3 stages are frozen with goal, why now, dependencies, exit signal, kill signal, and non-goals."
   - "The first backlog items can naturally enter cc-plan without extra strategic guessing."
+  - "The roadmap shows an explicit RM dependency graph so serial blockers and parallel-ready work are obvious."
   - "The user-approved recommendation is explicit and grounded in current evidence."
 reroutes:
   - when: "The user is already discussing one concrete requirement, bug, or execution task."
@@ -47,7 +52,7 @@ tool_budget:
 
 ## Role
 
-`roadmap` 只负责一件事：决定项目接下来 1-3 个阶段该打哪几仗。
+`cc-roadmap` 只负责一件事：决定项目接下来 1-3 个阶段该打哪几仗。
 
 它先尽可能收集真实上下文，再逼出真实用户、真实痛点、真实紧迫性，最后把这些现实压成一条能落地、能进入 `cc-plan` 的主线。
 
@@ -82,14 +87,14 @@ tool_budget:
 
 ## Harness Contract
 
-- Allowed actions: read current strategy files, repo context, and recent reality; compare route shapes; write only `ROADMAP.md` and `BACKLOG.md`.
+- Allowed actions: read current strategy files, repo context, and recent reality; compare route shapes; write only repo-root `ROADMAP.md` and `BACKLOG.md`.
 - Forbidden actions: decompose implementation tasks, invent hidden context, or jump into `cc-plan` before the roadmap is approved.
 - Required evidence: every stage and backlog item must point back to explicit repo facts, user constraints, or observed market signals.
 - Reroute rule: once the conversation collapses to one concrete requirement, stop strategic expansion and hand off to `cc-plan`.
 
 ## Entry Gate
 
-1. 如果 `ROADMAP.md` / `BACKLOG.md` 已存在，先读现状再重写。
+1. 如果 repo root 下的 `ROADMAP.md` / `BACKLOG.md` 已存在，先读现状再重写。
 2. 先判断这是“项目方向问题”还是“单 requirement 执行问题”。
 3. 先做一次上下文扫描，不能跳过现有事实直接写愿景。
 4. 方向没被批准前，不准把 roadmap 偷偷下放成实现任务。
@@ -98,7 +103,7 @@ tool_budget:
 
 进入对话前，至少主动收这些上下文：
 
-1. 当前 `ROADMAP.md` / `BACKLOG.md` 的主线、版本、已停放事项。
+1. 当前 repo root `ROADMAP.md` / `BACKLOG.md` 的主线、版本、已停放事项。
 2. `CLAUDE.md`、`README*`、`TODOS.md`、最近相关 docs / specs / plans。
 3. 最近相关提交、当前分支脏状态、正在进行中的 requirement。
 4. 真实 forcing functions：deadline、发布窗口、资源上限、依赖、distribution、adoption / trust / delivery 卡点。
@@ -114,8 +119,9 @@ tool_budget:
 4. 先写 `Context Snapshot`、证据、约束、非目标，再讨论阶段。
 5. 给出 2-3 种路线图形状，再明确推荐一种，并说明为什么其他路线现在不值得打。
 6. 只冻结 1-3 个阶段。每个阶段都必须有 goal、why now、dependencies、exit signal、kill signal、non-goals。
-7. backlog 只保留会真的进入下一轮 `cc-plan` 的事项，每项都要带成功信号和下一决策。
-8. 用户没批准，不进入 `cc-plan`。
+7. 把 `RM` 之间的硬依赖压成显式 dependency graph，并标出 parallel-ready wave；不要把“最好按这个顺序做”伪装成 blocker。
+8. backlog 只保留会真的进入下一轮 `cc-plan` 的事项，每项都要带成功信号、下一决策、`Depends On` 与 `Parallel With`。
+9. 用户没批准，不进入 `cc-plan`。
 
 ## Route Selection Rule
 
@@ -159,17 +165,19 @@ tool_budget:
 2. 没有 2-3 条路线对比，不准直接拍脑袋定主线。
 3. 没有 exit signal / kill signal / non-goals，不算阶段冻结。
 4. 没有明确成功信号和下一决策，不准把事项放进 `Ready For Req-Plan`。
-5. 没有用户批准，不准把 roadmap item 下放到 `cc-plan`。
+5. 没有 `RM dependency graph` 或 parallel-ready wave，不准宣称事项可以并发推进。
+6. 没有用户批准，不准把 roadmap item 下放到 `cc-plan`。
 
 ## Review Loop
 
-写完 `ROADMAP.md` / `BACKLOG.md` 后，至少完成这 5 个检查：
+写完 repo root `ROADMAP.md` / `BACKLOG.md` 后，至少完成这 6 个检查：
 
 1. Placeholder scan：不能有 TBD、TODO、`[NEEDS CONTEXT]` 之类的逃避词。
 2. Evidence scan：每个阶段是否都能指回某个现实证据，而不是空洞愿景。
 3. Causality scan：Stage 2 是否真的建立在 Stage 1 的胜利条件之上。
 4. Feasibility scan：阶段目标与团队容量、依赖、distribution 约束是否接得上。
-5. Handoff scan：第一批 roadmap item 是否已经自然长成可进入 `cc-plan` 的对象。
+5. Graph scan：`Depends On` 是否只包含硬阻塞，图里有没有环，parallel-ready wave 是否真的共享同一前置。
+6. Handoff scan：第一批 roadmap item 是否已经自然长成可进入 `cc-plan` 的对象。
 
 ## Output
 
@@ -184,10 +192,11 @@ tool_budget:
 2. 为什么不是另外两仗
 3. 哪个 signal 说明这一仗赢了
 4. 哪些 backlog 项已经真的 ready for `cc-plan`
+5. 哪些 `RM` 必须串行，哪些已经可以并行开会话
 
 ## Versioning
 
-`roadmap` 自身使用 semver：
+`cc-roadmap` 自身使用 semver：
 
 - `patch`：措辞、模板字段说明、非契约性澄清
 - `minor`：新增兼容字段、上下文收集规则、评审规则、输出结构增强
@@ -221,7 +230,7 @@ tool_budget:
 
 1. 先收上下文，再收意见。
 2. 没有现实证据时必须明确写成 assumption，而不是偷偷当事实。
-3. `ROADMAP.md` 是方向真相源，`BACKLOG.md` 是进入下一轮规划的缓冲区。
+3. repo root `ROADMAP.md` 是方向真相源，repo root `BACKLOG.md` 是进入下一轮规划的缓冲区。
 4. 决策理由必须保留下来，方便以后重跑时比较版本差异。
 5. 不要为了显得完整而写 6 个阶段，能打赢下一仗比画完整战争图更重要。
 

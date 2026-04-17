@@ -4,6 +4,73 @@
 # cc-act: 共享提取与归一化逻辑
 # ------------------------------------------------------------
 
+req_act_change_dir() {
+  local input="$1"
+  local normalized="${input%/}"
+
+  case "$(basename "$normalized")" in
+    planning|execution|review|handoff|meta)
+      dirname "$normalized"
+      ;;
+    *)
+      printf '%s\n' "$normalized"
+      ;;
+  esac
+}
+
+req_act_planning_dir() {
+  printf '%s/planning\n' "$(req_act_change_dir "$1")"
+}
+
+req_act_review_dir() {
+  printf '%s/review\n' "$(req_act_change_dir "$1")"
+}
+
+req_act_handoff_dir() {
+  printf '%s/handoff\n' "$(req_act_change_dir "$1")"
+}
+
+req_act_manifest_path() {
+  printf '%s/task-manifest.json\n' "$(req_act_planning_dir "$1")"
+}
+
+req_act_tasks_path() {
+  printf '%s/tasks.md\n' "$(req_act_planning_dir "$1")"
+}
+
+req_act_contract_path() {
+  local planning_dir
+  local design_file
+  local analysis_file
+
+  planning_dir="$(req_act_planning_dir "$1")"
+  design_file="$planning_dir/design.md"
+  analysis_file="$planning_dir/analysis.md"
+
+  if [[ -f "$analysis_file" && ! -f "$design_file" ]]; then
+    printf '%s\n' "$analysis_file"
+    return 0
+  fi
+
+  printf '%s\n' "$design_file"
+}
+
+req_act_report_path() {
+  printf '%s/report-card.json\n' "$(req_act_review_dir "$1")"
+}
+
+req_act_release_note_path() {
+  printf '%s/release-note.md\n' "$(req_act_handoff_dir "$1")"
+}
+
+req_act_resume_index_path() {
+  printf '%s/resume-index.md\n' "$(req_act_handoff_dir "$1")"
+}
+
+req_act_doc_sync_report_path() {
+  printf '%s/doc-sync-report.md\n' "$(req_act_handoff_dir "$1")"
+}
+
 req_act_repo_root() {
   git rev-parse --show-toplevel 2>/dev/null || pwd
 }

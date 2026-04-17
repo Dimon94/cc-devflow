@@ -34,7 +34,7 @@ assert_contains() {
   fi
 }
 
-ROADMAP_VERSION="$(skill_version roadmap)"
+ROADMAP_VERSION="$(skill_version cc-roadmap)"
 REQ_PLAN_VERSION="$(skill_version cc-plan)"
 INVESTIGATE_VERSION="$(skill_version cc-investigate)"
 REQ_DO_VERSION="$(skill_version cc-do)"
@@ -42,7 +42,7 @@ REQ_CHECK_VERSION="$(skill_version cc-check)"
 REQ_ACT_VERSION="$(skill_version cc-act)"
 
 for pair in \
-  "roadmap:$ROADMAP_VERSION" \
+  "cc-roadmap:$ROADMAP_VERSION" \
   "cc-plan:$REQ_PLAN_VERSION" \
   "cc-investigate:$INVESTIGATE_VERSION" \
   "cc-do:$REQ_DO_VERSION" \
@@ -85,7 +85,7 @@ while IFS= read -r encoded; do
   ' "$planning_dir/task-manifest.json" >/dev/null
 
   assert_contains "$readme" "## Example Meta"
-  assert_contains "$readme" "\`roadmap@$ROADMAP_VERSION\`"
+  assert_contains "$readme" "\`cc-roadmap@$ROADMAP_VERSION\`"
   assert_contains "$readme" "\`cc-plan@$REQ_PLAN_VERSION\`"
   assert_contains "$readme" "\`cc-do@$REQ_DO_VERSION\`"
   assert_contains "$readme" "\`cc-check@$REQ_CHECK_VERSION\`"

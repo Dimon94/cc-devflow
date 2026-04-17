@@ -9,7 +9,7 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  mark-task-complete.sh --manifest task-manifest.json [--tasks TASKS.md] --task T001
+  mark-task-complete.sh --manifest task-manifest.json [--tasks tasks.md] --task T001
 EOF
 }
 

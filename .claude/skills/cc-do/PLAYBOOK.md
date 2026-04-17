@@ -4,7 +4,7 @@
 
 `cc-plan | cc-investigate -> cc-do -> cc-check`
 
-- Enter from: an approved `DESIGN.md` or `ANALYSIS.md` with frozen tasks.
+- Enter from: an approved `planning/design.md` or `planning/analysis.md` with frozen tasks.
 - Stay in: `cc-do` while there are ready tasks, valid checkpoints, and the design contract still holds.
 - Exit to: `cc-check` once the current task set has red/green/review evidence and no hidden execution gaps remain.
 - Reroute to: `cc-investigate` if repeated failures prove the root-cause contract is wrong, or `cc-plan` if the requirement design itself is wrong.
@@ -15,7 +15,7 @@
 
 - `implement`: 已有 ready task，可直接进入 TDD
 - `resume`: task 已有 runtime / checkpoint，需要续做
-- `repair-from-investigation`: `ANALYSIS.md` 已冻结，可直接修
+- `repair-from-investigation`: `planning/analysis.md` 已冻结，可直接修
 - `reroute-cc-investigate`: bug 根因未明，回调查入口
 - `review-fix`: scope 不变，只修 review 指向的问题
 
@@ -25,8 +25,8 @@
 
 1. 读取 `task-manifest.json`，先用 `scripts/select-ready-tasks.sh` 找出当前 ready tasks。
 2. 如果有多于一个 ready task，要先跑 `scripts/detect-file-conflicts.sh`；有共享触点或依赖关系就退回串行。
-3. 对每个要执行的 task，先用 `scripts/build-task-context.sh` 从 `DESIGN.md`、`TASKS.md`、`task-manifest.json` 组装上下文，再开始编码。
-4. 如果当前任务来自 `cc-investigate`，把 `ANALYSIS.md` 当成上游合同，不准一边做一边重开调查。
+3. 对每个要执行的 task，先用 `scripts/build-task-context.sh` 从 `planning/design.md`、`planning/tasks.md`、`planning/task-manifest.json` 组装上下文，再开始编码。
+4. 如果当前任务来自 `cc-investigate`，把 `planning/analysis.md` 当成上游合同，不准一边做一边重开调查。
 5. 进入 TDD 闭环：先红，再绿，再重构。
 6. 每个关键节点都写 runtime：失败测试、Green 通过、Refactor、Review 结论、阻塞原因。
 7. 任务实现后，先过 `spec review`，再过 `code review`，review 不通过就回到实现。
@@ -81,7 +81,7 @@
 ## Root Cause Protocol
 
 - 先复现，再猜原因
-- 先读 `ANALYSIS.md`，再改代码
+- 先读 `planning/analysis.md`，再改代码
 - 先守住修复边界，再做最小实现
 - 两次失败后回看证据
 - 三次失败后先回 `cc-investigate`，再决定是否需要 `cc-plan`

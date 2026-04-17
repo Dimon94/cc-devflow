@@ -1,5 +1,18 @@
 # Roadmap Skill Changelog
 
+## v3.0.0 - 2026-04-17
+
+- change `cc-roadmap` durable outputs to repo-root `ROADMAP.md` and `BACKLOG.md`, aligning the skill contract with README, examples, and live usage
+- require roadmap output to include an explicit `RM Dependency Graph` plus `Parallel Waves`, so serial blockers and concurrent work are visible
+- upgrade backlog handoff fields to record `Depends On` and `Parallel With`
+- update bundled helper scripts to prefer repo-root files and fall back to legacy `devflow/roadmap/*` files when present
+
+Migration note:
+
+- new roadmap runs should write repo-root `ROADMAP.md` and `BACKLOG.md`
+- helper scripts still read legacy `devflow/roadmap/*` files as fallback, but the canonical path is now the repo root
+- if you maintain automation that parses the `Implementation Tracking` table, account for the new `Depends On` column before `Status`
+
 ## v2.2.0 - 2026-04-17
 
 - convert public frontmatter from loose prose into structured harness contract fields: `triggers`, `reads`, `writes`, `entry_gate`, `exit_criteria`, `reroutes`, `recovery_modes`, `tool_budget`

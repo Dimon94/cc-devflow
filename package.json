@@ -10,7 +10,7 @@
         "bin/",
         "lib/",
         "config/",
-        ".claude/skills/roadmap/",
+        ".claude/skills/cc-roadmap/",
         ".claude/skills/cc-plan/",
         ".claude/skills/cc-investigate/",
         ".claude/skills/cc-do/",

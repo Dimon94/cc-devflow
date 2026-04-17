@@ -14,7 +14,7 @@ If you need to verify that examples still match the current skill contracts, use
 
 - Path: [./pdca-loop/README.md](./pdca-loop/README.md)
 - Shows:
-  - `roadmap -> cc-plan -> cc-do -> cc-check -> cc-act`
+  - `cc-roadmap -> cc-plan -> cc-do -> cc-check -> cc-act`
   - `tiny-design`
   - `pass`
   - `create-pr`

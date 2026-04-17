@@ -1,7 +1,7 @@
 {
   "updatedAt": "2026-04-17",
   "skills": {
-    "roadmap": "2.2.0",
+    "cc-roadmap": "2.2.0",
     "cc-plan": "3.3.0",
     "cc-investigate": "1.0.0",
     "cc-do": "1.3.0",
@@ -14,7 +14,7 @@
       "readme": "docs/examples/pdca-loop/README.md",
       "root": "docs/examples/pdca-loop",
       "changeDir": "docs/examples/pdca-loop/changes/REQ-001-copy-invite-link",
-      "covers": ["roadmap", "cc-plan", "cc-do", "cc-check", "cc-act"],
+      "covers": ["cc-roadmap", "cc-plan", "cc-do", "cc-check", "cc-act"],
       "expectedShipMode": "create-pr"
     },
     {
@@ -22,7 +22,7 @@
       "readme": "docs/examples/full-design-blocked/README.md",
       "root": "docs/examples/full-design-blocked",
       "changeDir": "docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import",
-      "covers": ["roadmap", "cc-plan", "cc-do", "cc-check"],
+      "covers": ["cc-roadmap", "cc-plan", "cc-do", "cc-check"],
       "expectedShipMode": "none"
     },
     {
@@ -30,7 +30,7 @@
       "readme": "docs/examples/local-handoff/README.md",
       "root": "docs/examples/local-handoff",
       "changeDir": "docs/examples/local-handoff/changes/REQ-003-audit-log-export",
-      "covers": ["roadmap", "cc-plan", "cc-do", "cc-check", "cc-act"],
+      "covers": ["cc-roadmap", "cc-plan", "cc-do", "cc-check", "cc-act"],
       "expectedShipMode": "local-handoff"
     }
   ]

@@ -17,9 +17,9 @@
 
 ## Output Shape
 
-- `ANALYSIS.md` 是人类真相源
-- `TASKS.md` 是修复 handoff
-- `task-manifest.json` 是执行真相源
+- `planning/analysis.md` 是人类真相源
+- `planning/tasks.md` 是修复 handoff
+- `planning/task-manifest.json` 是执行真相源
 
 ## Reroute
 

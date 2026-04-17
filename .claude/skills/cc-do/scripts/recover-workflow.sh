@@ -8,11 +8,12 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-Usage: recover-workflow.sh --dir path/to/requirement
+Usage: recover-workflow.sh --dir path/to/change
 EOF
 }
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/cc-do-common.sh"
 REQ_DIR=""
 
 while [[ $# -gt 0 ]]; do
@@ -28,15 +29,15 @@ if [[ -z "$REQ_DIR" || ! -d "$REQ_DIR" ]]; then
   exit 1
 fi
 
-manifest="$REQ_DIR/task-manifest.json"
-tasks="$REQ_DIR/TASKS.md"
-report="$REQ_DIR/report-card.json"
+CHANGE_DIR="$(req_do_resolve_change_dir "$REQ_DIR")"
+manifest="$(req_do_manifest_path "$CHANGE_DIR")"
+tasks="$(req_do_tasks_path "$CHANGE_DIR")"
+report="$(req_do_report_card_path "$CHANGE_DIR")"
 change_id=""
-repo_root="$(git -C "$REQ_DIR" rev-parse --show-toplevel 2>/dev/null || (cd "$REQ_DIR" && pwd))"
 
 echo "# Recovery Snapshot"
 echo
-echo "- Requirement dir: $REQ_DIR"
+echo "- Change dir: $CHANGE_DIR"
 
 if [[ -f "$manifest" ]]; then
   current="$(jq -r '.currentTaskId // "unknown"' "$manifest" 2>/dev/null || echo unknown)"
@@ -67,8 +68,11 @@ if [[ -f "$report" ]]; then
   echo "- Latest check verdict: $verdict"
 fi
 
-if [[ -n "$change_id" && -d "$repo_root/.harness/runtime/$change_id" ]]; then
-  runtime_dir="$repo_root/.harness/runtime/$change_id"
+if [[ -n "$change_id" ]]; then
+  runtime_dir="$(req_do_execution_dir "$CHANGE_DIR")/tasks"
+fi
+
+if [[ -n "${runtime_dir:-}" && -d "$runtime_dir" ]]; then
   echo "- Runtime dir: $runtime_dir"
 
   while IFS= read -r checkpoint_path; do

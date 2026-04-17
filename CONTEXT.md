@@ -5,7 +5,7 @@
 CC-DevFlow 当前的对外形态是：
 
 - skill-first
-- roadmap + PDCA
+- cc-roadmap + PDCA
 - packaged CLI for distribution
 - multi-platform adaptation
 - skill-owned workflow with `lib/skill-runtime` as shared internal support code
@@ -13,7 +13,7 @@ CC-DevFlow 当前的对外形态是：
 用户真正看见的入口只有两类：
 
 - `cc-devflow init` / `cc-devflow adapt`
-- `roadmap -> cc-plan -> cc-do -> cc-check -> cc-act`
+- `cc-roadmap -> cc-plan -> cc-do -> cc-check -> cc-act`
 
 ---
 
@@ -33,7 +33,7 @@ npx cc-devflow adapt --cwd /path/to/project --platform codex
 ### Workflow Layer
 
 ```text
-roadmap
+cc-roadmap
 
 cc-plan -> cc-do -> cc-check -> cc-act
 ```
@@ -48,7 +48,7 @@ cc-plan -> cc-do -> cc-check -> cc-act
 
 ```text
 .claude/skills/
-├── roadmap/
+├── cc-roadmap/
 ├── cc-plan/
 ├── cc-do/
 ├── cc-check/
