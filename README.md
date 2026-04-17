@@ -160,9 +160,15 @@ skills.sh remains the single-skill distribution path for distributed `.claude/sk
 - `roadmap` writes `ROADMAP.md` and `BACKLOG.md`
 - `cc-plan` writes `planning/design.md`, `planning/tasks.md`, `task-manifest.json`
 - `cc-investigate` writes `planning/analysis.md`, `planning/tasks.md`, `task-manifest.json`
-- `cc-do` writes code, tests, and runtime checkpoints
+- `cc-do` writes code, tests, task `checkpoint.json`, and workspace scratch runtime
 - `cc-check` writes `report-card.json`
-- `cc-act` writes `handoff/pr-brief.md`, `handoff/release-note.md`, and synced docs
+- `cc-act` writes exactly one final handoff file: `handoff/pr-brief.md`, `handoff/resume-index.md`, or `handoff/release-note.md`
+
+## Durable vs Ephemeral
+
+- `devflow/changes/<change>/` stores durable truth only: `change-state.json`, planning docs, `task-manifest.json`, `team-state.json`, task `checkpoint.json`, `report-card.json`, and one final handoff file.
+- `devflow/workspaces/<change>/` stores ephemeral runtime scratch such as worker assignment, journals, prompts, and session logs.
+- If a file can be regenerated from durable truth, it should not be persisted under `devflow/changes/`.
 
 See [docs/examples/START-HERE.md](./docs/examples/START-HERE.md) for the single entry page to the example set. Example version bindings live in [docs/examples/example-bindings.json](./docs/examples/example-bindings.json).
 

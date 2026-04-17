@@ -155,9 +155,15 @@ skills.sh 则是已分发 `.claude/skills/*` 的单 Skill 安装路径。
 - `roadmap` 产出 `ROADMAP.md` 和 `BACKLOG.md`
 - `cc-plan` 产出 `planning/design.md`、`planning/tasks.md`、`task-manifest.json`
 - `cc-investigate` 产出 `planning/analysis.md`、`planning/tasks.md`、`task-manifest.json`
-- `cc-do` 产出代码、测试和运行时 checkpoint
+- `cc-do` 产出代码、测试、任务级 `checkpoint.json`，以及 workspace scratch 运行态
 - `cc-check` 产出 `report-card.json`
-- `cc-act` 产出 `handoff/pr-brief.md`、`handoff/release-note.md` 和同步后的文档
+- `cc-act` 只产出一个最终 handoff 文件：`handoff/pr-brief.md`、`handoff/resume-index.md` 或 `handoff/release-note.md`
+
+## Durable 与 Ephemeral
+
+- `devflow/changes/<change>/` 只保存 durable truth：`change-state.json`、planning 文档、`task-manifest.json`、`team-state.json`、任务级 `checkpoint.json`、`report-card.json`，以及唯一的最终 handoff 文件。
+- `devflow/workspaces/<change>/` 只保存 ephemeral runtime scratch，比如 worker assignment、journal、prompt 和 session log。
+- 凡是可以从 durable truth 即时再生的内容，都不应该持久化到 `devflow/changes/`。
 
 可以先看 [docs/examples/START-HERE.md](./docs/examples/START-HERE.md) 这个单页入口，它已经把样例选择、按产物反查和样例跳转合在一起了。样例和 skill 的版本绑定真相源在 [docs/examples/example-bindings.json](./docs/examples/example-bindings.json)。
 

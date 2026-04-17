@@ -15,13 +15,12 @@
 - implementation tasks `T001-T003` completed
 - targeted test and lint evidence collected
 - `report-card.json` confirms `pass`
-- `status.md` explains why the work is in handoff mode instead of PR mode
 
 ## Next Entry
 
 - when remote access is restored, rerun `detect-ship-target`
 - if the branch still has no PR, switch from `local-handoff` to `create-pr`
-- use `status.md` and `report-card.json` as the truth sources for the next ship step
+- use `resume-index.md` and `report-card.json` as the truth sources for the next ship step
 
 ## Read First
 
@@ -29,7 +28,6 @@
 - `tasks.md`
 - `task-manifest.json`
 - `report-card.json`
-- `status.md`
 
 ## How To Re-Verify
 

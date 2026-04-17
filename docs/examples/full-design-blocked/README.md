@@ -49,6 +49,6 @@ The sample shows what happens when implementation moved before the integration d
 
 ## Why There Is No `cc-act` Output
 
-There is no `status.md`, `pr-brief.md`, or `resume-index.md` here because `cc-check` did **not** return `pass`.
+There is no final handoff file here because `cc-check` did **not** return `pass`.
 
 The loop must stop honestly before `cc-act`.

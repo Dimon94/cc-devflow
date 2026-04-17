@@ -21,7 +21,6 @@ const {
   getReportCardPath,
   getReleaseNotePath,
   getTasksMarkdownPath,
-  getTaskReviewPath,
   readJson,
   readText
 } = require('../../lib/skill-runtime/store');
@@ -56,19 +55,17 @@ describe('Skill runtime', () => {
     fs.rmSync(repoRoot, { recursive: true, force: true });
   });
 
-  function writeReviewArtifact(changeId, taskId, kind, verdict = 'pass') {
-    const reviewPath = getTaskReviewPath(repoRoot, changeId, taskId, kind);
-    fs.mkdirSync(path.dirname(reviewPath), { recursive: true });
-    fs.writeFileSync(
-      reviewPath,
-      [
-        `# ${kind} review`,
-        '',
-        `- Verdict: \`${verdict}\``,
-        '- Reviewer: jest',
-        `- Summary: ${taskId} ${kind} review ${verdict}`
-      ].join('\n')
-    );
+  async function markManifestReviews(changeId, verdict = 'pass') {
+    const manifestPath = getTaskManifestPath(repoRoot, changeId);
+    const manifest = await readJson(manifestPath);
+    manifest.tasks = manifest.tasks.map((task) => ({
+      ...task,
+      reviews: {
+        spec: verdict,
+        code: verdict
+      }
+    }));
+    fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
   }
 
   test('runs init -> snapshot -> plan -> dispatch -> verify -> release', async () => {
@@ -101,10 +98,7 @@ describe('Skill runtime', () => {
     const manifest = await readJson(getTaskManifestPath(repoRoot, changeId));
     expect(manifest.tasks.every((task) => task.status === 'passed')).toBe(true);
 
-    for (const task of manifest.tasks) {
-      writeReviewArtifact(changeId, task.id, 'spec');
-      writeReviewArtifact(changeId, task.id, 'code');
-    }
+    await markManifestReviews(changeId, 'pass');
 
     const verifyResult = await runVerify({
       repoRoot,

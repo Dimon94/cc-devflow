@@ -49,7 +49,6 @@
 ## Minimum Landing Pack
 
 - Required for this mode:
-  - `status.md`
   - `pr-brief.md`
   - fresh `report-card.json`
 - Intentionally omitted:

@@ -70,7 +70,6 @@ Use this when the only thing you know is the file in front of you.
 | `tasks.md` | `cc-plan` or `cc-do` | [pdca-loop/tasks.md](./pdca-loop/changes/REQ-001-copy-invite-link/planning/tasks.md) |
 | `task-manifest.json` | `cc-do` | [pdca-loop/task-manifest.json](./pdca-loop/changes/REQ-001-copy-invite-link/planning/task-manifest.json) |
 | `report-card.json` | `cc-check` | [pdca-loop/report-card.json](./pdca-loop/changes/REQ-001-copy-invite-link/review/report-card.json), [full-design-blocked/report-card.json](./full-design-blocked/changes/REQ-002-bulk-invite-import/review/report-card.json), or [local-handoff/report-card.json](./local-handoff/changes/REQ-003-audit-log-export/review/report-card.json) |
-| `status.md` | `cc-act` | [pdca-loop/status.md](./pdca-loop/changes/REQ-001-copy-invite-link/handoff/status.md) or [local-handoff/status.md](./local-handoff/changes/REQ-003-audit-log-export/handoff/status.md) |
 | `pr-brief.md` | `cc-act` | [pdca-loop/pr-brief.md](./pdca-loop/changes/REQ-001-copy-invite-link/handoff/pr-brief.md) |
 | `resume-index.md` | `cc-act` with `local-handoff` | [local-handoff/resume-index.md](./local-handoff/changes/REQ-003-audit-log-export/handoff/resume-index.md) |
 
@@ -128,13 +127,20 @@ If you only have one minute, open these files in order:
 
 1. example `README.md`
 2. change `planning/design.md`
-3. `report-card.json` or `resume-index.md`
+3. `report-card.json` or the single final handoff file
 
 That should already tell you:
 
 - what planning density was chosen
 - whether verification passed, failed, or blocked
 - why `cc-act` selected the final ship mode
+
+## Minimal Output Rule
+
+`devflow/changes/<change>/` should stay lean.
+
+- Durable truth only: `change-state.json`, planning docs, `task-manifest.json`, optional `team-state.json`, task `checkpoint.json`, `report-card.json`, and one final handoff file.
+- Runtime scratch belongs in `devflow/workspaces/<change>/`, not beside the durable record.
 
 ## If You Still Want The Split Views
 

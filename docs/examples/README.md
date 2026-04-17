@@ -33,6 +33,6 @@ If you need to verify that examples still match the current skill contracts, use
 - Shows:
   - work that is truly verified
   - a case where remote / PR actions are intentionally skipped
-  - `cc-act` still leaving a clean next entry through `resume-index.md`
+  - `cc-act` leaving exactly one final handoff file, with `resume-index.md` only for local-handoff
 
 If you need symptom routing or artifact-based lookup, go back to [START-HERE.md](./START-HERE.md).

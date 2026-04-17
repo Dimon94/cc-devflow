@@ -32,7 +32,7 @@ But the current environment is local-only:
 
 1. Why `cc-check` is `pass`
 2. Why `cc-act` still does not choose `create-pr`
-3. How `resume-index.md` becomes the next-entry truth source
+3. How `resume-index.md` becomes the only final handoff file
 
 ## Artifact Map
 
@@ -42,7 +42,6 @@ But the current environment is local-only:
 - `changes/REQ-003-audit-log-export/planning/tasks.md`
 - `changes/REQ-003-audit-log-export/planning/task-manifest.json`
 - `changes/REQ-003-audit-log-export/review/report-card.json`
-- `changes/REQ-003-audit-log-export/handoff/status.md`
 - `changes/REQ-003-audit-log-export/handoff/resume-index.md`
 
 ## Why There Is No `pr-brief.md`
@@ -51,7 +50,6 @@ This sample intentionally chooses `local-handoff`.
 
 That mode needs:
 
-- `status.md`
 - `resume-index.md`
 
 It does **not** require a PR brief yet.

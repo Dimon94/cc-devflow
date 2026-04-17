@@ -33,7 +33,6 @@ The sample requirement is:
 - `changes/REQ-001-copy-invite-link/planning/tasks.md`: executable task handoff
 - `changes/REQ-001-copy-invite-link/planning/task-manifest.json`: machine-readable execution truth
 - `changes/REQ-001-copy-invite-link/review/report-card.json`: `cc-check` proof and verdict
-- `changes/REQ-001-copy-invite-link/handoff/status.md`: `cc-act` summary of reality
 - `changes/REQ-001-copy-invite-link/handoff/pr-brief.md`: ship-ready PR handoff
 
 ## Why There Is No `release-note.md`
@@ -42,7 +41,6 @@ This sample chooses `create-pr`.
 
 That mode needs:
 
-- `status.md`
 - `pr-brief.md`
 - synced docs if behavior changed
 

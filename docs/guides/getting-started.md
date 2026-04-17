@@ -85,7 +85,12 @@ Typical outputs:
 - `cc-plan` writes `planning/design.md`, `planning/tasks.md`, `task-manifest.json`
 - `cc-investigate` writes `planning/analysis.md`, `planning/tasks.md`, `task-manifest.json`
 - `cc-check` writes `report-card.json`
-- `cc-act` writes `handoff/release-note.md` and `handoff/pr-brief.md`
+- `cc-act` writes exactly one final handoff file: `handoff/pr-brief.md`, `handoff/resume-index.md`, or `handoff/release-note.md`
+
+The durable truth lives in `devflow/changes/<change>/`.
+
+- Keep only `change-state.json`, planning docs, `task-manifest.json`, optional `team-state.json`, task `checkpoint.json`, `report-card.json`, and one final handoff file there.
+- Worker prompts, journals, assignments, and session logs belong under `devflow/workspaces/<change>/` as ephemeral scratch.
 
 Typical public contract fields:
 

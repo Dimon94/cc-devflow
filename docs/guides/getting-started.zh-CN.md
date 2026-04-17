@@ -85,7 +85,12 @@ find .codex/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort
 - `cc-plan` 产出 `planning/design.md`、`planning/tasks.md`、`task-manifest.json`
 - `cc-investigate` 产出 `planning/analysis.md`、`planning/tasks.md`、`task-manifest.json`
 - `cc-check` 产出 `report-card.json`
-- `cc-act` 产出 `handoff/release-note.md` 和 `handoff/pr-brief.md`
+- `cc-act` 只产出一个最终 handoff 文件：`handoff/pr-brief.md`、`handoff/resume-index.md` 或 `handoff/release-note.md`
+
+durable truth 固定放在 `devflow/changes/<change>/`：
+
+- 这里只保留 `change-state.json`、planning 文档、`task-manifest.json`、可选 `team-state.json`、任务级 `checkpoint.json`、`report-card.json` 和唯一的最终 handoff 文件。
+- worker prompt、journal、assignment、session log 统一放到 `devflow/workspaces/<change>/`，作为 ephemeral scratch。
 
 公开契约字段的典型形状：
 
