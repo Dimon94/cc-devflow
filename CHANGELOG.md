@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added a public `cc-investigate` skill so bug work can follow `cc-investigate -> cc-do -> cc-check -> cc-act` instead of overloading `cc-plan`.
+
+### Changed
+
+- Documented the workflow as two shared-tail loops: `PDCA` for feature/scope work and `IDCA/DDCA` for root-cause work.
+- Updated public distribution, publish validation, and Codex mirror expectations so `cc-investigate` ships with the pack.
+- Updated `cc-do` and `cc-check` contracts so they can consume `ANALYSIS.md` handoffs and reroute failed bug fixes back to `cc-investigate`.
+
 ## [4.4.0] - 2026-04-10
 
 ### 🚀 Review-Gated Delivery + Distribution Cleanup

@@ -11,16 +11,17 @@ cc-devflow is now a skills-first repository with a restored distributable CLI.
 Public surface:
 
 - `roadmap`
-- `req-plan`
-- `req-do`
-- `req-check`
-- `req-act`
+- `cc-plan`
+- `cc-investigate`
+- `cc-do`
+- `cc-check`
+- `cc-act`
 - `cc-devflow init`
 - `cc-devflow adapt`
 
-Internal implementation details may still live under `lib/harness/`, but they are not the user-facing CLI anymore.
+Shared runtime helpers may still live under `lib/skill-runtime/`, but they are not the user-facing workflow anymore.
 
-Maintenance helpers may also exist under `.claude/skills/`, such as `docs-sync`, but they do not change the public five-step workflow story.
+Maintenance helpers may also exist under `.claude/skills/`, such as `docs-sync`, but they do not change the public `roadmap + PDCA/IDCA` workflow story.
 
 ---
 
@@ -71,8 +72,8 @@ cc-devflow/
 ├── docs/                      # Public docs
 ├── lib/adapters/              # Platform adapter layer
 ├── lib/compiler/              # Multi-platform compiler
-├── lib/harness/               # Internal runtime library
-├── test/harness/              # CLI distribution regression tests
+├── lib/skill-runtime/         # Shared runtime helpers for skill scripts
+├── test/skill-runtime/        # CLI and runtime regression tests
 ├── README.md
 ├── README.zh-CN.md
 └── package.json
@@ -84,7 +85,7 @@ cc-devflow/
 - `bin/`: distributable CLI behavior
 - `lib/compiler/`: skills/prompts parsing, transformation, emitters, rules generation
 - `lib/adapters/`: platform adapter config and validation
-- `lib/harness/`: internal runtime semantics
+- `lib/skill-runtime/`: shared runtime helpers used by skill-local scripts
 - `docs/`: user-facing documentation
 
 ---
@@ -99,7 +100,7 @@ The user-facing story should stay:
 
 - whole pack: `cc-devflow init`
 - platform outputs: `cc-devflow adapt`
-- workflow execution: visible skills
+- workflow execution: visible `roadmap + PDCA/IDCA` skills
 
 ### 2. Preserve Skills-First Layout
 
@@ -132,9 +133,9 @@ Examples of junk we should exclude:
 - `.DS_Store`
 - local editor or OS artifacts
 
-### 4. Treat Harness As Internal
+### 4. Keep Runtime Helpers Secondary
 
-If you touch `lib/harness/`, keep the behavior testable, but do not document it as the primary user entry.
+If you touch `lib/skill-runtime/`, keep the behavior testable, but do not document it as the primary user entry. The public workflow still belongs to the shipped skills.
 
 ---
 
@@ -149,7 +150,7 @@ npm test
 ### Focused CLI Regression
 
 ```bash
-npm test -- --runInBand test/harness/cli-bootstrap.test.js
+npm test -- --runInBand test/skill-runtime/cli-bootstrap.test.js
 ```
 
 ### Publish Validation
@@ -173,9 +174,9 @@ This should confirm:
 - contributor-only docs may use `node bin/cc-devflow-cli.js ...`
 - `skills.sh` should be documented only as a single-skill distribution path
 - do not describe `.claude/commands/` as required structure
-- do not describe harness CLI as supported public workflow
+- do not describe internal runtime helpers as the supported public workflow
 - if a shipped skill changes, update that skill's `version`, local `CHANGELOG.md`, and affected public docs in the same PR
-- keep the workflow story as five visible skills; document maintenance helpers separately
+- keep the workflow story as `roadmap + PDCA/IDCA` visible skills; document maintenance helpers separately
 
 ---
 

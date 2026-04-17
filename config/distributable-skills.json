@@ -1,10 +1,11 @@
 {
   "publicSkills": [
     "roadmap",
-    "req-plan",
-    "req-do",
-    "req-check",
-    "req-act"
+    "cc-plan",
+    "cc-investigate",
+    "cc-do",
+    "cc-check",
+    "cc-act"
   ],
   "internalSkills": [
     "docs-sync",

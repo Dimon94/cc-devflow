@@ -1,0 +1,46 @@
+{
+  "changeId": "REQ-123",
+  "verdict": "blocked",
+  "overall": "fail",
+  "summary": "verdict=blocked quick=1/2 strict=0/0 review=blocked",
+  "quickGates": [
+    {
+      "name": "targeted-tests",
+      "status": "pass",
+      "command": "npm test -- src/feature/feature.test.ts",
+      "summary": "targeted tests passed"
+    },
+    {
+      "name": "review-proof",
+      "status": "blocked",
+      "command": "review artifacts",
+      "summary": "missing spec review proof for T002"
+    }
+  ],
+  "strictGates": [],
+  "review": {
+    "status": "blocked",
+    "summary": "Task review evidence is incomplete",
+    "details": "T002 is implemented, but the requirement still lacks spec review proof required by the gate.",
+    "taskReviews": {
+      "status": "blocked",
+      "required": true,
+      "summary": "T002 has no spec review record yet",
+      "reviewers": [],
+      "findings": []
+    },
+    "diffReview": {
+      "status": "skipped",
+      "required": false,
+      "summary": "",
+      "reviewers": [],
+      "findings": []
+    },
+    "findings": []
+  },
+  "blockingFindings": [
+    "review: missing spec review proof for T002"
+  ],
+  "reroute": "cc-do",
+  "timestamp": "2026-04-15T12:00:00.000Z"
+}

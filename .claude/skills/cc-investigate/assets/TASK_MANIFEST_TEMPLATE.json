@@ -1,0 +1,87 @@
+{
+  "changeId": "REQ-XXX",
+  "requirementId": "REQ-XXX",
+  "requirementVersion": "REQ-XXX.v1",
+  "sourceRoadmap": {
+    "itemId": "RM-001",
+    "roadmapVersion": "1.0",
+    "roadmapSkillVersion": "2.1.0",
+    "sourceStage": "Stage 1",
+    "successSignal": "The broken behavior is reproducible and then fixed without widening scope",
+    "killSignal": "Repair requires reopening product scope or redesigning unrelated modules",
+    "dependencies": [
+      "The existing product contract still applies"
+    ],
+    "nonGoals": [
+      "No unrelated feature additions"
+    ]
+  },
+  "planningMeta": {
+    "ccInvestigateSkillVersion": "1.0.0",
+    "analysisVersion": "analysis.v1",
+    "approvedAt": "2026-04-17T12:00:00.000Z",
+    "approvedBy": "user",
+    "basedOnRootCause": "Root cause sentence"
+  },
+  "status": "planned",
+  "designMode": "cc-investigate",
+  "approvedOption": "confirmed-root-cause",
+  "designStatus": "approved",
+  "reviewStatus": "approved",
+  "tasteDecisions": [],
+  "userChallenges": [],
+  "currentTaskId": "T001",
+  "activePhase": 1,
+  "frozenDecisions": [
+    "Fix only the confirmed root cause",
+    "Do not widen scope without rerouting to cc-plan"
+  ],
+  "tasks": [
+    {
+      "id": "T001",
+      "title": "[TEST] Capture the bug as a failing reproduction",
+      "phase": 1,
+      "status": "pending",
+      "dependsOn": [],
+      "parallel": false,
+      "touches": [
+        "tests",
+        "bug-reproduction"
+      ],
+      "files": [
+        "src/feature/feature.test.ts"
+      ],
+      "acceptance": [
+        "The target bug is reproduced as a stable failure",
+        "The failure output points to the confirmed root-cause path"
+      ],
+      "verification": [
+        "npm test -- src/feature/feature.test.ts"
+      ],
+      "evidence": [
+        "Failing test output"
+      ],
+      "context": {
+        "readFiles": [
+          "ANALYSIS.md",
+          "TASKS.md"
+        ],
+        "commands": [
+          "npm test -- src/feature/feature.test.ts"
+        ],
+        "notes": [
+          "Prove the bug first",
+          "Do not change unrelated contracts in this task"
+        ]
+      },
+      "reviews": {
+        "spec": "pending",
+        "code": "pending"
+      }
+    }
+  ],
+  "openQuestions": [],
+  "deferredQuestions": [
+    "If the fix expands beyond the frozen repair boundary, reroute to cc-plan"
+  ]
+}

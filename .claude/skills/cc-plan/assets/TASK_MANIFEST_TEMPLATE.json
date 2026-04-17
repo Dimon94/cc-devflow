@@ -1,0 +1,87 @@
+{
+  "changeId": "REQ-XXX",
+  "requirementId": "REQ-XXX",
+  "requirementVersion": "REQ-XXX.v1",
+  "sourceRoadmap": {
+    "itemId": "RM-001",
+    "roadmapVersion": "1.0",
+    "roadmapSkillVersion": "2.1.0",
+    "sourceStage": "Stage 1",
+    "successSignal": "User can complete the new flow without manual workaround",
+    "killSignal": "Implementation requires reworking unrelated modules",
+    "dependencies": [
+      "Existing auth/session contract stays unchanged"
+    ],
+    "nonGoals": [
+      "No redesign of unrelated settings screens"
+    ]
+  },
+  "planningMeta": {
+    "reqPlanSkillVersion": "3.2.0",
+    "designVersion": "design.v1",
+    "approvedAt": "2026-04-15T12:00:00.000Z",
+    "approvedBy": "user",
+    "basedOnOption": "Option A"
+  },
+  "status": "planned",
+  "designMode": "tiny-design",
+  "approvedOption": "Option A",
+  "designStatus": "approved",
+  "reviewStatus": "approved",
+  "tasteDecisions": [],
+  "userChallenges": [],
+  "currentTaskId": "T001",
+  "activePhase": 1,
+  "frozenDecisions": [
+    "Keep the existing route and data contract",
+    "Prefer a minimal patch over a broader refactor"
+  ],
+  "tasks": [
+    {
+      "id": "T001",
+      "title": "[TEST] Add a failing test for the missing behavior",
+      "phase": 1,
+      "status": "pending",
+      "dependsOn": [],
+      "parallel": false,
+      "touches": [
+        "tests",
+        "requirement-behavior"
+      ],
+      "files": [
+        "src/feature/feature.test.ts"
+      ],
+      "acceptance": [
+        "The target behavior is reproduced as a failing test",
+        "The failure message points to the missing requirement behavior"
+      ],
+      "verification": [
+        "npm test -- src/feature/feature.test.ts"
+      ],
+      "evidence": [
+        "Failing test output"
+      ],
+      "context": {
+        "readFiles": [
+          "DESIGN.md",
+          "TASKS.md"
+        ],
+        "commands": [
+          "npm test -- src/feature/feature.test.ts"
+        ],
+        "notes": [
+          "Write the failing test first",
+          "Do not change unrelated contracts in this task"
+        ]
+      },
+      "reviews": {
+        "spec": "pending",
+        "code": "pending"
+      }
+    }
+  ],
+  "openQuestions": [],
+  "deferredQuestions": [
+    "If the patch touches shared contracts, upgrade the design to full-design"
+  ]
+}

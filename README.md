@@ -1,8 +1,8 @@
 # 🚀 cc-devflow
 
-> Roadmap plus PDCA skills for agent coding
+> Roadmap plus PDCA and IDCA skills for agent coding
 
-CC-DevFlow is a stripped-down workflow for the agent coding era. It gives you one front-door planning skill, `roadmap`, then runs every requirement through a PDCA loop: `req-plan -> req-do -> req-check -> req-act`.
+CC-DevFlow is a stripped-down workflow for the agent coding era. It gives you one front-door planning skill, `roadmap`, then lets each requirement enter one of two closed loops: the planning loop `cc-plan -> cc-do -> cc-check -> cc-act`, or the investigation loop `cc-investigate -> cc-do -> cc-check -> cc-act`.
 
 [中文文档](./README.zh-CN.md) | [English](./README.md)
 
@@ -10,17 +10,18 @@ CC-DevFlow is a stripped-down workflow for the agent coding era. It gives you on
 
 ## 🎯 One-Line Introduction
 
-CC-DevFlow exposes only five visible skills:
+CC-DevFlow exposes six visible skills:
 
 - `roadmap`: build the project's mid and long-range roadmap
-- `req-plan`: clarify a roadmap item, design it, and turn it into tasks
-- `req-do`: implement, debug, resume, and apply review feedback
-- `req-check`: verify with evidence
-- `req-act`: ship, sync docs, and feed the result into the next cycle
+- `cc-plan`: clarify a roadmap item, design it, and turn it into tasks
+- `cc-investigate`: freeze symptom, reproduction, root cause, and repair tasks before fixing a bug
+- `cc-do`: implement, resume, repair from investigation, and apply review feedback
+- `cc-check`: verify with evidence
+- `cc-act`: ship, sync docs, and feed the result into the next cycle
 
 ## ✨ Core Features
 
-- **Minimal visible surface**: one roadmap skill plus four PDCA stages
+- **Minimal visible surface**: one roadmap skill plus two entry loops that share the same `cc-do -> cc-check -> cc-act` tail
 - **Multi-platform CLI restored**: `cc-devflow` is back as the distributable CLI for `.claude` installation plus multi-platform adaptation for Codex, Cursor, Qwen, and Antigravity
 - **skills.sh-compatible skill layout**: `.claude/skills/<skill>/SKILL.md` stays compatible with single-skill distribution on skills.sh
 - **Skill-local resources**: each skill carries its own templates, references, and scripts
@@ -28,19 +29,26 @@ CC-DevFlow exposes only five visible skills:
 - **Task-template first**: keep `TASKS.md` and `task-manifest.json` as the execution backbone
 - **Skill pack first**: the repository distributes `.claude` skills, playbooks, and assets as one pack
 - **Evidence before done**: verification, doc sync, PR brief, and release note live at the end of the loop
-- **Roadmap-first**: decide medium-range direction once, then execute through PDCA
+- **Roadmap-first**: decide medium-range direction once, then execute through PDCA or IDCA
 
 ## 🧠 Mental Model
 
 ```text
 roadmap
 
-req-plan -> req-do -> req-check -> req-act
+PDCA: cc-plan -> cc-do -> cc-check -> cc-act
+IDCA: cc-investigate -> cc-do -> cc-check -> cc-act
 ```
 
 Use `roadmap` to decide the next 1-3 stages of the product.
 
-Use the PDCA loop to execute one roadmap item at a time.
+Use `cc-plan` when the next problem is scope, design, and task freezing.
+
+Use `cc-investigate` when the next problem is root cause, reproduction, and repair boundary.
+
+Both loops converge into the same `cc-do -> cc-check -> cc-act` tail.
+
+The visible state machine lives in the public skills themselves. The pack is intentionally skill-first: routing, reroutes, recovery, and evidence rules are described in `SKILL.md` and `PLAYBOOK.md`, while `lib/skill-runtime/` is limited to shared support code that those skills reuse.
 
 ## 🚀 Install
 
@@ -73,10 +81,11 @@ Because skills.sh installs skills one by one, use it to pull the specific skills
 
 ```bash
 npx skills add https://github.com/Dimon94/cc-devflow --skill roadmap
-npx skills add https://github.com/Dimon94/cc-devflow --skill req-plan
-npx skills add https://github.com/Dimon94/cc-devflow --skill req-do
-npx skills add https://github.com/Dimon94/cc-devflow --skill req-check
-npx skills add https://github.com/Dimon94/cc-devflow --skill req-act
+npx skills add https://github.com/Dimon94/cc-devflow --skill cc-plan
+npx skills add https://github.com/Dimon94/cc-devflow --skill cc-investigate
+npx skills add https://github.com/Dimon94/cc-devflow --skill cc-do
+npx skills add https://github.com/Dimon94/cc-devflow --skill cc-check
+npx skills add https://github.com/Dimon94/cc-devflow --skill cc-act
 ```
 
 Use `cc-devflow init` when you want the whole `.claude` pack.
@@ -110,16 +119,22 @@ CC-DevFlow keeps the `.claude` skill folders compatible with skills.sh single-sk
 - one skill per folder
 - one `SKILL.md` per distributed skill
 - YAML frontmatter at the top of each `SKILL.md`
-- `name` and `description` in that frontmatter
+- public skills declare structured runtime contract fields in frontmatter: `triggers`, `reads`, `writes`, `entry_gate`, `exit_criteria`, `reroutes`, `recovery_modes`, `tool_budget`
 - bundled local resources beside the skill, such as `PLAYBOOK.md`, `assets/`, `scripts/`, and `references/`
+
+Public skills also carry two explicit text contracts:
+
+- `SKILL.md` includes a `Harness Contract` section
+- `PLAYBOOK.md` includes a `Visible State Machine` section
 
 In this repository, the distributed skill folders are:
 
 - `.claude/skills/roadmap/`
-- `.claude/skills/req-plan/`
-- `.claude/skills/req-do/`
-- `.claude/skills/req-check/`
-- `.claude/skills/req-act/`
+- `.claude/skills/cc-plan/`
+- `.claude/skills/cc-investigate/`
+- `.claude/skills/cc-do/`
+- `.claude/skills/cc-check/`
+- `.claude/skills/cc-act/`
 
 ## 🛠️ Use
 
@@ -127,10 +142,10 @@ The skill sequence remains:
 
 ```text
 1. roadmap
-2. req-plan
-3. req-do
-4. req-check
-5. req-act
+2. choose cc-plan or cc-investigate
+3. cc-do
+4. cc-check
+5. cc-act
 6. repeat
 ```
 
@@ -143,15 +158,19 @@ skills.sh remains the single-skill distribution path for distributed `.claude/sk
 ## 📦 Outputs
 
 - `roadmap` writes `ROADMAP.md` and `BACKLOG.md`
-- `req-plan` writes `BRAINSTORM.md`, `DESIGN.md`, `TASKS.md`, `task-manifest.json`
-- `req-do` writes code, tests, and runtime checkpoints
-- `req-check` writes `report-card.json`
-- `req-act` writes `pr-brief.md`, `RELEASE_NOTE.md`, and synced docs
+- `cc-plan` writes `DESIGN.md`, `TASKS.md`, `task-manifest.json`
+- `cc-investigate` writes `ANALYSIS.md`, `TASKS.md`, `task-manifest.json`
+- `cc-do` writes code, tests, and runtime checkpoints
+- `cc-check` writes `report-card.json`
+- `cc-act` writes `pr-brief.md`, `RELEASE_NOTE.md`, and synced docs
+
+See [docs/examples/START-HERE.md](./docs/examples/START-HERE.md) for the single entry page to the example set. Example version bindings live in [docs/examples/example-bindings.json](./docs/examples/example-bindings.json).
 
 ## Principles
 
 - Roadmap before execution
-- Plan before code
+- Plan before feature code
+- Investigate before bug repair
 - Root cause before fix
 - Evidence before done
 - Ship, then feed the result into the next plan
@@ -161,4 +180,5 @@ skills.sh remains the single-skill distribution path for distributed `.claude/sk
 ```bash
 find .claude/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort
 find .claude/skills -mindepth 2 -maxdepth 3 -type f | sort
+npm run verify
 ```

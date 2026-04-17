@@ -3,6 +3,7 @@ const os = require('os');
 const path = require('path');
 const zlib = require('zlib');
 const { spawnSync } = require('child_process');
+const matter = require('gray-matter');
 
 const ROOT = path.resolve(__dirname, '..');
 const DISTRIBUTION_CONFIG = require(path.join(ROOT, 'config', 'distributable-skills.json'));
@@ -76,6 +77,20 @@ function validatePackageJson(errors) {
     errors.push('package.json publishConfig.access must be "public"');
   }
 
+  const scripts = pkg.scripts || {};
+  if (scripts.prepublishOnly !== 'node scripts/validate-publish.js') {
+    errors.push('package.json scripts.prepublishOnly must be "node scripts/validate-publish.js"');
+  }
+  if (scripts['verify:examples'] !== 'bash docs/examples/scripts/check-example-bindings.sh') {
+    errors.push('package.json scripts.verify:examples must run the example bindings check');
+  }
+  if (scripts['verify:publish'] !== 'node scripts/validate-publish.js') {
+    errors.push('package.json scripts.verify:publish must be "node scripts/validate-publish.js"');
+  }
+  if (typeof scripts.verify !== 'string' || !scripts.verify.includes('npm run verify:examples')) {
+    errors.push('package.json scripts.verify must include "npm run verify:examples"');
+  }
+
   ensureArrayIncludes(pkg.files, 'bin/', errors, 'package.json files');
   ensureArrayIncludes(pkg.files, 'lib/', errors, 'package.json files');
   ensureArrayIncludes(pkg.files, 'config/', errors, 'package.json files');
@@ -101,6 +116,99 @@ function validateTemplate(errors) {
     ensurePath(`.claude/skills/${skillName}`, 'dir', errors);
     ensurePath(`.claude/skills/${skillName}/SKILL.md`, 'file', errors);
     ensurePath(`.claude/skills/${skillName}/PLAYBOOK.md`, 'file', errors);
+  }
+}
+
+function ensureNonEmptyString(value, label, errors) {
+  if (typeof value !== 'string' || value.trim().length === 0) {
+    errors.push(`${label} must be a non-empty string`);
+  }
+}
+
+function ensureStringArray(value, label, errors) {
+  if (!Array.isArray(value) || value.length === 0) {
+    errors.push(`${label} must be a non-empty array`);
+    return;
+  }
+
+  for (const item of value) {
+    if (typeof item !== 'string' || item.trim().length === 0) {
+      errors.push(`${label} must contain non-empty strings`);
+      return;
+    }
+  }
+}
+
+function validatePublicSkillContracts(errors) {
+  for (const skillName of PUBLIC_SKILLS) {
+    const skillPath = path.join(ROOT, '.claude', 'skills', skillName, 'SKILL.md');
+    const playbookPath = path.join(ROOT, '.claude', 'skills', skillName, 'PLAYBOOK.md');
+    const skillBody = fs.readFileSync(skillPath, 'utf8');
+    const playbookBody = fs.readFileSync(playbookPath, 'utf8');
+
+    let parsed;
+    try {
+      parsed = matter(skillBody);
+    } catch (error) {
+      errors.push(`Failed to parse public skill ${skillName}: ${error.message}`);
+      continue;
+    }
+
+    const data = parsed.data || {};
+    ensureNonEmptyString(data.name, `${skillName} frontmatter.name`, errors);
+    ensureNonEmptyString(data.version, `${skillName} frontmatter.version`, errors);
+    ensureNonEmptyString(data.description, `${skillName} frontmatter.description`, errors);
+    ensureStringArray(data.triggers, `${skillName} frontmatter.triggers`, errors);
+    ensureStringArray(data.reads, `${skillName} frontmatter.reads`, errors);
+    ensureStringArray(data.writes, `${skillName} frontmatter.writes`, errors);
+    ensureStringArray(data.entry_gate, `${skillName} frontmatter.entry_gate`, errors);
+    ensureStringArray(data.exit_criteria, `${skillName} frontmatter.exit_criteria`, errors);
+
+    if (!Array.isArray(data.reroutes) || data.reroutes.length === 0) {
+      errors.push(`${skillName} frontmatter.reroutes must be a non-empty array`);
+    } else {
+      for (const route of data.reroutes) {
+        if (!route || typeof route !== 'object') {
+          errors.push(`${skillName} frontmatter.reroutes must contain objects`);
+          break;
+        }
+        ensureNonEmptyString(route.when, `${skillName} reroutes.when`, errors);
+        ensureNonEmptyString(route.target, `${skillName} reroutes.target`, errors);
+      }
+    }
+
+    if (!Array.isArray(data.recovery_modes) || data.recovery_modes.length === 0) {
+      errors.push(`${skillName} frontmatter.recovery_modes must be a non-empty array`);
+    } else {
+      for (const mode of data.recovery_modes) {
+        if (!mode || typeof mode !== 'object') {
+          errors.push(`${skillName} frontmatter.recovery_modes must contain objects`);
+          break;
+        }
+        ensureNonEmptyString(mode.name, `${skillName} recovery_modes.name`, errors);
+        ensureNonEmptyString(mode.when, `${skillName} recovery_modes.when`, errors);
+        ensureNonEmptyString(mode.action, `${skillName} recovery_modes.action`, errors);
+      }
+    }
+
+    const budget = data.tool_budget;
+    if (!budget || typeof budget !== 'object') {
+      errors.push(`${skillName} frontmatter.tool_budget must be an object`);
+    } else {
+      for (const key of ['read_files', 'search_steps', 'shell_commands']) {
+        if (!Number.isInteger(budget[key]) || budget[key] < 0) {
+          errors.push(`${skillName} frontmatter.tool_budget.${key} must be a non-negative integer`);
+        }
+      }
+    }
+
+    if (!/## Harness Contract\b/.test(parsed.content)) {
+      errors.push(`${skillName} SKILL.md must include "## Harness Contract"`);
+    }
+
+    if (!/## Visible State Machine\b/.test(playbookBody)) {
+      errors.push(`${skillName} PLAYBOOK.md must include "## Visible State Machine"`);
+    }
   }
 }
 
@@ -296,6 +404,20 @@ function validatePackTarball(errors) {
   fs.rmSync(tmpDir, { recursive: true, force: true });
 }
 
+function validateExampleBindings(errors) {
+  ensurePath('docs/examples/example-bindings.json', 'file', errors);
+  ensurePath('docs/examples/scripts/check-example-bindings.sh', 'file', errors);
+
+  const result = runCommand('bash', ['docs/examples/scripts/check-example-bindings.sh'], {
+    cwd: ROOT,
+    env: process.env
+  });
+
+  if (!result.ok) {
+    errors.push(`example bindings check failed: ${result.error}`);
+  }
+}
+
 function main() {
   const errors = [];
 
@@ -309,6 +431,8 @@ function main() {
 
   validatePackageJson(errors);
   validateTemplate(errors);
+  validatePublicSkillContracts(errors);
+  validateExampleBindings(errors);
   validatePackTarball(errors);
 
   if (errors.length > 0) {

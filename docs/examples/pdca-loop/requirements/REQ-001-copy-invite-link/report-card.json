@@ -1,0 +1,44 @@
+{
+  "changeId": "REQ-001",
+  "verdict": "pass",
+  "overall": "pass",
+  "summary": "verdict=pass quick=2/2 strict=0/0 review=pass",
+  "quickGates": [
+    {
+      "name": "targeted-tests",
+      "status": "pass",
+      "command": "npm test -- src/features/share/ShareDialog.test.tsx",
+      "summary": "share dialog targeted tests passed"
+    },
+    {
+      "name": "lint",
+      "status": "pass",
+      "command": "npm run lint -- src/features/share/ShareDialog.tsx",
+      "summary": "lint passed for the touched dialog file"
+    }
+  ],
+  "strictGates": [],
+  "review": {
+    "status": "pass",
+    "summary": "Task review proof and requirement-level diff review both passed",
+    "details": "T001-T003 have matching spec/code review proof and the diff stays inside the approved tiny-design boundary.",
+    "taskReviews": {
+      "status": "pass",
+      "required": true,
+      "summary": "All completed tasks carry spec/code proof",
+      "reviewers": [],
+      "findings": []
+    },
+    "diffReview": {
+      "status": "pass",
+      "required": false,
+      "summary": "No blocking requirement-level findings",
+      "reviewers": [],
+      "findings": []
+    },
+    "findings": []
+  },
+  "blockingFindings": [],
+  "reroute": "none",
+  "timestamp": "2026-04-15T11:20:00.000Z"
+}

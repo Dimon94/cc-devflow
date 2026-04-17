@@ -11,13 +11,16 @@ CC-DevFlow has two entry paths:
 - `cc-devflow init`: install the whole `.claude` pack into your project
 - `cc-devflow adapt`: generate platform outputs such as Codex rules
 
-The workflow itself is driven by five visible skills:
+The workflow itself is driven by six visible skills:
 
 ```text
 roadmap
 
-req-plan -> req-do -> req-check -> req-act
+PDCA: cc-plan -> cc-do -> cc-check -> cc-act
+IDCA: cc-investigate -> cc-do -> cc-check -> cc-act
 ```
+
+The public skills are the visible harness. Each distributed `SKILL.md` now carries structured frontmatter plus a `Harness Contract`, and each `PLAYBOOK.md` carries the stage transition rules in a `Visible State Machine` section.
 
 ## Prerequisites
 
@@ -57,7 +60,7 @@ find .claude/skills -mindepth 1 -maxdepth 1 -type d | sort
 find .claude/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort
 ```
 
-If you adapted for Codex, verify the generated rule file:
+If you adapted for Codex, verify the mirrored skill folders:
 
 ```bash
 find .codex/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort
@@ -69,19 +72,28 @@ Use the skills in this order:
 
 ```text
 1. roadmap
-2. req-plan
-3. req-do
-4. req-check
-5. req-act
+2. choose cc-plan or cc-investigate
+3. cc-do
+4. cc-check
+5. cc-act
 6. repeat
 ```
 
 Typical outputs:
 
 - `roadmap` writes `ROADMAP.md` and `BACKLOG.md`
-- `req-plan` writes `BRAINSTORM.md`, `DESIGN.md`, `TASKS.md`, `task-manifest.json`
-- `req-check` writes `report-card.json`
-- `req-act` writes `RELEASE_NOTE.md` and `pr-brief.md`
+- `cc-plan` writes `DESIGN.md`, `TASKS.md`, `task-manifest.json`
+- `cc-investigate` writes `ANALYSIS.md`, `TASKS.md`, `task-manifest.json`
+- `cc-check` writes `report-card.json`
+- `cc-act` writes `RELEASE_NOTE.md` and `pr-brief.md`
+
+Typical public contract fields:
+
+- `triggers`, `reads`, `writes`
+- `entry_gate`, `exit_criteria`
+- `reroutes`, `recovery_modes`, `tool_budget`
+
+If you want to see complete artifact chains before using the skills, start with [../examples/START-HERE.md](../examples/START-HERE.md). If you are updating examples alongside skills, run [../examples/scripts/check-example-bindings.sh](../examples/scripts/check-example-bindings.sh).
 
 ## Upgrade
 
@@ -119,11 +131,27 @@ Run:
 npx cc-devflow adapt --cwd /path/to/your/project --platform codex
 ```
 
-If your project has no optional `.claude/commands/` input, this is expected: the compiler will still generate the skills registry and rules entry files.
+If your project has no optional `.claude/commands/` input, this is expected: the compiler will still generate the skills registry and mirror the public workflow skills for Codex.
+
+Codex mirrors every discovered `.claude/skills/<skill>/` folder into `.codex/skills/<skill>/`, and no longer keeps a separate aggregate `cc-devflow` skill entry.
+
+### Keep skills and examples in sync
+
+```bash
+npm run verify
+```
+
+If you are preparing a publishable pack, run:
+
+```bash
+npm run verify:publish
+```
 
 ## Next Steps
 
 - [CLI And Skills](../commands/README.md)
 - [Workflow Guide](./workflow-guide.md)
 - [Best Practices](./best-practices.md)
+- [Example Entry Page](../examples/START-HERE.md)
+- [Compact Example List](../examples/README.md)
 - [Project README](../../README.md)

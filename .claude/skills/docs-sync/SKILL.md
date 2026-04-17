@@ -1,7 +1,7 @@
 ---
 name: docs-sync
-version: 1.0.0
-description: Use when a shipped skill, CLI contract, or public-facing workflow changed and you need to sync skill versions, CHANGELOGs, README/CONTRIBUTING/docs content, and migration notes before commit or ship.
+version: 1.1.0
+description: Use when a shipped skill, CLI contract, or public-facing workflow loop changed and you need to sync skill versions, CHANGELOGs, README/CONTRIBUTING/docs content, and migration notes before commit or ship.
 ---
 
 # Docs-Sync
@@ -25,7 +25,7 @@ description: Use when a shipped skill, CLI contract, or public-facing workflow c
 - 改了任何已发布 skill 的 `SKILL.md`、`PLAYBOOK.md`、`assets/`、`references/`、`scripts/`
 - 改了 CLI、安装方式、适配命令、workflow 叙事或公开输出
 - 准备提交一个会影响用户理解的变更
-- `req-act` 结束后，需要做最终文档同步
+- `cc-act` 结束后，需要做最终文档同步
 
 如果只是改纯内部实现，且不会改变 skill 契约、CLI 行为、公开文档或用户心智模型，不要强行制造文档噪音。
 
@@ -52,7 +52,7 @@ description: Use when a shipped skill, CLI contract, or public-facing workflow c
    - 同步 `CONTRIBUTING.md` / `CONTRIBUTING.zh-CN.md`
    - 同步受影响的 `docs/**/*.md`
    - 如果会影响发布说明，再同步根 `CHANGELOG.md`
-4. 如果主 workflow 仍然只有 `roadmap -> req-plan -> req-do -> req-check -> req-act`，保住这条主线；维护类 skill 单独说明，不要污染主叙事。
+4. 公开 workflow 叙事要忠于现实：`roadmap` 之后既有 `PDCA`，也有 `IDCA/DDCA`；维护类 skill 单独说明，不要污染主叙事。
 5. 结束前做一次 drift scan，确认没有旧版本号、旧技能列表、旧命令残留在公开 docs 里。
 
 ## Skill Versioning Rules
@@ -93,4 +93,4 @@ description: Use when a shipped skill, CLI contract, or public-facing workflow c
 - 不要 bump 版本却不写 changelog
 - 不要只改英文或只改中文文档
 - 不要把内部实现噪音硬写进对外文档
-- 不要把维护类 skill 写成主 workflow 第六步
+- 不要把维护类 skill 写成公开主 workflow 的一环

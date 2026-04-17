@@ -42,7 +42,7 @@ bash .claude/skills/docs-sync/scripts/bump-skill-version.sh \
   --message "change summary"
 
 # 检查公开 docs 里是否还残留旧叙事
-rg -n "five visible skills|published skills|skills.sh|req-act|roadmap" \
+rg -n "five visible skills|six visible skills|PDCA|IDCA|DDCA|cc-investigate|cc-act|roadmap" \
   README.md README.zh-CN.md CONTRIBUTING.md CONTRIBUTING.zh-CN.md docs
 ```
 

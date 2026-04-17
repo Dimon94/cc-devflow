@@ -14,7 +14,8 @@ Use skills directly for the workflow itself:
 ```text
 roadmap
 
-req-plan -> req-do -> req-check -> req-act
+PDCA: cc-plan -> cc-do -> cc-check -> cc-act
+IDCA: cc-investigate -> cc-do -> cc-check -> cc-act
 ```
 
 Use [skills.sh CLI](https://skills.sh/docs/cli) when you only want one skill:
