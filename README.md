@@ -26,7 +26,7 @@ CC-DevFlow exposes six visible skills:
 - **skills.sh-compatible skill layout**: `.claude/skills/<skill>/SKILL.md` stays compatible with single-skill distribution on skills.sh
 - **Skill-local resources**: each skill carries its own templates, references, and scripts
 - **Explicit, not hidden**: no default context injection, read the files you actually need
-- **Task-template first**: keep `TASKS.md` and `task-manifest.json` as the execution backbone
+- **Task-template first**: keep `planning/tasks.md` and `task-manifest.json` as the execution backbone
 - **Skill pack first**: the repository distributes `.claude` skills, playbooks, and assets as one pack
 - **Evidence before done**: verification, doc sync, PR brief, and release note live at the end of the loop
 - **Roadmap-first**: decide medium-range direction once, then execute through PDCA or IDCA
@@ -158,11 +158,11 @@ skills.sh remains the single-skill distribution path for distributed `.claude/sk
 ## 📦 Outputs
 
 - `roadmap` writes `ROADMAP.md` and `BACKLOG.md`
-- `cc-plan` writes `DESIGN.md`, `TASKS.md`, `task-manifest.json`
-- `cc-investigate` writes `ANALYSIS.md`, `TASKS.md`, `task-manifest.json`
+- `cc-plan` writes `planning/design.md`, `planning/tasks.md`, `task-manifest.json`
+- `cc-investigate` writes `planning/analysis.md`, `planning/tasks.md`, `task-manifest.json`
 - `cc-do` writes code, tests, and runtime checkpoints
 - `cc-check` writes `report-card.json`
-- `cc-act` writes `pr-brief.md`, `RELEASE_NOTE.md`, and synced docs
+- `cc-act` writes `handoff/pr-brief.md`, `handoff/release-note.md`, and synced docs
 
 See [docs/examples/START-HERE.md](./docs/examples/START-HERE.md) for the single entry page to the example set. Example version bindings live in [docs/examples/example-bindings.json](./docs/examples/example-bindings.json).
 

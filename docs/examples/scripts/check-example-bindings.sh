@@ -62,9 +62,12 @@ while IFS= read -r encoded; do
   example_id="$(jq -r '.id' <<<"$encoded")"
   readme="$ROOT_DIR/$(jq -r '.readme' <<<"$encoded")"
   root="$ROOT_DIR/$(jq -r '.root' <<<"$encoded")"
-  requirement_dir="$ROOT_DIR/$(jq -r '.requirementDir' <<<"$encoded")"
+  change_dir="$ROOT_DIR/$(jq -r '.changeDir' <<<"$encoded")"
+  planning_dir="$change_dir/planning"
+  review_dir="$change_dir/review"
+  handoff_dir="$change_dir/handoff"
 
-  for file in "$readme" "$root/ROADMAP.md" "$root/BACKLOG.md" "$requirement_dir/DESIGN.md" "$requirement_dir/TASKS.md" "$requirement_dir/task-manifest.json"; do
+  for file in "$readme" "$root/ROADMAP.md" "$root/BACKLOG.md" "$planning_dir/design.md" "$planning_dir/tasks.md" "$planning_dir/task-manifest.json"; do
     if [[ ! -f "$file" ]]; then
       echo "Example $example_id is missing required file: $file" >&2
       exit 1
@@ -73,13 +76,13 @@ while IFS= read -r encoded; do
 
   assert_contains "$root/ROADMAP.md" "- Skill version: \`$ROADMAP_VERSION\`"
   assert_contains "$root/BACKLOG.md" "- Skill version: \`$ROADMAP_VERSION\`"
-  assert_contains "$requirement_dir/DESIGN.md" "- CC-Plan skill version: \`$REQ_PLAN_VERSION\`"
-  assert_contains "$requirement_dir/TASKS.md" "- CC-Plan skill version: \`$REQ_PLAN_VERSION\`"
+  assert_contains "$planning_dir/design.md" "- CC-Plan skill version: \`$REQ_PLAN_VERSION\`"
+  assert_contains "$planning_dir/tasks.md" "- CC-Plan skill version: \`$REQ_PLAN_VERSION\`"
 
   jq -er --arg roadmap "$ROADMAP_VERSION" --arg reqplan "$REQ_PLAN_VERSION" '
     (.sourceRoadmap.roadmapSkillVersion // $roadmap) == $roadmap and
     (.planningMeta.reqPlanSkillVersion // $reqplan) == $reqplan
-  ' "$requirement_dir/task-manifest.json" >/dev/null
+  ' "$planning_dir/task-manifest.json" >/dev/null
 
   assert_contains "$readme" "## Example Meta"
   assert_contains "$readme" "\`roadmap@$ROADMAP_VERSION\`"
@@ -91,8 +94,15 @@ while IFS= read -r encoded; do
     assert_contains "$readme" "\`cc-act@$REQ_ACT_VERSION\`"
   fi
 
-  if [[ -f "$requirement_dir/report-card.json" ]]; then
-    "$ROOT_DIR/.claude/skills/cc-check/scripts/verify-gate.sh" --report "$requirement_dir/report-card.json" >/dev/null
+  if [[ -f "$review_dir/report-card.json" ]]; then
+    "$ROOT_DIR/.claude/skills/cc-check/scripts/verify-gate.sh" --report "$review_dir/report-card.json" >/dev/null
+  fi
+
+  if jq -e '.covers | index("cc-act")' <<<"$encoded" >/dev/null; then
+    if [[ ! -f "$handoff_dir/status.md" ]]; then
+      echo "Example $example_id is missing required handoff file: $handoff_dir/status.md" >&2
+      exit 1
+    fi
   fi
 done < <(jq -c '.examples[]' "$BINDINGS_FILE")
 

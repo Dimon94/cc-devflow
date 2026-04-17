@@ -13,7 +13,7 @@
 8. 6-12 个月后会长成什么
 9. 给出 2-3 条路线图形状并明确推荐
 10. 冻结 1-3 个阶段，写 exit signal / kill signal / non-goals
-11. 标出哪些事项真的 ready for `req-plan`
+11. 标出哪些事项真的 ready for `cc-plan`
 
 ## Question Rules
 
@@ -31,5 +31,5 @@
 
 - 只定 1-3 个阶段
 - 每个阶段都要有 exit signal、kill signal、non-goals
-- backlog 只收下一轮真会进入 `req-plan` 的事项
+- backlog 只收下一轮真会进入 `cc-plan` 的事项
 - ready 项必须带成功信号和下一决策

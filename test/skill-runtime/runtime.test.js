@@ -20,6 +20,8 @@ const {
   getTaskManifestPath,
   getReportCardPath,
   getReleaseNotePath,
+  getTasksMarkdownPath,
+  getTaskReviewPath,
   readJson,
   readText
 } = require('../../lib/skill-runtime/store');
@@ -29,7 +31,6 @@ describe('Skill runtime', () => {
 
   beforeEach(() => {
     repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-runtime-'));
-    fs.mkdirSync(path.join(repoRoot, 'devflow', 'requirements'), { recursive: true });
 
     fs.writeFileSync(
       path.join(repoRoot, 'package.json'),
@@ -56,7 +57,7 @@ describe('Skill runtime', () => {
   });
 
   function writeReviewArtifact(changeId, taskId, kind, verdict = 'pass') {
-    const reviewPath = path.join(repoRoot, '.skill-runtime', 'runtime', changeId, taskId, `review-${kind}.md`);
+    const reviewPath = getTaskReviewPath(repoRoot, changeId, taskId, kind);
     fs.mkdirSync(path.dirname(reviewPath), { recursive: true });
     fs.writeFileSync(
       reviewPath,
@@ -72,11 +73,10 @@ describe('Skill runtime', () => {
 
   test('runs init -> snapshot -> plan -> dispatch -> verify -> release', async () => {
     const changeId = 'REQ-999';
-    const reqDir = path.join(repoRoot, 'devflow', 'requirements', changeId);
-    fs.mkdirSync(reqDir, { recursive: true });
+    await runInit({ repoRoot, changeId, goal: 'Test skill runtime pipeline' });
 
     fs.writeFileSync(
-      path.join(reqDir, 'TASKS.md'),
+      getTasksMarkdownPath(repoRoot, changeId),
       [
         '- [ ] T001 create scaffolding (src/a.ts)',
         '- [ ] T002 [P] add docs (docs/readme.md)',
@@ -84,7 +84,6 @@ describe('Skill runtime', () => {
       ].join('\n')
     );
 
-    await runInit({ repoRoot, changeId, goal: 'Test skill runtime pipeline' });
     await runPlanningSnapshot({ repoRoot, changeId });
 
     const planResult = await runPlan({ repoRoot, changeId, overwrite: true });
@@ -127,18 +126,16 @@ describe('Skill runtime', () => {
 
   test('blocks verify when passed tasks are missing native review proof', async () => {
     const changeId = 'REQ-1000';
-    const reqDir = path.join(repoRoot, 'devflow', 'requirements', changeId);
-    fs.mkdirSync(reqDir, { recursive: true });
+    await runInit({ repoRoot, changeId, goal: 'Require task review proof' });
 
     fs.writeFileSync(
-      path.join(reqDir, 'TASKS.md'),
+      getTasksMarkdownPath(repoRoot, changeId),
       [
         '- [ ] T001 [TEST] Counter behavior (src/a.test.ts)',
         '- [ ] T002 [IMPL] Counter behavior dependsOn:T001 (src/a.ts)'
       ].join('\n')
     );
 
-    await runInit({ repoRoot, changeId, goal: 'Require task review proof' });
     await runPlanningSnapshot({ repoRoot, changeId });
     await runPlan({ repoRoot, changeId, overwrite: true });
     await runApprove({ repoRoot, changeId, executionMode: 'direct' });

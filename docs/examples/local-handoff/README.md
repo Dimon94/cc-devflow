@@ -38,12 +38,12 @@ But the current environment is local-only:
 
 - `ROADMAP.md`
 - `BACKLOG.md`
-- `requirements/REQ-003-audit-log-export/DESIGN.md`
-- `requirements/REQ-003-audit-log-export/TASKS.md`
-- `requirements/REQ-003-audit-log-export/task-manifest.json`
-- `requirements/REQ-003-audit-log-export/report-card.json`
-- `requirements/REQ-003-audit-log-export/status-report.md`
-- `requirements/REQ-003-audit-log-export/resume-index.md`
+- `changes/REQ-003-audit-log-export/planning/design.md`
+- `changes/REQ-003-audit-log-export/planning/tasks.md`
+- `changes/REQ-003-audit-log-export/planning/task-manifest.json`
+- `changes/REQ-003-audit-log-export/review/report-card.json`
+- `changes/REQ-003-audit-log-export/handoff/status.md`
+- `changes/REQ-003-audit-log-export/handoff/resume-index.md`
 
 ## Why There Is No `pr-brief.md`
 
@@ -51,7 +51,7 @@ This sample intentionally chooses `local-handoff`.
 
 That mode needs:
 
-- `status-report.md`
+- `status.md`
 - `resume-index.md`
 
 It does **not** require a PR brief yet.

@@ -1,7 +1,44 @@
 ---
 name: roadmap
-version: 2.0.0
-description: Use when defining, resetting, or narrowing project direction, stage order, or backlog priority before a concrete requirement enters the PDCA loop.
+version: 2.2.0
+description: "Use when defining, resetting, or narrowing project direction, stage order, or backlog priority before a concrete requirement enters the PDCA loop."
+triggers:
+  - "帮我定路线图"
+  - "下一阶段先做什么"
+  - "backlog 太乱了"
+  - "项目方向散了"
+  - "roadmap this project"
+  - "what should we build next"
+  - "reset the roadmap"
+  - "prioritize the backlog"
+reads:
+  - "PLAYBOOK.md"
+  - "CHANGELOG.md"
+  - "assets/ROADMAP_TEMPLATE.md"
+  - "assets/BACKLOG_TEMPLATE.md"
+  - "references/roadmap-dialogue.md"
+writes:
+  - "ROADMAP.md"
+  - "BACKLOG.md"
+entry_gate:
+  - "Read current roadmap, backlog, and surrounding repo context before proposing direction."
+  - "Confirm this is a project-direction problem, not a single requirement execution problem."
+  - "Do not decompose implementation tasks while the roadmap is still being decided."
+exit_criteria:
+  - "The next 1-3 stages are frozen with goal, why now, dependencies, exit signal, kill signal, and non-goals."
+  - "The first backlog items can naturally enter cc-plan without extra strategic guessing."
+  - "The user-approved recommendation is explicit and grounded in current evidence."
+reroutes:
+  - when: "The user is already discussing one concrete requirement, bug, or execution task."
+    target: "cc-plan"
+recovery_modes:
+  - name: "re-scan-context"
+    when: "The current direction no longer matches repo reality, roadmap files, or the latest user constraint."
+    action: "Reload the roadmap sources, rewrite Context Snapshot, and recompute the recommended route before continuing."
+tool_budget:
+  read_files: 8
+  search_steps: 5
+  shell_commands: 4
 ---
 
 # Roadmap
@@ -12,7 +49,7 @@ description: Use when defining, resetting, or narrowing project direction, stage
 
 `roadmap` 只负责一件事：决定项目接下来 1-3 个阶段该打哪几仗。
 
-它先尽可能收集真实上下文，再逼出真实用户、真实痛点、真实紧迫性，最后把这些现实压成一条能落地、能进入 `req-plan` 的主线。
+它先尽可能收集真实上下文，再逼出真实用户、真实痛点、真实紧迫性，最后把这些现实压成一条能落地、能进入 `cc-plan` 的主线。
 
 ## Read First
 
@@ -29,7 +66,26 @@ description: Use when defining, resetting, or narrowing project direction, stage
 - backlog 很多，但主线不清楚
 - 你需要决定接下来 1-3 个阶段先做什么
 
-如果用户已经在讨论一个明确 requirement、一个 bug 或一组实现任务，停止留在这里，转去 `req-plan`。
+如果用户已经在讨论一个明确 requirement、一个 bug 或一组实现任务，停止留在这里，转去 `cc-plan`。
+
+## Quick Start
+
+如果用户只给了一个模糊问题，先把它归到下面 3 类之一，再继续问：
+
+| 用户信号 | 先读成什么问题 | 默认路线形状 |
+|---------|---------------|-------------|
+| “不知道下一步做什么” | 主线不清 | `wedge-first` |
+| “后面几阶段都会重复碰同一底座” | 底座风险 | `platform-first` |
+| “增长/交付/信任卡住了” | 当前最大瓶颈 | `rescue-first` |
+
+先给一个**默认推荐**，再解释为什么，不要把用户扔进开放式战略讨论。
+
+## Harness Contract
+
+- Allowed actions: read current strategy files, repo context, and recent reality; compare route shapes; write only `ROADMAP.md` and `BACKLOG.md`.
+- Forbidden actions: decompose implementation tasks, invent hidden context, or jump into `cc-plan` before the roadmap is approved.
+- Required evidence: every stage and backlog item must point back to explicit repo facts, user constraints, or observed market signals.
+- Reroute rule: once the conversation collapses to one concrete requirement, stop strategic expansion and hand off to `cc-plan`.
 
 ## Entry Gate
 
@@ -58,8 +114,27 @@ description: Use when defining, resetting, or narrowing project direction, stage
 4. 先写 `Context Snapshot`、证据、约束、非目标，再讨论阶段。
 5. 给出 2-3 种路线图形状，再明确推荐一种，并说明为什么其他路线现在不值得打。
 6. 只冻结 1-3 个阶段。每个阶段都必须有 goal、why now、dependencies、exit signal、kill signal、non-goals。
-7. backlog 只保留会真的进入下一轮 `req-plan` 的事项，每项都要带成功信号和下一决策。
-8. 用户没批准，不进入 `req-plan`。
+7. backlog 只保留会真的进入下一轮 `cc-plan` 的事项，每项都要带成功信号和下一决策。
+8. 用户没批准，不进入 `cc-plan`。
+
+## Route Selection Rule
+
+给出 2-3 条路线后，必须明确推荐其中一条。推荐格式至少回答这 4 件事：
+
+1. 为什么这条路线最符合当前证据
+2. 为什么另外两条现在不值得先打
+3. 这条路线最早会在哪个 signal 上赢
+4. 如果这个 signal 没出现，什么时候该止损
+
+推荐话术要像这样：
+
+> Recommendation: `wedge-first`, because the strongest current evidence is demand uncertainty, not platform pain. We should earn the right to build the base layer after Stage 1 proves pull.
+
+不要只写：
+
+- “建议先做 wedge-first”
+- “这条更合理”
+- “综合来看最优”
 
 ## Ask
 
@@ -84,7 +159,7 @@ description: Use when defining, resetting, or narrowing project direction, stage
 2. 没有 2-3 条路线对比，不准直接拍脑袋定主线。
 3. 没有 exit signal / kill signal / non-goals，不算阶段冻结。
 4. 没有明确成功信号和下一决策，不准把事项放进 `Ready For Req-Plan`。
-5. 没有用户批准，不准把 roadmap item 下放到 `req-plan`。
+5. 没有用户批准，不准把 roadmap item 下放到 `cc-plan`。
 
 ## Review Loop
 
@@ -94,12 +169,21 @@ description: Use when defining, resetting, or narrowing project direction, stage
 2. Evidence scan：每个阶段是否都能指回某个现实证据，而不是空洞愿景。
 3. Causality scan：Stage 2 是否真的建立在 Stage 1 的胜利条件之上。
 4. Feasibility scan：阶段目标与团队容量、依赖、distribution 约束是否接得上。
-5. Handoff scan：第一批 roadmap item 是否已经自然长成可进入 `req-plan` 的对象。
+5. Handoff scan：第一批 roadmap item 是否已经自然长成可进入 `cc-plan` 的对象。
 
 ## Output
 
 - `ROADMAP.md`
 - `BACKLOG.md`
+
+## Good Output
+
+一个高质量 roadmap 交付后，用户应该一眼看懂：
+
+1. 现在先打哪一仗
+2. 为什么不是另外两仗
+3. 哪个 signal 说明这一仗赢了
+4. 哪些 backlog 项已经真的 ready for `cc-plan`
 
 ## Versioning
 
@@ -131,7 +215,7 @@ description: Use when defining, resetting, or narrowing project direction, stage
 - 核心上下文、证据和硬约束已经显式记录
 - 阶段目标与优先级清楚
 - 第一批 requirement 从 roadmap 里自然长出来
-- 下一步唯一答案是把某个 roadmap item 放进 `req-plan`
+- 下一步唯一答案是把某个 roadmap item 放进 `cc-plan`
 
 ## Working Rules
 

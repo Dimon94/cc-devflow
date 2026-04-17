@@ -8,12 +8,12 @@ CC-DevFlow 当前的对外形态是：
 - roadmap + PDCA
 - packaged CLI for distribution
 - multi-platform adaptation
-- harness as an internal runtime library, not a user-facing CLI
+- skill-owned workflow with `lib/skill-runtime` as shared internal support code
 
 用户真正看见的入口只有两类：
 
 - `cc-devflow init` / `cc-devflow adapt`
-- `roadmap -> req-plan -> req-do -> req-check -> req-act`
+- `roadmap -> cc-plan -> cc-do -> cc-check -> cc-act`
 
 ---
 
@@ -35,7 +35,7 @@ npx cc-devflow adapt --cwd /path/to/project --platform codex
 ```text
 roadmap
 
-req-plan -> req-do -> req-check -> req-act
+cc-plan -> cc-do -> cc-check -> cc-act
 ```
 
 `skills.sh` 只负责单个 Skill 的分发，不承担整包安装或多平台适配。
@@ -49,10 +49,10 @@ req-plan -> req-do -> req-check -> req-act
 ```text
 .claude/skills/
 ├── roadmap/
-├── req-plan/
-├── req-do/
-├── req-check/
-└── req-act/
+├── cc-plan/
+├── cc-do/
+├── cc-check/
+└── cc-act/
 ```
 
 这五个 Skill 目录是当前仓库的主要分发源。
@@ -71,17 +71,17 @@ config/
 
 多平台适配由 compiler + adapters 完成。
 
-### Internal Runtime Layer
+### Shared Runtime Layer
 
 ```text
-lib/harness/
+lib/skill-runtime/
 ```
 
-`lib/harness/` 仍然存在，但它是内部运行时能力层：
+`lib/skill-runtime/` 仍然存在，但它只是给公开 Skill 复用的共享支撑层：
 
 - 可被测试覆盖
 - 可被 Skill 或内部模块调用
-- 不再作为独立 CLI 对外分发
+- 不再承担公开工作流语义
 
 ---
 
@@ -91,13 +91,14 @@ lib/harness/
 
 - `ROADMAP.md`
 - `BACKLOG.md`
-- `BRAINSTORM.md`
-- `DESIGN.md`
-- `TASKS.md`
-- `task-manifest.json`
-- `report-card.json`
-- `pr-brief.md`
-- `RELEASE_NOTE.md`
+- `devflow/changes/<change-key>/planning/design.md`
+- `devflow/changes/<change-key>/planning/tasks.md`
+- `devflow/changes/<change-key>/planning/task-manifest.json`
+- `devflow/changes/<change-key>/review/report-card.json`
+- `devflow/changes/<change-key>/handoff/status.md`
+- `devflow/changes/<change-key>/handoff/pr-brief.md`
+- `devflow/changes/<change-key>/handoff/release-note.md`
+- `devflow/workspaces/<change-key>/<worker-id>/`
 
 常见平台产物：
 
@@ -113,7 +114,7 @@ lib/harness/
 
 - `.claude/commands/` 现在只是可选兼容输入，不是默认结构
 - 旧 `/flow:*` 只允许作为历史语境出现，不应再写进新的用户文档
-- `harness:*` 现在是内部实现词汇，不应再写成用户操作手册
+- 内部 runtime 词汇不应再写成用户操作手册
 - 分发文档默认写 `cc-devflow` CLI；源码开发文档才写 `node bin/...` 或 `npm exec --`
 
 ---
@@ -125,6 +126,10 @@ lib/harness/
 - `README.md`
 - `README.zh-CN.md`
 - `docs/guides/getting-started.md`
+- `docs/examples/START-HERE.md`
+- `docs/examples/example-bindings.json`
+- `docs/examples/scripts/check-example-bindings.sh`
+- `docs/examples/README.md`
 - `bin/cc-devflow-cli.js`
 - `bin/adapt.js`
 - `lib/compiler/index.js`

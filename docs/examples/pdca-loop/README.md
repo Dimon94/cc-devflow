@@ -13,7 +13,7 @@ The example is intentionally small:
 - product context is fake
 - requirement scope is real enough to feel concrete
 - the chosen ship mode is `create-pr`
-- optional artifacts such as `RELEASE_NOTE.md` are intentionally omitted when the mode does not require them
+- optional artifacts such as `release-note.md` are intentionally omitted when the mode does not require them
 
 ## Scenario
 
@@ -29,20 +29,20 @@ The sample requirement is:
 
 - `ROADMAP.md`: what `roadmap` decided and why this item is first
 - `BACKLOG.md`: how `RM-001` becomes ready for `cc-plan`
-- `requirements/REQ-001-copy-invite-link/DESIGN.md`: approved tiny design
-- `requirements/REQ-001-copy-invite-link/TASKS.md`: executable task handoff
-- `requirements/REQ-001-copy-invite-link/task-manifest.json`: machine-readable execution truth
-- `requirements/REQ-001-copy-invite-link/report-card.json`: `cc-check` proof and verdict
-- `requirements/REQ-001-copy-invite-link/status-report.md`: `cc-act` summary of reality
-- `requirements/REQ-001-copy-invite-link/pr-brief.md`: ship-ready PR handoff
+- `changes/REQ-001-copy-invite-link/planning/design.md`: approved tiny design
+- `changes/REQ-001-copy-invite-link/planning/tasks.md`: executable task handoff
+- `changes/REQ-001-copy-invite-link/planning/task-manifest.json`: machine-readable execution truth
+- `changes/REQ-001-copy-invite-link/review/report-card.json`: `cc-check` proof and verdict
+- `changes/REQ-001-copy-invite-link/handoff/status.md`: `cc-act` summary of reality
+- `changes/REQ-001-copy-invite-link/handoff/pr-brief.md`: ship-ready PR handoff
 
-## Why There Is No `RELEASE_NOTE.md`
+## Why There Is No `release-note.md`
 
 This sample chooses `create-pr`.
 
 That mode needs:
 
-- `status-report.md`
+- `status.md`
 - `pr-brief.md`
 - synced docs if behavior changed
 
@@ -56,4 +56,4 @@ When reading the sample, check whether you can answer these in under a minute:
 2. Why does the requirement stay `tiny-design` instead of `full-design`?
 3. Which task proved the missing behavior first?
 4. What fresh evidence let `cc-check` say `pass`?
-5. Why does `cc-act` choose `create-pr` and omit `RELEASE_NOTE.md`?
+5. Why does `cc-act` choose `create-pr` and omit `release-note.md`?

@@ -82,10 +82,10 @@ find .codex/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort
 常见产物：
 
 - `roadmap` 产出 `ROADMAP.md` 和 `BACKLOG.md`
-- `cc-plan` 产出 `DESIGN.md`、`TASKS.md`、`task-manifest.json`
-- `cc-investigate` 产出 `ANALYSIS.md`、`TASKS.md`、`task-manifest.json`
+- `cc-plan` 产出 `planning/design.md`、`planning/tasks.md`、`task-manifest.json`
+- `cc-investigate` 产出 `planning/analysis.md`、`planning/tasks.md`、`task-manifest.json`
 - `cc-check` 产出 `report-card.json`
-- `cc-act` 产出 `RELEASE_NOTE.md` 和 `pr-brief.md`
+- `cc-act` 产出 `handoff/release-note.md` 和 `handoff/pr-brief.md`
 
 公开契约字段的典型形状：
 

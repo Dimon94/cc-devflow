@@ -1,0 +1,98 @@
+{
+  "changeId": "REQ-003",
+  "goal": "Add a local CSV export for the existing audit summary panel without introducing new reporting contracts.",
+  "createdAt": "2026-04-16T13:00:00.000Z",
+  "updatedAt": "2026-04-16T14:20:00.000Z",
+  "requirementId": "REQ-003",
+  "requirementVersion": "REQ-003.v1",
+  "currentTaskId": null,
+  "activePhase": null,
+  "tasks": [
+    {
+      "id": "T001",
+      "title": "[TEST] Add a failing test for the missing download action",
+      "type": "TEST",
+      "phase": 1,
+      "parallel": false,
+      "dependsOn": [],
+      "touches": ["audit-summary", "tests"],
+      "files": ["src/admin/AuditSummaryPanel.test.tsx"],
+      "run": ["npm test -- src/admin/AuditSummaryPanel.test.tsx"],
+      "checks": ["test fails before implementation"],
+      "acceptance": ["the missing download action is reproduced as a failing test"],
+      "verification": ["npm test -- src/admin/AuditSummaryPanel.test.tsx"],
+      "evidence": ["failing test output"],
+      "context": {
+        "readFiles": ["design.md", "tasks.md", "src/admin/AuditSummaryPanel.tsx"],
+        "commands": ["npm test -- src/admin/AuditSummaryPanel.test.tsx"],
+        "notes": ["stay inside the current audit summary panel"]
+      },
+      "reviews": { "spec": "pass", "code": "pass" },
+      "status": "passed",
+      "attempts": 1,
+      "maxRetries": 1
+    },
+    {
+      "id": "T002",
+      "title": "[IMPL] Add the download summary action",
+      "type": "IMPL",
+      "phase": 1,
+      "parallel": false,
+      "dependsOn": ["T001"],
+      "touches": ["audit-summary"],
+      "files": ["src/admin/AuditSummaryPanel.tsx"],
+      "run": ["npm test -- src/admin/AuditSummaryPanel.test.tsx"],
+      "checks": ["panel test passes"],
+      "acceptance": ["admins can trigger a CSV download from the existing summary panel"],
+      "verification": ["npm test -- src/admin/AuditSummaryPanel.test.tsx"],
+      "evidence": ["passing test output", "checkpoint summary"],
+      "context": {
+        "readFiles": ["design.md", "tasks.md", "src/admin/AuditSummaryPanel.test.tsx"],
+        "commands": ["npm test -- src/admin/AuditSummaryPanel.test.tsx"],
+        "notes": ["reuse visible summary rows as the export source"]
+      },
+      "reviews": { "spec": "pass", "code": "pass" },
+      "status": "passed",
+      "attempts": 1,
+      "maxRetries": 1
+    },
+    {
+      "id": "T003",
+      "title": "Run targeted checks and collect handoff evidence",
+      "type": "OTHER",
+      "phase": 2,
+      "parallel": false,
+      "dependsOn": ["T002"],
+      "touches": ["quality-gates"],
+      "files": ["src/admin/AuditSummaryPanel.tsx", "src/admin/AuditSummaryPanel.test.tsx"],
+      "run": [
+        "npm test -- src/admin/AuditSummaryPanel.test.tsx",
+        "npm run lint -- src/admin/AuditSummaryPanel.tsx"
+      ],
+      "checks": ["targeted tests pass", "lint passes"],
+      "acceptance": ["fresh verification evidence exists for local handoff"],
+      "verification": [
+        "npm test -- src/admin/AuditSummaryPanel.test.tsx",
+        "npm run lint -- src/admin/AuditSummaryPanel.tsx"
+      ],
+      "evidence": ["passing test output", "clean lint output"],
+      "context": {
+        "readFiles": ["tasks.md", "task-manifest.json"],
+        "commands": [
+          "npm test -- src/admin/AuditSummaryPanel.test.tsx",
+          "npm run lint -- src/admin/AuditSummaryPanel.tsx"
+        ],
+        "notes": ["remote push is intentionally out of scope for this example"]
+      },
+      "reviews": { "spec": "pass", "code": "pass" },
+      "status": "passed",
+      "attempts": 1,
+      "maxRetries": 1
+    }
+  ],
+  "metadata": {
+    "source": "tasks.md",
+    "generatedBy": "docs-example",
+    "planVersion": 1
+  }
+}

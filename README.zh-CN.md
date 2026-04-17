@@ -26,7 +26,7 @@ CC-DevFlow 现在暴露 6 个可见 Skill：
 - **skills.sh 兼容布局**：`.claude/skills/<skill>/SKILL.md` 继续保持可被 skills.sh 单 Skill 分发的结构
 - **资源内化到 Skill**：每个 Skill 自带模板、参考资料和脚本
 - **白盒优先**：默认不做上下文注入，需要什么文件就显式读取什么文件
-- **任务模板保留**：继续以 `TASKS.md` 和 `task-manifest.json` 作为执行骨架
+- **任务模板保留**：继续以 `planning/tasks.md` 和 `task-manifest.json` 作为执行骨架
 - **Skill Pack 优先**：仓库以整包形式分发 `.claude` Skill、playbook 和资源文件
 - **先证据后完成**：验证、文档同步、PR brief、release note 都在闭环末端
 - **roadmap 先行**：先定中长期方向，再让 requirement 按 PDCA 或 IDCA 执行
@@ -153,11 +153,11 @@ skills.sh 则是已分发 `.claude/skills/*` 的单 Skill 安装路径。
 ## 📦 产物
 
 - `roadmap` 产出 `ROADMAP.md` 和 `BACKLOG.md`
-- `cc-plan` 产出 `DESIGN.md`、`TASKS.md`、`task-manifest.json`
-- `cc-investigate` 产出 `ANALYSIS.md`、`TASKS.md`、`task-manifest.json`
+- `cc-plan` 产出 `planning/design.md`、`planning/tasks.md`、`task-manifest.json`
+- `cc-investigate` 产出 `planning/analysis.md`、`planning/tasks.md`、`task-manifest.json`
 - `cc-do` 产出代码、测试和运行时 checkpoint
 - `cc-check` 产出 `report-card.json`
-- `cc-act` 产出 `pr-brief.md`、`RELEASE_NOTE.md` 和同步后的文档
+- `cc-act` 产出 `handoff/pr-brief.md`、`handoff/release-note.md` 和同步后的文档
 
 可以先看 [docs/examples/START-HERE.md](./docs/examples/START-HERE.md) 这个单页入口，它已经把样例选择、按产物反查和样例跳转合在一起了。样例和 skill 的版本绑定真相源在 [docs/examples/example-bindings.json](./docs/examples/example-bindings.json)。
 

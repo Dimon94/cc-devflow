@@ -22,6 +22,7 @@
   - Open risks:
   - First planning question:
   - Required context to load:
+  - Why this is ready now:
 
 ## Parked
 

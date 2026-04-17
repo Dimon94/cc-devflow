@@ -44,6 +44,14 @@
 | platform-first |  |  | Rejected |
 | rescue-first |  |  | Rejected |
 
+## Recommended Route
+
+- Recommendation:
+- Why this route wins now:
+- Why the rejected routes lose now:
+- First signal to watch:
+- Kill signal / stop condition:
+
 ## Product Thesis
 
 - Users:

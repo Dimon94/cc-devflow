@@ -82,10 +82,10 @@ Use the skills in this order:
 Typical outputs:
 
 - `roadmap` writes `ROADMAP.md` and `BACKLOG.md`
-- `cc-plan` writes `DESIGN.md`, `TASKS.md`, `task-manifest.json`
-- `cc-investigate` writes `ANALYSIS.md`, `TASKS.md`, `task-manifest.json`
+- `cc-plan` writes `planning/design.md`, `planning/tasks.md`, `task-manifest.json`
+- `cc-investigate` writes `planning/analysis.md`, `planning/tasks.md`, `task-manifest.json`
 - `cc-check` writes `report-card.json`
-- `cc-act` writes `RELEASE_NOTE.md` and `pr-brief.md`
+- `cc-act` writes `handoff/release-note.md` and `handoff/pr-brief.md`
 
 Typical public contract fields:
 

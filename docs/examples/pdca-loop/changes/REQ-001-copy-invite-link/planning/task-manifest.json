@@ -1,0 +1,201 @@
+{
+  "changeId": "REQ-001",
+  "goal": "Add a one-click copy action to the existing share dialog without changing backend contracts.",
+  "createdAt": "2026-04-15T10:00:00.000Z",
+  "updatedAt": "2026-04-15T11:10:00.000Z",
+  "status": "verified",
+  "requirementId": "REQ-001",
+  "requirementVersion": "REQ-001.v1",
+  "sourceRoadmap": {
+    "itemId": "RM-001",
+    "roadmapVersion": "roadmap.v1",
+    "roadmapSkillVersion": "2.2.0",
+    "sourceStage": "Stage 1",
+    "successSignal": "Users can copy the invite link with one click",
+    "killSignal": "The patch requires backend or permission changes",
+    "dependencies": [
+      "Existing share dialog stays intact"
+    ],
+    "nonGoals": [
+      "No invite role redesign",
+      "No share analytics"
+    ]
+  },
+  "planningMeta": {
+    "reqPlanSkillVersion": "3.3.0",
+    "designVersion": "design.v1",
+    "approvedAt": "2026-04-15T10:05:00.000Z",
+    "approvedBy": "user",
+    "basedOnOption": "Tiny design card"
+  },
+  "currentTaskId": null,
+  "activePhase": null,
+  "tasks": [
+    {
+      "id": "T001",
+      "title": "[TEST] Add a failing dialog test for the missing copy action",
+      "type": "TEST",
+      "phase": 1,
+      "parallel": false,
+      "dependsOn": [],
+      "touches": [
+        "share-dialog",
+        "tests"
+      ],
+      "files": [
+        "src/features/share/ShareDialog.test.tsx"
+      ],
+      "run": [
+        "npm test -- src/features/share/ShareDialog.test.tsx"
+      ],
+      "checks": [
+        "test fails before implementation"
+      ],
+      "acceptance": [
+        "The missing copy action is reproduced as a failing test"
+      ],
+      "verification": [
+        "npm test -- src/features/share/ShareDialog.test.tsx"
+      ],
+      "evidence": [
+        "Failing test output"
+      ],
+      "context": {
+        "readFiles": [
+          "design.md",
+          "tasks.md",
+          "src/features/share/ShareDialog.tsx"
+        ],
+        "commands": [
+          "npm test -- src/features/share/ShareDialog.test.tsx"
+        ],
+        "notes": [
+          "Do not change share-service contracts in this task"
+        ]
+      },
+      "reviews": {
+        "spec": "pass",
+        "code": "pass"
+      },
+      "status": "passed",
+      "attempts": 1,
+      "maxRetries": 1
+    },
+    {
+      "id": "T002",
+      "title": "[IMPL] Add the copy button and copied-state confirmation",
+      "type": "IMPL",
+      "phase": 1,
+      "parallel": false,
+      "dependsOn": [
+        "T001"
+      ],
+      "touches": [
+        "share-dialog"
+      ],
+      "files": [
+        "src/features/share/ShareDialog.tsx"
+      ],
+      "run": [
+        "npm test -- src/features/share/ShareDialog.test.tsx"
+      ],
+      "checks": [
+        "dialog test passes after implementation"
+      ],
+      "acceptance": [
+        "The dialog exposes a copy button and confirms the copied state"
+      ],
+      "verification": [
+        "npm test -- src/features/share/ShareDialog.test.tsx"
+      ],
+      "evidence": [
+        "Passing targeted test output",
+        "Checkpoint summary"
+      ],
+      "context": {
+        "readFiles": [
+          "design.md",
+          "tasks.md",
+          "src/features/share/ShareDialog.test.tsx"
+        ],
+        "commands": [
+          "npm test -- src/features/share/ShareDialog.test.tsx"
+        ],
+        "notes": [
+          "Keep the patch inside the existing dialog"
+        ]
+      },
+      "reviews": {
+        "spec": "pass",
+        "code": "pass"
+      },
+      "status": "passed",
+      "attempts": 1,
+      "maxRetries": 1
+    },
+    {
+      "id": "T003",
+      "title": "Run targeted checks and collect fresh evidence",
+      "type": "OTHER",
+      "phase": 2,
+      "parallel": false,
+      "dependsOn": [
+        "T002"
+      ],
+      "touches": [
+        "quality-gates"
+      ],
+      "files": [
+        "src/features/share/ShareDialog.tsx",
+        "src/features/share/ShareDialog.test.tsx"
+      ],
+      "run": [
+        "npm test -- src/features/share/ShareDialog.test.tsx",
+        "npm run lint -- src/features/share/ShareDialog.tsx"
+      ],
+      "checks": [
+        "targeted test passes",
+        "lint passes"
+      ],
+      "acceptance": [
+        "Fresh verification evidence is ready for cc-check"
+      ],
+      "verification": [
+        "npm test -- src/features/share/ShareDialog.test.tsx",
+        "npm run lint -- src/features/share/ShareDialog.tsx"
+      ],
+      "evidence": [
+        "Passing targeted test output",
+        "Clean lint output"
+      ],
+      "context": {
+        "readFiles": [
+          "tasks.md",
+          "task-manifest.json"
+        ],
+        "commands": [
+          "npm test -- src/features/share/ShareDialog.test.tsx",
+          "npm run lint -- src/features/share/ShareDialog.tsx"
+        ],
+        "notes": [
+          "Collect only fresh evidence from this run"
+        ]
+      },
+      "reviews": {
+        "spec": "pass",
+        "code": "pass"
+      },
+      "status": "passed",
+      "attempts": 1,
+      "maxRetries": 1
+    }
+  ],
+  "metadata": {
+    "source": "tasks.md",
+    "generatedBy": "docs-example",
+    "planVersion": 1
+  },
+  "deferredQuestions": [
+    "If users still miss the copied-state confirmation, open RM-002 for richer feedback."
+  ]
+}

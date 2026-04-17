@@ -66,13 +66,13 @@ Use this when the only thing you know is the file in front of you.
 | --- | --- | --- |
 | `ROADMAP.md` | `roadmap` | [pdca-loop/ROADMAP.md](./pdca-loop/ROADMAP.md) |
 | `BACKLOG.md` | `roadmap` -> `cc-plan` handoff | [pdca-loop/BACKLOG.md](./pdca-loop/BACKLOG.md) |
-| `DESIGN.md` | `cc-plan` | [pdca-loop/DESIGN.md](./pdca-loop/requirements/REQ-001-copy-invite-link/DESIGN.md) or [full-design-blocked/DESIGN.md](./full-design-blocked/requirements/REQ-002-bulk-invite-import/DESIGN.md) |
-| `TASKS.md` | `cc-plan` or `cc-do` | [pdca-loop/TASKS.md](./pdca-loop/requirements/REQ-001-copy-invite-link/TASKS.md) |
-| `task-manifest.json` | `cc-do` | [pdca-loop/task-manifest.json](./pdca-loop/requirements/REQ-001-copy-invite-link/task-manifest.json) |
-| `report-card.json` | `cc-check` | [pdca-loop/report-card.json](./pdca-loop/requirements/REQ-001-copy-invite-link/report-card.json), [full-design-blocked/report-card.json](./full-design-blocked/requirements/REQ-002-bulk-invite-import/report-card.json), or [local-handoff/report-card.json](./local-handoff/requirements/REQ-003-audit-log-export/report-card.json) |
-| `status-report.md` | `cc-act` | [pdca-loop/status-report.md](./pdca-loop/requirements/REQ-001-copy-invite-link/status-report.md) or [local-handoff/status-report.md](./local-handoff/requirements/REQ-003-audit-log-export/status-report.md) |
-| `pr-brief.md` | `cc-act` | [pdca-loop/pr-brief.md](./pdca-loop/requirements/REQ-001-copy-invite-link/pr-brief.md) |
-| `resume-index.md` | `cc-act` with `local-handoff` | [local-handoff/resume-index.md](./local-handoff/requirements/REQ-003-audit-log-export/resume-index.md) |
+| `design.md` | `cc-plan` | [pdca-loop/design.md](./pdca-loop/changes/REQ-001-copy-invite-link/planning/design.md) or [full-design-blocked/design.md](./full-design-blocked/changes/REQ-002-bulk-invite-import/planning/design.md) |
+| `tasks.md` | `cc-plan` or `cc-do` | [pdca-loop/tasks.md](./pdca-loop/changes/REQ-001-copy-invite-link/planning/tasks.md) |
+| `task-manifest.json` | `cc-do` | [pdca-loop/task-manifest.json](./pdca-loop/changes/REQ-001-copy-invite-link/planning/task-manifest.json) |
+| `report-card.json` | `cc-check` | [pdca-loop/report-card.json](./pdca-loop/changes/REQ-001-copy-invite-link/review/report-card.json), [full-design-blocked/report-card.json](./full-design-blocked/changes/REQ-002-bulk-invite-import/review/report-card.json), or [local-handoff/report-card.json](./local-handoff/changes/REQ-003-audit-log-export/review/report-card.json) |
+| `status.md` | `cc-act` | [pdca-loop/status.md](./pdca-loop/changes/REQ-001-copy-invite-link/handoff/status.md) or [local-handoff/status.md](./local-handoff/changes/REQ-003-audit-log-export/handoff/status.md) |
+| `pr-brief.md` | `cc-act` | [pdca-loop/pr-brief.md](./pdca-loop/changes/REQ-001-copy-invite-link/handoff/pr-brief.md) |
+| `resume-index.md` | `cc-act` with `local-handoff` | [local-handoff/resume-index.md](./local-handoff/changes/REQ-003-audit-log-export/handoff/resume-index.md) |
 
 ### Read `report-card.json` Like This
 
@@ -118,7 +118,7 @@ If both are true, you are usually in `cc-act` local handoff territory, not back 
 
 ## Wrong Turns To Avoid
 
-- Do not jump from `TASKS.md` straight to `cc-act`
+- Do not jump from `tasks.md` straight to `cc-act`
 - Do not treat green tests as stronger than a `report-card.json` reroute
 - Do not treat `resume-index.md` as proof that planning failed; it may simply mean local handoff
 
@@ -127,7 +127,7 @@ If both are true, you are usually in `cc-act` local handoff territory, not back 
 If you only have one minute, open these files in order:
 
 1. example `README.md`
-2. requirement `DESIGN.md`
+2. change `planning/design.md`
 3. `report-card.json` or `resume-index.md`
 
 That should already tell you:

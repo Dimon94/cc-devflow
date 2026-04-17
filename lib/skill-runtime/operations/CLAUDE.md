@@ -12,11 +12,11 @@ init.js: 初始化 requirement/runtime 目录，并写入 harness-state。
 janitor.js: 清理过期 runtime 工件，保留仍在运行的任务状态。
 snapshot.js: 采集仓库事实与脚本信息，生成 planning-snapshot。
 pack.js: 旧的兼容转发层，把 runPack 映射到 snapshot.js。
-plan.js: 基于 TASKS.md 生成 task-manifest，并更新计划状态。
+plan.js: 基于 `planning/tasks.md` 生成 task-manifest，并更新计划状态。
 prepare-pr.js: 基于 verify 结果和 task result 生成 PR-ready brief。
 release.js: 在验证通过后生成 RELEASE_NOTE，并标记 released。
 resume.js: 从最近稳定 checkpoint 恢复执行，重排失败/阻塞任务后复用 dispatch 的执行机制。
-verify.js: 运行 quick/strict/review 质量门禁，写 report-card。
+verify.js: 运行 quick/strict/review 质量门禁，写 `review/report-card.json`。
 worker-run.js: 运行本地 worker/provider 命令，并回写任务、事件和记忆工件。
 worker.js: 生成 worker handoff bundle，供本地和 provider worker 复用。
 

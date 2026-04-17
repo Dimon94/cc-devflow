@@ -13,7 +13,7 @@
       "id": "pdca-loop",
       "readme": "docs/examples/pdca-loop/README.md",
       "root": "docs/examples/pdca-loop",
-      "requirementDir": "docs/examples/pdca-loop/requirements/REQ-001-copy-invite-link",
+      "changeDir": "docs/examples/pdca-loop/changes/REQ-001-copy-invite-link",
       "covers": ["roadmap", "cc-plan", "cc-do", "cc-check", "cc-act"],
       "expectedShipMode": "create-pr"
     },
@@ -21,7 +21,7 @@
       "id": "full-design-blocked",
       "readme": "docs/examples/full-design-blocked/README.md",
       "root": "docs/examples/full-design-blocked",
-      "requirementDir": "docs/examples/full-design-blocked/requirements/REQ-002-bulk-invite-import",
+      "changeDir": "docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import",
       "covers": ["roadmap", "cc-plan", "cc-do", "cc-check"],
       "expectedShipMode": "none"
     },
@@ -29,7 +29,7 @@
       "id": "local-handoff",
       "readme": "docs/examples/local-handoff/README.md",
       "root": "docs/examples/local-handoff",
-      "requirementDir": "docs/examples/local-handoff/requirements/REQ-003-audit-log-export",
+      "changeDir": "docs/examples/local-handoff/changes/REQ-003-audit-log-export",
       "covers": ["roadmap", "cc-plan", "cc-do", "cc-check", "cc-act"],
       "expectedShipMode": "local-handoff"
     }

@@ -42,13 +42,13 @@ The sample shows what happens when implementation moved before the integration d
 
 - `ROADMAP.md`
 - `BACKLOG.md`
-- `requirements/REQ-002-bulk-invite-import/DESIGN.md`
-- `requirements/REQ-002-bulk-invite-import/TASKS.md`
-- `requirements/REQ-002-bulk-invite-import/task-manifest.json`
-- `requirements/REQ-002-bulk-invite-import/report-card.json`
+- `changes/REQ-002-bulk-invite-import/planning/design.md`
+- `changes/REQ-002-bulk-invite-import/planning/tasks.md`
+- `changes/REQ-002-bulk-invite-import/planning/task-manifest.json`
+- `changes/REQ-002-bulk-invite-import/review/report-card.json`
 
 ## Why There Is No `cc-act` Output
 
-There is no `status-report.md`, `pr-brief.md`, or `resume-index.md` here because `cc-check` did **not** return `pass`.
+There is no `status.md`, `pr-brief.md`, or `resume-index.md` here because `cc-check` did **not** return `pass`.
 
 The loop must stop honestly before `cc-act`.

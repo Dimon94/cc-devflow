@@ -1,5 +1,13 @@
 # Roadmap Playbook
 
+## Visible State Machine
+
+`roadmap` is the only strategy stage.
+
+- Enter from: project kickoff, backlog drift, or strategy reset.
+- Stay in: `roadmap` while direction is still being argued or evidence is incomplete.
+- Exit to: `cc-plan` once one approved roadmap item becomes the next concrete requirement.
+
 ## Core Rules
 
 1. 先读上下文，再问现实，不先写愿景。
@@ -7,6 +15,7 @@
 3. 只定 1-3 个阶段，不写愿望清单。
 4. 通过 `roadmap` 只能产出方向，不能偷拆实现任务。
 5. 没有证据时写 assumption，不准冒充事实。
+6. 每次都必须明确推荐一条路线，不准只列选项不下判断。
 
 ## Local Kit
 
@@ -52,6 +61,15 @@
 
 推荐时必须回答：为什么这条主线比其他两条更值得先打。
 
+## Recommendation Test
+
+写完推荐后，快速自检：
+
+1. 如果删掉路线名，别人还能从理由里猜出为什么是这条吗？
+2. 有没有明确说“不先做另外两条”的原因？
+3. Stage 1 的 win signal 能不能在 1-2 个周期内看到？
+4. 如果 Stage 1 输了，kill signal 是不是具体到可以止损？
+
 ## Stage Contract
 
 每个阶段至少要有：
@@ -62,7 +80,7 @@
 4. `Exit signal`
 5. `Kill signal`
 6. `Non-goals`
-7. 可以自然长成下一轮 `req-plan` 的候选事项
+7. 可以自然长成下一轮 `cc-plan` 的候选事项
 
 ## Output Contract
 
@@ -77,7 +95,7 @@
 - 非目标
 
 `BACKLOG.md`
-- 只保留会真的进入下一轮 `req-plan` 的事项
+- 只保留会真的进入下一轮 `cc-plan` 的事项
 - 每项注明来源阶段、优先级、证据、依赖、当前未知点、下一决策、是否 ready
 
 ## Review Loop
@@ -87,7 +105,7 @@
 1. 有没有 placeholder
 2. 阶段之间是否有因果链
 3. 阶段目标是否真能被当前资源支撑
-4. ready 项是否真能进入 `req-plan`
+4. ready 项是否真能进入 `cc-plan`
 5. 本次版本相比上一版到底改了什么
 
 ## Versioning
@@ -99,3 +117,4 @@
 ## Exit Rule
 
 只有当第一批 requirement 能从阶段主线自然长出来时，`roadmap` 才算完成。
+如果用户看完还会问“所以现在到底先做什么”，说明 roadmap 还没写好。

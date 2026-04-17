@@ -100,5 +100,5 @@ KISS, YAGNI, DRY & SOLID, and use ask-question tool if you are not clear about m
 
 优先使用 `.claude/skills/docs-sync/` 作为仓库内的文档收口流程。
 
-注意：`docs-sync` 是维护类 Skill，不属于 `roadmap -> req-plan -> req-do -> req-check -> req-act` 这条 5 步主 workflow。
+注意：`docs-sync` 是维护类 Skill，不属于 `roadmap -> cc-plan -> cc-do -> cc-check -> cc-act` 这条 5 步主 workflow。
 </skill_maintenance_protocol>
