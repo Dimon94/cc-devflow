@@ -1,6 +1,6 @@
 ---
 name: cc-act
-version: 1.4.0
+version: 1.4.1
 description: "Use when verified work must be shipped or handed off with a clear landing path: run simplify and required tests, create or update a PR, prepare a local handoff, close out merged work, sync docs, write release notes, and fold follow-ups back into backlog or roadmap."
 triggers:
   - "准备提 PR"
@@ -148,13 +148,13 @@ tool_budget:
 1. `create-pr`
    - 必须有 `handoff/pr-brief.md`
    - 必须完成需要同步的 doc updates
-   - commit message 与 commit 拆分必须符合 `references/git-commit-guidelines.md`
+   - 新增提交必须遵守 `references/git-commit-guidelines.md`
    - 远端可用时必须完成 commit、push、`gh pr create`
 2. `update-pr`
    - 必须有更新后的 `handoff/pr-brief.md`
    - 必须说明这次新增了什么验证或文档同步
    - 必须避免重复创建 PR / MR
-   - 新增提交时，commit message 与 commit 拆分必须符合 `references/git-commit-guidelines.md`
+   - 新增提交必须遵守 `references/git-commit-guidelines.md`
    - 如果有新增提交，必须 push 并刷新 PR / MR 内容
 3. `local-handoff`
    - 必须有更新后的 `handoff/resume-index.md`
@@ -184,7 +184,7 @@ tool_budget:
    - e2e 失败并导致代码修改时，同样回 `cc-check`
 4. `Commit and push`
    - 只对 `create-pr` / `update-pr` 模式生效
-   - 所有验证通过后再 commit，commit message 与 commit 拆分必须参考 `references/git-commit-guidelines.md`
+   - 所有验证通过后再 commit，并遵守 `references/git-commit-guidelines.md`
    - push 当前分支，并用 `gh pr create` 创建 PR；已有 PR 时只更新，不重复创建
    - `gh` 不可用、push 失败、远端不可达时，切到 `local-handoff` 并把阻塞写清楚
 
@@ -205,8 +205,8 @@ tool_budget:
    - 优先运行 `scripts/sync-act-docs.sh --dir <requirement-dir>`
    - 再运行 `scripts/render-pr-brief.sh --dir <requirement-dir>`
 8. 执行分支集成动作：
-   - `create-pr`：按 `references/git-commit-guidelines.md` 拆分并生成 commit，推分支，并优先使用 `gh pr create` 创建 PR / MR
-   - `update-pr`：如果有新提交，先按 `references/git-commit-guidelines.md` 整理 commit / push，再刷新 PR / MR body，不沿用陈旧内容
+   - `create-pr`：按 `references/git-commit-guidelines.md` 完成提交并推分支，再优先使用 `gh pr create` 创建 PR / MR
+   - `update-pr`：如果有新提交，先按 `references/git-commit-guidelines.md` 完成 commit / push，再刷新 PR / MR body，不沿用陈旧内容
    - `local-handoff`：不假装已经发出，只生成可接手材料
    - `post-merge-closeout`：跳过 PR，完成发布与闭环回写
 9. 处理 doc sync：如果 ship 结果改变了代码地图、用法、架构边界，文档必须跟上。

@@ -109,15 +109,14 @@ Ship 必须属于这 4 种模式之一：
 
 ### `create-pr`
 
-- 先按 `references/git-commit-guidelines.md` 检查 commit 边界；功能、测试、文档、配置能拆就拆
-- commit 所有已验证变更，message 必须符合约定格式，且与 PR 核心语义一致
+- 按 `references/git-commit-guidelines.md` 完成提交
 - 推送当前分支
 - 用 `gh pr create` 创建 PR / MR
 - PR body 以 `pr-brief.md` 为真相源
 
 ### `update-pr`
 
-- 如果有新增提交，先按 `references/git-commit-guidelines.md` 整理 commit / push
+- 如果有新增提交，先按 `references/git-commit-guidelines.md` 完成 commit / push
 - 不重新造一个 PR
 - 刷新已有 PR / MR body
 - 确保 body 反映这次最新 `cc-check` 结果与 doc sync 状态
@@ -185,7 +184,7 @@ Ship 必须属于这 4 种模式之一：
 - `scripts/generate-status-report.sh` 负责汇总 requirement 与 ship 现状
 - `scripts/archive-requirement.sh` 负责 requirement 生命周期收尾
 - `cc-simplify` 负责在 ship 前压掉重复、坏味道、低效实现
-- `references/git-commit-guidelines.md` 负责约束 commit message、commit 拆分与线性历史要求
+- `references/git-commit-guidelines.md` 负责提交规范真相源
 
 ## Exit Smell
 

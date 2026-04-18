@@ -1,5 +1,11 @@
 # CC-Act Skill Changelog
 
+## v1.4.1 - 2026-04-18
+
+- compress duplicated commit-rule summaries in `SKILL.md` and `PLAYBOOK.md` so `references/git-commit-guidelines.md` stays the single truth source
+- keep only stage-level enforcement language in the main docs and move commit-detail semantics fully behind the reference
+- reduce drift risk between skill overview text and playbook execution text
+
 ## v1.4.0 - 2026-04-18
 
 - add `references/git-commit-guidelines.md` as the canonical commit-history reference for `cc-act`
