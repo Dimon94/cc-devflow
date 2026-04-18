@@ -1,6 +1,6 @@
 ---
 name: cc-roadmap
-version: 3.0.0
+version: 4.0.0
 description: "Use when defining, resetting, or narrowing project direction, stage order, or backlog priority before a concrete requirement enters the PDCA loop."
 triggers:
   - "帮我定路线图"
@@ -18,10 +18,10 @@ reads:
   - "assets/BACKLOG_TEMPLATE.md"
   - "references/roadmap-dialogue.md"
 writes:
-  - path: "ROADMAP.md"
+  - path: "devflow/ROADMAP.md"
     durability: "durable"
     required: true
-  - path: "BACKLOG.md"
+  - path: "devflow/BACKLOG.md"
     durability: "durable"
     required: true
 entry_gate:
@@ -87,14 +87,14 @@ tool_budget:
 
 ## Harness Contract
 
-- Allowed actions: read current strategy files, repo context, and recent reality; compare route shapes; write only repo-root `ROADMAP.md` and `BACKLOG.md`.
+- Allowed actions: read current strategy files, repo context, and recent reality; compare route shapes; write only `devflow/ROADMAP.md` and `devflow/BACKLOG.md`.
 - Forbidden actions: decompose implementation tasks, invent hidden context, or jump into `cc-plan` before the roadmap is approved.
 - Required evidence: every stage and backlog item must point back to explicit repo facts, user constraints, or observed market signals.
 - Reroute rule: once the conversation collapses to one concrete requirement, stop strategic expansion and hand off to `cc-plan`.
 
 ## Entry Gate
 
-1. 如果 repo root 下的 `ROADMAP.md` / `BACKLOG.md` 已存在，先读现状再重写。
+1. 如果 `devflow/ROADMAP.md` / `devflow/BACKLOG.md` 已存在，先读现状再重写。
 2. 先判断这是“项目方向问题”还是“单 requirement 执行问题”。
 3. 先做一次上下文扫描，不能跳过现有事实直接写愿景。
 4. 方向没被批准前，不准把 roadmap 偷偷下放成实现任务。
@@ -103,7 +103,7 @@ tool_budget:
 
 进入对话前，至少主动收这些上下文：
 
-1. 当前 repo root `ROADMAP.md` / `BACKLOG.md` 的主线、版本、已停放事项。
+1. 当前 `devflow/ROADMAP.md` / `devflow/BACKLOG.md` 的主线、版本、已停放事项。
 2. `CLAUDE.md`、`README*`、`TODOS.md`、最近相关 docs / specs / plans。
 3. 最近相关提交、当前分支脏状态、正在进行中的 requirement。
 4. 真实 forcing functions：deadline、发布窗口、资源上限、依赖、distribution、adoption / trust / delivery 卡点。
@@ -170,7 +170,7 @@ tool_budget:
 
 ## Review Loop
 
-写完 repo root `ROADMAP.md` / `BACKLOG.md` 后，至少完成这 6 个检查：
+写完 `devflow/ROADMAP.md` / `devflow/BACKLOG.md` 后，至少完成这 6 个检查：
 
 1. Placeholder scan：不能有 TBD、TODO、`[NEEDS CONTEXT]` 之类的逃避词。
 2. Evidence scan：每个阶段是否都能指回某个现实证据，而不是空洞愿景。
@@ -181,8 +181,8 @@ tool_budget:
 
 ## Output
 
-- `ROADMAP.md`
-- `BACKLOG.md`
+- `devflow/ROADMAP.md`
+- `devflow/BACKLOG.md`
 
 ## Good Output
 
@@ -200,13 +200,13 @@ tool_budget:
 
 - `patch`：措辞、模板字段说明、非契约性澄清
 - `minor`：新增兼容字段、上下文收集规则、评审规则、输出结构增强
-- `major`：改变 `ROADMAP.md` / `BACKLOG.md` 的核心契约、阶段模型或 handoff 预期
+- `major`：改变 `devflow/ROADMAP.md` / `devflow/BACKLOG.md` 的核心契约、阶段模型或 handoff 预期
 
 每次修改都必须：
 
 1. 更新本文件 frontmatter 的 `version`
 2. 更新 `CHANGELOG.md`
-3. 如果会影响已有 `ROADMAP.md` / `BACKLOG.md` 使用方式，在 `CHANGELOG.md` 写清 migration note
+3. 如果会影响已有 `devflow/ROADMAP.md` / `devflow/BACKLOG.md` 使用方式，在 `CHANGELOG.md` 写清 migration note
 
 ## Bundled Resources
 
@@ -230,7 +230,7 @@ tool_budget:
 
 1. 先收上下文，再收意见。
 2. 没有现实证据时必须明确写成 assumption，而不是偷偷当事实。
-3. repo root `ROADMAP.md` 是方向真相源，repo root `BACKLOG.md` 是进入下一轮规划的缓冲区。
+3. `devflow/ROADMAP.md` 是方向真相源，`devflow/BACKLOG.md` 是进入下一轮规划的缓冲区。
 4. 决策理由必须保留下来，方便以后重跑时比较版本差异。
 5. 不要为了显得完整而写 6 个阶段，能打赢下一仗比画完整战争图更重要。
 

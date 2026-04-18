@@ -28,7 +28,7 @@
 
 进入 roadmap 对话前，至少摸清：
 
-1. 现有 repo root `ROADMAP.md` / `BACKLOG.md`
+1. 现有 `devflow/ROADMAP.md` / `devflow/BACKLOG.md`
 2. `CLAUDE.md`、`README*`、`TODOS.md`
 3. 最近相关 docs / specs / plans
 4. 最近相关提交、当前工作树状态、正在推进的 requirement
@@ -91,7 +91,7 @@
 
 ## Output Contract
 
-`ROADMAP.md`
+`devflow/ROADMAP.md`
 - version / skill version / context snapshot / evidence ledger
 - 1-3 个阶段
 - 每阶段目标
@@ -103,7 +103,7 @@
 - `RM Dependency Graph`
 - `Parallel waves`
 
-`BACKLOG.md`
+`devflow/BACKLOG.md`
 - 只保留会真的进入下一轮 `cc-plan` 的事项
 - 每项注明来源阶段、优先级、证据、`Depends On`、`Parallel With`、当前未知点、下一决策、是否 ready
 

@@ -1,5 +1,17 @@
 # Roadmap Skill Changelog
 
+## v4.0.0 - 2026-04-18
+
+- restore `cc-roadmap` durable outputs to `devflow/ROADMAP.md` and `devflow/BACKLOG.md`, matching the repository contract and keeping roadmap artifacts under `devflow/`
+- update bundled helper scripts to prefer `devflow/ROADMAP.md` and `devflow/BACKLOG.md`, while still falling back to the recent repo-root paths and the older `devflow/roadmap/*` paths
+- realign skill docs, public guides, and registry/bootstrap tests with the restored canonical paths
+
+Migration note:
+
+- new roadmap runs should write `devflow/ROADMAP.md` and `devflow/BACKLOG.md`
+- if you temporarily have repo-root `ROADMAP.md` / `BACKLOG.md` from v3.0.0, move them back under `devflow/`
+- helper scripts now resolve files in this order: `devflow/*.md` -> repo-root `*.md` -> legacy `devflow/roadmap/*.md`
+
 ## v3.0.0 - 2026-04-17
 
 - change `cc-roadmap` durable outputs to repo-root `ROADMAP.md` and `BACKLOG.md`, aligning the skill contract with README, examples, and live usage
