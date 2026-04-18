@@ -1,5 +1,9 @@
 # CC-Do Skill Changelog
 
+## v1.3.1 - 2026-04-18
+
+- replace GNU `sed` usage in `scripts/mark-task-complete.sh` with a portable `awk` implementation so task completion works on macOS BSD userlands
+
 ## v1.3.0 - 2026-04-17
 
 - split root-cause investigation out of `cc-do` so bug execution now expects a frozen `ANALYSIS.md` handoff from `cc-investigate`

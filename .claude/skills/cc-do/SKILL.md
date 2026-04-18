@@ -1,6 +1,6 @@
 ---
 name: cc-do
-version: 1.3.0
+version: 1.3.1
 description: "Use when implementing planned tasks, resuming interrupted work, applying a frozen investigation handoff, or landing review feedback after cc-plan or cc-investigate."
 triggers:
   - "开始做 T003"

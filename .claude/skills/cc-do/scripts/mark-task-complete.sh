@@ -13,6 +13,39 @@ Usage:
 EOF
 }
 
+mark_first_task_complete() {
+  local tasks_path="$1"
+  local task_id="$2"
+
+  awk -v task="$task_id" '
+    function task_matches(rest, prefix, next_char) {
+      prefix = task
+      if (substr(rest, 1, length(prefix)) == prefix) {
+        next_char = substr(rest, length(prefix) + 1, 1)
+        return next_char == "" || next_char ~ /[^[:alnum:]_-]/
+      }
+
+      prefix = "**" task "**"
+      if (substr(rest, 1, length(prefix)) == prefix) {
+        next_char = substr(rest, length(prefix) + 1, 1)
+        return next_char == "" || next_char ~ /[^[:alnum:]_-]/
+      }
+
+      return 0
+    }
+
+    {
+      rest = $0
+      if (!replaced && sub(/^- \[ \] /, "", rest) && task_matches(rest)) {
+        sub(/^- \[ \] /, "- [x] ")
+        replaced = 1
+      }
+
+      print
+    }
+  ' "$tasks_path"
+}
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MANIFEST=""
 TASKS=""
@@ -79,7 +112,7 @@ if [[ -n "$TASKS" ]]; then
   fi
 
   tmp_tasks="$(mktemp)"
-  sed -E "0,/^- \[ \] (\*\*)?${TASK_ID}(\*\*)?/{s//- [x] \1${TASK_ID}\2/}" "$TASKS" > "$tmp_tasks"
+  mark_first_task_complete "$TASKS" "$TASK_ID" > "$tmp_tasks"
   mv "$tmp_tasks" "$TASKS"
 fi
 
