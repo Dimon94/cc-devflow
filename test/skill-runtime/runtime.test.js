@@ -39,6 +39,10 @@ const VERIFY_TASK_GATES = path.resolve(
   __dirname,
   '../../.claude/skills/cc-do/scripts/verify-task-gates.sh'
 );
+const MARK_TASK_COMPLETE = path.resolve(
+  __dirname,
+  '../../.claude/skills/cc-do/scripts/mark-task-complete.sh'
+);
 
 describe('Skill runtime', () => {
   let repoRoot;
@@ -241,5 +245,33 @@ describe('Skill runtime', () => {
     expect(fs.existsSync(path.join(change.tasksDir, 'T001', 'checkpoint.md'))).toBe(false);
     expect(fs.existsSync(path.join(change.tasksDir, 'T001', 'review-spec.md'))).toBe(false);
     expect(fs.existsSync(path.join(change.tasksDir, 'T001', 'review-code.md'))).toBe(false);
+  });
+
+  test('mark-task-complete updates only the first matching task line on Darwin-compatible userlands', () => {
+    const tasksPath = path.join(repoRoot, 'tasks.md');
+    fs.writeFileSync(
+      tasksPath,
+      [
+        '- [ ] **T001** first task',
+        '- [ ] T001 second task',
+        '- [ ] T002 untouched'
+      ].join('\n')
+    );
+
+    const result = spawnSync(MARK_TASK_COMPLETE, [
+      '--tasks',
+      tasksPath,
+      '--task',
+      'T001'
+    ], { encoding: 'utf8' });
+
+    expect(result.status).toBe(0);
+    expect(fs.readFileSync(tasksPath, 'utf8').trimEnd()).toBe(
+      [
+        '- [x] **T001** first task',
+        '- [ ] T001 second task',
+        '- [ ] T002 untouched'
+      ].join('\n')
+    );
   });
 });
