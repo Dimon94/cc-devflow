@@ -8,7 +8,7 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-Usage: sync-roadmap-progress.sh --rm RM-001 [--status Planned] [--req REQ-001] [--progress 50%] [--file ROADMAP.md]
+Usage: sync-roadmap-progress.sh --rm RM-001 [--status Planned] [--req REQ-001] [--progress 50%] [--file devflow/ROADMAP.md]
 EOF
 }
 
@@ -17,7 +17,8 @@ STATUS=""
 REQ_ID=""
 PROGRESS=""
 REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
-DEFAULT_FILE="$REPO_ROOT/ROADMAP.md"
+DEFAULT_FILE="$REPO_ROOT/devflow/ROADMAP.md"
+ROOT_FILE="$REPO_ROOT/ROADMAP.md"
 LEGACY_FILE="$REPO_ROOT/devflow/roadmap/roadmap.md"
 FILE="$DEFAULT_FILE"
 
@@ -33,8 +34,12 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ "$FILE" == "$DEFAULT_FILE" && ! -f "$FILE" && -f "$LEGACY_FILE" ]]; then
-  FILE="$LEGACY_FILE"
+if [[ "$FILE" == "$DEFAULT_FILE" && ! -f "$FILE" ]]; then
+  if [[ -f "$ROOT_FILE" ]]; then
+    FILE="$ROOT_FILE"
+  elif [[ -f "$LEGACY_FILE" ]]; then
+    FILE="$LEGACY_FILE"
+  fi
 fi
 
 if [[ -z "$RM_ID" || ! -f "$FILE" ]]; then

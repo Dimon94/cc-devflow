@@ -8,7 +8,7 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-Usage: locate-roadmap-item.sh <ID> [--roadmap ROADMAP.md] [--backlog BACKLOG.md]
+Usage: locate-roadmap-item.sh <ID> [--roadmap devflow/ROADMAP.md] [--backlog devflow/BACKLOG.md]
 
 ID can be RM-xxx or REQ-xxx.
 EOF
@@ -16,9 +16,11 @@ EOF
 
 TARGET="${1:-}"
 REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
-DEFAULT_ROADMAP_FILE="$REPO_ROOT/ROADMAP.md"
+DEFAULT_ROADMAP_FILE="$REPO_ROOT/devflow/ROADMAP.md"
+ROOT_ROADMAP_FILE="$REPO_ROOT/ROADMAP.md"
 LEGACY_ROADMAP_FILE="$REPO_ROOT/devflow/roadmap/roadmap.md"
-DEFAULT_BACKLOG_FILE="$REPO_ROOT/BACKLOG.md"
+DEFAULT_BACKLOG_FILE="$REPO_ROOT/devflow/BACKLOG.md"
+ROOT_BACKLOG_FILE="$REPO_ROOT/BACKLOG.md"
 LEGACY_BACKLOG_FILE="$REPO_ROOT/devflow/roadmap/backlog.md"
 ROADMAP_FILE="$DEFAULT_ROADMAP_FILE"
 BACKLOG_FILE="$DEFAULT_BACKLOG_FILE"
@@ -38,12 +40,20 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ "$ROADMAP_FILE" == "$DEFAULT_ROADMAP_FILE" && ! -f "$ROADMAP_FILE" && -f "$LEGACY_ROADMAP_FILE" ]]; then
-  ROADMAP_FILE="$LEGACY_ROADMAP_FILE"
+if [[ "$ROADMAP_FILE" == "$DEFAULT_ROADMAP_FILE" && ! -f "$ROADMAP_FILE" ]]; then
+  if [[ -f "$ROOT_ROADMAP_FILE" ]]; then
+    ROADMAP_FILE="$ROOT_ROADMAP_FILE"
+  elif [[ -f "$LEGACY_ROADMAP_FILE" ]]; then
+    ROADMAP_FILE="$LEGACY_ROADMAP_FILE"
+  fi
 fi
 
-if [[ "$BACKLOG_FILE" == "$DEFAULT_BACKLOG_FILE" && ! -f "$BACKLOG_FILE" && -f "$LEGACY_BACKLOG_FILE" ]]; then
-  BACKLOG_FILE="$LEGACY_BACKLOG_FILE"
+if [[ "$BACKLOG_FILE" == "$DEFAULT_BACKLOG_FILE" && ! -f "$BACKLOG_FILE" ]]; then
+  if [[ -f "$ROOT_BACKLOG_FILE" ]]; then
+    BACKLOG_FILE="$ROOT_BACKLOG_FILE"
+  elif [[ -f "$LEGACY_BACKLOG_FILE" ]]; then
+    BACKLOG_FILE="$LEGACY_BACKLOG_FILE"
+  fi
 fi
 
 found=false
