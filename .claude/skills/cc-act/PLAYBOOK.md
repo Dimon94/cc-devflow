@@ -5,7 +5,7 @@
 `cc-check -> cc-act -> roadmap/cc-plan next loop`
 
 - Enter from: `cc-check` with a passing report card.
-- Stay in: `cc-act` while ship mode, docs, and handoff are being aligned to proven facts.
+- Stay in: `cc-act` while ship mode, simplify/test evidence, docs, and handoff are being aligned to proven facts.
 - Exit to: the next roadmap/backlog loop once delivery artifacts and follow-up writeback are complete.
 - Reroute to: `cc-check` if verification changes, or `cc-do` if act uncovers unfinished implementation.
 
@@ -51,7 +51,27 @@ Ship 必须属于这 4 种模式之一：
 - `Why now: <一句话理由>`
 - `Why not others: <一句话排除>`
 
-## Phase 2: Build Delivery Pack
+## Phase 2: Simplify And Refresh Proof
+
+在真正准备交付材料前，先做这 4 件事：
+
+1. 调用 `cc-simplify`
+   - 通过当前运行时可用的 skill 调用器执行
+   - 如果桥接环境暴露为 `${JM}`，使用 `${JM}` with `skill: "cc-simplify"`
+2. 跑项目单测
+   - 先检查 `package.json` scripts、`Makefile`、或项目常见测试入口
+   - 选择项目实际存在的命令执行
+3. 跑 e2e
+   - 严格遵守协调器 prompt 给出的 e2e recipe
+   - recipe 明确要求跳过时，只记录 skip 理由
+4. 一旦这三步里有任何修复改了代码，立即回 `cc-check`
+
+原则很简单：
+
+- `cc-act` 可以做清理和收尾修复
+- 但只要现实被改写，就必须重新证明
+
+## Phase 3: Build Delivery Pack
 
 先按模式整理最小材料：
 
@@ -74,7 +94,7 @@ Ship 必须属于这 4 种模式之一：
 1. `scripts/sync-act-docs.sh --dir <requirement-dir>`
 2. `scripts/render-pr-brief.sh --dir <requirement-dir>`
 
-## Phase 3: Sync Docs
+## Phase 4: Sync Docs
 
 文档同步不是装饰动作，而是 ship 的一部分。
 
@@ -85,16 +105,19 @@ Ship 必须属于这 4 种模式之一：
 3. handoff 路径变了，就同步 `handoff/resume-index.md`
 4. reviewer 如果看文档还得猜，就说明 sync 失败
 
-## Phase 4: Execute Integration
+## Phase 5: Execute Integration
 
 ### `create-pr`
 
+- 先按 `references/git-commit-guidelines.md` 检查 commit 边界；功能、测试、文档、配置能拆就拆
+- commit 所有已验证变更，message 必须符合约定格式，且与 PR 核心语义一致
 - 推送当前分支
-- 创建 PR / MR
+- 用 `gh pr create` 创建 PR / MR
 - PR body 以 `pr-brief.md` 为真相源
 
 ### `update-pr`
 
+- 如果有新增提交，先按 `references/git-commit-guidelines.md` 整理 commit / push
 - 不重新造一个 PR
 - 刷新已有 PR / MR body
 - 确保 body 反映这次最新 `cc-check` 结果与 doc sync 状态
@@ -109,7 +132,9 @@ Ship 必须属于这 4 种模式之一：
 - 不做 feature branch PR 动作
 - 完成 release note、文档同步、backlog/roadmap 回写、归档
 
-## Phase 5: Write Back The Learning
+如果 `gh` 不可用、push 失败、远端不可达，就不要硬凹 `create-pr` / `update-pr`。切到 `local-handoff`，把阻塞和下一步写清楚。
+
+## Phase 6: Write Back The Learning
 
 以下情况必须回写 `devflow/roadmap/backlog.md` / `devflow/roadmap/roadmap.md`：
 
@@ -123,7 +148,7 @@ Ship 必须属于这 4 种模式之一：
 - 下一轮待排队动作写 `devflow/roadmap/backlog.md`
 - 不要把噪音和碎念回写成系统真相
 
-## Phase 6: Declare The Next Entry
+## Phase 7: Declare The Next Entry
 
 `cc-act` 结束时必须留下一个明确入口：
 
@@ -137,7 +162,7 @@ Ship 必须属于这 4 种模式之一：
 1. 看完第一屏，别人能不能立刻知道 ship 模式？
 2. 材料是不是只覆盖当前模式真正需要的内容？
 3. reviewer / 接手者 还需不需要追问“所以我现在该看哪个文件”？
-4. 如果删掉 `handoff/release-note.md` 或 PR 更新动作，是否仍然符合当前模式？
+4. `cc-simplify`、单测、e2e、commit/push 的结果是不是都能追溯？
 
 如果第 1 或第 3 题答案不是“能”，说明 `cc-act` 仍然太重或太糊。
 
@@ -159,12 +184,15 @@ Ship 必须属于这 4 种模式之一：
 - `scripts/render-pr-brief.sh` 负责从 requirement 真相源渲染 `pr-brief.md`
 - `scripts/generate-status-report.sh` 负责汇总 requirement 与 ship 现状
 - `scripts/archive-requirement.sh` 负责 requirement 生命周期收尾
+- `cc-simplify` 负责在 ship 前压掉重复、坏味道、低效实现
+- `references/git-commit-guidelines.md` 负责约束 commit message、commit 拆分与线性历史要求
 
 ## Exit Smell
 
 如果用户看完结果还会问：
 
 - “所以现在是提 PR 还是先 handoff？”
+- “你真的跑过 simplify、单测、e2e 吗？”
 - “为什么要写 release note？”
 - “下一位到底从哪里开始接？”
 

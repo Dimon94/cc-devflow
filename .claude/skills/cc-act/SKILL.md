@@ -1,7 +1,7 @@
 ---
 name: cc-act
-version: 1.2.0
-description: "Use when verified work must be shipped or handed off with a clear landing path: create or update a PR, prepare a local handoff, close out merged work, sync docs, write release notes, and fold follow-ups back into backlog or roadmap."
+version: 1.4.0
+description: "Use when verified work must be shipped or handed off with a clear landing path: run simplify and required tests, create or update a PR, prepare a local handoff, close out merged work, sync docs, write release notes, and fold follow-ups back into backlog or roadmap."
 triggers:
   - "准备提 PR"
   - "帮我发版"
@@ -14,6 +14,7 @@ reads:
   - "PLAYBOOK.md"
   - "CHANGELOG.md"
   - "references/closure-contract.md"
+  - "references/git-commit-guidelines.md"
   - "assets/PR_BRIEF_TEMPLATE.md"
   - "assets/RELEASE_NOTE_TEMPLATE.md"
 writes:
@@ -37,10 +38,10 @@ effects:
 entry_gate:
   - "Accept only a passing review/report-card.json with reroute=none."
   - "Freeze current branch, PR, and ship-mode facts before writing delivery materials."
-  - "If act changes code or verification scope, return to cc-check immediately."
+  - "If simplify, tests, or act changes code or verification scope, return to cc-check immediately."
 exit_criteria:
   - "The ship mode is explicit, delivery materials match that mode, and the next maintainer has one clear entry point."
-  - "Docs, PR text, release notes, and handoff artifacts reflect the same proven facts."
+  - "Docs, PR text, release notes, handoff artifacts, and test evidence reflect the same proven facts."
   - "Follow-up items are written back to roadmap/backlog instead of lingering in chat memory."
 reroutes:
   - when: "Verification is stale, incomplete, or changed during act."
@@ -56,8 +57,8 @@ recovery_modes:
     action: "Switch to local-handoff mode, refresh handoff/resume-index.md, and leave a verified next entry for the maintainer."
 tool_budget:
   read_files: 8
-  search_steps: 4
-  shell_commands: 6
+  search_steps: 5
+  shell_commands: 10
 ---
 
 # CC-Act
@@ -77,11 +78,13 @@ tool_budget:
 1. `PLAYBOOK.md`
 2. `CHANGELOG.md`
 3. `references/closure-contract.md`
+4. `references/git-commit-guidelines.md`
 
 ## Use This Skill When
 
 - `cc-check` 已通过
 - 需要决定这次是 `create-pr`、`update-pr`、`local-handoff`，还是 `post-merge-closeout`
+- 需要在 ship 前再做一次 `cc-simplify`、单测、以及按协调器要求执行的 e2e
 - 需要同步最终文档、handoff、release note
 - 需要把遗留 follow-up / 优先级变化回写 `devflow/roadmap/backlog.md` 或 `devflow/roadmap/roadmap.md`
 - 需要让下一轮入口比现在更清楚
@@ -103,9 +106,9 @@ tool_budget:
 
 ## Harness Contract
 
-- Allowed actions: freeze ship facts, sync docs, prepare landing materials, and execute the matching ship mode.
-- Forbidden actions: shipping with a stale report card, inventing a fifth ambiguous mode, or continuing feature development inside act.
-- Required evidence: PR briefs, status reports, release notes, and resume indexes must summarize already-proven facts only.
+- Allowed actions: freeze ship facts, run simplify and required tests, sync docs, prepare landing materials, and execute the matching ship mode.
+- Forbidden actions: shipping with a stale report card, claiming readiness without simplify/test evidence or explicit skip evidence, inventing a fifth ambiguous mode, or continuing feature development inside act.
+- Required evidence: PR briefs, status reports, release notes, resume indexes, and test evidence must summarize already-proven facts only.
 - Reroute rule: changed verification goes back to `cc-check`; unfinished implementation or new fixes go back to `cc-do`.
 
 ## Entry Gate
@@ -114,7 +117,7 @@ tool_budget:
 2. 再读 `planning/design.md` 或 `planning/analysis.md`、`planning/tasks.md`、`planning/task-manifest.json`；如果已有 `handoff/resume-index.md`，一并读取，确认这次到底完成了什么。
 3. 运行 `scripts/verify-act-gate.sh --dir <requirement-dir>`，确认 gate 真的闭合。
 4. 运行 `scripts/detect-ship-target.sh`，识别当前分支、base branch、PR 状态与推荐 ship 路径。
-5. 如果在 `cc-act` 期间又改了代码、修了 review、补了测试，必须回 `cc-check`，不能带着旧证明继续 ship。
+5. 如果在 `cc-act` 期间因为 `cc-simplify`、单测、e2e、review 修复而改了代码，必须回 `cc-check`，不能带着旧证明继续 ship。
 
 ## Ship Modes
 
@@ -145,10 +148,14 @@ tool_budget:
 1. `create-pr`
    - 必须有 `handoff/pr-brief.md`
    - 必须完成需要同步的 doc updates
+   - commit message 与 commit 拆分必须符合 `references/git-commit-guidelines.md`
+   - 远端可用时必须完成 commit、push、`gh pr create`
 2. `update-pr`
    - 必须有更新后的 `handoff/pr-brief.md`
    - 必须说明这次新增了什么验证或文档同步
    - 必须避免重复创建 PR / MR
+   - 新增提交时，commit message 与 commit 拆分必须符合 `references/git-commit-guidelines.md`
+   - 如果有新增提交，必须 push 并刷新 PR / MR 内容
 3. `local-handoff`
    - 必须有更新后的 `handoff/resume-index.md`
    - 必须写清接手入口、验证方式、当前阻塞
@@ -159,28 +166,55 @@ tool_budget:
 
 不是每次都要把所有文件生成一遍。材料必须服务于当前 ship 模式，而不是为了流程好看。
 
+## Pre-Ship Validation
+
+在真正写交付材料或推远端之前，先把这 4 件事做完：
+
+1. `Simplify`
+   - 通过当前运行时可用的 skill 调用器调用 `cc-simplify`
+   - 如果桥接环境暴露为 `${JM}`，就按 `${JM}` + `skill: "cc-simplify"` 执行
+   - 目标不是再开发新范围，而是清理重复、坏味道、低效实现
+2. `Run unit tests`
+   - 先检查项目的标准测试入口，例如 `package.json` scripts、`Makefile`、`bun test`、`pytest`、`go test`
+   - 选择该项目实际存在的单测入口执行
+   - 失败就修，但修完必须回 `cc-check` 刷新证明
+3. `Test end-to-end`
+   - 严格按协调器 prompt 里的 e2e recipe 执行
+   - 如果 recipe 明确要求跳过，记录 skip 原因，不要伪造执行
+   - e2e 失败并导致代码修改时，同样回 `cc-check`
+4. `Commit and push`
+   - 只对 `create-pr` / `update-pr` 模式生效
+   - 所有验证通过后再 commit，commit message 与 commit 拆分必须参考 `references/git-commit-guidelines.md`
+   - push 当前分支，并用 `gh pr create` 创建 PR；已有 PR 时只更新，不重复创建
+   - `gh` 不可用、push 失败、远端不可达时，切到 `local-handoff` 并把阻塞写清楚
+
+这 4 步只接受两种结果：`全部完成` 或 `明确 reroute / handoff`。不要停在“差不多已经好了”。
+
 ## Loop
 
 1. 先锁定 ship 事实：当前分支、base branch、PR 状态、requirement 状态。
-2. 只使用 `cc-check` 已经证明过的事实写交付材料，不编故事，不补脑。
-3. 同步文档：
+2. 调用 `cc-simplify`，清理重复、坏味道、低效实现；如果因此改了代码，回 `cc-check`。
+3. 运行项目单测；失败就修，修完回 `cc-check`。
+4. 按协调器 recipe 执行 e2e；如果 recipe 允许 skip，记录 skip 理由；如果失败并修复，回 `cc-check`。
+5. 只使用 `cc-check` 已经证明过的事实写交付材料，不编故事，不补脑。
+6. 同步文档：
    - 结构变了，更新对应目录的 `CLAUDE.md`
    - 用户可感知行为变了，更新 `README.md` / `handoff/release-note.md`
    - handoff 变了，更新 `handoff/resume-index.md`
-4. 生成 `handoff/pr-brief.md`，把需求、变更、验证证据、风险、文档同步状态一次写清。
+7. 生成 `handoff/pr-brief.md`，把需求、变更、验证证据、风险、文档同步状态一次写清。
    - 优先运行 `scripts/sync-act-docs.sh --dir <requirement-dir>`
    - 再运行 `scripts/render-pr-brief.sh --dir <requirement-dir>`
-5. 执行分支集成动作：
-   - `create-pr`：推分支并创建 PR / MR
-   - `update-pr`：刷新 PR / MR body，不沿用陈旧内容
+8. 执行分支集成动作：
+   - `create-pr`：按 `references/git-commit-guidelines.md` 拆分并生成 commit，推分支，并优先使用 `gh pr create` 创建 PR / MR
+   - `update-pr`：如果有新提交，先按 `references/git-commit-guidelines.md` 整理 commit / push，再刷新 PR / MR body，不沿用陈旧内容
    - `local-handoff`：不假装已经发出，只生成可接手材料
    - `post-merge-closeout`：跳过 PR，完成发布与闭环回写
-6. 处理 doc sync：如果 ship 结果改变了代码地图、用法、架构边界，文档必须跟上。
-7. 回写 `devflow/roadmap/backlog.md` / `devflow/roadmap/roadmap.md`：
+9. 处理 doc sync：如果 ship 结果改变了代码地图、用法、架构边界，文档必须跟上。
+10. 回写 `devflow/roadmap/backlog.md` / `devflow/roadmap/roadmap.md`：
    - 新发现的 follow-up
    - 被推迟但必须保留的事项
    - 因本次结果而改变优先级的事项
-8. 如果 requirement 真正闭环，更新状态摘要并归档；否则把下一位接手者的入口写清楚。
+11. 如果 requirement 真正闭环，更新状态摘要并归档；否则把下一位接手者的入口写清楚。
 
 ## Output
 
@@ -189,6 +223,7 @@ tool_budget:
 - 更新后的 `handoff/resume-index.md`
 - 同步后的 `CLAUDE.md` / README / 架构文档
 - 必要时更新后的 `devflow/roadmap/backlog.md` / `devflow/roadmap/roadmap.md`
+- 单测 / e2e 的通过证据，或明确记录的 skip / blocker
 - 必要时创建或更新的 PR / MR
 
 ## Good Output
@@ -199,6 +234,7 @@ tool_budget:
 - 哪些材料已经准备好，哪些刻意不需要
 - 现在谁都可以顺着 `handoff/pr-brief.md` 或 `handoff/resume-index.md` 继续往前走
 - 文档、PR 描述、release note 说的是同一套现实
+- `cc-simplify`、单测、e2e、commit/push 的结果都能被接手者追溯
 
 ## Bundled Resources
 
@@ -206,6 +242,7 @@ tool_budget:
 - 契约：`references/closure-contract.md`
 - 模板：`assets/PR_BRIEF_TEMPLATE.md`
 - 模板：`assets/RELEASE_NOTE_TEMPLATE.md`
+- 提交规范：`references/git-commit-guidelines.md`
 - 状态摘要：`scripts/generate-status-report.sh`
 - Gate 校验：`scripts/verify-act-gate.sh`
 - Ship 目标识别：`scripts/detect-ship-target.sh`
@@ -221,9 +258,10 @@ tool_budget:
 4. 文档必须与最终代码和 ship 状态同构。
 5. 分支决策必须明确属于 4 种模式之一，不要含糊。
 6. 已存在 PR / MR 时，优先更新，不重复创建。
-7. 如果 Act 阶段修改了代码、测试或验证口径，必须回 `cc-check`。
+7. `cc-simplify`、单测、e2e 任何一步只要导致代码变化或验证口径变化，必须回 `cc-check`。
 8. `devflow/roadmap/backlog.md` / `devflow/roadmap/roadmap.md` 只回写真正改变优先级或产生 follow-up 的事项，不写噪音。
 9. `local-handoff` 不是偷懒模式，它仍然必须让下一位接手者知道做什么、怎么验证、卡在哪。
+10. `create-pr` / `update-pr` 模式默认要求提交历史符合 `references/git-commit-guidelines.md`，并完成正确的 push、PR 创建或更新动作。
 
 ## Exit Criteria
 
@@ -231,6 +269,7 @@ tool_budget:
 - ship 模式已明确并执行到位
 - reviewer / maintainer 能直接接手
 - 需要同步的文档已经同步
+- `cc-simplify`、单测、e2e 已执行完毕，或 skip / blocker 已被明确记录
 - follow-up 已回写到正确的 backlog / roadmap 位置
 - 下一轮该怎么继续已经写清楚
 - requirement 不是“看起来结束”，而是真正闭环
@@ -239,6 +278,7 @@ tool_budget:
 
 - 不把发布动作偷偷塞回 `cc-check`
 - 不拿旧测试输出冒充当前事实
+- 不跳过 `cc-simplify`、单测、e2e 却声称 ready
 - 不重复创建 PR / MR
 - 不让 handoff 只停留在口头描述
 - 不留“下次再说”的关键空洞
@@ -249,3 +289,4 @@ tool_budget:
 - 深入剧本：`PLAYBOOK.md`
 - 变更记录：`CHANGELOG.md`
 - 收尾契约：`references/closure-contract.md`
+- 提交规范：`references/git-commit-guidelines.md`
