@@ -36,6 +36,8 @@ IDCA: cc-investigate -> cc-do -> cc-check -> cc-act
 npx cc-devflow init --dir /path/to/your/project
 ```
 
+整包安装会带上 6 个可见 workflow skill，以及用于 ship 前清理的 `cc-simplify`。
+
 ### 单个 Skill 安装
 
 ```bash
@@ -128,6 +130,8 @@ npx skills update
 npx cc-devflow init --dir /path/to/your/project --force
 ```
 
+`--force` 现在只会强制升级 cc-devflow 正式分发的 skill，不会删除现有的 `.claude/commands`、自定义 skill 或其他项目文件。
+
 ### 没有生成 Codex 输出
 
 运行：
@@ -136,9 +140,9 @@ npx cc-devflow init --dir /path/to/your/project --force
 npx cc-devflow adapt --cwd /path/to/your/project --platform codex
 ```
 
-如果你的项目没有可选的 `.claude/commands/` 输入目录，这也是正常的；编译器仍然会生成 skills registry，并为 Codex 镜像公开 workflow skill。
+如果你的项目没有可选的 `.claude/commands/` 输入目录，这也是正常的；编译器仍然会生成 skills registry，并为 Codex 镜像正式分发 skill 集合。
 
-Codex 现在只会把公开 workflow skill 从 `.claude/skills/<skill>/` 镜像到 `.codex/skills/<skill>/`，并清理从 Claude 侧发现的非公开镜像；同时不再保留单独的聚合 `cc-devflow` 入口。
+Codex 现在会把正式分发的 skill 从 `.claude/skills/<skill>/` 镜像到 `.codex/skills/<skill>/`。这套集合包含 6 个公开 workflow skill 和 `cc-simplify`，并且镜像是纯增量的：项目里已有的自定义 Codex skill 不会被删除。
 
 ### 保持 skill 和样例同步
 

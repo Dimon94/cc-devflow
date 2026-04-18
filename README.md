@@ -71,6 +71,9 @@ npx cc-devflow adapt --cwd /path/to/your/project --platform qwen
 npx cc-devflow adapt --cwd /path/to/your/project --platform antigravity
 ```
 
+Whole-pack installation ships the six visible workflow skills plus the maintenance skill `cc-simplify`.
+`init --force` now force-upgrades only the managed distributed skills and preserves unrelated project files under `.claude`.
+
 If you are running from a source checkout instead of an installed package, use `node bin/cc-devflow-cli.js ...` or `npm exec -- cc-devflow ...`.
 
 ## 🧩 skills.sh Distribution
@@ -86,6 +89,7 @@ npx skills add https://github.com/Dimon94/cc-devflow --skill cc-investigate
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-do
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-check
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-act
+npx skills add https://github.com/Dimon94/cc-devflow --skill cc-simplify
 ```
 
 Use `cc-devflow init` when you want the whole `.claude` pack.
@@ -135,6 +139,7 @@ In this repository, the distributed skill folders are:
 - `.claude/skills/cc-do/`
 - `.claude/skills/cc-check/`
 - `.claude/skills/cc-act/`
+- `.claude/skills/cc-simplify/`
 
 ## 🛠️ Use
 

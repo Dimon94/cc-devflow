@@ -36,6 +36,8 @@ The public skills are the visible harness. Each distributed `SKILL.md` now carri
 npx cc-devflow init --dir /path/to/your/project
 ```
 
+The whole-pack install includes the six visible workflow skills plus `cc-simplify` for pre-ship cleanup.
+
 ### Single Skill Install
 
 ```bash
@@ -128,6 +130,8 @@ npx skills update
 npx cc-devflow init --dir /path/to/your/project --force
 ```
 
+`--force` force-upgrades only the distributed cc-devflow skills. It does not delete existing `.claude/commands`, custom skills, or other project-owned files.
+
 ### No Codex output generated
 
 Run:
@@ -136,9 +140,9 @@ Run:
 npx cc-devflow adapt --cwd /path/to/your/project --platform codex
 ```
 
-If your project has no optional `.claude/commands/` input, this is expected: the compiler will still generate the skills registry and mirror the public workflow skills for Codex.
+If your project has no optional `.claude/commands/` input, this is expected: the compiler will still generate the skills registry and mirror the distributed skill set for Codex.
 
-Codex mirrors only the public workflow skills from `.claude/skills/<skill>/` into `.codex/skills/<skill>/`, and removes non-public mirrors discovered from the Claude tree. It no longer keeps a separate aggregate `cc-devflow` skill entry.
+Codex mirrors the distributed skills from `.claude/skills/<skill>/` into `.codex/skills/<skill>/`. That set includes the six public workflow skills plus `cc-simplify`, and the mirror is additive-only: existing project-owned Codex skills are preserved instead of being deleted.
 
 ### Keep skills and examples in sync
 
