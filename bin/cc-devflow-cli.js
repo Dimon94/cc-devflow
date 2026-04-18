@@ -5,11 +5,15 @@ const { spawnSync } = require('child_process');
 
 const PACKAGE_ROOT = path.resolve(__dirname, '..');
 const TEMPLATE_DIR = path.join(PACKAGE_ROOT, '.claude');
+const TEMPLATE_SKILLS_DIR = path.join(TEMPLATE_DIR, 'skills');
 const DISTRIBUTION_CONFIG = require(path.join(PACKAGE_ROOT, 'config', 'distributable-skills.json'));
 const ADAPT_BIN = path.join(PACKAGE_ROOT, 'bin', 'adapt.js');
 const ADAPTER_BIN = path.join(PACKAGE_ROOT, 'bin', 'cc-devflow.js');
 const TEMPLATE_IGNORES = new Set(['.DS_Store', 'tsc-cache']);
-const PUBLIC_SKILLS = new Set(DISTRIBUTION_CONFIG.publicSkills || []);
+const DISTRIBUTED_SKILLS = Array.from(
+  new Set(DISTRIBUTION_CONFIG.distributedSkills || DISTRIBUTION_CONFIG.publicSkills || [])
+);
+const DISTRIBUTED_SKILL_SET = new Set(DISTRIBUTED_SKILLS);
 
 function shouldIncludeTemplatePath(src) {
   const relativePath = path.relative(TEMPLATE_DIR, src);
@@ -23,7 +27,7 @@ function shouldIncludeTemplatePath(src) {
 
   if (skillIndex !== -1 && segments.length > skillIndex + 1) {
     const skillName = segments[skillIndex + 1];
-    if (!PUBLIC_SKILLS.has(skillName)) {
+    if (!DISTRIBUTED_SKILL_SET.has(skillName)) {
       return false;
     }
   }
@@ -41,7 +45,7 @@ Commands:
 
 Init options:
   --dir <path>         Target project path (default: cwd)
-  --force              Overwrite existing .claude
+  --force              Force-upgrade managed skills without deleting other .claude files
 
 Adapt options:
   --cwd <path>         Target project path (default: cwd)
@@ -110,42 +114,61 @@ function parseCliArgs(args) {
   return { options, rest };
 }
 
-function copyIncremental(src, dest) {
+function copyManagedDirectory(src, dest, options = {}) {
+  const { force = false } = options;
+
   if (!shouldIncludeTemplatePath(src)) {
     return;
   }
 
   const stats = fs.statSync(src);
   if (stats.isDirectory()) {
-    if (!fs.existsSync(dest)) {
-      fs.mkdirSync(dest, { recursive: true });
-    }
+    fs.mkdirSync(dest, { recursive: true });
     const entries = fs.readdirSync(src);
     for (const entry of entries) {
-      copyIncremental(path.join(src, entry), path.join(dest, entry));
+      copyManagedDirectory(path.join(src, entry), path.join(dest, entry), options);
     }
-  } else {
-    if (!fs.existsSync(dest)) {
-      // Case 1: File missing - Copy it
-      fs.copyFileSync(src, dest);
-      console.log(`[NEW] ${path.relative(process.cwd(), dest)}`);
-    } else {
-      // Case 2: File exists - Compare content
-      try {
-        const srcContent = fs.readFileSync(src);
-        const destContent = fs.readFileSync(dest);
+    return;
+  }
 
-        if (!srcContent.equals(destContent)) {
-          // Content differs - Overwrite original
-          fs.unlinkSync(dest);
-          fs.copyFileSync(src, dest);
-          console.log(`[UPDATE] ${path.relative(process.cwd(), dest)}`);
-        }
-        // else: Content identical - Silent skip
-      } catch (err) {
-        console.warn(`[WARN] Could not compare ${path.relative(process.cwd(), dest)}: ${err.message}`);
-      }
+  if (!fs.existsSync(dest)) {
+    fs.mkdirSync(path.dirname(dest), { recursive: true });
+    fs.copyFileSync(src, dest);
+    console.log(`[NEW] ${path.relative(process.cwd(), dest)}`);
+    return;
+  }
+
+  try {
+    const srcContent = fs.readFileSync(src);
+    const destContent = fs.readFileSync(dest);
+
+    if (!force && srcContent.equals(destContent)) {
+      return;
     }
+
+    fs.copyFileSync(src, dest);
+    console.log(`[UPDATE] ${path.relative(process.cwd(), dest)}`);
+  } catch (err) {
+    console.warn(`[WARN] Could not compare ${path.relative(process.cwd(), dest)}: ${err.message}`);
+  }
+}
+
+function syncDistributedSkills(targetRoot, options = {}) {
+  const { force = false } = options;
+  const targetClaudeDir = path.join(targetRoot, '.claude');
+  const targetSkillsDir = path.join(targetClaudeDir, 'skills');
+
+  fs.mkdirSync(targetSkillsDir, { recursive: true });
+
+  for (const skillName of DISTRIBUTED_SKILLS) {
+    const sourceSkillDir = path.join(TEMPLATE_SKILLS_DIR, skillName);
+    const targetSkillDir = path.join(targetSkillsDir, skillName);
+
+    if (!fs.existsSync(sourceSkillDir)) {
+      throw new Error(`Managed skill template not found: ${sourceSkillDir}`);
+    }
+
+    copyManagedDirectory(sourceSkillDir, targetSkillDir, { force });
   }
 }
 
@@ -165,32 +188,25 @@ function runInit(args) {
     return 1;
   }
 
-  // Case 1: Directory does not exist - Clean Install
+  // Case 1: Directory does not exist - Create managed skill roots only
   if (!fs.existsSync(targetDir)) {
-    fs.cpSync(TEMPLATE_DIR, targetDir, {
-      recursive: true,
-      filter: (src) => shouldIncludeTemplatePath(src)
-    });
-    console.log(`Initialized .claude in ${targetRoot}`);
+    syncDistributedSkills(targetRoot);
+    console.log(`Initialized managed .claude skills in ${targetRoot}`);
     return 0;
   }
 
-  // Case 2: Directory exists + Force - Hard Reset
+  // Case 2: Directory exists + Force - Force-upgrade managed skills only
   if (options.force) {
-    console.log('Force flag detected. Resetting .claude directory...');
-    fs.rmSync(targetDir, { recursive: true, force: true });
-    fs.cpSync(TEMPLATE_DIR, targetDir, {
-      recursive: true,
-      filter: (src) => shouldIncludeTemplatePath(src)
-    });
-    console.log(`Re-initialized .claude in ${targetRoot}`);
+    console.log('Force flag detected. Reinstalling managed skills without deleting unrelated .claude files...');
+    syncDistributedSkills(targetRoot, { force: true });
+    console.log(`Reinstalled managed .claude skills in ${targetRoot}`);
     return 0;
   }
 
   // Case 3: Directory exists - Incremental Update
   console.log(`Target ${targetDir} already exists. Performing incremental update...`);
-  copyIncremental(TEMPLATE_DIR, targetDir);
-  console.log('Incremental update complete. Existing files were preserved.');
+  syncDistributedSkills(targetRoot);
+  console.log('Incremental update complete. Existing .claude files were preserved.');
   return 0;
 }
 

@@ -7,6 +7,15 @@
     "cc-check",
     "cc-act"
   ],
+  "distributedSkills": [
+    "cc-roadmap",
+    "cc-plan",
+    "cc-investigate",
+    "cc-do",
+    "cc-check",
+    "cc-act",
+    "cc-simplify"
+  ],
   "internalSkills": [
     "docs-sync",
     "npm-release"
