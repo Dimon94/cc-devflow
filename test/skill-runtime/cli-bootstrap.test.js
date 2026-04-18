@@ -147,12 +147,12 @@ describe('cc-devflow cli distribution bootstrap', () => {
     expect(codexRoadmapSkill.data.writes).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          path: 'ROADMAP.md',
+          path: 'devflow/ROADMAP.md',
           durability: 'durable',
           required: true
         }),
         expect.objectContaining({
-          path: 'BACKLOG.md',
+          path: 'devflow/BACKLOG.md',
           durability: 'durable',
           required: true
         })
