@@ -8,6 +8,7 @@ const matter = require('gray-matter');
 const ROOT = path.resolve(__dirname, '..');
 const DISTRIBUTION_CONFIG = require(path.join(ROOT, 'config', 'distributable-skills.json'));
 const PUBLIC_SKILLS = DISTRIBUTION_CONFIG.publicSkills || [];
+const DISTRIBUTED_SKILLS = DISTRIBUTION_CONFIG.distributedSkills || PUBLIC_SKILLS;
 const INTERNAL_SKILLS = DISTRIBUTION_CONFIG.internalSkills || [];
 
 function statType(stat) {
@@ -94,7 +95,7 @@ function validatePackageJson(errors) {
   ensureArrayIncludes(pkg.files, 'bin/', errors, 'package.json files');
   ensureArrayIncludes(pkg.files, 'lib/', errors, 'package.json files');
   ensureArrayIncludes(pkg.files, 'config/', errors, 'package.json files');
-  for (const skillName of PUBLIC_SKILLS) {
+  for (const skillName of DISTRIBUTED_SKILLS) {
     ensureArrayIncludes(pkg.files, `.claude/skills/${skillName}/`, errors, 'package.json files');
   }
 
@@ -112,9 +113,12 @@ function validateTemplate(errors) {
   ensurePath('config/adapters.yml', 'file', errors);
   ensurePath('config/schema/adapters.schema.json', 'file', errors);
   ensurePath('lib/compiler', 'dir', errors);
-  for (const skillName of PUBLIC_SKILLS) {
+  for (const skillName of DISTRIBUTED_SKILLS) {
     ensurePath(`.claude/skills/${skillName}`, 'dir', errors);
     ensurePath(`.claude/skills/${skillName}/SKILL.md`, 'file', errors);
+  }
+
+  for (const skillName of PUBLIC_SKILLS) {
     ensurePath(`.claude/skills/${skillName}/PLAYBOOK.md`, 'file', errors);
   }
 }
@@ -376,8 +380,11 @@ function validatePackTarball(errors) {
     'package/package.json'
   ];
 
-  for (const skillName of PUBLIC_SKILLS) {
+  for (const skillName of DISTRIBUTED_SKILLS) {
     requiredEntries.push(`package/.claude/skills/${skillName}/SKILL.md`);
+  }
+
+  for (const skillName of PUBLIC_SKILLS) {
     requiredEntries.push(`package/.claude/skills/${skillName}/PLAYBOOK.md`);
   }
 
