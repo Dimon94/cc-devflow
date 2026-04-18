@@ -83,7 +83,7 @@ Use the skills in this order:
 
 Typical outputs:
 
-- `cc-roadmap` writes `ROADMAP.md` and `BACKLOG.md`
+- `cc-roadmap` writes `devflow/ROADMAP.md` and `devflow/BACKLOG.md`
 - `cc-plan` writes `planning/design.md`, `planning/tasks.md`, `task-manifest.json`
 - `cc-investigate` writes `planning/analysis.md`, `planning/tasks.md`, `task-manifest.json`
 - `cc-check` writes `report-card.json`

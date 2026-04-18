@@ -89,8 +89,8 @@ lib/skill-runtime/
 
 常见工作流产物：
 
-- `ROADMAP.md`
-- `BACKLOG.md`
+- `devflow/ROADMAP.md`
+- `devflow/BACKLOG.md`
 - `devflow/changes/<change-key>/planning/design.md`
 - `devflow/changes/<change-key>/planning/tasks.md`
 - `devflow/changes/<change-key>/planning/task-manifest.json`

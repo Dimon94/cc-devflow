@@ -162,7 +162,7 @@ skills.sh remains the single-skill distribution path for distributed `.claude/sk
 
 ## 📦 Outputs
 
-- `cc-roadmap` writes `ROADMAP.md` and `BACKLOG.md`
+- `cc-roadmap` writes `devflow/ROADMAP.md` and `devflow/BACKLOG.md`
 - `cc-plan` writes `planning/design.md`, `planning/tasks.md`, `task-manifest.json`
 - `cc-investigate` writes `planning/analysis.md`, `planning/tasks.md`, `task-manifest.json`
 - `cc-do` writes code, tests, task `checkpoint.json`, and workspace scratch runtime

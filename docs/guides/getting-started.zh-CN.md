@@ -83,7 +83,7 @@ find .codex/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort
 
 常见产物：
 
-- `cc-roadmap` 产出 `ROADMAP.md` 和 `BACKLOG.md`
+- `cc-roadmap` 产出 `devflow/ROADMAP.md` 和 `devflow/BACKLOG.md`
 - `cc-plan` 产出 `planning/design.md`、`planning/tasks.md`、`task-manifest.json`
 - `cc-investigate` 产出 `planning/analysis.md`、`planning/tasks.md`、`task-manifest.json`
 - `cc-check` 产出 `report-card.json`

@@ -157,7 +157,7 @@ skills.sh 则是已分发 `.claude/skills/*` 的单 Skill 安装路径。
 
 ## 📦 产物
 
-- `cc-roadmap` 产出 `ROADMAP.md` 和 `BACKLOG.md`
+- `cc-roadmap` 产出 `devflow/ROADMAP.md` 和 `devflow/BACKLOG.md`
 - `cc-plan` 产出 `planning/design.md`、`planning/tasks.md`、`task-manifest.json`
 - `cc-investigate` 产出 `planning/analysis.md`、`planning/tasks.md`、`task-manifest.json`
 - `cc-do` 产出代码、测试、任务级 `checkpoint.json`，以及 workspace scratch 运行态
