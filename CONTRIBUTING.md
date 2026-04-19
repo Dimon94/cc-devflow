@@ -72,8 +72,7 @@ cc-devflow/
 ├── docs/                      # Public docs
 ├── lib/adapters/              # Platform adapter layer
 ├── lib/compiler/              # Multi-platform compiler
-├── lib/skill-runtime/         # Shared runtime helpers for skill scripts
-├── test/skill-runtime/        # CLI and runtime regression tests
+├── lib/skill-runtime/         # Shared runtime helpers and colocated tests for skill scripts
 ├── README.md
 ├── README.zh-CN.md
 └── package.json
@@ -150,7 +149,7 @@ npm test
 ### Focused CLI Regression
 
 ```bash
-npm test -- --runInBand test/skill-runtime/cli-bootstrap.test.js
+npm test -- --runInBand lib/skill-runtime/__tests__/cli-bootstrap.integration.test.js
 ```
 
 ### Publish Validation

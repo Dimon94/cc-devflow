@@ -72,8 +72,7 @@ cc-devflow/
 ├── docs/                      # 公开文档
 ├── lib/adapters/              # 平台适配层
 ├── lib/compiler/              # 多平台编译器
-├── lib/skill-runtime/         # 供 Skill 脚本复用的共享运行时
-├── test/skill-runtime/        # CLI 与运行时回归测试
+├── lib/skill-runtime/         # 供 Skill 脚本复用的共享运行时与同目录测试
 ├── README.md
 ├── README.zh-CN.md
 └── package.json
@@ -150,7 +149,7 @@ npm test
 ### CLI 回归测试
 
 ```bash
-npm test -- --runInBand test/skill-runtime/cli-bootstrap.test.js
+npm test -- --runInBand lib/skill-runtime/__tests__/cli-bootstrap.integration.test.js
 ```
 
 ### 发布校验
