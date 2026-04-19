@@ -1,25 +1,19 @@
 # operations/
-> L2 | 父级: /Users/dimon/.codex/worktrees/03a4/cc-devflow/lib/skill-runtime/CLAUDE.md
+> L2 | 父级: ../CLAUDE.md
 
-成员清单
-autopilot-shared.js: 提供 autopilot 共享阶段工具与 snapshot 读取，并复用 lifecycle 共享语义避免 core/execution 漂移。
-autopilot-core.js: 承载 autopilot 的阶段判定、approval gate、state 读取与 discover/converge/delegate/finish 核心 runner。
-autopilot-execution.js: 承载 autopilot 的执行层循环，处理 direct/controller 与 delegated worker 混合执行。
-autopilot.js: 自动驾驶兼容入口，直接组合 shared/core/execution，并只负责阶段顺序编排、起止事件与最终摘要返回。
-approve.js: 显式批准当前 plan_version，并锁定 direct/delegate/team 执行模式。
-dispatch.js: 执行依赖图中的当前任务前沿，写入 checkpoint/events 与运行状态。
-init.js: 初始化 requirement/runtime 目录，并写入 harness-state。
-janitor.js: 清理过期 runtime 工件，保留仍在运行的任务状态。
-snapshot.js: 采集仓库事实与脚本信息，生成 planning-snapshot。
-pack.js: 旧的兼容转发层，把 runPack 映射到 snapshot.js。
-plan.js: 基于 `planning/tasks.md` 生成 task-manifest，并更新计划状态。
-prepare-pr.js: 基于 verify 结果和 task result 生成 PR-ready brief。
-release.js: 在验证通过后生成 RELEASE_NOTE，并标记 released。
-resume.js: 从最近稳定 checkpoint 恢复执行，重排失败/阻塞任务后复用 dispatch 的执行机制。
-verify.js: 运行 quick/strict/review 质量门禁，写 `review/report-card.json`。
-worker-run.js: 运行本地 worker/provider 命令，并回写任务、事件和记忆工件。
-worker.js: 生成 worker handoff bundle，供本地和 provider worker 复用。
+阶段分组
+初始化与快照: `init.js` 创建 runtime 骨架，`snapshot.js` 采集 discover 阶段需要的只读事实。
+计划与批准: `plan.js` 生成 `task-manifest.json`，`approve.js` 锁定批准版本与执行模式。
+执行主链: `dispatch.js` 推进当前任务前沿，`resume.js` 从稳定 checkpoint 恢复，`verify.js` 和 `release.js` 负责质量门与发布收口。
+交接与工人: `prepare-pr.js` 生成唯一 PR brief，`worker.js`/`worker-run.js` 负责本地或 provider worker handoff 与回写。
+自动驾驶: `autopilot-shared.js`、`autopilot-core.js`、`autopilot-execution.js`、`autopilot.js` 拆开共享语义、阶段判定和执行循环，避免单文件失控。
+维护类: `janitor.js` 清理过期 runtime 工件，但不改变正在运行任务的真相源。
 
-法则: 成员完整·一行一文件·父级链接·技术词前置
+更新规则
+这里只记录阶段入口和职责边界，不维护逐文件穷举说明。
+新增 operation 如果只是归入已有阶段，不改此文档；只有出现新阶段或边界迁移时才更新。
+阶段入口只保留当前真相源，不为历史别名单独占坑。
 
-[PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+法则: 阶段先于文件名·边界先于清单·父级链接稳定
+
+[PROTOCOL]: 变更阶段边界或入口约定时更新此头部，然后检查 CLAUDE.md

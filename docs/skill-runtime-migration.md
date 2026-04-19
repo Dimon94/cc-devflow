@@ -27,7 +27,7 @@ That includes:
 - task/context recovery guidance lives with `cc-do`
 - `cc-act` owns PR and release-side closure scripts
 - the old `autopilot-stages.js` compatibility layer was removed
-- tests and contributor docs now point at `lib/skill-runtime/` and `test/skill-runtime/`
+- tests and contributor docs now point at `lib/skill-runtime/` and `lib/skill-runtime/__tests__/`
 
 ## Current Boundary
 
