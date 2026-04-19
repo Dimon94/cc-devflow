@@ -4,7 +4,7 @@
 
 - Example version: `1.0.0`
 - Last reviewed: `2026-04-17`
-- Bound skills: `cc-roadmap@2.2.0`, `cc-plan@3.3.0`, `cc-do@1.3.0`, `cc-check@1.5.0`, `cc-act@1.2.0`
+- Bound skills: `cc-roadmap@4.0.0`, `cc-plan@3.3.0`, `cc-do@1.3.1`, `cc-check@1.5.0`, `cc-act@1.4.1`
 
 This folder shows one minimal but complete `cc-roadmap -> cc-plan -> cc-do -> cc-check -> cc-act` loop.
 
@@ -29,11 +29,11 @@ The sample requirement is:
 
 - `ROADMAP.md`: what `cc-roadmap` decided and why this item is first
 - `BACKLOG.md`: how `RM-001` becomes ready for `cc-plan`
-- `changes/REQ-001-copy-invite-link/planning/design.md`: approved tiny design
-- `changes/REQ-001-copy-invite-link/planning/tasks.md`: executable task handoff
-- `changes/REQ-001-copy-invite-link/planning/task-manifest.json`: machine-readable execution truth
-- `changes/REQ-001-copy-invite-link/review/report-card.json`: `cc-check` proof and verdict
-- `changes/REQ-001-copy-invite-link/handoff/pr-brief.md`: ship-ready PR handoff
+- `changes/req-001-copy-invite-link/planning/design.md`: approved tiny design
+- `changes/req-001-copy-invite-link/planning/tasks.md`: executable task handoff
+- `changes/req-001-copy-invite-link/planning/task-manifest.json`: machine-readable execution truth
+- `changes/req-001-copy-invite-link/review/report-card.json`: `cc-check` proof and verdict
+- `changes/req-001-copy-invite-link/handoff/pr-brief.md`: ship-ready PR handoff
 
 ## Why There Is No `release-note.md`
 

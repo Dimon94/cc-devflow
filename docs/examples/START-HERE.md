@@ -66,12 +66,12 @@ Use this when the only thing you know is the file in front of you.
 | --- | --- | --- |
 | `ROADMAP.md` | `cc-roadmap` | [pdca-loop/ROADMAP.md](./pdca-loop/ROADMAP.md) |
 | `BACKLOG.md` | `cc-roadmap` -> `cc-plan` handoff | [pdca-loop/BACKLOG.md](./pdca-loop/BACKLOG.md) |
-| `design.md` | `cc-plan` | [pdca-loop/design.md](./pdca-loop/changes/REQ-001-copy-invite-link/planning/design.md) or [full-design-blocked/design.md](./full-design-blocked/changes/REQ-002-bulk-invite-import/planning/design.md) |
-| `tasks.md` | `cc-plan` or `cc-do` | [pdca-loop/tasks.md](./pdca-loop/changes/REQ-001-copy-invite-link/planning/tasks.md) |
-| `task-manifest.json` | `cc-do` | [pdca-loop/task-manifest.json](./pdca-loop/changes/REQ-001-copy-invite-link/planning/task-manifest.json) |
-| `report-card.json` | `cc-check` | [pdca-loop/report-card.json](./pdca-loop/changes/REQ-001-copy-invite-link/review/report-card.json), [full-design-blocked/report-card.json](./full-design-blocked/changes/REQ-002-bulk-invite-import/review/report-card.json), or [local-handoff/report-card.json](./local-handoff/changes/REQ-003-audit-log-export/review/report-card.json) |
-| `pr-brief.md` | `cc-act` | [pdca-loop/pr-brief.md](./pdca-loop/changes/REQ-001-copy-invite-link/handoff/pr-brief.md) |
-| `resume-index.md` | `cc-act` with `local-handoff` | [local-handoff/resume-index.md](./local-handoff/changes/REQ-003-audit-log-export/handoff/resume-index.md) |
+| `design.md` | `cc-plan` | [pdca-loop/design.md](./pdca-loop/changes/req-001-copy-invite-link/planning/design.md) or [full-design-blocked/design.md](./full-design-blocked/changes/req-002-bulk-invite-import/planning/design.md) |
+| `tasks.md` | `cc-plan` or `cc-do` | [pdca-loop/tasks.md](./pdca-loop/changes/req-001-copy-invite-link/planning/tasks.md) |
+| `task-manifest.json` | `cc-do` | [pdca-loop/task-manifest.json](./pdca-loop/changes/req-001-copy-invite-link/planning/task-manifest.json) |
+| `report-card.json` | `cc-check` | [pdca-loop/report-card.json](./pdca-loop/changes/req-001-copy-invite-link/review/report-card.json), [full-design-blocked/report-card.json](./full-design-blocked/changes/req-002-bulk-invite-import/review/report-card.json), or [local-handoff/report-card.json](./local-handoff/changes/req-003-audit-log-export/review/report-card.json) |
+| `pr-brief.md` | `cc-act` | [pdca-loop/pr-brief.md](./pdca-loop/changes/req-001-copy-invite-link/handoff/pr-brief.md) |
+| `resume-index.md` | `cc-act` with `local-handoff` | [local-handoff/resume-index.md](./local-handoff/changes/req-003-audit-log-export/handoff/resume-index.md) |
 
 ### Read `report-card.json` Like This
 

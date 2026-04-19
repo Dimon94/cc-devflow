@@ -11,7 +11,7 @@
 - Design status: `in-review`
 - Source roadmap item: `RM-010`
 - Source roadmap version: `roadmap.v2`
-- Source roadmap skill version: `2.2.0`
+- Source roadmap skill version: `4.0.0`
 - Date: `2026-04-16`
 - Owner: `product-owner`
 

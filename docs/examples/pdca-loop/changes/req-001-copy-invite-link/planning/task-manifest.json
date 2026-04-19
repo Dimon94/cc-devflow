@@ -9,7 +9,7 @@
   "sourceRoadmap": {
     "itemId": "RM-001",
     "roadmapVersion": "roadmap.v1",
-    "roadmapSkillVersion": "2.2.0",
+    "roadmapSkillVersion": "4.0.0",
     "sourceStage": "Stage 1",
     "successSignal": "Users can copy the invite link with one click",
     "killSignal": "The patch requires backend or permission changes",
