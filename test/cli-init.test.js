@@ -7,7 +7,7 @@ const ROOT = path.resolve(__dirname, '..');
 const CLI = path.join(ROOT, 'bin', 'cc-devflow-cli.js');
 
 describe('cc-devflow init', () => {
-  test('installs cc-simplify with the distributed .claude pack', () => {
+  test('installs maintenance skills with the distributed .claude pack', () => {
     const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-devflow-init-'));
 
     const result = spawnSync(process.execPath, [CLI, 'init', '--dir', tempDir], {
@@ -16,6 +16,9 @@ describe('cc-devflow init', () => {
     });
 
     expect(result.status).toBe(0);
+    expect(
+      fs.existsSync(path.join(tempDir, '.claude', 'skills', 'cc-spec-init', 'SKILL.md'))
+    ).toBe(true);
     expect(
       fs.existsSync(path.join(tempDir, '.claude', 'skills', 'cc-simplify', 'SKILL.md'))
     ).toBe(true);
