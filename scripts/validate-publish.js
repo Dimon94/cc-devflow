@@ -143,6 +143,30 @@ function ensureStringArray(value, label, errors) {
   }
 }
 
+function ensureWritesArray(value, label, errors) {
+  if (!Array.isArray(value) || value.length === 0) {
+    errors.push(`${label} must be a non-empty array`);
+    return;
+  }
+
+  for (const item of value) {
+    if (!item || typeof item !== 'object') {
+      errors.push(`${label} must contain objects`);
+      return;
+    }
+
+    ensureNonEmptyString(item.path, `${label}.path`, errors);
+
+    if (item.durability !== undefined) {
+      ensureNonEmptyString(item.durability, `${label}.durability`, errors);
+    }
+
+    if (item.required !== undefined && typeof item.required !== 'boolean') {
+      errors.push(`${label}.required must be a boolean when present`);
+    }
+  }
+}
+
 function validatePublicSkillContracts(errors) {
   for (const skillName of PUBLIC_SKILLS) {
     const skillPath = path.join(ROOT, '.claude', 'skills', skillName, 'SKILL.md');
@@ -164,7 +188,7 @@ function validatePublicSkillContracts(errors) {
     ensureNonEmptyString(data.description, `${skillName} frontmatter.description`, errors);
     ensureStringArray(data.triggers, `${skillName} frontmatter.triggers`, errors);
     ensureStringArray(data.reads, `${skillName} frontmatter.reads`, errors);
-    ensureStringArray(data.writes, `${skillName} frontmatter.writes`, errors);
+    ensureWritesArray(data.writes, `${skillName} frontmatter.writes`, errors);
     ensureStringArray(data.entry_gate, `${skillName} frontmatter.entry_gate`, errors);
     ensureStringArray(data.exit_criteria, `${skillName} frontmatter.exit_criteria`, errors);
 
