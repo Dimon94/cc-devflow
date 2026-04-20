@@ -1,0 +1,50 @@
+{
+  "version": 2,
+  "lastSyncedAt": "2026-04-19",
+  "backlogMeta": {
+    "roadmapVersion": "roadmap.v2",
+    "skillVersion": "4.3.1",
+    "currentFocusStage": "Stage 2"
+  },
+  "dependencyHandoff": {
+    "serialSpine": "RM-010",
+    "parallelReadyNextWave": "-",
+    "notesOnBlockers": "verification is blocked until the import contract covers limits, duplicates, billing, and audit consistency"
+  },
+  "items": [
+    {
+      "rmId": "RM-010",
+      "item": "Add CSV bulk invite import for admins",
+      "stage": "Stage 2",
+      "priority": "P1",
+      "primaryCapability": "cap-bulk-invite-import",
+      "secondaryCapabilities": [
+        "cap-workspace-membership"
+      ],
+      "expectedSpecDelta": "define import semantics before widening current truth",
+      "dependsOn": [],
+      "status": "Verification blocked",
+      "req": "REQ-002",
+      "progress": "80%",
+      "backlog": {
+        "capabilityGap": "admins can invite one user at a time but cannot safely import invite batches",
+        "evidence": "sales onboarding asks for spreadsheet-scale invites",
+        "parallelWith": [],
+        "unknowns": "duplicate-email policy, seat enforcement, audit fan-out",
+        "nextDecision": "reroute to full design before more execution work",
+        "ready": true,
+        "whyNow": "demand is real, but the contract is too wide to keep improvising in code",
+        "successSignal": "the capability has a trusted import contract before implementation resumes",
+        "entryConstraints": "must freeze limits, duplicates, warnings, and audit behavior first",
+        "openRisks": "another partial implementation pass would deepen the semantic drift",
+        "firstPlanningQuestion": "which subflows share one import contract and which need explicit splits?",
+        "requiredContextToLoad": "invite limits, billing rules, duplicate handling, audit logging",
+        "whyReadyNow": "the blocker is design truth, not implementation effort",
+        "parked": false,
+        "parkedReason": "",
+        "triggerToReopen": "",
+        "missingEvidence": ""
+      }
+    }
+  ]
+}

@@ -4,14 +4,14 @@
 
 - Requirement version: `REQ-002.v2`
 - Design version: `design.v2`
-- CC-Plan skill version: `3.3.0`
+- CC-Plan skill version: `3.4.0`
 - Requirement ID: `REQ-002`
 - Design mode: `full-design`
 - Why not `tiny-design`: the feature crosses import parsing, invite rules, billing limits, duplicate handling, and audit logging
 - Design status: `in-review`
 - Source roadmap item: `RM-010`
 - Source roadmap version: `roadmap.v2`
-- Source roadmap skill version: `4.0.0`
+- Source roadmap skill version: `4.1.0`
 - Date: `2026-04-16`
 - Owner: `product-owner`
 

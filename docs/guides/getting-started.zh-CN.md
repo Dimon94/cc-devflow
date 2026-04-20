@@ -36,7 +36,7 @@ IDCA: cc-investigate -> cc-do -> cc-check -> cc-act
 npx cc-devflow init --dir /path/to/your/project
 ```
 
-整包安装会带上 6 个可见 workflow skill，以及用于 ship 前清理的 `cc-simplify`。
+整包安装会带上 6 个可见 workflow skill，以及维护用的 `cc-spec-init` 和 `cc-simplify`。
 
 ### 单个 Skill 安装
 
@@ -83,15 +83,17 @@ find .codex/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort
 
 常见产物：
 
-- `cc-roadmap` 产出 `devflow/ROADMAP.md` 和 `devflow/BACKLOG.md`
-- `cc-plan` 产出 `planning/design.md`、`planning/tasks.md`、`task-manifest.json`
-- `cc-investigate` 产出 `planning/analysis.md`、`planning/tasks.md`、`task-manifest.json`
+- `cc-roadmap` 产出 `devflow/ROADMAP.md` 和 `devflow/BACKLOG.md`；如果使用内置同步脚本，还会维护 `devflow/roadmap-tracking.json` 作为 roadmap/backlog 的共享真相源
+- `cc-spec-init` 产出 `devflow/specs/INDEX.md`、capability spec 和 `change-meta.json`
+- `cc-plan` 产出 `planning/design.md`、`planning/tasks.md`、`task-manifest.json` 和 `change-meta.json`
+- `cc-investigate` 产出 `planning/analysis.md`、`planning/tasks.md`、`task-manifest.json` 和 `change-meta.json`
 - `cc-check` 产出 `report-card.json`
 - `cc-act` 只产出一个最终 handoff 文件：`handoff/pr-brief.md`、`handoff/resume-index.md` 或 `handoff/release-note.md`
 
-durable truth 固定放在 `devflow/changes/<change>/`：
+durable truth 分两层：
 
-- 这里只保留 `change-state.json`、planning 文档、`task-manifest.json`、可选 `team-state.json`、任务级 `checkpoint.json`、`report-card.json` 和唯一的最终 handoff 文件。
+- `devflow/specs/`：capability 真相，保留 `INDEX.md` 与 `capabilities/*.md`
+- `devflow/changes/<change>/`：变更真相，保留 `change-state.json`、`change-meta.json`、planning 文档、`task-manifest.json`、可选 `team-state.json`、任务级 `checkpoint.json`、`report-card.json` 和唯一的最终 handoff 文件。
 - worker prompt、journal、assignment、session log 统一放到 `devflow/workspaces/<change>/`，作为 ephemeral scratch。
 
 公开契约字段的典型形状：
@@ -142,7 +144,7 @@ npx cc-devflow adapt --cwd /path/to/your/project --platform codex
 
 如果你的项目没有可选的 `.claude/commands/` 输入目录，这也是正常的；编译器仍然会生成 skills registry，并为 Codex 镜像正式分发 skill 集合。
 
-Codex 现在会把正式分发的 skill 从 `.claude/skills/<skill>/` 镜像到 `.codex/skills/<skill>/`。这套集合包含 6 个公开 workflow skill 和 `cc-simplify`，并且镜像是纯增量的：项目里已有的自定义 Codex skill 不会被删除。
+Codex 现在会把正式分发的 skill 从 `.claude/skills/<skill>/` 镜像到 `.codex/skills/<skill>/`。这套集合包含 6 个公开 workflow skill 和维护类 skill `cc-spec-init`、`cc-simplify`，并且镜像是纯增量的：项目里已有的自定义 Codex skill 不会被删除。
 
 ### 保持 skill 和样例同步
 

@@ -18,6 +18,11 @@ PDCA: cc-plan -> cc-do -> cc-check -> cc-act
 IDCA: cc-investigate -> cc-do -> cc-check -> cc-act
 ```
 
+维护类动作按需单独调用：
+
+- `cc-spec-init`：初始化或修复 `devflow/specs/` 与 `change-meta.json`
+- `cc-simplify`：ship 前做清理和坏味道检查
+
 如果你只想安装单个 Skill，再使用 [skills.sh CLI](https://skills.sh/docs/cli)：
 
 ```bash

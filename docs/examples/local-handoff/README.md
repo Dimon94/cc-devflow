@@ -4,7 +4,7 @@
 
 - Example version: `1.0.0`
 - Last reviewed: `2026-04-17`
-- Bound skills: `cc-roadmap@4.0.0`, `cc-plan@3.3.0`, `cc-do@1.3.1`, `cc-check@1.5.0`, `cc-act@1.4.1`
+- Bound skills: `cc-roadmap@4.3.1`, `cc-plan@3.4.0`, `cc-do@1.4.0`, `cc-check@1.6.0`, `cc-act@1.5.0`
 
 This example shows verified work that is **ready to move forward**, but `cc-act` still chooses `local-handoff`.
 
@@ -37,6 +37,7 @@ But the current environment is local-only:
 ## Artifact Map
 
 - `ROADMAP.md`
+- `roadmap-tracking.json` (shared roadmap/backlog truth)
 - `BACKLOG.md`
 - `changes/req-003-audit-log-export/planning/design.md`
 - `changes/req-003-audit-log-export/planning/tasks.md`

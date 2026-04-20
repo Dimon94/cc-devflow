@@ -3,7 +3,7 @@
 ## Roadmap Meta
 
 - Roadmap version: `roadmap.v2`
-- Skill version: `4.0.0`
+- Skill version: `4.3.1`
 - Status: `active`
 - Last updated: `2026-04-16`
 - Owner / decider: `product-owner`
@@ -44,7 +44,10 @@
 - Kill signal / stop condition: if the team cannot specify bulk invite semantics before implementation starts
 
 ## Implementation Tracking
+- Tracking source: `roadmap-tracking.json`
 
-| RM-ID | Item | Stage | Priority | Status | REQ | Progress |
-|------|------|-------|----------|--------|-----|----------|
-| RM-010 | Add CSV bulk invite import for admins | Stage 2 | P1 | Verification blocked | REQ-002 | 80% |
+<!-- roadmap-tracking:start -->
+| RM-ID | Item | Stage | Priority | Primary Capability | Secondary Capabilities | Expected Spec Delta | Depends On | Status | REQ | Progress |
+|------|------|------|------|------|------|------|------|------|------|------|
+| RM-010 | Add CSV bulk invite import for admins | Stage 2 | P1 | cap-bulk-invite-import | cap-workspace-membership | define import semantics before widening current truth | - | Verification blocked | REQ-002 | 80% |
+<!-- roadmap-tracking:end -->

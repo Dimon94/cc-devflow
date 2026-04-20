@@ -3,23 +3,43 @@
 ## Backlog Meta
 
 - Roadmap version: `roadmap.v2`
-- Skill version: `4.0.0`
-- Last synced: `2026-04-16`
+- Skill version: `4.3.1`
+- Last synced: `2026-04-19`
 - Current focus stage: `Stage 2`
+- Tracking source: `roadmap-tracking.json`
 
 ## Queue
 
-| RM-ID | Title | Source Stage | Priority | Evidence | Dependency | Unknowns | Next Decision | Ready |
-|------|-------|--------------|----------|----------|------------|----------|---------------|-------|
-| RM-010 | Add CSV bulk invite import for admins | Stage 2 | P1 | repeated admin demand | billing and audit rules | duplicate and partial-failure behavior | reopen full design and freeze import semantics | No |
+| RM-ID | Title | Source Stage | Priority | Primary Capability | Secondary Capabilities | Capability Gap | Expected Spec Delta | Evidence | Depends On | Parallel With | Unknowns | Next Decision | Ready |
+|------|------|------|------|------|------|------|------|------|------|------|------|------|------|
+| RM-010 | Add CSV bulk invite import for admins | Stage 2 | P1 | cap-bulk-invite-import | cap-workspace-membership | admins can invite one user at a time but cannot safely import invite batches | define import semantics before widening current truth | sales onboarding asks for spreadsheet-scale invites | - | - | duplicate-email policy, seat enforcement, audit fan-out | reroute to full design before more execution work | Yes |
 
-## Ready For CC-Plan
+## Dependency Handoff
+
+- Serial spine: RM-010
+- Parallel-ready next wave: -
+- Notes on blockers: verification is blocked until the import contract covers limits, duplicates, billing, and audit consistency
+
+## Ready For Req-Plan
 
 - RM-010:
-  - Why now: larger-team onboarding now needs admin-scale invite tools
-  - Success signal: admins can import a CSV and predict every outcome
-  - Entry constraints: billing seats, duplicate users, and audit logs must stay consistent
-  - Open risks: current implementation evidence shows the semantics are still underspecified
-  - First planning question: what is the single source of truth for duplicate handling and seat-limit enforcement?
-  - Required context to load: admin invite flow, billing rules, audit log rules, current diff
-  - Why this is ready now: the pain is real, but the design must be reopened before execution can honestly continue
+  - Primary Capability: `cap-bulk-invite-import`
+  - Secondary Capabilities: `cap-workspace-membership`
+  - Why now: demand is real, but the contract is too wide to keep improvising in code
+  - Success signal: the capability has a trusted import contract before implementation resumes
+  - Entry constraints: must freeze limits, duplicates, warnings, and audit behavior first
+  - Capability gap: admins can invite one user at a time but cannot safely import invite batches
+  - Expected spec delta: define import semantics before widening current truth
+  - Open risks: another partial implementation pass would deepen the semantic drift
+  - First planning question: which subflows share one import contract and which need explicit splits?
+  - Required context to load: invite limits, billing rules, duplicate handling, audit logging
+  - Depends On: `-`
+  - Parallel With: `-`
+  - Why this is ready now: the blocker is design truth, not implementation effort
+
+## Parked
+
+- RM-XXX:
+  - Reason parked:
+  - Trigger to reopen:
+  - Missing evidence:

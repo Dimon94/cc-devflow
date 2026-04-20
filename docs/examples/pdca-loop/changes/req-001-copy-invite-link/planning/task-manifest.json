@@ -9,7 +9,7 @@
   "sourceRoadmap": {
     "itemId": "RM-001",
     "roadmapVersion": "roadmap.v1",
-    "roadmapSkillVersion": "4.0.0",
+    "roadmapSkillVersion": "4.3.1",
     "sourceStage": "Stage 1",
     "successSignal": "Users can copy the invite link with one click",
     "killSignal": "The patch requires backend or permission changes",
@@ -22,7 +22,7 @@
     ]
   },
   "planningMeta": {
-    "reqPlanSkillVersion": "3.3.0",
+    "reqPlanSkillVersion": "3.4.0",
     "designVersion": "design.v1",
     "approvedAt": "2026-04-15T10:05:00.000Z",
     "approvedBy": "user",

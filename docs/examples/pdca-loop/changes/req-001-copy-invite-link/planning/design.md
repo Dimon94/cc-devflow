@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-001.v1`
 - Design version: `design.v1`
-- CC-Plan skill version: `3.3.0`
+- CC-Plan skill version: `3.4.0`
 - Requirement ID: `REQ-001`
 - Design mode: `tiny-design`
 - Why this stays `tiny-design`: the patch is limited to an existing dialog and test file, with no API or data model changes

@@ -18,6 +18,11 @@ PDCA: cc-plan -> cc-do -> cc-check -> cc-act
 IDCA: cc-investigate -> cc-do -> cc-check -> cc-act
 ```
 
+Use maintenance skills separately when needed:
+
+- `cc-spec-init`: bootstrap or repair `devflow/specs/` and `change-meta.json`
+- `cc-simplify`: cleanup pass before ship
+
 Use [skills.sh CLI](https://skills.sh/docs/cli) when you only want one skill:
 
 ```bash

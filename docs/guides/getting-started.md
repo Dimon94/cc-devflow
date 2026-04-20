@@ -36,7 +36,7 @@ The public skills are the visible harness. Each distributed `SKILL.md` now carri
 npx cc-devflow init --dir /path/to/your/project
 ```
 
-The whole-pack install includes the six visible workflow skills plus `cc-simplify` for pre-ship cleanup.
+The whole-pack install includes the six visible workflow skills plus `cc-spec-init` and `cc-simplify` as maintenance helpers.
 
 ### Single Skill Install
 
@@ -83,15 +83,18 @@ Use the skills in this order:
 
 Typical outputs:
 
-- `cc-roadmap` writes `devflow/ROADMAP.md` and `devflow/BACKLOG.md`
-- `cc-plan` writes `planning/design.md`, `planning/tasks.md`, `task-manifest.json`
-- `cc-investigate` writes `planning/analysis.md`, `planning/tasks.md`, `task-manifest.json`
+- `cc-roadmap` writes `devflow/ROADMAP.md` and `devflow/BACKLOG.md`; helper sync can also maintain `devflow/roadmap-tracking.json` as the shared roadmap/backlog truth source
+- `cc-spec-init` writes `devflow/specs/INDEX.md`, capability specs, and `change-meta.json`
+- `cc-plan` writes `planning/design.md`, `planning/tasks.md`, `task-manifest.json`, and `change-meta.json`
+- `cc-investigate` writes `planning/analysis.md`, `planning/tasks.md`, `task-manifest.json`, and `change-meta.json`
 - `cc-check` writes `report-card.json`
 - `cc-act` writes exactly one final handoff file: `handoff/pr-brief.md`, `handoff/resume-index.md`, or `handoff/release-note.md`
 
-The durable truth lives in `devflow/changes/<change>/`.
+Capability truth lives in `devflow/specs/`.
+Change truth lives in `devflow/changes/<change>/`.
 
-- Keep only `change-state.json`, planning docs, `task-manifest.json`, optional `team-state.json`, task `checkpoint.json`, `report-card.json`, and one final handoff file there.
+- Keep `INDEX.md` plus capability markdown under `devflow/specs/`.
+- Keep `change-state.json`, `change-meta.json`, planning docs, `task-manifest.json`, optional `team-state.json`, task `checkpoint.json`, `report-card.json`, and one final handoff file under each `devflow/changes/<change>/`.
 - Worker prompts, journals, assignments, and session logs belong under `devflow/workspaces/<change>/` as ephemeral scratch.
 
 Typical public contract fields:
@@ -142,7 +145,7 @@ npx cc-devflow adapt --cwd /path/to/your/project --platform codex
 
 If your project has no optional `.claude/commands/` input, this is expected: the compiler will still generate the skills registry and mirror the distributed skill set for Codex.
 
-Codex mirrors the distributed skills from `.claude/skills/<skill>/` into `.codex/skills/<skill>/`. That set includes the six public workflow skills plus `cc-simplify`, and the mirror is additive-only: existing project-owned Codex skills are preserved instead of being deleted.
+Codex mirrors the distributed skills from `.claude/skills/<skill>/` into `.codex/skills/<skill>/`. That set includes the six public workflow skills plus `cc-spec-init` and `cc-simplify`, and the mirror is additive-only: existing project-owned Codex skills are preserved instead of being deleted.
 
 ### Keep skills and examples in sync
 

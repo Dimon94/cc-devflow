@@ -1,0 +1,114 @@
+{
+  "version": 2,
+  "lastSyncedAt": "2026-04-19",
+  "backlogMeta": {
+    "roadmapVersion": "roadmap.v1",
+    "skillVersion": "4.3.1",
+    "currentFocusStage": "Stage 1"
+  },
+  "dependencyHandoff": {
+    "serialSpine": "RM-001 -> RM-002",
+    "parallelReadyNextWave": "none until RM-001 proves the copy action shape",
+    "notesOnBlockers": "RM-002 should reuse the final interaction contract from RM-001, not race it"
+  },
+  "items": [
+    {
+      "rmId": "RM-001",
+      "item": "Add one-click copy action to the share dialog",
+      "stage": "Stage 1",
+      "priority": "P1",
+      "primaryCapability": "cap-invite-links",
+      "secondaryCapabilities": [],
+      "expectedSpecDelta": "tighten invite-link copy truth",
+      "dependsOn": [],
+      "status": "In review",
+      "req": "REQ-001",
+      "progress": "100%",
+      "backlog": {
+        "capabilityGap": "share dialog exposes invite URL but not direct copy action",
+        "evidence": "repeated support friction",
+        "parallelWith": [],
+        "unknowns": "copied-state feedback shape",
+        "nextDecision": "freeze tiny design and execute",
+        "ready": true,
+        "whyNow": "it removes the first visible collaboration friction in the beta flow",
+        "successSignal": "users can copy the invite link with one click",
+        "entryConstraints": "no backend changes, no share dialog redesign",
+        "openRisks": "clipboard failure copy may still need follow-up UX",
+        "firstPlanningQuestion": "can this stay a tiny-design patch without changing contracts?",
+        "requiredContextToLoad": "current share dialog, current invite URL source, existing tests",
+        "whyReadyNow": "the ask is narrow, the evidence is real, and the dependency surface is already known",
+        "parked": false,
+        "parkedReason": "",
+        "triggerToReopen": "",
+        "missingEvidence": ""
+      }
+    },
+    {
+      "rmId": "RM-002",
+      "item": "Add copied-state feedback to the share dialog",
+      "stage": "Stage 1",
+      "priority": "P2",
+      "primaryCapability": "cap-invite-links",
+      "secondaryCapabilities": [],
+      "expectedSpecDelta": "extend invite-link feedback truth",
+      "dependsOn": [
+        "RM-001"
+      ],
+      "status": "Planned",
+      "req": "",
+      "progress": "0%",
+      "backlog": {
+        "capabilityGap": "invite links lack durable copied-state feedback after action completion",
+        "evidence": "likely useful after RM-001",
+        "parallelWith": [],
+        "unknowns": "toast vs inline state",
+        "nextDecision": "decide after first patch ships",
+        "ready": false,
+        "whyNow": "",
+        "successSignal": "",
+        "entryConstraints": "",
+        "openRisks": "",
+        "firstPlanningQuestion": "",
+        "requiredContextToLoad": "",
+        "whyReadyNow": "",
+        "parked": false,
+        "parkedReason": "",
+        "triggerToReopen": "",
+        "missingEvidence": ""
+      }
+    },
+    {
+      "rmId": "RM-004",
+      "item": "Collaboration analytics follow-up",
+      "stage": "",
+      "priority": "",
+      "primaryCapability": "",
+      "secondaryCapabilities": [],
+      "expectedSpecDelta": "",
+      "dependsOn": [],
+      "status": "",
+      "req": "",
+      "progress": "",
+      "backlog": {
+        "capabilityGap": "",
+        "evidence": "",
+        "parallelWith": [],
+        "unknowns": "",
+        "nextDecision": "",
+        "ready": false,
+        "whyNow": "",
+        "successSignal": "",
+        "entryConstraints": "",
+        "openRisks": "",
+        "firstPlanningQuestion": "",
+        "requiredContextToLoad": "",
+        "whyReadyNow": "",
+        "parked": true,
+        "parkedReason": "collaboration analytics is premature before Stage 1 and 2 prove usage",
+        "triggerToReopen": "repeated invite usage after beta activation",
+        "missingEvidence": "stable collaboration volume"
+      }
+    }
+  ]
+}

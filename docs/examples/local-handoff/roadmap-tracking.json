@@ -1,0 +1,48 @@
+{
+  "version": 2,
+  "lastSyncedAt": "2026-04-19",
+  "backlogMeta": {
+    "roadmapVersion": "roadmap.v2",
+    "skillVersion": "4.3.1",
+    "currentFocusStage": "Stage 2"
+  },
+  "dependencyHandoff": {
+    "serialSpine": "RM-020",
+    "parallelReadyNextWave": "-",
+    "notesOnBlockers": "export work stays local-only until the next maintainer has remote access"
+  },
+  "items": [
+    {
+      "rmId": "RM-020",
+      "item": "Add an audit-log export summary download",
+      "stage": "Stage 2",
+      "priority": "P1",
+      "primaryCapability": "cap-audit-log-export",
+      "secondaryCapabilities": [],
+      "expectedSpecDelta": "codify local export summary truth",
+      "dependsOn": [],
+      "status": "Local handoff",
+      "req": "REQ-003",
+      "progress": "100%",
+      "backlog": {
+        "capabilityGap": "admins can export raw audit data but not a compact summary for review",
+        "evidence": "support escalations keep asking for a lightweight summary bundle",
+        "parallelWith": [],
+        "unknowns": "csv-only or csv-plus-markdown summary",
+        "nextDecision": "resume from local handoff once remote access returns",
+        "ready": true,
+        "whyNow": "the implementation and proof already exist, only the landing path is deferred",
+        "successSignal": "admins can download a concise audit summary without manual spreadsheet cleanup",
+        "entryConstraints": "stay local-only and avoid remote automation",
+        "openRisks": "handoff may age if schema changes before the next maintainer resumes",
+        "firstPlanningQuestion": "does the summary format need another review before remote landing?",
+        "requiredContextToLoad": "admin export screen, generated summary fixture, local handoff notes",
+        "whyReadyNow": "the requirement is already proven and only needs a clean resume point",
+        "parked": false,
+        "parkedReason": "",
+        "triggerToReopen": "",
+        "missingEvidence": ""
+      }
+    }
+  ]
+}
