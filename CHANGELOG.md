@@ -12,12 +12,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added a public `cc-investigate` skill so bug work can follow `cc-investigate -> cc-do -> cc-check -> cc-act` instead of overloading `cc-plan`.
+- Added a distributed maintenance skill `cc-spec-init` for capability-centered spec bootstrap, capability truth maintenance, and `change-meta.json` link repair.
 
 ### Changed
 
 - Documented the workflow as two shared-tail loops: `PDCA` for feature/scope work and `IDCA/DDCA` for root-cause work.
 - Updated public distribution, publish validation, and Codex mirror expectations so `cc-investigate` ships with the pack.
 - Updated `cc-do` and `cc-check` contracts so they can consume `ANALYSIS.md` handoffs and reroute failed bug fixes back to `cc-investigate`.
+- Updated `cc-roadmap`, `cc-plan`, `cc-investigate`, `cc-do`, `cc-check`, and `cc-act` to carry capability/spec linkage through roadmap, planning, execution, verification, and closeout.
+- Updated public docs and example bindings so `devflow/specs/` is documented as durable capability truth and `change-meta.json` is documented as durable change truth.
 
 ## [4.4.0] - 2026-04-10
 
