@@ -16,6 +16,7 @@
         ".claude/skills/cc-do/",
         ".claude/skills/cc-check/",
         ".claude/skills/cc-act/",
+        ".claude/skills/cc-spec-init/",
         ".claude/skills/cc-simplify/",
         "docs/",
         "README.md",
