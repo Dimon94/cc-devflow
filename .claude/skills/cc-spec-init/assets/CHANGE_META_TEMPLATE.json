@@ -1,0 +1,25 @@
+{
+  "changeId": "req-001-example",
+  "requirementId": "REQ-001",
+  "sourceRoadmap": {
+    "itemId": "RM-001",
+    "roadmapVersion": "roadmap.v1",
+    "roadmapSkillVersion": "4.1.0"
+  },
+  "spec": {
+    "primaryCapability": "cap-example",
+    "secondaryCapabilities": [],
+    "changeType": "update",
+    "specFiles": [
+      "devflow/specs/capabilities/cap-example.md"
+    ],
+    "expectedDelta": [
+      "Describe the new truth the change should add or tighten"
+    ],
+    "affectedInvariants": [],
+    "gapsClosed": [],
+    "newGaps": [],
+    "syncStatus": "planned",
+    "notes": []
+  }
+}

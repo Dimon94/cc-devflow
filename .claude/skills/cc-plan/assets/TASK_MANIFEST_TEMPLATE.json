@@ -28,6 +28,20 @@
   "approvedOption": "Option A",
   "designStatus": "approved",
   "reviewStatus": "approved",
+  "spec": {
+    "primaryCapability": "cap-example",
+    "secondaryCapabilities": [],
+    "expectedDelta": [
+      "Tighten current truth for the capability"
+    ],
+    "affectedInvariants": [],
+    "gapsClosed": [],
+    "newGaps": [],
+    "specFiles": [
+      "devflow/specs/capabilities/cap-example.md"
+    ],
+    "syncStatus": "planned"
+  },
   "tasteDecisions": [],
   "userChallenges": [],
   "currentTaskId": "T001",
@@ -64,7 +78,8 @@
       "context": {
         "readFiles": [
           "design.md",
-          "tasks.md"
+          "tasks.md",
+          "change-meta.json"
         ],
         "commands": [
           "npm test -- src/feature/feature.test.ts"

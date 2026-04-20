@@ -1,0 +1,48 @@
+{
+  "version": 2,
+  "lastSyncedAt": "2026-04-19",
+  "backlogMeta": {
+    "roadmapVersion": "roadmap.v1",
+    "skillVersion": "4.3.1",
+    "currentFocusStage": "Stage 1"
+  },
+  "dependencyHandoff": {
+    "serialSpine": "RM-001",
+    "parallelReadyNextWave": "-",
+    "notesOnBlockers": "-"
+  },
+  "items": [
+    {
+      "rmId": "RM-001",
+      "item": "",
+      "stage": "Stage 1",
+      "priority": "P1",
+      "primaryCapability": "cap-example",
+      "secondaryCapabilities": [],
+      "expectedSpecDelta": "tighten current truth",
+      "dependsOn": [],
+      "status": "Planned",
+      "req": "",
+      "progress": "0%",
+      "backlog": {
+        "capabilityGap": "",
+        "evidence": "",
+        "parallelWith": [],
+        "unknowns": "",
+        "nextDecision": "",
+        "ready": false,
+        "whyNow": "",
+        "successSignal": "",
+        "entryConstraints": "",
+        "openRisks": "",
+        "firstPlanningQuestion": "",
+        "requiredContextToLoad": "",
+        "whyReadyNow": "",
+        "parked": false,
+        "parkedReason": "",
+        "triggerToReopen": "",
+        "missingEvidence": ""
+      }
+    }
+  ]
+}

@@ -3,6 +3,9 @@
   "verdict": "blocked",
   "overall": "fail",
   "summary": "verdict=blocked quick=1/2 strict=0/0 review=blocked",
+  "specAlignment": "blocked",
+  "specDeltaVerified": false,
+  "specSyncReady": false,
   "quickGates": [
     {
       "name": "targeted-tests",
@@ -41,6 +44,7 @@
   "blockingFindings": [
     "review: missing spec review proof for T002"
   ],
+  "gaps": [],
   "reroute": "cc-do",
   "timestamp": "2026-04-15T12:00:00.000Z"
 }
