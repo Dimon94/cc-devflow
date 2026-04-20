@@ -36,6 +36,9 @@ jq -e '
   .summary and
   .review and
   .blockingFindings and
+  (.specAlignment? // "blocked") and
+  ((.specDeltaVerified? // false) | type == "boolean") and
+  ((.specSyncReady? // false) | type == "boolean") and
   .reroute and
   .timestamp and
   (.verdict | IN("pass", "fail", "blocked")) and

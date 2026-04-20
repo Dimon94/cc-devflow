@@ -144,6 +144,36 @@ function collectBlockingFindings({ manifest, quickGates, strictGates, review }) 
   return findings.concat(summarizeOpenReviewFindings(review.findings || []));
 }
 
+function deriveSpecSignals(manifest, verdict, review) {
+  const spec = manifest.spec || {};
+  const hasSpec =
+    Boolean(spec.primaryCapability) ||
+    (Array.isArray(spec.secondaryCapabilities) && spec.secondaryCapabilities.length > 0) ||
+    (Array.isArray(spec.specFiles) && spec.specFiles.length > 0);
+
+  if (!hasSpec || review.status === 'blocked') {
+    return {
+      specAlignment: 'blocked',
+      specDeltaVerified: false,
+      specSyncReady: false
+    };
+  }
+
+  if (verdict === 'fail') {
+    return {
+      specAlignment: 'fail',
+      specDeltaVerified: false,
+      specSyncReady: false
+    };
+  }
+
+  return {
+    specAlignment: 'pass',
+    specDeltaVerified: true,
+    specSyncReady: true
+  };
+}
+
 function main() {
   const args = parseArgs(process.argv.slice(2));
   if (!args.changeId || !args.manifest || !args.quick || !args.strict || !args.review) {
@@ -169,6 +199,7 @@ function main() {
     manifest,
     blockingFindings
   });
+  const specSignals = deriveSpecSignals(manifest, verdict, review);
 
   const report = {
     changeId: args.changeId,
@@ -180,10 +211,14 @@ function main() {
       review,
       verdict
     }),
+    specAlignment: specSignals.specAlignment,
+    specDeltaVerified: specSignals.specDeltaVerified,
+    specSyncReady: specSignals.specSyncReady,
     quickGates,
     strictGates,
     review,
     blockingFindings,
+    gaps: manifest.spec?.newGaps || [],
     reroute,
     timestamp: args.timestamp || new Date().toISOString()
   };

@@ -36,6 +36,7 @@ CHANGE_DIR="$(req_do_resolve_change_dir "$REQ_DIR")"
 manifest="$(req_do_manifest_path "$CHANGE_DIR")"
 design_file="$(req_do_contract_path "$CHANGE_DIR")"
 tasks_file="$(req_do_tasks_path "$CHANGE_DIR")"
+change_meta="$(req_do_change_meta_path "$CHANGE_DIR")"
 resume_index="$(req_do_resume_index_path "$CHANGE_DIR")"
 
 if [[ ! -f "$manifest" ]]; then
@@ -84,6 +85,11 @@ completed_tasks="$(jq -r '
 ready_tasks="$(echo "$ready_json" | jq -r '.readyTasks[]?.id')"
 running_tasks="$(echo "$ready_json" | jq -r '.runningTasks[]?.id')"
 active_phase="$(echo "$ready_json" | jq -r '.activePhase // "unknown"')"
+primary_capability="$(jq -r '.spec.primaryCapability // empty' "$manifest" 2>/dev/null || true)"
+secondary_capabilities="$(jq -r '(.spec.secondaryCapabilities // [])[]?' "$manifest" 2>/dev/null || true)"
+spec_files="$(jq -r '(.spec.specFiles // [])[]?' "$manifest" 2>/dev/null || true)"
+expected_delta="$(jq -r '(.spec.expectedDelta // [])[]?' "$manifest" 2>/dev/null || true)"
+sync_status="$(jq -r '.spec.syncStatus // "unknown"' "$manifest" 2>/dev/null || true)"
 
 {
   echo "# Task Context"
@@ -131,6 +137,20 @@ active_phase="$(echo "$ready_json" | jq -r '.activePhase // "unknown"')"
   echo
   list_or_none "$task_commands"
   echo
+  echo "## Spec Contract"
+  echo
+  echo "- Primary capability: ${primary_capability:-none}"
+  echo "- Spec sync status: ${sync_status:-unknown}"
+  echo
+  echo "### Secondary Capabilities"
+  list_or_none "$secondary_capabilities"
+  echo
+  echo "### Capability Specs"
+  list_or_none "$spec_files"
+  echo
+  echo "### Expected Spec Delta"
+  list_or_none "$expected_delta"
+  echo
   echo "## Task Notes"
   echo
   list_or_none "$task_notes"
@@ -139,6 +159,7 @@ active_phase="$(echo "$ready_json" | jq -r '.activePhase // "unknown"')"
   echo
   [[ -f "$design_file" ]] && echo "- ${design_file#$CHANGE_DIR/}"
   [[ -f "$tasks_file" ]] && echo "- ${tasks_file#$CHANGE_DIR/}"
+  [[ -f "$change_meta" ]] && echo "- ${change_meta#$CHANGE_DIR/}"
   echo "- planning/task-manifest.json"
   echo
   echo "## Context Reset"

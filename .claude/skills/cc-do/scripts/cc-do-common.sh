@@ -43,6 +43,10 @@ req_do_tasks_path() {
   printf '%s/tasks.md\n' "$(req_do_planning_dir "$1")"
 }
 
+req_do_change_meta_path() {
+  printf '%s/change-meta.json\n' "$(req_do_resolve_change_dir "$1")"
+}
+
 req_do_contract_path() {
   local planning_dir
   local design_file

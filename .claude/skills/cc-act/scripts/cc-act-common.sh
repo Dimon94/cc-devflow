@@ -98,6 +98,11 @@ req_act_report_verdict() {
   jq -r '.verdict // "unknown"' "$report_card" 2>/dev/null || echo unknown
 }
 
+req_act_spec_sync_ready() {
+  local report_card="$1"
+  jq -r '.specSyncReady // false' "$report_card" 2>/dev/null || echo false
+}
+
 req_act_design_goal() {
   local design_file="$1"
   awk -F': ' '/^- Deliver:/{print $2; exit} /^- Change:/{print $2; exit}' "$design_file" 2>/dev/null || true
@@ -201,6 +206,19 @@ req_act_collect_touched_files() {
       | add
       | .[]?
     ' "$manifest" 2>/dev/null | sed '/^$/d' > "$out_file" || true
+  fi
+
+  req_act_dedup_file "$out_file"
+}
+
+req_act_collect_spec_files() {
+  local manifest="$1"
+  local out_file="$2"
+
+  : > "$out_file"
+
+  if [[ -f "$manifest" ]]; then
+    jq -r '(.spec.specFiles // [])[]?' "$manifest" 2>/dev/null | sed '/^$/d' > "$out_file" || true
   fi
 
   req_act_dedup_file "$out_file"

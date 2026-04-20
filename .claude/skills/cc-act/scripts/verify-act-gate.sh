@@ -36,6 +36,7 @@ tasks_file="$(req_act_tasks_path "$CHANGE_DIR")"
 
 verdict="$(jq -r '.verdict // "unknown"' "$report_card" 2>/dev/null || echo unknown)"
 reroute="$(jq -r '.reroute // "unknown"' "$report_card" 2>/dev/null || echo unknown)"
+spec_sync_ready="$(jq -r '.specSyncReady // false' "$report_card" 2>/dev/null || echo false)"
 evidence_count="$(jq -r '(.evidence // []) | length' "$report_card" 2>/dev/null || echo 0)"
 gap_count="$(jq -r '(.gaps // []) | length' "$report_card" 2>/dev/null || echo 0)"
 
@@ -46,6 +47,7 @@ fi
 
 [[ "$verdict" == "pass" ]] || { echo "Gate open: verdict=$verdict" >&2; exit 1; }
 [[ "$reroute" == "none" ]] || { echo "Gate open: reroute=$reroute" >&2; exit 1; }
+[[ "$spec_sync_ready" == "true" ]] || { echo "Gate open: spec_sync_ready=$spec_sync_ready" >&2; exit 1; }
 [[ "$evidence_count" -gt 0 ]] || { echo "Gate open: evidence is empty" >&2; exit 1; }
 [[ "$gap_count" -eq 0 ]] || { echo "Gate open: gaps=$gap_count" >&2; exit 1; }
 [[ "$remaining_tasks" -eq 0 ]] || { echo "Gate open: remaining_tasks=$remaining_tasks" >&2; exit 1; }
@@ -54,6 +56,7 @@ cat <<EOF
 GATE=closed
 VERDICT=$verdict
 REROUTE=$reroute
+SPEC_SYNC_READY=$spec_sync_ready
 EVIDENCE_COUNT=$evidence_count
 GAP_COUNT=$gap_count
 REMAINING_TASKS=$remaining_tasks

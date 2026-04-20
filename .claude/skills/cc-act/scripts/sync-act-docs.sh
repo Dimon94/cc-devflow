@@ -58,6 +58,7 @@ timestamp="$(date '+%Y-%m-%d %H:%M:%S %z')"
 requirement_id="$(req_act_requirement_id "$manifest" "$CHANGE_DIR")"
 report_summary="$(req_act_report_summary "$report_card")"
 report_verdict="$(req_act_report_verdict "$report_card")"
+spec_sync_ready="$(req_act_spec_sync_ready "$report_card")"
 design_goal="$(req_act_design_goal "$design_file")"
 main_risk="$(req_act_main_risk "$design_file")"
 
@@ -65,10 +66,11 @@ tmp_changed="$(mktemp)"
 tmp_verify="$(mktemp)"
 tmp_followups="$(mktemp)"
 tmp_touched="$(mktemp)"
+tmp_specs="$(mktemp)"
 tmp_claude="$(mktemp)"
 tmp_readme="$(mktemp)"
 cleanup() {
-  rm -f "$tmp_changed" "$tmp_verify" "$tmp_followups" "$tmp_touched" "$tmp_claude" "$tmp_readme"
+  rm -f "$tmp_changed" "$tmp_verify" "$tmp_followups" "$tmp_touched" "$tmp_specs" "$tmp_claude" "$tmp_readme"
 }
 trap cleanup EXIT
 
@@ -79,6 +81,7 @@ req_act_collect_completed_titles "$manifest" "$tasks_file" "$tmp_changed"
 req_act_collect_verification_commands "$manifest" "$tmp_verify"
 req_act_collect_followups "$report_card" "$manifest" "$tmp_followups"
 req_act_collect_touched_files "$manifest" "$tmp_touched"
+req_act_collect_spec_files "$manifest" "$tmp_specs"
 
 nearest_claude() {
   local rel="$1"
@@ -163,6 +166,7 @@ find "$REPO_ROOT" -maxdepth 2 -type f \( -iname 'README.md' -o -iname 'README*.m
   echo "## Ops Notes"
   echo
   echo "- Ship mode: $ship_mode"
+  echo "- Spec sync ready: $spec_sync_ready"
   echo "- Current branch: ${current_branch:-unknown}"
   echo "- Base branch: ${base_branch:-unknown}"
   [[ -n "$pr_status" ]] && echo "- PR status: $pr_status"
@@ -227,6 +231,7 @@ esac
   echo "## Next Action"
   echo
   echo "- $next_action"
+  echo "- Formal spec sync belongs in cc-act before final ship closeout."
   echo
   echo "## Parallel Notes"
   echo
@@ -243,6 +248,7 @@ esac
   echo "- Requirement: $requirement_id"
   echo "- Ship mode: $ship_mode"
   echo "- CC-Check verdict: $report_verdict"
+  echo "- Spec sync ready: $spec_sync_ready"
   echo "- Updated at: $timestamp"
   echo
   echo "## Synced Requirement Artifacts"
@@ -258,6 +264,16 @@ esac
     done < "$tmp_touched"
   else
     echo "- No touched files recorded in task-manifest.json."
+  fi
+  echo
+  echo "## Spec Targets"
+  echo
+  if [[ -s "$tmp_specs" ]]; then
+    while IFS= read -r line; do
+      echo "- \`$line\`"
+    done < "$tmp_specs"
+  else
+    echo "- No capability spec files recorded in task-manifest.json."
   fi
   echo
   echo "## Project Doc Targets"
