@@ -8,6 +8,8 @@
 - Source roadmap item:
 - Source roadmap version:
 - Incident / bug ID:
+- Primary capability:
+- Related capability specs:
 
 ## Symptom
 
@@ -33,6 +35,7 @@
 
 - Confirmed root cause:
 - Broken contract:
+- Spec diagnosis: `implementation drift` | `missing spec truth` | `roadmap mismatch`
 - Why it escaped:
 
 ## Repair Boundary
@@ -40,6 +43,7 @@
 - Fix strategy:
 - Files likely touched:
 - Do not change:
+- Expected spec delta:
 - Verification after fix:
 - Why this can enter `cc-do`:
 

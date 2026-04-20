@@ -20,8 +20,12 @@
 ## Local Kit
 
 - 生成骨架时用 `assets/ROADMAP_TEMPLATE.md` 和 `assets/BACKLOG_TEMPLATE.md`
+- 需要结构化 tracking 时用 `assets/TRACKING_TEMPLATE.json`
 - 需要追问脚本时看 `references/roadmap-dialogue.md`
 - 需要定位 / 回写条目时用 `scripts/locate-roadmap-item.sh` 和 `scripts/sync-roadmap-progress.sh`
+- `scripts/locate-roadmap-item.sh` 先读 `roadmap-tracking.json`，再回落到 `ROADMAP.md` / `BACKLOG.md`，避免定位依赖 markdown 列位或文案漂移
+- 只想把 sidecar 重渲染回 `ROADMAP.md` / `BACKLOG.md` 时，直接调用 `scripts/roadmap-tracking.js render`
+- `scripts/sync-roadmap-progress.sh` 会把 `roadmap-tracking.json` 当真相源，再回渲染 `ROADMAP.md` 和 `BACKLOG.md`
 - 变更版本时同步 `CHANGELOG.md`，必要时用 `scripts/bump-skill-version.sh`
 
 ## Context Sweep
@@ -102,10 +106,12 @@
 - 非目标
 - `RM Dependency Graph`
 - `Parallel waves`
+- `Implementation Tracking` 由 `devflow/roadmap-tracking.json` 渲染，避免手改 markdown 表格列位
 
 `devflow/BACKLOG.md`
 - 只保留会真的进入下一轮 `cc-plan` 的事项
 - 每项注明来源阶段、优先级、证据、`Depends On`、`Parallel With`、当前未知点、下一决策、是否 ready
+- `Backlog Meta`、`Queue`、`Dependency Handoff`、`Ready For Req-Plan`、`Parked` 可由 `devflow/roadmap-tracking.json` 回渲染，避免 roadmap truth 和 backlog handoff 分叉
 
 ## Review Loop
 

@@ -1,6 +1,6 @@
 ---
 name: cc-do
-version: 1.3.1
+version: 1.4.0
 description: "Use when implementing planned tasks, resuming interrupted work, applying a frozen investigation handoff, or landing review feedback after cc-plan or cc-investigate."
 triggers:
   - "开始做 T003"
@@ -32,7 +32,7 @@ effects:
   - "test changes"
   - "workspace scratch runtime updates"
 entry_gate:
-  - "Read planning/design.md or planning/analysis.md, then planning/tasks.md, planning/task-manifest.json, and the latest checkpoint before changing code."
+  - "Read planning/design.md or planning/analysis.md, then planning/tasks.md, planning/task-manifest.json, change-meta.json, related capability specs, and the latest checkpoint before changing code."
   - "Select only ready tasks whose dependencies and file ownership are clear."
   - "If the current task cannot be restated from canonical artifacts, run a context reset before coding."
 exit_criteria:
@@ -119,7 +119,7 @@ tool_budget:
 2. 先用 `scripts/select-ready-tasks.sh` 判断现在到底哪几个任务真的 ready。
 3. 只锁定当前 ready task，或一组经依赖与触点校验后可并行的 ready tasks。
 4. 如果这次来自 `cc-investigate`，必须把 `planning/analysis.md` 当成 canonical contract，而不是一边实现一边重新调查。
-5. 没有任务上下文，不准把任务扔给 subagent；先用 `scripts/build-task-context.sh` 从 `planning/design.md` 或 `planning/analysis.md`、`planning/tasks.md`、`planning/task-manifest.json` 组装上下文。
+5. 没有任务上下文，不准把任务扔给 subagent；先用 `scripts/build-task-context.sh` 从 `planning/design.md` 或 `planning/analysis.md`、`planning/tasks.md`、`planning/task-manifest.json`、`change-meta.json` 与相关 capability spec 组装上下文。
 
 ## Loop
 
@@ -129,7 +129,7 @@ tool_budget:
 4. 先 `fail-first`：先写失败测试，先看见红，再写生产代码。
 5. 按 `Red -> Green -> Refactor` 推进，Green 只允许最小实现。
 6. 每次推进都写 task runtime：`events.jsonl` + `checkpoint.json`。
-7. 任务实现后，先过 `spec review`，再过 `code review`，两道门都过才算任务收口。
+7. 任务实现后，先过 `spec review`，再过 `code review`，两道门都过才算任务收口；这里只验证 spec delta，不回写长期 spec。
 8. 当前任务完成后，把可验证证据留给 `cc-check`。
 
 ## Output
@@ -169,9 +169,10 @@ tool_budget:
 3. 没有失败测试，不准写生产代码。
 4. 测试如果第一次就绿，说明你没证明任何东西，先修测试。
 5. 先过 `spec review`，再过 `code review`，顺序不能反。
-6. 失败和阻塞都要留下恢复证据。
-7. 给 subagent 的输入必须包含：当前进度、当前任务全文、依赖状态、必读文件、验收标准、可信命令。
-8. 三次失败修补后必须先质疑调查合同或设计合同，而不是继续堆补丁。
+6. 不在 `cc-do` 里改 capability spec 正文；这里只产出实现证据和 spec 对齐证据。
+7. 失败和阻塞都要留下恢复证据。
+8. 给 subagent 的输入必须包含：当前进度、当前任务全文、依赖状态、必读文件、验收标准、可信命令。
+9. 三次失败修补后必须先质疑调查合同或设计合同，而不是继续堆补丁。
 
 ## Exit Criteria
 

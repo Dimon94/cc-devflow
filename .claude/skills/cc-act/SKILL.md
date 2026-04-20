@@ -1,6 +1,6 @@
 ---
 name: cc-act
-version: 1.4.1
+version: 1.5.0
 description: "Use when verified work must be shipped or handed off with a clear landing path: run simplify and required tests, create or update a PR, prepare a local handoff, close out merged work, sync docs, write release notes, and fold follow-ups back into backlog or roadmap."
 triggers:
   - "准备提 PR"
@@ -36,7 +36,7 @@ writes:
 effects:
   - "roadmap or backlog follow-up updates when needed"
 entry_gate:
-  - "Accept only a passing review/report-card.json with reroute=none."
+  - "Accept only a passing review/report-card.json with reroute=none and specSyncReady=true."
   - "Freeze current branch, PR, and ship-mode facts before writing delivery materials."
   - "If simplify, tests, or act changes code or verification scope, return to cc-check immediately."
 exit_criteria:
@@ -87,9 +87,10 @@ tool_budget:
 - 需要在 ship 前再做一次 `cc-simplify`、单测、以及按协调器要求执行的 e2e
 - 需要同步最终文档、handoff、release note
 - 需要把遗留 follow-up / 优先级变化回写 `devflow/roadmap/backlog.md` 或 `devflow/roadmap/roadmap.md`
+- 需要把已验证的 spec delta 正式回写 capability spec 与 `devflow/specs/INDEX.md`
 - 需要让下一轮入口比现在更清楚
 
-如果 `review/report-card.json` 不是 `pass`，或者仍指向 `cc-do` / `cc-plan`，停止在这里，不准 ship。
+如果 `review/report-card.json` 不是 `pass`，或 `specSyncReady` 不是 `true`，或者仍指向 `cc-do` / `cc-plan`，停止在这里，不准 ship。
 
 ## Quick Start
 
@@ -114,7 +115,7 @@ tool_budget:
 ## Entry Gate
 
 1. 先读 `review/report-card.json`，只接受已通过且有证据的现实。
-2. 再读 `planning/design.md` 或 `planning/analysis.md`、`planning/tasks.md`、`planning/task-manifest.json`；如果已有 `handoff/resume-index.md`，一并读取，确认这次到底完成了什么。
+2. 再读 `planning/design.md` 或 `planning/analysis.md`、`planning/tasks.md`、`planning/task-manifest.json`、`change-meta.json`、相关 capability spec；如果已有 `handoff/resume-index.md`，一并读取，确认这次到底完成了什么。
 3. 运行 `scripts/verify-act-gate.sh --dir <requirement-dir>`，确认 gate 真的闭合。
 4. 运行 `scripts/detect-ship-target.sh`，识别当前分支、base branch、PR 状态与推荐 ship 路径。
 5. 如果在 `cc-act` 期间因为 `cc-simplify`、单测、e2e、review 修复而改了代码，必须回 `cc-check`，不能带着旧证明继续 ship。
@@ -196,25 +197,26 @@ tool_budget:
 2. 调用 `cc-simplify`，清理重复、坏味道、低效实现；如果因此改了代码，回 `cc-check`。
 3. 运行项目单测；失败就修，修完回 `cc-check`。
 4. 按协调器 recipe 执行 e2e；如果 recipe 允许 skip，记录 skip 理由；如果失败并修复，回 `cc-check`。
-5. 只使用 `cc-check` 已经证明过的事实写交付材料，不编故事，不补脑。
-6. 同步文档：
+5. 先把 `change-meta.json.spec.syncStatus` 从 `planned/verified` 推进到 `synced`，并正式回写 capability spec 与 `devflow/specs/INDEX.md`；只在 spec truth 更新后继续交付材料。
+6. 只使用 `cc-check` 已经证明过的事实写交付材料，不编故事，不补脑。
+7. 同步文档：
    - 结构变了，更新对应目录的 `CLAUDE.md`
    - 用户可感知行为变了，更新 `README.md` / `handoff/release-note.md`
    - handoff 变了，更新 `handoff/resume-index.md`
-7. 生成 `handoff/pr-brief.md`，把需求、变更、验证证据、风险、文档同步状态一次写清。
+8. 生成 `handoff/pr-brief.md`，把需求、变更、验证证据、风险、文档同步状态一次写清。
    - 优先运行 `scripts/sync-act-docs.sh --dir <requirement-dir>`
    - 再运行 `scripts/render-pr-brief.sh --dir <requirement-dir>`
-8. 执行分支集成动作：
+9. 执行分支集成动作：
    - `create-pr`：按 `references/git-commit-guidelines.md` 完成提交并推分支，再优先使用 `gh pr create` 创建 PR / MR
    - `update-pr`：如果有新提交，先按 `references/git-commit-guidelines.md` 完成 commit / push，再刷新 PR / MR body，不沿用陈旧内容
    - `local-handoff`：不假装已经发出，只生成可接手材料
    - `post-merge-closeout`：跳过 PR，完成发布与闭环回写
-9. 处理 doc sync：如果 ship 结果改变了代码地图、用法、架构边界，文档必须跟上。
-10. 回写 `devflow/roadmap/backlog.md` / `devflow/roadmap/roadmap.md`：
+10. 处理 doc sync：如果 ship 结果改变了代码地图、用法、架构边界，文档必须跟上。
+11. 回写 `devflow/roadmap/backlog.md` / `devflow/roadmap/roadmap.md`：
    - 新发现的 follow-up
    - 被推迟但必须保留的事项
    - 因本次结果而改变优先级的事项
-11. 如果 requirement 真正闭环，更新状态摘要并归档；否则把下一位接手者的入口写清楚。
+12. 如果 requirement 真正闭环，更新状态摘要并归档；否则把下一位接手者的入口写清楚。
 
 ## Output
 

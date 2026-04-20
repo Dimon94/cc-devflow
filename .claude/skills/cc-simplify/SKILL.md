@@ -1,7 +1,7 @@
 ---
 name: cc-simplify
-version: 1.0.0
-description: Review changed code for reuse, quality, and efficiency, then fix any issues found.
+version: 1.1.0
+description: Review changed code for reuse, quality, efficiency, and spec drift, then fix any issues found or flag the drift for the user.
 ---
 Simplify: Code Review and Cleanup
 
@@ -34,6 +34,7 @@ Review the same changes for hacky patterns:
 5. **Stringly-typed code**: using raw strings where constants, enums (string unions), or branded types already exist in the codebase
 6. **Unnecessary JSX nesting**: wrapper Boxes/elements that add no layout value — check if inner component props (flexShrink, alignItems, etc.) already provide the needed behavior
 7. **Unnecessary comments**: comments explaining WHAT the code does (well-named identifiers already do that), narrating the change, or referencing the task/caller — delete; keep only non-obvious WHY (hidden constraints, subtle invariants, workarounds)
+8. **Spec drift**: behavior, boundary, or invariant changed but no matching `change-meta.json` / capability spec delta was updated — flag it explicitly and propose the missing spec sync
 
 ### Agent 3: Efficiency Review
 

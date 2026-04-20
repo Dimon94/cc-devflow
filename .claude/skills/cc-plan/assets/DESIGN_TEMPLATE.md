@@ -12,6 +12,8 @@
 - Source roadmap item:
 - Source roadmap version:
 - Source roadmap skill version:
+- Primary capability:
+- Secondary capabilities:
 - Date:
 - Owner:
 
@@ -19,12 +21,23 @@
 
 - Source stage:
 - Why now from roadmap:
+- Capability gap from roadmap:
+- Expected spec delta:
 - Inherited success signal:
 - Inherited kill signal:
 - Inherited dependencies:
 - Inherited non-goals:
 - Upstream evidence:
 - Assumptions to re-validate:
+
+## Capability Handoff
+
+- Canonical capability spec:
+- Related capability specs:
+- Current truth to preserve:
+- Current gaps:
+- Intentional gaps:
+- Spec sync target:
 
 ## Requirement Snapshot
 
@@ -77,6 +90,18 @@
 - Contracts:
 - Error handling:
 - Rollout / migration:
+
+## Invariant Impact
+
+- Affected invariants:
+- Invariants kept unchanged:
+- New invariants introduced:
+
+## Gap Changes
+
+- Gaps closed by this change:
+- New gaps introduced:
+- Gaps intentionally left open:
 
 ## File Plan
 

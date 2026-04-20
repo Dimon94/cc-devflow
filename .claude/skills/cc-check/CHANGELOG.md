@@ -1,5 +1,16 @@
 # CC-Check Skill Changelog
 
+## v1.6.0 - 2026-04-19
+
+- extend `report-card.json` with `specAlignment`, `specDeltaVerified`, `specSyncReady`, and `gaps` so closeout can judge spec readiness directly
+- teach the report renderer to derive spec verification signals from manifest capability metadata
+- relax gate validation to accept both existing reports and the richer spec-aware fields during the transition
+
+Migration note:
+
+- new `cc-check` runs should write the spec-aware report fields
+- old reports remain structurally valid during migration
+
 ## v1.5.0 - 2026-04-17
 
 - accept `ANALYSIS.md` as an upstream verification contract so investigated bug fixes can flow through the same evidence gate

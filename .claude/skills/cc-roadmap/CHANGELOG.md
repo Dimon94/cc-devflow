@@ -1,5 +1,52 @@
 # Roadmap Skill Changelog
 
+## v4.3.1 - 2026-04-19
+
+- refactor `scripts/roadmap-tracking.js` into focused schema / markdown / store helpers so the CLI stops carrying parsing, rendering, upgrade, and persistence in one 1000-line file
+- route `locate-roadmap-item.sh` through the shared tracking query path instead of maintaining a second inline Node formatter
+- preserve existing `backlog` fields when auto-upgrading legacy v1 tracking JSON so shared lookup and render paths stay behaviorally correct
+
+## v4.3.0 - 2026-04-19
+
+- expand `devflow/roadmap-tracking.json` from implementation-only tracking into the shared truth source for `ROADMAP.md` and `BACKLOG.md`
+- teach `roadmap-tracking.js render` and `sync-roadmap-progress.sh` to regenerate both files from the same sidecar so roadmap status and backlog handoff can no longer drift apart
+- upgrade locator, templates, docs, examples, and tests so backlog queue / ready / parked data are read from the sidecar before falling back to markdown text
+
+Migration note:
+
+- existing v4.2.x `roadmap-tracking.json` files are auto-upgraded on first render or sync run
+- if you maintain backlog handoff by hand, move the durable fields into `roadmap-tracking.json` and rerender instead of treating `BACKLOG.md` as the writable source
+- `scripts/roadmap-tracking.js render` now requires both `--roadmap` and `--backlog`
+
+## v4.2.1 - 2026-04-19
+
+- teach `locate-roadmap-item.sh` to resolve `RM-*` and `REQ-*` through `devflow/roadmap-tracking.json` before falling back to markdown grep
+- realign bundled examples with the capability-aware backlog contract so templates, examples, and helper checks no longer drift apart
+- tighten example validation to require the new backlog queue columns and `Ready For Req-Plan` handoff fields
+
+## v4.2.0 - 2026-04-19
+
+- add `devflow/roadmap-tracking.json` as the structured truth source for `Implementation Tracking`
+- replace fragile column-position markdown rewrites with JSON-first sync plus markdown re-rendering
+- ship a reusable `render` path so manual edits to the tracking sidecar can be pushed back into `ROADMAP.md`
+
+Migration note:
+
+- keep `devflow/ROADMAP.md` as the human-facing roadmap, but let helper automation update `devflow/roadmap-tracking.json`
+- the first sync run bootstraps `roadmap-tracking.json` from an existing `Implementation Tracking` table, then rewrites the section in the new generated shape
+- if you were scripting direct table edits, switch to `scripts/sync-roadmap-progress.sh` or edit `roadmap-tracking.json` and rerender
+
+## v4.1.0 - 2026-04-19
+
+- teach `cc-roadmap` to anchor roadmap items to capability specs instead of leaving future work as requirement-shaped fragments
+- upgrade roadmap and backlog templates with `Primary Capability`, `Secondary Capabilities`, `Capability Gap`, and `Expected Spec Delta`
+- extend `sync-roadmap-progress.sh` so roadmap tracking can update capability/spec columns together with status progress
+
+Migration note:
+
+- roadmap items should now point to at least one capability, with one explicit primary capability
+- backlog handoffs should carry expected spec delta into `cc-plan`
+
 ## v4.0.0 - 2026-04-18
 
 - restore `cc-roadmap` durable outputs to `devflow/ROADMAP.md` and `devflow/BACKLOG.md`, matching the repository contract and keeping roadmap artifacts under `devflow/`

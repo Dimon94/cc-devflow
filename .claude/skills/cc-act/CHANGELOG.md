@@ -1,5 +1,15 @@
 # CC-Act Skill Changelog
 
+## v1.5.0 - 2026-04-19
+
+- require `cc-act` to finish formal spec synchronization before ship closeout when `cc-check` marks `specSyncReady=true`
+- surface spec sync state and target capability files in `sync-act-docs.sh` outputs so closeout materials stay aligned with capability truth
+- tighten act entry rules so a passing report without spec readiness can no longer masquerade as a complete closeout
+
+Migration note:
+
+- change closeout now expects `change-meta.json`, related capability specs, and `report-card.json.specSyncReady`
+
 ## v1.4.1 - 2026-04-18
 
 - compress duplicated commit-rule summaries in `SKILL.md` and `PLAYBOOK.md` so `references/git-commit-guidelines.md` stays the single truth source

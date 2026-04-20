@@ -7,12 +7,15 @@
 - CC-Plan skill version:
 - Source roadmap item:
 - Source roadmap version:
+- Change meta: `change-meta.json`
 
 ## Execution Handoff
 
 - Canonical design: `planning/design.md`
+- Canonical change meta: `change-meta.json`
 - Execution mode: `single-path` | `parallel-ready`
 - Frozen decisions:
+- Capability specs:
 - Read first:
 - Commands to trust:
 - Do not re-decide:

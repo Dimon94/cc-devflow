@@ -6,13 +6,16 @@
 - Analysis version:
 - Investigate skill version:
 - Source bug / incident:
+- Change meta: `change-meta.json`
 
 ## Execution Handoff
 
 - Canonical analysis: `planning/analysis.md`
+- Canonical change meta: `change-meta.json`
 - Execution mode: `single-path` | `parallel-ready`
 - Confirmed root cause:
 - Frozen repair boundary:
+- Capability specs:
 - Read first:
 - Commands to trust:
 - Do not re-decide:

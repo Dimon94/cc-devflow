@@ -1,6 +1,6 @@
 ---
 name: cc-investigate
-version: 1.0.0
+version: 1.1.0
 description: "Use when a bug, regression, broken task, or unexpected behavior needs root-cause investigation, reproducible evidence, and a frozen repair handoff before cc-do resumes coding."
 triggers:
   - "帮我查这个 bug"
@@ -25,6 +25,9 @@ writes:
     durability: "durable"
     required: true
   - path: "devflow/changes/<change-key>/planning/task-manifest.json"
+    durability: "durable"
+    required: true
+  - path: "devflow/changes/<change-key>/change-meta.json"
     durability: "durable"
     required: true
 entry_gate:
@@ -109,14 +112,14 @@ tool_budget:
 
 ## Harness Contract
 
-- Allowed actions: reproduce, collect evidence, trace code paths, test hypotheses, freeze root cause, and write only `planning/analysis.md`, `planning/tasks.md`, `planning/task-manifest.json`.
+- Allowed actions: reproduce, collect evidence, trace code paths, test hypotheses, freeze root cause, and write only `planning/analysis.md`, `planning/tasks.md`, `planning/task-manifest.json`, and `change-meta.json`.
 - Forbidden actions: writing production code, disguising guesses as root cause, or skipping directly from symptoms to repair.
 - Required evidence: every root-cause claim must point to reproduction evidence, code facts, recent history, or explicit user confirmation.
 - Reroute rule: product/scope changes go to `cc-plan`; strategy questions go to `roadmap`; only confirmed repair handoff goes to `cc-do`.
 
 ## Output Model
 
-`cc-investigate` 只允许产出 3 个主文件：
+`cc-investigate` 只允许产出 4 个主文件：
 
 1. `planning/analysis.md`
    - 现象
@@ -131,6 +134,9 @@ tool_budget:
 3. `planning/task-manifest.json`
    - 机器真相源
    - 标记当前任务、依赖、验证命令、调查版本链
+4. `change-meta.json`
+   - 标记当前 bug 是实现偏离 spec、spec 本身缺失，还是 roadmap 假设错误
+   - 记录这次修复会如何影响 capability truth
 
 `cc-investigate` 不写生产代码，不在这里偷跑 `cc-do`。
 
@@ -139,7 +145,7 @@ tool_budget:
 1. 先确认当前对象仍然属于一个 requirement，而不是整个项目级故障。
 2. 先收症状事实：错误、触发条件、影响面、复现路径。
 3. 先读现有 change 目录里的 `planning/design.md` / `planning/analysis.md` / `planning/tasks.md` / `planning/task-manifest.json`，不要假设自己是第一位调查者。
-4. 先读代码、测试、日志和最近提交，再下任何假设。
+4. 先读代码、测试、日志、相关 capability spec 和最近提交，再下任何假设。
 5. 如果复现都不稳定，先不要写根因。
 
 ## Investigation Loop
@@ -152,6 +158,7 @@ tool_budget:
    - 沿着代码路径找触点
    - 查最近提交和同类改动
    - 找现有测试和断点证据
+   - 判定偏离的是 capability boundary、invariant，还是只是实现细节
 3. **Form hypotheses**
    - 只保留 1-3 个可被证伪的假设
    - 每个假设都写支持证据和反证
@@ -161,7 +168,7 @@ tool_budget:
 5. **Freeze repair contract**
    - 根因确认后，写进 `planning/analysis.md`
    - 只保留最小修复边界
-   - 输出 `planning/tasks.md` + `planning/task-manifest.json`
+   - 输出 `planning/tasks.md` + `planning/task-manifest.json` + `change-meta.json`
 6. **Hand off**
    - 下一步明确写成 `cc-do`
    - 如果 repair contract 越过当前 requirement，就 reroute 到 `cc-plan`

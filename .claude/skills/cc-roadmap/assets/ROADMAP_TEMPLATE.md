@@ -26,6 +26,7 @@
 - Hard constraints:
 - Adoption / trust bottleneck:
 - Known unknowns:
+- Relevant capabilities:
 
 ## Evidence Ledger
 
@@ -64,11 +65,11 @@
 
 ## Stage Overview
 
-| Stage | Goal | Why now | Dependencies | Exit signal | Kill signal | Non-goals |
-|-------|------|---------|--------------|-------------|-------------|-----------|
-| Stage 1 |  |  |  |  |  |  |
-| Stage 2 |  |  |  |  |  |  |
-| Stage 3 |  |  |  |  |  |  |
+| Stage | Goal | Why now | Primary capabilities | Dependencies | Exit signal | Kill signal | Non-goals |
+|-------|------|---------|----------------------|--------------|-------------|-------------|-----------|
+| Stage 1 |  |  |  |  |  |  |  |
+| Stage 2 |  |  |  |  |  |  |  |
+| Stage 3 |  |  |  |  |  |  |  |
 
 ## Stage Detail
 
@@ -143,6 +144,10 @@ flowchart LR
 
 ## Implementation Tracking
 
-| RM-ID | Item | Stage | Priority | Depends On | Status | REQ | Progress |
-|------|------|-------|----------|------------|--------|-----|----------|
-| RM-001 |  | Stage 1 | P1 | - | Planned | - | 0% |
+- Tracking source: `devflow/roadmap-tracking.json`
+
+<!-- roadmap-tracking:start -->
+| RM-ID | Item | Stage | Priority | Primary Capability | Secondary Capabilities | Expected Spec Delta | Depends On | Status | REQ | Progress |
+|------|------|-------|----------|--------------------|------------------------|---------------------|------------|--------|-----|----------|
+| RM-001 |  | Stage 1 | P1 | cap-example | - | tighten current truth | - | Planned | - | 0% |
+<!-- roadmap-tracking:end -->

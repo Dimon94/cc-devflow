@@ -1,5 +1,15 @@
 # CC-Do Skill Changelog
 
+## v1.4.0 - 2026-04-19
+
+- require `cc-do` to load `change-meta.json` and related capability specs before coding so execution stops guessing long-term constraints
+- extend `build-task-context.sh` with primary capability, spec files, expected spec delta, and sync status
+- make the execution contract explicit that `cc-do` validates spec alignment but does not mutate long-term spec truth
+
+Migration note:
+
+- new execution contexts should include `change-meta.json` beside `design.md` / `analysis.md`
+
 ## v1.3.1 - 2026-04-18
 
 - replace GNU `sed` usage in `scripts/mark-task-complete.sh` with a portable `awk` implementation so task completion works on macOS BSD userlands

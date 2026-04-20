@@ -1,6 +1,6 @@
 ---
 name: cc-check
-version: 1.5.0
+version: 1.6.0
 description: "Use when a planned or investigated change needs fresh verification evidence, quality gates, review proof, and a clear pass fail blocked verdict."
 triggers:
   - "验收这个需求"
@@ -25,7 +25,7 @@ entry_gate:
   - "Re-run fresh commands instead of inheriting cc-do narration."
   - "If evidence is stale or missing, reset context and rebuild the verdict from canonical artifacts."
 exit_criteria:
-  - "review/report-card.json records pass, fail, or blocked using fresh evidence and honest reroute."
+  - "review/report-card.json records pass, fail, or blocked using fresh evidence, plus spec alignment and sync readiness."
   - "Task-level review and requirement-level diff review are separated clearly."
   - "The next step is unambiguous: cc-act, cc-do, cc-investigate, or cc-plan."
 reroutes:
@@ -95,7 +95,7 @@ tool_budget:
 1. 先读 `planning/design.md` 或 `planning/analysis.md`，再读 `planning/tasks.md`、`planning/task-manifest.json`。
 2. 明确本次要验证哪些事实，不做含糊验收。
 3. 所有通过结论都必须来自本次新鲜命令输出。
-4. 已完成任务必须能拿出 `spec/code` review 证据。
+4. 已完成任务必须能拿出 `spec/code` review 证据，并能说明 expected spec delta 是否已被验证。
 
 ## Loop
 

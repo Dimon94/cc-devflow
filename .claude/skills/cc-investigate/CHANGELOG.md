@@ -1,5 +1,15 @@
 # CC-Investigate Skill Changelog
 
+## v1.1.0 - 2026-04-19
+
+- add `change-meta.json` to the investigation output so bug work also preserves capability/spec linkage
+- upgrade `ANALYSIS.md`, debug task handoff, and manifest templates with spec diagnosis and expected spec delta fields
+- teach investigation to classify whether the problem is implementation drift, missing spec truth, or roadmap mismatch
+
+Migration note:
+
+- investigated bug changes should now refresh or create `devflow/changes/<change-key>/change-meta.json`
+
 ## v1.0.0 - 2026-04-17
 
 - 初始版 `cc-investigate` skill，作为 bug 路径里的专用调查入口。

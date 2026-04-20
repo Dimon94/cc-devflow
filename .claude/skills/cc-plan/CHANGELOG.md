@@ -1,5 +1,16 @@
 # CC-Plan Skill Changelog
 
+## v3.4.0 - 2026-04-19
+
+- add `change-meta.json` as a required planning output so roadmap items, capability specs, and execution share one machine truth source
+- upgrade design and tiny-design templates with capability handoff, invariant impact, expected spec delta, and gap change sections
+- extend `task-manifest.json` and task handoff templates so `cc-do` can load capability specs without relying on chat memory
+
+Migration note:
+
+- new planning runs should generate `devflow/changes/<change-key>/change-meta.json`
+- capability-linked roadmap items should carry one explicit `Primary capability`
+
 ## v3.3.0 - 2026-04-17
 
 - add structured frontmatter contract fields so cc-plan is machine-readable as a skill-first harness stage

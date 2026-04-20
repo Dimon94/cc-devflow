@@ -1,6 +1,6 @@
 ---
 name: cc-roadmap
-version: 4.0.0
+version: 4.3.1
 description: "Use when defining, resetting, or narrowing project direction, stage order, or backlog priority before a concrete requirement enters the PDCA loop."
 triggers:
   - "帮我定路线图"
@@ -16,6 +16,7 @@ reads:
   - "CHANGELOG.md"
   - "assets/ROADMAP_TEMPLATE.md"
   - "assets/BACKLOG_TEMPLATE.md"
+  - "assets/TRACKING_TEMPLATE.json"
   - "references/roadmap-dialogue.md"
 writes:
   - path: "devflow/ROADMAP.md"
@@ -24,13 +25,17 @@ writes:
   - path: "devflow/BACKLOG.md"
     durability: "durable"
     required: true
+  - path: "devflow/roadmap-tracking.json"
+    durability: "durable"
+    required: false
+    when: "roadmap/backlog tracking is maintained through bundled helper scripts"
 entry_gate:
-  - "Read current roadmap, backlog, and surrounding repo context before proposing direction."
+  - "Read current roadmap, backlog, related capability specs, and surrounding repo context before proposing direction."
   - "Confirm this is a project-direction problem, not a single requirement execution problem."
   - "Do not decompose implementation tasks while the roadmap is still being decided."
 exit_criteria:
   - "The next 1-3 stages are frozen with goal, why now, dependencies, exit signal, kill signal, and non-goals."
-  - "The first backlog items can naturally enter cc-plan without extra strategic guessing."
+  - "The first backlog items can naturally enter cc-plan without extra strategic guessing, including explicit capability links and expected spec delta."
   - "The roadmap shows an explicit RM dependency graph so serial blockers and parallel-ready work are obvious."
   - "The user-approved recommendation is explicit and grounded in current evidence."
 reroutes:
@@ -52,7 +57,7 @@ tool_budget:
 
 ## Role
 
-`cc-roadmap` 只负责一件事：决定项目接下来 1-3 个阶段该打哪几仗。
+`cc-roadmap` 只负责一件事：决定项目接下来 1-3 个阶段该推进哪几个 capability。
 
 它先尽可能收集真实上下文，再逼出真实用户、真实痛点、真实紧迫性，最后把这些现实压成一条能落地、能进入 `cc-plan` 的主线。
 
@@ -87,7 +92,7 @@ tool_budget:
 
 ## Harness Contract
 
-- Allowed actions: read current strategy files, repo context, and recent reality; compare route shapes; write only `devflow/ROADMAP.md` and `devflow/BACKLOG.md`.
+- Allowed actions: read current strategy files, repo context, and recent reality; compare route shapes; write `devflow/ROADMAP.md`, `devflow/BACKLOG.md`, and the optional `devflow/roadmap-tracking.json` sidecar used by bundled helpers as the shared roadmap/backlog truth source.
 - Forbidden actions: decompose implementation tasks, invent hidden context, or jump into `cc-plan` before the roadmap is approved.
 - Required evidence: every stage and backlog item must point back to explicit repo facts, user constraints, or observed market signals.
 - Reroute rule: once the conversation collapses to one concrete requirement, stop strategic expansion and hand off to `cc-plan`.
@@ -104,10 +109,11 @@ tool_budget:
 进入对话前，至少主动收这些上下文：
 
 1. 当前 `devflow/ROADMAP.md` / `devflow/BACKLOG.md` 的主线、版本、已停放事项。
-2. `CLAUDE.md`、`README*`、`TODOS.md`、最近相关 docs / specs / plans。
-3. 最近相关提交、当前分支脏状态、正在进行中的 requirement。
-4. 真实 forcing functions：deadline、发布窗口、资源上限、依赖、distribution、adoption / trust / delivery 卡点。
-5. 当前项目最强的现实证据，以及仍然只能靠假设的空白。
+2. `devflow/specs/INDEX.md` 与相关 capability specs 的边界、状态、open gaps。
+3. `CLAUDE.md`、`README*`、`TODOS.md`、最近相关 docs / specs / plans。
+4. 最近相关提交、当前分支脏状态、正在进行中的 requirement。
+5. 真实 forcing functions：deadline、发布窗口、资源上限、依赖、distribution、adoption / trust / delivery 卡点。
+6. 当前项目最强的现实证据，以及仍然只能靠假设的空白。
 
 先把这些材料压成一个 `Context Snapshot`，再开始追问用户。
 
@@ -120,7 +126,7 @@ tool_budget:
 5. 给出 2-3 种路线图形状，再明确推荐一种，并说明为什么其他路线现在不值得打。
 6. 只冻结 1-3 个阶段。每个阶段都必须有 goal、why now、dependencies、exit signal、kill signal、non-goals。
 7. 把 `RM` 之间的硬依赖压成显式 dependency graph，并标出 parallel-ready wave；不要把“最好按这个顺序做”伪装成 blocker。
-8. backlog 只保留会真的进入下一轮 `cc-plan` 的事项，每项都要带成功信号、下一决策、`Depends On` 与 `Parallel With`。
+8. backlog 只保留会真的进入下一轮 `cc-plan` 的事项，每项都要带成功信号、下一决策、`Primary Capability`、`Secondary Capabilities`、`Expected Spec Delta`、`Depends On` 与 `Parallel With`。
 9. 用户没批准，不进入 `cc-plan`。
 
 ## Route Selection Rule
@@ -177,12 +183,14 @@ tool_budget:
 3. Causality scan：Stage 2 是否真的建立在 Stage 1 的胜利条件之上。
 4. Feasibility scan：阶段目标与团队容量、依赖、distribution 约束是否接得上。
 5. Graph scan：`Depends On` 是否只包含硬阻塞，图里有没有环，parallel-ready wave 是否真的共享同一前置。
-6. Handoff scan：第一批 roadmap item 是否已经自然长成可进入 `cc-plan` 的对象。
+6. Spec scan：每个 roadmap item 是否都落到某个 capability，而不是悬空需求。
+7. Handoff scan：第一批 roadmap item 是否已经自然长成可进入 `cc-plan` 的对象。
 
 ## Output
 
 - `devflow/ROADMAP.md`
 - `devflow/BACKLOG.md`
+- `devflow/roadmap-tracking.json` when helper automation needs a shared roadmap/backlog truth source
 
 ## Good Output
 
@@ -213,8 +221,10 @@ tool_budget:
 - 变更记录：`CHANGELOG.md`
 - 模板：`assets/ROADMAP_TEMPLATE.md`
 - 模板：`assets/BACKLOG_TEMPLATE.md`
+- 结构化 tracking 模板：`assets/TRACKING_TEMPLATE.json`
 - 对话骨架：`references/roadmap-dialogue.md`
 - 条目定位：`scripts/locate-roadmap-item.sh`
+- tracking 渲染器：`scripts/roadmap-tracking.js`
 - 进度回写：`scripts/sync-roadmap-progress.sh`
 - 版本递增：`scripts/bump-skill-version.sh`
 
