@@ -71,7 +71,7 @@ npx cc-devflow adapt --cwd /path/to/your/project --platform qwen
 npx cc-devflow adapt --cwd /path/to/your/project --platform antigravity
 ```
 
-Whole-pack installation ships the six visible workflow skills plus the maintenance skill `cc-simplify`.
+Whole-pack installation ships the six visible workflow skills plus the maintenance skills `cc-spec-init` and `cc-simplify`.
 `init --force` now force-upgrades only the managed distributed skills and preserves unrelated project files under `.claude`.
 
 If you are running from a source checkout instead of an installed package, use `node bin/cc-devflow-cli.js ...` or `npm exec -- cc-devflow ...`.
@@ -89,6 +89,7 @@ npx skills add https://github.com/Dimon94/cc-devflow --skill cc-investigate
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-do
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-check
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-act
+npx skills add https://github.com/Dimon94/cc-devflow --skill cc-spec-init
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-simplify
 ```
 
@@ -139,6 +140,7 @@ In this repository, the distributed skill folders are:
 - `.claude/skills/cc-do/`
 - `.claude/skills/cc-check/`
 - `.claude/skills/cc-act/`
+- `.claude/skills/cc-spec-init/`
 - `.claude/skills/cc-simplify/`
 
 ## 🛠️ Use
@@ -162,16 +164,18 @@ skills.sh remains the single-skill distribution path for distributed `.claude/sk
 
 ## 📦 Outputs
 
-- `cc-roadmap` writes `devflow/ROADMAP.md` and `devflow/BACKLOG.md`
-- `cc-plan` writes `planning/design.md`, `planning/tasks.md`, `task-manifest.json`
-- `cc-investigate` writes `planning/analysis.md`, `planning/tasks.md`, `task-manifest.json`
+- `cc-roadmap` writes `devflow/ROADMAP.md` and `devflow/BACKLOG.md`; helper sync can also maintain `devflow/roadmap-tracking.json` as the shared roadmap/backlog truth source
+- `cc-spec-init` writes `devflow/specs/INDEX.md`, capability specs, and `change-meta.json`
+- `cc-plan` writes `planning/design.md`, `planning/tasks.md`, `task-manifest.json`, and `change-meta.json`
+- `cc-investigate` writes `planning/analysis.md`, `planning/tasks.md`, `task-manifest.json`, and `change-meta.json`
 - `cc-do` writes code, tests, task `checkpoint.json`, and workspace scratch runtime
 - `cc-check` writes `report-card.json`
 - `cc-act` writes exactly one final handoff file: `handoff/pr-brief.md`, `handoff/resume-index.md`, or `handoff/release-note.md`
 
 ## Durable vs Ephemeral
 
-- `devflow/changes/<change>/` stores durable truth only: `change-state.json`, planning docs, `task-manifest.json`, `team-state.json`, task `checkpoint.json`, `report-card.json`, and one final handoff file.
+- `devflow/specs/` stores durable capability truth: `INDEX.md` plus `capabilities/*.md`.
+- `devflow/changes/<change>/` stores durable change truth only: `change-state.json`, `change-meta.json`, planning docs, `task-manifest.json`, `team-state.json`, task `checkpoint.json`, `report-card.json`, and one final handoff file.
 - `devflow/workspaces/<change>/` stores ephemeral runtime scratch such as worker assignment, journals, prompts, and session logs.
 - If a file can be regenerated from durable truth, it should not be persisted under `devflow/changes/`.
 
