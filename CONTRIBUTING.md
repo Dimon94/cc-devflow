@@ -21,7 +21,7 @@ Public surface:
 
 Shared runtime helpers may still live under `lib/skill-runtime/`, but they are not the user-facing workflow anymore.
 
-Maintenance helpers may also exist under `.claude/skills/`, such as `docs-sync`, but they do not change the public `cc-roadmap + PDCA/IDCA` workflow story.
+Maintenance helpers may also exist under `.claude/skills/`, such as `cc-spec-init`, `cc-simplify`, and `docs-sync`, but they do not change the public `cc-roadmap + PDCA/IDCA` workflow story.
 
 ---
 
@@ -100,6 +100,7 @@ The user-facing story should stay:
 - whole pack: `cc-devflow init`
 - platform outputs: `cc-devflow adapt`
 - workflow execution: visible `cc-roadmap + PDCA/IDCA` skills
+- capability truth maintenance: `cc-spec-init`
 
 ### 2. Preserve Skills-First Layout
 
@@ -175,7 +176,7 @@ This should confirm:
 - do not describe `.claude/commands/` as required structure
 - do not describe internal runtime helpers as the supported public workflow
 - if a shipped skill changes, update that skill's `version`, local `CHANGELOG.md`, and affected public docs in the same PR
-- keep the workflow story as `cc-roadmap + PDCA/IDCA` visible skills; document maintenance helpers separately
+- keep the workflow story as `cc-roadmap + PDCA/IDCA` visible skills; document maintenance helpers such as `cc-spec-init` / `cc-simplify` separately
 
 ---
 
