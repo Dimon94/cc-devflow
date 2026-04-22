@@ -2,11 +2,11 @@
   "updatedAt": "2026-04-19",
   "skills": {
     "cc-roadmap": "4.3.1",
-    "cc-plan": "3.4.0",
+    "cc-plan": "3.5.0",
     "cc-investigate": "1.1.0",
-    "cc-do": "1.4.0",
+    "cc-do": "1.4.3",
     "cc-check": "1.6.0",
-    "cc-act": "1.5.0",
+    "cc-act": "1.5.1",
     "cc-spec-init": "1.0.0"
   },
   "examples": [

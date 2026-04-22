@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated `cc-do` and `cc-check` contracts so they can consume `ANALYSIS.md` handoffs and reroute failed bug fixes back to `cc-investigate`.
 - Updated `cc-roadmap`, `cc-plan`, `cc-investigate`, `cc-do`, `cc-check`, and `cc-act` to carry capability/spec linkage through roadmap, planning, execution, verification, and closeout.
 - Updated public docs and example bindings so `devflow/specs/` is documented as durable capability truth and `change-meta.json` is documented as durable change truth.
+- Backported `explainer-comic` skill hardening into source skills: `cc-plan` now collapses fake REQ boundaries, `cc-do` now blocks on `externalDep` and serializes runtime writes, `cc-spec-init` now validates secondary/spec-file links, and `cc-act` now accepts the newer `report-card` gate schema.
+- Refreshed example bindings to `cc-plan@3.5.0`, `cc-do@1.4.3`, and `cc-act@1.5.1` so docs match the shipped skill contracts.
 
 ## [4.4.0] - 2026-04-10
 

@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-001.v1`
 - Design version: `design.v1`
-- CC-Plan skill version: `3.4.0`
+- CC-Plan skill version: `3.5.0`
 - Source roadmap item: `RM-001`
 - Source roadmap version: `roadmap.v1`
 
