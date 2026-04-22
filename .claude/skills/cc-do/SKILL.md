@@ -1,6 +1,6 @@
 ---
 name: cc-do
-version: 1.4.0
+version: 1.4.3
 description: "Use when implementing planned tasks, resuming interrupted work, applying a frozen investigation handoff, or landing review feedback after cc-plan or cc-investigate."
 triggers:
   - "开始做 T003"
@@ -116,7 +116,7 @@ tool_budget:
 ## Entry Gate
 
 1. 先读 `planning/design.md` 或 `planning/analysis.md`，再读 `planning/tasks.md`、`planning/task-manifest.json`；如果是恢复执行，再补读最近 checkpoint 或已有 `handoff/resume-index.md`。
-2. 先用 `scripts/select-ready-tasks.sh` 判断现在到底哪几个任务真的 ready。
+2. 先用 `scripts/select-ready-tasks.sh` 判断现在到底哪几个任务真的 ready，以及哪些任务仍被 `externalDep` / cross-REQ blocker 卡住。
 3. 只锁定当前 ready task，或一组经依赖与触点校验后可并行的 ready tasks。
 4. 如果这次来自 `cc-investigate`，必须把 `planning/analysis.md` 当成 canonical contract，而不是一边实现一边重新调查。
 5. 没有任务上下文，不准把任务扔给 subagent；先用 `scripts/build-task-context.sh` 从 `planning/design.md` 或 `planning/analysis.md`、`planning/tasks.md`、`planning/task-manifest.json`、`change-meta.json` 与相关 capability spec 组装上下文。
@@ -124,7 +124,7 @@ tool_budget:
 ## Loop
 
 1. 读取当前任务，而不是重新发明任务。
-2. 依赖没满足前，不准提前做下游任务。
+2. 内部 `dependsOn` 或外部 `externalDep` 没满足前，不准提前做下游任务。
 3. 没有明确并行资格，不准把多个实现任务同时推进。
 4. 先 `fail-first`：先写失败测试，先看见红，再写生产代码。
 5. 按 `Red -> Green -> Refactor` 推进，Green 只允许最小实现。
@@ -143,6 +143,7 @@ tool_budget:
 ## Good Output
 
 - 当前 task 一眼可见，执行者不用从聊天记录里猜目标
+- 当前 task 的内部依赖和外部阻塞一眼可见，不靠聊天记忆猜 ready 状态
 - 至少留下一次明确的 Red/Green 证据
 - runtime / checkpoint 足够让下一位接手者无损恢复
 - reviewer 能顺着 review 记录和验证命令复盘这次实现

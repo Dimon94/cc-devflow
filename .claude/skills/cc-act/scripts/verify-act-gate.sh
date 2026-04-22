@@ -37,7 +37,13 @@ tasks_file="$(req_act_tasks_path "$CHANGE_DIR")"
 verdict="$(jq -r '.verdict // "unknown"' "$report_card" 2>/dev/null || echo unknown)"
 reroute="$(jq -r '.reroute // "unknown"' "$report_card" 2>/dev/null || echo unknown)"
 spec_sync_ready="$(jq -r '.specSyncReady // false' "$report_card" 2>/dev/null || echo false)"
-evidence_count="$(jq -r '(.evidence // []) | length' "$report_card" 2>/dev/null || echo 0)"
+evidence_count="$(
+  jq -r '
+    ((.evidence // []) | length)
+    + ((.quickGates // []) | length)
+    + ((.strictGates // []) | length)
+  ' "$report_card" 2>/dev/null || echo 0
+)"
 gap_count="$(jq -r '(.gaps // []) | length' "$report_card" 2>/dev/null || echo 0)"
 
 remaining_tasks="0"

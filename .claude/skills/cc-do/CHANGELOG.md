@@ -1,5 +1,23 @@
 # CC-Do Skill Changelog
 
+## v1.4.3 - 2026-04-22
+
+- serialize manifest review updates in `record-review-decision.sh` so parallel `spec` / `code` writes no longer clobber each other
+- serialize checkpoint, `events.jsonl`, and task completion writes so concurrent `cc-do` workers stop overwriting each other's runtime truth
+- add a shared mkdir-based lock helper in `cc-do-common.sh` for macOS-safe coordination without `flock`
+
+## v1.4.2 - 2026-04-22
+
+- align `cc-do` helper scripts with the canonical `devflow/changes/<change-key>/{planning,execution,review,handoff}` layout instead of special-casing flat paths
+- teach `mark-task-complete.sh` to resolve canonical change roots before gate checks so planning-path inputs no longer break closeout
+- strengthen spec-link validation so dangling capability-map entries, `secondaryCapabilities`, and `specFiles` are caught before closeout
+
+## v1.4.1 - 2026-04-21
+
+- teach `scripts/select-ready-tasks.sh` to treat `externalDep` as a first-class readiness gate instead of pretending only intra-manifest `dependsOn` exists
+- add an explicit `externalDepsReady` / `externalDepStatus=ready|satisfied|done|passed|verified` unlock path so cross-REQ or fixture gates stop relying on chat memory
+- expose `waitingOnInternal` and `waitingOnExternal` separately in ready-task summaries, and surface external gates in `build-task-context.sh`
+
 ## v1.4.0 - 2026-04-19
 
 - require `cc-do` to load `change-meta.json` and related capability specs before coding so execution stops guessing long-term constraints

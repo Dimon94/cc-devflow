@@ -50,6 +50,7 @@ change_id="$(jq -r '.changeId // .requirementId // "REQ-UNKNOWN"' "$manifest" 2>
 plan_version="$(jq -r '.metadata.planVersion // 1' "$manifest" 2>/dev/null || echo 1)"
 timestamp="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 runtime_task_dir="$(req_do_task_runtime_dir "$CHANGE_DIR" "$TASK_ID")"
+checkpoint_file="$runtime_task_dir/checkpoint.json"
 
 mkdir -p "$runtime_task_dir"
 
@@ -57,46 +58,55 @@ if [[ -z "$SESSION_ID" ]]; then
   SESSION_ID="${TASK_ID}-$(date -u +%s)"
 fi
 
-jq -nc \
-  --arg changeId "$change_id" \
-  --arg taskId "$TASK_ID" \
-  --arg sessionId "$SESSION_ID" \
-  --arg planVersion "$plan_version" \
-  --arg status "$STATUS" \
-  --arg summary "$SUMMARY" \
-  --arg timestamp "$timestamp" \
-  --arg attempt "$ATTEMPT" \
-  '{
-    changeId: $changeId,
-    taskId: $taskId,
-    sessionId: $sessionId,
-    planVersion: ($planVersion | tonumber),
-    status: $status,
-    summary: $summary,
-    timestamp: $timestamp,
-    attempt: ($attempt | tonumber)
-  }' > "$runtime_task_dir/checkpoint.json"
-
-if [[ -n "$EVENT_TYPE" || "$STATUS" == "failed" ]]; then
+write_checkpoint() {
+  local tmp_checkpoint
+  tmp_checkpoint="$(mktemp)"
   jq -nc \
-    --arg type "${EVENT_TYPE:-status_$STATUS}" \
     --arg changeId "$change_id" \
     --arg taskId "$TASK_ID" \
     --arg sessionId "$SESSION_ID" \
+    --arg planVersion "$plan_version" \
     --arg status "$STATUS" \
     --arg summary "$SUMMARY" \
-    --arg nextAction "$NEXT_ACTION" \
     --arg timestamp "$timestamp" \
+    --arg attempt "$ATTEMPT" \
     '{
-      type: $type,
       changeId: $changeId,
       taskId: $taskId,
       sessionId: $sessionId,
+      planVersion: ($planVersion | tonumber),
       status: $status,
       summary: $summary,
-      nextAction: $nextAction,
-      timestamp: $timestamp
-    }' >> "$runtime_task_dir/events.jsonl"
+      timestamp: $timestamp,
+      attempt: ($attempt | tonumber)
+    }' > "$tmp_checkpoint"
+  mv "$tmp_checkpoint" "$checkpoint_file"
+}
+req_do_with_lock "$checkpoint_file" write_checkpoint
+
+if [[ -n "$EVENT_TYPE" || "$STATUS" == "failed" ]]; then
+  append_event() {
+    jq -nc \
+      --arg type "${EVENT_TYPE:-status_$STATUS}" \
+      --arg changeId "$change_id" \
+      --arg taskId "$TASK_ID" \
+      --arg sessionId "$SESSION_ID" \
+      --arg status "$STATUS" \
+      --arg summary "$SUMMARY" \
+      --arg nextAction "$NEXT_ACTION" \
+      --arg timestamp "$timestamp" \
+      '{
+        type: $type,
+        changeId: $changeId,
+        taskId: $taskId,
+        sessionId: $sessionId,
+        status: $status,
+        summary: $summary,
+        nextAction: $nextAction,
+        timestamp: $timestamp
+      }' >> "$runtime_task_dir/events.jsonl"
+  }
+  req_do_with_lock "$runtime_task_dir/events.jsonl" append_event
 fi
 
-echo "Wrote $runtime_task_dir/checkpoint.json"
+echo "Wrote $checkpoint_file"

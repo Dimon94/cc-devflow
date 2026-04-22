@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.4.0
+version: 3.5.0
 description: "Use when a requirement, roadmap item, or bug needs scope clarification, design decisions, and executable task breakdown before coding starts."
 triggers:
   - "帮我规划这个需求"
@@ -64,6 +64,8 @@ tool_budget:
 
 它的目标不是制造一串 planning 文档，而是把 requirement 压成最少但足够强的交付物，让 `cc-do` 不需要临场补脑。
 
+它默认信任大模型有能力连续吃下同一业务链路里的多段工作，所以 `REQ` 的边界应该围绕真实业务链路和真实 handoff 断点来画，而不是围绕“每 3 个任务拆一个目录”来画。
+
 ## Read First
 
 1. `PLAYBOOK.md`
@@ -94,6 +96,12 @@ tool_budget:
 | 跨模块、高风险、会逼执行者二次设计 | `full-design` |
 
 先给出默认 planning 形态，再解释为什么不是另外两种。`cc-plan` 的第一件事不是产出文档，而是压平 planning 密度。
+
+第二件事是判断这次应该收成一个更强的 `REQ`，还是确实需要拆成多个 `REQ`：
+
+- 如果几段工作属于同一业务链路、共享同一成功标准、前后只是串行 handoff，而不是不同 owner / 不同发布边界 / 不同风险模型，就优先合并进一个 `REQ`
+- 不要因为任务数看起来整齐，或者每个小段都能勉强写成 3-4 个 task，就机械拆出多个 `REQ`
+- 只有当执行者跨过某个边界后，真的进入了另一类问题，才值得新开 `REQ`
 
 ## Harness Contract
 
@@ -133,9 +141,11 @@ tool_budget:
 
 1. 先确认当前对象是一个 requirement，而不是整个项目路线图。
 2. 如果来源于 `roadmap`，必须先定位对应的 `RM-ID`，读清 `devflow/ROADMAP.md` / `devflow/BACKLOG.md` 的版本、证据、约束、success signal、next decision、primary capability、expected spec delta。
-3. 先读当前 change 目录现状。旧目录里如果还有 `BRAINSTORM.md` / `PLAN_REVIEW.md` / `context-package.md`，把有效信息吸收进新的 `planning/design.md`，不要继续增殖。
-4. 先看代码、文档、测试和最近提交，再谈拆任务。
-5. 先写不做什么，再写做什么。
+3. 在创建或沿用 change-key 之前，先判断上游相邻 `RM` 是否其实属于同一条业务链路。如果它们共享同一阶段目标、成功信号连续、只是串行 handoff，不要急着拆成多个 `REQ`。
+4. 先读当前 change 目录现状。旧目录里如果还有 `BRAINSTORM.md` / `PLAN_REVIEW.md` / `context-package.md`，把有效信息吸收进新的 `planning/design.md`，不要继续增殖。
+5. 如果已经存在多个很小的相邻 `REQ`，且它们只是在同一业务链路上顺序相连，要优先评估是否合并成一个 canonical `REQ`，而不是继续在碎片结构上叠任务。
+6. 先看代码、文档、测试和最近提交，再谈拆任务。
+7. 先写不做什么，再写做什么。
 
 ## Context Sweep
 
@@ -155,13 +165,14 @@ tool_budget:
 1. 先探索上下文，再写结论。
 2. 澄清时一次只问一个关键问题，不做问题轰炸。
 3. 先写问题、目标、约束、非目标、成功标准，再写方案。
-4. 如果方向仍不稳，给 2-3 个方案，带 trade-off 和推荐，但这些内容都写进 `planning/design.md`。
-5. 推荐方案没有得到用户明确批准前，不允许生成 `planning/tasks.md`。
-6. 批准后先判断这次用 `tiny-design` 还是 `full-design`。
-7. 把批准后的唯一方案冻结进 `planning/design.md`。
-8. 在 `planning/design.md` 内完成 review loop 与 final gate，不再额外拆出 `PLAN_REVIEW.md`。
-9. 只有 design gate 真正通过，才能写 `planning/tasks.md`、`planning/task-manifest.json` 和 `change-meta.json`。
-10. 计划完成后，下一步唯一答案是 `cc-do`。
+4. 先判断这次是一个真实 `REQ`，还是几个被误拆的小段。如果只是同链路串行工作，优先合并成一个更强的 `REQ`。
+5. 如果方向仍不稳，给 2-3 个方案，带 trade-off 和推荐，但这些内容都写进 `planning/design.md`。
+6. 推荐方案没有得到用户明确批准前，不允许生成 `planning/tasks.md`。
+7. 批准后先判断这次用 `tiny-design` 还是 `full-design`。
+8. 把批准后的唯一方案冻结进 `planning/design.md`。
+9. 在 `planning/design.md` 内完成 review loop 与 final gate，不再额外拆出 `PLAN_REVIEW.md`。
+10. 只有 design gate 真正通过，才能写 `planning/tasks.md`、`planning/task-manifest.json` 和 `change-meta.json`。
+11. 计划完成后，下一步唯一答案是 `cc-do`。
 
 ## Design Modes
 
@@ -183,6 +194,19 @@ tool_budget:
 2. 有数据模型、接口契约、状态机、迁移或兼容性风险
 3. 有安全、权限、计费、同步一致性等高代价约束
 4. 如果不先讲清边界，执行者会被迫二次设计
+
+`REQ` 边界判断和 `design mode` 判断是两件事，不要混淆：
+
+- 一个 `REQ` 可以是 `full-design`，并覆盖同一业务链路上的多个连续 `RM` / 子问题
+- `tiny-design` 适合小变更，但不等于“每个小段都要独立成一个 REQ”
+- 如果多个相邻小段共享同一业务目标和同一 handoff 主线，优先合并成一个 `REQ`，然后在这个 `REQ` 里用更清楚的 task phase 表达顺序
+
+以下情况才更适合拆成多个 `REQ`：
+
+1. 不同阶段之间存在真正的 owner / 风险 / 发布边界
+2. 前一段做完后，后一段仍需要重新做 design 决策，而不是直接执行
+3. 两段工作的成功标准、非目标或 capability 约束已经明显不同
+4. 合并后会让 `planning/design.md` 失去单一主线，变成并列项目集
 
 ## Review Loop
 
@@ -206,6 +230,7 @@ tool_budget:
 - `planning/task-manifest.json` 是 `cc-do` 的真相源，要写清 `dependsOn`、并行资格、触点、验证命令，以及继承了哪版 roadmap / design / spec
 - `change-meta.json` 是 capability 真相源，要写清这次 change 准备如何改变长期 spec
 - 看完第一屏，执行者就知道这次属于 `tiny-design` 还是 `full-design`，以及为什么
+- 如果这次覆盖的是同一业务链路的连续几段工作，看完第一屏也应该立刻看出：为什么这些内容属于同一个 `REQ`，以及为什么现在不值得拆开
 
 ## Bundled Resources
 
@@ -227,8 +252,10 @@ tool_budget:
 4. `planning/design.md` 和 `planning/tasks.md` 必须足够让 `cc-do` 在不继承当前会话的前提下继续工作。
 5. 版本、来源、冻结决策必须可追踪。
 6. 任务少而硬，胜过任务多而虚。
-7. 任务一旦超过 2-5 分钟粒度就继续拆，直到可以稳定交给执行者。
-8. 三层以上判断说明设计还没压平，应回到 `planning/design.md` 继续简化。
+7. 优先减少假的 `REQ` 边界，而不是优先减少单个 `REQ` 的任务数。
+8. 任务一旦超过 2-5 分钟粒度就继续拆，直到可以稳定交给执行者；但 task 要拆，不代表 `REQ` 必须跟着拆。
+9. 同一业务链路里如果只是串行 phase 变化，优先用 phase / dependsOn 表达，而不是新开一个 `REQ`。
+10. 三层以上判断说明设计还没压平，应回到 `planning/design.md` 继续简化。
 
 ## Exit Criteria
 
@@ -248,6 +275,8 @@ tool_budget:
 - 不拿“后面再想”伪装成计划
 - 不把项目路线图和 requirement 计划混成一锅
 - 不在设计没批准前抢跑到实现任务
+- 不因为“每个 REQ 看起来 3-4 个 task 比较整齐”就机械拆分 change
+- 不把同一业务链路上的串行 handoff 伪装成多个独立 `REQ`
 
 ## Companion Files
 

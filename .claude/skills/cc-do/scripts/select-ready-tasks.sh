@@ -38,6 +38,7 @@ const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 const tasks = Array.isArray(manifest.tasks) ? manifest.tasks : [];
 const doneStates = new Set(['passed', 'completed', 'done', 'verified']);
 const blockedStates = new Set(['failed', 'skipped', 'blocked']);
+const externalReadyStates = new Set(['ready', 'satisfied', 'done', 'passed', 'verified']);
 
 function statusOf(task) {
   if (task.status) return task.status;
@@ -56,16 +57,44 @@ function unmetDependencies(task) {
   });
 }
 
+function externalDependenciesOf(task) {
+  return Array.isArray(task.externalDep) ? task.externalDep : [];
+}
+
+function externalDepsSatisfied(task) {
+  if (task.externalDepsReady === true) return true;
+
+  const rawStatus = typeof task.externalDepStatus === 'string'
+    ? task.externalDepStatus.trim().toLowerCase()
+    : '';
+
+  return rawStatus !== '' && externalReadyStates.has(rawStatus);
+}
+
+function unmetExternalDependencies(task) {
+  const deps = externalDependenciesOf(task);
+  if (deps.length === 0 || externalDepsSatisfied(task)) {
+    return [];
+  }
+  return deps;
+}
+
 function summarize(task) {
+  const waitingOnInternal = unmetDependencies(task);
+  const waitingOnExternal = unmetExternalDependencies(task);
   return {
     id: task.id,
     title: task.title,
     phase: task.phase || 0,
     status: statusOf(task),
     dependsOn: task.dependsOn || [],
+    externalDep: externalDependenciesOf(task),
+    externalDepsReady: externalDepsSatisfied(task),
     parallel: Boolean(task.parallel),
     touches: task.touches || task.files || [],
-    waitingOn: unmetDependencies(task)
+    waitingOnInternal,
+    waitingOnExternal,
+    waitingOn: [...waitingOnInternal, ...waitingOnExternal]
   };
 }
 
@@ -80,7 +109,8 @@ const readyTasks = unfinished
     return (
       (activePhase === null || taskPhase === activePhase) &&
       status === 'pending' &&
-      unmetDependencies(task).length === 0
+      unmetDependencies(task).length === 0 &&
+      unmetExternalDependencies(task).length === 0
     );
   })
   .map(summarize);
@@ -91,7 +121,11 @@ const blockedTasks = unfinished
     const status = statusOf(task);
     return (
       (activePhase === null || taskPhase === activePhase) &&
-      (unmetDependencies(task).length > 0 || blockedStates.has(status))
+      (
+        unmetDependencies(task).length > 0 ||
+        unmetExternalDependencies(task).length > 0 ||
+        blockedStates.has(status)
+      )
     );
   })
   .map(summarize);

@@ -1,5 +1,11 @@
 # CC-Act Skill Changelog
 
+## v1.5.1 - 2026-04-22
+
+- make `cc-act` compatible with the newer `report-card.json` schema by extracting verification commands from `quickGates` / `strictGates` when top-level `evidence` is absent
+- let handoff rendering reuse gate summaries as evidence so `pr-brief.md`, `release-note.md`, and `resume-index.md` still carry proof after schema evolution
+- treat spec sync as already closed when `specSyncReady=true` instead of blindly repeating the old closeout reminder
+
 ## v1.5.0 - 2026-04-19
 
 - require `cc-act` to finish formal spec synchronization before ship closeout when `cc-check` marks `specSyncReady=true`

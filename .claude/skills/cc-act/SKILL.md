@@ -1,6 +1,6 @@
 ---
 name: cc-act
-version: 1.5.0
+version: 1.5.1
 description: "Use when verified work must be shipped or handed off with a clear landing path: run simplify and required tests, create or update a PR, prepare a local handoff, close out merged work, sync docs, write release notes, and fold follow-ups back into backlog or roadmap."
 triggers:
   - "准备提 PR"

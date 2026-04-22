@@ -75,7 +75,7 @@ cleanup() {
 trap cleanup EXIT
 
 req_act_collect_completed_titles "$manifest" "$tasks_file" "$tmp_changed"
-req_act_collect_verification_commands "$manifest" "$tmp_verify"
+req_act_collect_verification_commands "$manifest" "$tmp_verify" "$report_card"
 req_act_collect_evidence "$report_card" "$tmp_evidence"
 req_act_collect_followups "$report_card" "$manifest" "$tmp_followups"
 

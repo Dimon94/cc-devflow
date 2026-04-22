@@ -1,5 +1,16 @@
 # CC-Plan Skill Changelog
 
+## v3.5.0 - 2026-04-21
+
+- add an explicit rule that `REQ` boundaries should follow real business-chain and handoff boundaries instead of arbitrary small task counts
+- clarify that one `REQ` may cover multiple adjacent roadmap items or serial phases when they share one business objective, one success signal, and one execution spine
+- update `SKILL.md` and `PLAYBOOK.md` so `cc-plan` prefers phase/dependency modeling inside one stronger `REQ` before splitting work into multiple change dirs
+
+Migration note:
+
+- existing tiny adjacent `REQ` folders on the same business chain may be merged into one canonical change if they only differ by serial phase order
+- when reviewing a roadmap handoff, evaluate `should this be one stronger REQ?` before creating a new change-key
+
 ## v3.4.0 - 2026-04-19
 
 - add `change-meta.json` as a required planning output so roadmap items, capability specs, and execution share one machine truth source

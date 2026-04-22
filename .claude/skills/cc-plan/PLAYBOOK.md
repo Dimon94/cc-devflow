@@ -16,6 +16,7 @@
 3. 一次只推进一个关键未知点。
 4. `planning/design.md` 和 `planning/tasks.md` 必须足够让执行者脱离当前会话继续工作。
 5. 版本、来源、冻结决策必须可追踪。
+6. 优先识别假的 `REQ` 边界: 同一业务链路上的连续串行工作，默认合并成一个更强的 `REQ`。
 
 ## Required Outputs
 
@@ -46,6 +47,7 @@
    - 完成证据
 7. `planning/tasks.md` 顶部必须写清 frozen decisions、commands to trust、do-not-re-decide。
 8. `planning/task-manifest.json` 必须是 `cc-do` 的真相源，而不是装饰文件。
+9. task 可以继续细拆，但只有遇到真实 handoff 边界时才拆新的 `REQ`。
 
 ## Approval Flow
 
@@ -65,6 +67,12 @@
 4. 执行者看完冻结卡片就能准确落地
 
 否则用 `full-design`。
+
+补充判断:
+
+- `tiny-design` 不是“少 task 就单开一个 REQ”的理由
+- 如果相邻几个小段共享同一业务目标、同一成功标准、同一串行主线，优先合并成一个 `REQ`
+- 新开 `REQ` 的标准是新的 design contract，不是新的 task phase
 
 ## Placeholder Ban
 

@@ -53,37 +53,44 @@ event_name="${GATE}_review_${VERDICT}"
 mkdir -p "$runtime_task_dir"
 
 if [[ -f "$manifest" ]]; then
-  tmp_manifest="$(mktemp)"
-  jq --arg task "$TASK_ID" --arg gate "$GATE" --arg verdict "$VERDICT" '
-    .tasks |= map(
-      if .id == $task then
-        . + { reviews: ((.reviews // {}) + {($gate): $verdict}) }
-      else
-        .
-      end
-    )
-  ' "$manifest" > "$tmp_manifest"
-  mv "$tmp_manifest" "$manifest"
+  update_manifest() {
+    local tmp_manifest
+    tmp_manifest="$(mktemp)"
+    jq --arg task "$TASK_ID" --arg gate "$GATE" --arg verdict "$VERDICT" '
+      .tasks |= map(
+        if .id == $task then
+          . + { reviews: ((.reviews // {}) + {($gate): $verdict}) }
+        else
+          .
+        end
+      )
+    ' "$manifest" > "$tmp_manifest"
+    mv "$tmp_manifest" "$manifest"
+  }
+  req_do_with_lock "$manifest" update_manifest
 fi
 
 if [[ -f "$runtime_task_dir/events.jsonl" || "$VERDICT" != "pass" ]]; then
-  jq -nc \
-    --arg type "$event_name" \
-    --arg changeId "$change_id" \
-    --arg taskId "$TASK_ID" \
-    --arg gate "$GATE" \
-    --arg verdict "$VERDICT" \
-    --arg summary "$SUMMARY" \
-    --arg timestamp "$timestamp" \
-    '{
-      type: $type,
-      changeId: $changeId,
-      taskId: $taskId,
-      gate: $gate,
-      verdict: $verdict,
-      summary: $summary,
-      timestamp: $timestamp
-    }' >> "$runtime_task_dir/events.jsonl"
+  append_event() {
+    jq -nc \
+      --arg type "$event_name" \
+      --arg changeId "$change_id" \
+      --arg taskId "$TASK_ID" \
+      --arg gate "$GATE" \
+      --arg verdict "$VERDICT" \
+      --arg summary "$SUMMARY" \
+      --arg timestamp "$timestamp" \
+      '{
+        type: $type,
+        changeId: $changeId,
+        taskId: $taskId,
+        gate: $gate,
+        verdict: $verdict,
+        summary: $summary,
+        timestamp: $timestamp
+      }' >> "$runtime_task_dir/events.jsonl"
+  }
+  req_do_with_lock "$runtime_task_dir/events.jsonl" append_event
 fi
 
 echo "Recorded $event_name for $TASK_ID"

@@ -69,8 +69,9 @@ tmp_touched="$(mktemp)"
 tmp_specs="$(mktemp)"
 tmp_claude="$(mktemp)"
 tmp_readme="$(mktemp)"
+tmp_evidence="$(mktemp)"
 cleanup() {
-  rm -f "$tmp_changed" "$tmp_verify" "$tmp_followups" "$tmp_touched" "$tmp_specs" "$tmp_claude" "$tmp_readme"
+  rm -f "$tmp_changed" "$tmp_verify" "$tmp_followups" "$tmp_touched" "$tmp_specs" "$tmp_claude" "$tmp_readme" "$tmp_evidence"
 }
 trap cleanup EXIT
 
@@ -78,7 +79,7 @@ trap cleanup EXIT
 # 共享提取：变更 / 验证 / follow-up / touched
 # ------------------------------------------------------------
 req_act_collect_completed_titles "$manifest" "$tasks_file" "$tmp_changed"
-req_act_collect_verification_commands "$manifest" "$tmp_verify"
+req_act_collect_verification_commands "$manifest" "$tmp_verify" "$report_card"
 req_act_collect_followups "$report_card" "$manifest" "$tmp_followups"
 req_act_collect_touched_files "$manifest" "$tmp_touched"
 req_act_collect_spec_files "$manifest" "$tmp_specs"
@@ -154,9 +155,10 @@ find "$REPO_ROOT" -maxdepth 2 -type f \( -iname 'README.md' -o -iname 'README*.m
   echo "## Verification"
   echo
   echo "- CC-Check verdict: $report_verdict"
-  jq -r '(.evidence // [])[]?' "$report_card" 2>/dev/null | sed '/^$/d' | while IFS= read -r line; do
+  req_act_collect_evidence "$report_card" "$tmp_evidence"
+  while IFS= read -r line; do
     echo "- $line"
-  done
+  done < "$tmp_evidence"
   if [[ -s "$tmp_verify" ]]; then
     while IFS= read -r cmd; do
       echo "- Verify with: \`$cmd\`"
@@ -231,7 +233,11 @@ esac
   echo "## Next Action"
   echo
   echo "- $next_action"
-  echo "- Formal spec sync belongs in cc-act before final ship closeout."
+  if [[ "$spec_sync_ready" == "true" ]]; then
+    echo "- Spec sync is already closed for this handoff."
+  else
+    echo "- Formal spec sync belongs in cc-act before final ship closeout."
+  fi
   echo
   echo "## Parallel Notes"
   echo

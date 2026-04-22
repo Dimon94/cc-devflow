@@ -77,3 +77,24 @@ req_do_task_runtime_dir() {
   local task_id="$2"
   printf '%s/tasks/%s\n' "$(req_do_execution_dir "$change_dir")" "$task_id"
 }
+
+req_do_with_lock() {
+  local target="$1"
+  shift
+  local lock_dir="${target}.lock"
+  local attempts=0
+
+  while ! mkdir "$lock_dir" 2>/dev/null; do
+    attempts=$((attempts + 1))
+    if [[ "$attempts" -ge 200 ]]; then
+      echo "Lock timeout: $target" >&2
+      return 1
+    fi
+    sleep 0.05
+  done
+
+  (
+    trap 'rmdir "$lock_dir"' EXIT
+    "$@"
+  )
+}

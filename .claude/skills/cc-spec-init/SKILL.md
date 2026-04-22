@@ -1,6 +1,6 @@
 ---
 name: cc-spec-init
-version: 1.0.0
+version: 1.0.1
 description: Use when you need to initialize capability specs under `devflow/specs/`, create or evolve capability truth sources, generate `change-meta.json`, or validate roadmap/change/spec links before roadmap, planning, or closeout work continues.
 ---
 
@@ -32,6 +32,7 @@ description: Use when you need to initialize capability specs under `devflow/spe
 - 生成或修复 `devflow/changes/<change-key>/change-meta.json`
 - 重建 `devflow/specs/INDEX.md`
 - 校验 capability、roadmap item、change 之间的链接完整性
+- 校验 `primaryCapability`、`secondaryCapabilities`、`specFiles` 与 capability map 没有悬空引用
 
 ## Read First
 

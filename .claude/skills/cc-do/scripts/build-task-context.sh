@@ -71,6 +71,8 @@ task_phase="$(jq -r '.phase // 0' <<<"$task_json")"
 task_status="$(jq -r '.status // "pending"' <<<"$task_json")"
 task_parallel="$(jq -r '.parallel // false' <<<"$task_json")"
 task_depends="$(jq -r '(.dependsOn // [])[]?' <<<"$task_json")"
+task_external_dep="$(jq -r '(.externalDep // [])[]?' <<<"$task_json")"
+task_external_blocker="$(jq -r '(.externalBlocker // empty)' <<<"$task_json")"
 task_touches="$(jq -r '((.touches // .files // [])[]?)' <<<"$task_json")"
 task_acceptance="$(jq -r '(.acceptance // [])[]?' <<<"$task_json")"
 task_verification="$(jq -r '(.verification // [])[]?' <<<"$task_json")"
@@ -116,6 +118,14 @@ sync_status="$(jq -r '.spec.syncStatus // "unknown"' "$manifest" 2>/dev/null || 
   echo "## Dependencies"
   echo
   list_or_none "$task_depends"
+  echo
+  echo "## External Dependencies"
+  echo
+  list_or_none "$task_external_dep"
+  echo
+  echo "## External Blocker"
+  echo
+  list_or_none "$task_external_blocker"
   echo
   echo "## Touches"
   echo

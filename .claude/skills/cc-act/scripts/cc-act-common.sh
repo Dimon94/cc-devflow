@@ -160,16 +160,28 @@ req_act_collect_completed_titles() {
 req_act_collect_verification_commands() {
   local manifest="$1"
   local out_file="$2"
+  local report_card="${3:-}"
 
   : > "$out_file"
 
-  if [[ -f "$manifest" ]]; then
+  if [[ -n "$report_card" && -f "$report_card" ]]; then
     jq -r '
-      (.tasks // [])
-      | map(.verification // [])
-      | add
-      | .[]?
-    ' "$manifest" 2>/dev/null | sed '/^$/d' > "$out_file" || true
+      [
+        ((.quickGates // [])[]? | .command // empty),
+        ((.strictGates // [])[]? | .command // empty)
+      ][]
+    ' "$report_card" 2>/dev/null | sed '/^$/d' > "$out_file" || true
+  fi
+
+  if [[ -f "$manifest" ]]; then
+    if [[ ! -s "$out_file" ]]; then
+      jq -r '
+        (.tasks // [])
+        | map(.verification // [])
+        | add
+        | .[]?
+      ' "$manifest" 2>/dev/null | sed '/^$/d' > "$out_file" || true
+    fi
   fi
 
   req_act_dedup_file "$out_file"
@@ -229,7 +241,27 @@ req_act_collect_evidence() {
   local out_file="$2"
 
   : > "$out_file"
-  jq -r '(.evidence // [])[]?' "$report_card" 2>/dev/null | sed '/^$/d' > "$out_file" || true
+  jq -r '
+    if ((.evidence // []) | length) > 0 then
+      (.evidence // [])[]?
+    else
+      [
+        ((.quickGates // [])[]? |
+          "\(.name // "unnamed-gate"): \(.status // "unknown")" +
+          (if (.summary // "") != "" then " - \(.summary)" else "" end)),
+        ((.strictGates // [])[]? |
+          "\(.name // "unnamed-gate"): \(.status // "unknown")" +
+          (if (.summary // "") != "" then " - \(.summary)" else "" end)),
+        (if (.summary // "") != "" then
+          "summary: \(.summary)"
+        elif ((.overall | type) == "object") and ((.overall.summary // "") != "") then
+          "overall: \(.overall.status // "unknown") - \(.overall.summary)"
+        else
+          empty
+        end)
+      ][]
+    end
+  ' "$report_card" 2>/dev/null | sed '/^$/d' > "$out_file" || true
   req_act_dedup_file "$out_file"
 }
 

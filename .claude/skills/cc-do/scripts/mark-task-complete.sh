@@ -47,6 +47,7 @@ mark_first_task_complete() {
 }
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/cc-do-common.sh"
 MANIFEST=""
 TASKS=""
 TASK_ID=""
@@ -72,37 +73,43 @@ if [[ -n "$MANIFEST" ]]; then
     exit 1
   fi
 
-  req_dir="$(cd "$(dirname "$MANIFEST")" && pwd)"
+  req_dir="$(req_do_resolve_change_dir "$(cd "$(dirname "$MANIFEST")" && pwd)")"
   "$SCRIPT_DIR/verify-task-gates.sh" --dir "$req_dir" --task "$TASK_ID" >/dev/null
 
-  tmp_manifest="$(mktemp)"
-  jq --arg task "$TASK_ID" '
-    .tasks |= map(
-      if .id == $task then
-        . + {
-          status: "passed",
-          reviews: ((.reviews // {}) + {spec: ((.reviews.spec // "pass") | tostring), code: ((.reviews.code // "pass") | tostring)})
-        }
-      else
-        .
-      end
-    )
-  ' "$MANIFEST" > "$tmp_manifest"
-  mv "$tmp_manifest" "$MANIFEST"
+  update_manifest_complete() {
+    local tmp_manifest
+    local next_task
 
-  next_task="$("$SCRIPT_DIR/select-ready-tasks.sh" --manifest "$MANIFEST" | jq -r '.readyTasks[0].id // empty')"
-
-  tmp_manifest="$(mktemp)"
-  jq --arg next "$next_task" '
-    .currentTaskId = (if $next == "" then null else $next end)
-    | .status = (
-        if ([.tasks[] | select((.status // "pending") != "passed" and (.status // "pending") != "completed" and (.status // "pending") != "done" and (.status // "pending") != "verified")] | length) == 0
-        then "implemented"
-        else "in_progress"
+    tmp_manifest="$(mktemp)"
+    jq --arg task "$TASK_ID" '
+      .tasks |= map(
+        if .id == $task then
+          . + {
+            status: "passed",
+            reviews: ((.reviews // {}) + {spec: ((.reviews.spec // "pass") | tostring), code: ((.reviews.code // "pass") | tostring)})
+          }
+        else
+          .
         end
       )
-  ' "$MANIFEST" > "$tmp_manifest"
-  mv "$tmp_manifest" "$MANIFEST"
+    ' "$MANIFEST" > "$tmp_manifest"
+    mv "$tmp_manifest" "$MANIFEST"
+
+    next_task="$("$SCRIPT_DIR/select-ready-tasks.sh" --manifest "$MANIFEST" | jq -r '.readyTasks[0].id // empty')"
+
+    tmp_manifest="$(mktemp)"
+    jq --arg next "$next_task" '
+      .currentTaskId = (if $next == "" then null else $next end)
+      | .status = (
+          if ([.tasks[] | select((.status // "pending") != "passed" and (.status // "pending") != "completed" and (.status // "pending") != "done" and (.status // "pending") != "verified")] | length) == 0
+          then "implemented"
+          else "in_progress"
+          end
+        )
+    ' "$MANIFEST" > "$tmp_manifest"
+    mv "$tmp_manifest" "$MANIFEST"
+  }
+  req_do_with_lock "$MANIFEST" update_manifest_complete
 fi
 
 if [[ -n "$TASKS" ]]; then
@@ -111,9 +118,13 @@ if [[ -n "$TASKS" ]]; then
     exit 1
   fi
 
-  tmp_tasks="$(mktemp)"
-  mark_first_task_complete "$TASKS" "$TASK_ID" > "$tmp_tasks"
-  mv "$tmp_tasks" "$TASKS"
+  update_tasks_file() {
+    local tmp_tasks
+    tmp_tasks="$(mktemp)"
+    mark_first_task_complete "$TASKS" "$TASK_ID" > "$tmp_tasks"
+    mv "$tmp_tasks" "$TASKS"
+  }
+  req_do_with_lock "$TASKS" update_tasks_file
 fi
 
 echo "Marked $TASK_ID complete"
