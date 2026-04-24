@@ -12,6 +12,9 @@
 8. 推荐方案没获批前，不允许继续拆执行任务。
 9. `planning/design.md` 通过 review gate 前，不允许宣称计划完成。
 10. 如果来自 `roadmap`，planning 不得悄悄丢掉 source constraints / non-goals / success signal。
+11. 每个计划必须先找 existing leverage，再决定新增实现；重复已有能力属于 planning 失败。
+12. 同 blast radius 内的完整边界默认纳入，defer 必须写入 `NOT in scope` 和原因。
+13. 如果推荐方案挑战用户原始方向，必须标成 `user challenge`，不能自动改写用户意图。
 
 ## Design Modes
 
@@ -51,7 +54,23 @@
 4. Ambiguity scan
 5. Feasibility scan
 6. Source alignment
-7. Final recommendation
+7. Existing leverage map
+8. Scope / complexity challenge
+9. Test diagram and failure modes
+10. NOT in scope
+11. Final recommendation
 
 如有 UI scope，再补 design review 结论。
 如有 developer-facing scope，再补 DX review 结论。
+
+## Decision Log
+
+每个非平凡决策至少记录：
+
+- decision
+- classification：`mechanical` / `taste` / `user challenge`
+- principle：completeness / pragmatic / DRY / explicit / action
+- rationale
+- rejected alternative
+
+机械选择可以自动落盘。taste decision 和 user challenge 必须在最终 gate 里显式出现。

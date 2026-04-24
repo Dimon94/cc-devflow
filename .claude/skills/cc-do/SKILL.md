@@ -1,58 +1,58 @@
 ---
 name: cc-do
-version: 1.4.0
-description: "Use when implementing planned tasks, resuming interrupted work, applying a frozen investigation handoff, or landing review feedback after cc-plan or cc-investigate."
+version: 1.5.0
+description: Use when implementing planned tasks, resuming interrupted work, applying a frozen investigation handoff, or landing review feedback after cc-plan or cc-investigate.
 triggers:
-  - "开始做 T003"
-  - "继续上次做到一半的任务"
-  - "按 planning/tasks.md 开始实现"
-  - "修这个 review comment"
-  - "implement this task"
-  - "resume this requirement"
-  - "repair this investigated bug"
+  - 开始做 T003
+  - 继续上次做到一半的任务
+  - 按 planning/tasks.md 开始实现
+  - 修这个 review comment
+  - implement this task
+  - resume this requirement
+  - repair this investigated bug
 reads:
-  - "PLAYBOOK.md"
-  - "CHANGELOG.md"
-  - "references/execution-recovery.md"
-  - "references/parallel-dispatch.md"
+  - PLAYBOOK.md
+  - CHANGELOG.md
+  - references/execution-recovery.md
+  - references/parallel-dispatch.md
 writes:
-  - path: "devflow/changes/<change-key>/execution/tasks/<task-id>/checkpoint.json"
-    durability: "durable"
+  - path: devflow/changes/<change-key>/execution/tasks/<task-id>/checkpoint.json
+    durability: durable
     required: true
-  - path: "devflow/changes/<change-key>/execution/tasks/<task-id>/events.jsonl"
-    durability: "durable"
+  - path: devflow/changes/<change-key>/execution/tasks/<task-id>/events.jsonl
+    durability: durable
     required: false
-    when: "debug mode is enabled or the task execution fails"
-  - path: "devflow/changes/<change-key>/execution/team-state.json"
-    durability: "durable"
+    when: debug mode is enabled or the task execution fails
+  - path: devflow/changes/<change-key>/execution/team-state.json
+    durability: durable
     required: false
-    when: "execution mode uses delegated or team workers"
+    when: execution mode uses delegated or team workers
 effects:
-  - "code changes"
-  - "test changes"
-  - "workspace scratch runtime updates"
+  - code changes
+  - test changes
+  - workspace scratch runtime updates
 entry_gate:
-  - "Read planning/design.md or planning/analysis.md, then planning/tasks.md, planning/task-manifest.json, change-meta.json, related capability specs, and the latest checkpoint before changing code."
-  - "Select only ready tasks whose dependencies and file ownership are clear."
-  - "If the current task cannot be restated from canonical artifacts, run a context reset before coding."
+  - Read planning/design.md or planning/analysis.md, then planning/tasks.md, planning/task-manifest.json, change-meta.json, related capability specs, and the latest checkpoint before changing code.
+  - Select only ready tasks whose dependencies and file ownership are clear.
+  - If the current task cannot be restated from canonical artifacts, run a context reset before coding.
 exit_criteria:
-  - "The current task has red/green evidence, review evidence, and a resumable checkpoint trail."
-  - "Execution leaves the next verifier enough runtime truth to judge the task without chat memory."
-  - "The honest next step is cc-check or an explicit reroute."
+  - The current task has red/green evidence, review evidence, and a resumable checkpoint trail.
+  - Execution leaves the next verifier enough runtime truth to judge the task without chat memory.
+  - The honest next step is cc-check or an explicit reroute.
 reroutes:
-  - when: "Three failed repair attempts or new evidence show the investigation contract is wrong."
-    target: "cc-investigate"
-  - when: "New evidence shows the requirement design or scope contract is wrong."
-    target: "cc-plan"
-  - when: "Implementation and reviews are complete for the current task set."
-    target: "cc-check"
+  - when: Three failed repair attempts or new evidence show the investigation contract is wrong.
+    target: cc-investigate
+  - when: New evidence shows the requirement design or scope contract is wrong.
+    target: cc-plan
+  - when: Implementation and reviews are complete for the current task set.
+    target: cc-check
 recovery_modes:
-  - name: "resume-from-checkpoint"
-    when: "Work was interrupted but the current design contract is still valid."
-    action: "Reload the latest checkpoint, rebuild task context, and continue from the last confirmed red/green/review milestone."
-  - name: "context-reset"
-    when: "The conversation history is noisy, stale, or cannot reproduce the exact task state."
-    action: "Discard chat memory, reread planning/design.md or planning/analysis.md plus planning/tasks.md/planning/task-manifest.json and the latest checkpoint, then restate the next action before coding."
+  - name: resume-from-checkpoint
+    when: Work was interrupted but the current design contract is still valid.
+    action: Reload the latest checkpoint, rebuild task context, and continue from the last confirmed red/green/review milestone.
+  - name: context-reset
+    when: The conversation history is noisy, stale, or cannot reproduce the exact task state.
+    action: Discard chat memory, reread planning/design.md or planning/analysis.md plus planning/tasks.md/planning/task-manifest.json and the latest checkpoint, then restate the next action before coding.
 tool_budget:
   read_files: 9
   search_steps: 6
@@ -113,6 +113,21 @@ tool_budget:
 - Required evidence: every task must leave red/green/review checkpoints plus objective failure notes when blocked.
 - Reroute rule: after repeated failed repairs or root-cause drift, stop patching and go back to `cc-investigate`; if scope or design truth breaks, go back to `cc-plan`; after task closure, hand off to `cc-check`.
 
+## TDD Iron Law
+
+```text
+NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
+```
+
+`cc-do` 默认采用 `superpowers/test-driven-development` 的执行纪律：
+
+1. Red：先写一个最小失败测试，运行并确认它因为目标行为缺失而失败。
+2. Green：只写让当前失败测试通过的最小生产代码。
+3. Refactor：只有 Green 之后才能清理命名、重复、结构和坏味道。
+4. Record：每一站都写入 `checkpoint.json`，必要时写入 `events.jsonl`。
+
+例外只能用于 throwaway prototype、纯生成文件、纯配置改动；例外必须写进 checkpoint 的 `tddException`，包含原因、风险和替代验证命令。测试第一次就绿，说明测试没有证明新行为，必须修测试而不是继续写生产代码。
+
 ## Entry Gate
 
 1. 先读 `planning/design.md` 或 `planning/analysis.md`，再读 `planning/tasks.md`、`planning/task-manifest.json`；如果是恢复执行，再补读最近 checkpoint 或已有 `handoff/resume-index.md`。
@@ -126,11 +141,13 @@ tool_budget:
 1. 读取当前任务，而不是重新发明任务。
 2. 依赖没满足前，不准提前做下游任务。
 3. 没有明确并行资格，不准把多个实现任务同时推进。
-4. 先 `fail-first`：先写失败测试，先看见红，再写生产代码。
-5. 按 `Red -> Green -> Refactor` 推进，Green 只允许最小实现。
-6. 每次推进都写 task runtime：`events.jsonl` + `checkpoint.json`。
-7. 任务实现后，先过 `spec review`，再过 `code review`，两道门都过才算任务收口；这里只验证 spec delta，不回写长期 spec。
-8. 当前任务完成后，把可验证证据留给 `cc-check`。
+4. 先 `fail-first`：先写失败测试，先看见预期红，再写生产代码。
+5. 如果红灯不是预期失败（语法错、fixture 错、测试没连上），先修测试直到它正确失败。
+6. 按 `Red -> Green -> Refactor` 推进，Green 只允许最小实现。
+7. Refactor 后必须重跑相关测试，保持 Green。
+8. 每次推进都写 task runtime：`events.jsonl` + `checkpoint.json`。
+9. 任务实现后，先过 `spec review`，再过 `code review`，两道门都过才算任务收口；这里只验证 spec delta，不回写长期 spec。
+10. 当前任务完成后，把可验证证据留给 `cc-check`。
 
 ## Output
 
@@ -143,7 +160,7 @@ tool_budget:
 ## Good Output
 
 - 当前 task 一眼可见，执行者不用从聊天记录里猜目标
-- 至少留下一次明确的 Red/Green 证据
+- 至少留下一次明确的 Red/Green/Refactor 证据，且 Red 是预期失败
 - runtime / checkpoint 足够让下一位接手者无损恢复
 - reviewer 能顺着 review 记录和验证命令复盘这次实现
 
@@ -168,11 +185,12 @@ tool_budget:
 2. 没有任务边界，不准无界发散。
 3. 没有失败测试，不准写生产代码。
 4. 测试如果第一次就绿，说明你没证明任何东西，先修测试。
-5. 先过 `spec review`，再过 `code review`，顺序不能反。
-6. 不在 `cc-do` 里改 capability spec 正文；这里只产出实现证据和 spec 对齐证据。
-7. 失败和阻塞都要留下恢复证据。
-8. 给 subagent 的输入必须包含：当前进度、当前任务全文、依赖状态、必读文件、验收标准、可信命令。
-9. 三次失败修补后必须先质疑调查合同或设计合同，而不是继续堆补丁。
+5. 红灯原因必须和目标行为缺失一致；红灯如果只是测试写错，不算 TDD 证据。
+6. 先过 `spec review`，再过 `code review`，顺序不能反。
+7. 不在 `cc-do` 里改 capability spec 正文；这里只产出实现证据和 spec 对齐证据。
+8. 失败和阻塞都要留下恢复证据。
+9. 给 subagent 的输入必须包含：当前进度、当前任务全文、依赖状态、必读文件、验收标准、可信命令。
+10. 三次失败修补后必须先质疑调查合同或设计合同，而不是继续堆补丁。
 
 ## Exit Criteria
 

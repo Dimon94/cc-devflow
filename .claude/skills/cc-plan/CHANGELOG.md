@@ -1,5 +1,15 @@
 # CC-Plan Skill Changelog
 
+## v3.5.0 - 2026-04-24
+
+- absorb `superpowers/brainstorming`, `gstack/office-hours`, `gstack/autoplan`, and `gstack/plan-eng-review` practices into native `cc-plan` discovery and review contracts
+- add autoplan decision principles, one-question discovery pressure, existing leverage mapping, test diagrams, failure modes, and explicit `NOT in scope` requirements
+- strengthen planning contract and playbook so taste decisions, user challenges, and engineering review outputs land inside `planning/design.md` instead of new side documents
+
+Migration note:
+
+- new planning artifacts should include existing leverage, scope challenge, test diagram, failure modes, and decision classification before task generation
+
 ## v3.4.0 - 2026-04-19
 
 - add `change-meta.json` as a required planning output so roadmap items, capability specs, and execution share one machine truth source

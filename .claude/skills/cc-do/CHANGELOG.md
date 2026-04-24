@@ -1,5 +1,15 @@
 # CC-Do Skill Changelog
 
+## v1.5.0 - 2026-04-24
+
+- absorb `superpowers/test-driven-development` into the `cc-do` execution contract with an explicit `NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST` rule
+- require Red failure reason verification, post-refactor Green evidence, and checkpoint fields that make TDD proof resumable
+- add a narrow TDD exception contract so prototypes, generated files, and config-only changes cannot silently bypass test-first execution
+
+Migration note:
+
+- new task checkpoints should record `red`, `green`, `refactor`, and optional `tddException` fields before `cc-check` verifies the task
+
 ## v1.4.0 - 2026-04-19
 
 - require `cc-do` to load `change-meta.json` and related capability specs before coding so execution stops guessing long-term constraints

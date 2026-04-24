@@ -16,6 +16,8 @@
 3. 一次只推进一个关键未知点。
 4. `planning/design.md` 和 `planning/tasks.md` 必须足够让执行者脱离当前会话继续工作。
 5. 版本、来源、冻结决策必须可追踪。
+6. 机械决策自动落盘；taste decision 和 user challenge 必须显式交给用户拍板。
+7. 同 blast radius 内的完整边界优先做完，跨系统或无证据扩张才 defer。
 
 ## Required Outputs
 
@@ -46,6 +48,8 @@
    - 完成证据
 7. `planning/tasks.md` 顶部必须写清 frozen decisions、commands to trust、do-not-re-decide。
 8. `planning/task-manifest.json` 必须是 `cc-do` 的真相源，而不是装饰文件。
+9. `planning/design.md` 必须包含 `Existing Leverage`、`NOT in scope`、`Failure Modes`、`Test Diagram`，除非明确说明为什么不适用。
+10. 新 artifact、CLI、包、容器、文档入口必须在计划阶段写清分发和 discoverability，不准到 `cc-act` 才发现没人能用。
 
 ## Approval Flow
 
@@ -54,6 +58,16 @@
 3. 用户批准推荐方案后，再冻结正式设计。
 4. 在 `planning/design.md` 里完成 review loop 与 final gate。
 5. gate 通过后，再拆 `planning/tasks.md` 与 `planning/task-manifest.json`。
+
+## Review Shape
+
+计划内的工程审查至少回答：
+
+- 现有代码已经解决了哪些子问题？
+- 最小完整方案触达哪些文件，为什么没有更小边界？
+- 数据流、状态流或执行流怎么走？
+- 每条新增 code path / user flow / error path 用什么测试覆盖？
+- 哪些生产失败模式已经处理，哪些 defer 到 backlog？
 
 ## Design Mode Switch
 

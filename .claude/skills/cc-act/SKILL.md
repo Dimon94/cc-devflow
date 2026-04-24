@@ -1,60 +1,60 @@
 ---
 name: cc-act
-version: 1.5.0
-description: "Use when verified work must be shipped or handed off with a clear landing path: run simplify and required tests, create or update a PR, prepare a local handoff, close out merged work, sync docs, write release notes, and fold follow-ups back into backlog or roadmap."
+version: 1.6.0
+description: 'Use when verified work must be shipped or handed off with a clear landing path: run simplify and required tests, create or update a PR, prepare a local handoff, close out merged work, sync docs, write release notes, and fold follow-ups back into backlog or roadmap.'
 triggers:
-  - "准备提 PR"
-  - "帮我发版"
-  - "收尾"
-  - "ship this"
-  - "handoff"
-  - "close this requirement"
-  - "merge 之后怎么收口"
+  - 准备提 PR
+  - 帮我发版
+  - 收尾
+  - ship this
+  - handoff
+  - close this requirement
+  - merge 之后怎么收口
 reads:
-  - "PLAYBOOK.md"
-  - "CHANGELOG.md"
-  - "references/closure-contract.md"
-  - "references/git-commit-guidelines.md"
-  - "assets/PR_BRIEF_TEMPLATE.md"
-  - "assets/RELEASE_NOTE_TEMPLATE.md"
+  - PLAYBOOK.md
+  - CHANGELOG.md
+  - references/closure-contract.md
+  - references/git-commit-guidelines.md
+  - assets/PR_BRIEF_TEMPLATE.md
+  - assets/RELEASE_NOTE_TEMPLATE.md
 writes:
-  - path: "devflow/changes/<change-key>/handoff/pr-brief.md"
-    durability: "durable"
+  - path: devflow/changes/<change-key>/handoff/pr-brief.md
+    durability: durable
     required: false
-    when: "handoff mode is create-pr or update-pr"
-    exclusive_group: "handoff"
-  - path: "devflow/changes/<change-key>/handoff/resume-index.md"
-    durability: "durable"
+    when: handoff mode is create-pr or update-pr
+    exclusive_group: handoff
+  - path: devflow/changes/<change-key>/handoff/resume-index.md
+    durability: durable
     required: false
-    when: "handoff mode is local resume"
-    exclusive_group: "handoff"
-  - path: "devflow/changes/<change-key>/handoff/release-note.md"
-    durability: "durable"
+    when: handoff mode is local resume
+    exclusive_group: handoff
+  - path: devflow/changes/<change-key>/handoff/release-note.md
+    durability: durable
     required: false
-    when: "handoff mode is release"
-    exclusive_group: "handoff"
+    when: handoff mode is release
+    exclusive_group: handoff
 effects:
-  - "roadmap or backlog follow-up updates when needed"
+  - roadmap or backlog follow-up updates when needed
 entry_gate:
-  - "Accept only a passing review/report-card.json with reroute=none and specSyncReady=true."
-  - "Freeze current branch, PR, and ship-mode facts before writing delivery materials."
-  - "If simplify, tests, or act changes code or verification scope, return to cc-check immediately."
+  - Accept only a passing review/report-card.json with reroute=none and specSyncReady=true.
+  - Freeze current branch, PR, and ship-mode facts before writing delivery materials.
+  - If simplify, tests, or act changes code or verification scope, return to cc-check immediately.
 exit_criteria:
-  - "The ship mode is explicit, delivery materials match that mode, and the next maintainer has one clear entry point."
-  - "Docs, PR text, release notes, handoff artifacts, and test evidence reflect the same proven facts."
-  - "Follow-up items are written back to roadmap/backlog instead of lingering in chat memory."
+  - The ship mode is explicit, delivery materials match that mode, and the next maintainer has one clear entry point.
+  - Docs, PR text, release notes, handoff artifacts, and test evidence reflect the same proven facts.
+  - Follow-up items are written back to roadmap/backlog instead of lingering in chat memory.
 reroutes:
-  - when: "Verification is stale, incomplete, or changed during act."
-    target: "cc-check"
-  - when: "Act reveals unfinished implementation or unresolved review findings."
-    target: "cc-do"
+  - when: Verification is stale, incomplete, or changed during act.
+    target: cc-check
+  - when: Act reveals unfinished implementation or unresolved review findings.
+    target: cc-do
 recovery_modes:
-  - name: "memory-consolidation"
-    when: "Delivery evidence is scattered across checkpoints, reviews, and prior handoff notes."
-    action: "Compress the current truth into handoff/pr-brief.md, handoff/resume-index.md, and handoff/release-note.md before any ship action continues."
-  - name: "local-handoff-refresh"
-    when: "Remote push or PR tooling is unavailable but the requirement is otherwise ready to land."
-    action: "Switch to local-handoff mode, refresh handoff/resume-index.md, and leave a verified next entry for the maintainer."
+  - name: memory-consolidation
+    when: Delivery evidence is scattered across checkpoints, reviews, and prior handoff notes.
+    action: Compress the current truth into handoff/pr-brief.md, handoff/resume-index.md, and handoff/release-note.md before any ship action continues.
+  - name: local-handoff-refresh
+    when: Remote push or PR tooling is unavailable but the requirement is otherwise ready to land.
+    action: Switch to local-handoff mode, refresh handoff/resume-index.md, and leave a verified next entry for the maintainer.
 tool_budget:
   read_files: 8
   search_steps: 5
@@ -191,6 +191,30 @@ tool_budget:
 
 这 4 步只接受两种结果：`全部完成` 或 `明确 reroute / handoff`。不要停在“差不多已经好了”。
 
+## Ship Discipline
+
+借鉴 `gstack/ship`，`cc-act` 的 ship 动作必须是幂等、可审计、可复跑的：
+
+1. Base and branch：识别 base branch、当前 branch、远端状态、已有 PR / MR，所有 diff/log/push 都基于同一个 base。
+2. Scope completion：PR 简报必须包含 `cc-check` 的 plan completion、scope drift、review finding、验证结果摘要。
+3. Version and changelog：如果项目有 `VERSION`、`package.json`、`CHANGELOG.md`，先判断是否已 bump / 是否漂移；不要重复 bump，也不要覆盖 changelog。
+4. Bisectable commits：提交按逻辑单元拆分，顺序保证每个 commit 独立可理解、尽量可验证；小于 50 行且少于 4 文件可单 commit。
+5. Fresh final verification：如果 `cc-act` 中的 review fix、doc sync、version sync 改了代码或运行时输入，重新回 `cc-check`；纯文档/PR body 变化记录即可。
+6. Push idempotency：push 前比较 local/remote HEAD；已同步就不重复 push，不可用就切 `local-handoff`。
+7. PR idempotency：已有打开的 PR / MR 只更新 body，不重复创建。
+
+## Documentation Release
+
+借鉴 `gstack/document-release`，文档同步要作为发布链路的一部分，而不是 PR 后的人工补丁：
+
+1. Diff audit：按最终 diff/log 识别新增能力、行为变化、删除项、基础设施变化。
+2. Per-file audit：检查 README、CLAUDE、ARCHITECTURE、CONTRIBUTING、docs、handoff 是否与 diff 矛盾。
+3. Auto-update facts：路径、命令、计数、skill 列表、入口链接、明显过期事实可以直接更新。
+4. Risky narrative gate：产品定位、安全模型、架构哲学、大段删除、含义改变的 changelog 改写必须停下说明。
+5. Changelog protection：只允许润色既有条目或新增由当前 diff 支撑的条目，不能重写历史、删除已有发布说明。
+6. Discoverability：新增文档必须能从 README、CLAUDE 或 handoff 入口找到。
+7. TODO/backlog cleanup：只把有 diff 证据完成的事项移到 completed；新 follow-up 写回 backlog/roadmap。
+
 ## Loop
 
 1. 先锁定 ship 事实：当前分支、base branch、PR 状态、requirement 状态。
@@ -203,20 +227,21 @@ tool_budget:
    - 结构变了，更新对应目录的 `CLAUDE.md`
    - 用户可感知行为变了，更新 `README.md` / `handoff/release-note.md`
    - handoff 变了，更新 `handoff/resume-index.md`
-8. 生成 `handoff/pr-brief.md`，把需求、变更、验证证据、风险、文档同步状态一次写清。
+8. 执行 documentation release audit：保护 changelog，检查 discoverability，记录 doc sync 结果。
+9. 生成 `handoff/pr-brief.md`，把需求、变更、验证证据、风险、文档同步状态一次写清。
    - 优先运行 `scripts/sync-act-docs.sh --dir <requirement-dir>`
    - 再运行 `scripts/render-pr-brief.sh --dir <requirement-dir>`
-9. 执行分支集成动作：
+10. 执行分支集成动作：
    - `create-pr`：按 `references/git-commit-guidelines.md` 完成提交并推分支，再优先使用 `gh pr create` 创建 PR / MR
    - `update-pr`：如果有新提交，先按 `references/git-commit-guidelines.md` 完成 commit / push，再刷新 PR / MR body，不沿用陈旧内容
    - `local-handoff`：不假装已经发出，只生成可接手材料
    - `post-merge-closeout`：跳过 PR，完成发布与闭环回写
-10. 处理 doc sync：如果 ship 结果改变了代码地图、用法、架构边界，文档必须跟上。
-11. 回写 `devflow/roadmap/backlog.md` / `devflow/roadmap/roadmap.md`：
+11. 处理 PR / MR body：从当前 `pr-brief.md`、最新验证、review、doc sync、TODO/backlog 结果重新渲染，不复用旧 body。
+12. 回写 `devflow/roadmap/backlog.md` / `devflow/roadmap/roadmap.md`：
    - 新发现的 follow-up
    - 被推迟但必须保留的事项
    - 因本次结果而改变优先级的事项
-12. 如果 requirement 真正闭环，更新状态摘要并归档；否则把下一位接手者的入口写清楚。
+13. 如果 requirement 真正闭环，更新状态摘要并归档；否则把下一位接手者的入口写清楚。
 
 ## Output
 
@@ -227,6 +252,7 @@ tool_budget:
 - 必要时更新后的 `devflow/roadmap/backlog.md` / `devflow/roadmap/roadmap.md`
 - 单测 / e2e 的通过证据，或明确记录的 skip / blocker
 - 必要时创建或更新的 PR / MR
+- PR / MR body 中的 Summary、Test Coverage、Pre-Landing Review、Scope Drift、Plan Completion、Verification Results、Documentation、Test plan
 
 ## Good Output
 
@@ -264,6 +290,8 @@ tool_budget:
 8. `devflow/roadmap/backlog.md` / `devflow/roadmap/roadmap.md` 只回写真正改变优先级或产生 follow-up 的事项，不写噪音。
 9. `local-handoff` 不是偷懒模式，它仍然必须让下一位接手者知道做什么、怎么验证、卡在哪。
 10. `create-pr` / `update-pr` 模式默认要求提交历史符合 `references/git-commit-guidelines.md`，并完成正确的 push、PR 创建或更新动作。
+11. CHANGELOG 只能基于当前 diff / commit history / release truth 更新，不允许覆盖既有历史条目。
+12. PR / MR body 每次都从当前事实重建，不沿用旧 body 或旧测试输出。
 
 ## Exit Criteria
 

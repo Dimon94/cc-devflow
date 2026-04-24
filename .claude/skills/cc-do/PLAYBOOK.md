@@ -49,20 +49,40 @@
 ## TDD Standard
 
 1. 先写失败测试，再运行到红。
-2. 只写让当前测试转绿的最小实现。
-3. 绿后才允许重构。
-4. 重构后必须保持绿。
-5. 测试没先红过，就不能宣称这次变更受 TDD 保护。
+2. 确认红灯是预期失败，不是测试写错、fixture 缺失或环境没接上。
+3. 只写让当前测试转绿的最小实现。
+4. 绿后才允许重构。
+5. 重构后必须保持绿。
+6. 测试没先红过，就不能宣称这次变更受 TDD 保护。
+
+## TDD Exception Rule
+
+只有这些场景允许跳过 fail-first：
+
+- throwaway prototype
+- 纯生成文件
+- 纯配置变更
+- 上游明确禁止写测试的探索步骤
+
+每个例外都要写入 checkpoint：
+
+- `tddException.reason`
+- `tddException.risk`
+- `tddException.alternativeEvidence`
+
+没有例外记录，就按违规处理，回到 Red。
 
 ## Task Gates
 
 任务只有在下面顺序全部成立后，才算完成：
 
 1. `red_failed`: 已观察到预期失败
-2. `green_passed`: 当前任务实现转绿
-3. `refactor_done` 或 `refactor_not_needed`
-4. `spec_review_pass`
-5. `code_review_pass`
+2. `red_reason_verified`: 红灯原因与目标行为缺失一致
+3. `green_passed`: 当前任务实现转绿
+4. `refactor_done` 或 `refactor_not_needed`
+5. `refactor_green`: 重构后相关测试仍绿
+6. `spec_review_pass`
+7. `code_review_pass`
 
 任何一门失败，都回到实现，不准直接跨过去。
 

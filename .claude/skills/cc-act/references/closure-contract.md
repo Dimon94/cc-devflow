@@ -26,6 +26,9 @@
 2. 已存在 PR / MR 时优先更新，不重复创建
 3. 文档不同构时，ship 不算完成
 4. follow-up 只允许回写到系统真相源，不允许停留在聊天记录里
+5. VERSION / package / changelog 漂移必须先分类处理，不能重复 bump 或覆盖发布历史
+6. PR / MR body 必须从当前事实重建，不能沿用旧验证输出
+7. push / PR 创建必须具备幂等检查：已同步则跳过，已存在 PR 则更新
 
 ## Memory Consolidation
 
@@ -43,3 +46,4 @@
 - maintainer 知道怎么验证
 - PR / handoff / release 材料反映同一套事实
 - 下一轮计划入口更清楚
+- 文档入口可发现，changelog 不丢历史，TODO / backlog 只记录有证据的事项

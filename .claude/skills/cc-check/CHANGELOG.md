@@ -1,5 +1,21 @@
 # CC-Check Skill Changelog
 
+## v1.8.0 - 2026-04-24
+
+- absorb `gstack/review` into the native `cc-check` requirement diff review contract
+- add plan completion audit, scope drift detection, critical pass categories, outside-diff lookup, documentation staleness, and adversarial synthesis to the review pipeline
+- require findings to carry severity, confidence, source, evidence, and action so report cards route failures without chat-memory interpretation
+
+Migration note:
+
+- new `review/report-card.json` files should populate `review.diffReview` with plan completion, scope drift, critical pass, and documentation staleness facts when applicable
+
+## v1.7.0 - 2026-04-23
+
+- tighten the public skill around an explicit `NO PASS WITHOUT FRESH EVIDENCE` iron law so `cc-check` cannot degrade into inherited narration from `cc-do`
+- add a four-phase verification model, layered boundary checks, and stop-reset signals inspired by systematic debugging, but translated into verification semantics
+- clarify that runtime gates, review proof, requirement diff truth, and spec sync readiness are separate layers and any single-layer drift blocks `pass`
+
 ## v1.6.0 - 2026-04-19
 
 - extend `report-card.json` with `specAlignment`, `specDeltaVerified`, `specSyncReady`, and `gaps` so closeout can judge spec readiness directly

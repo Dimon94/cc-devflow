@@ -1,5 +1,16 @@
 # CC-Act Skill Changelog
 
+## v1.6.0 - 2026-04-24
+
+- absorb `gstack/ship` and `gstack/document-release` into the native `cc-act` ship and documentation closeout contract
+- add ship hygiene rules for base detection, version/package/changelog drift, bisectable commits, final verification, push idempotency, and PR idempotency
+- strengthen documentation release rules so README/CLAUDE/architecture/handoff/changelog/TODO updates are audited from the final diff before PR or handoff
+- require PR bodies to be regenerated from current `cc-check`, scope drift, plan completion, verification, documentation, and test-plan facts
+
+Migration note:
+
+- new `create-pr` and `update-pr` closeouts should treat documentation sync and PR-body regeneration as first-class ship steps rather than optional post-processing
+
 ## v1.5.0 - 2026-04-19
 
 - require `cc-act` to finish formal spec synchronization before ship closeout when `cc-check` marks `specSyncReady=true`

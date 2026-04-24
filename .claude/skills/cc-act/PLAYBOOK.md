@@ -71,6 +71,16 @@ Ship 必须属于这 4 种模式之一：
 - `cc-act` 可以做清理和收尾修复
 - 但只要现实被改写，就必须重新证明
 
+## Phase 2.5: Ship Hygiene
+
+真正提交或推送前，先锁住 ship 卫生：
+
+1. 比较 `VERSION` / `package.json` / base branch，识别 `fresh`、`already bumped`、`stale package`、`unexpected drift`。
+2. 读取 changelog，不覆盖已有条目；新增或润色只能基于当前 diff 和 commit history。
+3. 检查提交边界，按逻辑单元拆分，保证提交顺序不引用未来代码。
+4. 如果有 WIP commit，只能用非破坏性 rebase / fixup 处理，不允许盲目 soft reset。
+5. push 前比较 local / remote HEAD；PR 前检查是否已有打开 PR / MR。
+
 ## Phase 3: Build Delivery Pack
 
 先按模式整理最小材料：
@@ -104,6 +114,9 @@ Ship 必须属于这 4 种模式之一：
 2. 用户可感知行为变了，就同步 `README.md` / `handoff/release-note.md`
 3. handoff 路径变了，就同步 `handoff/resume-index.md`
 4. reviewer 如果看文档还得猜，就说明 sync 失败
+5. 新文档必须从 README、CLAUDE 或 handoff 入口可发现
+6. CHANGELOG 只允许保护性更新，不能重写历史
+7. doc sync 结果要进入 PR body 或 handoff，而不是只留在聊天里
 
 ## Phase 5: Execute Integration
 
@@ -112,14 +125,14 @@ Ship 必须属于这 4 种模式之一：
 - 按 `references/git-commit-guidelines.md` 完成提交
 - 推送当前分支
 - 用 `gh pr create` 创建 PR / MR
-- PR body 以 `pr-brief.md` 为真相源
+- PR body 以 `pr-brief.md` 为真相源，并包含 Summary、Test Coverage、Pre-Landing Review、Scope Drift、Plan Completion、Verification Results、Documentation、Test plan
 
 ### `update-pr`
 
 - 如果有新增提交，先按 `references/git-commit-guidelines.md` 完成 commit / push
 - 不重新造一个 PR
 - 刷新已有 PR / MR body
-- 确保 body 反映这次最新 `cc-check` 结果与 doc sync 状态
+- 确保 body 由本次最新 `cc-check` 结果与 doc sync 状态重建，不沿用旧 body
 
 ### `local-handoff`
 
@@ -162,6 +175,7 @@ Ship 必须属于这 4 种模式之一：
 2. 材料是不是只覆盖当前模式真正需要的内容？
 3. reviewer / 接手者 还需不需要追问“所以我现在该看哪个文件”？
 4. `cc-simplify`、单测、e2e、commit/push 的结果是不是都能追溯？
+5. PR body / release note / handoff / changelog 说的是不是同一套现实？
 
 如果第 1 或第 3 题答案不是“能”，说明 `cc-act` 仍然太重或太糊。
 

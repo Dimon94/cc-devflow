@@ -1,53 +1,53 @@
 ---
 name: cc-plan
-version: 3.4.0
-description: "Use when a requirement, roadmap item, or bug needs scope clarification, design decisions, and executable task breakdown before coding starts."
+version: 3.5.0
+description: Use when a requirement, roadmap item, or bug needs scope clarification, design decisions, and executable task breakdown before coding starts.
 triggers:
-  - "帮我规划这个需求"
-  - "先别写代码先定方案"
-  - "这个 bug 边界不清"
-  - "拆一下任务"
-  - "plan this requirement"
-  - "scope this bug"
-  - "turn this into tasks"
+  - 帮我规划这个需求
+  - 先别写代码先定方案
+  - 这个 bug 边界不清
+  - 拆一下任务
+  - plan this requirement
+  - scope this bug
+  - turn this into tasks
 reads:
-  - "PLAYBOOK.md"
-  - "CHANGELOG.md"
-  - "assets/DESIGN_TEMPLATE.md"
-  - "assets/TINY_DESIGN_TEMPLATE.md"
-  - "assets/TASKS_TEMPLATE.md"
-  - "assets/TASK_MANIFEST_TEMPLATE.json"
-  - "references/planning-contract.md"
+  - PLAYBOOK.md
+  - CHANGELOG.md
+  - assets/DESIGN_TEMPLATE.md
+  - assets/TINY_DESIGN_TEMPLATE.md
+  - assets/TASKS_TEMPLATE.md
+  - assets/TASK_MANIFEST_TEMPLATE.json
+  - references/planning-contract.md
 writes:
-  - path: "devflow/changes/<change-key>/planning/design.md"
-    durability: "durable"
+  - path: devflow/changes/<change-key>/planning/design.md
+    durability: durable
     required: true
-  - path: "devflow/changes/<change-key>/planning/tasks.md"
-    durability: "durable"
+  - path: devflow/changes/<change-key>/planning/tasks.md
+    durability: durable
     required: true
-  - path: "devflow/changes/<change-key>/planning/task-manifest.json"
-    durability: "durable"
+  - path: devflow/changes/<change-key>/planning/task-manifest.json
+    durability: durable
     required: true
-  - path: "devflow/changes/<change-key>/change-meta.json"
-    durability: "durable"
+  - path: devflow/changes/<change-key>/change-meta.json
+    durability: durable
     required: true
 entry_gate:
-  - "Read roadmap handoff, current requirement files, code, docs, and tests before drafting design."
-  - "Freeze problem, constraints, non-goals, and success criteria before proposing implementation tasks."
-  - "Do not generate planning/tasks.md, planning/task-manifest.json, or change-meta.json until the recommended design is approved."
+  - Read roadmap handoff, current requirement files, code, docs, and tests before drafting design.
+  - Freeze problem, constraints, non-goals, and success criteria before proposing implementation tasks.
+  - Do not generate planning/tasks.md, planning/task-manifest.json, or change-meta.json until the recommended design is approved.
 exit_criteria:
-  - "planning/design.md captures the approved solution, boundaries, review conclusions, and execution edge cases."
-  - "planning/tasks.md, planning/task-manifest.json, and change-meta.json are explicit enough that cc-do can continue without chat memory."
-  - "Only one next step remains: enter cc-do."
+  - planning/design.md captures the approved solution, boundaries, review conclusions, and execution edge cases.
+  - planning/tasks.md, planning/task-manifest.json, and change-meta.json are explicit enough that cc-do can continue without chat memory.
+  - 'Only one next step remains: enter cc-do.'
 reroutes:
-  - when: "The discussion is still about project direction or stage order instead of one requirement."
-    target: "roadmap"
-  - when: "The plan is already approved and tasks are already frozen."
-    target: "cc-do"
+  - when: The discussion is still about project direction or stage order instead of one requirement.
+    target: roadmap
+  - when: The plan is already approved and tasks are already frozen.
+    target: cc-do
 recovery_modes:
-  - name: "re-open-design"
-    when: "Execution feedback, review findings, or user correction invalidates the current design contract."
-    action: "Return to planning/design.md, reopen the approved decision explicitly, and regenerate tasks only after the design is stable again."
+  - name: re-open-design
+    when: Execution feedback, review findings, or user correction invalidates the current design contract.
+    action: Return to planning/design.md, reopen the approved decision explicitly, and regenerate tasks only after the design is stable again.
 tool_budget:
   read_files: 10
   search_steps: 6
@@ -102,6 +102,19 @@ tool_budget:
 - Required evidence: design choices, task boundaries, and verification commands must point back to repo facts or explicit user approval.
 - Reroute rule: if the problem expands to project strategy go back to `roadmap`; if the plan is already frozen move straight to `cc-do`.
 
+## Autoplan Principles
+
+从 `gstack/autoplan` 学到的规则要内化为 `cc-plan` 的决策口径，而不是变成额外文档：
+
+1. Choose completeness：如果完整方案只多花少量 agent 时间，就不要留下 happy-path 计划。
+2. Boil lakes：同一 blast radius 内、少于 1 天 agent 工作量的边界问题，应纳入当前计划；跨系统迁移才 defer。
+3. Pragmatic：两个方案都能达成目标时，选更小、更直白、更可验证的方案。
+4. DRY：已有流程、脚本、spec、运行时能复用时，不准设计平行系统。
+5. Explicit over clever：十行人人看懂的实现路径胜过二百行抽象。
+6. Bias toward action：把不确定性压成明确 gate、风险和后续入口，不让计划停在空泛讨论。
+
+自动决策也要留痕：机械选择写进 `planning/design.md` 的 decision log；taste decision 或用户原始方向被挑战时，必须明确标成 `taste decision` / `user challenge`，由用户最后拍板。
+
 ## Output Model
 
 `cc-plan` 只允许产出 4 个主文件，向 `gstack` / `superpowers` 学习“少文档、强文档”：
@@ -150,6 +163,19 @@ tool_budget:
 
 先把这些材料压成 `Source Handoff`，再决定 discovery 还是 planning。
 
+## Discovery Questions
+
+`superpowers/brainstorming` 和 `gstack/office-hours` 的核心不是多问，而是逼近真实问题。澄清时优先用这些问题压缩范围：
+
+1. Demand reality：这个 requirement 具体让谁的工作变好，当前没有它会卡在哪里？
+2. Status quo：用户现在怎么绕过这个问题，现有 repo 里哪些代码已经解决了一半？
+3. Desperate specificity：哪一个失败场景最痛，必须在本轮变绿？
+4. Narrowest wedge：最小可交付边界是什么，哪些同 blast radius 问题必须顺手解决？
+5. Observation：有没有日志、测试、真实流程、最近提交能证明这个问题存在？
+6. Future fit：这个方案 6 个月后是否仍然是正确边界，还是会制造第二套系统？
+
+一次只问一个关键未知点。能从代码、文档、测试、git 历史里确认的问题，不问用户。
+
 ## Session Protocol
 
 1. 先探索上下文，再写结论。
@@ -162,6 +188,20 @@ tool_budget:
 8. 在 `planning/design.md` 内完成 review loop 与 final gate，不再额外拆出 `PLAN_REVIEW.md`。
 9. 只有 design gate 真正通过，才能写 `planning/tasks.md`、`planning/task-manifest.json` 和 `change-meta.json`。
 10. 计划完成后，下一步唯一答案是 `cc-do`。
+
+## Engineering Review Gate
+
+冻结设计前，必须在 `planning/design.md` 内完成一次轻量工程审查：
+
+1. Existing leverage map：每个子问题先映射到现有代码、脚本、spec、模板或测试，避免重复造轮子。
+2. Scope challenge：超过 8 个文件、2 个新 service/class、或跨模块连锁时，必须解释为什么不是过度设计。
+3. Architecture diagram：跨模块或状态流变更要写 ASCII 数据流 / 依赖图。
+4. Code quality scan：指出 DRY、命名、错误处理、三层以上分支、隐藏耦合风险。
+5. Test diagram：列出新增 code path、user flow、错误路径、边界状态，并标注 unit / e2e / eval。
+6. Performance and distribution：涉及批量、I/O、发布物、CLI、包、容器时，必须写清性能和分发边界。
+7. NOT in scope：所有被考虑但 defer 的内容要写理由，不能消失在聊天里。
+
+如果任一项无法从当前证据完成，写 `assumption` 或 `blocked question`，不要伪装成已经审过。
 
 ## Design Modes
 
@@ -194,7 +234,8 @@ tool_budget:
 4. Ambiguity scan：实现者看完不能还靠猜
 5. Feasibility scan：方案要接得上现有代码、依赖和时间边界
 6. Source alignment：仍然对齐上游 roadmap 的 success signal、constraints、non-goals
-7. Final gate：明确 auto-decided items、taste decisions、user challenges 和最终 recommendation
+7. Engineering scan：完成 existing leverage、scope challenge、test diagram、failure modes、NOT in scope
+8. Final gate：明确 auto-decided items、taste decisions、user challenges 和最终 recommendation
 
 如果有 UI / interaction 明显范围，在 `planning/design.md` 里补一段 design review 结论。
 如果有 API / CLI / developer-facing scope，在 `planning/design.md` 里补一段 DX review 结论。

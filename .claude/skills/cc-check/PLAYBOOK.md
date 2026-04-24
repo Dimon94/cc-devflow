@@ -1,5 +1,13 @@
 # CC-Check Playbook
 
+## Iron Law
+
+```text
+NO PASS WITHOUT FRESH EVIDENCE
+```
+
+只要 gate、review、spec truth 里任一层没有本轮新鲜证据，`pass` 就不成立。
+
 ## Visible State Machine
 
 `cc-do -> cc-check -> cc-act`
@@ -19,6 +27,24 @@
 
 先答完这三题，再跑完整 gate；不要一边验证一边发明 verdict。
 
+## Four Verification Phases
+
+1. **Reset Contract**
+   - 重新读取 `planning/design.md` 或 `planning/analysis.md`
+   - 重新读取 `planning/tasks.md`、`planning/task-manifest.json`
+   - 明确本轮验收对象和 spec delta
+2. **Re-run Reality**
+   - 重新跑 gate
+   - 读取退出码、关键输出、skip 原因
+3. **Check Every Boundary**
+   - runtime gate
+   - task review proof
+   - requirement diff review
+   - spec sync readiness
+4. **Freeze Verdict**
+   - 只允许 `pass` / `fail` / `blocked`
+   - 只允许诚实 reroute
+
 ## Gate Function
 
 在宣称任何“完成、通过、ready”之前，必须做 4 件事：
@@ -28,6 +54,25 @@
 3. 读取真实输出和退出码
 4. 把证据写进 `report-card.json`
 5. 把任务级 review 与需求级 diff review 分开写清楚
+
+## Verification Layers
+
+1. Runtime reality
+2. Task review proof
+3. Requirement diff truth
+4. Spec alignment and sync readiness
+
+## Requirement Diff Review
+
+需求级 review 至少分 5 步：
+
+1. `base truth`：确认 base branch、当前 branch、PR 状态。
+2. `plan completion`：逐项核对 tasks / manifest 是否真的由 diff 或 runtime proof 兑现。
+3. `scope drift`：识别多做、少做、做偏。
+4. `critical pass`：检查数据安全、并发、shell、LLM trust boundary、枚举覆盖、静默失败、文档漂移。
+5. `adversarial synthesis`：合并外部 review / codex / subagent /人工 finding，去重并标置信度。
+
+这些结论进入 `review.diffReview`，不能只写在口头总结里。
 
 ## Verdict
 
@@ -42,6 +87,8 @@
 1. 命令或 review 明确失败 => `fail`
 2. 条件缺失、证据不足、review 缺件 => `blocked`
 3. 只有当 gate 和 review 都过，才是 `pass`
+
+如果已经证明根因故事失效，别用 `blocked` 糊过去，直接 reroute 到 `cc-investigate`。
 
 ## Minimum `report-card.json`
 
@@ -76,6 +123,16 @@
 - 范围错了、设计前提失效、当前计划已经不可信 => `cc-plan`
 - 只有 `pass` 才能写 `none`
 
+## Red Flags
+
+看到下面这些念头就停下 reset：
+
+- “上次跑过，沿用就行”
+- “测试绿了，review 应该也没问题”
+- “先给 blocked，省得解释 reroute”
+- “manifest proof 以后再补”
+- “spec truth 应该没漂”
+
 ## Local Kit
 
 - `assets/REPORT_CARD_TEMPLATE.json` 提供最小输出形状
@@ -93,3 +150,4 @@
 3. `reroute` 是不是和失败类型一致？
 4. `review.status` 是真实现实，还是我脑补的绿色？
 5. 如果把这份 `report-card.json` 给下一位接手者，他知道接下来去哪吗？
+6. diff review 是否同时覆盖了 plan completion、scope drift、critical pass、doc staleness？
