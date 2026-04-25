@@ -9,10 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.4.1] - 2026-04-25
+
+### 🔧 Canonical Change Keys + Planning Contract Hardening
+
+v4.4.1 tightens the planning and release workflow contracts so new change
+directories use explicit `REQ-*` / `FIX-*` prefixes and executable plans keep
+test-first handoffs as a native requirement.
+
 ### Added
 
 - Added a public `cc-investigate` skill so bug work can follow `cc-investigate -> cc-do -> cc-check -> cc-act` instead of overloading `cc-plan`.
 - Added a distributed maintenance skill `cc-spec-init` for capability-centered spec bootstrap, capability truth maintenance, and `change-meta.json` link repair.
+- Added runtime coverage for canonical change-key generation, legacy lowercase directory compatibility, `FIX-*` ids, and rejection of stale `BUG-*` ids.
 
 ### Changed
 
@@ -21,6 +30,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated `cc-do` and `cc-check` contracts so they can consume `ANALYSIS.md` handoffs and reroute failed bug fixes back to `cc-investigate`.
 - Updated `cc-roadmap`, `cc-plan`, `cc-investigate`, `cc-do`, `cc-check`, and `cc-act` to carry capability/spec linkage through roadmap, planning, execution, verification, and closeout.
 - Updated public docs and example bindings so `devflow/specs/` is documented as durable capability truth and `change-meta.json` is documented as durable change truth.
+- Updated `cc-plan` and `cc-investigate` so new planning outputs must use `REQ-<number>-<description>` for requirement work and `FIX-<number>-<description>` for bug-fix work.
+- Updated public examples to use uppercase `REQ-*` change directories.
+
+### Fixed
+
+- Fixed path resolution so new change directories no longer silently downcase
+  `REQ-*` ids into `req-*`.
 
 ## [4.4.0] - 2026-04-10
 
