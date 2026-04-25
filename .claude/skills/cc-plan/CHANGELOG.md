@@ -1,9 +1,24 @@
 # CC-Plan Skill Changelog
 
+## v3.5.2 - 2026-04-25
+
+- make test-first execution a native planning requirement so concrete tasks default to `Red -> Green -> Refactor`
+- require `planning/tasks.md` and `task-manifest.json` to expose TDD phase, failing-test evidence, refactor checkpoints, and explicit TDD exceptions
+- update planning templates and contract so `cc-plan` no longer hands a non-TDD plan to `cc-do`
+
+Migration note:
+
+- new plans should split behavior changes into `[TEST]`, `[IMPL]`, and `[REFACTOR]` tasks or document a narrow TDD exception with replacement evidence
+
+## v3.5.1 - 2026-04-25
+
+- remove external tool provenance from the public skill contract so planning rules read as native `cc-plan` behavior
+- keep the decision principles, discovery pressure, and engineering review gate unchanged while tightening skill self-description
+
 ## v3.5.0 - 2026-04-24
 
-- absorb `superpowers/brainstorming`, `gstack/office-hours`, `gstack/autoplan`, and `gstack/plan-eng-review` practices into native `cc-plan` discovery and review contracts
-- add autoplan decision principles, one-question discovery pressure, existing leverage mapping, test diagrams, failure modes, and explicit `NOT in scope` requirements
+- add completeness decision principles, one-question discovery pressure, existing leverage mapping, test diagrams, failure modes, and explicit `NOT in scope` requirements
+- strengthen discovery and review contracts as native `cc-plan` behavior
 - strengthen planning contract and playbook so taste decisions, user challenges, and engineering review outputs land inside `planning/design.md` instead of new side documents
 
 Migration note:

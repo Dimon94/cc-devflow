@@ -17,11 +17,16 @@
     ]
   },
   "planningMeta": {
-    "reqPlanSkillVersion": "3.2.0",
+    "reqPlanSkillVersion": "3.5.2",
     "designVersion": "design.v1",
     "approvedAt": "2026-04-15T12:00:00.000Z",
     "approvedBy": "user",
     "basedOnOption": "Option A"
+  },
+  "executionDiscipline": {
+    "default": "red-green-refactor",
+    "testFirstRequired": true,
+    "tddExceptions": []
   },
   "status": "planned",
   "designMode": "tiny-design",
@@ -56,6 +61,7 @@
       "title": "[TEST] Add a failing test for the missing behavior",
       "phase": 1,
       "status": "pending",
+      "tddPhase": "red",
       "dependsOn": [],
       "parallel": false,
       "touches": [

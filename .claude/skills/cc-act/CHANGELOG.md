@@ -1,8 +1,13 @@
 # CC-Act Skill Changelog
 
+## v1.6.1 - 2026-04-25
+
+- remove external tool provenance from the public skill contract so ship and documentation release rules read as native `cc-act` behavior
+- keep idempotent ship, documentation audit, changelog protection, and PR regeneration requirements unchanged
+
 ## v1.6.0 - 2026-04-24
 
-- absorb `gstack/ship` and `gstack/document-release` into the native `cc-act` ship and documentation closeout contract
+- add the native `cc-act` ship and documentation closeout contract
 - add ship hygiene rules for base detection, version/package/changelog drift, bisectable commits, final verification, push idempotency, and PR idempotency
 - strengthen documentation release rules so README/CLAUDE/architecture/handoff/changelog/TODO updates are audited from the final diff before PR or handoff
 - require PR bodies to be regenerated from current `cc-check`, scope drift, plan completion, verification, documentation, and test-plan facts

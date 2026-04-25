@@ -1,6 +1,6 @@
 ---
 name: cc-act
-version: 1.6.0
+version: 1.6.1
 description: 'Use when verified work must be shipped or handed off with a clear landing path: run simplify and required tests, create or update a PR, prepare a local handoff, close out merged work, sync docs, write release notes, and fold follow-ups back into backlog or roadmap.'
 triggers:
   - 准备提 PR
@@ -193,7 +193,7 @@ tool_budget:
 
 ## Ship Discipline
 
-借鉴 `gstack/ship`，`cc-act` 的 ship 动作必须是幂等、可审计、可复跑的：
+`cc-act` 的 ship 动作必须是幂等、可审计、可复跑的：
 
 1. Base and branch：识别 base branch、当前 branch、远端状态、已有 PR / MR，所有 diff/log/push 都基于同一个 base。
 2. Scope completion：PR 简报必须包含 `cc-check` 的 plan completion、scope drift、review finding、验证结果摘要。
@@ -205,7 +205,7 @@ tool_budget:
 
 ## Documentation Release
 
-借鉴 `gstack/document-release`，文档同步要作为发布链路的一部分，而不是 PR 后的人工补丁：
+文档同步要作为发布链路的一部分，而不是 PR 后的人工补丁：
 
 1. Diff audit：按最终 diff/log 识别新增能力、行为变化、删除项、基础设施变化。
 2. Per-file audit：检查 README、CLAUDE、ARCHITECTURE、CONTRIBUTING、docs、handoff 是否与 diff 矛盾。

@@ -2,7 +2,7 @@
 
 ## Hard Rules
 
-1. `cc-plan` 默认只产出 3 个文件：`planning/design.md`、`planning/tasks.md`、`planning/task-manifest.json`。
+1. `cc-plan` 默认只产出 4 个文件：`planning/design.md`、`planning/tasks.md`、`planning/task-manifest.json`、`change-meta.json`。
 2. clarification / brainstorm / review 结论必须并入 `planning/design.md`，不能再默认拆独立文档。
 3. 执行 handoff 必须写进 `planning/tasks.md` 顶部，不能依赖单独的 `context-package.md`。
 4. `planning/task-manifest.json` 必须和 `planning/tasks.md` 同步，且能告诉 `cc-do` 当前任务是谁。
@@ -15,6 +15,7 @@
 11. 每个计划必须先找 existing leverage，再决定新增实现；重复已有能力属于 planning 失败。
 12. 同 blast radius 内的完整边界默认纳入，defer 必须写入 `NOT in scope` 和原因。
 13. 如果推荐方案挑战用户原始方向，必须标成 `user challenge`，不能自动改写用户意图。
+14. 行为变更的具体任务默认采用测试先行；没有 Red/Green/Refactor 链或 TDD exception，不允许交给 `cc-do`。
 
 ## Design Modes
 
@@ -40,9 +41,12 @@
 每个任务至少写清：
 
 - 目标
+- TDD phase：`red` / `green` / `refactor` / `exception`
 - 涉及文件
 - 验证方式
 - 完成证据
+
+行为变更任务必须先有 `[TEST]` 红灯任务，再有 `[IMPL]` 绿灯任务，最后有 `[REFACTOR]` 或明确 refactor checkpoint。纯文档、纯配置、纯生成文件、throwaway prototype 可以例外，但必须写明原因、风险和替代验证。
 
 ## Review Gate
 
@@ -58,7 +62,8 @@
 8. Scope / complexity challenge
 9. Test diagram and failure modes
 10. NOT in scope
-11. Final recommendation
+11. Test-first readiness
+12. Final recommendation
 
 如有 UI scope，再补 design review 结论。
 如有 developer-facing scope，再补 DX review 结论。

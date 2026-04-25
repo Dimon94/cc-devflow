@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.5.0
+version: 3.5.2
 description: Use when a requirement, roadmap item, or bug needs scope clarification, design decisions, and executable task breakdown before coding starts.
 triggers:
   - 帮我规划这个需求
@@ -34,10 +34,12 @@ writes:
 entry_gate:
   - Read roadmap handoff, current requirement files, code, docs, and tests before drafting design.
   - Freeze problem, constraints, non-goals, and success criteria before proposing implementation tasks.
+  - Plan executable work as Red/Green/Refactor by default; identify the first failing test before any production implementation task, or write an explicit TDD exception with replacement evidence.
   - Do not generate planning/tasks.md, planning/task-manifest.json, or change-meta.json until the recommended design is approved.
 exit_criteria:
   - planning/design.md captures the approved solution, boundaries, review conclusions, and execution edge cases.
   - planning/tasks.md, planning/task-manifest.json, and change-meta.json are explicit enough that cc-do can continue without chat memory.
+  - The task breakdown preserves test-first execution; failing-test tasks precede implementation tasks, refactor checkpoints are visible, and any TDD exception is justified.
   - 'Only one next step remains: enter cc-do.'
 reroutes:
   - when: The discussion is still about project direction or stage order instead of one requirement.
@@ -104,7 +106,7 @@ tool_budget:
 
 ## Autoplan Principles
 
-从 `gstack/autoplan` 学到的规则要内化为 `cc-plan` 的决策口径，而不是变成额外文档：
+这些规则属于 `cc-plan` 的原生决策口径，不允许拆成额外文档：
 
 1. Choose completeness：如果完整方案只多花少量 agent 时间，就不要留下 happy-path 计划。
 2. Boil lakes：同一 blast radius 内、少于 1 天 agent 工作量的边界问题，应纳入当前计划；跨系统迁移才 defer。
@@ -117,14 +119,14 @@ tool_budget:
 
 ## Output Model
 
-`cc-plan` 只允许产出 4 个主文件，向 `gstack` / `superpowers` 学习“少文档、强文档”：
+`cc-plan` 只允许产出 4 个主文件，默认采用“少文档、强文档”的输出模型：
 
 1. `planning/design.md`
    - 吸收原来的 clarification / brainstorm / review 结论
    - 记录 source handoff、问题定义、备选方案、批准方案、设计决策、review gate、执行边界
 2. `planning/tasks.md`
    - 只保留可执行任务和执行 handoff
-   - 顶部写清 frozen decisions、read first、commands to trust、并行边界
+   - 顶部写清 frozen decisions、read first、commands to trust、TDD plan、并行边界
 3. `planning/task-manifest.json`
    - 从 `planning/tasks.md` 编译出的机器真相源
    - 只服务执行与调度，不再承担人类阅读的叙事职责
@@ -165,7 +167,7 @@ tool_budget:
 
 ## Discovery Questions
 
-`superpowers/brainstorming` 和 `gstack/office-hours` 的核心不是多问，而是逼近真实问题。澄清时优先用这些问题压缩范围：
+澄清的核心不是多问，而是逼近真实问题。澄清时优先用这些问题压缩范围：
 
 1. Demand reality：这个 requirement 具体让谁的工作变好，当前没有它会卡在哪里？
 2. Status quo：用户现在怎么绕过这个问题，现有 repo 里哪些代码已经解决了一半？
@@ -197,11 +199,25 @@ tool_budget:
 2. Scope challenge：超过 8 个文件、2 个新 service/class、或跨模块连锁时，必须解释为什么不是过度设计。
 3. Architecture diagram：跨模块或状态流变更要写 ASCII 数据流 / 依赖图。
 4. Code quality scan：指出 DRY、命名、错误处理、三层以上分支、隐藏耦合风险。
-5. Test diagram：列出新增 code path、user flow、错误路径、边界状态，并标注 unit / e2e / eval。
+5. Test diagram：列出新增 code path、user flow、错误路径、边界状态，并标注 first failing test、unit / e2e / eval。
 6. Performance and distribution：涉及批量、I/O、发布物、CLI、包、容器时，必须写清性能和分发边界。
 7. NOT in scope：所有被考虑但 defer 的内容要写理由，不能消失在聊天里。
 
 如果任一项无法从当前证据完成，写 `assumption` 或 `blocked question`，不要伪装成已经审过。
+
+## Test-First Planning
+
+`cc-plan` 生成具体计划时默认采用测试先行纪律。不能让计划是“先实现再补测”，然后把 TDD 压力留给 `cc-do` 临场修正。
+
+1. 每个可观察行为变更默认拆成 `Red -> Green -> Refactor`：
+   - Red：先写 `[TEST]` 任务，目标是用最小失败测试证明目标行为缺失。
+   - Green：再写 `[IMPL]` 任务，只做让对应红灯转绿的最小生产实现。
+   - Refactor：最后写 `[REFACTOR]` 或在实现任务中明确 refactor checkpoint，说明何时清理重复、命名、结构和坏味道。
+2. `planning/tasks.md` 不能把测试和实现塞进同一个 task。一个 task 同时写“实现并测试”就是计划失败。
+3. `planning/task-manifest.json` 必须让 `cc-do` 看出每个任务的 `tddPhase`、依赖和证据：`red` 任务产出 failing output，`green` 任务产出 passing output，`refactor` 任务产出重跑后的 green evidence。
+4. 只有纯文档、纯配置、纯生成文件、throwaway prototype 可以例外。例外必须写进 `planning/design.md` 和 `planning/tasks.md` 的 `TDD exceptions`，包含原因、风险、替代验证命令和后续补证入口。
+5. 并行只允许发生在已经满足上游 Red/Green 依赖之后。两个 `[P]` 任务如果共享同一个红灯或同一组 touched files，就不能并行。
+6. 如果当前需求找不到第一条失败测试，先把它写成 blocked question 或 exploratory spike，不准伪装成可执行实现任务。
 
 ## Design Modes
 
@@ -243,8 +259,8 @@ tool_budget:
 ## Good Output
 
 - `planning/design.md` 一份就讲清：为什么做、做什么、不做什么、备选方案、批准方案、设计模式、风险、review gate、执行边界
-- `planning/tasks.md` 只保留能直接执行的任务和 handoff，不再承载重复背景介绍
-- `planning/task-manifest.json` 是 `cc-do` 的真相源，要写清 `dependsOn`、并行资格、触点、验证命令，以及继承了哪版 roadmap / design / spec
+- `planning/tasks.md` 只保留能直接执行的任务和 handoff，不再承载重复背景介绍；行为变更默认拆成 `[TEST] -> [IMPL] -> [REFACTOR]`
+- `planning/task-manifest.json` 是 `cc-do` 的真相源，要写清 `dependsOn`、`tddPhase`、并行资格、触点、验证命令，以及继承了哪版 roadmap / design / spec
 - `change-meta.json` 是 capability 真相源，要写清这次 change 准备如何改变长期 spec
 - 看完第一屏，执行者就知道这次属于 `tiny-design` 还是 `full-design`，以及为什么
 
@@ -268,8 +284,9 @@ tool_budget:
 4. `planning/design.md` 和 `planning/tasks.md` 必须足够让 `cc-do` 在不继承当前会话的前提下继续工作。
 5. 版本、来源、冻结决策必须可追踪。
 6. 任务少而硬，胜过任务多而虚。
-7. 任务一旦超过 2-5 分钟粒度就继续拆，直到可以稳定交给执行者。
-8. 三层以上判断说明设计还没压平，应回到 `planning/design.md` 继续简化。
+7. 具体计划默认测试先行；没有 Red/Green/Refactor 或 TDD exception，就不能进入 `cc-do`。
+8. 任务一旦超过 2-5 分钟粒度就继续拆，直到可以稳定交给执行者。
+9. 三层以上判断说明设计还没压平，应回到 `planning/design.md` 继续简化。
 
 ## Exit Criteria
 
@@ -279,6 +296,7 @@ tool_budget:
 - 推荐方案已被批准
 - review gate 已在 `planning/design.md` 里闭合
 - 任务顺序没有歧义
+- 测试先行顺序没有歧义，TDD exception 已显式写清
 - `cc-do` 不需要再靠会话记忆恢复背景
 
 ## Do Not
@@ -287,6 +305,7 @@ tool_budget:
 - 不把 clarification / brainstorm / review 各拆一份文档
 - 不把“问了一堆问题”误当成“完成 discovery”
 - 不拿“后面再想”伪装成计划
+- 不把“先实现再补测试”伪装成可执行计划
 - 不把项目路线图和 requirement 计划混成一锅
 - 不在设计没批准前抢跑到实现任务
 

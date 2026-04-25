@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-002.v2`
 - Design version: `design.v2`
-- CC-Plan skill version: `3.5.0`
+- CC-Plan skill version: `3.5.2`
 - Requirement ID: `REQ-002`
 - Design mode: `full-design`
 - Why not `tiny-design`: the feature crosses import parsing, invite rules, billing limits, duplicate handling, and audit logging

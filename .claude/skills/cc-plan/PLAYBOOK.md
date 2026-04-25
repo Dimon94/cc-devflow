@@ -18,6 +18,7 @@
 5. 版本、来源、冻结决策必须可追踪。
 6. 机械决策自动落盘；taste decision 和 user challenge 必须显式交给用户拍板。
 7. 同 blast radius 内的完整边界优先做完，跨系统或无证据扩张才 defer。
+8. 具体执行计划默认测试先行；没有 Red/Green/Refactor 链或 TDD exception，不准交给 `cc-do`。
 
 ## Required Outputs
 
@@ -41,6 +42,7 @@
 5. `planning/tasks.md` 之前，`planning/design.md` 内的 review gate 必须闭合。
 6. 每个任务都要写清：
    - 目标
+   - TDD phase：`red` / `green` / `refactor` / `exception`
    - dependsOn / 是否允许并行
    - 涉及文件
    - 必读上下文
@@ -50,6 +52,7 @@
 8. `planning/task-manifest.json` 必须是 `cc-do` 的真相源，而不是装饰文件。
 9. `planning/design.md` 必须包含 `Existing Leverage`、`NOT in scope`、`Failure Modes`、`Test Diagram`，除非明确说明为什么不适用。
 10. 新 artifact、CLI、包、容器、文档入口必须在计划阶段写清分发和 discoverability，不准到 `cc-act` 才发现没人能用。
+11. 行为变更任务必须拆成 `[TEST] -> [IMPL] -> [REFACTOR]` 或写明 TDD exception；不能用“实现并测试”混成一个任务。
 
 ## Approval Flow
 
@@ -66,7 +69,7 @@
 - 现有代码已经解决了哪些子问题？
 - 最小完整方案触达哪些文件，为什么没有更小边界？
 - 数据流、状态流或执行流怎么走？
-- 每条新增 code path / user flow / error path 用什么测试覆盖？
+- 每条新增 code path / user flow / error path 的第一条失败测试是什么？
 - 哪些生产失败模式已经处理，哪些 defer 到 backlog？
 
 ## Design Mode Switch
@@ -98,3 +101,4 @@
 只有当 `cc-do` 不需要临场补脑也能直接执行时，计划才算合格。
 如果执行者还得自己猜“这次到底碰哪些文件、为什么这么改”，说明 `planning/design.md` 仍然不够。
 如果执行者还看不出哪些决策已经冻结，说明 `planning/tasks.md` 仍然不够。
+如果执行者还要自己决定先写什么失败测试，说明 `planning/tasks.md` 仍然不够。

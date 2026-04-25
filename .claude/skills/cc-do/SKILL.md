@@ -1,6 +1,6 @@
 ---
 name: cc-do
-version: 1.5.0
+version: 1.5.1
 description: Use when implementing planned tasks, resuming interrupted work, applying a frozen investigation handoff, or landing review feedback after cc-plan or cc-investigate.
 triggers:
   - 开始做 T003
@@ -119,7 +119,7 @@ tool_budget:
 NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
 ```
 
-`cc-do` 默认采用 `superpowers/test-driven-development` 的执行纪律：
+`cc-do` 默认采用测试先行的执行纪律：
 
 1. Red：先写一个最小失败测试，运行并确认它因为目标行为缺失而失败。
 2. Green：只写让当前失败测试通过的最小生产代码。

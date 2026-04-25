@@ -113,6 +113,9 @@
 
 ## Validation Strategy
 
+- First failing tests:
+- Red/Green/Refactor task chain:
+- TDD exceptions:
 - Unit:
 - Integration:
 - Manual:
@@ -134,6 +137,7 @@
 - Source alignment:
 - UI / interaction review summary:
 - DX review summary:
+- Test-first readiness:
 - Auto-decided items:
 - Taste decisions:
 - User challenges:

@@ -1,6 +1,6 @@
 ---
 name: cc-check
-version: 1.8.0
+version: 1.8.1
 description: Use when a planned or investigated change needs fresh verification evidence, layered gate proof, review truth, and an honest pass fail blocked verdict before entering cc-act.
 triggers:
   - 验收这个需求
@@ -144,7 +144,7 @@ NO PASS WITHOUT FRESH EVIDENCE
 
 ## Diff Review Pipeline
 
-借鉴 `gstack/review`，`cc-check` 的 requirement-level review 不能只写“diff 看过了”。至少要形成这些事实：
+`cc-check` 的 requirement-level review 不能只写“diff 看过了”。至少要形成这些事实：
 
 1. Base truth：识别 base branch、当前分支、是否已有 PR / MR，避免拿错比较基准。
 2. Plan completion audit：从 `planning/tasks.md` / `task-manifest.json` 抽取可执行项，逐项标 `DONE` / `PARTIAL` / `NOT_DONE` / `CHANGED`。

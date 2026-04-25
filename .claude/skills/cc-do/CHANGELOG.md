@@ -1,8 +1,13 @@
 # CC-Do Skill Changelog
 
+## v1.5.1 - 2026-04-25
+
+- remove external tool provenance from the public skill contract so test-first execution reads as native `cc-do` behavior
+- keep the Red/Green/Refactor iron law and exception checkpoint contract unchanged
+
 ## v1.5.0 - 2026-04-24
 
-- absorb `superpowers/test-driven-development` into the `cc-do` execution contract with an explicit `NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST` rule
+- add test-first execution to the `cc-do` contract with an explicit `NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST` rule
 - require Red failure reason verification, post-refactor Green evidence, and checkpoint fields that make TDD proof resumable
 - add a narrow TDD exception contract so prototypes, generated files, and config-only changes cannot silently bypass test-first execution
 

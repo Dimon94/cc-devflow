@@ -44,6 +44,10 @@
 
 ## Validation
 
+- First failing test:
+- Green implementation check:
+- Refactor checkpoint:
+- TDD exceptions:
 - Primary check:
 - Secondary checks:
 - Evidence to collect:
@@ -60,6 +64,7 @@
 - Scope scan:
 - Ambiguity scan:
 - Feasibility scan:
+- Test-first readiness:
 - Final recommendation:
 
 ## Approval
