@@ -1,7 +1,7 @@
 {
-  "changeId": "REQ-XXX",
-  "requirementId": "REQ-XXX",
-  "requirementVersion": "REQ-XXX.v1",
+  "changeId": "FIX-XXX",
+  "requirementId": "FIX-XXX",
+  "requirementVersion": "FIX-XXX.v1",
   "sourceRoadmap": {
     "itemId": "RM-001",
     "roadmapVersion": "1.0",

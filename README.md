@@ -175,6 +175,7 @@ skills.sh remains the single-skill distribution path for distributed `.claude/sk
 ## Durable vs Ephemeral
 
 - `devflow/specs/` stores durable capability truth: `INDEX.md` plus `capabilities/*.md`.
+- New change directories must be named `REQ-<number>-<description>` for requirements or `FIX-<number>-<description>` for bug fixes; old lowercase directories are compatibility reads only.
 - `devflow/changes/<change>/` stores durable change truth only: `change-state.json`, `change-meta.json`, planning docs, `task-manifest.json`, `team-state.json`, task `checkpoint.json`, `report-card.json`, and one final handoff file.
 - `devflow/workspaces/<change>/` stores ephemeral runtime scratch such as worker assignment, journals, prompts, and session logs.
 - If a file can be regenerated from durable truth, it should not be persisted under `devflow/changes/`.

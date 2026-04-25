@@ -1,6 +1,6 @@
 ---
 name: cc-investigate
-version: 1.1.0
+version: 1.1.1
 description: "Use when a bug, regression, broken task, or unexpected behavior needs root-cause investigation, reproducible evidence, and a frozen repair handoff before cc-do resumes coding."
 triggers:
   - "帮我查这个 bug"
@@ -32,6 +32,7 @@ writes:
     required: true
 entry_gate:
   - "Read the current bug report, existing requirement artifacts, relevant code, tests, and recent history before forming any hypothesis."
+  - "Use a FIX-<number>-<description> change key for new bug-fix investigations."
   - "Reproduce or narrow the symptom first, then freeze the evidence chain before proposing repair tasks."
   - "Do not write production code here; this stage ends with planning/analysis.md plus executable repair tasks for cc-do."
 exit_criteria:

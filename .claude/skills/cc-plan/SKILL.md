@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.5.2
+version: 3.5.3
 description: Use when a requirement, roadmap item, or bug needs scope clarification, design decisions, and executable task breakdown before coding starts.
 triggers:
   - 帮我规划这个需求
@@ -35,6 +35,7 @@ entry_gate:
   - Read roadmap handoff, current requirement files, code, docs, and tests before drafting design.
   - Freeze problem, constraints, non-goals, and success criteria before proposing implementation tasks.
   - Plan executable work as Red/Green/Refactor by default; identify the first failing test before any production implementation task, or write an explicit TDD exception with replacement evidence.
+  - Assign a canonical change key before writing artifacts; feature work must use `REQ-<number>-<description>`, and bug-fix work must use `FIX-<number>-<description>`.
   - Do not generate planning/tasks.md, planning/task-manifest.json, or change-meta.json until the recommended design is approved.
 exit_criteria:
   - planning/design.md captures the approved solution, boundaries, review conclusions, and execution edge cases.
@@ -103,6 +104,15 @@ tool_budget:
 - Forbidden actions: writing production code, splitting planning into new side documents, or emitting tasks before approval.
 - Required evidence: design choices, task boundaries, and verification commands must point back to repo facts or explicit user approval.
 - Reroute rule: if the problem expands to project strategy go back to `roadmap`; if the plan is already frozen move straight to `cc-do`.
+
+## Change Key Contract
+
+`<change-key>` 不是自由 slug。它必须先表达变更类型，再表达编号，最后才是描述：
+
+- 需求 / 功能 / 规格变更：`REQ-<number>-<description>`
+- 缺陷 / 回归 / 修复变更：`FIX-<number>-<description>`
+
+描述部分使用 kebab-case，可以保留中文词组，但不允许丢掉大写 `REQ` / `FIX` 前缀。不要再创建 `req-123-...`、`bug-123-...`、纯描述目录或没有编号的目录。旧的小写目录只能作为历史兼容读取目标，不作为新 planning 输出。
 
 ## Autoplan Principles
 

@@ -94,6 +94,7 @@ Capability truth lives in `devflow/specs/`.
 Change truth lives in `devflow/changes/<change>/`.
 
 - Keep `INDEX.md` plus capability markdown under `devflow/specs/`.
+- Name new change directories as `REQ-<number>-<description>` for requirements or `FIX-<number>-<description>` for bug fixes; old lowercase directories are compatibility reads only.
 - Keep `change-state.json`, `change-meta.json`, planning docs, `task-manifest.json`, optional `team-state.json`, task `checkpoint.json`, `report-card.json`, and one final handoff file under each `devflow/changes/<change>/`.
 - Worker prompts, journals, assignments, and session logs belong under `devflow/workspaces/<change>/` as ephemeral scratch.
 

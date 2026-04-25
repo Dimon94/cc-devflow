@@ -4,7 +4,7 @@
 
 - Example version: `1.0.0`
 - Last reviewed: `2026-04-17`
-- Bound skills: `cc-roadmap@4.3.1`, `cc-plan@3.5.2`, `cc-do@1.5.1`, `cc-check@1.8.1`
+- Bound skills: `cc-roadmap@4.3.1`, `cc-plan@3.5.3`, `cc-do@1.5.1`, `cc-check@1.8.1`
 
 This example shows a requirement that **looked executable**, but `cc-check` correctly stopped it and sent it back to `cc-plan`.
 
@@ -43,10 +43,10 @@ The sample shows what happens when implementation moved before the integration d
 - `ROADMAP.md`
 - `roadmap-tracking.json` (shared roadmap/backlog truth)
 - `BACKLOG.md`
-- `changes/req-002-bulk-invite-import/planning/design.md`
-- `changes/req-002-bulk-invite-import/planning/tasks.md`
-- `changes/req-002-bulk-invite-import/planning/task-manifest.json`
-- `changes/req-002-bulk-invite-import/review/report-card.json`
+- `changes/REQ-002-bulk-invite-import/planning/design.md`
+- `changes/REQ-002-bulk-invite-import/planning/tasks.md`
+- `changes/REQ-002-bulk-invite-import/planning/task-manifest.json`
+- `changes/REQ-002-bulk-invite-import/review/report-card.json`
 
 ## Why There Is No `cc-act` Output
 

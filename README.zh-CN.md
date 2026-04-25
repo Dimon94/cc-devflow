@@ -170,6 +170,7 @@ skills.sh 则是已分发 `.claude/skills/*` 的单 Skill 安装路径。
 ## Durable 与 Ephemeral
 
 - `devflow/specs/` 保存 durable 的 capability 真相：`INDEX.md` 与 `capabilities/*.md`。
+- 新 change 目录必须命名为 `REQ-<number>-<description>`（需求）或 `FIX-<number>-<description>`（修复）；旧小写目录只作为历史兼容读取。
 - `devflow/changes/<change>/` 只保存 durable 的变更真相：`change-state.json`、`change-meta.json`、planning 文档、`task-manifest.json`、`team-state.json`、任务级 `checkpoint.json`、`report-card.json`，以及唯一的最终 handoff 文件。
 - `devflow/workspaces/<change>/` 只保存 ephemeral runtime scratch，比如 worker assignment、journal、prompt 和 session log。
 - 凡是可以从 durable truth 即时再生的内容，都不应该持久化到 `devflow/changes/`。

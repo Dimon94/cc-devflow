@@ -19,6 +19,7 @@
 6. 机械决策自动落盘；taste decision 和 user challenge 必须显式交给用户拍板。
 7. 同 blast radius 内的完整边界优先做完，跨系统或无证据扩张才 defer。
 8. 具体执行计划默认测试先行；没有 Red/Green/Refactor 链或 TDD exception，不准交给 `cc-do`。
+9. 新 change 目录必须使用 `REQ-<number>-<description>` 或 `FIX-<number>-<description>`；旧小写目录只读兼容，不再作为新输出。
 
 ## Required Outputs
 
@@ -38,9 +39,10 @@
 1. 一份 `planning/design.md` 讲清 clarification、方案、review 和 final gate。
 2. 一份 `planning/tasks.md` 讲清执行任务和 handoff。
 3. `planning/task-manifest.json` 只做机器真相源，不再重复人类叙事。
-4. 推荐方案获批前，不得生成 `planning/tasks.md`。
-5. `planning/tasks.md` 之前，`planning/design.md` 内的 review gate 必须闭合。
-6. 每个任务都要写清：
+4. 先固定 canonical change key：需求用 `REQ-*`，修复用 `FIX-*`。
+5. 推荐方案获批前，不得生成 `planning/tasks.md`。
+6. `planning/tasks.md` 之前，`planning/design.md` 内的 review gate 必须闭合。
+7. 每个任务都要写清：
    - 目标
    - TDD phase：`red` / `green` / `refactor` / `exception`
    - dependsOn / 是否允许并行
@@ -48,11 +50,11 @@
    - 必读上下文
    - 验证方式
    - 完成证据
-7. `planning/tasks.md` 顶部必须写清 frozen decisions、commands to trust、do-not-re-decide。
-8. `planning/task-manifest.json` 必须是 `cc-do` 的真相源，而不是装饰文件。
-9. `planning/design.md` 必须包含 `Existing Leverage`、`NOT in scope`、`Failure Modes`、`Test Diagram`，除非明确说明为什么不适用。
-10. 新 artifact、CLI、包、容器、文档入口必须在计划阶段写清分发和 discoverability，不准到 `cc-act` 才发现没人能用。
-11. 行为变更任务必须拆成 `[TEST] -> [IMPL] -> [REFACTOR]` 或写明 TDD exception；不能用“实现并测试”混成一个任务。
+8. `planning/tasks.md` 顶部必须写清 frozen decisions、commands to trust、do-not-re-decide。
+9. `planning/task-manifest.json` 必须是 `cc-do` 的真相源，而不是装饰文件。
+10. `planning/design.md` 必须包含 `Existing Leverage`、`NOT in scope`、`Failure Modes`、`Test Diagram`，除非明确说明为什么不适用。
+11. 新 artifact、CLI、包、容器、文档入口必须在计划阶段写清分发和 discoverability，不准到 `cc-act` 才发现没人能用。
+12. 行为变更任务必须拆成 `[TEST] -> [IMPL] -> [REFACTOR]` 或写明 TDD exception；不能用“实现并测试”混成一个任务。
 
 ## Approval Flow
 

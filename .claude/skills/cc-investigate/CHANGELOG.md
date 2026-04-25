@@ -1,5 +1,14 @@
 # CC-Investigate Skill Changelog
 
+## v1.1.1 - 2026-04-25
+
+- require new bug-fix investigations to use `FIX-<number>-<description>` change keys
+- update manifest examples so repair handoffs no longer advertise `REQ-*` for fresh fix work
+
+Migration note:
+
+- existing `REQ-*` investigation directories can still be read as historical requirement-linked work; new bug-fix work should start with `FIX-*`
+
 ## v1.1.0 - 2026-04-19
 
 - add `change-meta.json` to the investigation output so bug work also preserves capability/spec linkage

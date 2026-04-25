@@ -17,7 +17,7 @@
 
 | Change | Primary Capability | Secondary Capabilities | Expected Delta | Sync Status |
 |--------|--------------------|------------------------|----------------|-------------|
-| req-001-example | cap-example | - | Add copy action | planned |
+| REQ-001-example | cap-example | - | Add copy action | planned |
 
 ## Status Legend
 

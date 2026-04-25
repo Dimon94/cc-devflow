@@ -8,7 +8,7 @@ last_verified_at: 2026-04-19
 roadmap_links:
   - RM-001
 related_changes:
-  - req-001-example
+  - REQ-001-example
 superseded_by: []
 split_into: []
 merged_into: ""
@@ -54,7 +54,7 @@ Intentional Gaps:
 
 # Change Ledger
 
-- req-001-example: 这次 change 对 capability 做了什么
+- REQ-001-example: 这次 change 对 capability 做了什么
 
 # Evidence
 

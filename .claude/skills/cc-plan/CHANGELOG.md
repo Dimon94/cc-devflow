@@ -1,5 +1,14 @@
 # CC-Plan Skill Changelog
 
+## v3.5.3 - 2026-04-25
+
+- require new planning change directories to use `REQ-<number>-<description>` for requirements and `FIX-<number>-<description>` for fixes
+- document that legacy lowercase change directories are read-only compatibility targets, not new outputs
+
+Migration note:
+
+- new plans should choose a canonical `REQ-*` or `FIX-*` change key before writing `planning/` artifacts
+
 ## v3.5.2 - 2026-04-25
 
 - make test-first execution a native planning requirement so concrete tasks default to `Red -> Green -> Refactor`

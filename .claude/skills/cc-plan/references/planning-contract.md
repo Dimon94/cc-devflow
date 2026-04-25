@@ -16,6 +16,7 @@
 12. 同 blast radius 内的完整边界默认纳入，defer 必须写入 `NOT in scope` 和原因。
 13. 如果推荐方案挑战用户原始方向，必须标成 `user challenge`，不能自动改写用户意图。
 14. 行为变更的具体任务默认采用测试先行；没有 Red/Green/Refactor 链或 TDD exception，不允许交给 `cc-do`。
+15. 新 change 目录必须是 `REQ-<number>-<description>` 或 `FIX-<number>-<description>`，不能用小写 `req-*` / `bug-*` 或纯描述目录。
 
 ## Design Modes
 

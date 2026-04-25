@@ -4,7 +4,7 @@
 
 - Example version: `1.0.0`
 - Last reviewed: `2026-04-17`
-- Bound skills: `cc-roadmap@4.3.1`, `cc-plan@3.5.2`, `cc-do@1.5.1`, `cc-check@1.8.1`, `cc-act@1.6.1`
+- Bound skills: `cc-roadmap@4.3.1`, `cc-plan@3.5.3`, `cc-do@1.5.1`, `cc-check@1.8.1`, `cc-act@1.6.1`
 
 This example shows verified work that is **ready to move forward**, but `cc-act` still chooses `local-handoff`.
 
@@ -39,11 +39,11 @@ But the current environment is local-only:
 - `ROADMAP.md`
 - `roadmap-tracking.json` (shared roadmap/backlog truth)
 - `BACKLOG.md`
-- `changes/req-003-audit-log-export/planning/design.md`
-- `changes/req-003-audit-log-export/planning/tasks.md`
-- `changes/req-003-audit-log-export/planning/task-manifest.json`
-- `changes/req-003-audit-log-export/review/report-card.json`
-- `changes/req-003-audit-log-export/handoff/resume-index.md`
+- `changes/REQ-003-audit-log-export/planning/design.md`
+- `changes/REQ-003-audit-log-export/planning/tasks.md`
+- `changes/REQ-003-audit-log-export/planning/task-manifest.json`
+- `changes/REQ-003-audit-log-export/review/report-card.json`
+- `changes/REQ-003-audit-log-export/handoff/resume-index.md`
 
 ## Why There Is No `pr-brief.md`
 
