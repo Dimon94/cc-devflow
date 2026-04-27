@@ -76,6 +76,49 @@ Whole-pack installation ships the six visible workflow skills plus the maintenan
 
 If you are running from a source checkout instead of an installed package, use `node bin/cc-devflow-cli.js ...` or `npm exec -- cc-devflow ...`.
 
+## ⚙️ Personal YAML Config
+
+CC-DevFlow reads personal/project YAML config at runtime before durable workflow documents are written. Create one or more config files:
+
+```text
+~/.cc-devflow/config.yml
+<repo>/.cc-devflow/config.yml
+<repo>/.cc-devflow/config.local.yml
+```
+
+Precedence is deterministic: defaults < user < project < local < env < CLI. `output.document_language` is machine-enforced and currently supports only `en` and `zh-CN`. Non-standard user preferences belong under `agent_preferences`; they are advisory and never override workflow contracts.
+
+Example:
+
+```yaml
+version: 1
+output:
+  document_language: zh-CN
+agent_preferences:
+  general:
+    - Start with the conclusion.
+  documentation:
+    - Keep headings short and avoid marketing language.
+```
+
+Create or edit config with:
+
+```bash
+npx cc-devflow config init --cwd /path/to/your/project --project
+npx cc-devflow config set output.document_language zh-CN --cwd /path/to/your/project --project
+npx cc-devflow config set output.document_language zh-CN --user
+```
+
+Inspect and diagnose the resolved policy with:
+
+```bash
+npx cc-devflow config resolve --cwd /path/to/your/project --format policy
+npx cc-devflow config get output.document_language --cwd /path/to/your/project
+npx cc-devflow config doctor --cwd /path/to/your/project
+```
+
+See `config/user-config.template.yml` for the full sample.
+
 ## 🧩 skills.sh Distribution
 
 [skills.sh](https://skills.sh/) is supported only as a distribution channel for the new `.claude` skills.

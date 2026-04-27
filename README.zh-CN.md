@@ -76,6 +76,49 @@ npx cc-devflow adapt --cwd /path/to/your/project --platform antigravity
 
 如果你不是通过已安装包，而是在源码仓库里调试 CLI，本地运行请用 `node bin/cc-devflow-cli.js ...` 或 `npm exec -- cc-devflow ...`。
 
+## ⚙️ 个人 YAML 配置
+
+CC-DevFlow 会在写入 durable workflow 文档前按运行时读取个人 / 项目 YAML 配置。配置文件支持三层：
+
+```text
+~/.cc-devflow/config.yml
+<repo>/.cc-devflow/config.yml
+<repo>/.cc-devflow/config.local.yml
+```
+
+优先级固定为：默认值 < 用户 < 项目 < 本地 < 环境变量 < CLI 参数。`output.document_language` 是机器约束，目前只支持 `en` 和 `zh-CN`。非标偏好统一放在 `agent_preferences` 下，它只作为表达和格式建议，不覆盖 workflow 合同。
+
+最小示例：
+
+```yaml
+version: 1
+output:
+  document_language: zh-CN
+agent_preferences:
+  general:
+    - 先给结论。
+  documentation:
+    - 标题短一些，避免营销腔。
+```
+
+创建或修改配置：
+
+```bash
+npx cc-devflow config init --cwd /path/to/your/project --project
+npx cc-devflow config set output.document_language zh-CN --cwd /path/to/your/project --project
+npx cc-devflow config set output.document_language zh-CN --user
+```
+
+查看和诊断解析后的策略：
+
+```bash
+npx cc-devflow config resolve --cwd /path/to/your/project --format policy
+npx cc-devflow config get output.document_language --cwd /path/to/your/project
+npx cc-devflow config doctor --cwd /path/to/your/project
+```
+
+完整样例见 `config/user-config.template.yml`。
+
 ## 🧩 skills.sh 分发
 
 [skills.sh](https://skills.sh/) 只作为新的 `.claude` Skill 分发渠道使用。

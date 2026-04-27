@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.0] - 2026-04-27
+
+### ✨ Runtime YAML Config
+
+v4.5.0 adds a personal/project YAML config mechanism that resolves output policy
+at runtime before durable workflow documents are written.
+
+### Added
+
+- Added `~/.cc-devflow/config.yml`, `<repo>/.cc-devflow/config.yml`, and `<repo>/.cc-devflow/config.local.yml` resolution with deterministic defaults < user < project < local < env < CLI precedence.
+- Added strict `output.document_language` validation for `en` and `zh-CN`, with non-standard preferences preserved under advisory `agent_preferences`.
+- Added `cc-devflow config init|get|set|resolve|doctor` so users can create, inspect, update, trace, and diagnose the effective output contract.
+- Added `config/user-config.template.yml` and `config/schema/cc-devflow-config.schema.json`.
+
+### Changed
+
+- Public workflow skills now resolve config at runtime with `cc-devflow config resolve --format policy` before writing durable Markdown or human-readable metadata.
+- `cc-devflow init` and `cc-devflow adapt --platform codex` no longer bake resolved user policy into managed Skill files.
+
 ## [4.4.1] - 2026-04-25
 
 ### 🔧 Canonical Change Keys + Planning Contract Hardening
