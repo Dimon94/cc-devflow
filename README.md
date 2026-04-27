@@ -1,129 +1,105 @@
-# 🚀 cc-devflow
+# cc-devflow
 
-> Roadmap plus PDCA and IDCA skills for agent coding
+> Agent-first development workflow for roadmap, planning, investigation, implementation, verification, and shipping.
 
-CC-DevFlow is a stripped-down workflow for the agent coding era. It gives you one front-door planning skill, `cc-roadmap`, then lets each requirement enter one of two closed loops: the planning loop `cc-plan -> cc-do -> cc-check -> cc-act`, or the investigation loop `cc-investigate -> cc-do -> cc-check -> cc-act`.
+[![GitHub stars](https://img.shields.io/github/stars/Dimon94/cc-devflow?style=social)](https://github.com/Dimon94/cc-devflow/stargazers)
+[![npm version](https://img.shields.io/npm/v/cc-devflow.svg)](https://www.npmjs.com/package/cc-devflow)
+[![Node.js >=18](https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg)](./package.json)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 
-[中文文档](./README.zh-CN.md) | [English](./README.md)
+[中文文档](./README.zh-CN.md) | [English](./README.md) | [Getting Started](./docs/guides/getting-started.md) | [Contributing](./CONTRIBUTING.md) | [Security](./SECURITY.md)
 
----
-
-## 🎯 One-Line Introduction
-
-CC-DevFlow exposes six visible skills:
-
-- `cc-roadmap`: build the project's mid and long-range roadmap
-- `cc-plan`: clarify a roadmap item, design it, and turn it into tasks
-- `cc-investigate`: freeze symptom, reproduction, root cause, and repair tasks before fixing a bug
-- `cc-do`: implement, resume, repair from investigation, and apply review feedback
-- `cc-check`: verify with evidence
-- `cc-act`: ship, sync docs, and feed the result into the next cycle
-
-## ✨ Core Features
-
-- **Minimal visible surface**: one `cc-roadmap` skill plus two entry loops that share the same `cc-do -> cc-check -> cc-act` tail
-- **Multi-platform CLI restored**: `cc-devflow` is back as the distributable CLI for `.claude` installation plus multi-platform adaptation for Codex, Cursor, Qwen, and Antigravity
-- **skills.sh-compatible skill layout**: `.claude/skills/<skill>/SKILL.md` stays compatible with single-skill distribution on skills.sh
-- **Skill-local resources**: each skill carries its own templates, references, and scripts
-- **Explicit, not hidden**: no default context injection, read the files you actually need
-- **Task-template first**: keep `planning/tasks.md` and `task-manifest.json` as the execution backbone
-- **Skill pack first**: the repository distributes `.claude` skills, playbooks, and assets as one pack
-- **Evidence before done**: verification, doc sync, PR brief, and release note live at the end of the loop
-- **Roadmap-first**: decide medium-range direction once, then execute through PDCA or IDCA
-
-## 🧠 Mental Model
+CC-DevFlow is a small, explicit workflow system for agent coding. It gives an AI agent one roadmap entry point, then routes every change through either a feature loop or a bug-investigation loop before work can be called done.
 
 ```text
 cc-roadmap
 
-PDCA: cc-plan -> cc-do -> cc-check -> cc-act
+PDCA: cc-plan        -> cc-do -> cc-check -> cc-act
 IDCA: cc-investigate -> cc-do -> cc-check -> cc-act
 ```
 
-Use `cc-roadmap` to decide the next 1-3 stages of the product.
+## Why cc-devflow
 
-Use `cc-plan` when the next problem is scope, design, and task freezing.
+- **Small public surface**: six visible workflow skills plus a CLI for installation and platform adaptation.
+- **Evidence before done**: implementation must pass through verification proof before shipping or handoff.
+- **Skill-first distribution**: the public contract lives in `.claude/skills/<skill>/SKILL.md` and `PLAYBOOK.md`, not in hidden runtime behavior.
+- **Multi-platform output**: install once, then adapt for Codex, Cursor, Qwen, Antigravity, and related agent environments.
+- **Durable project memory**: roadmap, specs, planning, review, and handoff artifacts stay in `devflow/`; temporary worker scratch stays outside durable truth.
 
-Use `cc-investigate` when the next problem is root cause, reproduction, and repair boundary.
+## Quick Start
 
-Both loops converge into the same `cc-do -> cc-check -> cc-act` tail.
+Prerequisites:
 
-The visible state machine lives in the public skills themselves. The pack is intentionally skill-first: routing, reroutes, recovery, and evidence rules are described in `SKILL.md` and `PLAYBOOK.md`, while `lib/skill-runtime/` is limited to shared support code that those skills reuse.
+- Node.js 18+
+- npm or a compatible package runner
+- A Git repository
+- Claude Code or another supported agent environment
 
-## 🚀 Install
-
-The built-in CLI is back to the classic `init + adapt` model.
-
-For the packaged CLI, the default entry stays simple:
-
-```bash
-npx cc-devflow init --dir /path/to/your/project
-```
-
-After installation, the restored CLI supports both pack installation and multi-platform adaptation:
+Install the whole skill pack:
 
 ```bash
-npx cc-devflow init --dir /path/to/your/project
-npx cc-devflow init --dir /path/to/your/project --force
-npx cc-devflow adapt --cwd /path/to/your/project --platform codex
-npx cc-devflow adapt --cwd /path/to/your/project --platform cursor
-npx cc-devflow adapt --cwd /path/to/your/project --platform qwen
-npx cc-devflow adapt --cwd /path/to/your/project --platform antigravity
+npx cc-devflow@latest init --dir /path/to/your/project
 ```
 
-Whole-pack installation ships the six visible workflow skills plus the maintenance skills `cc-spec-init` and `cc-simplify`.
-`init --force` now force-upgrades only the managed distributed skills and preserves unrelated project files under `.claude`.
-
-If you are running from a source checkout instead of an installed package, use `node bin/cc-devflow-cli.js ...` or `npm exec -- cc-devflow ...`.
-
-## ⚙️ Personal YAML Config
-
-CC-DevFlow reads personal/project YAML config at runtime before durable workflow documents are written. Create one or more config files:
-
-```text
-~/.cc-devflow/config.yml
-<repo>/.cc-devflow/config.yml
-<repo>/.cc-devflow/config.local.yml
-```
-
-Precedence is deterministic: defaults < user < project < local < env < CLI. `output.document_language` is machine-enforced and currently supports only `en` and `zh-CN`. Non-standard user preferences belong under `agent_preferences`; they are advisory and never override workflow contracts.
-
-Example:
-
-```yaml
-version: 1
-output:
-  document_language: zh-CN
-agent_preferences:
-  general:
-    - Start with the conclusion.
-  documentation:
-    - Keep headings short and avoid marketing language.
-```
-
-Create or edit config with:
+Generate platform outputs:
 
 ```bash
-npx cc-devflow config init --cwd /path/to/your/project --project
-npx cc-devflow config set output.document_language zh-CN --cwd /path/to/your/project --project
-npx cc-devflow config set output.document_language zh-CN --user
+npx cc-devflow@latest adapt --cwd /path/to/your/project --platform codex
+npx cc-devflow@latest adapt --cwd /path/to/your/project --platform cursor
+npx cc-devflow@latest adapt --cwd /path/to/your/project --platform qwen
+npx cc-devflow@latest adapt --cwd /path/to/your/project --platform antigravity
 ```
 
-Inspect and diagnose the resolved policy with:
+Refresh every supported platform output:
 
 ```bash
-npx cc-devflow config resolve --cwd /path/to/your/project --format policy
-npx cc-devflow config get output.document_language --cwd /path/to/your/project
-npx cc-devflow config doctor --cwd /path/to/your/project
+npx cc-devflow@latest adapt --cwd /path/to/your/project --all
 ```
 
-See `config/user-config.template.yml` for the full sample.
+After installation, ask your agent to use the workflow skills directly. Start with `cc-roadmap` for product direction, use `cc-plan` for new work, use `cc-investigate` for bugs, then continue through `cc-do`, `cc-check`, and `cc-act`.
 
-## 🧩 skills.sh Distribution
+## Workflow Skills
 
-[skills.sh](https://skills.sh/) is supported only as a distribution channel for the new `.claude` skills.
+| Skill | Use it when | Main output |
+| --- | --- | --- |
+| `cc-roadmap` | You need product direction, staged scope, or backlog order | `devflow/ROADMAP.md`, `devflow/BACKLOG.md` |
+| `cc-plan` | A feature or change needs scope, design, and task freezing | `planning/design.md`, `planning/tasks.md`, `task-manifest.json` |
+| `cc-investigate` | A bug needs symptom, reproduction, root cause, and repair boundary | `planning/analysis.md`, `planning/tasks.md`, `task-manifest.json` |
+| `cc-do` | Planned or investigated work needs implementation | code, tests, checkpoints, scratch runtime |
+| `cc-check` | Work needs fresh verification evidence | `report-card.json` |
+| `cc-act` | Verified work needs a PR, local handoff, release note, or closeout | one final handoff file |
 
-Because skills.sh installs skills one by one, use it to pull the specific skills you want:
+Maintenance skills are shipped with the pack:
+
+- `cc-spec-init`: initialize and maintain durable capability specs under `devflow/specs/`
+- `cc-simplify`: review changed code for reuse, quality, efficiency, and spec drift
+
+## Installation Modes
+
+### Whole-pack install
+
+Use this when you want the complete `.claude` skill pack:
+
+```bash
+npx cc-devflow@latest init --dir /path/to/your/project
+npx cc-devflow@latest init --dir /path/to/your/project --force
+```
+
+`--force` upgrades only cc-devflow-managed distributed skills and preserves unrelated project files under `.claude`.
+
+### Source checkout
+
+When developing this repository locally:
+
+```bash
+node bin/cc-devflow-cli.js --help
+node bin/cc-devflow-cli.js init --dir /tmp/example-project
+node bin/cc-devflow-cli.js adapt --cwd /tmp/example-project --platform codex
+```
+
+### Single-skill install with skills.sh
+
+[skills.sh](https://skills.sh/) is supported as a single-skill distribution channel:
 
 ```bash
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-roadmap
@@ -132,50 +108,64 @@ npx skills add https://github.com/Dimon94/cc-devflow --skill cc-investigate
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-do
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-check
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-act
-npx skills add https://github.com/Dimon94/cc-devflow --skill cc-spec-init
-npx skills add https://github.com/Dimon94/cc-devflow --skill cc-simplify
 ```
 
-Use `cc-devflow init` when you want the whole `.claude` pack.
+Use `cc-devflow init` for the full pack, `cc-devflow adapt` for generated platform outputs, and `skills add` only when you want one skill at a time.
 
-Use `cc-devflow adapt` when you want generated multi-platform outputs.
+## Configuration
 
-Use skills.sh when you want to install or refresh a single skill.
+CC-DevFlow reads layered YAML config before durable workflow documents are written:
 
-## 🔁 Upgrade
+```text
+~/.cc-devflow/config.yml
+<repo>/.cc-devflow/config.yml
+<repo>/.cc-devflow/config.local.yml
+```
 
-Refresh the packaged `.claude` bundle with the latest CLI:
+Precedence is deterministic: defaults < user < project < local < environment < CLI. `output.document_language` is machine-enforced and currently supports `en` and `zh-CN`. Non-standard preferences belong under `agent_preferences`; they guide style but do not override workflow contracts.
+
+```yaml
+version: 1
+output:
+  document_language: en
+agent_preferences:
+  general:
+    - Start with the conclusion.
+  documentation:
+    - Keep headings short and avoid marketing language.
+```
+
+Useful commands:
 
 ```bash
-npx cc-devflow@latest init --dir /path/to/your/project
-npx cc-devflow@latest adapt --cwd /path/to/your/project --all
+npx cc-devflow config init --cwd /path/to/your/project --project
+npx cc-devflow config set output.document_language zh-CN --cwd /path/to/your/project --project
+npx cc-devflow config resolve --cwd /path/to/your/project --format policy
+npx cc-devflow config doctor --cwd /path/to/your/project
 ```
 
-Upgrade installed skills with the skills CLI lifecycle commands:
+See [`config/user-config.template.yml`](./config/user-config.template.yml) for the full sample.
 
-```bash
-npx skills check
-npx skills update
+## Repository Format
+
+Distributed skills live in `.claude/skills/`:
+
+```text
+.claude/skills/<skill>/
+├── SKILL.md
+├── PLAYBOOK.md
+├── assets/
+├── references/
+└── scripts/
 ```
 
-If you only want to refresh one skill immediately, re-run its `npx skills add ... --skill ...` command.
+Each shipped skill keeps its runtime contract local:
 
-## 🧱 Repository Format
+- `SKILL.md` has YAML frontmatter plus the `Harness Contract`
+- `PLAYBOOK.md` has the `Visible State Machine`
+- local resources stay beside the skill that owns them
 
-CC-DevFlow keeps the `.claude` skill folders compatible with skills.sh single-skill distribution:
-
-- one skill per folder
-- one `SKILL.md` per distributed skill
-- YAML frontmatter at the top of each `SKILL.md`
-- public skills declare structured runtime contract fields in frontmatter: `triggers`, `reads`, structured `writes`, `effects`, `entry_gate`, `exit_criteria`, `reroutes`, `recovery_modes`, `tool_budget`
-- bundled local resources beside the skill, such as `PLAYBOOK.md`, `assets/`, `scripts/`, and `references/`
-
-Public skills also carry two explicit text contracts:
-
-- `SKILL.md` includes a `Harness Contract` section
-- `PLAYBOOK.md` includes a `Visible State Machine` section
-
-In this repository, the distributed skill folders are:
+The currently distributed skill folders are:
 
 - `.claude/skills/cc-roadmap/`
 - `.claude/skills/cc-plan/`
@@ -186,58 +176,53 @@ In this repository, the distributed skill folders are:
 - `.claude/skills/cc-spec-init/`
 - `.claude/skills/cc-simplify/`
 
-## 🛠️ Use
-
-The skill sequence remains:
-
-```text
-1. cc-roadmap
-2. choose cc-plan or cc-investigate
-3. cc-do
-4. cc-check
-5. cc-act
-6. repeat
-```
-
-You do not need to remember command names.
-
-The `cc-devflow` CLI remains the whole-pack installation and adaptation path.
-
-skills.sh remains the single-skill distribution path for distributed `.claude/skills/*`.
-
-## 📦 Outputs
-
-- `cc-roadmap` writes `devflow/ROADMAP.md` and `devflow/BACKLOG.md`; helper sync can also maintain `devflow/roadmap-tracking.json` as the shared roadmap/backlog truth source
-- `cc-spec-init` writes `devflow/specs/INDEX.md`, capability specs, and `change-meta.json`
-- `cc-plan` writes `planning/design.md`, `planning/tasks.md`, `task-manifest.json`, and `change-meta.json`
-- `cc-investigate` writes `planning/analysis.md`, `planning/tasks.md`, `task-manifest.json`, and `change-meta.json`
-- `cc-do` writes code, tests, task `checkpoint.json`, and workspace scratch runtime
-- `cc-check` writes `report-card.json`
-- `cc-act` writes exactly one final handoff file: `handoff/pr-brief.md`, `handoff/resume-index.md`, or `handoff/release-note.md`
-
 ## Durable vs Ephemeral
 
 - `devflow/specs/` stores durable capability truth: `INDEX.md` plus `capabilities/*.md`.
-- New change directories must be named `REQ-<number>-<description>` for requirements or `FIX-<number>-<description>` for bug fixes; old lowercase directories are compatibility reads only.
-- `devflow/changes/<change>/` stores durable change truth only: `change-state.json`, `change-meta.json`, planning docs, `task-manifest.json`, `team-state.json`, task `checkpoint.json`, `report-card.json`, and one final handoff file.
+- New change directories use `REQ-<number>-<description>` for requirements or `FIX-<number>-<description>` for bug fixes.
+- `devflow/changes/<change>/` stores durable change truth: `change-state.json`, `change-meta.json`, planning docs, `task-manifest.json`, `team-state.json`, task `checkpoint.json`, `report-card.json`, and one final handoff file.
 - `devflow/workspaces/<change>/` stores ephemeral runtime scratch such as worker assignment, journals, prompts, and session logs.
-- If a file can be regenerated from durable truth, it should not be persisted under `devflow/changes/`.
+- Regenerable files should not be persisted under `devflow/changes/`.
 
-See [docs/examples/START-HERE.md](./docs/examples/START-HERE.md) for the single entry page to the example set. Example version bindings live in [docs/examples/example-bindings.json](./docs/examples/example-bindings.json).
+For complete artifact examples, start with [`docs/examples/START-HERE.md`](./docs/examples/START-HERE.md). Example version bindings live in [`docs/examples/example-bindings.json`](./docs/examples/example-bindings.json).
 
-## Principles
-
-- Roadmap before execution
-- Plan before feature code
-- Investigate before bug repair
-- Root cause before fix
-- Evidence before done
-- Ship, then feed the result into the next plan
-
-## Verification
+## Development
 
 ```bash
-find .claude/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort
-find .claude/skills -mindepth 2 -maxdepth 3 -type f | sort
+git clone https://github.com/Dimon94/cc-devflow.git
+cd cc-devflow
+npm install
+npm test
 npm run verify
 ```
+
+Publish validation:
+
+```bash
+npm run verify:publish
+```
+
+The main contributor guide is [`CONTRIBUTING.md`](./CONTRIBUTING.md). It explains the public surface rules, local CLI smoke tests, documentation rules, and PR expectations.
+
+## Community
+
+- Star the project if the workflow is useful: [GitHub stars](https://github.com/Dimon94/cc-devflow/stargazers)
+- Open issues for reproducible bugs, stale docs, or missing platform adapters.
+- Keep PRs focused: one skill, one CLI behavior, one compiler/adaptation fix, or one documentation cleanup.
+- If a shipped skill changes, update its `version`, local `CHANGELOG.md`, examples, and affected public docs in the same PR.
+- Read the [Code of Conduct](./CODE_OF_CONDUCT.md) before participating in project discussions.
+- Report vulnerabilities through the [Security Policy](./SECURITY.md), not public issues.
+
+## Star History
+
+<a href="https://www.star-history.com/#Dimon94/cc-devflow&Date">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=Dimon94/cc-devflow&type=Date&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=Dimon94/cc-devflow&type=Date" />
+    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=Dimon94/cc-devflow&type=Date" />
+  </picture>
+</a>
+
+## License
+
+[MIT](./LICENSE)

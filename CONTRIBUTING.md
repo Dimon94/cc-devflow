@@ -4,6 +4,8 @@
 
 ---
 
+Please also read the [Code of Conduct](./CODE_OF_CONDUCT.md). If you are reporting a vulnerability, follow the [Security Policy](./SECURITY.md) instead of opening a public issue.
+
 ## Overview
 
 cc-devflow is now a skills-first repository with a restored distributable CLI.

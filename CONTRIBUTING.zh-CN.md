@@ -4,6 +4,8 @@
 
 ---
 
+请同时阅读 [行为准则](./CODE_OF_CONDUCT.zh-CN.md)。如果你要报告漏洞，请遵循 [安全策略](./SECURITY.zh-CN.md)，不要创建公开 issue。
+
 ## 概览
 
 cc-devflow 现在是一个 skills-first 仓库，并且重新带回了可分发的 CLI。

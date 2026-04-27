@@ -21,6 +21,12 @@
         "docs/",
         "README.md",
         "README.zh-CN.md",
+        "CONTRIBUTING.md",
+        "CONTRIBUTING.zh-CN.md",
+        "CODE_OF_CONDUCT.md",
+        "CODE_OF_CONDUCT.zh-CN.md",
+        "SECURITY.md",
+        "SECURITY.zh-CN.md",
         "CHANGELOG.md",
         "LICENSE",
         "package.json"
