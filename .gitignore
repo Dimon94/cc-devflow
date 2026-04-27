@@ -25,6 +25,7 @@ build/
 devflow/.generated/
 .refresh/
 devflow/
+.cc-devflow/config.local.yml
 
 # OS
 .DS_Store

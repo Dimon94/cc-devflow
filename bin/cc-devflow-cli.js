@@ -7,6 +7,13 @@ const PACKAGE_ROOT = path.resolve(__dirname, '..');
 const TEMPLATE_DIR = path.join(PACKAGE_ROOT, '.claude');
 const TEMPLATE_SKILLS_DIR = path.join(TEMPLATE_DIR, 'skills');
 const DISTRIBUTION_CONFIG = require(path.join(PACKAGE_ROOT, 'config', 'distributable-skills.json'));
+const {
+  doctorUserConfig,
+  getConfigValue,
+  resolveUserConfig,
+  setConfigValue,
+  writeConfigTemplate
+} = require(path.join(PACKAGE_ROOT, 'lib/skill-runtime/config.js'));
 const ADAPT_BIN = path.join(PACKAGE_ROOT, 'bin', 'adapt.js');
 const ADAPTER_BIN = path.join(PACKAGE_ROOT, 'bin', 'cc-devflow.js');
 const TEMPLATE_IGNORES = new Set(['.DS_Store', 'tsc-cache']);
@@ -42,6 +49,11 @@ Usage: cc-devflow <command> [options]
 Commands:
   init                Install .claude template into a project
   adapt               Compile .claude into multi-platform outputs
+  config init         Create a YAML config template
+  config get          Print one resolved config value
+  config set          Set one project/user/local config value
+  config resolve      Print resolved YAML config with key-level trace
+  config doctor       Validate config and local ignore safety
 
 Init options:
   --dir <path>         Target project path (default: cwd)
@@ -56,11 +68,26 @@ Adapt options:
   --rules              Generate rules entry files only
   --verbose            Show detailed output
 
+Config options:
+  --cwd <path>         Project path used for project/local config lookup
+  --user               Read/write ~/.cc-devflow/config.yml
+  --project            Read/write .cc-devflow/config.yml
+  --local              Read/write .cc-devflow/config.local.yml
+  --scope <name>       Backward-compatible scope alias: user, project, or local
+  --format <name>      Output format: json or policy
+  --document-language  CLI override for output.document_language
+  --trace              Include key-level source trace with policy output
+  --force              Overwrite an existing config template
+
 Examples:
   cc-devflow init
   cc-devflow init --dir /path/to/project
   cc-devflow adapt --platform cursor
   cc-devflow adapt --cwd /path/to/project --platform codex
+  cc-devflow config init --cwd /path/to/project --project
+  cc-devflow config set output.document_language zh-CN --cwd /path/to/project --project
+  cc-devflow config set output.document_language zh-CN --user
+  cc-devflow config resolve --cwd /path/to/project --format policy
 `);
 }
 
@@ -210,6 +237,201 @@ function runInit(args) {
   return 0;
 }
 
+function parseConfigArgs(args) {
+  const parsed = {
+    cwd: null,
+    documentLanguage: null,
+    force: false,
+    format: 'json',
+    scope: 'project',
+    trace: false
+  };
+  const rest = [];
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+
+    if (arg === '--force') {
+      parsed.force = true;
+      continue;
+    }
+
+    if (arg === '--trace') {
+      parsed.trace = true;
+      continue;
+    }
+
+    if (arg === '--user') {
+      parsed.scope = 'user';
+      continue;
+    }
+
+    if (arg === '--project') {
+      parsed.scope = 'project';
+      continue;
+    }
+
+    if (arg === '--local') {
+      parsed.scope = 'local';
+      continue;
+    }
+
+    if (arg === '--cwd') {
+      parsed.cwd = args[++i];
+      continue;
+    }
+
+    if (arg.startsWith('--cwd=')) {
+      parsed.cwd = arg.slice('--cwd='.length);
+      continue;
+    }
+
+    if (arg === '--scope') {
+      parsed.scope = args[++i];
+      continue;
+    }
+
+    if (arg.startsWith('--scope=')) {
+      parsed.scope = arg.slice('--scope='.length);
+      continue;
+    }
+
+    if (arg === '--format') {
+      parsed.format = args[++i];
+      continue;
+    }
+
+    if (arg.startsWith('--format=')) {
+      parsed.format = arg.slice('--format='.length);
+      continue;
+    }
+
+    if (arg === '--document-language') {
+      parsed.documentLanguage = args[++i];
+      continue;
+    }
+
+    if (arg.startsWith('--document-language=')) {
+      parsed.documentLanguage = arg.slice('--document-language='.length);
+      continue;
+    }
+
+    rest.push(arg);
+  }
+
+  parsed.rest = rest;
+  return parsed;
+}
+
+function parseConfigOverrides(options) {
+  if (!options.documentLanguage) {
+    return {};
+  }
+
+  return {
+    output: {
+      document_language: options.documentLanguage
+    }
+  };
+}
+
+function runConfig(args) {
+  const [subcommand, ...rest] = args;
+  const options = parseConfigArgs(rest);
+  const cwd = path.resolve(options.cwd || process.cwd());
+
+  if (subcommand === 'init') {
+    const configPath = writeConfigTemplate({
+      cwd,
+      force: options.force,
+      scope: options.scope
+    });
+    console.log(`Config template ready: ${configPath}`);
+    return 0;
+  }
+
+  if (subcommand === 'get') {
+    const keyPath = options.rest[0];
+    if (!keyPath) {
+      console.error('Config key is required.');
+      return 3;
+    }
+
+    const resolved = resolveUserConfig({
+      cwd,
+      overrides: parseConfigOverrides(options)
+    });
+    const value = getConfigValue(resolved.config, keyPath);
+    if (value === undefined) {
+      return 4;
+    }
+    process.stdout.write(`${typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value)}\n`);
+    return 0;
+  }
+
+  if (subcommand === 'set') {
+    const [keyPath, value] = options.rest;
+    if (!keyPath || value === undefined) {
+      console.error('Use: cc-devflow config set <key> <value>');
+      return 3;
+    }
+
+    const configPath = setConfigValue(keyPath, value, {
+      cwd,
+      scope: options.scope
+    });
+    console.log(`Updated ${configPath}`);
+    return 0;
+  }
+
+  if (subcommand === 'doctor') {
+    const result = doctorUserConfig({
+      cwd,
+      overrides: parseConfigOverrides(options)
+    });
+
+    if (result.ok) {
+      console.log('Config OK');
+      return 0;
+    }
+
+    for (const warning of result.warnings) {
+      console.error(`Config warning: ${warning}`);
+    }
+    return 2;
+  }
+
+  if (subcommand !== 'resolve') {
+    console.error('Unknown config command. Use: cc-devflow config init|get|set|resolve|doctor');
+    return 3;
+  }
+
+  const resolved = resolveUserConfig({
+    cwd,
+    overrides: parseConfigOverrides(options)
+  });
+
+  if (options.format === 'policy') {
+    process.stdout.write(resolved.policy || '');
+    if (options.trace) {
+      process.stdout.write('\nTrace:\n');
+      for (const entry of resolved.trace) {
+        const sourcePath = entry.path ? ` ${entry.path}` : '';
+        process.stdout.write(`- ${entry.key} = ${entry.value} (${entry.source}${sourcePath})\n`);
+      }
+    }
+    return 0;
+  }
+
+  if (options.format !== 'json') {
+    console.error(`Unknown config format: ${options.format}`);
+    return 3;
+  }
+
+  process.stdout.write(`${JSON.stringify(resolved, null, 2)}\n`);
+  return 0;
+}
+
 function runAdapt(args) {
   const { options, rest } = parseCliArgs(args);
 
@@ -268,6 +490,10 @@ function main() {
 
   if (command === 'adapt') {
     return runAdapt(rest);
+  }
+
+  if (command === 'config') {
+    return runConfig(rest);
   }
 
   return runAdapter(command, rest);
