@@ -1,6 +1,6 @@
 ---
 name: cc-do
-version: 1.5.1
+version: 1.5.2
 description: Use when implementing planned tasks, resuming interrupted work, applying a frozen investigation handoff, or landing review feedback after cc-plan or cc-investigate.
 triggers:
   - 开始做 T003
@@ -70,6 +70,14 @@ tool_budget:
 同时它也是 IDCA / DDCA 里的 `Do`。
 
 它只做一件事：沿着已经冻结的任务，把代码真正做出来，并把执行证据留到足够让别人接手、复盘、复验。
+
+## Runtime Output Policy
+
+写入任何 durable Markdown 或 JSON metadata 前，先运行 `cc-devflow config resolve --format policy`。
+
+- `Output language` 是机器约束，checkpoint、events、team-state 中新增的人类可读摘要必须记录并遵守它。
+- `agent_preferences` 是用户偏好建议，只影响表达方式和结构选择，不覆盖本 Skill 的工作流边界。
+- 如果配置解析失败，先修配置或向用户说明阻塞，不要用默认语言继续生成正式文档。
 
 上游冻结合同可以来自两条路：
 

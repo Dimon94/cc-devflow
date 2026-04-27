@@ -5,6 +5,7 @@
 - Requirement version:
 - Analysis version:
 - Investigate skill version:
+- Output language:
 - Source bug / incident:
 - Change meta: `change-meta.json`
 

@@ -1,5 +1,10 @@
 # CC-Check Skill Changelog
 
+## v1.8.2 - 2026-04-27
+
+- require verification reports to resolve the runtime output policy before writing human-readable verdicts or summaries
+- record `Output language` as the machine-enforced language contract while treating `agent_preferences` as advisory style input
+
 ## v1.8.1 - 2026-04-25
 
 - remove external tool provenance from the public skill contract so diff review reads as native `cc-check` behavior

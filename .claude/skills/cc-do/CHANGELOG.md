@@ -1,5 +1,10 @@
 # CC-Do Skill Changelog
 
+## v1.5.2 - 2026-04-27
+
+- require execution evidence that adds human-readable summaries to resolve the runtime output policy first
+- record `Output language` as the machine-enforced language contract while treating `agent_preferences` as advisory style input
+
 ## v1.5.1 - 2026-04-25
 
 - remove external tool provenance from the public skill contract so test-first execution reads as native `cc-do` behavior

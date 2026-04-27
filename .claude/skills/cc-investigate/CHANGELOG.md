@@ -1,5 +1,10 @@
 # CC-Investigate Skill Changelog
 
+## v1.1.2 - 2026-04-27
+
+- require investigation outputs to resolve the runtime output policy before writing analysis, task, or change metadata artifacts
+- record `Output language` as the machine-enforced language contract while treating `agent_preferences` as advisory style input
+
 ## v1.1.1 - 2026-04-25
 
 - require new bug-fix investigations to use `FIX-<number>-<description>` change keys

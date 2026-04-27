@@ -1,6 +1,6 @@
 ---
 name: cc-roadmap
-version: 4.3.1
+version: 4.3.2
 description: "Use when defining, resetting, or narrowing project direction, stage order, or backlog priority before a concrete requirement enters the PDCA loop."
 triggers:
   - "帮我定路线图"
@@ -60,6 +60,14 @@ tool_budget:
 `cc-roadmap` 只负责一件事：决定项目接下来 1-3 个阶段该推进哪几个 capability。
 
 它先尽可能收集真实上下文，再逼出真实用户、真实痛点、真实紧迫性，最后把这些现实压成一条能落地、能进入 `cc-plan` 的主线。
+
+## Runtime Output Policy
+
+写入任何 durable Markdown 或 JSON metadata 前，先运行 `cc-devflow config resolve --format policy`。
+
+- `Output language` 是机器约束，`devflow/ROADMAP.md`、`devflow/BACKLOG.md` 和 tracking metadata 必须记录并遵守它。
+- `agent_preferences` 是用户偏好建议，只影响表达方式和结构选择，不覆盖本 Skill 的工作流边界。
+- 如果配置解析失败，先修配置或向用户说明阻塞，不要用默认语言继续生成正式文档。
 
 ## Read First
 

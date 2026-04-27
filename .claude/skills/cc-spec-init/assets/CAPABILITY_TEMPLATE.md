@@ -4,6 +4,7 @@ title: Example Capability
 type: user-visible
 status: partial
 primary_owner: ""
+output_language: ""
 last_verified_at: 2026-04-19
 roadmap_links:
   - RM-001

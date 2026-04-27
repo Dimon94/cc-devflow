@@ -1,5 +1,11 @@
 # CC-Act Skill Changelog
 
+## v1.6.2 - 2026-04-27
+
+- require closeout handoff documents to resolve the runtime output policy before writing PR briefs, release notes, resume indexes, or status handoffs
+- record `Output language` as the machine-enforced language contract while treating `agent_preferences` as advisory style input
+- render `Output language` metadata in generated PR briefs, release notes, resume indexes, and doc sync reports
+
 ## v1.6.1 - 2026-04-25
 
 - remove external tool provenance from the public skill contract so ship and documentation release rules read as native `cc-act` behavior

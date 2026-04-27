@@ -62,6 +62,7 @@ pr_url="$(req_act_ship_field "$ship_context" "PR_URL")"
 requirement_id="$(req_act_requirement_id "$manifest" "$CHANGE_DIR")"
 report_summary="$(req_act_report_summary "$report_card")"
 report_verdict="$(req_act_report_verdict "$report_card")"
+output_language="$(req_act_output_language "$report_card")"
 design_goal="$(req_act_design_goal "$design_file")"
 main_risk="$(req_act_main_risk "$design_file")"
 
@@ -96,6 +97,10 @@ fi
 
 {
   echo "# PR Brief"
+  echo
+  echo "## Document Meta"
+  echo
+  echo "- Output language: $output_language"
   echo
   echo "## Requirement"
   echo

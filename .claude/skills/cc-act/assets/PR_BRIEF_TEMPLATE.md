@@ -1,5 +1,9 @@
 # PR Brief
 
+## Document Meta
+
+- Output language:
+
 ## Decision
 
 - Recommended mode:

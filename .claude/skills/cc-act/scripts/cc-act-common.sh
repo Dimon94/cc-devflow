@@ -103,6 +103,11 @@ req_act_spec_sync_ready() {
   jq -r '.specSyncReady // false' "$report_card" 2>/dev/null || echo false
 }
 
+req_act_output_language() {
+  local report_card="$1"
+  jq -r '.outputPolicy.documentLanguage // "en"' "$report_card" 2>/dev/null || echo en
+}
+
 req_act_design_goal() {
   local design_file="$1"
   awk -F': ' '/^- Deliver:/{print $2; exit} /^- Change:/{print $2; exit}' "$design_file" 2>/dev/null || true

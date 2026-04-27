@@ -1,6 +1,6 @@
 ---
 name: cc-act
-version: 1.6.1
+version: 1.6.2
 description: 'Use when verified work must be shipped or handed off with a clear landing path: run simplify and required tests, create or update a PR, prepare a local handoff, close out merged work, sync docs, write release notes, and fold follow-ups back into backlog or roadmap.'
 triggers:
   - 准备提 PR
@@ -72,6 +72,14 @@ tool_budget:
 它不再只是“写收尾文档”，而是负责把已经通过验证的现实推进到真正可接手、可 review、可发布、可回写的状态。
 
 一句话：`cc-check` 证明“东西已经好”，`cc-act` 负责把“已经好”变成“已经落地”。
+
+## Runtime Output Policy
+
+写入任何 durable Markdown 或 JSON metadata 前，先运行 `cc-devflow config resolve --format policy`。
+
+- `Output language` 是机器约束，PR brief、resume index、release note 和 status handoff 必须记录并遵守它。
+- `agent_preferences` 是用户偏好建议，只影响表达方式和结构选择，不覆盖本 Skill 的工作流边界。
+- 如果配置解析失败，先修配置或向用户说明阻塞，不要用默认语言继续生成正式文档。
 
 ## Read First
 

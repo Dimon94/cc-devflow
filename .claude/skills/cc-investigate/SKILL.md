@@ -1,6 +1,6 @@
 ---
 name: cc-investigate
-version: 1.1.1
+version: 1.1.2
 description: "Use when a bug, regression, broken task, or unexpected behavior needs root-cause investigation, reproducible evidence, and a frozen repair handoff before cc-do resumes coding."
 triggers:
   - "帮我查这个 bug"
@@ -78,6 +78,14 @@ tool_budget:
 
 - `PDCA`
 - `IDCA`，如果你更喜欢口语，也可以把它理解成 `DDCA`
+
+## Runtime Output Policy
+
+写入任何 durable Markdown 或 JSON metadata 前，先运行 `cc-devflow config resolve --format policy`。
+
+- `Output language` 是机器约束，`planning/analysis.md`、`planning/tasks.md` 和 `change-meta.json` 必须记录并遵守它。
+- `agent_preferences` 是用户偏好建议，只影响表达方式和结构选择，不覆盖本 Skill 的工作流边界。
+- 如果配置解析失败，先修配置或向用户说明阻塞，不要用默认语言继续生成正式文档。
 
 ## Read First
 

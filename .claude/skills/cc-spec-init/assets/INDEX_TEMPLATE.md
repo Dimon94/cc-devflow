@@ -3,6 +3,7 @@
 ## Index Meta
 
 - Spec system version: `spec.v1`
+- Output language:
 - Last updated:
 - Maintainer:
 - Notes:

@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.5.3
+version: 3.5.4
 description: Use when a requirement, roadmap item, or bug needs scope clarification, design decisions, and executable task breakdown before coding starts.
 triggers:
   - 帮我规划这个需求
@@ -66,6 +66,14 @@ tool_budget:
 `cc-plan` 是 PDCA 里的 `Plan`。
 
 它的目标不是制造一串 planning 文档，而是把 requirement 压成最少但足够强的交付物，让 `cc-do` 不需要临场补脑。
+
+## Runtime Output Policy
+
+写入任何 durable Markdown 或 JSON metadata 前，先运行 `cc-devflow config resolve --format policy`。
+
+- `Output language` 是机器约束，`planning/design.md`、`planning/tasks.md` 和 `change-meta.json` 必须记录并遵守它。
+- `agent_preferences` 是用户偏好建议，只影响表达方式和结构选择，不覆盖本 Skill 的工作流边界。
+- 如果配置解析失败，先修配置或向用户说明阻塞，不要用默认语言继续生成正式文档。
 
 ## Read First
 

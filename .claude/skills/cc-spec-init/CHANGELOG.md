@@ -1,5 +1,10 @@
 # CC-Spec-Init Skill Changelog
 
+## v1.0.1 - 2026-04-27
+
+- require capability specs, spec indexes, and change metadata to resolve the runtime output policy before writing durable artifacts
+- record `Output language` as the machine-enforced language contract while treating `agent_preferences` as advisory style input
+
 ## v1.0.0 - 2026-04-19
 
 - 初始版 `cc-spec-init`，用于 capability-centered spec 初始化、能力真相源维护和 `change-meta.json` 链路收口。

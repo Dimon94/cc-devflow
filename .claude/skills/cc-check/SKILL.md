@@ -1,6 +1,6 @@
 ---
 name: cc-check
-version: 1.8.1
+version: 1.8.2
 description: Use when a planned or investigated change needs fresh verification evidence, layered gate proof, review truth, and an honest pass fail blocked verdict before entering cc-act.
 triggers:
   - 验收这个需求
@@ -56,6 +56,14 @@ tool_budget:
 它负责把“应该好了”变成“证据表明它好了”。
 
 它不是收尾话术器，也不是替 `cc-do` 涂绿。
+
+## Runtime Output Policy
+
+写入任何 durable Markdown 或 JSON metadata 前，先运行 `cc-devflow config resolve --format policy`。
+
+- `Output language` 是机器约束，`review/report-card.json` 中新增的人类可读 verdict 和报告摘要必须记录并遵守它。
+- `agent_preferences` 是用户偏好建议，只影响表达方式和结构选择，不覆盖本 Skill 的工作流边界。
+- 如果配置解析失败，先修配置或向用户说明阻塞，不要用默认语言继续生成正式文档。
 
 ## Iron Law
 

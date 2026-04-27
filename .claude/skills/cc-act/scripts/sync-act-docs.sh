@@ -59,6 +59,7 @@ requirement_id="$(req_act_requirement_id "$manifest" "$CHANGE_DIR")"
 report_summary="$(req_act_report_summary "$report_card")"
 report_verdict="$(req_act_report_verdict "$report_card")"
 spec_sync_ready="$(req_act_spec_sync_ready "$report_card")"
+output_language="$(req_act_output_language "$report_card")"
 design_goal="$(req_act_design_goal "$design_file")"
 main_risk="$(req_act_main_risk "$design_file")"
 
@@ -127,6 +128,10 @@ find "$REPO_ROOT" -maxdepth 2 -type f \( -iname 'README.md' -o -iname 'README*.m
 # ------------------------------------------------------------
 {
   echo "# Release Note"
+  echo
+  echo "## Document Meta"
+  echo
+  echo "- Output language: $output_language"
   echo
   echo "## User Impact"
   if [[ -n "$report_summary" ]]; then
@@ -198,6 +203,10 @@ esac
 {
   echo "# Resume Index"
   echo
+  echo "## Document Meta"
+  echo
+  echo "- Output language: $output_language"
+  echo
   echo "- Requirement: $requirement_id"
   echo "- Current stage: cc-act"
   echo "- Current task: ship:$ship_mode"
@@ -218,7 +227,7 @@ esac
   echo "- Ship mode decided as \`$ship_mode\`."
   [[ -n "$pr_url" ]] && echo "- Active PR / MR: $pr_url"
   echo
-  echo "## Blockers"
+  echo "## Follow-Ups"
   echo
   if [[ -s "$tmp_followups" ]]; then
     while IFS= read -r line; do
@@ -244,6 +253,10 @@ esac
 # ------------------------------------------------------------
 {
   echo "# Doc Sync Report"
+  echo
+  echo "## Document Meta"
+  echo
+  echo "- Output language: $output_language"
   echo
   echo "- Requirement: $requirement_id"
   echo "- Ship mode: $ship_mode"

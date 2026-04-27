@@ -1,5 +1,10 @@
 # Roadmap Skill Changelog
 
+## v4.3.2 - 2026-04-27
+
+- require roadmap outputs to resolve the runtime output policy before writing durable roadmap/backlog documents
+- record `Output language` as the machine-enforced language contract while treating `agent_preferences` as advisory style input
+
 ## v4.3.1 - 2026-04-19
 
 - refactor `scripts/roadmap-tracking.js` into focused schema / markdown / store helpers so the CLI stops carrying parsing, rendering, upgrade, and persistence in one 1000-line file

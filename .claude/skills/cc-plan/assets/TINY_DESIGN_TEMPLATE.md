@@ -5,6 +5,7 @@
 - Requirement version:
 - Design version:
 - CC-Plan skill version:
+- Output language:
 - Requirement ID:
 - Design mode: `tiny-design`
 - Why this stays `tiny-design`:

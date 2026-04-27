@@ -5,6 +5,7 @@
 - Requirement version:
 - Design version:
 - CC-Plan skill version:
+- Output language:
 - Source roadmap item:
 - Source roadmap version:
 - Change meta: `change-meta.json`

@@ -1,5 +1,10 @@
 # CC-Plan Skill Changelog
 
+## v3.5.4 - 2026-04-27
+
+- require planning outputs to resolve the runtime output policy before writing `planning/design.md`, `planning/tasks.md`, or `change-meta.json`
+- record `Output language` as the machine-enforced language contract while treating `agent_preferences` as advisory style input
+
 ## v3.5.3 - 2026-04-25
 
 - require new planning change directories to use `REQ-<number>-<description>` for requirements and `FIX-<number>-<description>` for fixes

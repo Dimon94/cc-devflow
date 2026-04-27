@@ -1,6 +1,6 @@
 ---
 name: cc-spec-init
-version: 1.0.0
+version: 1.0.1
 description: Use when you need to initialize capability specs under `devflow/specs/`, create or evolve capability truth sources, generate `change-meta.json`, or validate roadmap/change/spec links before roadmap, planning, or closeout work continues.
 ---
 
@@ -32,6 +32,14 @@ description: Use when you need to initialize capability specs under `devflow/spe
 - 生成或修复 `devflow/changes/<change-key>/change-meta.json`
 - 重建 `devflow/specs/INDEX.md`
 - 校验 capability、roadmap item、change 之间的链接完整性
+
+## Runtime Output Policy
+
+写入任何 durable Markdown 或 JSON metadata 前，先运行 `cc-devflow config resolve --format policy`。
+
+- `Output language` 是机器约束，capability spec、`devflow/specs/INDEX.md` 和 `change-meta.json` 必须记录并遵守它。
+- `agent_preferences` 是用户偏好建议，只影响表达方式和结构选择，不覆盖本 Skill 的工作流边界。
+- 如果配置解析失败，先修配置或向用户说明阻塞，不要用默认语言继续生成正式文档。
 
 ## Read First
 

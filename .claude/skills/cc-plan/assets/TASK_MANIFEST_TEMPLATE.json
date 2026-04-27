@@ -2,6 +2,9 @@
   "changeId": "REQ-XXX",
   "requirementId": "REQ-XXX",
   "requirementVersion": "REQ-XXX.v1",
+  "outputPolicy": {
+    "documentLanguage": ""
+  },
   "sourceRoadmap": {
     "itemId": "RM-001",
     "roadmapVersion": "1.0",

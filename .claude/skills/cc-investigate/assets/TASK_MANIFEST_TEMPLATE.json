@@ -2,6 +2,9 @@
   "changeId": "FIX-XXX",
   "requirementId": "FIX-XXX",
   "requirementVersion": "FIX-XXX.v1",
+  "outputPolicy": {
+    "documentLanguage": ""
+  },
   "sourceRoadmap": {
     "itemId": "RM-001",
     "roadmapVersion": "1.0",

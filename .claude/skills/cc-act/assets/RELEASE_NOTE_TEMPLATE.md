@@ -1,5 +1,9 @@
 # Release Note
 
+## Document Meta
+
+- Output language:
+
 ## Release Scope
 
 - Why a release note is needed now:

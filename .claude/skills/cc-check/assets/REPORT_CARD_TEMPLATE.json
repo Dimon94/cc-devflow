@@ -1,5 +1,8 @@
 {
   "changeId": "REQ-123",
+  "outputPolicy": {
+    "documentLanguage": ""
+  },
   "verdict": "blocked",
   "overall": "fail",
   "summary": "verdict=blocked quick=1/2 strict=0/0 review=blocked",
