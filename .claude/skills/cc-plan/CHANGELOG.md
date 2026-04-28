@@ -1,5 +1,11 @@
 # CC-Plan Skill Changelog
 
+## v3.6.1 - 2026-04-28
+
+- require plans to freeze public test seams, behavior assertions, mock boundaries, and feedback loop types before handing Red tasks to `cc-do`
+- strengthen TDD planning so Red tasks reject implementation-detail tests, internal collaborator mocks, and fake seams
+- update design, tiny-design, tasks, and manifest templates with test quality fields inherited from the TDD workflow review
+
 ## v3.6.0 - 2026-04-28
 
 - absorb grilling-session discipline into native planning: one decision branch at a time, recommended answer with evidence, and no user questions when repo evidence can answer

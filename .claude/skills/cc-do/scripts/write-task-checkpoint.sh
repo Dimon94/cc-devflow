@@ -9,7 +9,7 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  write-task-checkpoint.sh --dir path/to/change --task T001 --status pending|running|passed|failed|skipped --summary "..." [--event context_ready] [--attempt 0] [--session session-id] [--next-action "..."]
+  write-task-checkpoint.sh --dir path/to/change --task T001 --status pending|running|passed|failed|skipped --summary "..." [--event context_ready] [--attempt 0] [--session session-id] [--next-action "..."] [--tdd-json '{"red":...}']
 EOF
 }
 
@@ -23,6 +23,7 @@ EVENT_TYPE=""
 ATTEMPT="0"
 SESSION_ID=""
 NEXT_ACTION=""
+TDD_JSON=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -34,6 +35,7 @@ while [[ $# -gt 0 ]]; do
     --attempt) ATTEMPT="$2"; shift 2 ;;
     --session) SESSION_ID="$2"; shift 2 ;;
     --next-action) NEXT_ACTION="$2"; shift 2 ;;
+    --tdd-json) TDD_JSON="$2"; shift 2 ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown arg: $1" >&2; usage; exit 1 ;;
   esac
@@ -57,6 +59,15 @@ if [[ -z "$SESSION_ID" ]]; then
   SESSION_ID="${TASK_ID}-$(date -u +%s)"
 fi
 
+tdd_payload="null"
+if [[ -n "$TDD_JSON" ]]; then
+  if [[ -f "$TDD_JSON" ]]; then
+    tdd_payload="$(jq -c . "$TDD_JSON")"
+  else
+    tdd_payload="$(printf '%s' "$TDD_JSON" | jq -c .)"
+  fi
+fi
+
 jq -nc \
   --arg changeId "$change_id" \
   --arg taskId "$TASK_ID" \
@@ -66,6 +77,7 @@ jq -nc \
   --arg summary "$SUMMARY" \
   --arg timestamp "$timestamp" \
   --arg attempt "$ATTEMPT" \
+  --argjson tdd "$tdd_payload" \
   '{
     changeId: $changeId,
     taskId: $taskId,
@@ -75,7 +87,7 @@ jq -nc \
     summary: $summary,
     timestamp: $timestamp,
     attempt: ($attempt | tonumber)
-  }' > "$runtime_task_dir/checkpoint.json"
+  } + (if $tdd == null then {} else {tdd: $tdd} end)' > "$runtime_task_dir/checkpoint.json"
 
 if [[ -n "$EVENT_TYPE" || "$STATUS" == "failed" ]]; then
   jq -nc \

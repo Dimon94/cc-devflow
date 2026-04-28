@@ -160,6 +160,10 @@
 
 - Test framework source:
 - First failing tests:
+- Test seams / public interfaces:
+- Behavior assertions:
+- Mock boundaries:
+- Feedback loop types:
 - Tracer bullet order:
 - Red/Green/Refactor task chain:
 - TDD exceptions:
@@ -173,9 +177,9 @@
 
 ## Test Coverage Map
 
-| Code path / user flow | Existing coverage | Quality | Required test | Level | Regression? |
-|-----------------------|-------------------|---------|---------------|-------|-------------|
-|  |  | strong / happy-path-only / smoke-only / missing |  | unit / integration / e2e / eval | Yes / No |
+| Code path / user flow | Public seam | Behavior asserted | Existing coverage | Quality | Required test | Level | Mock boundary | Implementation-detail risk | Regression? |
+|-----------------------|-------------|-------------------|-------------------|---------|---------------|-------|---------------|----------------------------|-------------|
+|  |  |  |  | strong / happy-path-only / smoke-only / missing |  | unit / integration / e2e / eval | none / system boundary | low / medium / high | Yes / No |
 
 ## Error & Rescue Map
 
@@ -225,6 +229,7 @@
 - Decision horizon scan:
 - Error & rescue scan:
 - Test framework / regression scan:
+- Test seam / mock boundary scan:
 - Tracer bullet scan:
 - UI / interaction review summary:
 - DX / operator review summary:

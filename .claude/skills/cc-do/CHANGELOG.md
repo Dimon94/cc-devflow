@@ -1,5 +1,11 @@
 # CC-Do Skill Changelog
 
+## v1.5.3 - 2026-04-28
+
+- require Red evidence to prove behavior through a public seam instead of private methods, internal call counts, or implementation-shaped tests
+- add mock-boundary and test-quality gates to the TDD execution contract so internal collaborators are not mocked as fake proof
+- allow `write-task-checkpoint.sh --tdd-json` and runtime checkpoint schema to preserve structured TDD evidence for recovery and review
+
 ## v1.5.2 - 2026-04-27
 
 - require execution evidence that adds human-readable summaries to resolve the runtime output policy first

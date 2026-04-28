@@ -82,12 +82,25 @@ if [[ -f "$events_file" ]]; then
       echo "-1"
     }
 
-    red_idx="$(first_index "red_failed")"
-    green_idx="$(first_index "green_passed")"
-    if [[ "$red_idx" != "-1" && "$green_idx" != "-1" && "$red_idx" -ge "$green_idx" ]]; then
-      echo "Task $TASK_ID gate order is invalid" >&2
-      exit 1
-    fi
+    assert_before() {
+      local before="$1"
+      local after="$2"
+      local before_idx after_idx
+      before_idx="$(first_index "$before")"
+      after_idx="$(first_index "$after")"
+      if [[ "$before_idx" != "-1" && "$after_idx" != "-1" && "$before_idx" -ge "$after_idx" ]]; then
+        echo "Task $TASK_ID gate order is invalid: $before must precede $after" >&2
+        exit 1
+      fi
+    }
+
+    assert_before "red_failed" "red_reason_verified"
+    assert_before "red_reason_verified" "red_seam_verified"
+    assert_before "red_seam_verified" "red_behavior_verified"
+    assert_before "red_behavior_verified" "mock_boundary_verified"
+    assert_before "mock_boundary_verified" "green_passed"
+    assert_before "red_failed" "green_passed"
+    assert_before "green_passed" "refactor_green"
   fi
 fi
 

@@ -18,13 +18,13 @@
 5. 版本、来源、冻结决策必须可追踪。
 6. 机械决策自动落盘；taste decision 和 user challenge 必须显式交给用户拍板。
 7. 同 blast radius 内的完整边界优先做完，跨系统或无证据扩张才 defer。
-8. 具体执行计划默认测试先行；没有 Red/Green/Refactor 链或 TDD exception，不准交给 `cc-do`。
+8. 具体执行计划默认测试先行；没有 Red/Green/Refactor 链、公共测试 seam、行为断言、mock 边界或 TDD exception，不准交给 `cc-do`。
 9. 新 change 目录必须使用 `REQ-<number>-<description>` 或 `FIX-<number>-<description>`；旧小写目录只读兼容，不再作为新输出。
 10. 原始需求跨多个独立子系统时，先拆回 roadmap / 多个 REQ/FIX；不要把一个大杂烩压成单个计划。
 11. `tiny-design` 仍然必须被批准，它只是短设计，不是跳过设计。
 12. 非 trivial 方案必须至少比较 `minimal viable` 和 `ideal architecture` 两种角色，小方案没有天然优先权。
 13. `full-design` 必须冻结 implementation decision horizon 和 error/rescue map，避免 `cc-do` 临场补设计。
-14. 测试框架来源、覆盖质量和回归测试必须在计划阶段写清，不准靠执行阶段猜。
+14. 测试框架来源、覆盖质量、测试 seam、mock 边界和回归测试必须在计划阶段写清，不准靠执行阶段猜。
 15. UI 和 developer/operator-facing 范围只在适用时触发对应 gate，不把每个计划都塞成大审查清单。
 16. 先对齐项目语言和持久决策，再命名 capability、模块、接口、测试和任务；术语冲突必须显式暴露。
 17. 行为变更按 tracer bullet 垂直切片推进，不能把任务水平切成“先测试层、再服务层、最后 UI 层”。
@@ -67,6 +67,9 @@
 14. 行为变更任务必须拆成 `[TEST] -> [IMPL] -> [REFACTOR]` 或写明 TDD exception；不能用“实现并测试”混成一个任务。
 15. 行为变更任务必须按一个 observable behavior 一条 tracer bullet 链组织，不能先批量写红灯再批量实现。
 16. 回归测试不能 defer。修改既有行为且缺少覆盖时，必须先计划 regression test。
+17. Red 任务必须验证公共接口上的行为，不验证私有函数、内部调用次数或临时数据结构。
+18. Mock 只能放在系统边界；如果测试必须 mock 自己控制的模块，说明 seam 或接口设计还没压平。
+19. 找不到正确 seam 时，先计划 exploratory spike 或设计修正，不能用假红灯冒充 TDD。
 17. UI scope 要写 design completeness score 和 loading / empty / error / success / partial 状态。
 18. developer/operator-facing scope 要写 target persona、time to first value、magic moment 和 install / run / debug / upgrade 风险。
 19. Review gate 只拦会导致实现错误、执行卡住、范围越界、验证缺失的问题；文字偏好和 nice-to-have 只能作为 advisory。
@@ -93,6 +96,9 @@
 - 新增接口是否是小接口深模块，复杂度是否被藏在正确边界里？
 - 每条 failure path 的 rescue action、用户可见结果和测试证据是什么？
 - 每条新增 code path / user flow / error path 的第一条失败测试是什么？
+- 第一条失败测试通过哪个公共 seam 进入系统，断言什么可观察行为？
+- 哪些依赖允许 mock，哪些内部协作者禁止 mock？
+- 反馈循环是自动测试、HTTP、CLI、浏览器、trace replay、harness、property/fuzz、differential，还是 HITL；为什么这是当前最短可信循环？
 - 测试框架来源是什么，现有覆盖是 strong、happy-path-only、smoke-only 还是 missing？
 - task 是否以端到端 tracer bullet 为单位，而不是按层水平拆？
 - 哪些生产失败模式已经处理，哪些 defer 到 backlog？

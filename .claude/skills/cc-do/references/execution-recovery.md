@@ -37,11 +37,14 @@
 1. `context_ready`
 2. `red_failed`
 3. `red_reason_verified`
-4. `green_passed`
-5. `refactor_done` 或 `refactor_not_needed`
-6. `refactor_green`
-7. `spec_review_pass`
-8. `code_review_pass`
+4. `red_seam_verified`
+5. `red_behavior_verified`
+6. `mock_boundary_verified`
+7. `green_passed`
+8. `refactor_done` 或 `refactor_not_needed`
+9. `refactor_green`
+10. `spec_review_pass`
+11. `code_review_pass`
 
 如果 `events.jsonl` 没开启，至少仍要有最新 `checkpoint.json` 和 manifest review verdict。
 
@@ -52,9 +55,17 @@
 - `red.command`
 - `red.exitStatus`
 - `red.expectedFailure`
+- `red.testSeam`
+- `red.behaviorAsserted`
+- `red.allowedMocks`
+- `red.implementationDetailRisk`
 - `green.command`
 - `green.exitStatus`
 - `refactor.status`
+- `testQuality.usesPublicInterface`
+- `testQuality.describesBehavior`
+- `testQuality.survivesInternalRefactor`
+- `testQuality.mocksOnlySystemBoundaries`
 - `review.spec.status`
 - `review.code.status`
 

@@ -20,7 +20,7 @@
     ]
   },
   "planningMeta": {
-    "reqPlanSkillVersion": "3.6.0",
+    "reqPlanSkillVersion": "3.6.1",
     "designVersion": "design.v1",
     "approvedAt": "2026-04-15T12:00:00.000Z",
     "approvedBy": "user",
@@ -38,6 +38,23 @@
     "taskShape": "vertical-tracer-bullets",
     "testFirstRequired": true,
     "testFrameworkSource": "",
+    "testQualityPolicy": {
+      "publicInterfaceRequired": true,
+      "behaviorAssertionRequired": true,
+      "mockBoundary": "system-boundaries-only",
+      "implementationDetailTests": "blocked",
+      "feedbackLoopPreference": [
+        "automated-test",
+        "http-curl",
+        "cli-fixture",
+        "browser-script",
+        "trace-replay",
+        "throwaway-harness",
+        "property-fuzz",
+        "differential-loop",
+        "hitl-script"
+      ]
+    },
     "regressionTestsRequired": [],
     "tddExceptions": []
   },
@@ -76,6 +93,25 @@
       "status": "pending",
       "tddPhase": "red",
       "verticalSlice": "Slice 1",
+      "testSeam": {
+        "entry": "public interface / caller flow / CLI / API / UI / trace replay / harness",
+        "behaviorAsserted": "The user or caller observable behavior that should exist",
+        "implementationDetailRisk": "low"
+      },
+      "feedbackLoop": {
+        "type": "automated-test",
+        "determinism": "deterministic",
+        "expectedFailure": "Fails because the target behavior is missing"
+      },
+      "allowedMocks": [
+        "external API / time / randomness / filesystem / database boundary"
+      ],
+      "testQuality": {
+        "usesPublicInterface": true,
+        "describesBehavior": true,
+        "survivesInternalRefactor": true,
+        "mocksOnlySystemBoundaries": true
+      },
       "dependsOn": [],
       "parallel": false,
       "touches": [

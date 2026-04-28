@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.6.0
+version: 3.6.1
 description: Use when a requirement, roadmap item, or bug needs scope clarification, design decisions, and executable task breakdown before coding starts.
 triggers:
   - 帮我规划这个需求
@@ -251,12 +251,15 @@ tool_budget:
 9. Error & Rescue map：`full-design` 必须按 codepath 写清 failure、rescue、user sees、test evidence；不适用时写 N/A 理由。
 10. Code quality scan：指出 DRY、命名、错误处理、三层以上分支、隐藏耦合风险。
 11. Test diagram：列出新增 code path、user flow、错误路径、边界状态，并标注 first failing test、unit / e2e / eval。
-12. Test framework source：先记录测试框架来自 `CLAUDE.md` / docs / config / directory 的哪条证据；不能靠猜。
-13. UI state coverage：有 UI / interaction scope 时，写 loading / empty / error / success / partial 状态表和 design completeness score。
-14. DX / operator coverage：developer-facing / operator-facing scope 必须写 target persona、time to first value、magic moment、install / run / debug / upgrade 风险。
-15. Performance and distribution：涉及批量、I/O、发布物、CLI、包、容器时，必须写清性能和分发边界。
-16. NOT in scope：所有被考虑但 defer 的内容要写理由，不能消失在聊天里。
-17. Review calibration：只有会导致 `cc-do` 建错、卡住、越界、漏测的问题才是 blocking；措辞偏好和非阻塞建议不能伪装成 gate failure。
+12. Test seam check：每条 Red 任务必须说明通过哪个公共接口、调用方流程或用户可见路径证明行为；如果只能测私有函数、内部调用次数或临时结构，先改设计或写 blocked question。
+13. Mock boundary check：只允许 mock 系统边界，如外部 API、时间、随机性、文件系统、必要数据库边界；不 mock 自己控制的内部模块。
+14. Feedback loop check：为每条行为选定最短可信反馈循环，优先顺序是自动测试、curl/HTTP、CLI+fixture、浏览器脚本、trace replay、throwaway harness、property/fuzz、differential loop、HITL script。
+15. Test framework source：先记录测试框架来自 `CLAUDE.md` / docs / config / directory 的哪条证据；不能靠猜。
+16. UI state coverage：有 UI / interaction scope 时，写 loading / empty / error / success / partial 状态表和 design completeness score。
+17. DX / operator coverage：developer-facing / operator-facing scope 必须写 target persona、time to first value、magic moment、install / run / debug / upgrade 风险。
+18. Performance and distribution：涉及批量、I/O、发布物、CLI、包、容器时，必须写清性能和分发边界。
+19. NOT in scope：所有被考虑但 defer 的内容要写理由，不能消失在聊天里。
+20. Review calibration：只有会导致 `cc-do` 建错、卡住、越界、漏测的问题才是 blocking；措辞偏好和非阻塞建议不能伪装成 gate failure。
 
 如果任一项无法从当前证据完成，写 `assumption` 或 `blocked question`，不要伪装成已经审过。
 
@@ -268,18 +271,23 @@ tool_budget:
    - 优先读取 `CLAUDE.md` / project docs 中的 testing 约定。
    - 如果没有，按配置文件和目录结构识别：`vitest` / `jest` / `pytest` / `go test` / `cargo test` / `rspec` / `playwright` / `cypress` 等。
    - 如果仍然没有框架，写成 `test framework unknown`，并把验证计划降级为 exploratory spike 或 manual evidence，不准假装已有自动测试路径。
-2. 每个可观察行为变更默认拆成 `Red -> Green -> Refactor`：
+2. 先冻结测试 seam 和行为断言：
+   - Red 必须通过公共接口、调用方流程、CLI/API/UI 路径或其它真实边界证明行为缺失。
+   - 测试名、断言和 fixture 必须描述用户 / 调用方关心的行为，不描述内部实现步骤。
+   - 如果正确 seam 不存在，计划先写 exploratory spike 或架构 follow-up，不准用脆弱单元测试冒充回归保护。
+3. 每个可观察行为变更默认拆成 `Red -> Green -> Refactor`：
    - Red：先写 `[TEST]` 任务，目标是用最小失败测试证明目标行为缺失。
    - Green：再写 `[IMPL]` 任务，只做让对应红灯转绿的最小生产实现。
    - Refactor：最后写 `[REFACTOR]` 或在实现任务中明确 refactor checkpoint，说明何时清理重复、命名、结构和坏味道。
-3. 禁止水平切片：不能先写一批测试、再写一批实现。计划必须按 tracer bullet 垂直切片排列：一个行为红灯 -> 最小实现转绿 -> 必要重构，然后再进入下一个行为。
-4. `planning/tasks.md` 不能把测试和实现塞进同一个 task。一个 task 同时写“实现并测试”就是计划失败。
-5. `planning/task-manifest.json` 必须让 `cc-do` 看出每个任务的 `tddPhase`、依赖和证据：`red` 任务产出 failing output，`green` 任务产出 passing output，`refactor` 任务产出重跑后的 green evidence。
-6. Test diagram 要同时覆盖 code paths 和 user flows。每条路径标注 `unit` / `integration` / `e2e` / `eval`，并给现有测试质量分级：`strong`、`happy-path-only`、`smoke-only`、`missing`。
-7. 回归测试是硬门槛。只要计划修改既有行为且现有测试没有覆盖，就必须把 regression test 写进 `planning/tasks.md`，不能 defer，不能问用户要不要跳过。
-8. 只有纯文档、纯配置、纯生成文件、throwaway prototype 可以例外。例外必须写进 `planning/design.md` 和 `planning/tasks.md` 的 `TDD exceptions`，包含原因、风险、替代验证命令和后续补证入口。
-9. 并行只允许发生在已经满足上游 Red/Green 依赖之后。两个 `[P]` 任务如果共享同一个红灯或同一组 touched files，就不能并行。
-10. 如果当前需求找不到第一条失败测试，先把它写成 blocked question 或 exploratory spike，不准伪装成可执行实现任务。
+4. 禁止水平切片：不能先写一批测试、再写一批实现。计划必须按 tracer bullet 垂直切片排列：一个行为红灯 -> 最小实现转绿 -> 必要重构，然后再进入下一个行为。
+5. `planning/tasks.md` 不能把测试和实现塞进同一个 task。一个 task 同时写“实现并测试”就是计划失败。
+6. `planning/tasks.md` 的每个 `[TEST]` task 必须写清 test seam、behavior asserted、allowed mocks、feedback loop type、implementation-detail risk。
+7. `planning/task-manifest.json` 必须让 `cc-do` 看出每个任务的 `tddPhase`、依赖、测试质量边界和证据：`red` 任务产出 failing output，`green` 任务产出 passing output，`refactor` 任务产出重跑后的 green evidence。
+8. Test diagram 要同时覆盖 code paths 和 user flows。每条路径标注 `unit` / `integration` / `e2e` / `eval`，并给现有测试质量分级：`strong`、`happy-path-only`、`smoke-only`、`missing`。
+9. 回归测试是硬门槛。只要计划修改既有行为且现有测试没有覆盖，就必须把 regression test 写进 `planning/tasks.md`，不能 defer，不能问用户要不要跳过。
+10. 只有纯文档、纯配置、纯生成文件、throwaway prototype 可以例外。例外必须写进 `planning/design.md` 和 `planning/tasks.md` 的 `TDD exceptions`，包含原因、风险、替代验证命令和后续补证入口。
+11. 并行只允许发生在已经满足上游 Red/Green 依赖之后。两个 `[P]` 任务如果共享同一个红灯或同一组 touched files，就不能并行。
+12. 如果当前需求找不到第一条失败测试，先把它写成 blocked question 或 exploratory spike，不准伪装成可执行实现任务。
 
 ## Design Modes
 
@@ -318,11 +326,12 @@ tool_budget:
 8. Decision horizon scan：foundation / core / integration / polish/tests 的实现决策是否已经冻结或明确 blocked。
 9. Error & rescue scan：`full-design` 是否写清 failure -> rescue -> user sees -> test evidence。
 10. Test framework / regression scan：测试框架来源、覆盖质量、回归测试是否明确。
-11. Domain language scan：核心名词、测试名、文件职责是否沿用项目语言；冲突是否写成 blocked question / user challenge。
-12. Interface depth scan：新增接口是否足够小、隐藏复杂度是否足够深、调用方是否容易正确使用且不容易误用。
-13. Tracer bullet scan：任务是否按一个行为一条 Red/Green/Refactor 链组织，而不是按测试层、服务层、UI 层水平堆叠。
-14. Review calibration：只把会导致实现错误、执行卡住、范围越界、验证缺失的问题标成 blocking；非阻塞建议必须降级为 advisory
-15. Final gate：明确 auto-decided items、taste decisions、user challenges 和最终 recommendation
+11. Test seam / mock boundary scan：Red 任务是否通过公共 seam 证明行为，mock 是否只发生在系统边界，反馈循环是否可重复。
+12. Domain language scan：核心名词、测试名、文件职责是否沿用项目语言；冲突是否写成 blocked question / user challenge。
+13. Interface depth scan：新增接口是否足够小、隐藏复杂度是否足够深、调用方是否容易正确使用且不容易误用。
+14. Tracer bullet scan：任务是否按一个行为一条 Red/Green/Refactor 链组织，而不是按测试层、服务层、UI 层水平堆叠。
+15. Review calibration：只把会导致实现错误、执行卡住、范围越界、验证缺失的问题标成 blocking；非阻塞建议必须降级为 advisory
+16. Final gate：明确 auto-decided items、taste decisions、user challenges 和最终 recommendation
 
 如果有 UI / interaction 明显范围，在 `planning/design.md` 里补 design completeness score 和状态覆盖表。
 如果有 API / CLI / developer-facing / operator-facing scope，在 `planning/design.md` 里补 target persona、time to first value、magic moment 和 DX / operator review 结论。
@@ -331,8 +340,8 @@ tool_budget:
 
 - `planning/design.md` 一份就讲清：为什么做、做什么、不做什么、备选方案、批准方案、设计模式、风险、review gate、执行边界
 - `planning/design.md` 必须使用项目 canonical language，记录相关 ADR / spec 冲突，并说明新增接口如何保持小接口深模块
-- `planning/tasks.md` 只保留能直接执行的任务和 handoff，不再承载重复背景介绍；行为变更默认拆成 tracer bullet 形式的 `[TEST] -> [IMPL] -> [REFACTOR]`
-- `planning/task-manifest.json` 是 `cc-do` 的真相源，要写清 `dependsOn`、`tddPhase`、`verticalSlice`、并行资格、触点、验证命令，以及继承了哪版 roadmap / design / spec
+- `planning/tasks.md` 只保留能直接执行的任务和 handoff，不再承载重复背景介绍；行为变更默认拆成 tracer bullet 形式的 `[TEST] -> [IMPL] -> [REFACTOR]`，且 Red task 明确公共 seam、行为断言、mock 边界和反馈循环
+- `planning/task-manifest.json` 是 `cc-do` 的真相源，要写清 `dependsOn`、`tddPhase`、`verticalSlice`、test seam、allowed mocks、feedback loop、并行资格、触点、验证命令，以及继承了哪版 roadmap / design / spec
 - `change-meta.json` 是 capability 真相源，要写清这次 change 准备如何改变长期 spec
 - 看完第一屏，执行者就知道这次属于 `tiny-design` 还是 `full-design`，以及为什么
 

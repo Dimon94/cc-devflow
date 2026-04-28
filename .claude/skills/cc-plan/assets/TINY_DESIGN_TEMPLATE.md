@@ -70,6 +70,10 @@
 
 - Test framework source:
 - First failing test:
+- Test seam / public interface:
+- Behavior asserted:
+- Mock boundary:
+- Feedback loop type:
 - Tracer bullet order:
 - Green implementation check:
 - Refactor checkpoint:
@@ -104,6 +108,7 @@
 - Implementation surface scan:
 - Interface depth scan:
 - Test framework / regression scan:
+- Test seam / mock boundary scan:
 - Tracer bullet scan:
 - Test-first readiness:
 - Review calibration:

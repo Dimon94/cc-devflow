@@ -21,6 +21,9 @@
 - Read first:
 - Commands to trust:
 - Test framework source:
+- Test seam policy: Red tasks verify behavior through public interfaces, caller flows, CLI/API/UI paths, or other real seams.
+- Mock boundary policy: mock only system boundaries; do not mock internal collaborators owned by this codebase.
+- Feedback loop ladder: automated test -> HTTP/curl -> CLI fixture -> browser script -> trace replay -> harness -> property/fuzz -> differential -> HITL.
 - TDD plan: `Red -> Green -> Refactor`
 - Tracer bullet plan: one observable behavior at a time; no horizontal "all tests first, all code later" slice
 - TDD exceptions: none | list exception reason, risk, replacement evidence, follow-up
@@ -40,9 +43,9 @@
 
 ## Tracer Bullet Map
 
-| Slice | Observable behavior | Red task | Green task | Refactor / evidence | Why vertical |
-|-------|---------------------|----------|------------|---------------------|--------------|
-| Slice 1 |  | T001 | T002 | T005 |  |
+| Slice | Observable behavior | Public test seam | Feedback loop | Red task | Green task | Refactor / evidence | Why vertical |
+|-------|---------------------|------------------|---------------|----------|------------|---------------------|--------------|
+| Slice 1 |  |  | automated test | T001 | T002 | T005 |  |
 
 > 每个 slice 必须能独立证明一个端到端行为，不要按“只改数据层 / 只改 UI 层”横切。
 
@@ -56,6 +59,10 @@
   Verification: `npm test -- path/to/test`
   Evidence: failing output
   Coverage: unit / integration / e2e / eval; regression: yes / no
+  Test seam: public interface / caller flow / CLI / API / UI / trace replay / harness
+  Behavior asserted: 描述用户或调用方可观察行为，不描述内部实现步骤
+  Allowed mocks: none / external API / time / randomness / filesystem / database boundary
+  Test quality guard: no private methods, no internal call-count assertions, no internal collaborator mocks
   Vertical slice: Slice 1
   Ready when: 没有上游依赖，且测试路径已经确定
 
@@ -79,6 +86,10 @@
   Verification: `npm test -- path/to/other.test`
   Evidence: failing output
   Coverage: unit / integration / e2e / eval; regression: yes / no
+  Test seam: public interface / caller flow / CLI / API / UI / trace replay / harness
+  Behavior asserted: 描述用户或调用方可观察行为，不描述内部实现步骤
+  Allowed mocks: none / external API / time / randomness / filesystem / database boundary
+  Test quality guard: no private methods, no internal call-count assertions, no internal collaborator mocks
   Vertical slice: Slice 2
   Ready when: T002 完成，且该测试覆盖的是独立行为
 
@@ -124,4 +135,6 @@
 - 要留下什么证据给 `cc-check`
 - 它处于 Red、Green、Refactor，还是明确的 TDD exception
 - 测试框架依据来自哪里，回归测试是否被明确处理
+- Red task 通过哪个公共 seam 证明行为缺失，允许 mock 的边界是什么
+- 测试是否会在内部重构后继续成立，而不是绑定私有函数、调用次数或临时结构
 - 它属于哪个 tracer bullet 垂直切片，完成后哪个可观察行为被证明
