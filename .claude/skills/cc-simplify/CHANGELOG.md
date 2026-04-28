@@ -1,5 +1,11 @@
 # CC-Simplify Skill Changelog
 
+## v1.4.0 - 2026-04-28
+
+- add deep-module architecture review checks for shallow wrappers, hypothetical seams, and complexity that should move behind a smaller interface
+- require architecture findings to pass a deletion test before cleanup deletes, keeps, or reshapes a module or helper
+- preserve capability invariants and public contracts when evaluating pass-through abstractions
+
 ## v1.3.0 - 2026-04-28
 
 - add scope-aware Codex reviewer dispatch with small-diff skip rules and conditional security, API contract, release, frontend performance, and red-team facets

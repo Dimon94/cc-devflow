@@ -1,6 +1,6 @@
 ---
 name: cc-simplify
-version: 1.3.0
+version: 1.4.0
 description: "Use when changed code needs a Codex-native simplification pass for scope drift, reuse, code quality, efficiency, test quality, and confidence-gated smell fixes before cc-check or cc-act."
 ---
 
@@ -101,6 +101,9 @@ Finding JSONL schema：
 4. 是否有 parameter sprawl：为了一个场景继续给函数加参数，而不是整理输入对象或拆出职责。
 5. 是否泄漏抽象边界：调用方知道了内部状态、文件布局、协议细节或测试专用机制。
 6. 文件是否因为本次改动开始承担多个职责；如果只是历史遗留，不在本轮扩大范围。
+7. 新增模块是否是浅包装：接口复杂度几乎等于实现复杂度，删除它只是把同样复杂度搬到调用方。
+8. seam 是否真实：只有一个 adapter 且没有明确第二个调用场景时，先当作 hypothetical seam；不要为了假扩展性制造抽象。
+9. deep module 机会：如果一个小接口能隐藏大量重复调用顺序、错误处理、配置或状态转换，优先让复杂度集中到该模块，而不是散落在调用方。
 
 #### Agent C: Quality / Efficiency / Test Reviewer
 
@@ -209,6 +212,12 @@ Decision：
 2. **使用事实**：用 `rg` 查调用方，确认不是 reviewer 缺上下文。
 3. **需求事实**：对照 `planning/tasks.md`、`change-meta.json`、capability spec，确认没有误删必要行为。
 4. **验证事实**：明确修复后用什么命令或检查证明没有回归。
+
+架构类 finding 还必须过删除测试：想象删除这个模块、helper、wrapper 或 seam。
+
+- 如果复杂度只是原样散回多个调用方，它可能是有价值的 deep module。
+- 如果复杂度消失或只留下一个直接调用，它多半是 pass-through / fake seam。
+- 如果删除会违反 capability invariant 或 public contract，就不能当作 cleanup 直接删。
 
 如果 reviewer 建议“更专业”的能力，先做 YAGNI 检查：没有调用方、没有需求、没有 acceptance，就不要新增。
 
