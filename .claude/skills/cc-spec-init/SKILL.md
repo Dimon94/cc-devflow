@@ -1,6 +1,6 @@
 ---
 name: cc-spec-init
-version: 1.0.1
+version: 1.1.0
 description: Use when you need to initialize capability specs under `devflow/specs/`, create or evolve capability truth sources, generate `change-meta.json`, or validate roadmap/change/spec links before roadmap, planning, or closeout work continues.
 ---
 
@@ -67,6 +67,7 @@ description: Use when you need to initialize capability specs under `devflow/spe
 2. 先判断你是在做 `bootstrap`、`create`、`update-links`、`split`、`merge` 还是 `deprecate`。
 3. 先锁定 capability 边界，再写模板；不要先写 prose 再猜结构。
 4. 先明确 primary capability，再允许 secondary capabilities 存在。
+5. 先检查命名是否已经有 canonical term；同义词、歧义词和关系约束没收口前，不要新建第二套 capability 名称。
 
 ## Session Protocol
 
@@ -80,6 +81,7 @@ description: Use when you need to initialize capability specs under `devflow/spe
    - 为当前已知 capability 写最小 spec
 3. 如果是新 capability：
    - 先写 capability 边界、约束、当前 truth、gaps
+   - 再写最小 language block：canonical term、definition、aliases to avoid、relationships、flagged ambiguities
    - 再登记到 `INDEX.md`
 4. 如果是 change 绑定：
    - 生成或更新 `change-meta.json`
@@ -91,6 +93,17 @@ description: Use when you need to initialize capability specs under `devflow/spe
    - `INDEX.md` 引到的 capability 文件都存在
    - `change-meta.json` 里的 capability 都能落到 spec
    - roadmap / backlog 里的 capability 引用仍可追踪
+   - 新 capability 的名称、aliases、relationships 没有和已有 spec 冲突
+
+## Language Boundary Gate
+
+capability spec 是长期 truth source，命名必须比一次需求更稳定：
+
+- canonical term：只选一个主名，优先沿用 roadmap、历史 design/analysis、代码公共接口和用户领域语言里已经稳定的词。
+- aliases to avoid：记录容易混用的别名，说明为什么不能继续用。
+- flagged ambiguity：同一个词指向两个概念时，必须写清拆分边界，必要时拆 capability。
+- relationships：用一句话写清 capability 之间的拥有、依赖、生命周期、输入输出或互斥关系。
+- implementation names：类名、文件名、函数名只有在它们已经是公共领域语言时才进入 spec；否则留在 change 设计里。
 
 ## Output
 

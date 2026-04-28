@@ -1,5 +1,11 @@
 # CC-Spec-Init Skill Changelog
 
+## v1.1.0 - 2026-04-28
+
+- add a language boundary gate for canonical capability terms, aliases to avoid, flagged ambiguity, and relationship constraints
+- require new capability specs to include a minimal language block before registration in `INDEX.md`
+- prevent implementation names from becoming capability truth unless they already represent stable public domain language
+
 ## v1.0.1 - 2026-04-27
 
 - require capability specs, spec indexes, and change metadata to resolve the runtime output policy before writing durable artifacts
