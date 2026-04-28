@@ -63,8 +63,15 @@ jq -e '
   ((.qa.coverageAudit.status? // "skipped") | IN("pass", "fail", "blocked", "skipped", "pending")) and
   ((.qa.browserEvidence? // {"status":"skipped"}) | type == "object") and
   ((.qa.browserEvidence.status? // "skipped") | IN("pass", "fail", "blocked", "skipped", "pending")) and
+  ((.qa.feedbackLoop? // {"status":"skipped"}) | type == "object") and
+  ((.qa.feedbackLoop.status? // "skipped") | IN("pass", "fail", "blocked", "skipped", "pending")) and
+  ((.qa.behaviorEvidence? // {"status":"skipped"}) | type == "object") and
+  ((.qa.behaviorEvidence.status? // "skipped") | IN("pass", "fail", "blocked", "skipped", "pending")) and
+  ((.qa.architectureFollowUps? // []) | type == "array") and
   ((.review.findings? // []) | all(.[]; ((.confidenceScore? // 7) | type == "number") and ((.displayTier? // "info") | IN("blocking", "warning", "info", "suppressed")))) and
   ((.verdict != "pass") or ((.review.freshness.status? // "unknown") | IN("fresh", "not-applicable"))) and
+  ((.verdict != "pass") or ((.qa.feedbackLoop.status? // "skipped") | IN("pass", "skipped"))) and
+  ((.verdict != "pass") or ((.qa.behaviorEvidence.status? // "skipped") | IN("pass", "skipped"))) and
   ((.verdict != "pass") or (((.runtime.failureOwnership? // []) | map(select(((.classification? // "") | IN("in-branch", "ambiguous")) and ((.status? // "open") | IN("open", "pending")))) | length) == 0)) and
   ((.verdict == "pass" and .reroute == "none") or (.verdict != "pass" and .reroute != "none"))
 ' "$REPORT" >/dev/null

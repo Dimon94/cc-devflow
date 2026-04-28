@@ -16,6 +16,17 @@
 
 所有通过结论都必须来自本次新鲜证据；旧输出只能当线索，不能直接继承 verdict。
 
+## QA Feedback Loop
+
+行为变更和 bugfix 的 evidence 还必须说明反馈环：
+
+- `mode`：failing test、curl / HTTP、CLI fixture、browser、trace replay、bisect、differential loop 等
+- `determinism`：反馈是否稳定，flaky 时复现率是多少
+- `signalSharpness`：失败是否指向目标行为，而不是语法、fixture 或 mock 问题
+- `blockedReason`：无法建立 loop 时缺少什么 artifact、权限、服务或输入
+
+没有可信 loop 的 bugfix 默认不能 `pass`。
+
 ## Reroute
 
 - `none`

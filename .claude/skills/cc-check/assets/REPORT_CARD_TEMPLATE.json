@@ -42,6 +42,32 @@
   ],
   "qa": {
     "status": "blocked",
+    "feedbackLoop": {
+      "status": "blocked",
+      "mode": "targeted-test",
+      "commandOrArtifact": "npm test -- src/feature/feature.test.ts",
+      "speed": "fast",
+      "determinism": "high",
+      "signalSharpness": "targeted failure would indicate the user-visible behavior regressed",
+      "reproductionRate": "not recorded",
+      "attempts": [
+        "targeted unit test"
+      ],
+      "blockedReason": "red/green reproduction is not recorded yet"
+    },
+    "behaviorEvidence": {
+      "status": "blocked",
+      "userFacingBoundary": "feature behavior",
+      "expectedBehavior": "target behavior succeeds for the user",
+      "actualBehavior": "not proven yet",
+      "reproductionSteps": [
+        "run the targeted verification command"
+      ],
+      "consistency": "not recorded",
+      "domainLanguage": [
+        "feature behavior"
+      ]
+    },
     "regressionProof": [
       {
         "behavior": "original symptom",
@@ -81,6 +107,23 @@
       "issues": [],
       "skipReason": "template example is not a UI browser QA scenario"
     },
+    "architectureFollowUps": [
+      {
+        "summary": "Add the missing public test seam before widening coverage",
+        "currentBehavior": "review proof depends on task metadata instead of a direct behavior seam",
+        "desiredBehavior": "tests verify the behavior through a stable public interface",
+        "keyInterfaces": [
+          "feature public API"
+        ],
+        "acceptanceCriteria": [
+          "target behavior can be reproduced without private implementation hooks"
+        ],
+        "outOfScope": [
+          "rewriting unrelated modules"
+        ],
+        "status": "deferred-minor"
+      }
+    ],
     "tddException": null
   },
   "quickGates": [

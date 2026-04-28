@@ -41,6 +41,7 @@ NO PASS WITHOUT FRESH EVIDENCE
    - task review proof
    - requirement diff review
    - claim evidence matrix
+   - QA feedback loop and behavior evidence
    - QA regression / test-quality proof
    - QA coverage and browser evidence
    - review freshness and finding confidence
@@ -69,11 +70,12 @@ NO PASS WITHOUT FRESH EVIDENCE
 2. Task review proof
 3. Requirement diff truth
 4. Claim evidence matrix
-5. QA regression and test quality
-6. QA coverage and browser evidence
-7. Review freshness and confidence calibration
-8. Failure ownership
-9. Spec alignment and sync readiness
+5. QA feedback loop and behavior evidence
+6. QA regression and test quality
+7. QA coverage and browser evidence
+8. Review freshness and confidence calibration
+9. Failure ownership
+10. Spec alignment and sync readiness
 
 ## Claim Evidence Matrix
 
@@ -121,13 +123,16 @@ review 还要带 `freshness`：`status`、`reviewedCommit`、`currentCommit`、`
 
 行为变化、bugfix、边界条件、用户可见流程必须补 `qa`：
 
+- `feedbackLoop`：用什么 loop 证明现实，速度、确定性、信号锋利度、复现率如何
+- `behaviorEvidence`：用户边界、expected / actual、复现步骤、稳定性、领域语言
 - `regressionProof`：red command、red failure reason、green command、是否恢复最终状态
-- `testQuality`：是否验证真实行为、mock 边界、是否存在 test-only production API
+- `testQuality`：是否经公共接口验证真实行为、mock 是否只停在系统边界、是否存在 test-only production API
+- `architectureFollowUps`：没有正确 test seam 时记录 seam / hidden coupling / shallow module 的后续改造
 - `tddException`：纯配置、生成文件、throwaway prototype 等例外和替代验证
 - `coverageAudit`：覆盖率、codepath / user-flow map、缺口、是否需要 e2e / eval、测试质量星级
 - `browserEvidence`：UI / 用户路径变更的 affected routes、截图、console、health score、issues，或明确 skip reason
 
-测试只绿过一次，不能证明 regression test 有效；断言 mock 本身，不能证明真实行为。
+测试只绿过一次，不能证明 regression test 有效；断言 mock 本身，不能证明真实行为。没有可信反馈环时，`pass` 不成立。
 
 ## Failure Ownership
 
@@ -171,6 +176,26 @@ review 还要带 `freshness`：`status`、`reviewedCommit`、`currentCommit`、`
   },
   "qa": {
     "status": "pass",
+    "feedbackLoop": {
+      "status": "pass",
+      "mode": "targeted-test",
+      "commandOrArtifact": "npm test -- src/feature/feature.test.ts",
+      "speed": "fast",
+      "determinism": "high",
+      "signalSharpness": "fails only when the target behavior is absent",
+      "reproductionRate": "1/1",
+      "attempts": [],
+      "blockedReason": ""
+    },
+    "behaviorEvidence": {
+      "status": "pass",
+      "userFacingBoundary": "feature action",
+      "expectedBehavior": "the user-visible behavior succeeds",
+      "actualBehavior": "verified by targeted test",
+      "reproductionSteps": [],
+      "consistency": "deterministic",
+      "domainLanguage": []
+    },
     "regressionProof": [],
     "testQuality": [],
     "coverageAudit": {
@@ -193,6 +218,7 @@ review 还要带 `freshness`：`status`、`reviewedCommit`、`currentCommit`、`
       "issues": [],
       "skipReason": "not a UI or user-path change"
     },
+    "architectureFollowUps": [],
     "tddException": null
   },
   "quickGates": [],
@@ -251,3 +277,4 @@ review 还要带 `freshness`：`status`、`reviewedCommit`、`currentCommit`、`
 4. `review.status` 是真实现实，还是我脑补的绿色？
 5. 如果把这份 `report-card.json` 给下一位接手者，他知道接下来去哪吗？
 6. diff review 是否同时覆盖了 plan completion、scope drift、critical pass、doc staleness？
+7. feedback loop 是否真的证明了用户描述的行为，而不是只证明附近代码能跑？

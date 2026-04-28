@@ -1,6 +1,6 @@
 ---
 name: cc-check
-version: 1.8.4
+version: 1.9.0
 description: Use when a planned or investigated change needs fresh verification evidence, layered gate proof, review truth, and an honest pass fail blocked verdict before entering cc-act.
 triggers:
   - 验收这个需求
@@ -120,6 +120,7 @@ NO PASS WITHOUT FRESH EVIDENCE
    - task-level review proof
    - requirement-level diff review
    - claim evidence matrix
+   - QA feedback loop and behavior evidence
    - QA regression / test-quality proof
    - spec alignment / sync readiness
 4. **Freeze Verdict**
@@ -138,7 +139,7 @@ NO PASS WITHOUT FRESH EVIDENCE
 
 ## Verification Layers
 
-`cc-check` 不是只看“测试是不是绿的”，而是至少看 9 层：
+`cc-check` 不是只看“测试是不是绿的”，而是至少看 10 层：
 
 1. **Runtime Layer**
    - 测试、lint、typecheck、build、脚本 gate
@@ -154,6 +155,7 @@ NO PASS WITHOUT FRESH EVIDENCE
 6. **QA Test Layer**
    - 回归测试是否有 red/green 证据
    - 测试是否验证真实行为，而不是 mock 或 test-only production API
+   - 反馈环是否能稳定复现或证明用户描述的行为
 7. **Review Freshness Layer**
    - review 是否绑定当前 `headSha`
    - 从 review 到当前 HEAD 是否还有新增 commit
@@ -164,6 +166,9 @@ NO PASS WITHOUT FRESH EVIDENCE
 9. **Failure Ownership Layer**
    - 失败是本分支引入、基线已存在、环境阻塞，还是归属不明
    - 归属不明默认不能支撑 `pass`
+10. **Behavior Contract Layer**
+   - expected / actual / reproduction steps 是否用用户和领域语言写清
+   - follow-up 是否是行为契约，而不是易腐烂的文件行号 TODO
 
 任何一层失真，都不能写 `pass`。
 
@@ -187,12 +192,25 @@ NO PASS WITHOUT FRESH EVIDENCE
 
 `cc-check` 必须区分“有测试”和“测试证明了正确行为”：
 
-1. 回归测试必须记录 red/green 证据；red 要因为目标行为缺失而失败，不是语法、fixture 或 mock 写错。
-2. 测试应验证真实行为；如果依赖 mock，必须说明 mock 的边界和为什么不会测试 mock 本身。
-3. 生产代码里新增仅测试使用的 API，默认是坏味道，必须 blocking，除非有明确生产生命周期理由。
-4. 复杂 mock setup 超过测试主体时，优先要求 integration / contract test 解释。
+1. 先建立反馈环，再谈修复：failing test、curl / HTTP、CLI fixture、headless browser、trace replay、throwaway harness、bisect / differential loop 都可以，但必须说明速度、确定性、信号锋利度和复现率。
+2. 回归测试必须记录 red/green 证据；red 要因为目标行为缺失而失败，不是语法、fixture 或 mock 写错。
+3. 测试应从公共接口验证真实行为；不准为了方便直接测私有实现。
+4. mock 只允许站在系统边界：外部 API、数据库、时间、随机数、文件系统、网络。mock 自家模块、断言内部调用次数或顺序，默认是 review finding。
+5. 生产代码里新增仅测试使用的 API，默认是坏味道，必须 blocking，除非有明确生产生命周期理由。
+6. 复杂 mock setup 超过测试主体时，优先要求 integration / contract test 解释。
+7. 如果没有正确测试 seam，不要硬造脆弱测试；记录 `qa.architectureFollowUps`，说明缺失 seam / hidden coupling / shallow module，并按严重度决定 reroute 或 follow-up。
 
 这些事实写入 `qa.regressionProof` 和 `qa.testQuality`。如果本需求没有行为测试空间，必须记录 `tddException` 或替代验证命令。
+
+## QA Behavior Evidence
+
+用户可见行为、bugfix、regression、工作流、CLI 行为和 API 行为都必须留下行为证据：
+
+1. `qa.feedbackLoop` 记录本轮用什么 loop 证明现实，包含 `status`、`mode`、`commandOrArtifact`、`speed`、`determinism`、`signalSharpness`、`reproductionRate`、`attempts`、`blockedReason`。
+2. `qa.behaviorEvidence` 记录 `userFacingBoundary`、`expectedBehavior`、`actualBehavior`、`reproductionSteps`、`consistency`、`domainLanguage`、`status`。
+3. bugfix 不能只写“代码改了”；必须证明用户描述的原始症状已经被同一条或更可信的反馈环覆盖。
+4. 不能复现时，verdict 默认 `blocked` 或回 `cc-investigate`，并写清尝试过哪些 loop、还缺什么 artifact / 权限 / 输入。
+5. QA issue / follow-up 必须用行为和验收条件表达，不写易失效的文件路径或行号，除非它是当前 review finding 的证据位置。
 
 ## QA Coverage And Browser Evidence
 

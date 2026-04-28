@@ -1,5 +1,12 @@
 # CC-Check Skill Changelog
 
+## v1.9.0 - 2026-04-28
+
+- add QA feedback-loop evidence so bugfix and behavior checks record reproduction mode, determinism, signal quality, and blocked loop reasons before a pass verdict
+- add behavior evidence fields for expected behavior, actual behavior, reproduction steps, consistency, and domain language
+- tighten test-quality review around public-interface tests, system-boundary mocks, and architecture follow-ups when no correct test seam exists
+- update the report-card template, renderer, and gate validation for the new QA evidence shape while keeping older reports structurally compatible
+
 ## v1.8.4 - 2026-04-28
 
 - add review freshness, quality score, specialist review facets, and finding confidence fingerprints so stale or noisy review evidence cannot masquerade as current proof

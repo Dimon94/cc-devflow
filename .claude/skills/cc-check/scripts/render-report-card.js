@@ -80,6 +80,22 @@ function deriveVerdict(manifest, quickGates, strictGates, review) {
     return 'blocked';
   }
 
+  if (['fail'].includes(review.qa?.feedbackLoop?.status)) {
+    return 'fail';
+  }
+
+  if (['blocked', 'pending'].includes(review.qa?.feedbackLoop?.status)) {
+    return 'blocked';
+  }
+
+  if (['fail'].includes(review.qa?.behaviorEvidence?.status)) {
+    return 'fail';
+  }
+
+  if (['blocked', 'pending'].includes(review.qa?.behaviorEvidence?.status)) {
+    return 'blocked';
+  }
+
   if (review.status === 'blocked') {
     return 'blocked';
   }
@@ -185,6 +201,26 @@ function buildClaimEvidence({ manifest, quickGates, strictGates, review }) {
 function buildQa(review) {
   return {
     status: review.qa?.status || 'skipped',
+    feedbackLoop: review.qa?.feedbackLoop || {
+      status: 'skipped',
+      mode: 'not-applicable',
+      commandOrArtifact: '',
+      speed: '',
+      determinism: '',
+      signalSharpness: '',
+      reproductionRate: '',
+      attempts: [],
+      blockedReason: 'not recorded'
+    },
+    behaviorEvidence: review.qa?.behaviorEvidence || {
+      status: 'skipped',
+      userFacingBoundary: '',
+      expectedBehavior: '',
+      actualBehavior: '',
+      reproductionSteps: [],
+      consistency: '',
+      domainLanguage: []
+    },
     regressionProof: review.qa?.regressionProof || [],
     testQuality: review.qa?.testQuality || [],
     coverageAudit: review.qa?.coverageAudit || {
@@ -207,6 +243,7 @@ function buildQa(review) {
       issues: [],
       skipReason: 'not recorded'
     },
+    architectureFollowUps: review.qa?.architectureFollowUps || [],
     tddException: review.qa?.tddException || null
   };
 }

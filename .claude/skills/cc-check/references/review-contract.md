@@ -98,14 +98,28 @@ Review finding 不只是“发现过”，必须有处置结果：
 
 Review 必须判断测试是否证明行为：
 
+- 反馈环是否可信：速度、确定性、信号锋利度、复现率是否足够支撑结论
+- bugfix 是否复现并覆盖了用户描述的原始症状，而不是附近的另一个失败
+- expected / actual / reproduction steps 是否能让 reviewer 独立复现或判断缺件
 - 回归测试是否有 red/green 证据
 - red 是否因为目标行为缺失而失败
 - green 是否包含 targeted test 和必要的 broader gate
-- mock 是否必要，且没有断言 mock 本身
+- 测试是否通过公共接口覆盖行为
+- mock 是否只停在系统边界，且没有断言 mock 本身或内部调用顺序
 - 生产代码是否新增 test-only API
 - integration / contract test 是否比复杂 mock 更直接
+- 如果没有正确测试 seam，是否记录了架构 follow-up，而不是造易碎测试
 - coverage audit 是否映射真实 codepath / user flow / error state / edge case
 - UI 或用户路径变更是否有 browser evidence、截图、console 结果，或明确 skip reason
+
+## Durable Follow-Up Facts
+
+Review 产生的 QA issue 或 follow-up 必须可长期执行：
+
+- 用领域语言描述用户或系统行为，不把当前文件路径 / 行号当成唯一真相
+- 写清 current behavior、desired behavior、key interfaces、acceptance criteria、out of scope
+- 独立行为拆成独立条目；有依赖关系时写明顺序
+- `deferred-minor` 只能用于不阻塞本次交付的 minor 项，并且必须进入 `cc-act` follow-up writeback
 
 ## Failure Ownership
 
@@ -125,6 +139,8 @@ Review 必须判断测试是否证明行为：
 - `important` / `critical` finding 未处理前，不算通过
 - `important` / `critical` finding 缺 triageStatus，不算通过
 - QA test quality 缺失且本次涉及行为变化，至少是 `blocked`
+- 行为变更缺 `qa.feedbackLoop` / `qa.behaviorEvidence` 且没有明确例外，至少是 `blocked`
+- bugfix 没有复现原始症状，也没有解释不可复现原因，不能通过
 - review freshness 缺失、过期或与当前 head 不一致，不能绿灯
 - UI / 用户路径变更缺 browser evidence 且无 skip reason，不能绿灯
 - `runtime.failureOwnership` 仍有 `in-branch` 或 `ambiguous` 未解释失败，不能绿灯
