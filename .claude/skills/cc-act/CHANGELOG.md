@@ -1,5 +1,12 @@
 # CC-Act Skill Changelog
 
+## v1.6.3 - 2026-04-28
+
+- require PR briefs and PR bodies to carry the reviewed base/head SHA, review packet summary, finding triage, and QA / claim evidence summary
+- require post-merge closeout to verify the merged result instead of relying only on pre-merge evidence
+- add destructive cleanup confirmation rules for branch, worktree, discard, and archive actions
+- update `render-pr-brief.sh` and the PR brief template with review range and merged-result verification fields
+
 ## v1.6.2 - 2026-04-27
 
 - require closeout handoff documents to resolve the runtime output policy before writing PR briefs, release notes, resume indexes, or status handoffs

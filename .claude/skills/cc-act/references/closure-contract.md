@@ -8,6 +8,7 @@
 4. `planning/tasks.md` 不能还有未完成项
 5. 交付材料必须只总结现实，不补编故事
 6. 如果文件结构变了，就同步对应目录的 `CLAUDE.md`
+7. PR / handoff 必须记录 `cc-check` 审过的 base/head SHA、review packet、finding triage 摘要
 
 ## Ship Decision Contract
 
@@ -29,6 +30,8 @@
 5. VERSION / package / changelog 漂移必须先分类处理，不能重复 bump 或覆盖发布历史
 6. PR / MR body 必须从当前事实重建，不能沿用旧验证输出
 7. push / PR 创建必须具备幂等检查：已同步则跳过，已存在 PR 则更新
+8. 本地合并或 post-merge closeout 后必须在 merged result 上重跑必要 gate
+9. 删除 branch、worktree、未合并提交、归档 requirement 前必须列出对象；丢弃未合并工作需要显式确认
 
 ## Memory Consolidation
 
@@ -45,5 +48,6 @@
 - reviewer 能接手
 - maintainer 知道怎么验证
 - PR / handoff / release 材料反映同一套事实
+- post-merge closeout 反映 merged result 的验证事实，而不是只反映合并前事实
 - 下一轮计划入口更清楚
 - 文档入口可发现，changelog 不丢历史，TODO / backlog 只记录有证据的事项

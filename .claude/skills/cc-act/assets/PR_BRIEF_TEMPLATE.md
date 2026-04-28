@@ -24,6 +24,14 @@
 - Base branch:
 - PR / MR:
 
+## Review Range
+
+- Reviewed base SHA:
+- Reviewed head SHA:
+- Review packet:
+- Finding triage:
+- QA / claim evidence:
+
 ## Summary
 
 - 
@@ -36,6 +44,7 @@
 
 - `review/report-card.json` verdict:
 - Fresh evidence:
+- Merged-result verification:
 
 ## Documentation Sync
 

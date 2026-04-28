@@ -104,6 +104,16 @@ Ship 必须属于这 4 种模式之一：
 1. `scripts/sync-act-docs.sh --dir <requirement-dir>`
 2. `scripts/render-pr-brief.sh --dir <requirement-dir>`
 
+`pr-brief.md` 还必须带上 `cc-check` 的 review range：
+
+- reviewed base SHA
+- reviewed head SHA
+- review packet path / summary
+- finding triage summary
+- QA / claim evidence summary
+
+缺这些字段时，可以生成 local handoff，但不能声称 PR body 已经可 review。
+
 ## Phase 4: Sync Docs
 
 文档同步不是装饰动作，而是 ship 的一部分。
@@ -142,7 +152,14 @@ Ship 必须属于这 4 种模式之一：
 ### `post-merge-closeout`
 
 - 不做 feature branch PR 动作
+- 在 merged result 上重跑必要 gate，并记录命令、exit status、关键观察
 - 完成 release note、文档同步、backlog/roadmap 回写、归档
+
+### destructive cleanup
+
+- 删除 branch、worktree、未合并提交、requirement archive 前，先列出对象
+- 丢弃未合并工作必须要求用户显式确认
+- 无法确认时保留现场，切到 `local-handoff`
 
 如果 `gh` 不可用、push 失败、远端不可达，就不要硬凹 `create-pr` / `update-pr`。切到 `local-handoff`，把阻塞和下一步写清楚。
 

@@ -9,6 +9,47 @@
   "specAlignment": "blocked",
   "specDeltaVerified": false,
   "specSyncReady": false,
+  "claimEvidence": [
+    {
+      "claim": "tests-pass",
+      "requiredProof": "fresh test command with exit 0 and 0 failures",
+      "commandOrArtifact": "npm test -- src/feature/feature.test.ts",
+      "exitStatus": 0,
+      "keyObservation": "targeted tests passed in this run",
+      "status": "pass"
+    },
+    {
+      "claim": "requirements-met",
+      "requiredProof": "line-by-line planning/tasks.md and task-manifest.json checklist",
+      "commandOrArtifact": "planning/tasks.md + planning/task-manifest.json",
+      "exitStatus": null,
+      "keyObservation": "T002 still lacks spec review proof",
+      "status": "blocked"
+    }
+  ],
+  "qa": {
+    "status": "blocked",
+    "regressionProof": [
+      {
+        "behavior": "original symptom",
+        "redCommand": "",
+        "redFailure": "",
+        "greenCommand": "",
+        "greenObservation": "",
+        "restoredState": false
+      }
+    ],
+    "testQuality": [
+      {
+        "area": "targeted-tests",
+        "checksRealBehavior": true,
+        "mockBoundary": "none",
+        "testOnlyProductionApi": false,
+        "status": "pass"
+      }
+    ],
+    "tddException": null
+  },
   "quickGates": [
     {
       "name": "targeted-tests",
@@ -32,13 +73,37 @@
       "status": "blocked",
       "required": true,
       "summary": "T002 has no spec review record yet",
+      "reviewPacket": {
+        "baseSha": "",
+        "headSha": "",
+        "requirements": "planning/tasks.md#T002",
+        "implemented": "implementation report for T002",
+        "reviewerContext": "task spec and changed files"
+      },
       "reviewers": [],
-      "findings": []
+      "findings": [
+        {
+          "severity": "important",
+          "confidence": "high",
+          "source": "task-review",
+          "summary": "T002 spec review proof is missing",
+          "evidence": "planning/task-manifest.json tasks[T002].reviews.spec is empty",
+          "action": "reroute-cc-do",
+          "triageStatus": "clarification-needed"
+        }
+      ]
     },
     "diffReview": {
       "status": "skipped",
       "required": false,
       "summary": "",
+      "reviewPacket": {
+        "baseSha": "",
+        "headSha": "",
+        "requirements": "planning/design.md",
+        "implemented": "",
+        "reviewerContext": ""
+      },
       "reviewers": [],
       "findings": []
     },

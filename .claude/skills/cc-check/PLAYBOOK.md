@@ -40,6 +40,8 @@ NO PASS WITHOUT FRESH EVIDENCE
    - runtime gate
    - task review proof
    - requirement diff review
+   - claim evidence matrix
+   - QA regression / test-quality proof
    - spec sync readiness
 4. **Freeze Verdict**
    - 只允许 `pass` / `fail` / `blocked`
@@ -54,13 +56,30 @@ NO PASS WITHOUT FRESH EVIDENCE
 3. 读取真实输出和退出码
 4. 把证据写进 `report-card.json`
 5. 把任务级 review 与需求级 diff review 分开写清楚
+6. 把每个成功声明映射到 `claimEvidence[]`
+7. 行为变更必须补 `qa` 证据或例外理由
 
 ## Verification Layers
 
 1. Runtime reality
 2. Task review proof
 3. Requirement diff truth
-4. Spec alignment and sync readiness
+4. Claim evidence matrix
+5. QA regression and test quality
+6. Spec alignment and sync readiness
+
+## Claim Evidence Matrix
+
+每个“通过”声明都要回答：这条声明由哪条命令或 artifact 证明？
+
+- `tests-pass`：本轮 test command、exit 0、0 failures
+- `lint-clean` / `typecheck-clean` / `build-succeeds`：对应 gate 的本轮输出
+- `bug-fixed`：原始症状或回归测试通过
+- `regression-test-works`：red -> green 证据，而不是只绿一次
+- `requirements-met`：逐项 plan / manifest checklist
+- `agent-completed`：VCS diff 或 artifact 证明实际变化
+
+缺少必要 claim 的证据时，verdict 至少是 `blocked`。不要把没有证据的 claim 写进 summary。
 
 ## Requirement Diff Review
 
@@ -73,6 +92,27 @@ NO PASS WITHOUT FRESH EVIDENCE
 5. `adversarial synthesis`：合并外部 review / codex / subagent /人工 finding，去重并标置信度。
 
 这些结论进入 `review.diffReview`，不能只写在口头总结里。
+
+每层 review 都要带 `reviewPacket`：`baseSha`、`headSha`、`requirements`、`implemented`、`reviewerContext`。缺少审查范围时，review 不能支撑 `pass`。
+
+每条 finding 都要带 `triageStatus`：
+
+- `accepted-fixed`
+- `rejected-with-evidence`
+- `deferred-minor`
+- `clarification-needed`
+
+`critical` / `important` finding 未闭环或仍是 `clarification-needed`，不能进入 `cc-act`。
+
+## QA Test Quality
+
+行为变化、bugfix、边界条件、用户可见流程必须补 `qa`：
+
+- `regressionProof`：red command、red failure reason、green command、是否恢复最终状态
+- `testQuality`：是否验证真实行为、mock 边界、是否存在 test-only production API
+- `tddException`：纯配置、生成文件、throwaway prototype 等例外和替代验证
+
+测试只绿过一次，不能证明 regression test 有效；断言 mock 本身，不能证明真实行为。
 
 ## Verdict
 
@@ -98,6 +138,13 @@ NO PASS WITHOUT FRESH EVIDENCE
   "verdict": "pass",
   "overall": "pass",
   "summary": "one-line reality",
+  "claimEvidence": [],
+  "qa": {
+    "status": "pass",
+    "regressionProof": [],
+    "testQuality": [],
+    "tddException": null
+  },
   "quickGates": [],
   "strictGates": [],
   "review": {

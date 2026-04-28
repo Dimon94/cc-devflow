@@ -65,6 +65,31 @@ report_verdict="$(req_act_report_verdict "$report_card")"
 output_language="$(req_act_output_language "$report_card")"
 design_goal="$(req_act_design_goal "$design_file")"
 main_risk="$(req_act_main_risk "$design_file")"
+review_base_sha="$(jq -r '[.review.taskReviews.reviewPacket.baseSha?, .review.diffReview.reviewPacket.baseSha?] | map(select(. != null and . != "")) | first // "not recorded"' "$report_card")"
+review_head_sha="$(jq -r '[.review.taskReviews.reviewPacket.headSha?, .review.diffReview.reviewPacket.headSha?] | map(select(. != null and . != "")) | first // "not recorded"' "$report_card")"
+review_packet_summary="$(jq -r '
+  [
+    .review.taskReviews.reviewPacket.requirements?,
+    .review.diffReview.reviewPacket.requirements?
+  ]
+  | map(select(. != null and . != ""))
+  | unique
+  | if length == 0 then "not recorded" else join("; ") end
+' "$report_card")"
+finding_triage_summary="$(jq -r '
+  [
+    (.review.taskReviews.findings? // []),
+    (.review.diffReview.findings? // []),
+    (.review.findings? // [])
+  ]
+  | flatten
+  | map(.triageStatus? // .status? // "untriaged")
+  | if length == 0 then "no findings" else group_by(.) | map("\(.[0])=\(length)") | join(", ") end
+' "$report_card")"
+qa_claim_summary="$(jq -r '
+  "qa=\(.qa.status? // "not recorded"), claims=" +
+  (((.claimEvidence? // []) | map((.claim // "unknown") + ":" + (.status // "unknown")) | join(", ")) // "not recorded")
+' "$report_card")"
 
 tmp_changed="$(mktemp)"
 tmp_verify="$(mktemp)"
@@ -120,6 +145,14 @@ fi
     echo "- PR / MR: none"
   fi
   echo
+  echo "## Review Range"
+  echo
+  echo "- Reviewed base SHA: $review_base_sha"
+  echo "- Reviewed head SHA: $review_head_sha"
+  echo "- Review packet: $review_packet_summary"
+  echo "- Finding triage: $finding_triage_summary"
+  echo "- QA / claim evidence: $qa_claim_summary"
+  echo
   echo "## Summary"
   echo
   if [[ -n "$report_summary" ]]; then
@@ -145,6 +178,11 @@ fi
   echo "## Verification Evidence"
   echo
   echo "- \`report-card.json\` verdict: $report_verdict"
+  if [[ "$ship_mode" == "post-merge-closeout" ]]; then
+    echo "- Merged-result verification: required before closeout; record command, exit status, and key observation"
+  else
+    echo "- Merged-result verification: not applicable before merge"
+  fi
   if [[ -s "$tmp_evidence" ]]; then
     while IFS= read -r line; do
       echo "- $line"

@@ -1,6 +1,6 @@
 ---
 name: cc-check
-version: 1.8.2
+version: 1.8.3
 description: Use when a planned or investigated change needs fresh verification evidence, layered gate proof, review truth, and an honest pass fail blocked verdict before entering cc-act.
 triggers:
   - 验收这个需求
@@ -25,7 +25,7 @@ entry_gate:
   - Re-run fresh commands instead of inheriting cc-do narration.
   - If evidence is stale or missing, reset context and rebuild the verdict from canonical artifacts.
 exit_criteria:
-  - review/report-card.json records pass, fail, or blocked using fresh evidence, plus spec alignment and sync readiness.
+  - review/report-card.json records pass, fail, or blocked using fresh evidence, claim evidence, QA test quality, plus spec alignment and sync readiness.
   - Task-level review and requirement-level diff review are separated clearly.
   - 'The next step is unambiguous: cc-act, cc-do, cc-investigate, or cc-plan.'
 reroutes:
@@ -119,6 +119,8 @@ NO PASS WITHOUT FRESH EVIDENCE
    - runtime gate
    - task-level review proof
    - requirement-level diff review
+   - claim evidence matrix
+   - QA regression / test-quality proof
    - spec alignment / sync readiness
 4. **Freeze Verdict**
    - 只允许 `pass` / `fail` / `blocked`
@@ -131,12 +133,12 @@ NO PASS WITHOUT FRESH EVIDENCE
 
 - Allowed actions: rerun gates, inspect review proof, record a verdict, and route the requirement honestly.
 - Forbidden actions: continuing development, inheriting old execution claims without fresh proof, or masking blocked work as pass.
-- Required evidence: every passing statement must cite fresh command output, exit status, and key observation.
+- Required evidence: every passing statement must cite fresh command output, exit status, key observation, and the claim it proves.
 - Reroute rule: code and review fixes return to `cc-do`; root-cause drift returns to `cc-investigate`; scope or design invalidation returns to `cc-plan`.
 
 ## Verification Layers
 
-`cc-check` 不是只看“测试是不是绿的”，而是至少看 4 层：
+`cc-check` 不是只看“测试是不是绿的”，而是至少看 6 层：
 
 1. **Runtime Layer**
    - 测试、lint、typecheck、build、脚本 gate
@@ -147,8 +149,40 @@ NO PASS WITHOUT FRESH EVIDENCE
    - 当前改动是否真的兑现 requirement，而不是只让局部测试通过
 4. **Spec Sync Layer**
    - capability truth、expected spec delta、handoff readiness 是否仍然一致
+5. **Claim Evidence Layer**
+   - 测试通过、build 成功、bug 修复、需求完成、agent 完成等声明，是否各自有对应证据
+6. **QA Test Layer**
+   - 回归测试是否有 red/green 证据
+   - 测试是否验证真实行为，而不是 mock 或 test-only production API
 
 任何一层失真，都不能写 `pass`。
+
+## Claim Evidence Matrix
+
+不要把所有绿色都写成“测试过了”。`cc-check` 必须把声明拆成证据：
+
+| Claim | Required proof | Not enough |
+| --- | --- | --- |
+| Tests pass | 本轮 test command、exit 0、0 failures | 旧输出、局部日志、应该会过 |
+| Lint clean | 本轮 lint command、0 errors | 只跑 formatter、只看 touched file 且声明全仓 clean |
+| Build succeeds | build command exit 0 | test / lint 通过 |
+| Bug fixed | 原始症状或回归测试通过 | 代码改了、推测已修 |
+| Regression test works | red -> green 证据 | 测试只绿过一次 |
+| Agent completed | VCS diff / artifact 证明实际变化 | agent 自报 success |
+| Requirements met | 逐项 plan / manifest checklist | 测试通过 |
+
+这些事实写入 `claimEvidence[]`。缺少关键 claim 的证据时，结论至少是 `blocked`。
+
+## QA Test Review
+
+`cc-check` 必须区分“有测试”和“测试证明了正确行为”：
+
+1. 回归测试必须记录 red/green 证据；red 要因为目标行为缺失而失败，不是语法、fixture 或 mock 写错。
+2. 测试应验证真实行为；如果依赖 mock，必须说明 mock 的边界和为什么不会测试 mock 本身。
+3. 生产代码里新增仅测试使用的 API，默认是坏味道，必须 blocking，除非有明确生产生命周期理由。
+4. 复杂 mock setup 超过测试主体时，优先要求 integration / contract test 解释。
+
+这些事实写入 `qa.regressionProof` 和 `qa.testQuality`。如果本需求没有行为测试空间，必须记录 `tddException` 或替代验证命令。
 
 ## Diff Review Pipeline
 
@@ -163,6 +197,25 @@ NO PASS WITHOUT FRESH EVIDENCE
 7. Adversarial synthesis：如果有 codex review、subagent review、人工 review，多视角 finding 要去重并标出高置信重叠项。
 
 这些事实写入 `review.diffReview.details` 或 `review.findings`。`pass` 只在 scope、completion、critical pass、doc staleness 都没有 blocking finding 时成立。
+
+## Review Packet And Triage
+
+每次 task-level 或 requirement-level review 都必须能脱离聊天记录复盘：
+
+1. `reviewPacket.baseSha`
+2. `reviewPacket.headSha`
+3. `reviewPacket.requirements`
+4. `reviewPacket.implemented`
+5. `reviewPacket.reviewerContext`
+
+每条 finding 必须有 triage：
+
+- `accepted-fixed`：已修并有验证
+- `rejected-with-evidence`：经代码 / 测试证明不适用
+- `deferred-minor`：非阻塞，已写入 follow-up
+- `clarification-needed`：不清楚，当前 verdict 不能是 `pass`
+
+`critical` / `important` finding 未 triage 或未闭环，不能进入 `cc-act`。
 
 ## Entry Gate
 
@@ -281,15 +334,20 @@ NO PASS WITHOUT FRESH EVIDENCE
   "verdict": "pass",
   "overall": "pass",
   "summary": "verdict=pass quick=3/3 strict=0/0 review=pass",
+  "claimEvidence": [
+    { "claim": "tests-pass", "requiredProof": "fresh test command", "commandOrArtifact": "npm test", "exitStatus": 0, "keyObservation": "0 failures", "status": "pass" },
+    { "claim": "requirements-met", "requiredProof": "plan checklist", "commandOrArtifact": "planning/tasks.md", "exitStatus": null, "keyObservation": "all tasks complete", "status": "pass" }
+  ],
+  "qa": { "status": "pass", "regressionProof": [], "testQuality": [], "tddException": null },
   "quickGates": [],
   "strictGates": [],
   "review": {
     "status": "pass",
     "summary": "Task review and diff review both passed",
     "details": "",
-      "taskReviews": { "status": "pass", "required": true, "summary": "all completed tasks carry spec/code proof", "reviewers": [], "findings": [] },
-      "diffReview": { "status": "pass", "required": true, "summary": "plan completion clean, no scope drift, no critical diff findings", "reviewers": [], "findings": [] },
-      "findings": []
+    "taskReviews": { "status": "pass", "required": true, "summary": "all completed tasks carry spec/code proof", "reviewPacket": {}, "reviewers": [], "findings": [] },
+    "diffReview": { "status": "pass", "required": true, "summary": "plan completion clean, no scope drift, no critical diff findings", "reviewPacket": {}, "reviewers": [], "findings": [] },
+    "findings": []
   },
   "blockingFindings": [],
   "reroute": "none",

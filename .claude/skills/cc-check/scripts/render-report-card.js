@@ -116,9 +116,63 @@ function buildSummary({ quickGates, strictGates, review, verdict }) {
   ].join(' ');
 }
 
+function claimFromGate(gate) {
+  const name = String(gate.name || '').toLowerCase();
+  if (/test|spec/.test(name)) {
+    return 'tests-pass';
+  }
+  if (/lint/.test(name)) {
+    return 'lint-clean';
+  }
+  if (/type/.test(name)) {
+    return 'typecheck-clean';
+  }
+  if (/build|compile/.test(name)) {
+    return 'build-succeeds';
+  }
+  return `gate-${gate.name || 'unknown'}`;
+}
+
+function buildClaimEvidence({ manifest, quickGates, strictGates, review }) {
+  const gateClaims = [...quickGates, ...strictGates].map((gate) => ({
+    claim: claimFromGate(gate),
+    requiredProof: 'fresh command output with exit status and key observation',
+    commandOrArtifact: gate.command || gate.name || '',
+    exitStatus: gate.exitStatus ?? null,
+    keyObservation: gate.summary || gate.details || '',
+    status: gate.status || 'blocked'
+  }));
+
+  const openTasks = (manifest.tasks || []).filter((task) => task.status !== 'done' && task.status !== 'completed');
+  gateClaims.push({
+    claim: 'requirements-met',
+    requiredProof: 'line-by-line planning/tasks.md and task-manifest.json checklist',
+    commandOrArtifact: 'planning/tasks.md + planning/task-manifest.json',
+    exitStatus: null,
+    keyObservation: openTasks.length === 0 ? 'no open task gaps recorded' : `${openTasks.length} open task gaps recorded`,
+    status: openTasks.length === 0 && review.status === 'pass' ? 'pass' : 'blocked'
+  });
+
+  return [...(review.claimEvidence || []), ...gateClaims];
+}
+
+function buildQa(review) {
+  return {
+    status: review.qa?.status || 'skipped',
+    regressionProof: review.qa?.regressionProof || [],
+    testQuality: review.qa?.testQuality || [],
+    tddException: review.qa?.tddException || null
+  };
+}
+
+function isFindingOpen(item) {
+  const status = item.status || item.triageStatus || '';
+  return !['resolved', 'accepted', 'informational', 'accepted-fixed', 'rejected-with-evidence', 'deferred-minor'].includes(status);
+}
+
 function summarizeOpenReviewFindings(findings = []) {
   return findings
-    .filter((item) => item.status !== 'resolved' && item.status !== 'accepted' && item.status !== 'informational')
+    .filter(isFindingOpen)
     .map((item) => `${item.source}: ${item.summary}`);
 }
 
@@ -200,6 +254,13 @@ function main() {
     blockingFindings
   });
   const specSignals = deriveSpecSignals(manifest, verdict, review);
+  const claimEvidence = buildClaimEvidence({
+    manifest,
+    quickGates,
+    strictGates,
+    review
+  });
+  const qa = buildQa(review);
 
   const report = {
     changeId: args.changeId,
@@ -214,6 +275,8 @@ function main() {
     specAlignment: specSignals.specAlignment,
     specDeltaVerified: specSignals.specDeltaVerified,
     specSyncReady: specSignals.specSyncReady,
+    claimEvidence,
+    qa,
     quickGates,
     strictGates,
     review,

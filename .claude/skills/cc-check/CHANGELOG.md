@@ -1,5 +1,12 @@
 # CC-Check Skill Changelog
 
+## v1.8.3 - 2026-04-28
+
+- add native claim evidence matrix guidance so each completion claim maps to command or artifact proof
+- add QA regression and test-quality review fields for red/green proof, mock boundaries, and test-only API smells
+- require review packets and finding triage so review results can be audited without chat memory
+- update report-card template, renderer, and gate validation for optional `claimEvidence` and `qa` fields
+
 ## v1.8.2 - 2026-04-27
 
 - require verification reports to resolve the runtime output policy before writing human-readable verdicts or summaries

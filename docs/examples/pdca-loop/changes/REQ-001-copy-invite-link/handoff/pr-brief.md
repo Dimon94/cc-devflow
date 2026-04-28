@@ -20,6 +20,14 @@
 - Base branch: `main`
 - PR / MR: not created yet
 
+## Review Range
+
+- Reviewed base SHA: `example-base`
+- Reviewed head SHA: `example-head`
+- Review packet: `planning/tasks.md#T001-T003`; `planning/design.md`
+- Finding triage: no findings
+- QA / claim evidence: `qa=pass`, `tests-pass=pass`, `requirements-met=pass`
+
 ## Summary
 
 - removes a small but visible sharing friction in the beta flow
@@ -35,6 +43,7 @@
 ## Verification Evidence
 
 - `report-card.json` verdict: `pass`
+- Merged-result verification: not applicable before merge
 - Fresh evidence:
   - `npm test -- src/features/share/ShareDialog.test.tsx`
   - `npm run lint -- src/features/share/ShareDialog.tsx`

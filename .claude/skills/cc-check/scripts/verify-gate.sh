@@ -45,6 +45,13 @@ jq -e '
   (.overall | IN("pass", "fail")) and
   (.reroute | IN("none", "cc-do", "cc-investigate", "cc-plan")) and
   (.review.status | IN("pass", "fail", "blocked", "skipped", "pending")) and
+  ((.claimEvidence? // []) | type == "array") and
+  ((.claimEvidence? // []) | all(.[];
+    (.claim and .requiredProof and .commandOrArtifact and .keyObservation and .status) and
+    (.status | IN("pass", "fail", "blocked", "skipped", "pending"))
+  )) and
+  ((.qa? // {"status":"skipped"}) | type == "object") and
+  ((.qa.status? // "skipped") | IN("pass", "fail", "blocked", "skipped", "pending")) and
   ((.verdict == "pass" and .reroute == "none") or (.verdict != "pass" and .reroute != "none"))
 ' "$REPORT" >/dev/null
 

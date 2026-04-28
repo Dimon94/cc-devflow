@@ -1,6 +1,6 @@
 ---
 name: cc-act
-version: 1.6.2
+version: 1.6.3
 description: 'Use when verified work must be shipped or handed off with a clear landing path: run simplify and required tests, create or update a PR, prepare a local handoff, close out merged work, sync docs, write release notes, and fold follow-ups back into backlog or roadmap.'
 triggers:
   - 准备提 PR
@@ -41,7 +41,7 @@ entry_gate:
   - If simplify, tests, or act changes code or verification scope, return to cc-check immediately.
 exit_criteria:
   - The ship mode is explicit, delivery materials match that mode, and the next maintainer has one clear entry point.
-  - Docs, PR text, release notes, handoff artifacts, and test evidence reflect the same proven facts.
+  - Docs, PR text, release notes, handoff artifacts, review range, and test evidence reflect the same proven facts.
   - Follow-up items are written back to roadmap/backlog instead of lingering in chat memory.
 reroutes:
   - when: Verification is stale, incomplete, or changed during act.
@@ -146,7 +146,7 @@ tool_budget:
    - 但要把 handoff 与下一步写清楚
 4. `post-merge-closeout`
    - 当前已在 base branch，或 requirement 已完成合并
-   - 重点是 release note、doc sync、backlog writeback、归档
+   - 重点是 merged-result verification、release note、doc sync、backlog writeback、归档
 
 不要发明第五种模糊模式。
 
@@ -210,6 +210,17 @@ tool_budget:
 5. Fresh final verification：如果 `cc-act` 中的 review fix、doc sync、version sync 改了代码或运行时输入，重新回 `cc-check`；纯文档/PR body 变化记录即可。
 6. Push idempotency：push 前比较 local/remote HEAD；已同步就不重复 push，不可用就切 `local-handoff`。
 7. PR idempotency：已有打开的 PR / MR 只更新 body，不重复创建。
+8. Review range：PR brief / PR body 必须写清 `cc-check` 审过的 base/head SHA、review packet、finding triage 摘要。
+9. Post-integration verification：本地合并或 post-merge closeout 后，必须在 merged result 上跑必要 gate；不能只继承合并前绿色。
+
+## Integration Safety
+
+`cc-act` 可以清理交付路径，但不能悄悄做破坏性动作：
+
+1. 删除 feature branch、删除 worktree、丢弃提交、归档 requirement 前，必须列出受影响对象。
+2. 丢弃未合并工作必须要求用户显式确认；没有确认时只能转 `local-handoff`。
+3. branch cleanup 只发生在 merge / PR / discard 语义已经清楚之后。
+4. `post-merge-closeout` 必须记录 merged-result verification：命令、exit status、关键观察、失败时 reroute。
 
 ## Documentation Release
 

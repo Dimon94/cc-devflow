@@ -3,6 +3,38 @@
   "verdict": "pass",
   "overall": "pass",
   "summary": "verdict=pass quick=2/2 strict=0/0 review=pass",
+  "claimEvidence": [
+    {
+      "claim": "tests-pass",
+      "requiredProof": "fresh targeted test command with exit 0",
+      "commandOrArtifact": "npm test -- src/admin/AuditSummaryPanel.test.tsx",
+      "exitStatus": 0,
+      "keyObservation": "audit summary panel targeted tests passed",
+      "status": "pass"
+    },
+    {
+      "claim": "requirements-met",
+      "requiredProof": "line-by-line planning/tasks.md and task-manifest.json checklist",
+      "commandOrArtifact": "planning/tasks.md + planning/task-manifest.json",
+      "exitStatus": null,
+      "keyObservation": "approved tiny-design scope completed",
+      "status": "pass"
+    }
+  ],
+  "qa": {
+    "status": "pass",
+    "regressionProof": [],
+    "testQuality": [
+      {
+        "area": "audit-summary-panel",
+        "checksRealBehavior": true,
+        "mockBoundary": "none",
+        "testOnlyProductionApi": false,
+        "status": "pass"
+      }
+    ],
+    "tddException": null
+  },
   "quickGates": [
     {
       "name": "targeted-tests",
@@ -26,6 +58,13 @@
       "status": "pass",
       "required": true,
       "summary": "All completed tasks carry spec/code proof",
+      "reviewPacket": {
+        "baseSha": "example-base",
+        "headSha": "example-head",
+        "requirements": "planning/tasks.md",
+        "implemented": "audit log export summary view",
+        "reviewerContext": "task manifest plus changed audit panel files"
+      },
       "reviewers": [],
       "findings": []
     },
@@ -33,6 +72,13 @@
       "status": "pass",
       "required": false,
       "summary": "No blocking requirement-level findings",
+      "reviewPacket": {
+        "baseSha": "example-base",
+        "headSha": "example-head",
+        "requirements": "planning/design.md",
+        "implemented": "audit log export summary view",
+        "reviewerContext": "requirement diff, plan completion, scope drift, docs staleness"
+      },
       "reviewers": [],
       "findings": []
     },
