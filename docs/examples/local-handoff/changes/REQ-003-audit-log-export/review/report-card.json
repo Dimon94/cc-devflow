@@ -3,6 +3,13 @@
   "verdict": "pass",
   "overall": "pass",
   "summary": "verdict=pass quick=2/2 strict=0/0 review=pass",
+  "specAlignment": "pass",
+  "specDeltaVerified": true,
+  "specSyncReady": true,
+  "runtime": {
+    "status": "pass",
+    "failureOwnership": []
+  },
   "claimEvidence": [
     {
       "claim": "tests-pass",
@@ -33,6 +40,26 @@
         "status": "pass"
       }
     ],
+    "coverageAudit": {
+      "status": "pass",
+      "coveragePct": 80,
+      "pathMap": ["audit summary render path", "empty audit state"],
+      "gaps": [],
+      "testsAdded": ["src/admin/AuditSummaryPanel.test.tsx"],
+      "e2eRequired": false,
+      "evalRequired": false,
+      "qualityStars": "★★"
+    },
+    "browserEvidence": {
+      "status": "skipped",
+      "mode": "not-applicable",
+      "affectedRoutes": [],
+      "screenshots": [],
+      "consoleErrors": [],
+      "healthScore": null,
+      "issues": [],
+      "skipReason": "local handoff example records component evidence without a live browser fixture"
+    },
     "tddException": null
   },
   "quickGates": [
@@ -54,6 +81,24 @@
     "status": "pass",
     "summary": "Task review proof and requirement-level diff review both passed",
     "details": "The diff stayed inside the approved tiny-design scope and verification evidence is fresh.",
+    "freshness": {
+      "status": "fresh",
+      "reviewedCommit": "example-head",
+      "currentCommit": "example-head",
+      "commitsSinceReview": 0,
+      "staleReason": ""
+    },
+    "qualityScore": 9,
+    "specialistReviews": [
+      {
+        "name": "testing",
+        "status": "pass",
+        "required": true,
+        "summary": "targeted tests cover the audit summary behavior for this example",
+        "skipReason": "",
+        "findings": []
+      }
+    ],
     "taskReviews": {
       "status": "pass",
       "required": true,
@@ -85,6 +130,7 @@
     "findings": []
   },
   "blockingFindings": [],
+  "gaps": [],
   "reroute": "none",
   "timestamp": "2026-04-16T14:30:00.000Z"
 }

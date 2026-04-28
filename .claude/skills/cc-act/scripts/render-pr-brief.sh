@@ -120,6 +120,56 @@ if [[ -f "$doc_sync_report" ]]; then
   fi
 fi
 
+review_freshness_summary="$(jq -r '
+  .review.freshness as $fresh |
+  if $fresh == null then
+    "not recorded"
+  else
+    "status=\($fresh.status // "unknown"), reviewed=\($fresh.reviewedCommit // "not recorded"), current=\($fresh.currentCommit // "not recorded"), commitsSinceReview=\($fresh.commitsSinceReview // "unknown")" +
+    (if (($fresh.staleReason // "") != "") then ", reason=\($fresh.staleReason)" else "" end)
+  end
+' "$report_card")"
+review_quality_summary="$(jq -r '
+  "qualityScore=\(.review.qualityScore // "not recorded")"
+' "$report_card")"
+specialist_review_summary="$(jq -r '
+  (.review.specialistReviews? // [])
+  | if length == 0 then
+      "no specialist facets recorded"
+    else
+      map((.name // "unknown") + ":" + (.status // "unknown")) | join(", ")
+    end
+' "$report_card")"
+qa_coverage_summary="$(jq -r '
+  .qa.coverageAudit as $coverage |
+  if $coverage == null then
+    "not recorded"
+  else
+    "status=\($coverage.status // "unknown"), coverage=\($coverage.coveragePct // "n/a"), gaps=\((($coverage.gaps // []) | length)), e2eRequired=\($coverage.e2eRequired // false), evalRequired=\($coverage.evalRequired // false)"
+  end
+' "$report_card")"
+browser_qa_summary="$(jq -r '
+  .qa.browserEvidence as $browser |
+  if $browser == null then
+    "not recorded"
+  else
+    "status=\($browser.status // "unknown"), mode=\($browser.mode // "unknown"), routes=\((($browser.affectedRoutes // []) | length)), issues=\((($browser.issues // []) | length)), consoleErrors=\((($browser.consoleErrors // []) | length))" +
+    (if (($browser.skipReason // "") != "") then ", skip=\($browser.skipReason)" else "" end)
+  end
+' "$report_card")"
+failure_ownership_summary="$(jq -r '
+  (.runtime.failureOwnership? // [])
+  | if length == 0 then
+      "no open failures recorded"
+    else
+      group_by(.classification // "unknown")
+      | map("\(.[0].classification // "unknown")=\(length)")
+      | join(", ")
+    end
+' "$report_card")"
+documentation_release_summary="CLAUDE=${claude_status}; README=${readme_status}"
+pr_body_accuracy_summary="body must be regenerated from this pr-brief, current report-card, and current diff before PR create/update"
+
 {
   echo "# PR Brief"
   echo
@@ -152,6 +202,17 @@ fi
   echo "- Review packet: $review_packet_summary"
   echo "- Finding triage: $finding_triage_summary"
   echo "- QA / claim evidence: $qa_claim_summary"
+  echo
+  echo "## Readiness Dashboard"
+  echo
+  echo "- Review freshness: $review_freshness_summary"
+  echo "- Review quality: $review_quality_summary"
+  echo "- Specialist review facets: $specialist_review_summary"
+  echo "- QA coverage: $qa_coverage_summary"
+  echo "- Browser QA: $browser_qa_summary"
+  echo "- Failure ownership: $failure_ownership_summary"
+  echo "- Documentation release: $documentation_release_summary"
+  echo "- PR body accuracy: $pr_body_accuracy_summary"
   echo
   echo "## Summary"
   echo

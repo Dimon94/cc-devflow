@@ -3,6 +3,22 @@
   "verdict": "blocked",
   "overall": "fail",
   "summary": "verdict=blocked quick=2/2 strict=0/0 review=blocked",
+  "specAlignment": "blocked",
+  "specDeltaVerified": false,
+  "specSyncReady": false,
+  "runtime": {
+    "status": "blocked",
+    "failureOwnership": [
+      {
+        "failure": "requirement semantics cannot be proven from current design",
+        "classification": "ambiguous",
+        "touchedByDiff": true,
+        "evidence": "duplicate-email and seat-limit outcomes lack a frozen row matrix",
+        "action": "reroute-cc-plan",
+        "status": "open"
+      }
+    ]
+  },
   "claimEvidence": [
     {
       "claim": "tests-pass",
@@ -33,6 +49,26 @@
         "status": "pass"
       }
     ],
+    "coverageAudit": {
+      "status": "blocked",
+      "coveragePct": null,
+      "pathMap": ["bulk invite parser", "admin panel happy path"],
+      "gaps": ["duplicate-email row semantics", "seat-limit partial-failure semantics"],
+      "testsAdded": ["src/invite/bulk-import.test.ts", "src/admin/BulkInvitePanel.test.tsx"],
+      "e2eRequired": true,
+      "evalRequired": false,
+      "qualityStars": "★"
+    },
+    "browserEvidence": {
+      "status": "skipped",
+      "mode": "not-applicable",
+      "affectedRoutes": [],
+      "screenshots": [],
+      "consoleErrors": [],
+      "healthScore": null,
+      "issues": [],
+      "skipReason": "design contract is blocked before browser QA can prove the intended behavior"
+    },
     "tddException": "design contract is incomplete, so tests cannot prove final requirement semantics yet"
   },
   "quickGates": [
@@ -54,6 +90,24 @@
     "status": "blocked",
     "summary": "The implementation evidence is real, but the requirement-level design contract is still incomplete",
     "details": "Diff review found that duplicate-email and seat-limit semantics are still not frozen tightly enough to trust the current implementation as the requirement truth.",
+    "freshness": {
+      "status": "fresh",
+      "reviewedCommit": "example-head",
+      "currentCommit": "example-head",
+      "commitsSinceReview": 0,
+      "staleReason": ""
+    },
+    "qualityScore": 6,
+    "specialistReviews": [
+      {
+        "name": "testing",
+        "status": "blocked",
+        "required": true,
+        "summary": "tests are real but cannot cover semantics that are not frozen in design",
+        "skipReason": "",
+        "findings": []
+      }
+    ],
     "taskReviews": {
       "status": "pass",
       "required": true,
@@ -88,7 +142,11 @@
           "summary": "duplicate-email behavior is still underspecified",
           "evidence": "planning/design.md does not freeze row-level duplicate semantics",
           "action": "reroute-cc-plan",
-          "triageStatus": "clarification-needed"
+          "triageStatus": "clarification-needed",
+          "confidenceScore": 9,
+          "fingerprint": "diff-review:bulk-invite:duplicate-email-semantics",
+          "displayTier": "blocking",
+          "suppressionReason": null
         },
         {
           "severity": "important",
@@ -97,7 +155,11 @@
           "summary": "seat-limit partial-failure semantics are not frozen in design.md",
           "evidence": "planning/design.md lacks accepted row-outcome matrix",
           "action": "reroute-cc-plan",
-          "triageStatus": "clarification-needed"
+          "triageStatus": "clarification-needed",
+          "confidenceScore": 9,
+          "fingerprint": "diff-review:bulk-invite:seat-limit-partial-failure",
+          "displayTier": "blocking",
+          "suppressionReason": null
         }
       ]
     },
@@ -109,7 +171,11 @@
         "summary": "The current code may be locally green while still violating the intended admin trust model",
         "evidence": "tests pass but requirement claim remains blocked by design ambiguity",
         "action": "reroute-cc-plan",
-        "triageStatus": "clarification-needed"
+        "triageStatus": "clarification-needed",
+        "confidenceScore": 7,
+        "fingerprint": "diff-review:bulk-invite:trust-model-ambiguous",
+        "displayTier": "warning",
+        "suppressionReason": null
       }
     ]
   },
@@ -117,6 +183,7 @@
     "design: duplicate-email row handling is not frozen tightly enough",
     "design: seat-limit partial-failure semantics must be reopened in cc-plan"
   ],
+  "gaps": ["duplicate-email row handling", "seat-limit partial-failure semantics"],
   "reroute": "cc-plan",
   "timestamp": "2026-04-16T12:15:00.000Z"
 }

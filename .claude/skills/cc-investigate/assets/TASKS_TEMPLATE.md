@@ -15,7 +15,11 @@
 - Canonical change meta: `change-meta.json`
 - Execution mode: `single-path` | `parallel-ready`
 - Confirmed root cause:
+- Root-cause hypothesis:
 - Frozen repair boundary:
+- Allowed files:
+- Forbidden files:
+- Blast radius:
 - Capability specs:
 - Read first:
 - Commands to trust:

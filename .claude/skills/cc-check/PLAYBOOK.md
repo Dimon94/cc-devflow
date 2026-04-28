@@ -42,6 +42,9 @@ NO PASS WITHOUT FRESH EVIDENCE
    - requirement diff review
    - claim evidence matrix
    - QA regression / test-quality proof
+   - QA coverage and browser evidence
+   - review freshness and finding confidence
+   - failure ownership
    - spec sync readiness
 4. **Freeze Verdict**
    - 只允许 `pass` / `fail` / `blocked`
@@ -58,6 +61,7 @@ NO PASS WITHOUT FRESH EVIDENCE
 5. 把任务级 review 与需求级 diff review 分开写清楚
 6. 把每个成功声明映射到 `claimEvidence[]`
 7. 行为变更必须补 `qa` 证据或例外理由
+8. 失败输出必须写入 `runtime.failureOwnership[]`
 
 ## Verification Layers
 
@@ -66,7 +70,10 @@ NO PASS WITHOUT FRESH EVIDENCE
 3. Requirement diff truth
 4. Claim evidence matrix
 5. QA regression and test quality
-6. Spec alignment and sync readiness
+6. QA coverage and browser evidence
+7. Review freshness and confidence calibration
+8. Failure ownership
+9. Spec alignment and sync readiness
 
 ## Claim Evidence Matrix
 
@@ -90,10 +97,14 @@ NO PASS WITHOUT FRESH EVIDENCE
 3. `scope drift`：识别多做、少做、做偏。
 4. `critical pass`：检查数据安全、并发、shell、LLM trust boundary、枚举覆盖、静默失败、文档漂移。
 5. `adversarial synthesis`：合并外部 review / codex / subagent /人工 finding，去重并标置信度。
+6. `specialist facets`：按风险记录 testing / security / performance / api-contract / data-migration / design 等审查面；没有覆盖必须写 skip reason。
+7. `freshness`：确认 review 对应当前 head；review 后新增 commit 时不能继续拿旧审查支撑 `pass`。
 
 这些结论进入 `review.diffReview`，不能只写在口头总结里。
 
 每层 review 都要带 `reviewPacket`：`baseSha`、`headSha`、`requirements`、`implemented`、`reviewerContext`。缺少审查范围时，review 不能支撑 `pass`。
+
+review 还要带 `freshness`：`status`、`reviewedCommit`、`currentCommit`、`commitsSinceReview`、`staleReason`。`status=stale` 或缺失 freshness 时，`pass` 不成立。
 
 每条 finding 都要带 `triageStatus`：
 
@@ -104,6 +115,8 @@ NO PASS WITHOUT FRESH EVIDENCE
 
 `critical` / `important` finding 未闭环或仍是 `clarification-needed`，不能进入 `cc-act`。
 
+每条 finding 还要带 `confidenceScore`、`fingerprint`、`displayTier`、`suppressionReason`。低置信 finding 只能作为 warning 或 gap，不能伪装成 blocking fact。
+
 ## QA Test Quality
 
 行为变化、bugfix、边界条件、用户可见流程必须补 `qa`：
@@ -111,8 +124,21 @@ NO PASS WITHOUT FRESH EVIDENCE
 - `regressionProof`：red command、red failure reason、green command、是否恢复最终状态
 - `testQuality`：是否验证真实行为、mock 边界、是否存在 test-only production API
 - `tddException`：纯配置、生成文件、throwaway prototype 等例外和替代验证
+- `coverageAudit`：覆盖率、codepath / user-flow map、缺口、是否需要 e2e / eval、测试质量星级
+- `browserEvidence`：UI / 用户路径变更的 affected routes、截图、console、health score、issues，或明确 skip reason
 
 测试只绿过一次，不能证明 regression test 有效；断言 mock 本身，不能证明真实行为。
+
+## Failure Ownership
+
+失败要先归属，再下结论：
+
+- `in-branch`：当前分支引入，默认回 `cc-do`
+- `pre-existing`：base branch 也存在，必须有复验证据
+- `environment`：依赖、权限、服务、密钥、平台缺失，通常是 `blocked`
+- `ambiguous`：无法证明归属，默认不能 `pass`
+
+不要把环境红灯、基线红灯、本分支红灯混成一句“测试失败”。
 
 ## Verdict
 
@@ -139,10 +165,34 @@ NO PASS WITHOUT FRESH EVIDENCE
   "overall": "pass",
   "summary": "one-line reality",
   "claimEvidence": [],
+  "runtime": {
+    "status": "pass",
+    "failureOwnership": []
+  },
   "qa": {
     "status": "pass",
     "regressionProof": [],
     "testQuality": [],
+    "coverageAudit": {
+      "status": "pass",
+      "coveragePct": 80,
+      "pathMap": [],
+      "gaps": [],
+      "testsAdded": [],
+      "e2eRequired": false,
+      "evalRequired": false,
+      "qualityStars": "★★"
+    },
+    "browserEvidence": {
+      "status": "skipped",
+      "mode": "not-applicable",
+      "affectedRoutes": [],
+      "screenshots": [],
+      "consoleErrors": [],
+      "healthScore": null,
+      "issues": [],
+      "skipReason": "not a UI or user-path change"
+    },
     "tddException": null
   },
   "quickGates": [],
@@ -151,6 +201,9 @@ NO PASS WITHOUT FRESH EVIDENCE
     "status": "pass",
     "summary": "",
     "details": "",
+    "freshness": { "status": "fresh", "reviewedCommit": "example-head", "currentCommit": "example-head", "commitsSinceReview": 0, "staleReason": "" },
+    "qualityScore": 9,
+    "specialistReviews": [],
     "taskReviews": { "status": "pass", "required": true, "summary": "", "reviewers": [], "findings": [] },
     "diffReview": { "status": "skipped", "required": false, "summary": "", "reviewers": [], "findings": [] },
     "findings": []

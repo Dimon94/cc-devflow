@@ -20,11 +20,61 @@
     ]
   },
   "planningMeta": {
-    "ccInvestigateSkillVersion": "1.0.0",
+    "ccInvestigateSkillVersion": "1.1.3",
     "analysisVersion": "analysis.v1",
     "approvedAt": "2026-04-17T12:00:00.000Z",
     "approvedBy": "user",
     "basedOnRootCause": "Root cause sentence"
+  },
+  "investigationMeta": {
+    "symptomStatus": "stable",
+    "reproductionPath": "npm test -- src/feature/feature.test.ts",
+    "patternAnalysis": {
+      "selectedPattern": "implementation drift",
+      "ruledOutPatterns": [
+        "race condition",
+        "configuration drift"
+      ],
+      "notes": "Pattern evidence belongs in planning/analysis.md"
+    },
+    "priorInvestigations": [],
+    "researchEvidence": [],
+    "rootCauseHypothesis": {
+      "statement": "Specific, testable root-cause claim",
+      "falsificationMethod": "Command, log probe, assertion, or code-path check",
+      "expectedObservation": "What should be observed if the hypothesis is true",
+      "actualObservation": "Observed evidence from the current repo",
+      "status": "confirmed"
+    },
+    "hypothesisAttempts": [
+      {
+        "statement": "Specific, testable root-cause claim",
+        "status": "confirmed",
+        "evidenceFor": [
+          "Reproduction output points to the affected code path"
+        ],
+        "evidenceAgainst": [],
+        "falsificationMethod": "Run the reproduction command"
+      }
+    ],
+    "escalationDecision": {
+      "failedHypothesisCount": 0,
+      "nextOption": "cc-do",
+      "recommendation": "Repair the confirmed root cause"
+    },
+    "repairBoundary": {
+      "affectedModule": "src/feature",
+      "allowedFiles": [
+        "src/feature/feature.ts",
+        "src/feature/feature.test.ts"
+      ],
+      "forbiddenFiles": [
+        "unrelated modules"
+      ],
+      "blastRadiusFileCount": 2,
+      "blastRadiusRisk": "low",
+      "splitOrRerouteDecision": "single focused repair"
+    }
   },
   "status": "planned",
   "designMode": "cc-investigate",
@@ -52,6 +102,7 @@
   "activePhase": 1,
   "frozenDecisions": [
     "Fix only the confirmed root cause",
+    "Use planning/analysis.md as the canonical root-cause contract",
     "Do not widen scope without rerouting to cc-plan"
   ],
   "tasks": [

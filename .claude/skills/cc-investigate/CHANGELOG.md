@@ -1,5 +1,12 @@
 # CC-Investigate Skill Changelog
 
+## v1.1.3 - 2026-04-28
+
+- add the explicit `NO REPAIR WITHOUT A FROZEN ROOT-CAUSE CONTRACT` iron law to keep investigation separate from implementation
+- require prior investigation history, pattern analysis, falsification methods, sanitized external research, and escalation decisions before freezing a root cause
+- add repair-boundary scope lock fields for affected module, allowed files, forbidden files, blast radius, and split-or-reroute decisions
+- update analysis, tasks, and task-manifest templates with root-cause hypothesis and investigation metadata
+
 ## v1.1.2 - 2026-04-27
 
 - require investigation outputs to resolve the runtime output policy before writing analysis, task, or change metadata artifacts

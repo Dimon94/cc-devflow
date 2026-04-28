@@ -9,6 +9,19 @@
   "specAlignment": "blocked",
   "specDeltaVerified": false,
   "specSyncReady": false,
+  "runtime": {
+    "status": "blocked",
+    "failureOwnership": [
+      {
+        "failure": "missing spec review proof",
+        "classification": "in-branch",
+        "touchedByDiff": true,
+        "evidence": "planning/task-manifest.json tasks[T002].reviews.spec is empty",
+        "action": "reroute-cc-do",
+        "status": "open"
+      }
+    ]
+  },
   "claimEvidence": [
     {
       "claim": "tests-pass",
@@ -48,6 +61,26 @@
         "status": "pass"
       }
     ],
+    "coverageAudit": {
+      "status": "blocked",
+      "coveragePct": null,
+      "pathMap": ["planning/tasks.md#T002"],
+      "gaps": ["T002 has no spec review proof, so the requirement cannot be marked covered"],
+      "testsAdded": [],
+      "e2eRequired": false,
+      "evalRequired": false,
+      "qualityStars": "★"
+    },
+    "browserEvidence": {
+      "status": "skipped",
+      "mode": "not-applicable",
+      "affectedRoutes": [],
+      "screenshots": [],
+      "consoleErrors": [],
+      "healthScore": null,
+      "issues": [],
+      "skipReason": "template example is not a UI browser QA scenario"
+    },
     "tddException": null
   },
   "quickGates": [
@@ -69,6 +102,24 @@
     "status": "blocked",
     "summary": "Task review evidence is incomplete",
     "details": "T002 is implemented, but the requirement still lacks spec review proof required by the gate.",
+    "freshness": {
+      "status": "unknown",
+      "reviewedCommit": "",
+      "currentCommit": "",
+      "commitsSinceReview": null,
+      "staleReason": "review range is not recorded yet"
+    },
+    "qualityScore": null,
+    "specialistReviews": [
+      {
+        "name": "testing",
+        "status": "blocked",
+        "required": true,
+        "summary": "testing facet cannot pass while task review proof is missing",
+        "skipReason": "",
+        "findings": []
+      }
+    ],
     "taskReviews": {
       "status": "blocked",
       "required": true,
@@ -89,7 +140,11 @@
           "summary": "T002 spec review proof is missing",
           "evidence": "planning/task-manifest.json tasks[T002].reviews.spec is empty",
           "action": "reroute-cc-do",
-          "triageStatus": "clarification-needed"
+          "triageStatus": "clarification-needed",
+          "confidenceScore": 9,
+          "fingerprint": "task-review:T002:missing-spec-review",
+          "displayTier": "blocking",
+          "suppressionReason": null
         }
       ]
     },

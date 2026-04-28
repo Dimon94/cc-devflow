@@ -36,6 +36,10 @@ jq -e '
   .summary and
   .review and
   .blockingFindings and
+  (.runtime and (.runtime | type == "object")) and
+  (.runtime.status | IN("pass", "fail", "blocked", "skipped", "pending")) and
+  ((.runtime.failureOwnership? // []) | type == "array") and
+  ((.runtime.failureOwnership? // []) | all(.[]; (.classification? // "environment") | IN("in-branch", "pre-existing", "environment", "ambiguous"))) and
   (.specAlignment? // "blocked") and
   ((.specDeltaVerified? // false) | type == "boolean") and
   ((.specSyncReady? // false) | type == "boolean") and
@@ -45,6 +49,9 @@ jq -e '
   (.overall | IN("pass", "fail")) and
   (.reroute | IN("none", "cc-do", "cc-investigate", "cc-plan")) and
   (.review.status | IN("pass", "fail", "blocked", "skipped", "pending")) and
+  ((.review.freshness? // {"status":"unknown"}) | type == "object") and
+  ((.review.freshness.status? // "unknown") | IN("fresh", "stale", "unknown", "not-applicable")) and
+  ((.review.specialistReviews? // []) | type == "array") and
   ((.claimEvidence? // []) | type == "array") and
   ((.claimEvidence? // []) | all(.[];
     (.claim and .requiredProof and .commandOrArtifact and .keyObservation and .status) and
@@ -52,6 +59,13 @@ jq -e '
   )) and
   ((.qa? // {"status":"skipped"}) | type == "object") and
   ((.qa.status? // "skipped") | IN("pass", "fail", "blocked", "skipped", "pending")) and
+  ((.qa.coverageAudit? // {"status":"skipped"}) | type == "object") and
+  ((.qa.coverageAudit.status? // "skipped") | IN("pass", "fail", "blocked", "skipped", "pending")) and
+  ((.qa.browserEvidence? // {"status":"skipped"}) | type == "object") and
+  ((.qa.browserEvidence.status? // "skipped") | IN("pass", "fail", "blocked", "skipped", "pending")) and
+  ((.review.findings? // []) | all(.[]; ((.confidenceScore? // 7) | type == "number") and ((.displayTier? // "info") | IN("blocking", "warning", "info", "suppressed")))) and
+  ((.verdict != "pass") or ((.review.freshness.status? // "unknown") | IN("fresh", "not-applicable"))) and
+  ((.verdict != "pass") or (((.runtime.failureOwnership? // []) | map(select(((.classification? // "") | IN("in-branch", "ambiguous")) and ((.status? // "open") | IN("open", "pending")))) | length) == 0)) and
   ((.verdict == "pass" and .reroute == "none") or (.verdict != "pass" and .reroute != "none"))
 ' "$REPORT" >/dev/null
 

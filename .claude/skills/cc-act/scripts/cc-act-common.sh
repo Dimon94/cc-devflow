@@ -234,7 +234,12 @@ req_act_collect_evidence() {
   local out_file="$2"
 
   : > "$out_file"
-  jq -r '(.evidence // [])[]?' "$report_card" 2>/dev/null | sed '/^$/d' > "$out_file" || true
+  jq -r '
+    (.evidence // [])[]?,
+    ((.claimEvidence // [])[]? | "- " + (.claim // "claim") + ": " + (.status // "unknown") + " via " + (.commandOrArtifact // "artifact") + " - " + (.keyObservation // "")),
+    (if .qa.coverageAudit then "- qa.coverage: " + (.qa.coverageAudit.status // "unknown") + ", gaps=" + (((.qa.coverageAudit.gaps // []) | length) | tostring) else empty end),
+    (if .qa.browserEvidence then "- qa.browser: " + (.qa.browserEvidence.status // "unknown") + ", mode=" + (.qa.browserEvidence.mode // "unknown") else empty end)
+  ' "$report_card" 2>/dev/null | sed '/^$/d' > "$out_file" || true
   req_act_dedup_file "$out_file"
 }
 

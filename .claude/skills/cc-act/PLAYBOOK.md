@@ -25,6 +25,7 @@
 1. 运行 `scripts/verify-act-gate.sh --dir <requirement-dir>`
 2. 确认 `review/report-card.json` 是 `pass`，且没有未解释的 gaps / reroute
 3. 确认 `planning/tasks.md` 不再有未完成项
+4. 确认 `review.freshness` 新鲜、`runtime.failureOwnership` 无未解释失败、`qa.coverageAudit` / `qa.browserEvidence` 有证据或明确 skip
 
 如果 gate 没闭合，直接回 `cc-check` 或 `cc-do`，不要在 `cc-act` 自我安慰。
 
@@ -70,6 +71,7 @@ Ship 必须属于这 4 种模式之一：
 
 - `cc-act` 可以做清理和收尾修复
 - 但只要现实被改写，就必须重新证明
+- verification 每次进 `cc-act` 都要重新跑；只有 push、PR 更新、文档生成这类动作可以因幂等状态跳过
 
 ## Phase 2.5: Ship Hygiene
 
@@ -80,6 +82,7 @@ Ship 必须属于这 4 种模式之一：
 3. 检查提交边界，按逻辑单元拆分，保证提交顺序不引用未来代码。
 4. 如果有 WIP commit，只能用非破坏性 rebase / fixup 处理，不允许盲目 soft reset。
 5. push 前比较 local / remote HEAD；PR 前检查是否已有打开 PR / MR。
+6. 生成 readiness dashboard：review freshness、review quality、QA coverage、browser QA、failure ownership、documentation release、PR body accuracy。
 
 ## Phase 3: Build Delivery Pack
 
@@ -111,6 +114,8 @@ Ship 必须属于这 4 种模式之一：
 - review packet path / summary
 - finding triage summary
 - QA / claim evidence summary
+- readiness dashboard
+- PR body accuracy check
 
 缺这些字段时，可以生成 local handoff，但不能声称 PR body 已经可 review。
 
@@ -135,7 +140,8 @@ Ship 必须属于这 4 种模式之一：
 - 按 `references/git-commit-guidelines.md` 完成提交
 - 推送当前分支
 - 用 `gh pr create` 创建 PR / MR
-- PR body 以 `pr-brief.md` 为真相源，并包含 Summary、Test Coverage、Pre-Landing Review、Scope Drift、Plan Completion、Verification Results、Documentation、Test plan
+- PR body 以 `pr-brief.md` 为真相源，并包含 Summary、Test Coverage、Pre-Landing Review、Readiness Dashboard、Scope Drift、Plan Completion、Verification Results、Documentation、Test plan
+- 创建前检查 PR body 是否来自当前 report-card 和当前 diff，不继承旧 body
 
 ### `update-pr`
 
@@ -143,6 +149,7 @@ Ship 必须属于这 4 种模式之一：
 - 不重新造一个 PR
 - 刷新已有 PR / MR body
 - 确保 body 由本次最新 `cc-check` 结果与 doc sync 状态重建，不沿用旧 body
+- PR body 与当前 commits / diff 不一致时，必须先更新 body，再继续交付判断
 
 ### `local-handoff`
 
@@ -193,6 +200,7 @@ Ship 必须属于这 4 种模式之一：
 3. reviewer / 接手者 还需不需要追问“所以我现在该看哪个文件”？
 4. `cc-simplify`、单测、e2e、commit/push 的结果是不是都能追溯？
 5. PR body / release note / handoff / changelog 说的是不是同一套现实？
+6. readiness dashboard 有没有 blocker 或 stale warning？
 
 如果第 1 或第 3 题答案不是“能”，说明 `cc-act` 仍然太重或太糊。
 

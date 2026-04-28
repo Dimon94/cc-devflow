@@ -1,6 +1,6 @@
 ---
 name: cc-check
-version: 1.8.3
+version: 1.8.4
 description: Use when a planned or investigated change needs fresh verification evidence, layered gate proof, review truth, and an honest pass fail blocked verdict before entering cc-act.
 triggers:
   - 验收这个需求
@@ -25,7 +25,7 @@ entry_gate:
   - Re-run fresh commands instead of inheriting cc-do narration.
   - If evidence is stale or missing, reset context and rebuild the verdict from canonical artifacts.
 exit_criteria:
-  - review/report-card.json records pass, fail, or blocked using fresh evidence, claim evidence, QA test quality, plus spec alignment and sync readiness.
+  - review/report-card.json records pass, fail, or blocked using fresh evidence, review freshness, claim evidence, QA coverage and browser evidence, failure ownership, plus spec alignment and sync readiness.
   - Task-level review and requirement-level diff review are separated clearly.
   - 'The next step is unambiguous: cc-act, cc-do, cc-investigate, or cc-plan.'
 reroutes:
@@ -138,7 +138,7 @@ NO PASS WITHOUT FRESH EVIDENCE
 
 ## Verification Layers
 
-`cc-check` 不是只看“测试是不是绿的”，而是至少看 6 层：
+`cc-check` 不是只看“测试是不是绿的”，而是至少看 9 层：
 
 1. **Runtime Layer**
    - 测试、lint、typecheck、build、脚本 gate
@@ -154,6 +154,16 @@ NO PASS WITHOUT FRESH EVIDENCE
 6. **QA Test Layer**
    - 回归测试是否有 red/green 证据
    - 测试是否验证真实行为，而不是 mock 或 test-only production API
+7. **Review Freshness Layer**
+   - review 是否绑定当前 `headSha`
+   - 从 review 到当前 HEAD 是否还有新增 commit
+   - 质量分、置信度、finding 去噪是否可复盘
+8. **QA Coverage / Browser Layer**
+   - 行为链路、错误态、边界条件是否被测试映射覆盖
+   - UI / 用户路径变更是否有浏览器证据、截图、console 结果或明确 skip 理由
+9. **Failure Ownership Layer**
+   - 失败是本分支引入、基线已存在、环境阻塞，还是归属不明
+   - 归属不明默认不能支撑 `pass`
 
 任何一层失真，都不能写 `pass`。
 
@@ -184,6 +194,16 @@ NO PASS WITHOUT FRESH EVIDENCE
 
 这些事实写入 `qa.regressionProof` 和 `qa.testQuality`。如果本需求没有行为测试空间，必须记录 `tddException` 或替代验证命令。
 
+## QA Coverage And Browser Evidence
+
+测试不是数量游戏。`cc-check` 必须判断测试覆盖了哪条真实路径：
+
+1. `qa.coverageAudit` 记录 `coveragePct`、`pathMap`、`gaps`、`testsAdded`、`e2eRequired`、`evalRequired`、`qualityStars`。
+2. UI、路由、端到端用户路径、可视状态、交互状态变化时，必须记录 `qa.browserEvidence`。
+3. `qa.browserEvidence` 至少说明 `mode`、`affectedRoutes`、`screenshots`、`consoleErrors`、`healthScore`、`issues`、`skipReason`。
+4. 前端变更没有浏览器证据也没有 skip reason，不能写 `pass`。
+5. 非前端或纯内部变更可以把 `browserEvidence.status` 写成 `skipped`，但必须说明为什么不需要浏览器 QA。
+
 ## Diff Review Pipeline
 
 `cc-check` 的 requirement-level review 不能只写“diff 看过了”。至少要形成这些事实：
@@ -195,6 +215,8 @@ NO PASS WITHOUT FRESH EVIDENCE
 5. Outside-diff lookup：新增枚举值、状态、路由、artifact 类型时，必须搜索 sibling references，不能只读 diff 内文件。
 6. Documentation staleness：代码行为、入口、命令、结构变化时，检查 README / CLAUDE / architecture docs 是否漂移。
 7. Adversarial synthesis：如果有 codex review、subagent review、人工 review，多视角 finding 要去重并标出高置信重叠项。
+8. Specialist facets：按实际风险记录 `testing`、`security`、`performance`、`api-contract`、`data-migration`、`design` 等 review facet；没有派发也要写 skip reason，避免 reviewer 误以为已经覆盖。
+9. Confidence calibration：每条 finding 必须有可比较的置信度和指纹，低置信 finding 不准伪装成 blocker。
 
 这些事实写入 `review.diffReview.details` 或 `review.findings`。`pass` 只在 scope、completion、critical pass、doc staleness 都没有 blocking finding 时成立。
 
@@ -208,6 +230,15 @@ NO PASS WITHOUT FRESH EVIDENCE
 4. `reviewPacket.implemented`
 5. `reviewPacket.reviewerContext`
 
+每次 review 还必须记录 freshness：
+
+1. `review.freshness.status`：`fresh` / `stale` / `unknown` / `not-applicable`
+2. `review.freshness.reviewedCommit`
+3. `review.freshness.currentCommit`
+4. `review.freshness.commitsSinceReview`
+5. `review.freshness.staleReason`
+6. `review.qualityScore`：0-10，缺失时不能当成高置信审查
+
 每条 finding 必须有 triage：
 
 - `accepted-fixed`：已修并有验证
@@ -216,6 +247,23 @@ NO PASS WITHOUT FRESH EVIDENCE
 - `clarification-needed`：不清楚，当前 verdict 不能是 `pass`
 
 `critical` / `important` finding 未 triage 或未闭环，不能进入 `cc-act`。
+
+每条 finding 还必须带去噪字段：
+
+- `confidenceScore`：1-10，低于 7 的 finding 只能作为 warning 或待验证 gap
+- `fingerprint`：稳定去重键，避免多路 review 重复报同一件事
+- `displayTier`：`blocking` / `warning` / `info` / `suppressed`
+- `suppressionReason`：只有 `displayTier=suppressed` 时允许非空
+
+## Failure Ownership
+
+失败不能只写“测试红了”。`cc-check` 必须把失败归属写入 `runtime.failureOwnership[]`：
+
+1. `classification` 只能是 `in-branch`、`pre-existing`、`environment`、`ambiguous`。
+2. `ambiguous` 默认按 `in-branch` 处理，除非有 base branch 复验证据。
+3. `pre-existing` 必须有 base branch 或历史证据，不能靠猜。
+4. `environment` 必须记录缺失依赖、权限、服务、密钥或平台约束。
+5. `pass` 不能带未解释的 `in-branch` 或 `ambiguous` 失败。
 
 ## Entry Gate
 
@@ -234,6 +282,7 @@ NO PASS WITHOUT FRESH EVIDENCE
    - 运行真实命令
    - 记录 exit status
    - 识别 failure 还是 blocked
+   - 记录 failure ownership，而不是把所有红灯混成一个失败摘要
 3. **Compare against the contract**
    - 对照 `planning/design.md` 或 `planning/analysis.md`
    - 对照 `planning/tasks.md`、`planning/task-manifest.json`
@@ -318,9 +367,12 @@ NO PASS WITHOUT FRESH EVIDENCE
 
 1. severity：`critical` / `important` / `info`
 2. confidence：`high` / `medium` / `low`，低置信不要伪装成 blocker
+   - 同时写 `confidenceScore`，用 1-10 数字表达可比较置信度
 3. source：`runtime` / `task-review` / `diff-review` / `adversarial` / `docs`
 4. evidence：文件、命令、退出码、manifest path、或具体观察
 5. action：`fix-now` / `reroute-cc-do` / `reroute-cc-plan` / `reroute-cc-investigate` / `document-follow-up`
+6. fingerprint：稳定去重键
+7. displayTier：`blocking` / `warning` / `info` / `suppressed`
 
 不能写“可能有问题”然后让接手者猜。要么证明，要么标成待验证 gap。
 
@@ -338,13 +390,24 @@ NO PASS WITHOUT FRESH EVIDENCE
     { "claim": "tests-pass", "requiredProof": "fresh test command", "commandOrArtifact": "npm test", "exitStatus": 0, "keyObservation": "0 failures", "status": "pass" },
     { "claim": "requirements-met", "requiredProof": "plan checklist", "commandOrArtifact": "planning/tasks.md", "exitStatus": null, "keyObservation": "all tasks complete", "status": "pass" }
   ],
-  "qa": { "status": "pass", "regressionProof": [], "testQuality": [], "tddException": null },
+  "runtime": { "status": "pass", "failureOwnership": [] },
+  "qa": {
+    "status": "pass",
+    "regressionProof": [],
+    "testQuality": [],
+    "coverageAudit": { "status": "pass", "coveragePct": 80, "pathMap": [], "gaps": [], "testsAdded": [], "e2eRequired": false, "evalRequired": false, "qualityStars": "★★" },
+    "browserEvidence": { "status": "skipped", "mode": "not-applicable", "affectedRoutes": [], "screenshots": [], "consoleErrors": [], "healthScore": null, "issues": [], "skipReason": "not a UI or user-path change" },
+    "tddException": null
+  },
   "quickGates": [],
   "strictGates": [],
   "review": {
     "status": "pass",
     "summary": "Task review and diff review both passed",
     "details": "",
+    "freshness": { "status": "fresh", "reviewedCommit": "example-head", "currentCommit": "example-head", "commitsSinceReview": 0, "staleReason": "" },
+    "qualityScore": 9,
+    "specialistReviews": [],
     "taskReviews": { "status": "pass", "required": true, "summary": "all completed tasks carry spec/code proof", "reviewPacket": {}, "reviewers": [], "findings": [] },
     "diffReview": { "status": "pass", "required": true, "summary": "plan completion clean, no scope drift, no critical diff findings", "reviewPacket": {}, "reviewers": [], "findings": [] },
     "findings": []

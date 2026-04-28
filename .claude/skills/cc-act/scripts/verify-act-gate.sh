@@ -37,8 +37,16 @@ tasks_file="$(req_act_tasks_path "$CHANGE_DIR")"
 verdict="$(jq -r '.verdict // "unknown"' "$report_card" 2>/dev/null || echo unknown)"
 reroute="$(jq -r '.reroute // "unknown"' "$report_card" 2>/dev/null || echo unknown)"
 spec_sync_ready="$(jq -r '.specSyncReady // false' "$report_card" 2>/dev/null || echo false)"
-evidence_count="$(jq -r '(.evidence // []) | length' "$report_card" 2>/dev/null || echo 0)"
+evidence_count="$(jq -r '((.evidence // []) + (.claimEvidence // []) + (.quickGates // []) + (.strictGates // [])) | length' "$report_card" 2>/dev/null || echo 0)"
 gap_count="$(jq -r '(.gaps // []) | length' "$report_card" 2>/dev/null || echo 0)"
+review_freshness="$(jq -r '.review.freshness.status // "unknown"' "$report_card" 2>/dev/null || echo unknown)"
+failure_ownership_open="$(jq -r '
+  (.runtime.failureOwnership? // [])
+  | map(select(((.classification? // "") | IN("in-branch", "ambiguous")) and ((.status? // "open") | IN("open", "pending"))))
+  | length
+' "$report_card" 2>/dev/null || echo 0)"
+coverage_status="$(jq -r '.qa.coverageAudit.status // "unknown"' "$report_card" 2>/dev/null || echo unknown)"
+browser_status="$(jq -r '.qa.browserEvidence.status // "unknown"' "$report_card" 2>/dev/null || echo unknown)"
 
 remaining_tasks="0"
 if [[ -f "$tasks_file" ]]; then
@@ -50,6 +58,10 @@ fi
 [[ "$spec_sync_ready" == "true" ]] || { echo "Gate open: spec_sync_ready=$spec_sync_ready" >&2; exit 1; }
 [[ "$evidence_count" -gt 0 ]] || { echo "Gate open: evidence is empty" >&2; exit 1; }
 [[ "$gap_count" -eq 0 ]] || { echo "Gate open: gaps=$gap_count" >&2; exit 1; }
+[[ "$review_freshness" == "fresh" || "$review_freshness" == "not-applicable" ]] || { echo "Gate open: review_freshness=$review_freshness" >&2; exit 1; }
+[[ "$failure_ownership_open" -eq 0 ]] || { echo "Gate open: failure_ownership_open=$failure_ownership_open" >&2; exit 1; }
+[[ "$coverage_status" != "blocked" && "$coverage_status" != "fail" && "$coverage_status" != "pending" ]] || { echo "Gate open: coverage_status=$coverage_status" >&2; exit 1; }
+[[ "$browser_status" != "blocked" && "$browser_status" != "fail" && "$browser_status" != "pending" ]] || { echo "Gate open: browser_status=$browser_status" >&2; exit 1; }
 [[ "$remaining_tasks" -eq 0 ]] || { echo "Gate open: remaining_tasks=$remaining_tasks" >&2; exit 1; }
 
 cat <<EOF
@@ -59,5 +71,9 @@ REROUTE=$reroute
 SPEC_SYNC_READY=$spec_sync_ready
 EVIDENCE_COUNT=$evidence_count
 GAP_COUNT=$gap_count
+REVIEW_FRESHNESS=$review_freshness
+FAILURE_OWNERSHIP_OPEN=$failure_ownership_open
+COVERAGE_STATUS=$coverage_status
+BROWSER_STATUS=$browser_status
 REMAINING_TASKS=$remaining_tasks
 EOF

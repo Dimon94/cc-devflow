@@ -1,5 +1,12 @@
 # CC-Check Skill Changelog
 
+## v1.8.4 - 2026-04-28
+
+- add review freshness, quality score, specialist review facets, and finding confidence fingerprints so stale or noisy review evidence cannot masquerade as current proof
+- add QA coverage audit and browser evidence fields for user-flow, route, screenshot, console, and skip-reason proof
+- add runtime failure ownership so failing commands are classified as in-branch, pre-existing, environment, or ambiguous before verdict selection
+- update the report-card template, renderer, and gate validation for the richer review and QA evidence shape
+
 ## v1.8.3 - 2026-04-28
 
 - add native claim evidence matrix guidance so each completion claim maps to command or artifact proof

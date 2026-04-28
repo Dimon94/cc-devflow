@@ -28,6 +28,17 @@
 - Finding triage: no findings
 - QA / claim evidence: `qa=pass`, `tests-pass=pass`, `requirements-met=pass`
 
+## Readiness Dashboard
+
+- Review freshness: `fresh`, reviewed `example-head`, current `example-head`
+- Review quality: `qualityScore=9`
+- Specialist review facets: `testing:pass`
+- QA coverage: `status=pass`, gaps `0`, e2eRequired `false`
+- Browser QA: `skipped`, example fixture uses targeted component evidence instead of a live browser
+- Failure ownership: no open failures recorded
+- Documentation release: README and CLAUDE unchanged for this scoped example
+- PR body accuracy: regenerate the PR body from this brief, current report-card, and current diff
+
 ## Summary
 
 - removes a small but visible sharing friction in the beta flow

@@ -1,5 +1,12 @@
 # CC-Act Skill Changelog
 
+## v1.6.4 - 2026-04-28
+
+- add a readiness dashboard covering review freshness, review quality, specialist facets, QA coverage, browser QA, failure ownership, documentation release, and PR body accuracy
+- require verification to rerun on every cc-act invocation while keeping ship actions idempotent
+- update `verify-act-gate.sh` to recognize `claimEvidence`, review freshness, QA coverage/browser status, and unresolved failure ownership
+- update `render-pr-brief.sh`, shared evidence extraction, and the PR brief template with readiness and PR body accuracy fields
+
 ## v1.6.3 - 2026-04-28
 
 - require PR briefs and PR bodies to carry the reviewed base/head SHA, review packet summary, finding triage, and QA / claim evidence summary

@@ -68,12 +68,38 @@ function deriveVerdict(manifest, quickGates, strictGates, review) {
     return 'fail';
   }
 
+  if ([...quickGates, ...strictGates].some((gate) => ['blocked', 'pending'].includes(gate.status))) {
+    return 'blocked';
+  }
+
+  if (review.qa?.status === 'fail') {
+    return 'fail';
+  }
+
+  if (['blocked', 'pending'].includes(review.qa?.status)) {
+    return 'blocked';
+  }
+
   if (review.status === 'blocked') {
     return 'blocked';
   }
 
   if (review.status === 'fail') {
     return 'fail';
+  }
+
+  const freshness = buildReviewFreshness(review).status;
+  if (review.status === 'pass' && !['fresh', 'not-applicable'].includes(freshness)) {
+    return 'blocked';
+  }
+
+  const openOwnedFailures = (review.runtime?.failureOwnership || []).some((item) => {
+    const classification = item.classification || '';
+    const status = item.status || 'open';
+    return ['in-branch', 'ambiguous'].includes(classification) && !['resolved', 'closed'].includes(status);
+  });
+  if (openOwnedFailures) {
+    return 'blocked';
   }
 
   return 'pass';
@@ -161,7 +187,82 @@ function buildQa(review) {
     status: review.qa?.status || 'skipped',
     regressionProof: review.qa?.regressionProof || [],
     testQuality: review.qa?.testQuality || [],
+    coverageAudit: review.qa?.coverageAudit || {
+      status: 'skipped',
+      coveragePct: null,
+      pathMap: [],
+      gaps: [],
+      testsAdded: [],
+      e2eRequired: false,
+      evalRequired: false,
+      qualityStars: ''
+    },
+    browserEvidence: review.qa?.browserEvidence || {
+      status: 'skipped',
+      mode: 'not-applicable',
+      affectedRoutes: [],
+      screenshots: [],
+      consoleErrors: [],
+      healthScore: null,
+      issues: [],
+      skipReason: 'not recorded'
+    },
     tddException: review.qa?.tddException || null
+  };
+}
+
+function buildRuntime(review) {
+  const failureOwnership = review.runtime?.failureOwnership || [];
+  const hasOpenOwnedFailure = failureOwnership.some((item) => {
+    const classification = item.classification || '';
+    const status = item.status || 'open';
+    return ['in-branch', 'ambiguous'].includes(classification) && !['resolved', 'closed'].includes(status);
+  });
+
+  return {
+    status: review.runtime?.status || (hasOpenOwnedFailure ? 'blocked' : 'pass'),
+    failureOwnership
+  };
+}
+
+function firstReviewHead(review) {
+  return [
+    review.taskReviews?.reviewPacket?.headSha,
+    review.diffReview?.reviewPacket?.headSha
+  ].find((value) => typeof value === 'string' && value.length > 0) || '';
+}
+
+function buildReviewFreshness(review) {
+  if (review.freshness) {
+    return review.freshness;
+  }
+
+  const headSha = firstReviewHead(review);
+  if (!headSha) {
+    return {
+      status: 'unknown',
+      reviewedCommit: '',
+      currentCommit: '',
+      commitsSinceReview: null,
+      staleReason: 'review headSha is not recorded'
+    };
+  }
+
+  return {
+    status: 'fresh',
+    reviewedCommit: headSha,
+    currentCommit: headSha,
+    commitsSinceReview: 0,
+    staleReason: ''
+  };
+}
+
+function buildReview(review) {
+  return {
+    ...review,
+    freshness: buildReviewFreshness(review),
+    qualityScore: review.qualityScore ?? null,
+    specialistReviews: review.specialistReviews || []
   };
 }
 
@@ -173,7 +274,7 @@ function isFindingOpen(item) {
 function summarizeOpenReviewFindings(findings = []) {
   return findings
     .filter(isFindingOpen)
-    .map((item) => `${item.source}: ${item.summary}`);
+    .map((item) => `${item.source || 'review'}: ${item.summary || item.evidence || 'open finding'}`);
 }
 
 function collectBlockingFindings({ manifest, quickGates, strictGates, review }) {
@@ -186,8 +287,8 @@ function collectBlockingFindings({ manifest, quickGates, strictGates, review }) 
   }
 
   for (const gate of [...quickGates, ...strictGates]) {
-    if (gate.status === 'fail') {
-      findings.push(`${gate.name}: ${gate.details}`);
+    if (['fail', 'blocked', 'pending'].includes(gate.status)) {
+      findings.push(`${gate.name}: ${gate.details || gate.summary || gate.status}`);
     }
   }
 
@@ -260,7 +361,9 @@ function main() {
     strictGates,
     review
   });
+  const runtime = buildRuntime(review);
   const qa = buildQa(review);
+  const reviewReport = buildReview(review);
 
   const report = {
     changeId: args.changeId,
@@ -275,11 +378,12 @@ function main() {
     specAlignment: specSignals.specAlignment,
     specDeltaVerified: specSignals.specDeltaVerified,
     specSyncReady: specSignals.specSyncReady,
+    runtime,
     claimEvidence,
     qa,
     quickGates,
     strictGates,
-    review,
+    review: reviewReport,
     blockingFindings,
     gaps: manifest.spec?.newGaps || [],
     reroute,

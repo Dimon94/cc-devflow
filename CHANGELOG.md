@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Updated `cc-check` to record review freshness, specialist review facets, QA coverage/browser evidence, and runtime failure ownership before a verdict can enter `cc-act`.
+- Updated `cc-act` to render a readiness dashboard, check PR body accuracy, and rerun verification on each invocation while keeping ship actions idempotent.
+- Updated `cc-investigate` to require a frozen root-cause contract with prior-history checks, pattern analysis, falsification methods, sanitized research evidence, and repair-boundary blast-radius fields.
+- Refreshed public examples and skill binding metadata for `cc-investigate@1.1.3`, `cc-check@1.8.4`, and `cc-act@1.6.4`.
+
 ## [4.5.1] - 2026-04-28
 
 ### Planning Evidence Gates

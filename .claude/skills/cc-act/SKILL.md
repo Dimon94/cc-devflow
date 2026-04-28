@@ -1,6 +1,6 @@
 ---
 name: cc-act
-version: 1.6.3
+version: 1.6.4
 description: 'Use when verified work must be shipped or handed off with a clear landing path: run simplify and required tests, create or update a PR, prepare a local handoff, close out merged work, sync docs, write release notes, and fold follow-ups back into backlog or roadmap.'
 triggers:
   - 准备提 PR
@@ -41,7 +41,7 @@ entry_gate:
   - If simplify, tests, or act changes code or verification scope, return to cc-check immediately.
 exit_criteria:
   - The ship mode is explicit, delivery materials match that mode, and the next maintainer has one clear entry point.
-  - Docs, PR text, release notes, handoff artifacts, review range, and test evidence reflect the same proven facts.
+  - Docs, PR text, release notes, handoff artifacts, review range, readiness dashboard, PR body accuracy check, and test evidence reflect the same proven facts.
   - Follow-up items are written back to roadmap/backlog instead of lingering in chat memory.
 reroutes:
   - when: Verification is stale, incomplete, or changed during act.
@@ -126,7 +126,8 @@ tool_budget:
 2. 再读 `planning/design.md` 或 `planning/analysis.md`、`planning/tasks.md`、`planning/task-manifest.json`、`change-meta.json`、相关 capability spec；如果已有 `handoff/resume-index.md`，一并读取，确认这次到底完成了什么。
 3. 运行 `scripts/verify-act-gate.sh --dir <requirement-dir>`，确认 gate 真的闭合。
 4. 运行 `scripts/detect-ship-target.sh`，识别当前分支、base branch、PR 状态与推荐 ship 路径。
-5. 如果在 `cc-act` 期间因为 `cc-simplify`、单测、e2e、review 修复而改了代码，必须回 `cc-check`，不能带着旧证明继续 ship。
+5. 检查 `review.freshness`、`runtime.failureOwnership`、`qa.coverageAudit`、`qa.browserEvidence`，确认 readiness dashboard 没有 blocker。
+6. 如果在 `cc-act` 期间因为 `cc-simplify`、单测、e2e、review 修复而改了代码，必须回 `cc-check`，不能带着旧证明继续 ship。
 
 ## Ship Modes
 
@@ -207,11 +208,25 @@ tool_budget:
 2. Scope completion：PR 简报必须包含 `cc-check` 的 plan completion、scope drift、review finding、验证结果摘要。
 3. Version and changelog：如果项目有 `VERSION`、`package.json`、`CHANGELOG.md`，先判断是否已 bump / 是否漂移；不要重复 bump，也不要覆盖 changelog。
 4. Bisectable commits：提交按逻辑单元拆分，顺序保证每个 commit 独立可理解、尽量可验证；小于 50 行且少于 4 文件可单 commit。
-5. Fresh final verification：如果 `cc-act` 中的 review fix、doc sync、version sync 改了代码或运行时输入，重新回 `cc-check`；纯文档/PR body 变化记录即可。
+5. Fresh final verification：每次进入 `cc-act` 都要重跑 entry gate、simplify、单测、e2e 或记录 skip；只有 push、PR 更新、doc 生成这类动作可以幂等跳过。以前跑过不等于现在仍然可信。
 6. Push idempotency：push 前比较 local/remote HEAD；已同步就不重复 push，不可用就切 `local-handoff`。
 7. PR idempotency：已有打开的 PR / MR 只更新 body，不重复创建。
 8. Review range：PR brief / PR body 必须写清 `cc-check` 审过的 base/head SHA、review packet、finding triage 摘要。
 9. Post-integration verification：本地合并或 post-merge closeout 后，必须在 merged result 上跑必要 gate；不能只继承合并前绿色。
+
+## Readiness Dashboard
+
+PR / handoff 之前必须把 readiness 压成一屏事实：
+
+1. Review freshness：`review.freshness.status` 必须是 `fresh` 或 `not-applicable`。
+2. Review quality：记录 `review.qualityScore`、specialist facet 覆盖、finding triage 摘要。
+3. QA coverage：记录 `qa.coverageAudit` 的 coverage、gaps、e2e/eval requirement。
+4. Browser QA：UI / 用户路径变更必须有 `qa.browserEvidence`，否则要有 skip reason。
+5. Failure ownership：`runtime.failureOwnership` 不能有未解释的 `in-branch` 或 `ambiguous` failure。
+6. Documentation release：README / CLAUDE / architecture / handoff / changelog 的同步状态必须可审计。
+7. PR body accuracy：PR body 必须从当前 `pr-brief.md`、当前 diff、当前 report-card 重建；已有 PR body 只能被刷新，不能被继承。
+
+readiness dashboard 有 blocker 时，不能创建或更新 PR，只能 reroute 到 `cc-check` / `cc-do` 或生成 local handoff。
 
 ## Integration Safety
 
@@ -256,11 +271,12 @@ tool_budget:
    - `local-handoff`：不假装已经发出，只生成可接手材料
    - `post-merge-closeout`：跳过 PR，完成发布与闭环回写
 11. 处理 PR / MR body：从当前 `pr-brief.md`、最新验证、review、doc sync、TODO/backlog 结果重新渲染，不复用旧 body。
-12. 回写 `devflow/roadmap/backlog.md` / `devflow/roadmap/roadmap.md`：
+12. 在 `handoff/pr-brief.md` 写入 readiness dashboard 与 PR body accuracy check；已有 PR body 与当前事实不一致时先刷新再继续。
+13. 回写 `devflow/roadmap/backlog.md` / `devflow/roadmap/roadmap.md`：
    - 新发现的 follow-up
    - 被推迟但必须保留的事项
    - 因本次结果而改变优先级的事项
-13. 如果 requirement 真正闭环，更新状态摘要并归档；否则把下一位接手者的入口写清楚。
+14. 如果 requirement 真正闭环，更新状态摘要并归档；否则把下一位接手者的入口写清楚。
 
 ## Output
 
@@ -272,6 +288,7 @@ tool_budget:
 - 单测 / e2e 的通过证据，或明确记录的 skip / blocker
 - 必要时创建或更新的 PR / MR
 - PR / MR body 中的 Summary、Test Coverage、Pre-Landing Review、Scope Drift、Plan Completion、Verification Results、Documentation、Test plan
+- readiness dashboard 和 PR body accuracy check
 
 ## Good Output
 
@@ -311,6 +328,7 @@ tool_budget:
 10. `create-pr` / `update-pr` 模式默认要求提交历史符合 `references/git-commit-guidelines.md`，并完成正确的 push、PR 创建或更新动作。
 11. CHANGELOG 只能基于当前 diff / commit history / release truth 更新，不允许覆盖既有历史条目。
 12. PR / MR body 每次都从当前事实重建，不沿用旧 body 或旧测试输出。
+13. Verification 每次执行 `cc-act` 都必须重新运行；只有已完成且可证明幂等的动作可以跳过。
 
 ## Exit Criteria
 

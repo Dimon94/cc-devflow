@@ -32,6 +32,17 @@
 - Finding triage:
 - QA / claim evidence:
 
+## Readiness Dashboard
+
+- Review freshness:
+- Review quality:
+- Specialist review facets:
+- QA coverage:
+- Browser QA:
+- Failure ownership:
+- Documentation release:
+- PR body accuracy:
+
 ## Summary
 
 - 
