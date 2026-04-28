@@ -9,13 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.2] - 2026-04-28
+
+### Skill Review Hardening
+
+v4.5.2 strengthens the verification and cleanup side of the workflow so
+review, QA, investigation, release readiness, and pre-ship simplification carry
+fresh evidence instead of relying on stale chat context.
+
 ### Changed
 
 - Updated `cc-check` to record review freshness, specialist review facets, QA coverage/browser evidence, and runtime failure ownership before a verdict can enter `cc-act`.
 - Updated `cc-act` to render a readiness dashboard, check PR body accuracy, and rerun verification on each invocation while keeping ship actions idempotent.
 - Updated `cc-investigate` to require a frozen root-cause contract with prior-history checks, boundary probes, backward trace, reference comparison, diagnostic probe cleanup, condition-wait evidence, pattern analysis, sanitized research evidence, and repair-boundary blast-radius fields.
 - Updated `cc-simplify` to a Chinese Codex-native cleanup workflow with scope-aware reviewer dispatch, JSONL findings, confidence-gated deduplication, Fix-First decisions, false-positive suppressions, and fresh validation evidence.
-- Refreshed public examples and skill binding metadata for `cc-investigate@1.1.4`, `cc-check@1.8.4`, and `cc-act@1.6.4`.
+- Refreshed public examples and skill binding metadata for `cc-investigate@1.1.4`, `cc-check@1.8.4`, `cc-act@1.6.4`, and `cc-simplify@1.3.0`.
 
 ## [4.5.1] - 2026-04-28
 
