@@ -19,12 +19,22 @@
 - Capability specs:
 - Read first:
 - Commands to trust:
+- Test framework source:
 - TDD plan: `Red -> Green -> Refactor`
 - TDD exceptions: none | list exception reason, risk, replacement evidence, follow-up
+- Regression tests: required | not applicable, with reason
 - Do not re-decide:
 - Parallel boundaries:
 
 > 顶部 handoff 只保留执行者必须知道的现实，不重复讲背景故事。
+
+## Implementation Surface Map
+
+| Surface | Responsibility | Tasks | Coupling risk |
+|---------|----------------|-------|---------------|
+|  |  |  |  |
+
+> 这张表是执行边界，不是装饰。任务拆分必须沿着这些职责走，不能让 `cc-do` 临场重切文件归属。
 
 ## Phase 1: Foundation
 
@@ -35,6 +45,7 @@
   Read first: `design.md`, `tasks.md`
   Verification: `npm test -- path/to/test`
   Evidence: failing output
+  Coverage: unit / integration / e2e / eval; regression: yes / no
   Ready when: 没有上游依赖，且测试路径已经确定
 
 - [ ] T002 [IMPL] Make the first test pass (dependsOn:T001) `path/to/file`
@@ -55,6 +66,7 @@
   Read first: `design.md`, `tasks.md`
   Verification: `npm test -- path/to/other.test`
   Evidence: failing output
+  Coverage: unit / integration / e2e / eval; regression: yes / no
   Ready when: T002 完成，且该测试覆盖的是独立行为
 
 - [ ] T004 [P] [IMPL] Make the independent test pass (dependsOn:T003) `path/to/other-file`
@@ -97,3 +109,4 @@
 - 用哪条命令证明它完成
 - 要留下什么证据给 `cc-check`
 - 它处于 Red、Green、Refactor，还是明确的 TDD exception
+- 测试框架依据来自哪里，回归测试是否被明确处理

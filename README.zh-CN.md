@@ -74,6 +74,12 @@ npx cc-devflow@latest adapt --cwd /path/to/your/project --all
 - `cc-spec-init`：初始化和维护 `devflow/specs/` 下的 durable capability spec
 - `cc-simplify`：审查已改代码的复用、质量、效率和需求漂移
 
+## 计划质量门禁
+
+`cc-roadmap` 现在会先记录 planning posture 和 evidence maturity，再推荐路线。idea、已有用户、付费客户、infra、recovery 场景不会被套进同一组问题。面向开发者或操作者的 roadmap item 还会把目标用户、time to first value、magic moment 和 adoption bottleneck 交给 `cc-plan`。
+
+`cc-plan` 会在 `cc-do` 开始前冻结更多实现决策。非 trivial 计划需要比较 minimal viable 和 ideal architecture，full-design 需要包含 implementation decision horizon 和 error/rescue map；测试计划要记录测试框架证据、覆盖质量，并在修改既有行为时强制规划 regression test。
+
 ## 安装方式
 
 ### 整包安装

@@ -1,5 +1,17 @@
 # Roadmap Skill Changelog
 
+## v4.3.4 - 2026-04-28
+
+- add planning posture and evidence maturity routing so roadmap questions match idea, user, paying, infra, or recovery contexts
+- require a framing check before route recommendation so vague users, hypothetical demand, and undefined status quo do not pass as evidence
+- add developer/operator adoption handoff fields for target user, time to first value, magic moment, and install/run/debug/upgrade bottlenecks
+
+## v4.3.3 - 2026-04-28
+
+- add a decomposition-first route for asks that bundle multiple independently shippable subsystems
+- require roadmap entry and approval gates to split over-broad goals into stages and RM candidates before implementation detail discovery
+- add subsystem decomposition and handoff notes to roadmap/backlog templates
+
 ## v4.3.2 - 2026-04-27
 
 - require roadmap outputs to resolve the runtime output policy before writing durable roadmap/backlog documents

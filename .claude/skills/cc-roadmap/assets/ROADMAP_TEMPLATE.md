@@ -15,17 +15,24 @@
 ## Context Snapshot
 
 - Product / repo:
+- Planning posture:
 - Project stage:
+- Evidence maturity:
 - Users:
 - Pain:
 - Existing workaround:
 - Strongest demand evidence:
+- Framing check:
 - Why now:
 - Distribution path:
 - Deadline / forcing function:
 - Team / capacity:
 - Hard constraints:
 - Adoption / trust bottleneck:
+- Target developer / operator:
+- Time to first value:
+- Magic moment:
+- Install / run / debug / upgrade bottleneck:
 - Known unknowns:
 - Relevant capabilities:
 
@@ -45,6 +52,7 @@
 | wedge-first |  |  | Recommended / Rejected |
 | platform-first |  |  | Rejected |
 | rescue-first |  |  | Rejected |
+| decompose-first |  |  | Recommended / Rejected |
 
 ## Recommended Route
 
@@ -63,6 +71,33 @@
 - Product promise:
 - What we refuse to build yet:
 - 6-12 month pull:
+
+## Evidence-Maturity Routing
+
+- Planning posture:
+- Evidence maturity:
+- Questions selected:
+- Questions intentionally skipped:
+- Reason this route matches maturity:
+- Evidence that would change the route:
+
+## DX / Operator Adoption Context
+
+- Applies: Yes / No
+- Target developer / operator:
+- Current first-success path:
+- Target time to first value:
+- Magic moment:
+- Install / run / debug / upgrade risks:
+- Adoption bottleneck:
+
+## Subsystem Decomposition
+
+| Subsystem / RM candidate | User value | Can ship independently? | Merge / split decision | Reason |
+|--------------------------|------------|-------------------------|------------------------|--------|
+| RM-001 |  | Yes / No | Merge / Split |  |
+
+> 如果一个目标里塞了多个独立子系统，先拆阶段和 `RM`，再谈优先级。不要把大杂烩写成一个阶段。
 
 ## Stage Overview
 
@@ -140,6 +175,8 @@ flowchart LR
 
 - Rejected path A:
 - Rejected path B:
+- Rejected maturity route:
+- Developer / operator adoption assumptions:
 - Open assumptions to verify next:
 - What changed in this version:
 

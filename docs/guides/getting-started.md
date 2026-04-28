@@ -98,6 +98,11 @@ Change truth lives in `devflow/changes/<change>/`.
 - Keep `change-state.json`, `change-meta.json`, planning docs, `task-manifest.json`, optional `team-state.json`, task `checkpoint.json`, `report-card.json`, and one final handoff file under each `devflow/changes/<change>/`.
 - Worker prompts, journals, assignments, and session logs belong under `devflow/workspaces/<change>/` as ephemeral scratch.
 
+Planning handoffs should be evidence-rich before implementation starts:
+
+- `cc-roadmap` records planning posture, evidence maturity, framing check, dependency graph, and any developer/operator adoption context.
+- `cc-plan` records option roles, implementation surface, decision horizon, error/rescue map, test framework source, coverage quality, and regression-test requirements when they apply.
+
 Typical public contract fields:
 
 - `triggers`, `reads`, structured `writes`, `effects`

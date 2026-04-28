@@ -20,7 +20,7 @@
     ]
   },
   "planningMeta": {
-    "reqPlanSkillVersion": "3.5.2",
+    "reqPlanSkillVersion": "3.5.6",
     "designVersion": "design.v1",
     "approvedAt": "2026-04-15T12:00:00.000Z",
     "approvedBy": "user",
@@ -29,6 +29,8 @@
   "executionDiscipline": {
     "default": "red-green-refactor",
     "testFirstRequired": true,
+    "testFrameworkSource": "",
+    "regressionTestsRequired": [],
     "tddExceptions": []
   },
   "status": "planned",

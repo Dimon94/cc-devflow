@@ -74,6 +74,12 @@ Maintenance skills are shipped with the pack:
 - `cc-spec-init`: initialize and maintain durable capability specs under `devflow/specs/`
 - `cc-simplify`: review changed code for reuse, quality, efficiency, and spec drift
 
+## Planning Quality Gates
+
+`cc-roadmap` now records planning posture and evidence maturity before recommending a route. That keeps idea-stage, active-user, paying-customer, infrastructure, and recovery work from being forced through the same questions. Developer-facing or operator-facing roadmap items also carry target user, time to first value, magic moment, and adoption bottleneck into `cc-plan`.
+
+`cc-plan` freezes more implementation decisions before `cc-do` starts. Non-trivial plans compare minimal viable and ideal architecture options, full designs include decision horizon plus error/rescue mapping, and test-first plans record test framework evidence, coverage quality, and mandatory regression tests when existing behavior changes.
+
 ## Installation Modes
 
 ### Whole-pack install

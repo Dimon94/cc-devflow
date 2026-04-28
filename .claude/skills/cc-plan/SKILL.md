@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.5.4
+version: 3.5.6
 description: Use when a requirement, roadmap item, or bug needs scope clarification, design decisions, and executable task breakdown before coding starts.
 triggers:
   - 帮我规划这个需求
@@ -34,6 +34,8 @@ writes:
 entry_gate:
   - Read roadmap handoff, current requirement files, code, docs, and tests before drafting design.
   - Freeze problem, constraints, non-goals, and success criteria before proposing implementation tasks.
+  - If the raw ask spans multiple independent subsystems, split it back into roadmap stages or separate REQ/FIX candidates before asking implementation details.
+  - "For non-trivial designs, compare named option roles: minimal viable, ideal architecture, and optional hybrid. Do not default to smallest unless it best serves the goal."
   - Plan executable work as Red/Green/Refactor by default; identify the first failing test before any production implementation task, or write an explicit TDD exception with replacement evidence.
   - Assign a canonical change key before writing artifacts; feature work must use `REQ-<number>-<description>`, and bug-fix work must use `FIX-<number>-<description>`.
   - Do not generate planning/tasks.md, planning/task-manifest.json, or change-meta.json until the recommended design is approved.
@@ -106,9 +108,11 @@ tool_budget:
 
 先给出默认 planning 形态，再解释为什么不是另外两种。`cc-plan` 的第一件事不是产出文档，而是压平 planning 密度。
 
+`tiny-design` 只是短设计，不是免设计。再小的变更也必须在 `planning/design.md` 里写清边界、验证和用户批准状态，不能用“太简单”跳过设计 gate。
+
 ## Harness Contract
 
-- Allowed actions: clarify scope, compare designs, freeze decisions, and write only `planning/design.md`, `planning/tasks.md`, `planning/task-manifest.json`, and `change-meta.json`.
+- Allowed actions: clarify scope, compare designs, split over-broad asks into separate planning candidates, freeze decisions, and write only `planning/design.md`, `planning/tasks.md`, `planning/task-manifest.json`, and `change-meta.json`.
 - Forbidden actions: writing production code, splitting planning into new side documents, or emitting tasks before approval.
 - Required evidence: design choices, task boundaries, and verification commands must point back to repo facts or explicit user approval.
 - Reroute rule: if the problem expands to project strategy go back to `roadmap`; if the plan is already frozen move straight to `cc-do`.
@@ -166,9 +170,10 @@ tool_budget:
 
 1. 先确认当前对象是一个 requirement，而不是整个项目路线图。
 2. 如果来源于 `roadmap`，必须先定位对应的 `RM-ID`，读清 `devflow/ROADMAP.md` / `devflow/BACKLOG.md` 的版本、证据、约束、success signal、next decision、primary capability、expected spec delta。
-3. 先读当前 change 目录现状。旧目录里如果还有 `BRAINSTORM.md` / `PLAN_REVIEW.md` / `context-package.md`，把有效信息吸收进新的 `planning/design.md`，不要继续增殖。
-4. 先看代码、文档、测试和最近提交，再谈拆任务。
-5. 先写不做什么，再写做什么。
+3. 如果原始需求包含多个可独立交付的子系统，先拆成独立 `RM` 或 `REQ/FIX` 候选；不要在一个 `cc-plan` 里继续追问实现细节。
+4. 先读当前 change 目录现状。旧目录里如果还有 `BRAINSTORM.md` / `PLAN_REVIEW.md` / `context-package.md`，把有效信息吸收进新的 `planning/design.md`，不要继续增殖。
+5. 先看代码、文档、测试和最近提交，再谈拆任务。
+6. 先写不做什么，再写做什么。
 
 ## Context Sweep
 
@@ -180,6 +185,9 @@ tool_budget:
 4. 当前 change 目录已有的 `planning/design.md`、`planning/tasks.md`、`planning/task-manifest.json`、`change-meta.json` 与历史 planning 文档
 5. `CLAUDE.md`、README、相关 docs / specs / ADR / 最近提交
 6. 当前代码、测试、发布、迁移、依赖的现实边界
+7. 测试框架真相源：优先读 `CLAUDE.md` / project docs 的测试约定，再用配置文件和目录结构补证。
+8. 如果有 UI scope，读取现有设计系统、组件、页面状态和交互模式。
+9. 如果是 API / CLI / SDK / developer-facing / operator-facing scope，读取 README、docs、package metadata、安装/运行/调试入口和当前 first-success path。
 
 先把这些材料压成 `Source Handoff`，再决定 discovery 还是 planning。
 
@@ -202,6 +210,9 @@ tool_budget:
 2. 澄清时一次只问一个关键问题，不做问题轰炸。
 3. 先写问题、目标、约束、非目标、成功标准，再写方案。
 4. 如果方向仍不稳，给 2-3 个方案，带 trade-off 和推荐，但这些内容都写进 `planning/design.md`。
+   - `full-design` 的方案必须至少包含 `minimal viable` 和 `ideal architecture` 两个角色。
+   - 两个角色权重相等；小方案不是默认答案，理想架构也不是默认过度设计。
+   - 只有一个方案成立时，必须写清其它方案为何被排除。
 5. 推荐方案没有得到用户明确批准前，不允许生成 `planning/tasks.md`。
 6. 批准后先判断这次用 `tiny-design` 还是 `full-design`。
 7. 把批准后的唯一方案冻结进 `planning/design.md`。
@@ -215,11 +226,19 @@ tool_budget:
 
 1. Existing leverage map：每个子问题先映射到现有代码、脚本、spec、模板或测试，避免重复造轮子。
 2. Scope challenge：超过 8 个文件、2 个新 service/class、或跨模块连锁时，必须解释为什么不是过度设计。
-3. Architecture diagram：跨模块或状态流变更要写 ASCII 数据流 / 依赖图。
-4. Code quality scan：指出 DRY、命名、错误处理、三层以上分支、隐藏耦合风险。
-5. Test diagram：列出新增 code path、user flow、错误路径、边界状态，并标注 first failing test、unit / e2e / eval。
-6. Performance and distribution：涉及批量、I/O、发布物、CLI、包、容器时，必须写清性能和分发边界。
-7. NOT in scope：所有被考虑但 defer 的内容要写理由，不能消失在聊天里。
+3. Implementation surface map：先锁定每个会新增或修改的文件、职责、归属理由、耦合风险，再拆任务。
+4. Option role check：非 trivial 方案必须比较 `minimal viable`、`ideal architecture`，必要时加 `hybrid`，并写清为什么推荐方案服务当前目标。
+5. Implementation decision horizon：提前写出 foundation、core logic、integration、polish/tests 阶段实现者会撞到的决策，能现在冻结就不要留给 `cc-do` 临场猜。
+6. Architecture diagram：跨模块或状态流变更要写 ASCII 数据流 / 依赖图。
+7. Error & Rescue map：`full-design` 必须按 codepath 写清 failure、rescue、user sees、test evidence；不适用时写 N/A 理由。
+8. Code quality scan：指出 DRY、命名、错误处理、三层以上分支、隐藏耦合风险。
+9. Test diagram：列出新增 code path、user flow、错误路径、边界状态，并标注 first failing test、unit / e2e / eval。
+10. Test framework source：先记录测试框架来自 `CLAUDE.md` / docs / config / directory 的哪条证据；不能靠猜。
+11. UI state coverage：有 UI / interaction scope 时，写 loading / empty / error / success / partial 状态表和 design completeness score。
+12. DX / operator coverage：developer-facing / operator-facing scope 必须写 target persona、time to first value、magic moment、install / run / debug / upgrade 风险。
+13. Performance and distribution：涉及批量、I/O、发布物、CLI、包、容器时，必须写清性能和分发边界。
+14. NOT in scope：所有被考虑但 defer 的内容要写理由，不能消失在聊天里。
+15. Review calibration：只有会导致 `cc-do` 建错、卡住、越界、漏测的问题才是 blocking；措辞偏好和非阻塞建议不能伪装成 gate failure。
 
 如果任一项无法从当前证据完成，写 `assumption` 或 `blocked question`，不要伪装成已经审过。
 
@@ -227,15 +246,21 @@ tool_budget:
 
 `cc-plan` 生成具体计划时默认采用测试先行纪律。不能让计划是“先实现再补测”，然后把 TDD 压力留给 `cc-do` 临场修正。
 
-1. 每个可观察行为变更默认拆成 `Red -> Green -> Refactor`：
+1. 先定位测试框架真相源：
+   - 优先读取 `CLAUDE.md` / project docs 中的 testing 约定。
+   - 如果没有，按配置文件和目录结构识别：`vitest` / `jest` / `pytest` / `go test` / `cargo test` / `rspec` / `playwright` / `cypress` 等。
+   - 如果仍然没有框架，写成 `test framework unknown`，并把验证计划降级为 exploratory spike 或 manual evidence，不准假装已有自动测试路径。
+2. 每个可观察行为变更默认拆成 `Red -> Green -> Refactor`：
    - Red：先写 `[TEST]` 任务，目标是用最小失败测试证明目标行为缺失。
    - Green：再写 `[IMPL]` 任务，只做让对应红灯转绿的最小生产实现。
    - Refactor：最后写 `[REFACTOR]` 或在实现任务中明确 refactor checkpoint，说明何时清理重复、命名、结构和坏味道。
-2. `planning/tasks.md` 不能把测试和实现塞进同一个 task。一个 task 同时写“实现并测试”就是计划失败。
-3. `planning/task-manifest.json` 必须让 `cc-do` 看出每个任务的 `tddPhase`、依赖和证据：`red` 任务产出 failing output，`green` 任务产出 passing output，`refactor` 任务产出重跑后的 green evidence。
-4. 只有纯文档、纯配置、纯生成文件、throwaway prototype 可以例外。例外必须写进 `planning/design.md` 和 `planning/tasks.md` 的 `TDD exceptions`，包含原因、风险、替代验证命令和后续补证入口。
-5. 并行只允许发生在已经满足上游 Red/Green 依赖之后。两个 `[P]` 任务如果共享同一个红灯或同一组 touched files，就不能并行。
-6. 如果当前需求找不到第一条失败测试，先把它写成 blocked question 或 exploratory spike，不准伪装成可执行实现任务。
+3. `planning/tasks.md` 不能把测试和实现塞进同一个 task。一个 task 同时写“实现并测试”就是计划失败。
+4. `planning/task-manifest.json` 必须让 `cc-do` 看出每个任务的 `tddPhase`、依赖和证据：`red` 任务产出 failing output，`green` 任务产出 passing output，`refactor` 任务产出重跑后的 green evidence。
+5. Test diagram 要同时覆盖 code paths 和 user flows。每条路径标注 `unit` / `integration` / `e2e` / `eval`，并给现有测试质量分级：`strong`、`happy-path-only`、`smoke-only`、`missing`。
+6. 回归测试是硬门槛。只要计划修改既有行为且现有测试没有覆盖，就必须把 regression test 写进 `planning/tasks.md`，不能 defer，不能问用户要不要跳过。
+7. 只有纯文档、纯配置、纯生成文件、throwaway prototype 可以例外。例外必须写进 `planning/design.md` 和 `planning/tasks.md` 的 `TDD exceptions`，包含原因、风险、替代验证命令和后续补证入口。
+8. 并行只允许发生在已经满足上游 Red/Green 依赖之后。两个 `[P]` 任务如果共享同一个红灯或同一组 touched files，就不能并行。
+9. 如果当前需求找不到第一条失败测试，先把它写成 blocked question 或 exploratory spike，不准伪装成可执行实现任务。
 
 ## Design Modes
 
@@ -250,6 +275,8 @@ tool_budget:
 2. 触达文件通常只有 1-3 个
 3. 不涉及 migration、复杂状态流、权限、安全、回滚编排
 4. 执行者看完一张冻结卡片就能准确落地
+
+`tiny-design` 仍然必须有用户批准、implementation surface、第一条验证证据和升级到 `full-design` 的触发条件。它消除的是冗长文档，不是消除设计。
 
 出现以下任一情况，直接升级到 `full-design`：
 
@@ -268,11 +295,15 @@ tool_budget:
 4. Ambiguity scan：实现者看完不能还靠猜
 5. Feasibility scan：方案要接得上现有代码、依赖和时间边界
 6. Source alignment：仍然对齐上游 roadmap 的 success signal、constraints、non-goals
-7. Engineering scan：完成 existing leverage、scope challenge、test diagram、failure modes、NOT in scope
-8. Final gate：明确 auto-decided items、taste decisions、user challenges 和最终 recommendation
+7. Engineering scan：完成 existing leverage、scope challenge、implementation surface、test diagram、failure modes、NOT in scope
+8. Decision horizon scan：foundation / core / integration / polish/tests 的实现决策是否已经冻结或明确 blocked。
+9. Error & rescue scan：`full-design` 是否写清 failure -> rescue -> user sees -> test evidence。
+10. Test framework / regression scan：测试框架来源、覆盖质量、回归测试是否明确。
+11. Review calibration：只把会导致实现错误、执行卡住、范围越界、验证缺失的问题标成 blocking；非阻塞建议必须降级为 advisory
+12. Final gate：明确 auto-decided items、taste decisions、user challenges 和最终 recommendation
 
-如果有 UI / interaction 明显范围，在 `planning/design.md` 里补一段 design review 结论。
-如果有 API / CLI / developer-facing scope，在 `planning/design.md` 里补一段 DX review 结论。
+如果有 UI / interaction 明显范围，在 `planning/design.md` 里补 design completeness score 和状态覆盖表。
+如果有 API / CLI / developer-facing / operator-facing scope，在 `planning/design.md` 里补 target persona、time to first value、magic moment 和 DX / operator review 结论。
 
 ## Good Output
 
@@ -305,6 +336,7 @@ tool_budget:
 7. 具体计划默认测试先行；没有 Red/Green/Refactor 或 TDD exception，就不能进入 `cc-do`。
 8. 任务一旦超过 2-5 分钟粒度就继续拆，直到可以稳定交给执行者。
 9. 三层以上判断说明设计还没压平，应回到 `planning/design.md` 继续简化。
+10. `tiny-design` 不得被当成“免审批”；只要要写任务，就必须先有已批准的设计卡片。
 
 ## Exit Criteria
 

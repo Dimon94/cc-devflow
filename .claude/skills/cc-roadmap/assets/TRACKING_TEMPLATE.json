@@ -6,12 +6,13 @@
   "lastSyncedAt": "2026-04-19",
   "backlogMeta": {
     "roadmapVersion": "roadmap.v1",
-    "skillVersion": "4.3.2",
+    "skillVersion": "4.3.4",
     "currentFocusStage": "Stage 1"
   },
   "dependencyHandoff": {
     "serialSpine": "RM-001",
     "parallelReadyNextWave": "-",
+    "decompositionNotes": "-",
     "notesOnBlockers": "-"
   },
   "items": [

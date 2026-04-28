@@ -43,15 +43,34 @@
 - Key decisions that `cc-do` must not re-decide:
 - Upgrade trigger to `full-design`:
 
+> `tiny-design` 是短设计，不是免设计。没有明确批准状态、验证证据和升级触发条件，就不能继续拆任务。
+
+## Implementation Surface Map
+
+| Surface | Responsibility | Why here | Coupling risk |
+|---------|----------------|----------|---------------|
+|  |  |  |  |
+
 ## Validation
 
+- Test framework source:
 - First failing test:
 - Green implementation check:
 - Refactor checkpoint:
 - TDD exceptions:
+- Regression test required:
 - Primary check:
 - Secondary checks:
 - Evidence to collect:
+
+## Conditional Design Checks
+
+- UI / interaction scope: Yes / No
+- UI state coverage if applicable:
+- Developer / operator-facing scope: Yes / No
+- Target developer / operator if applicable:
+- Time to first value if applicable:
+- Magic moment if applicable:
 
 ## Main Risk
 
@@ -65,7 +84,10 @@
 - Scope scan:
 - Ambiguity scan:
 - Feasibility scan:
+- Implementation surface scan:
+- Test framework / regression scan:
 - Test-first readiness:
+- Review calibration:
 - Final recommendation:
 
 ## Approval

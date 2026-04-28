@@ -19,7 +19,17 @@
 
 - Serial spine:
 - Parallel-ready next wave:
+- Decomposition notes:
 - Notes on blockers:
+
+## Adoption Handoff
+
+- Planning posture:
+- Evidence maturity:
+- Target developer / operator:
+- Time to first value:
+- Magic moment:
+- Adoption bottleneck:
 
 ## Ready For Req-Plan
 
@@ -33,6 +43,11 @@
   - Expected spec delta:
   - Open risks:
   - First planning question:
+  - Evidence maturity:
+  - Target developer / operator:
+  - Time to first value:
+  - Magic moment:
+  - Adoption bottleneck:
   - Required context to load:
   - Depends On:
   - Parallel With:

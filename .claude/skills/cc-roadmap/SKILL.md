@@ -1,6 +1,6 @@
 ---
 name: cc-roadmap
-version: 4.3.2
+version: 4.3.4
 description: "Use when defining, resetting, or narrowing project direction, stage order, or backlog priority before a concrete requirement enters the PDCA loop."
 triggers:
   - "帮我定路线图"
@@ -32,6 +32,8 @@ writes:
 entry_gate:
   - "Read current roadmap, backlog, related capability specs, and surrounding repo context before proposing direction."
   - "Confirm this is a project-direction problem, not a single requirement execution problem."
+  - "Classify planning posture and evidence maturity before selecting the route or forcing questions."
+  - "If the ask contains multiple independent subsystems, decompose them into stages and RM candidates before refining any implementation detail."
   - "Do not decompose implementation tasks while the roadmap is still being decided."
 exit_criteria:
   - "The next 1-3 stages are frozen with goal, why now, dependencies, exit signal, kill signal, and non-goals."
@@ -95,12 +97,13 @@ tool_budget:
 | “不知道下一步做什么” | 主线不清 | `wedge-first` |
 | “后面几阶段都会重复碰同一底座” | 底座风险 | `platform-first` |
 | “增长/交付/信任卡住了” | 当前最大瓶颈 | `rescue-first` |
+| “一个目标里塞了多个可独立交付系统” | 边界过宽 | `decompose-first` |
 
 先给一个**默认推荐**，再解释为什么，不要把用户扔进开放式战略讨论。
 
 ## Harness Contract
 
-- Allowed actions: read current strategy files, repo context, and recent reality; compare route shapes; write `devflow/ROADMAP.md`, `devflow/BACKLOG.md`, and the optional `devflow/roadmap-tracking.json` sidecar used by bundled helpers as the shared roadmap/backlog truth source.
+- Allowed actions: read current strategy files, repo context, and recent reality; compare route shapes; decompose independent subsystems into stages and RM candidates; write `devflow/ROADMAP.md`, `devflow/BACKLOG.md`, and the optional `devflow/roadmap-tracking.json` sidecar used by bundled helpers as the shared roadmap/backlog truth source.
 - Forbidden actions: decompose implementation tasks, invent hidden context, or jump into `cc-plan` before the roadmap is approved.
 - Required evidence: every stage and backlog item must point back to explicit repo facts, user constraints, or observed market signals.
 - Reroute rule: once the conversation collapses to one concrete requirement, stop strategic expansion and hand off to `cc-plan`.
@@ -109,8 +112,9 @@ tool_budget:
 
 1. 如果 `devflow/ROADMAP.md` / `devflow/BACKLOG.md` 已存在，先读现状再重写。
 2. 先判断这是“项目方向问题”还是“单 requirement 执行问题”。
-3. 先做一次上下文扫描，不能跳过现有事实直接写愿景。
-4. 方向没被批准前，不准把 roadmap 偷偷下放成实现任务。
+3. 如果输入是多个独立子系统的混合目标，先拆成阶段和 `RM` 候选；不要继续追问某个子系统的实现细节。
+4. 先做一次上下文扫描，不能跳过现有事实直接写愿景。
+5. 方向没被批准前，不准把 roadmap 偷偷下放成实现任务。
 
 ## Context Sweep
 
@@ -122,20 +126,38 @@ tool_budget:
 4. 最近相关提交、当前分支脏状态、正在进行中的 requirement。
 5. 真实 forcing functions：deadline、发布窗口、资源上限、依赖、distribution、adoption / trust / delivery 卡点。
 6. 当前项目最强的现实证据，以及仍然只能靠假设的空白。
+7. Planning posture：startup / internal / hackathon / OSS / research / learning / side-project / infrastructure。
+8. Evidence maturity：idea / has users / paying users / internal sponsor / infra-only / recovery。
+9. 如果是 developer-facing 或 operator-facing 能力，补齐 target developer/operator、time to first value、magic moment、install / run / debug / upgrade 卡点。
 
 先把这些材料压成一个 `Context Snapshot`，再开始追问用户。
+
+## Evidence-Maturity Routing
+
+不要对所有项目套同一组问题。先用 `planning posture` 和 `evidence maturity` 决定追问深度：
+
+| Evidence maturity | 优先追问 | 不要浪费时间在 |
+| --- | --- | --- |
+| idea / pre-product | 真实用户、status quo、最窄 wedge、需求证据 | 远期平台架构细节 |
+| has users | 现有使用路径、失败/绕路场景、保留率或复用信号、下一阶段 wedge | 假想 persona |
+| paying users / internal sponsor | 付费/赞助动机、扩张边界、不可丢的信任信号、组织风险 | 泛泛市场教育 |
+| infra-only | 当前瓶颈、调用方、现有 workaround、复用边界、迁移/回滚约束 | 伪装成用户访谈的问题 |
+| recovery / trust gap | 事故证据、恢复路径、最小可信修复、停止继续扩张的 kill signal | 新功能愿景 |
+
+第一轮回答后必须做 framing check：术语是否具体、用户是否可命名、痛点是否有行为证据、status quo 是否真实、需求是否只是兴趣。发现答案虚，要先收紧问题，再谈路线。
 
 ## Session Protocol
 
 1. 先探索上下文，不靠默认上下文注入替代阅读。
 2. 先问现实，不先写愿景。
 3. 一次只推进一个关键未知点，不要一口气抛一串问题。
-4. 先写 `Context Snapshot`、证据、约束、非目标，再讨论阶段。
+4. 先写 `Context Snapshot`、planning posture、evidence maturity、证据、约束、非目标，再讨论阶段。
 5. 给出 2-3 种路线图形状，再明确推荐一种，并说明为什么其他路线现在不值得打。
-6. 只冻结 1-3 个阶段。每个阶段都必须有 goal、why now、dependencies、exit signal、kill signal、non-goals。
-7. 把 `RM` 之间的硬依赖压成显式 dependency graph，并标出 parallel-ready wave；不要把“最好按这个顺序做”伪装成 blocker。
-8. backlog 只保留会真的进入下一轮 `cc-plan` 的事项，每项都要带成功信号、下一决策、`Primary Capability`、`Secondary Capabilities`、`Expected Spec Delta`、`Depends On` 与 `Parallel With`。
-9. 用户没批准，不进入 `cc-plan`。
+6. 如果一个方向里有多个可独立交付的子系统，先写清 decomposition：哪些合并为同一阶段，哪些拆成独立 `RM`，为什么。
+7. 只冻结 1-3 个阶段。每个阶段都必须有 goal、why now、dependencies、exit signal、kill signal、non-goals。
+8. 把 `RM` 之间的硬依赖压成显式 dependency graph，并标出 parallel-ready wave；不要把“最好按这个顺序做”伪装成 blocker。
+9. backlog 只保留会真的进入下一轮 `cc-plan` 的事项，每项都要带成功信号、下一决策、`Primary Capability`、`Secondary Capabilities`、`Expected Spec Delta`、`Depends On` 与 `Parallel With`。
+10. 用户没批准，不进入 `cc-plan`。
 
 ## Route Selection Rule
 
@@ -173,14 +195,24 @@ tool_budget:
 8. 当前最大的 adoption、trust、delivery 卡点是什么
 9. 这个 roadmap 成功与失败各自用什么信号判断
 
+如果这是 developer-facing / operator-facing roadmap，再补 4 件事：
+
+10. 目标开发者 / 操作者是谁
+11. 从第一次接触到第一次成功输出需要多久
+12. 让他们觉得“这东西真的有用”的 magic moment 是什么
+13. install / run / debug / upgrade / handoff 中哪个环节最可能让 adoption 失败
+
 ## Approval Gates
 
 1. 没有 `Context Snapshot`，不准给路线推荐。
-2. 没有 2-3 条路线对比，不准直接拍脑袋定主线。
-3. 没有 exit signal / kill signal / non-goals，不算阶段冻结。
-4. 没有明确成功信号和下一决策，不准把事项放进 `Ready For Req-Plan`。
-5. 没有 `RM dependency graph` 或 parallel-ready wave，不准宣称事项可以并发推进。
-6. 没有用户批准，不准把 roadmap item 下放到 `cc-plan`。
+2. 没有 planning posture、evidence maturity 和 framing check，不准给路线推荐。
+3. 没有 2-3 条路线对比，不准直接拍脑袋定主线。
+4. 没有 exit signal / kill signal / non-goals，不算阶段冻结。
+5. 没有明确成功信号和下一决策，不准把事项放进 `Ready For Req-Plan`。
+6. developer-facing / operator-facing item 没有 target user、time to first value 或 adoption bottleneck，不准标成 ready。
+7. 没有 `RM dependency graph` 或 parallel-ready wave，不准宣称事项可以并发推进。
+8. 没有独立子系统拆分判断，不准把大而混杂的方向伪装成单一主线。
+9. 没有用户批准，不准把 roadmap item 下放到 `cc-plan`。
 
 ## Review Loop
 
@@ -192,7 +224,10 @@ tool_budget:
 4. Feasibility scan：阶段目标与团队容量、依赖、distribution 约束是否接得上。
 5. Graph scan：`Depends On` 是否只包含硬阻塞，图里有没有环，parallel-ready wave 是否真的共享同一前置。
 6. Spec scan：每个 roadmap item 是否都落到某个 capability，而不是悬空需求。
-7. Handoff scan：第一批 roadmap item 是否已经自然长成可进入 `cc-plan` 的对象。
+7. Decomposition scan：多个独立子系统是否已拆成阶段 / `RM` 候选，而不是塞进一个含糊阶段。
+8. Handoff scan：第一批 roadmap item 是否已经自然长成可进入 `cc-plan` 的对象。
+9. Evidence maturity scan：问题路由是否匹配 idea / user / paying / infra / recovery 状态，还是拿同一套问题硬套所有项目。
+10. Adoption scan：developer-facing / operator-facing item 是否写清目标人、time to first value、magic moment 和 adoption bottleneck。
 
 ## Output
 

@@ -20,6 +20,12 @@
 7. 同 blast radius 内的完整边界优先做完，跨系统或无证据扩张才 defer。
 8. 具体执行计划默认测试先行；没有 Red/Green/Refactor 链或 TDD exception，不准交给 `cc-do`。
 9. 新 change 目录必须使用 `REQ-<number>-<description>` 或 `FIX-<number>-<description>`；旧小写目录只读兼容，不再作为新输出。
+10. 原始需求跨多个独立子系统时，先拆回 roadmap / 多个 REQ/FIX；不要把一个大杂烩压成单个计划。
+11. `tiny-design` 仍然必须被批准，它只是短设计，不是跳过设计。
+12. 非 trivial 方案必须至少比较 `minimal viable` 和 `ideal architecture` 两种角色，小方案没有天然优先权。
+13. `full-design` 必须冻结 implementation decision horizon 和 error/rescue map，避免 `cc-do` 临场补设计。
+14. 测试框架来源、覆盖质量和回归测试必须在计划阶段写清，不准靠执行阶段猜。
+15. UI 和 developer/operator-facing 范围只在适用时触发对应 gate，不把每个计划都塞成大审查清单。
 
 ## Required Outputs
 
@@ -53,8 +59,14 @@
 8. `planning/tasks.md` 顶部必须写清 frozen decisions、commands to trust、do-not-re-decide。
 9. `planning/task-manifest.json` 必须是 `cc-do` 的真相源，而不是装饰文件。
 10. `planning/design.md` 必须包含 `Existing Leverage`、`NOT in scope`、`Failure Modes`、`Test Diagram`，除非明确说明为什么不适用。
-11. 新 artifact、CLI、包、容器、文档入口必须在计划阶段写清分发和 discoverability，不准到 `cc-act` 才发现没人能用。
-12. 行为变更任务必须拆成 `[TEST] -> [IMPL] -> [REFACTOR]` 或写明 TDD exception；不能用“实现并测试”混成一个任务。
+11. `planning/design.md` 或 `planning/tasks.md` 必须包含 implementation surface map：文件、职责、归属理由、耦合风险。
+12. `full-design` 必须包含 implementation decision horizon 和 error/rescue map；不适用时写清 N/A 理由。
+13. 新 artifact、CLI、包、容器、文档入口必须在计划阶段写清分发和 discoverability，不准到 `cc-act` 才发现没人能用。
+14. 行为变更任务必须拆成 `[TEST] -> [IMPL] -> [REFACTOR]` 或写明 TDD exception；不能用“实现并测试”混成一个任务。
+15. 回归测试不能 defer。修改既有行为且缺少覆盖时，必须先计划 regression test。
+16. UI scope 要写 design completeness score 和 loading / empty / error / success / partial 状态。
+17. developer/operator-facing scope 要写 target persona、time to first value、magic moment 和 install / run / debug / upgrade 风险。
+18. Review gate 只拦会导致实现错误、执行卡住、范围越界、验证缺失的问题；文字偏好和 nice-to-have 只能作为 advisory。
 
 ## Approval Flow
 
@@ -71,7 +83,12 @@
 - 现有代码已经解决了哪些子问题？
 - 最小完整方案触达哪些文件，为什么没有更小边界？
 - 数据流、状态流或执行流怎么走？
+- 每个会触达的文件职责是什么，为什么属于这个文件，而不是另一个平行位置？
+- 为什么推荐方案胜过 `minimal viable` / `ideal architecture` 的另一端？
+- foundation / core / integration / polish 阶段哪些决策已经冻结，哪些仍是 blocked question？
+- 每条 failure path 的 rescue action、用户可见结果和测试证据是什么？
 - 每条新增 code path / user flow / error path 的第一条失败测试是什么？
+- 测试框架来源是什么，现有覆盖是 strong、happy-path-only、smoke-only 还是 missing？
 - 哪些生产失败模式已经处理，哪些 defer 到 backlog？
 
 ## Design Mode Switch

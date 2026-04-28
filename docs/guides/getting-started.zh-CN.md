@@ -97,6 +97,11 @@ durable truth 分两层：
 - `devflow/changes/<change>/`：变更真相，保留 `change-state.json`、`change-meta.json`、planning 文档、`task-manifest.json`、可选 `team-state.json`、任务级 `checkpoint.json`、`report-card.json` 和唯一的最终 handoff 文件。
 - worker prompt、journal、assignment、session log 统一放到 `devflow/workspaces/<change>/`，作为 ephemeral scratch。
 
+进入实现前，planning handoff 应该先把证据写实：
+
+- `cc-roadmap` 记录 planning posture、evidence maturity、framing check、依赖图，以及适用时的 developer/operator adoption context。
+- `cc-plan` 记录 option roles、implementation surface、decision horizon、error/rescue map、测试框架来源、覆盖质量，以及适用时的 regression-test requirement。
+
 公开契约字段的典型形状：
 
 - `triggers`、`reads`、结构化 `writes`、`effects`

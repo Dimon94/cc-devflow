@@ -1,5 +1,19 @@
 # CC-Plan Skill Changelog
 
+## v3.5.6 - 2026-04-28
+
+- require non-trivial plans to compare named option roles, including minimal viable and ideal architecture, before freezing a recommendation
+- add implementation decision horizon and error/rescue mapping so full designs resolve implementation-time ambiguity before `cc-do`
+- strengthen test-first planning with test framework evidence, coverage quality mapping, and mandatory regression tests for changed existing behavior
+- add conditional UI and DX/operator gates for design completeness, interaction states, target persona, time to first value, and magic moment
+
+## v3.5.5 - 2026-04-28
+
+- require over-broad asks to split back into roadmap stages or separate REQ/FIX candidates before detailed planning
+- clarify that `tiny-design` is a short approved design, not permission to skip the design gate
+- add implementation surface mapping so file responsibilities are locked before task decomposition
+- add review calibration so only build-blocking scope, ambiguity, verification, or execution issues fail the planning gate
+
 ## v3.5.4 - 2026-04-27
 
 - require planning outputs to resolve the runtime output policy before writing `planning/design.md`, `planning/tasks.md`, or `change-meta.json`

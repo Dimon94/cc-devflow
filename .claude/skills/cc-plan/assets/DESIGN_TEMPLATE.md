@@ -61,19 +61,28 @@
 
 ### Option A
 
+- Role: `minimal viable` | `ideal architecture` | `hybrid`
 - Shape:
 - Reuses:
+- Completeness:
 - Pros:
 - Cons:
 - Risks:
 
 ### Option B
 
+- Role: `minimal viable` | `ideal architecture` | `hybrid`
 - Shape:
 - Reuses:
+- Completeness:
 - Pros:
 - Cons:
 - Risks:
+
+### Eliminated Options
+
+- Option:
+- Why eliminated:
 
 ## Approved Direction
 
@@ -91,6 +100,15 @@
 - Contracts:
 - Error handling:
 - Rollout / migration:
+
+## Implementation Decision Horizon
+
+| Phase | Decision `cc-do` would otherwise hit | Frozen answer | Evidence / owner |
+|-------|--------------------------------------|---------------|------------------|
+| Foundation |  |  |  |
+| Core logic |  |  |  |
+| Integration |  |  |  |
+| Polish / tests |  |  |  |
 
 ## Invariant Impact
 
@@ -112,15 +130,61 @@
 
 > 如果文件计划超过 5-8 个文件，先问自己：这是不是已经逼近 `full-design` 之外的需求膨胀。
 
+## Implementation Surface Map
+
+| Surface | Responsibility | Why here | Coupling risk | Split / merge decision |
+|---------|----------------|----------|---------------|------------------------|
+|  |  |  |  |  |
+
+> 先锁定文件职责，再拆任务。执行者不应该在 `cc-do` 阶段重新决定代码该放哪里。
+
 ## Validation Strategy
 
+- Test framework source:
 - First failing tests:
 - Red/Green/Refactor task chain:
 - TDD exceptions:
+- Regression tests required:
 - Unit:
 - Integration:
+- E2E:
+- Eval:
 - Manual:
 - Observability / evidence:
+
+## Test Coverage Map
+
+| Code path / user flow | Existing coverage | Quality | Required test | Level | Regression? |
+|-----------------------|-------------------|---------|---------------|-------|-------------|
+|  |  | strong / happy-path-only / smoke-only / missing |  | unit / integration / e2e / eval | Yes / No |
+
+## Error & Rescue Map
+
+| Codepath | What can fail | Rescue action | User sees | Test evidence |
+|----------|---------------|---------------|-----------|---------------|
+|  |  |  |  |  |
+
+## UI Design Gate
+
+- Applies: Yes / No
+- Design completeness score:
+- What 10/10 means here:
+- Existing design patterns to reuse:
+- State coverage:
+
+| Feature | Loading | Empty | Error | Success | Partial |
+|---------|---------|-------|-------|---------|---------|
+|  |  |  |  |  |  |
+
+## DX / Operator Gate
+
+- Applies: Yes / No
+- Target developer / operator:
+- Current first-success path:
+- Target time to first value:
+- Magic moment:
+- Install / run / debug / upgrade risks:
+- Required docs / examples / entrypoints:
 
 ## Risks
 
@@ -136,9 +200,14 @@
 - Ambiguity scan:
 - Feasibility scan:
 - Source alignment:
+- Implementation surface scan:
+- Decision horizon scan:
+- Error & rescue scan:
+- Test framework / regression scan:
 - UI / interaction review summary:
-- DX review summary:
+- DX / operator review summary:
 - Test-first readiness:
+- Review calibration:
 - Auto-decided items:
 - Taste decisions:
 - User challenges:

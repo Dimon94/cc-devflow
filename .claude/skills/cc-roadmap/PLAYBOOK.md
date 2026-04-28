@@ -16,6 +16,9 @@
 4. 通过 `roadmap` 只能产出方向，不能偷拆实现任务。
 5. 没有证据时写 assumption，不准冒充事实。
 6. 每次都必须明确推荐一条路线，不准只列选项不下判断。
+7. 多个独立子系统混在一个目标里时，先拆阶段和 `RM` 候选，不要继续追问实现细节。
+8. 先判断 planning posture 和 evidence maturity，再决定追问哪些问题；不要用同一套问题硬套 idea、已有用户、付费客户、infra 和 recovery 场景。
+9. developer-facing / operator-facing 路线必须写清 target user、time to first value、magic moment 和 adoption bottleneck。
 
 ## Local Kit
 
@@ -37,6 +40,9 @@
 3. 最近相关 docs / specs / plans
 4. 最近相关提交、当前工作树状态、正在推进的 requirement
 5. 现实 forcing functions：deadline、distribution、资源、依赖、当前卡点
+6. planning posture：startup / internal / hackathon / OSS / research / learning / side-project / infrastructure
+7. evidence maturity：idea / has users / paying users / internal sponsor / infra-only / recovery
+8. developer / operator adoption 线索：目标人、first success path、TTHW / time to first value、debug / upgrade 卡点
 
 先把这些材料压成 `Context Snapshot`，再追问用户。
 
@@ -57,11 +63,22 @@
 8. 当前最大的 adoption / trust / delivery 卡点是什么
 9. 成功与失败的判断信号是什么
 
+第一轮答案之后做 framing check：术语是否具体、用户是否可命名、pain 是否来自真实行为、status quo 是否明确、需求证据是否强过“感兴趣”。如果答案虚，先收紧问题，不要急着定路线。
+
+## Evidence-Maturity Routing
+
+- `idea / pre-product`: 先追真实用户、现状替代方案、最窄 wedge、需求证据。
+- `has users`: 先追现有路径、失败/绕路场景、使用保留信号、下一阶段 wedge。
+- `paying users / internal sponsor`: 先追付费/赞助动机、扩张边界、信任信号、组织风险。
+- `infra-only`: 先追调用方、瓶颈、复用边界、迁移/回滚约束。
+- `recovery / trust gap`: 先追事故证据、恢复路径、最小可信修复、停止扩张的 kill signal。
+
 ## Route Shapes
 
 - `wedge-first`: 用一个极窄切口先打穿真实需求
 - `platform-first`: 先搭通后续阶段复用的关键底座
 - `rescue-first`: 先解决当前最大的 adoption / trust / delivery 卡点
+- `decompose-first`: 先把多个可独立交付的子系统拆成阶段和 `RM`，再选择主线
 
 推荐时必须回答：为什么这条主线比其他两条更值得先打。
 
@@ -73,6 +90,7 @@
 2. 有没有明确说“不先做另外两条”的原因？
 3. Stage 1 的 win signal 能不能在 1-2 个周期内看到？
 4. 如果 Stage 1 输了，kill signal 是不是具体到可以止损？
+5. 当前问题路由是否匹配 evidence maturity，而不是为了完整感把所有问题都问一遍？
 
 ## Stage Contract
 
@@ -84,7 +102,8 @@
 4. `Exit signal`
 5. `Kill signal`
 6. `Non-goals`
-7. 可以自然长成下一轮 `cc-plan` 的候选事项
+7. 子系统 / `RM` 边界，说明哪些合并、哪些拆开
+8. 可以自然长成下一轮 `cc-plan` 的候选事项
 
 ## Dependency Contract
 
@@ -98,6 +117,7 @@
 `devflow/ROADMAP.md`
 - version / skill version / context snapshot / evidence ledger
 - 1-3 个阶段
+- 独立子系统拆分判断
 - 每阶段目标
 - 每阶段存在原因
 - 每阶段 dependencies
@@ -111,6 +131,7 @@
 `devflow/BACKLOG.md`
 - 只保留会真的进入下一轮 `cc-plan` 的事项
 - 每项注明来源阶段、优先级、证据、`Depends On`、`Parallel With`、当前未知点、下一决策、是否 ready
+- developer-facing / operator-facing 条目要带 target user、time to first value、magic moment 和 adoption bottleneck，方便 `cc-plan` 继续做 DX 设计
 - `Backlog Meta`、`Queue`、`Dependency Handoff`、`Ready For Req-Plan`、`Parked` 可由 `devflow/roadmap-tracking.json` 回渲染，避免 roadmap truth 和 backlog handoff 分叉
 
 ## Review Loop
@@ -123,6 +144,8 @@
 4. `RM Dependency Graph` 是否只有硬依赖、没有环
 5. ready 项是否真能进入 `cc-plan`
 6. 本次版本相比上一版到底改了什么
+7. 问题路由是否匹配 planning posture / evidence maturity
+8. developer-facing / operator-facing item 是否能说明 first value 为什么会发生
 
 ## Versioning
 
