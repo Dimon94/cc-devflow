@@ -1,6 +1,6 @@
 ---
 name: cc-investigate
-version: 1.1.3
+version: 1.1.4
 description: "Use when a bug, regression, broken task, or unexpected behavior needs root-cause investigation, reproducible evidence, and a frozen repair handoff before cc-do resumes coding."
 triggers:
   - "帮我查这个 bug"
@@ -35,9 +35,10 @@ entry_gate:
   - "Use a FIX-<number>-<description> change key for new bug-fix investigations."
   - "Reproduce or narrow the symptom first, then freeze the evidence chain before proposing repair tasks."
   - "Search prior investigations, TODO/backlog signals, and recent fixes in the affected area before declaring the bug novel."
+  - "For multi-component, deep-stack, or flaky symptoms, record boundary probes, backward trace, or condition-wait evidence before declaring the root cause."
   - "Do not write production code here; this stage ends with planning/analysis.md plus executable repair tasks for cc-do."
 exit_criteria:
-  - "planning/analysis.md records symptom, reproduction, evidence chain, pattern analysis, tested hypotheses, confirmed root cause, and repair boundary."
+  - "planning/analysis.md records symptom, reproduction, evidence chain, boundary probes or backward trace when applicable, pattern analysis, tested hypotheses, confirmed root cause, and repair boundary."
   - "planning/tasks.md and planning/task-manifest.json are explicit enough that cc-do can repair the bug without chat memory."
   - "The honest next step is cc-do, cc-plan, or roadmap."
 reroutes:
@@ -130,6 +131,10 @@ NO REPAIR WITHOUT A FROZEN ROOT-CAUSE CONTRACT
 | --- | --- |
 | 症状真实，但还没有稳定复现 | `reproduce-first`，先把现象钉死 |
 | 明显是 regression | `diff-trace`，先查最近变化 |
+| 多组件链路断裂 | `boundary-probe`，先记录每个边界的输入、输出、配置和状态 |
+| 报错点很深或坏值来源不明 | `backward-trace`，从 symptom site 一直追到 original trigger |
+| 同仓库有相似可用路径 | `reference-compare`，先列出 working vs broken differences |
+| flaky / sleep / timeout 类问题 | `condition-wait`，先找真实等待条件，不先加大延时 |
 | 症状已知，但修复边界可能扩大范围 | `contract-check`，先判是否还属于当前 requirement |
 | 错误类型陌生，像框架 / 依赖 / 平台问题 | `pattern-research`，先做脱敏外部调研 |
 | 同一区域反复坏 | `history-trace`，先查 prior investigations 和最近修复 |
@@ -184,12 +189,15 @@ NO REPAIR WITHOUT A FROZEN ROOT-CAUSE CONTRACT
    - 如果上下文缺失，只问一个最关键问题，不一次性抛出问题清单
 2. **Trace reality**
    - 沿着代码路径找触点
+   - 多组件系统先写 `Boundary Probe Matrix`：每个边界的输入、输出、配置 / 环境、状态和 pass/fail
+   - 深层报错先写 `Backward Trace Chain`：immediate failure site、caller chain、bad value origin、original trigger
    - 查最近提交和同类改动
    - 查既有 `devflow/changes/*/planning/analysis.md`、`TODOS.md`、backlog、report-card finding
    - 找现有测试和断点证据
    - 判定偏离的是 capability boundary、invariant，还是只是实现细节
 3. **Classify pattern**
-   - 判定是否属于 race condition、null propagation、state corruption、integration failure、configuration drift、stale cache、resource leak、trust boundary drift
+   - 判定是否属于 race condition、null propagation、state corruption、integration failure、configuration drift、stale cache、resource leak、trust boundary drift、timing guess / flaky wait
+   - 如果有同仓库 working example，先写 `Reference Comparison`，列出 working path、broken path、差异和被接受 / 排除的假设
    - 如果错误类型陌生，先做脱敏外部调研；只搜索通用错误类型、框架 / 库名和版本，不搜索 raw secret / path / customer data
 4. **Form hypotheses**
    - 只保留 1-3 个可被证伪的假设
@@ -197,6 +205,7 @@ NO REPAIR WITHOUT A FROZEN ROOT-CAUSE CONTRACT
    - 每个假设都写 `falsification method`、`expected observation`、`actual observation`
 5. **Test hypotheses**
    - 用复现、日志、断言、最小探针验证
+   - 临时探针必须写 `Diagnostic Instrumentation Plan`：probe location、question answered、command、expected signal、cleanup requirement
    - 三次假设都失败，就停下进入 escalation decision
 6. **Freeze repair contract**
    - 根因确认后，写进 `planning/analysis.md`
@@ -221,8 +230,80 @@ NO REPAIR WITHOUT A FROZEN ROOT-CAUSE CONTRACT
 | stale cache | 清缓存后恢复、旧状态复现 | browser / CDN / Redis / build cache |
 | resource leak | OOM、句柄增长、慢性崩溃 | lifecycle、subscription、retention、cleanup |
 | trust boundary drift | LLM / 用户输入 / 外部响应被当成可信 | validation、escaping、policy gate |
+| timing guess / flaky wait | sleep / setTimeout / timeout 增大后偶尔通过 | 真实完成条件、事件、文件、状态或队列计数 |
 
 模式分析不是结论，只是定位第一批证据的索引。
+
+## Boundary Probe Matrix
+
+多组件链路不要先猜。先记录每个边界的事实：
+
+- component boundary
+- input observed
+- output observed
+- config / env observed
+- state observed
+- verdict: `pass` / `fail` / `unknown`
+
+只有一个边界先失败时，后续调查才收缩到那个组件。多个边界都异常时，优先找共同上游，不在下游堆补丁。
+
+## Backward Trace Chain
+
+报错点很深时，不准只在 symptom site 加 guard。`analysis.md` 必须追到：
+
+- immediate failure site
+- direct caller
+- caller chain
+- bad value origin
+- original trigger
+- why symptom-site fix is rejected
+
+找不到 original trigger 时，根因还没有冻结，只能继续调查或进入 escalation。
+
+## Reference Comparison
+
+同仓库或参考实现有相似可用路径时，先对照再假设：
+
+- similar working example
+- broken path
+- differences found
+- differences accepted as hypothesis
+- differences ruled out
+
+不要用“看起来差不多”跳过差异。小差异也可能是根因。
+
+## Diagnostic Instrumentation
+
+临时日志、断言、探针只能用于回答一个明确问题：
+
+- probe location
+- question answered
+- command to run
+- expected signal
+- actual signal
+- cleanup requirement
+
+探针不能变成修复。进入 `cc-do` 前，要么删除，要么明确写入 repair task 的清理 / 转正方式。
+
+## Timing And Flaky Bugs
+
+遇到 flaky、sleep、timeout、重试后消失：
+
+- 先找真实等待条件：event、state、file、count、queue empty、network response
+- 任意 timeout 必须说明为什么这个时间是业务 / 协议事实，不是猜测
+- 如果只能在并发或负载下复现，记录对应命令和环境
+- 不把“加大 sleep”写成 repair contract，除非它本身就是被证实的协议等待窗口
+
+## No Code Root Cause
+
+如果调查证明是环境、外部服务或时序窗口，不要假装代码根因：
+
+- `rootCauseClass`: `code` / `config` / `environment` / `external` / `timing`
+- `why not code root cause`
+- `monitoring or future evidence needed`
+- `operator handling after fix`
+
+这类结论仍然需要本地证据支撑；“没有根因”通常只是调查不完整。
 
 ## Prior Investigation History
 

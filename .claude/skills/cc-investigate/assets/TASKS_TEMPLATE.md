@@ -17,6 +17,9 @@
 - Confirmed root cause:
 - Root-cause hypothesis:
 - Frozen repair boundary:
+- Boundary probes:
+- Backward trace:
+- Reference comparison:
 - Allowed files:
 - Forbidden files:
 - Blast radius:
@@ -26,7 +29,7 @@
 - Do not re-decide:
 - Parallel boundaries:
 
-## Phase 1: Reproduce Guard
+## Phase 1: Reproduce And Probe Guard
 
 - [ ] T001 [TEST] Capture the failing behavior as a stable reproduction (dependsOn:none) `path/to/test`
   Goal: 让 bug 先变成一个可复跑的失败事实。
@@ -34,7 +37,7 @@
   Read first: `analysis.md`, `tasks.md`
   Verification: `npm test -- path/to/test`
   Evidence: failing output or reproducible log
-  Ready when: reproduction path 已稳定
+  Ready when: reproduction path 已稳定，analysis 已记录必要的 boundary / trace / comparison evidence
 
 ## Phase 2: Repair
 
@@ -44,7 +47,7 @@
   Read first: `analysis.md`, `path/to/test`
   Verification: `npm test -- path/to/test`
   Evidence: passing output + checkpoint
-  Ready when: T001 已证明问题存在
+  Ready when: T001 已证明问题存在，analysis 已证明根因源头
 
 ## Phase 3: Verify
 

@@ -17,6 +17,7 @@
 4. `planning/analysis.md` 和 `planning/tasks.md` 必须足够让 `cc-do` 脱离当前会话继续工作。
 5. 调查失败三次后先重建入口，不准继续乱补。
 6. 没有 frozen root-cause contract，不准进入 repair task。
+7. 多组件、深层调用、flaky 问题必须先补边界探针、反向追踪或条件等待证据。
 
 ## Iron Law
 
@@ -48,6 +49,10 @@ root-cause contract 至少包含：稳定复现或缩小后的可验证症状、
 | --- | --- | --- |
 | `reproduce-first` | 症状真实但不稳定 | 缩小复现命令 / 手动路径 |
 | `diff-trace` | 昨天可用、今天坏了 | `git log --oneline -20 -- <affected-files>` |
+| `boundary-probe` | API -> service -> DB、CI -> build -> deploy 这类链路断裂 | 记录每层输入、输出、配置和状态 |
+| `backward-trace` | 错误出现在深层堆栈或坏值来源不明 | 从 immediate failure site 反追 original trigger |
+| `reference-compare` | 同仓库有相似可用路径 | 列出 working / broken 差异并逐项接受或排除 |
+| `condition-wait` | flaky、sleep、timeout、重试后消失 | 找真实等待条件，不先加大延时 |
 | `history-trace` | 同一区域反复坏 | 查历史 `analysis.md`、TODO、report-card finding |
 | `pattern-research` | 陌生框架 / 依赖 / 平台错误 | 脱敏后查通用错误类型 |
 | `contract-check` | 修复边界可能扩大 | 判定 implementation drift / missing spec truth / roadmap mismatch |
@@ -64,6 +69,18 @@ root-cause contract 至少包含：稳定复现或缩小后的可验证症状、
 - stale cache：清缓存后恢复或旧状态复现
 - resource leak：OOM、句柄增长、生命周期未释放
 - trust boundary drift：外部输入、LLM 输出、用户输入被当成可信
+- timing guess / flaky wait：任意 sleep / timeout / setTimeout 掩盖真实条件
+
+## Boundary And Trace Evidence
+
+复杂链路必须在 `analysis.md` 写清：
+
+- Boundary Probe Matrix：component boundary、input observed、output observed、config/env observed、state observed、verdict
+- Backward Trace Chain：immediate failure site、caller chain、bad value origin、original trigger、why symptom-site fix is rejected
+- Reference Comparison：similar working example、broken path、differences accepted / ruled out
+- Diagnostic Instrumentation Plan：probe location、question answered、command、expected signal、cleanup requirement
+
+这些字段不是装饰。它们的作用是证明根因位于源头，而不是报错点。
 
 ## Prior Investigation History
 
@@ -83,6 +100,15 @@ root-cause contract 至少包含：稳定复现或缩小后的可验证症状、
 - 先删除 host、IP、token、customer id、内部路径、SQL、私有 repo 名。
 - 只搜错误类别、框架 / 库名、版本、通用组件名。
 - 调研结果只能进入候选假设，必须回到本仓库复现或代码证据验证。
+
+## No Code Root Cause
+
+如果结论是环境、外部服务或时序窗口：
+
+- 写 `rootCauseClass`: `code` / `config` / `environment` / `external` / `timing`
+- 写明为什么不是 code root cause
+- 写明需要什么 monitoring / future evidence
+- 写明 operator handling，不要把未知外因包装成代码修复
 
 ## Scope Lock
 

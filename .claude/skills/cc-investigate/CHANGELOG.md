@@ -1,5 +1,11 @@
 # CC-Investigate Skill Changelog
 
+## v1.1.4 - 2026-04-28
+
+- add boundary-probe, backward-trace, reference-comparison, diagnostic-instrumentation, and condition-wait investigation modes for multi-component, deep-stack, similar-path, and flaky failures
+- require analysis templates to record boundary matrices, caller chains, working-vs-broken comparisons, probe cleanup, root-cause class, and no-code-root-cause evidence
+- update tasks and manifest templates so repair handoffs preserve the probe/trace facts that prove the confirmed root cause
+
 ## v1.1.3 - 2026-04-28
 
 - add the explicit `NO REPAIR WITHOUT A FROZEN ROOT-CAUSE CONTRACT` iron law to keep investigation separate from implementation

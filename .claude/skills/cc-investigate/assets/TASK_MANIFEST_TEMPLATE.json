@@ -20,7 +20,7 @@
     ]
   },
   "planningMeta": {
-    "ccInvestigateSkillVersion": "1.1.3",
+    "ccInvestigateSkillVersion": "1.1.4",
     "analysisVersion": "analysis.v1",
     "approvedAt": "2026-04-17T12:00:00.000Z",
     "approvedBy": "user",
@@ -33,10 +33,54 @@
       "selectedPattern": "implementation drift",
       "ruledOutPatterns": [
         "race condition",
-        "configuration drift"
+        "configuration drift",
+        "timing guess / flaky wait"
       ],
       "notes": "Pattern evidence belongs in planning/analysis.md"
     },
+    "boundaryProbes": [
+      {
+        "componentBoundary": "api -> service",
+        "inputObserved": "Request payload matches the reproduced failure",
+        "outputObserved": "Service receives invalid state",
+        "configEnvObserved": "Relevant env/config values recorded in analysis.md",
+        "stateObserved": "State snapshot or log pointer",
+        "verdict": "fail"
+      }
+    ],
+    "backwardTrace": {
+      "immediateFailureSite": "file:line or operation where the symptom appears",
+      "directCaller": "caller that passed the bad value or state",
+      "callerChain": [
+        "entrypoint",
+        "intermediate caller",
+        "failure site"
+      ],
+      "badValueOrigin": "where the invalid data/state first appears",
+      "originalTrigger": "user action, command, event, config, or dependency response that starts the chain",
+      "symptomSiteFixRejectedBecause": "Guarding only the failure site would leave the bad upstream contract intact"
+    },
+    "referenceComparison": {
+      "similarWorkingExample": "path/to/working/example",
+      "brokenPath": "path/to/broken/path",
+      "differencesFound": [
+        "Working path validates input before persistence"
+      ],
+      "differencesAcceptedAsHypothesis": [
+        "Missing validation before persistence"
+      ],
+      "differencesRuledOut": []
+    },
+    "diagnosticInstrumentation": [
+      {
+        "probeLocation": "file:line or component boundary",
+        "questionAnswered": "Which boundary first emits the invalid value?",
+        "commandToRun": "npm test -- src/feature/feature.test.ts",
+        "expectedSignal": "Probe records invalid value before the failure site",
+        "actualSignal": "Observed evidence from the current repo",
+        "cleanupRequirement": "Remove temporary probe or convert it into a durable assertion/log"
+      }
+    ],
     "priorInvestigations": [],
     "researchEvidence": [],
     "rootCauseHypothesis": {
@@ -45,6 +89,12 @@
       "expectedObservation": "What should be observed if the hypothesis is true",
       "actualObservation": "Observed evidence from the current repo",
       "status": "confirmed"
+    },
+    "rootCauseClass": "code",
+    "noCodeRootCause": {
+      "whyNotCodeRootCause": "",
+      "monitoringOrFutureEvidenceNeeded": "",
+      "operatorHandlingAfterFix": ""
     },
     "hypothesisAttempts": [
       {

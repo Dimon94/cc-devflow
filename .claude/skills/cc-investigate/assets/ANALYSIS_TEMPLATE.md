@@ -30,6 +30,35 @@
 - Prior investigations:
 - TODO / backlog / report-card signals:
 
+## Boundary Probe Matrix
+
+| Component boundary | Input observed | Output observed | Config / env observed | State observed | Verdict |
+| --- | --- | --- | --- | --- | --- |
+| | | | | | unknown |
+
+## Backward Trace Chain
+
+- Immediate failure site:
+- Direct caller:
+- Caller chain:
+- Bad value origin:
+- Original trigger:
+- Why symptom-site fix is rejected:
+
+## Reference Comparison
+
+- Similar working example:
+- Broken path:
+- Differences found:
+- Differences accepted as hypothesis:
+- Differences ruled out:
+
+## Diagnostic Instrumentation Plan
+
+| Probe location | Question answered | Command to run | Expected signal | Actual signal | Cleanup requirement |
+| --- | --- | --- | --- | --- | --- |
+| | | | | | |
+
 ## Pattern Analysis
 
 | Pattern | Evidence checked | Status | Notes |
@@ -42,6 +71,7 @@
 | stale cache | | ruled-out | |
 | resource leak | | ruled-out | |
 | trust boundary drift | | ruled-out | |
+| timing guess / flaky wait | | ruled-out | |
 
 ## Research Evidence
 
@@ -69,9 +99,13 @@
 ## Root Cause
 
 - Confirmed root cause:
+- Root cause class: `code` | `config` | `environment` | `external` | `timing`
 - Broken contract:
 - Spec diagnosis: `implementation drift` | `missing spec truth` | `roadmap mismatch`
 - Why it escaped:
+- Why not code root cause:
+- Monitoring or future evidence needed:
+- Operator handling after fix:
 - Prior history relationship: `new` | `recurring` | `same-root-cause` | `architectural-smell-candidate`
 
 ## Repair Boundary
