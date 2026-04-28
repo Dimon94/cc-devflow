@@ -13,7 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updated `cc-check` to require QA feedback-loop and behavior evidence for bugfix and user-visible behavior verification, including reproduction mode, determinism, expected/actual behavior, and test seam follow-ups.
 - Updated `cc-act` to carry QA behavior evidence into PR briefs, handoffs, and release notes, and to write follow-ups as durable behavior briefs before roadmap/backlog writeback.
-- Refreshed public examples and skill binding metadata for `cc-check@1.9.0` and `cc-act@1.7.0`.
+- Updated `cc-roadmap`, `cc-plan`, and `cc-investigate` to keep canonical language and durable decisions in cc-devflow-native sources: `devflow/specs/`, roadmap/backlog, design/analysis, and change metadata.
+- Refreshed public examples and skill binding metadata for `cc-roadmap@4.4.1`, `cc-plan@3.6.2`, `cc-investigate@1.1.6`, `cc-check@1.9.0`, and `cc-act@1.7.0`.
 
 ## [4.5.2] - 2026-04-28
 

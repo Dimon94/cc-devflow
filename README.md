@@ -78,6 +78,8 @@ Maintenance skills are shipped with the pack:
 
 `cc-roadmap` now records planning posture, evidence maturity, canonical project language, and durable decision context before recommending a route. That keeps idea-stage, active-user, paying-customer, infrastructure, and recovery work from being forced through the same questions, and prevents roadmap items from inventing a second vocabulary. Developer-facing or operator-facing roadmap items also carry target user, time to first value, magic moment, adoption bottleneck, and domain handoff into `cc-plan`.
 
+Canonical language and durable decisions stay inside cc-devflow-native sources: `devflow/specs/`, `devflow/ROADMAP.md`, `devflow/BACKLOG.md`, `planning/design.md`, `planning/analysis.md`, and `change-meta.json`.
+
 `cc-plan` freezes more implementation decisions before `cc-do` starts. Non-trivial plans compare minimal viable and ideal architecture options, full designs include decision horizon plus error/rescue mapping, and test-first plans record test framework evidence, public test seams, behavior assertions, mock boundaries, coverage quality, mandatory regression tests, interface depth, and vertical tracer-bullet slices when existing behavior changes.
 
 ## Verification And Ship Gates

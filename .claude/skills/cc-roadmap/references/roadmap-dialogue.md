@@ -2,14 +2,14 @@
 
 ## Order
 
-0. 先做 `Context Snapshot`：现有 roadmap / backlog、文档、最近提交、forcing functions、项目语言 / ADR / spec 决策
+0. 先做 `Context Snapshot`：现有 roadmap / backlog、capability specs、历史 design/analysis、最近提交、forcing functions、项目语言 / durable decisions
 1. 用户是谁
 2. 今天靠什么笨办法活着
 3. 最强需求证据是什么
 4. 为什么现在必须解决
 5. deadline / capacity / dependency / distribution 约束是什么
 6. 当前最大的 adoption / trust / delivery 卡点是什么
-7. 核心术语是否已有 canonical definition，是否和现有 ADR / spec 冲突
+7. 核心术语是否已有 canonical definition，是否和现有 capability spec / roadmap decision 冲突
 8. 最窄突破口是什么
 9. 6-12 个月后会长成什么
 10. 给出 2-3 条路线图形状并明确推荐
@@ -21,7 +21,7 @@
 
 - 一次只推进一个关键未知点
 - 每个问题附带推荐答案、证据来源，以及用户反对时会改变哪条路线
-- 能从 repo / spec / ADR / git history 得到答案时先查证，不问用户
+- 能从 repo / capability spec / roadmap / design / git history 得到答案时先查证，不问用户
 - 没证据时明确写 assumption
 - 用户没批准前，不把事项偷下放成 requirement
 
@@ -38,4 +38,4 @@
 - `RM` 必须带 `Depends On`，并在 roadmap 里显式画出 dependency graph
 - backlog 只收下一轮真会进入 `cc-plan` 的事项
 - ready 项必须带成功信号、下一决策、`Depends On`、`Parallel With`
-- ready 项必须带 canonical terms、ADR / spec context 或明确的 language / decision conflict
+- ready 项必须带 canonical terms、capability spec context 或明确的 language / decision conflict

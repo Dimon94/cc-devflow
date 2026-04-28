@@ -46,9 +46,9 @@
 - Canonical terms used:
 - Terms avoided / aliases:
 - Language conflicts:
-- ADR / decision docs loaded:
-- ADR / spec conflicts:
-- Decisions worth long-term ADR / spec sync:
+- Native decision sources loaded:
+- Capability spec / roadmap decision conflicts:
+- Decisions worth long-term capability spec sync:
 
 ## Requirement Snapshot
 

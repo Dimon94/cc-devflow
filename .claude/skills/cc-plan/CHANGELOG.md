@@ -1,5 +1,11 @@
 # CC-Plan Skill Changelog
 
+## v3.6.2 - 2026-04-28
+
+- clarify that canonical language and durable decisions come from cc-devflow native sources: `devflow/specs/`, roadmap/backlog handoff, planning design/analysis, and change metadata
+- remove external context/architecture-decision files from the standard planning contract so they are not implied as generated artifacts
+- route long-lived decisions into capability spec deltas, roadmap/backlog decision notes, or the current design decision log
+
 ## v3.6.1 - 2026-04-28
 
 - require plans to freeze public test seams, behavior assertions, mock boundaries, and feedback loop types before handing Red tasks to `cc-do`

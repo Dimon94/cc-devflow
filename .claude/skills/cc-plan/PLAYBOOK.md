@@ -92,7 +92,7 @@
 - 每个会触达的文件职责是什么，为什么属于这个文件，而不是另一个平行位置？
 - 为什么推荐方案胜过 `minimal viable` / `ideal architecture` 的另一端？
 - foundation / core / integration / polish 阶段哪些决策已经冻结，哪些仍是 blocked question？
-- 核心语言是否沿用 `CONTEXT.md` / spec / ADR，是否存在 language conflict？
+- 核心语言是否沿用 `devflow/specs/`、roadmap handoff 或历史 design/analysis，是否存在 language conflict？
 - 新增接口是否是小接口深模块，复杂度是否被藏在正确边界里？
 - 每条 failure path 的 rescue action、用户可见结果和测试证据是什么？
 - 每条新增 code path / user flow / error path 的第一条失败测试是什么？

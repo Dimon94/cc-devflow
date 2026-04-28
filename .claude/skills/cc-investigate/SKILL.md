@@ -1,6 +1,6 @@
 ---
 name: cc-investigate
-version: 1.1.5
+version: 1.1.6
 description: "Use when a bug, regression, broken task, or unexpected behavior needs root-cause investigation, reproducible evidence, and a frozen repair handoff before cc-do resumes coding."
 triggers:
   - "帮我查这个 bug"
@@ -201,7 +201,7 @@ NO REPAIR WITHOUT A FROZEN ROOT-CAUSE CONTRACT
    - 深层报错先写 `Backward Trace Chain`：immediate failure site、caller chain、bad value origin、original trigger
    - 查最近提交和同类改动
    - 查既有 `devflow/changes/*/planning/analysis.md`、`TODOS.md`、backlog、report-card finding
-   - 如果仓库有 `CONTEXT.md`、`CONTEXT-MAP.md` 或相关 ADR，把领域词汇和已冻结决策当成契约证据
+   - 如果仓库有 `devflow/specs/`、roadmap/backlog handoff、历史 `planning/design.md` / `planning/analysis.md` 或 `change-meta.json`，把领域词汇和已冻结决策当成契约证据
    - 找现有测试和断点证据
    - 判定偏离的是 capability boundary、invariant，还是只是实现细节
 4. **Classify pattern**

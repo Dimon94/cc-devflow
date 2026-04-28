@@ -153,10 +153,10 @@ debug 日志必须带唯一前缀，例如 `[DEBUG-FIX123-a4f2]`，确保 cleanu
 
 ## Domain And Decision Context
 
-如果仓库存在 `CONTEXT.md`、`CONTEXT-MAP.md` 或相关 ADR，调查前先读相关部分。
+调查前先读 cc-devflow 原生上下文：`devflow/specs/INDEX.md`、相关 capability specs、roadmap/backlog handoff、历史 `planning/design.md` / `planning/analysis.md`、`change-meta.json`。
 
 - 输出中的领域概念、假设名、测试名使用项目既有词汇
-- 如果根因或修复方向违反 ADR，必须显式记录冲突和理由
+- 如果根因或修复方向违反 capability spec、roadmap decision 或历史 design decision，必须显式记录冲突和理由
 - 缺失领域词汇是调查信号，不要临时发明同义词掩盖契约缺口
 
 ## Prior History

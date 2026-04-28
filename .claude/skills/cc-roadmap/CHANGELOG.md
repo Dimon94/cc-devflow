@@ -1,10 +1,16 @@
 # Roadmap Skill Changelog
 
+## v4.4.1 - 2026-04-28
+
+- clarify that roadmap language and durable decisions come from cc-devflow native sources: `devflow/specs/`, roadmap/backlog, historical design/analysis, and change metadata
+- remove external context/architecture-decision files from the standard roadmap contract so non-native documentation ecosystems stay optional rather than canonical
+- update roadmap/backlog templates and dialogue prompts to route durable decisions into capability spec deltas, roadmap decision notes, and downstream design handoff
+
 ## v4.4.0 - 2026-04-28
 
 - absorb strategic grilling discipline into roadmap work: one route-changing question at a time, recommended answer with evidence, and no user question when repo evidence can answer
 - require domain language and durable decision scans before naming stages, capabilities, roadmap items, or backlog handoffs
-- add language / ADR conflict gates so route recommendations expose terminology and decision drift instead of creating a second conceptual system
+- add language / spec decision conflict gates so route recommendations expose terminology and decision drift instead of creating a second conceptual system
 - update roadmap and backlog templates with domain-language and durable-decision handoff sections for downstream `cc-plan`
 - update tracking template skill version to match the enhanced roadmap contract
 

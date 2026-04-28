@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.6.1
+version: 3.6.2
 description: Use when a requirement, roadmap item, or bug needs scope clarification, design decisions, and executable task breakdown before coding starts.
 triggers:
   - 帮我规划这个需求
@@ -33,7 +33,7 @@ writes:
     required: true
 entry_gate:
   - Read roadmap handoff, current requirement files, code, docs, and tests before drafting design.
-  - Load project language and decision docs (`CONTEXT.md`, `CONTEXT-MAP.md`, relevant ADRs, specs, or equivalents) before naming concepts, modules, tests, or tasks.
+  - Load cc-devflow native language and decision sources (`devflow/specs/`, roadmap/backlog handoff, current or prior `planning/design.md` / `planning/analysis.md`, and `change-meta.json`) before naming concepts, modules, tests, or tasks.
   - Freeze problem, constraints, non-goals, and success criteria before proposing implementation tasks.
   - If the raw ask spans multiple independent subsystems, split it back into roadmap stages or separate REQ/FIX candidates before asking implementation details.
   - "For non-trivial designs, compare named option roles: minimal viable, ideal architecture, and optional hybrid. Do not default to smallest unless it best serves the goal."
@@ -174,7 +174,7 @@ tool_budget:
 3. 如果原始需求包含多个可独立交付的子系统，先拆成独立 `RM` 或 `REQ/FIX` 候选；不要在一个 `cc-plan` 里继续追问实现细节。
 4. 先读当前 change 目录现状。旧目录里如果还有 `BRAINSTORM.md` / `PLAN_REVIEW.md` / `context-package.md`，把有效信息吸收进新的 `planning/design.md`，不要继续增殖。
 5. 先看代码、文档、测试和最近提交，再谈拆任务。
-6. 先读项目语言和决策上下文：`CONTEXT.md`、`CONTEXT-MAP.md`、相关 `docs/adr/`、capability spec、历史 design decision；不存在时静默跳过，但发现术语冲突必须写成 blocked question 或 user challenge。
+6. 先读 cc-devflow 原生项目语言和决策上下文：`devflow/specs/INDEX.md`、相关 capability specs、roadmap/backlog handoff、当前或历史 `planning/design.md` / `planning/analysis.md`、`change-meta.json`；不存在时静默跳过，但发现术语冲突必须写成 blocked question 或 user challenge。
 7. 先写不做什么，再写做什么。
 
 ## Context Sweep
@@ -184,9 +184,9 @@ tool_budget:
 1. 当前对象对应的 `RM-ID`、roadmap version、roadmap skill version
 2. `devflow/ROADMAP.md` / `devflow/BACKLOG.md` 中该事项的阶段来源、证据、dependencies、success signal、kill signal、next decision、capability links
 3. `devflow/specs/INDEX.md` 与相关 capability specs
-4. 项目语言 / 决策上下文：`CONTEXT.md`、`CONTEXT-MAP.md`、相关 `docs/adr/`、模块内 ADR、历史 design / decision note
+4. 项目语言 / 决策上下文：`devflow/specs/INDEX.md`、相关 capability specs、roadmap/backlog handoff、当前或历史 `planning/design.md` / `planning/analysis.md`、`change-meta.json`
 5. 当前 change 目录已有的 `planning/design.md`、`planning/tasks.md`、`planning/task-manifest.json`、`change-meta.json` 与历史 planning 文档
-6. `CLAUDE.md`、README、相关 docs / specs / ADR / 最近提交
+6. `CLAUDE.md`、README、相关 docs / specs / 最近提交
 7. 当前代码、测试、发布、迁移、依赖的现实边界
 8. 测试框架真相源：优先读 `CLAUDE.md` / project docs 的测试约定，再用配置文件和目录结构补证。
 9. 如果有 UI scope，读取现有设计系统、组件、页面状态和交互模式。
@@ -215,10 +215,10 @@ tool_budget:
 
 1. 沿决策树一枝一枝走。每次只解决一个会改变设计或任务切分的关键分支。
 2. 每个问题必须附带推荐答案、证据来源、以及如果用户反对会影响哪些下游决策。
-3. 能从代码、docs、tests、git history、spec 或 ADR 得到答案时，先查证，不问用户。
-4. 用户或文档里的模糊词必须被压成 canonical term；如果和 `CONTEXT.md` / spec / ADR 冲突，立即标成 `language conflict`。
+3. 能从代码、docs、tests、git history、capability spec、roadmap handoff 或历史 design/analysis 得到答案时，先查证，不问用户。
+4. 用户或文档里的模糊词必须被压成 canonical term；如果和 `devflow/specs/`、roadmap/backlog 或历史 design/analysis 冲突，立即标成 `language conflict`。
 5. 具体场景优先于抽象概念。每个关键边界至少用一个真实 codepath、user flow、operator flow 或 failure path 压测。
-6. 只有满足 hard to reverse、surprising without context、real trade-off 三个条件的决策，才建议沉淀为 ADR 或长期 spec delta；否则留在本次 design decision log。
+6. 只有满足 hard to reverse、surprising without context、real trade-off 三个条件的决策，才建议沉淀为 capability spec delta 或 roadmap/backlog decision note；否则留在本次 design decision log。
 
 ## Session Protocol
 
@@ -244,7 +244,7 @@ tool_budget:
 2. Scope challenge：超过 8 个文件、2 个新 service/class、或跨模块连锁时，必须解释为什么不是过度设计。
 3. Implementation surface map：先锁定每个会新增或修改的文件、职责、归属理由、耦合风险，再拆任务。
 4. Option role check：非 trivial 方案必须比较 `minimal viable`、`ideal architecture`，必要时加 `hybrid`，并写清为什么推荐方案服务当前目标。
-5. Domain language check：核心名词、文件命名、测试名、任务标题必须对齐 `CONTEXT.md` / specs；没有来源时写 assumption，不要临时发明第二套语言。
+5. Domain language check：核心名词、文件命名、测试名、任务标题必须对齐 `devflow/specs/`、roadmap handoff 或历史 design/analysis；没有来源时写 assumption，不要临时发明第二套语言。
 6. Interface depth check：新增或改动模块 / API / CLI / SDK 时，先说明调用方、公共操作、隐藏复杂度、易用错点；必要时做两种以上接口形态比较，优先小接口深模块。
 7. Implementation decision horizon：提前写出 foundation、core logic、integration、polish/tests 阶段实现者会撞到的决策，能现在冻结就不要留给 `cc-do` 临场猜。
 8. Architecture diagram：跨模块或状态流变更要写 ASCII 数据流 / 依赖图。
@@ -339,7 +339,7 @@ tool_budget:
 ## Good Output
 
 - `planning/design.md` 一份就讲清：为什么做、做什么、不做什么、备选方案、批准方案、设计模式、风险、review gate、执行边界
-- `planning/design.md` 必须使用项目 canonical language，记录相关 ADR / spec 冲突，并说明新增接口如何保持小接口深模块
+- `planning/design.md` 必须使用项目 canonical language，记录相关 capability spec / roadmap decision 冲突，并说明新增接口如何保持小接口深模块
 - `planning/tasks.md` 只保留能直接执行的任务和 handoff，不再承载重复背景介绍；行为变更默认拆成 tracer bullet 形式的 `[TEST] -> [IMPL] -> [REFACTOR]`，且 Red task 明确公共 seam、行为断言、mock 边界和反馈循环
 - `planning/task-manifest.json` 是 `cc-do` 的真相源，要写清 `dependsOn`、`tddPhase`、`verticalSlice`、test seam、allowed mocks、feedback loop、并行资格、触点、验证命令，以及继承了哪版 roadmap / design / spec
 - `change-meta.json` 是 capability 真相源，要写清这次 change 准备如何改变长期 spec

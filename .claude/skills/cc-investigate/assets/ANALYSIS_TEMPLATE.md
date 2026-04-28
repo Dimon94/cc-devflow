@@ -44,7 +44,7 @@
 - Existing tests:
 - Prior investigations:
 - TODO / backlog / report-card signals:
-- Domain / ADR context:
+- Native domain / decision context:
 
 ## Boundary Probe Matrix
 

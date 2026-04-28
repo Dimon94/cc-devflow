@@ -105,7 +105,7 @@ root-cause contract 至少包含：稳定复现或缩小后的可验证症状、
 
 ## Domain And Decision Context
 
-如果仓库存在 `CONTEXT.md`、`CONTEXT-MAP.md` 或相关 ADR，先读相关部分。调查输出里的领域名、假设名、测试名应沿用项目词汇；如果调查结论违反 ADR，要显式写入 evidence chain，而不是静默覆盖既有设计决策。
+优先读取 cc-devflow 原生上下文：`devflow/specs/INDEX.md`、相关 capability specs、roadmap/backlog handoff、历史 `planning/design.md` / `planning/analysis.md`、`change-meta.json`。调查输出里的领域名、假设名、测试名应沿用项目词汇；如果调查结论违反 capability spec、roadmap decision 或历史 design decision，要显式写入 evidence chain，而不是静默覆盖既有设计决策。
 
 ## External Research Hygiene
 

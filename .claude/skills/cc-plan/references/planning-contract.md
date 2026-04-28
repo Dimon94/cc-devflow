@@ -17,7 +17,7 @@
 13. 如果推荐方案挑战用户原始方向，必须标成 `user challenge`，不能自动改写用户意图。
 14. 行为变更的具体任务默认采用测试先行；没有 Red/Green/Refactor 链、公共测试 seam、行为断言、mock 边界或 TDD exception，不允许交给 `cc-do`。
 15. 新 change 目录必须是 `REQ-<number>-<description>` 或 `FIX-<number>-<description>`，不能用小写 `req-*` / `bug-*` 或纯描述目录。
-16. 计划命名必须沿用项目 canonical language；术语或 ADR/spec 冲突必须写入 `planning/design.md`，不能在任务里发明第二套语言。
+16. 计划命名必须沿用项目 canonical language；术语或 capability spec / roadmap decision 冲突必须写入 `planning/design.md`，不能在任务里发明第二套语言。
 17. 行为变更任务必须按 tracer bullet 垂直切片组织：一个可观察行为对应一组 Red/Green/Refactor 任务。
 18. Red 任务必须通过公共接口、调用方流程、CLI/API/UI 路径或其它真实 seam 证明行为缺失。
 19. Mock 只能发生在系统边界；mock 内部协作者、私有方法或调用次数属于测试设计失败。
@@ -72,7 +72,7 @@
 7. Existing leverage map
 8. Scope / complexity challenge
 9. Test diagram and failure modes
-10. Domain language / ADR conflict scan
+10. Domain language / spec decision conflict scan
 11. Interface depth scan
 12. Test seam / mock boundary scan
 13. Tracer bullet scan

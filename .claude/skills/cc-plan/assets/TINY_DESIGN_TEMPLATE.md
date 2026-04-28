@@ -36,7 +36,7 @@
 
 - Language sources loaded:
 - Canonical terms used:
-- Language / ADR conflicts:
+- Language / spec decision conflicts:
 - Decisions worth long-term spec sync:
 
 ## Frozen Design Card

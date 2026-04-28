@@ -1,10 +1,16 @@
 # CC-Investigate Skill Changelog
 
+## v1.1.6 - 2026-04-28
+
+- clarify that investigation domain language and durable decisions come from cc-devflow native sources: `devflow/specs/`, roadmap/backlog handoff, historical design/analysis, and change metadata
+- remove external context/architecture-decision files from the standard investigation contract so they are not implied as generated artifacts
+- route conflicts through capability specs, roadmap decisions, or historical design decisions instead of external decision-document language
+
 ## v1.1.5 - 2026-04-28
 
 - add a feedback-loop contract so investigations record loop type, command, symptom match, runtime, determinism, failure rate, signal specificity, and sharpening plan before freezing root cause
 - require ranked candidate hypotheses before narrowing to active falsification targets, plus probe tags for cleanup-safe diagnostic instrumentation
-- add performance-regression, domain/ADR context, correct-test-seam, and evidence-request fields across the analysis, task, manifest, playbook, and investigation contract templates
+- add performance-regression, native domain/decision context, correct-test-seam, and evidence-request fields across the analysis, task, manifest, playbook, and investigation contract templates
 
 ## v1.1.4 - 2026-04-28
 

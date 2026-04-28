@@ -36,7 +36,7 @@
 - Language sources loaded:
 - Canonical terms for next `cc-plan`:
 - Terms to avoid:
-- ADR / spec decisions to preserve:
+- Capability spec / roadmap decisions to preserve:
 - Language / decision conflicts to resolve:
 
 ## Ready For Req-Plan
@@ -57,7 +57,7 @@
   - Magic moment:
   - Adoption bottleneck:
   - Canonical terms:
-  - ADR / spec context:
+  - Capability spec / roadmap context:
   - Required context to load:
   - Depends On:
   - Parallel With:

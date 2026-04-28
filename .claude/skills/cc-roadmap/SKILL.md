@@ -1,6 +1,6 @@
 ---
 name: cc-roadmap
-version: 4.4.0
+version: 4.4.1
 description: "Use when defining, resetting, or narrowing project direction, stage order, or backlog priority before a concrete requirement enters the PDCA loop."
 triggers:
   - "帮我定路线图"
@@ -31,7 +31,7 @@ writes:
     when: "roadmap/backlog tracking is maintained through bundled helper scripts"
 entry_gate:
   - "Read current roadmap, backlog, related capability specs, and surrounding repo context before proposing direction."
-  - "Load project language and durable decision docs (`CONTEXT.md`, `CONTEXT-MAP.md`, ADRs, specs, or equivalents) before naming stages, capabilities, users, or backlog items."
+  - "Load cc-devflow native language and durable-decision sources (`devflow/specs/`, current roadmap/backlog, prior `planning/design.md` or `planning/analysis.md`, and `change-meta.json`) before naming stages, capabilities, users, or backlog items."
   - "Confirm this is a project-direction problem, not a single requirement execution problem."
   - "Classify planning posture and evidence maturity before selecting the route or forcing questions."
   - "If the ask contains multiple independent subsystems, decompose them into stages and RM candidates before refining any implementation detail."
@@ -115,7 +115,7 @@ tool_budget:
 2. 先判断这是“项目方向问题”还是“单 requirement 执行问题”。
 3. 如果输入是多个独立子系统的混合目标，先拆成阶段和 `RM` 候选；不要继续追问某个子系统的实现细节。
 4. 先做一次上下文扫描，不能跳过现有事实直接写愿景。
-5. 先读取项目语言与持久决策：`CONTEXT.md`、`CONTEXT-MAP.md`、相关 `docs/adr/`、capability spec、历史路线图决策；不存在时静默跳过，但术语或决策冲突必须写进 roadmap。
+5. 先读取 cc-devflow 原生项目语言与持久决策：`devflow/specs/INDEX.md`、相关 capability specs、`devflow/ROADMAP.md`、`devflow/BACKLOG.md`、历史 `planning/design.md` / `planning/analysis.md` 和 `change-meta.json`；不存在时静默跳过，但术语或决策冲突必须写进 roadmap。
 6. 方向没被批准前，不准把 roadmap 偷偷下放成实现任务。
 
 ## Context Sweep
@@ -124,7 +124,7 @@ tool_budget:
 
 1. 当前 `devflow/ROADMAP.md` / `devflow/BACKLOG.md` 的主线、版本、已停放事项。
 2. `devflow/specs/INDEX.md` 与相关 capability specs 的边界、状态、open gaps。
-3. 项目语言 / 决策上下文：`CONTEXT.md`、`CONTEXT-MAP.md`、相关 `docs/adr/`、模块内 ADR、长期 design decision。
+3. 项目语言 / 决策上下文：`devflow/specs/INDEX.md`、相关 capability specs、当前 roadmap/backlog、历史 `planning/design.md` / `planning/analysis.md`、`change-meta.json` 和长期 design decision。
 4. `CLAUDE.md`、`README*`、`TODOS.md`、最近相关 docs / specs / plans。
 5. 最近相关提交、当前分支脏状态、正在进行中的 requirement。
 6. 真实 forcing functions：deadline、发布窗口、资源上限、依赖、distribution、adoption / trust / delivery 卡点。
@@ -155,10 +155,10 @@ tool_budget:
 
 1. 一次只推进一个会改变阶段顺序或 backlog 优先级的关键未知点。
 2. 每个问题必须附带推荐答案、证据来源、以及如果用户反对会改变哪条路线。
-3. 能从 repo、roadmap、spec、ADR、最近提交、真实运行证据里得到答案时，先查证，不问用户。
-4. 模糊或冲突的术语要压成 canonical term；如果 `CONTEXT.md`、capability spec 或 ADR 已有定义，路线图必须沿用。
+3. 能从 repo、roadmap/backlog、capability spec、历史 design/analysis、最近提交、真实运行证据里得到答案时，先查证，不问用户。
+4. 模糊或冲突的术语要压成 canonical term；如果 `devflow/specs/`、roadmap/backlog 或历史 design/analysis 已有定义，路线图必须沿用。
 5. 每条路线都要用一个具体 scenario 压测：谁在什么约束下，今天如何绕路，Stage 1 完成后哪一步不再发生。
-6. 硬决策才沉淀：只有 hard to reverse、surprising without context、real trade-off 三者同时成立，才建议新增 ADR 或长期 spec delta。
+6. 硬决策才沉淀：只有 hard to reverse、surprising without context、real trade-off 三者同时成立，才进入 capability spec delta、roadmap decision note 或本次 design decision log。
 
 ## Session Protocol
 
@@ -221,7 +221,7 @@ tool_budget:
 
 1. 没有 `Context Snapshot`，不准给路线推荐。
 2. 没有 planning posture、evidence maturity 和 framing check，不准给路线推荐。
-3. 没有 domain language / durable decision scan，不准给路线推荐；如果没有这些文件，写成 `not present`，不要假装已对齐。
+3. 没有 native language / durable decision scan，不准给路线推荐；如果缺少 `devflow/specs/` 或历史决策材料，写成 `not present`，不要假装已对齐。
 4. 没有 2-3 条路线对比，不准直接拍脑袋定主线。
 5. 没有 exit signal / kill signal / non-goals，不算阶段冻结。
 6. 没有明确成功信号和下一决策，不准把事项放进 `Ready For Req-Plan`。
@@ -245,7 +245,7 @@ tool_budget:
 9. Evidence maturity scan：问题路由是否匹配 idea / user / paying / infra / recovery 状态，还是拿同一套问题硬套所有项目。
 10. Adoption scan：developer-facing / operator-facing item 是否写清目标人、time to first value、magic moment 和 adoption bottleneck。
 11. Domain language scan：stage、capability、RM title、backlog handoff 是否沿用项目语言；冲突是否显式交给下一轮决策。
-12. Durable decision scan：路线是否违背既有 ADR / spec；如需重开，是否说明为什么值得重开。
+12. Durable decision scan：路线是否违背既有 capability spec、roadmap decision 或历史 design decision；如需重开，是否说明为什么值得重开。
 
 ## Output
 
@@ -262,7 +262,7 @@ tool_budget:
 3. 哪个 signal 说明这一仗赢了
 4. 哪些 backlog 项已经真的 ready for `cc-plan`
 5. 哪些 `RM` 必须串行，哪些已经可以并行开会话
-6. 哪些项目术语 / ADR / spec 决策会随第一批 backlog 传给 `cc-plan`
+6. 哪些项目术语 / capability spec / roadmap decision 会随第一批 backlog 传给 `cc-plan`
 
 ## Versioning
 
