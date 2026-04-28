@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const os = require('os');
 const { spawnSync } = require('child_process');
+const { ensureStringArray } = require('../scripts/validate-publish');
 
 const ROOT = path.resolve(__dirname, '..');
 
@@ -44,5 +45,20 @@ describe('validate-publish', () => {
     expect(result.stderr).toContain('Binding mismatch for cc-check');
 
     fs.rmSync(tempDir, { recursive: true, force: true });
+  });
+
+  test('reports yaml mapping list items with a precise repair hint', () => {
+    const errors = [];
+
+    ensureStringArray(
+      [{ 'For non-trivial designs, compare named option roles': 'minimal viable' }],
+      'cc-plan frontmatter.entry_gate',
+      errors
+    );
+
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toContain('cc-plan frontmatter.entry_gate[0]');
+    expect(errors[0]).toContain('got object');
+    expect(errors[0]).toContain('Quote YAML list items that contain ": "');
   });
 });

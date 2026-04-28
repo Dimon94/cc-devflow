@@ -135,12 +135,16 @@ function ensureStringArray(value, label, errors) {
     return;
   }
 
-  for (const item of value) {
+  value.forEach((item, index) => {
     if (typeof item !== 'string' || item.trim().length === 0) {
-      errors.push(`${label} must contain non-empty strings`);
-      return;
+      const actualType = Array.isArray(item) ? 'array' : typeof item;
+      const serialized = item === undefined ? 'undefined' : JSON.stringify(item);
+      errors.push(
+        `${label}[${index}] must be a non-empty string; got ${actualType} ${serialized}. ` +
+          'Quote YAML list items that contain ": " so they do not parse as mappings.'
+      );
     }
-  }
+  });
 }
 
 function ensureWritesArray(value, label, errors) {
@@ -477,4 +481,10 @@ function main() {
   console.log('Publish validation passed.');
 }
 
-main();
+if (require.main === module) {
+  main();
+}
+
+module.exports = {
+  ensureStringArray
+};
