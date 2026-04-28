@@ -1,6 +1,6 @@
 ---
 name: cc-investigate
-version: 1.1.6
+version: 1.2.0
 description: "Use when a bug, regression, broken task, or unexpected behavior needs root-cause investigation, reproducible evidence, and a frozen repair handoff before cc-do resumes coding."
 triggers:
   - "帮我查这个 bug"
@@ -312,6 +312,14 @@ NO REPAIR WITHOUT A FROZEN ROOT-CAUSE CONTRACT
 - failure rate for flaky bugs
 - sharpening plan: 如何让它更快、更准、更稳定
 
+把 loop 当成调查产品来迭代。已有 loop 但信号差时，先优化它：
+
+1. faster：缓存 setup、缩小 test scope、跳过无关启动。
+2. sharper：断言用户看见的具体症状，不用“没有崩溃”冒充匹配。
+3. more deterministic：固定时间、随机种子、filesystem、network、locale、feature flag。
+
+flaky bug 的目标不是立刻 100% 复现，而是提高复现率直到可调试。可以循环 100 次、并行触发、加压力、缩小时序窗口或做 differential loop；如果失败率仍低到不可证伪，先写 Evidence Request，不要继续猜。
+
 没有 loop 时，不能把代码阅读当成根因。只能写 `Evidence Request`：需要可复现环境、HAR、日志 dump、core dump、带时间戳录屏，或临时生产探针权限。
 
 ## Correct Test Seam
@@ -383,6 +391,14 @@ NO REPAIR WITHOUT A FROZEN ROOT-CAUSE CONTRACT
 1. 能拆成 critical path + follow-up，就拆。
 2. 不能拆但仍是根因跨度，写明为什么。
 3. 如果已经变成设计 / 架构范围，reroute 到 `cc-plan`。
+
+## Prevention Handoff
+
+根因冻结后必须写一句后验判断：什么结构、测试 seam、capability invariant、operator guard 或文档会让这个 bug 更早暴露或根本不出现。
+
+- 如果答案是小范围 regression test，把它写进当前 repair task。
+- 如果答案是 seam / module / capability 边界问题，把它写成 architecture finding，并明确交给 `cc-plan` 或后续 backlog。
+- 如果答案只是流程提醒或人工记忆，不算预防；要么转成可执行 guard，要么明确不记录。
 
 ## Escalation Decision
 

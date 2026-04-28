@@ -1,5 +1,11 @@
 # CC-Investigate Skill Changelog
 
+## v1.2.0 - 2026-04-28
+
+- treat feedback loops as investigation products that must be made faster, sharper, and more deterministic before root cause freeze
+- require flaky investigations to raise reproduction rate with stress, repetition, timing-window narrowing, or differential loops instead of guessing from weak signals
+- add prevention handoff so confirmed root causes produce either a regression task, architecture finding, or explicit non-recorded reason
+
 ## v1.1.6 - 2026-04-28
 
 - clarify that investigation domain language and durable decisions come from cc-devflow native sources: `devflow/specs/`, roadmap/backlog handoff, historical design/analysis, and change metadata
