@@ -17,10 +17,12 @@
 - Execution mode: `single-path` | `parallel-ready`
 - Frozen decisions:
 - Capability specs:
+- Canonical language / terms:
 - Read first:
 - Commands to trust:
 - Test framework source:
 - TDD plan: `Red -> Green -> Refactor`
+- Tracer bullet plan: one observable behavior at a time; no horizontal "all tests first, all code later" slice
 - TDD exceptions: none | list exception reason, risk, replacement evidence, follow-up
 - Regression tests: required | not applicable, with reason
 - Do not re-decide:
@@ -36,6 +38,14 @@
 
 > 这张表是执行边界，不是装饰。任务拆分必须沿着这些职责走，不能让 `cc-do` 临场重切文件归属。
 
+## Tracer Bullet Map
+
+| Slice | Observable behavior | Red task | Green task | Refactor / evidence | Why vertical |
+|-------|---------------------|----------|------------|---------------------|--------------|
+| Slice 1 |  | T001 | T002 | T005 |  |
+
+> 每个 slice 必须能独立证明一个端到端行为，不要按“只改数据层 / 只改 UI 层”横切。
+
 ## Phase 1: Foundation
 
 - [ ] T001 [TEST] Write the first failing test (dependsOn:none) `path/to/test`
@@ -46,6 +56,7 @@
   Verification: `npm test -- path/to/test`
   Evidence: failing output
   Coverage: unit / integration / e2e / eval; regression: yes / no
+  Vertical slice: Slice 1
   Ready when: 没有上游依赖，且测试路径已经确定
 
 - [ ] T002 [IMPL] Make the first test pass (dependsOn:T001) `path/to/file`
@@ -55,6 +66,7 @@
   Read first: `design.md`, `path/to/test`
   Verification: `npm test -- path/to/test`
   Evidence: passing output + checkpoint
+  Vertical slice: Slice 1
   Ready when: T001 已经见红，且当前 touched files 不和其他并行任务冲突
 
 ## Phase 2: Build
@@ -67,6 +79,7 @@
   Verification: `npm test -- path/to/other.test`
   Evidence: failing output
   Coverage: unit / integration / e2e / eval; regression: yes / no
+  Vertical slice: Slice 2
   Ready when: T002 完成，且该测试覆盖的是独立行为
 
 - [ ] T004 [P] [IMPL] Make the independent test pass (dependsOn:T003) `path/to/other-file`
@@ -76,6 +89,7 @@
   Read first: `design.md`, `path/to/other.test`
   Verification: `npm test -- path/to/other.test`
   Evidence: passing output + review notes
+  Vertical slice: Slice 2
   Ready when: T003 已经见红，且文件触点与其他 `[P]` 任务不冲突
 
 ## Phase 3: Verify
@@ -110,3 +124,4 @@
 - 要留下什么证据给 `cc-check`
 - 它处于 Red、Green、Refactor，还是明确的 TDD exception
 - 测试框架依据来自哪里，回归测试是否被明确处理
+- 它属于哪个 tracer bullet 垂直切片，完成后哪个可观察行为被证明

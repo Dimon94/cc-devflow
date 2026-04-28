@@ -1,5 +1,13 @@
 # Roadmap Skill Changelog
 
+## v4.4.0 - 2026-04-28
+
+- absorb strategic grilling discipline into roadmap work: one route-changing question at a time, recommended answer with evidence, and no user question when repo evidence can answer
+- require domain language and durable decision scans before naming stages, capabilities, roadmap items, or backlog handoffs
+- add language / ADR conflict gates so route recommendations expose terminology and decision drift instead of creating a second conceptual system
+- update roadmap and backlog templates with domain-language and durable-decision handoff sections for downstream `cc-plan`
+- update tracking template skill version to match the enhanced roadmap contract
+
 ## v4.3.4 - 2026-04-28
 
 - add planning posture and evidence maturity routing so roadmap questions match idea, user, paying, infra, or recovery contexts

@@ -1,5 +1,13 @@
 # CC-Plan Skill Changelog
 
+## v3.6.0 - 2026-04-28
+
+- absorb grilling-session discipline into native planning: one decision branch at a time, recommended answer with evidence, and no user questions when repo evidence can answer
+- require domain language and durable decision scans before naming modules, interfaces, tests, or tasks
+- add interface/deep-module checks so new public surfaces identify callers, hidden complexity, misuse risk, and alternative shapes before task split
+- strengthen test-first planning around vertical tracer bullets so tasks do not become horizontal "all tests first, all implementation later" slices
+- update design, tiny-design, tasks, and manifest templates with language handoff, interface shape, and vertical slice fields
+
 ## v3.5.6 - 2026-04-28
 
 - require non-trivial plans to compare named option roles, including minimal viable and ideal architecture, before freezing a recommendation

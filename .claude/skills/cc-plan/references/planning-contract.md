@@ -17,6 +17,8 @@
 13. 如果推荐方案挑战用户原始方向，必须标成 `user challenge`，不能自动改写用户意图。
 14. 行为变更的具体任务默认采用测试先行；没有 Red/Green/Refactor 链或 TDD exception，不允许交给 `cc-do`。
 15. 新 change 目录必须是 `REQ-<number>-<description>` 或 `FIX-<number>-<description>`，不能用小写 `req-*` / `bug-*` 或纯描述目录。
+16. 计划命名必须沿用项目 canonical language；术语或 ADR/spec 冲突必须写入 `planning/design.md`，不能在任务里发明第二套语言。
+17. 行为变更任务必须按 tracer bullet 垂直切片组织：一个可观察行为对应一组 Red/Green/Refactor 任务。
 
 ## Design Modes
 
@@ -43,11 +45,13 @@
 
 - 目标
 - TDD phase：`red` / `green` / `refactor` / `exception`
+- Vertical slice / tracer bullet
 - 涉及文件
 - 验证方式
 - 完成证据
 
 行为变更任务必须先有 `[TEST]` 红灯任务，再有 `[IMPL]` 绿灯任务，最后有 `[REFACTOR]` 或明确 refactor checkpoint。纯文档、纯配置、纯生成文件、throwaway prototype 可以例外，但必须写明原因、风险和替代验证。
+不要把计划拆成水平层：一批测试、一批服务、一批 UI。每个切片完成后都应该能证明一个真实行为。
 
 ## Review Gate
 
@@ -62,9 +66,12 @@
 7. Existing leverage map
 8. Scope / complexity challenge
 9. Test diagram and failure modes
-10. NOT in scope
-11. Test-first readiness
-12. Final recommendation
+10. Domain language / ADR conflict scan
+11. Interface depth scan
+12. Tracer bullet scan
+13. NOT in scope
+14. Test-first readiness
+15. Final recommendation
 
 如有 UI scope，再补 design review 结论。
 如有 developer-facing scope，再补 DX review 结论。

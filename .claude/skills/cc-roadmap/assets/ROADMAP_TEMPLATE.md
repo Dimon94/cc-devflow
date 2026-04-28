@@ -33,6 +33,11 @@
 - Time to first value:
 - Magic moment:
 - Install / run / debug / upgrade bottleneck:
+- Language sources loaded:
+- Canonical terms:
+- Language conflicts:
+- Durable decision docs loaded:
+- ADR / spec conflicts:
 - Known unknowns:
 - Relevant capabilities:
 
@@ -71,6 +76,15 @@
 - Product promise:
 - What we refuse to build yet:
 - 6-12 month pull:
+
+## Domain Language & Durable Decisions
+
+- Canonical terms this roadmap uses:
+- Terms avoided / aliases:
+- Existing ADR / spec decisions preserved:
+- ADR / spec decisions reopened:
+- Decisions worth new ADR / spec sync:
+- Handoff notes for `cc-plan`:
 
 ## Evidence-Maturity Routing
 
@@ -176,6 +190,7 @@ flowchart LR
 - Rejected path A:
 - Rejected path B:
 - Rejected maturity route:
+- Language / ADR conflicts:
 - Developer / operator adoption assumptions:
 - Open assumptions to verify next:
 - What changed in this version:

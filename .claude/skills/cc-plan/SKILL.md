@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.5.6
+version: 3.6.0
 description: Use when a requirement, roadmap item, or bug needs scope clarification, design decisions, and executable task breakdown before coding starts.
 triggers:
   - 帮我规划这个需求
@@ -33,6 +33,7 @@ writes:
     required: true
 entry_gate:
   - Read roadmap handoff, current requirement files, code, docs, and tests before drafting design.
+  - Load project language and decision docs (`CONTEXT.md`, `CONTEXT-MAP.md`, relevant ADRs, specs, or equivalents) before naming concepts, modules, tests, or tasks.
   - Freeze problem, constraints, non-goals, and success criteria before proposing implementation tasks.
   - If the raw ask spans multiple independent subsystems, split it back into roadmap stages or separate REQ/FIX candidates before asking implementation details.
   - "For non-trivial designs, compare named option roles: minimal viable, ideal architecture, and optional hybrid. Do not default to smallest unless it best serves the goal."
@@ -173,7 +174,8 @@ tool_budget:
 3. 如果原始需求包含多个可独立交付的子系统，先拆成独立 `RM` 或 `REQ/FIX` 候选；不要在一个 `cc-plan` 里继续追问实现细节。
 4. 先读当前 change 目录现状。旧目录里如果还有 `BRAINSTORM.md` / `PLAN_REVIEW.md` / `context-package.md`，把有效信息吸收进新的 `planning/design.md`，不要继续增殖。
 5. 先看代码、文档、测试和最近提交，再谈拆任务。
-6. 先写不做什么，再写做什么。
+6. 先读项目语言和决策上下文：`CONTEXT.md`、`CONTEXT-MAP.md`、相关 `docs/adr/`、capability spec、历史 design decision；不存在时静默跳过，但发现术语冲突必须写成 blocked question 或 user challenge。
+7. 先写不做什么，再写做什么。
 
 ## Context Sweep
 
@@ -182,12 +184,13 @@ tool_budget:
 1. 当前对象对应的 `RM-ID`、roadmap version、roadmap skill version
 2. `devflow/ROADMAP.md` / `devflow/BACKLOG.md` 中该事项的阶段来源、证据、dependencies、success signal、kill signal、next decision、capability links
 3. `devflow/specs/INDEX.md` 与相关 capability specs
-4. 当前 change 目录已有的 `planning/design.md`、`planning/tasks.md`、`planning/task-manifest.json`、`change-meta.json` 与历史 planning 文档
-5. `CLAUDE.md`、README、相关 docs / specs / ADR / 最近提交
-6. 当前代码、测试、发布、迁移、依赖的现实边界
-7. 测试框架真相源：优先读 `CLAUDE.md` / project docs 的测试约定，再用配置文件和目录结构补证。
-8. 如果有 UI scope，读取现有设计系统、组件、页面状态和交互模式。
-9. 如果是 API / CLI / SDK / developer-facing / operator-facing scope，读取 README、docs、package metadata、安装/运行/调试入口和当前 first-success path。
+4. 项目语言 / 决策上下文：`CONTEXT.md`、`CONTEXT-MAP.md`、相关 `docs/adr/`、模块内 ADR、历史 design / decision note
+5. 当前 change 目录已有的 `planning/design.md`、`planning/tasks.md`、`planning/task-manifest.json`、`change-meta.json` 与历史 planning 文档
+6. `CLAUDE.md`、README、相关 docs / specs / ADR / 最近提交
+7. 当前代码、测试、发布、迁移、依赖的现实边界
+8. 测试框架真相源：优先读 `CLAUDE.md` / project docs 的测试约定，再用配置文件和目录结构补证。
+9. 如果有 UI scope，读取现有设计系统、组件、页面状态和交互模式。
+10. 如果是 API / CLI / SDK / developer-facing / operator-facing scope，读取 README、docs、package metadata、安装/运行/调试入口和当前 first-success path。
 
 先把这些材料压成 `Source Handoff`，再决定 discovery 还是 planning。
 
@@ -201,8 +204,21 @@ tool_budget:
 4. Narrowest wedge：最小可交付边界是什么，哪些同 blast radius 问题必须顺手解决？
 5. Observation：有没有日志、测试、真实流程、最近提交能证明这个问题存在？
 6. Future fit：这个方案 6 个月后是否仍然是正确边界，还是会制造第二套系统？
+7. Language fit：这次使用的核心名词是否已经是项目里的 canonical term，还是在创造第二套语言？
+8. Interface fit：调用方真正需要的最小公共接口是什么，哪些复杂度应该被藏在模块内部？
 
 一次只问一个关键未知点。能从代码、文档、测试、git 历史里确认的问题，不问用户。
+
+## Grilling Protocol
+
+`cc-plan` 可以吸收 brainstorm / grilling 的结论，但不再产出独立 `BRAINSTORM.md`。深挖问题时遵守这些规则：
+
+1. 沿决策树一枝一枝走。每次只解决一个会改变设计或任务切分的关键分支。
+2. 每个问题必须附带推荐答案、证据来源、以及如果用户反对会影响哪些下游决策。
+3. 能从代码、docs、tests、git history、spec 或 ADR 得到答案时，先查证，不问用户。
+4. 用户或文档里的模糊词必须被压成 canonical term；如果和 `CONTEXT.md` / spec / ADR 冲突，立即标成 `language conflict`。
+5. 具体场景优先于抽象概念。每个关键边界至少用一个真实 codepath、user flow、operator flow 或 failure path 压测。
+6. 只有满足 hard to reverse、surprising without context、real trade-off 三个条件的决策，才建议沉淀为 ADR 或长期 spec delta；否则留在本次 design decision log。
 
 ## Session Protocol
 
@@ -228,17 +244,19 @@ tool_budget:
 2. Scope challenge：超过 8 个文件、2 个新 service/class、或跨模块连锁时，必须解释为什么不是过度设计。
 3. Implementation surface map：先锁定每个会新增或修改的文件、职责、归属理由、耦合风险，再拆任务。
 4. Option role check：非 trivial 方案必须比较 `minimal viable`、`ideal architecture`，必要时加 `hybrid`，并写清为什么推荐方案服务当前目标。
-5. Implementation decision horizon：提前写出 foundation、core logic、integration、polish/tests 阶段实现者会撞到的决策，能现在冻结就不要留给 `cc-do` 临场猜。
-6. Architecture diagram：跨模块或状态流变更要写 ASCII 数据流 / 依赖图。
-7. Error & Rescue map：`full-design` 必须按 codepath 写清 failure、rescue、user sees、test evidence；不适用时写 N/A 理由。
-8. Code quality scan：指出 DRY、命名、错误处理、三层以上分支、隐藏耦合风险。
-9. Test diagram：列出新增 code path、user flow、错误路径、边界状态，并标注 first failing test、unit / e2e / eval。
-10. Test framework source：先记录测试框架来自 `CLAUDE.md` / docs / config / directory 的哪条证据；不能靠猜。
-11. UI state coverage：有 UI / interaction scope 时，写 loading / empty / error / success / partial 状态表和 design completeness score。
-12. DX / operator coverage：developer-facing / operator-facing scope 必须写 target persona、time to first value、magic moment、install / run / debug / upgrade 风险。
-13. Performance and distribution：涉及批量、I/O、发布物、CLI、包、容器时，必须写清性能和分发边界。
-14. NOT in scope：所有被考虑但 defer 的内容要写理由，不能消失在聊天里。
-15. Review calibration：只有会导致 `cc-do` 建错、卡住、越界、漏测的问题才是 blocking；措辞偏好和非阻塞建议不能伪装成 gate failure。
+5. Domain language check：核心名词、文件命名、测试名、任务标题必须对齐 `CONTEXT.md` / specs；没有来源时写 assumption，不要临时发明第二套语言。
+6. Interface depth check：新增或改动模块 / API / CLI / SDK 时，先说明调用方、公共操作、隐藏复杂度、易用错点；必要时做两种以上接口形态比较，优先小接口深模块。
+7. Implementation decision horizon：提前写出 foundation、core logic、integration、polish/tests 阶段实现者会撞到的决策，能现在冻结就不要留给 `cc-do` 临场猜。
+8. Architecture diagram：跨模块或状态流变更要写 ASCII 数据流 / 依赖图。
+9. Error & Rescue map：`full-design` 必须按 codepath 写清 failure、rescue、user sees、test evidence；不适用时写 N/A 理由。
+10. Code quality scan：指出 DRY、命名、错误处理、三层以上分支、隐藏耦合风险。
+11. Test diagram：列出新增 code path、user flow、错误路径、边界状态，并标注 first failing test、unit / e2e / eval。
+12. Test framework source：先记录测试框架来自 `CLAUDE.md` / docs / config / directory 的哪条证据；不能靠猜。
+13. UI state coverage：有 UI / interaction scope 时，写 loading / empty / error / success / partial 状态表和 design completeness score。
+14. DX / operator coverage：developer-facing / operator-facing scope 必须写 target persona、time to first value、magic moment、install / run / debug / upgrade 风险。
+15. Performance and distribution：涉及批量、I/O、发布物、CLI、包、容器时，必须写清性能和分发边界。
+16. NOT in scope：所有被考虑但 defer 的内容要写理由，不能消失在聊天里。
+17. Review calibration：只有会导致 `cc-do` 建错、卡住、越界、漏测的问题才是 blocking；措辞偏好和非阻塞建议不能伪装成 gate failure。
 
 如果任一项无法从当前证据完成，写 `assumption` 或 `blocked question`，不要伪装成已经审过。
 
@@ -254,13 +272,14 @@ tool_budget:
    - Red：先写 `[TEST]` 任务，目标是用最小失败测试证明目标行为缺失。
    - Green：再写 `[IMPL]` 任务，只做让对应红灯转绿的最小生产实现。
    - Refactor：最后写 `[REFACTOR]` 或在实现任务中明确 refactor checkpoint，说明何时清理重复、命名、结构和坏味道。
-3. `planning/tasks.md` 不能把测试和实现塞进同一个 task。一个 task 同时写“实现并测试”就是计划失败。
-4. `planning/task-manifest.json` 必须让 `cc-do` 看出每个任务的 `tddPhase`、依赖和证据：`red` 任务产出 failing output，`green` 任务产出 passing output，`refactor` 任务产出重跑后的 green evidence。
-5. Test diagram 要同时覆盖 code paths 和 user flows。每条路径标注 `unit` / `integration` / `e2e` / `eval`，并给现有测试质量分级：`strong`、`happy-path-only`、`smoke-only`、`missing`。
-6. 回归测试是硬门槛。只要计划修改既有行为且现有测试没有覆盖，就必须把 regression test 写进 `planning/tasks.md`，不能 defer，不能问用户要不要跳过。
-7. 只有纯文档、纯配置、纯生成文件、throwaway prototype 可以例外。例外必须写进 `planning/design.md` 和 `planning/tasks.md` 的 `TDD exceptions`，包含原因、风险、替代验证命令和后续补证入口。
-8. 并行只允许发生在已经满足上游 Red/Green 依赖之后。两个 `[P]` 任务如果共享同一个红灯或同一组 touched files，就不能并行。
-9. 如果当前需求找不到第一条失败测试，先把它写成 blocked question 或 exploratory spike，不准伪装成可执行实现任务。
+3. 禁止水平切片：不能先写一批测试、再写一批实现。计划必须按 tracer bullet 垂直切片排列：一个行为红灯 -> 最小实现转绿 -> 必要重构，然后再进入下一个行为。
+4. `planning/tasks.md` 不能把测试和实现塞进同一个 task。一个 task 同时写“实现并测试”就是计划失败。
+5. `planning/task-manifest.json` 必须让 `cc-do` 看出每个任务的 `tddPhase`、依赖和证据：`red` 任务产出 failing output，`green` 任务产出 passing output，`refactor` 任务产出重跑后的 green evidence。
+6. Test diagram 要同时覆盖 code paths 和 user flows。每条路径标注 `unit` / `integration` / `e2e` / `eval`，并给现有测试质量分级：`strong`、`happy-path-only`、`smoke-only`、`missing`。
+7. 回归测试是硬门槛。只要计划修改既有行为且现有测试没有覆盖，就必须把 regression test 写进 `planning/tasks.md`，不能 defer，不能问用户要不要跳过。
+8. 只有纯文档、纯配置、纯生成文件、throwaway prototype 可以例外。例外必须写进 `planning/design.md` 和 `planning/tasks.md` 的 `TDD exceptions`，包含原因、风险、替代验证命令和后续补证入口。
+9. 并行只允许发生在已经满足上游 Red/Green 依赖之后。两个 `[P]` 任务如果共享同一个红灯或同一组 touched files，就不能并行。
+10. 如果当前需求找不到第一条失败测试，先把它写成 blocked question 或 exploratory spike，不准伪装成可执行实现任务。
 
 ## Design Modes
 
@@ -299,8 +318,11 @@ tool_budget:
 8. Decision horizon scan：foundation / core / integration / polish/tests 的实现决策是否已经冻结或明确 blocked。
 9. Error & rescue scan：`full-design` 是否写清 failure -> rescue -> user sees -> test evidence。
 10. Test framework / regression scan：测试框架来源、覆盖质量、回归测试是否明确。
-11. Review calibration：只把会导致实现错误、执行卡住、范围越界、验证缺失的问题标成 blocking；非阻塞建议必须降级为 advisory
-12. Final gate：明确 auto-decided items、taste decisions、user challenges 和最终 recommendation
+11. Domain language scan：核心名词、测试名、文件职责是否沿用项目语言；冲突是否写成 blocked question / user challenge。
+12. Interface depth scan：新增接口是否足够小、隐藏复杂度是否足够深、调用方是否容易正确使用且不容易误用。
+13. Tracer bullet scan：任务是否按一个行为一条 Red/Green/Refactor 链组织，而不是按测试层、服务层、UI 层水平堆叠。
+14. Review calibration：只把会导致实现错误、执行卡住、范围越界、验证缺失的问题标成 blocking；非阻塞建议必须降级为 advisory
+15. Final gate：明确 auto-decided items、taste decisions、user challenges 和最终 recommendation
 
 如果有 UI / interaction 明显范围，在 `planning/design.md` 里补 design completeness score 和状态覆盖表。
 如果有 API / CLI / developer-facing / operator-facing scope，在 `planning/design.md` 里补 target persona、time to first value、magic moment 和 DX / operator review 结论。
@@ -308,8 +330,9 @@ tool_budget:
 ## Good Output
 
 - `planning/design.md` 一份就讲清：为什么做、做什么、不做什么、备选方案、批准方案、设计模式、风险、review gate、执行边界
-- `planning/tasks.md` 只保留能直接执行的任务和 handoff，不再承载重复背景介绍；行为变更默认拆成 `[TEST] -> [IMPL] -> [REFACTOR]`
-- `planning/task-manifest.json` 是 `cc-do` 的真相源，要写清 `dependsOn`、`tddPhase`、并行资格、触点、验证命令，以及继承了哪版 roadmap / design / spec
+- `planning/design.md` 必须使用项目 canonical language，记录相关 ADR / spec 冲突，并说明新增接口如何保持小接口深模块
+- `planning/tasks.md` 只保留能直接执行的任务和 handoff，不再承载重复背景介绍；行为变更默认拆成 tracer bullet 形式的 `[TEST] -> [IMPL] -> [REFACTOR]`
+- `planning/task-manifest.json` 是 `cc-do` 的真相源，要写清 `dependsOn`、`tddPhase`、`verticalSlice`、并行资格、触点、验证命令，以及继承了哪版 roadmap / design / spec
 - `change-meta.json` 是 capability 真相源，要写清这次 change 准备如何改变长期 spec
 - 看完第一屏，执行者就知道这次属于 `tiny-design` 还是 `full-design`，以及为什么
 
@@ -334,9 +357,10 @@ tool_budget:
 5. 版本、来源、冻结决策必须可追踪。
 6. 任务少而硬，胜过任务多而虚。
 7. 具体计划默认测试先行；没有 Red/Green/Refactor 或 TDD exception，就不能进入 `cc-do`。
-8. 任务一旦超过 2-5 分钟粒度就继续拆，直到可以稳定交给执行者。
-9. 三层以上判断说明设计还没压平，应回到 `planning/design.md` 继续简化。
-10. `tiny-design` 不得被当成“免审批”；只要要写任务，就必须先有已批准的设计卡片。
+8. 任务必须是端到端可验证的垂直切片；除非是纯重构，否则不要按“先改模型、再改服务、最后改 UI”的水平层次拆。
+9. 任务一旦超过 2-5 分钟粒度就继续拆，直到可以稳定交给执行者。
+10. 三层以上判断说明设计还没压平，应回到 `planning/design.md` 继续简化。
+11. `tiny-design` 不得被当成“免审批”；只要要写任务，就必须先有已批准的设计卡片。
 
 ## Exit Criteria
 

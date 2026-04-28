@@ -20,14 +20,22 @@
     ]
   },
   "planningMeta": {
-    "reqPlanSkillVersion": "3.5.6",
+    "reqPlanSkillVersion": "3.6.0",
     "designVersion": "design.v1",
     "approvedAt": "2026-04-15T12:00:00.000Z",
     "approvedBy": "user",
     "basedOnOption": "Option A"
   },
+  "languageAndDecisions": {
+    "languageSources": [],
+    "canonicalTerms": [],
+    "languageConflicts": [],
+    "decisionDocs": [],
+    "adrOrSpecConflicts": []
+  },
   "executionDiscipline": {
     "default": "red-green-refactor",
+    "taskShape": "vertical-tracer-bullets",
     "testFirstRequired": true,
     "testFrameworkSource": "",
     "regressionTestsRequired": [],
@@ -67,6 +75,7 @@
       "phase": 1,
       "status": "pending",
       "tddPhase": "red",
+      "verticalSlice": "Slice 1",
       "dependsOn": [],
       "parallel": false,
       "touches": [

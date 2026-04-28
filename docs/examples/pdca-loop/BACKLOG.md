@@ -3,7 +3,7 @@
 ## Backlog Meta
 
 - Roadmap version: `roadmap.v1`
-- Skill version: `4.3.4`
+- Skill version: `4.4.0`
 - Last synced: `2026-04-19`
 - Current focus stage: `Stage 1`
 - Tracking source: `roadmap-tracking.json`

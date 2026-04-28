@@ -32,6 +32,13 @@
 - Current gaps:
 - Spec sync target:
 
+## Domain Language & Decisions
+
+- Language sources loaded:
+- Canonical terms used:
+- Language / ADR conflicts:
+- Decisions worth long-term spec sync:
+
 ## Frozen Design Card
 
 - Change:
@@ -45,6 +52,14 @@
 
 > `tiny-design` 是短设计，不是免设计。没有明确批准状态、验证证据和升级触发条件，就不能继续拆任务。
 
+## Interface Shape
+
+- Callers:
+- Public operations:
+- Complexity hidden:
+- Misuse risk:
+- Why this stays simple:
+
 ## Implementation Surface Map
 
 | Surface | Responsibility | Why here | Coupling risk |
@@ -55,6 +70,7 @@
 
 - Test framework source:
 - First failing test:
+- Tracer bullet order:
 - Green implementation check:
 - Refactor checkpoint:
 - TDD exceptions:
@@ -84,8 +100,11 @@
 - Scope scan:
 - Ambiguity scan:
 - Feasibility scan:
+- Domain language scan:
 - Implementation surface scan:
+- Interface depth scan:
 - Test framework / regression scan:
+- Tracer bullet scan:
 - Test-first readiness:
 - Review calibration:
 - Final recommendation:

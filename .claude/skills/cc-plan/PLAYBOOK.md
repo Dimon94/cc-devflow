@@ -26,6 +26,8 @@
 13. `full-design` 必须冻结 implementation decision horizon 和 error/rescue map，避免 `cc-do` 临场补设计。
 14. 测试框架来源、覆盖质量和回归测试必须在计划阶段写清，不准靠执行阶段猜。
 15. UI 和 developer/operator-facing 范围只在适用时触发对应 gate，不把每个计划都塞成大审查清单。
+16. 先对齐项目语言和持久决策，再命名 capability、模块、接口、测试和任务；术语冲突必须显式暴露。
+17. 行为变更按 tracer bullet 垂直切片推进，不能把任务水平切成“先测试层、再服务层、最后 UI 层”。
 
 ## Required Outputs
 
@@ -63,10 +65,11 @@
 12. `full-design` 必须包含 implementation decision horizon 和 error/rescue map；不适用时写清 N/A 理由。
 13. 新 artifact、CLI、包、容器、文档入口必须在计划阶段写清分发和 discoverability，不准到 `cc-act` 才发现没人能用。
 14. 行为变更任务必须拆成 `[TEST] -> [IMPL] -> [REFACTOR]` 或写明 TDD exception；不能用“实现并测试”混成一个任务。
-15. 回归测试不能 defer。修改既有行为且缺少覆盖时，必须先计划 regression test。
-16. UI scope 要写 design completeness score 和 loading / empty / error / success / partial 状态。
-17. developer/operator-facing scope 要写 target persona、time to first value、magic moment 和 install / run / debug / upgrade 风险。
-18. Review gate 只拦会导致实现错误、执行卡住、范围越界、验证缺失的问题；文字偏好和 nice-to-have 只能作为 advisory。
+15. 行为变更任务必须按一个 observable behavior 一条 tracer bullet 链组织，不能先批量写红灯再批量实现。
+16. 回归测试不能 defer。修改既有行为且缺少覆盖时，必须先计划 regression test。
+17. UI scope 要写 design completeness score 和 loading / empty / error / success / partial 状态。
+18. developer/operator-facing scope 要写 target persona、time to first value、magic moment 和 install / run / debug / upgrade 风险。
+19. Review gate 只拦会导致实现错误、执行卡住、范围越界、验证缺失的问题；文字偏好和 nice-to-have 只能作为 advisory。
 
 ## Approval Flow
 
@@ -86,9 +89,12 @@
 - 每个会触达的文件职责是什么，为什么属于这个文件，而不是另一个平行位置？
 - 为什么推荐方案胜过 `minimal viable` / `ideal architecture` 的另一端？
 - foundation / core / integration / polish 阶段哪些决策已经冻结，哪些仍是 blocked question？
+- 核心语言是否沿用 `CONTEXT.md` / spec / ADR，是否存在 language conflict？
+- 新增接口是否是小接口深模块，复杂度是否被藏在正确边界里？
 - 每条 failure path 的 rescue action、用户可见结果和测试证据是什么？
 - 每条新增 code path / user flow / error path 的第一条失败测试是什么？
 - 测试框架来源是什么，现有覆盖是 strong、happy-path-only、smoke-only 还是 missing？
+- task 是否以端到端 tracer bullet 为单位，而不是按层水平拆？
 - 哪些生产失败模式已经处理，哪些 defer 到 backlog？
 
 ## Design Mode Switch

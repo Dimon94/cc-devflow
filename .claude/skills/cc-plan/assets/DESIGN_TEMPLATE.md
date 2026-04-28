@@ -40,6 +40,16 @@
 - Intentional gaps:
 - Spec sync target:
 
+## Domain Language & Durable Decisions
+
+- Language sources loaded:
+- Canonical terms used:
+- Terms avoided / aliases:
+- Language conflicts:
+- ADR / decision docs loaded:
+- ADR / spec conflicts:
+- Decisions worth long-term ADR / spec sync:
+
 ## Requirement Snapshot
 
 - Raw ask:
@@ -101,6 +111,14 @@
 - Error handling:
 - Rollout / migration:
 
+## Interface / Deep Module Check
+
+| Surface | Callers | Public operations | Complexity hidden | Misuse risk | Shape decision |
+|---------|---------|-------------------|-------------------|-------------|----------------|
+|  |  |  |  |  |  |
+
+> 新增或改动公共接口时，优先小接口深模块。若有两个合理形态，写清为什么没有选择另一个。
+
 ## Implementation Decision Horizon
 
 | Phase | Decision `cc-do` would otherwise hit | Frozen answer | Evidence / owner |
@@ -142,6 +160,7 @@
 
 - Test framework source:
 - First failing tests:
+- Tracer bullet order:
 - Red/Green/Refactor task chain:
 - TDD exceptions:
 - Regression tests required:
@@ -200,10 +219,13 @@
 - Ambiguity scan:
 - Feasibility scan:
 - Source alignment:
+- Domain language scan:
 - Implementation surface scan:
+- Interface depth scan:
 - Decision horizon scan:
 - Error & rescue scan:
 - Test framework / regression scan:
+- Tracer bullet scan:
 - UI / interaction review summary:
 - DX / operator review summary:
 - Test-first readiness:

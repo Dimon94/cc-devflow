@@ -19,6 +19,7 @@
 7. 多个独立子系统混在一个目标里时，先拆阶段和 `RM` 候选，不要继续追问实现细节。
 8. 先判断 planning posture 和 evidence maturity，再决定追问哪些问题；不要用同一套问题硬套 idea、已有用户、付费客户、infra 和 recovery 场景。
 9. developer-facing / operator-facing 路线必须写清 target user、time to first value、magic moment 和 adoption bottleneck。
+10. 先对齐项目语言和持久决策，再命名 stage、capability、RM 和 backlog；术语或 ADR 冲突必须成为显式路线风险。
 
 ## Local Kit
 
@@ -37,12 +38,13 @@
 
 1. 现有 `devflow/ROADMAP.md` / `devflow/BACKLOG.md`
 2. `CLAUDE.md`、`README*`、`TODOS.md`
-3. 最近相关 docs / specs / plans
-4. 最近相关提交、当前工作树状态、正在推进的 requirement
-5. 现实 forcing functions：deadline、distribution、资源、依赖、当前卡点
-6. planning posture：startup / internal / hackathon / OSS / research / learning / side-project / infrastructure
-7. evidence maturity：idea / has users / paying users / internal sponsor / infra-only / recovery
-8. developer / operator adoption 线索：目标人、first success path、TTHW / time to first value、debug / upgrade 卡点
+3. 项目语言和持久决策：`CONTEXT.md`、`CONTEXT-MAP.md`、相关 `docs/adr/`、capability spec、长期 design decision
+4. 最近相关 docs / specs / plans
+5. 最近相关提交、当前工作树状态、正在推进的 requirement
+6. 现实 forcing functions：deadline、distribution、资源、依赖、当前卡点
+7. planning posture：startup / internal / hackathon / OSS / research / learning / side-project / infrastructure
+8. evidence maturity：idea / has users / paying users / internal sponsor / infra-only / recovery
+9. developer / operator adoption 线索：目标人、first success path、TTHW / time to first value、debug / upgrade 卡点
 
 先把这些材料压成 `Context Snapshot`，再追问用户。
 
@@ -63,7 +65,7 @@
 8. 当前最大的 adoption / trust / delivery 卡点是什么
 9. 成功与失败的判断信号是什么
 
-第一轮答案之后做 framing check：术语是否具体、用户是否可命名、pain 是否来自真实行为、status quo 是否明确、需求证据是否强过“感兴趣”。如果答案虚，先收紧问题，不要急着定路线。
+第一轮答案之后做 framing check：术语是否具体、是否沿用项目 canonical language、用户是否可命名、pain 是否来自真实行为、status quo 是否明确、需求证据是否强过“感兴趣”。如果答案虚，先收紧问题，不要急着定路线。
 
 ## Evidence-Maturity Routing
 
@@ -146,6 +148,7 @@
 6. 本次版本相比上一版到底改了什么
 7. 问题路由是否匹配 planning posture / evidence maturity
 8. developer-facing / operator-facing item 是否能说明 first value 为什么会发生
+9. stage / RM / capability 命名是否沿用项目语言，或明确记录了需要重开的 language / ADR 冲突
 
 ## Versioning
 

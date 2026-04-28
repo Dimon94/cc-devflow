@@ -31,6 +31,14 @@
 - Magic moment:
 - Adoption bottleneck:
 
+## Domain Handoff
+
+- Language sources loaded:
+- Canonical terms for next `cc-plan`:
+- Terms to avoid:
+- ADR / spec decisions to preserve:
+- Language / decision conflicts to resolve:
+
 ## Ready For Req-Plan
 
 - RM-001:
@@ -48,6 +56,8 @@
   - Time to first value:
   - Magic moment:
   - Adoption bottleneck:
+  - Canonical terms:
+  - ADR / spec context:
   - Required context to load:
   - Depends On:
   - Parallel With:
