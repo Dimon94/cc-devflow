@@ -1,5 +1,11 @@
 # CC-Do Skill Changelog
 
+## v1.6.0 - 2026-04-28
+
+- prohibit horizontal TDD execution by requiring one tracer bullet Red/Green/Refactor cycle per observable behavior
+- add test fixture discipline so partial fixtures, type assertions, generated stubs, and mocks must preserve public seam behavior
+- require checkpoints to record fixture risk when test data shortcuts could hide a seam or contract problem
+
 ## v1.5.3 - 2026-04-28
 
 - require Red evidence to prove behavior through a public seam instead of private methods, internal call counts, or implementation-shaped tests
