@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.3] - 2026-04-29
+
+### Skill Strategy Integration
+
+v4.5.3 absorbs the useful strategies from an external skill library into native
+cc-devflow contracts, keeping the public workflow cohesive instead of adding
+parallel skill surfaces.
+
 ### Changed
 
 - Added an external skill strategy audit and migrated the useful patterns into native cc-devflow contracts instead of copying external skill prose.
