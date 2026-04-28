@@ -1,5 +1,10 @@
 # CC-Check Skill Changelog
 
+## v1.10.0 - 2026-04-28
+
+- add test fixture honesty review for partial fixtures, generated stubs, casts, and missing mock payload fields
+- require fixture shortcuts to preserve public seam behavior instead of hiding contract or input-shape problems
+
 ## v1.9.0 - 2026-04-28
 
 - add QA feedback-loop evidence so bugfix and behavior checks record reproduction mode, determinism, signal quality, and blocked loop reasons before a pass verdict

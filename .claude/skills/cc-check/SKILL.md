@@ -1,6 +1,6 @@
 ---
 name: cc-check
-version: 1.9.0
+version: 1.10.0
 description: Use when a planned or investigated change needs fresh verification evidence, layered gate proof, review truth, and an honest pass fail blocked verdict before entering cc-act.
 triggers:
   - 验收这个需求
@@ -198,7 +198,8 @@ NO PASS WITHOUT FRESH EVIDENCE
 4. mock 只允许站在系统边界：外部 API、数据库、时间、随机数、文件系统、网络。mock 自家模块、断言内部调用次数或顺序，默认是 review finding。
 5. 生产代码里新增仅测试使用的 API，默认是坏味道，必须 blocking，除非有明确生产生命周期理由。
 6. 复杂 mock setup 超过测试主体时，优先要求 integration / contract test 解释。
-7. 如果没有正确测试 seam，不要硬造脆弱测试；记录 `qa.architectureFollowUps`，说明缺失 seam / hidden coupling / shallow module，并按严重度决定 reroute 或 follow-up。
+7. test fixture 必须诚实表达 contract：partial fixture、generated stub、`as` / `any` / 双重 cast、缺字段 mock payload 都要说明真实字段与填充字段；如果这些技巧让测试绕过公共 seam 或隐藏错误输入，默认是 review finding。
+8. 如果没有正确测试 seam，不要硬造脆弱测试；记录 `qa.architectureFollowUps`，说明缺失 seam / hidden coupling / shallow module，并按严重度决定 reroute 或 follow-up。
 
 这些事实写入 `qa.regressionProof` 和 `qa.testQuality`。如果本需求没有行为测试空间，必须记录 `tddException` 或替代验证命令。
 
