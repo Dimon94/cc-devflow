@@ -9,6 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.1] - 2026-04-28
+
+### Planning Evidence Gates
+
+v4.5.1 strengthens roadmap and requirement planning so downstream execution gets
+clearer evidence, option tradeoffs, rescue behavior, and test obligations before
+implementation starts.
+
+### Changed
+
+- Updated `cc-roadmap` to record planning posture, evidence maturity, framing checks, and developer/operator adoption handoff fields.
+- Updated `cc-plan` to require named option roles, implementation decision horizon, error/rescue mapping, test framework evidence, coverage quality mapping, and regression-test planning.
+- Updated README and getting-started docs to describe the new roadmap and planning quality gates.
+- Refreshed public examples and skill binding metadata for `cc-roadmap@4.3.4` and `cc-plan@3.5.6`.
+
+### Fixed
+
+- Improved publish validation diagnostics for YAML frontmatter list items that accidentally parse as mappings when they contain `": "`.
+- Added a regression test so malformed public-skill string arrays report the exact field, index, actual type, and repair hint.
+
 ## [4.5.0] - 2026-04-27
 
 ### ✨ Runtime YAML Config
