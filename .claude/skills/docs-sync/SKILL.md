@@ -1,6 +1,6 @@
 ---
 name: docs-sync
-version: 1.1.0
+version: 1.2.0
 description: Use when a shipped skill, CLI contract, or public-facing workflow loop changed and you need to sync skill versions, CHANGELOGs, README/CONTRIBUTING/docs content, and migration notes before commit or ship.
 ---
 
@@ -54,6 +54,24 @@ description: Use when a shipped skill, CLI contract, or public-facing workflow l
    - 如果会影响发布说明，再同步根 `CHANGELOG.md`
 4. 公开 workflow 叙事要忠于现实：`roadmap` 之后既有 `PDCA`，也有 `IDCA/DDCA`；维护类 skill 单独说明，不要污染主叙事。
 5. 结束前做一次 drift scan，确认没有旧版本号、旧技能列表、旧命令残留在公开 docs 里。
+
+## Skill Contract Quality Gate
+
+改动 skill 时，先检查它作为“模型可见触发合同”是否仍然好用：
+
+1. Description 是触发真相源：
+   - 第一层说明 skill 做什么。
+   - 第二层说明 `Use when...` 的具体触发词、场景、文件类型或 workflow 状态。
+   - 不写空泛描述，例如“helps with workflow”。
+2. `SKILL.md` 保持入口短而硬：
+   - 常用路径留在主文件。
+   - 稀有细节下沉到 `references/`。
+   - 可重复的确定性操作优先写进 `scripts/`，不要让模型每次重新发明。
+3. 文档顺序按依赖关系组织：
+   - 先讲必须先知道的概念，再讲派生步骤。
+   - 同一段只服务一个决策或动作。
+   - 中英文公开文档要表达同一套事实，不做自由改写。
+4. 发现 skill 描述、README、CHANGELOG、模板或脚本互相矛盾时，先修合同，不要只补 changelog。
 
 ## Skill Versioning Rules
 

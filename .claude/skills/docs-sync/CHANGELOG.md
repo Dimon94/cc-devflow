@@ -1,5 +1,11 @@
 # Docs-Sync Skill Changelog
 
+## v1.2.0 - 2026-04-28
+
+- add a skill contract quality gate for trigger descriptions, concise SKILL.md entrypoints, references, scripts, and template consistency
+- require docs to preserve dependency order so concepts appear before derived steps and bilingual docs tell the same facts
+- make conflicting skill descriptions, README text, changelogs, templates, and scripts a contract repair before commit
+
 ## v1.1.0 - 2026-04-17
 
 - update the workflow sync rule so public docs can describe both `PDCA` and `IDCA/DDCA` honestly
