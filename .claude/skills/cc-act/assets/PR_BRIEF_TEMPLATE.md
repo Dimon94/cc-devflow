@@ -39,6 +39,8 @@
 - Specialist review facets:
 - QA coverage:
 - Browser QA:
+- Feedback loop:
+- Behavior evidence:
 - Failure ownership:
 - Documentation release:
 - PR body accuracy:
@@ -56,6 +58,14 @@
 - `review/report-card.json` verdict:
 - Fresh evidence:
 - Merged-result verification:
+
+## QA Behavior Evidence
+
+- Feedback loop:
+- Expected behavior:
+- Actual behavior:
+- Reproduction steps:
+- Consistency:
 
 ## Documentation Sync
 
@@ -81,7 +91,11 @@
 
 ## Follow-Ups
 
-- 
+- Current behavior:
+- Desired behavior:
+- Key interfaces:
+- Acceptance criteria:
+- Out of scope:
 
 ## Risks
 

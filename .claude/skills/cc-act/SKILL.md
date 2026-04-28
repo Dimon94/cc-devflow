@@ -1,6 +1,6 @@
 ---
 name: cc-act
-version: 1.6.4
+version: 1.7.0
 description: 'Use when verified work must be shipped or handed off with a clear landing path: run simplify and required tests, create or update a PR, prepare a local handoff, close out merged work, sync docs, write release notes, and fold follow-ups back into backlog or roadmap.'
 triggers:
   - 准备提 PR
@@ -127,7 +127,8 @@ tool_budget:
 3. 运行 `scripts/verify-act-gate.sh --dir <requirement-dir>`，确认 gate 真的闭合。
 4. 运行 `scripts/detect-ship-target.sh`，识别当前分支、base branch、PR 状态与推荐 ship 路径。
 5. 检查 `review.freshness`、`runtime.failureOwnership`、`qa.coverageAudit`、`qa.browserEvidence`，确认 readiness dashboard 没有 blocker。
-6. 如果在 `cc-act` 期间因为 `cc-simplify`、单测、e2e、review 修复而改了代码，必须回 `cc-check`，不能带着旧证明继续 ship。
+6. 检查 `qa.feedbackLoop`、`qa.behaviorEvidence`、`qa.architectureFollowUps` 和 follow-up brief，确认交付材料继承的是行为证据，不是聊天记忆或易腐烂 TODO。
+7. 如果在 `cc-act` 期间因为 `cc-simplify`、单测、e2e、review 修复而改了代码，必须回 `cc-check`，不能带着旧证明继续 ship。
 
 ## Ship Modes
 
@@ -213,6 +214,7 @@ tool_budget:
 7. PR idempotency：已有打开的 PR / MR 只更新 body，不重复创建。
 8. Review range：PR brief / PR body 必须写清 `cc-check` 审过的 base/head SHA、review packet、finding triage 摘要。
 9. Post-integration verification：本地合并或 post-merge closeout 后，必须在 merged result 上跑必要 gate；不能只继承合并前绿色。
+10. Follow-up durability：PR brief / release note / backlog writeback 里的 follow-up 必须写成行为契约，包含 current behavior、desired behavior、key interfaces、acceptance criteria、out of scope；不要把当前文件路径或行号当成长期计划。
 
 ## Readiness Dashboard
 
@@ -222,9 +224,11 @@ PR / handoff 之前必须把 readiness 压成一屏事实：
 2. Review quality：记录 `review.qualityScore`、specialist facet 覆盖、finding triage 摘要。
 3. QA coverage：记录 `qa.coverageAudit` 的 coverage、gaps、e2e/eval requirement。
 4. Browser QA：UI / 用户路径变更必须有 `qa.browserEvidence`，否则要有 skip reason。
-5. Failure ownership：`runtime.failureOwnership` 不能有未解释的 `in-branch` 或 `ambiguous` failure。
-6. Documentation release：README / CLAUDE / architecture / handoff / changelog 的同步状态必须可审计。
-7. PR body accuracy：PR body 必须从当前 `pr-brief.md`、当前 diff、当前 report-card 重建；已有 PR body 只能被刷新，不能被继承。
+5. Feedback loop：bugfix / 行为变更必须有 `qa.feedbackLoop`，否则要有不可复现或不适用原因。
+6. Behavior evidence：expected / actual / reproduction steps 必须能被 reviewer 独立理解。
+7. Failure ownership：`runtime.failureOwnership` 不能有未解释的 `in-branch` 或 `ambiguous` failure。
+8. Documentation release：README / CLAUDE / architecture / handoff / changelog 的同步状态必须可审计。
+9. PR body accuracy：PR body 必须从当前 `pr-brief.md`、当前 diff、当前 report-card 重建；已有 PR body 只能被刷新，不能被继承。
 
 readiness dashboard 有 blocker 时，不能创建或更新 PR，只能 reroute 到 `cc-check` / `cc-do` 或生成 local handoff。
 

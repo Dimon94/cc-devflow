@@ -1,5 +1,12 @@
 # CC-Act Skill Changelog
 
+## v1.7.0 - 2026-04-28
+
+- carry cc-check QA feedback-loop and behavior evidence into PR briefs, handoffs, and release notes so ship materials preserve expected/actual/reproduction truth
+- add durable follow-up brief rules for current behavior, desired behavior, key interfaces, acceptance criteria, and out-of-scope boundaries
+- teach shared follow-up and evidence extraction to include report-card followup briefs and QA architecture follow-ups
+- extend readiness dashboard guidance with feedback-loop quality and behavior evidence checks
+
 ## v1.6.4 - 2026-04-28
 
 - add a readiness dashboard covering review freshness, review quality, specialist facets, QA coverage, browser QA, failure ownership, documentation release, and PR body accuracy

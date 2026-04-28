@@ -157,6 +157,23 @@ browser_qa_summary="$(jq -r '
     (if (($browser.skipReason // "") != "") then ", skip=\($browser.skipReason)" else "" end)
   end
 ' "$report_card")"
+feedback_loop_summary="$(jq -r '
+  .qa.feedbackLoop as $loop |
+  if $loop == null then
+    "not recorded"
+  else
+    "status=\($loop.status // "unknown"), mode=\($loop.mode // "unknown"), determinism=\($loop.determinism // "not recorded"), reproductionRate=\($loop.reproductionRate // "not recorded")" +
+    (if (($loop.blockedReason // "") != "") then ", blocked=\($loop.blockedReason)" else "" end)
+  end
+' "$report_card")"
+behavior_evidence_summary="$(jq -r '
+  .qa.behaviorEvidence as $behavior |
+  if $behavior == null then
+    "not recorded"
+  else
+    "status=\($behavior.status // "unknown"), boundary=\($behavior.userFacingBoundary // "not recorded"), expected=\($behavior.expectedBehavior // "not recorded"), actual=\($behavior.actualBehavior // "not recorded"), steps=\((($behavior.reproductionSteps // []) | length))"
+  end
+' "$report_card")"
 failure_ownership_summary="$(jq -r '
   (.runtime.failureOwnership? // [])
   | if length == 0 then
@@ -210,6 +227,8 @@ pr_body_accuracy_summary="body must be regenerated from this pr-brief, current r
   echo "- Specialist review facets: $specialist_review_summary"
   echo "- QA coverage: $qa_coverage_summary"
   echo "- Browser QA: $browser_qa_summary"
+  echo "- Feedback loop: $feedback_loop_summary"
+  echo "- Behavior evidence: $behavior_evidence_summary"
   echo "- Failure ownership: $failure_ownership_summary"
   echo "- Documentation release: $documentation_release_summary"
   echo "- PR body accuracy: $pr_body_accuracy_summary"
@@ -251,6 +270,18 @@ pr_body_accuracy_summary="body must be regenerated from this pr-brief, current r
   else
     echo "- No evidence lines captured yet."
   fi
+  echo
+  echo "## QA Behavior Evidence"
+  echo
+  echo "- Feedback loop: $feedback_loop_summary"
+  echo "- Behavior evidence: $behavior_evidence_summary"
+  jq -r '
+    .qa.behaviorEvidence as $behavior |
+    if $behavior == null then empty else
+      (($behavior.reproductionSteps // [])[]? | "- Reproduction step: " + .),
+      (($behavior.domainLanguage // [])[]? | "- Domain language: " + .)
+    end
+  ' "$report_card" 2>/dev/null | sed '/^$/d' || true
   echo
   echo "## Documentation Sync"
   echo

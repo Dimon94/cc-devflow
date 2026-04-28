@@ -47,6 +47,8 @@ failure_ownership_open="$(jq -r '
 ' "$report_card" 2>/dev/null || echo 0)"
 coverage_status="$(jq -r '.qa.coverageAudit.status // "unknown"' "$report_card" 2>/dev/null || echo unknown)"
 browser_status="$(jq -r '.qa.browserEvidence.status // "unknown"' "$report_card" 2>/dev/null || echo unknown)"
+feedback_loop_status="$(jq -r '.qa.feedbackLoop.status // "skipped"' "$report_card" 2>/dev/null || echo skipped)"
+behavior_evidence_status="$(jq -r '.qa.behaviorEvidence.status // "skipped"' "$report_card" 2>/dev/null || echo skipped)"
 
 remaining_tasks="0"
 if [[ -f "$tasks_file" ]]; then
@@ -62,6 +64,8 @@ fi
 [[ "$failure_ownership_open" -eq 0 ]] || { echo "Gate open: failure_ownership_open=$failure_ownership_open" >&2; exit 1; }
 [[ "$coverage_status" != "blocked" && "$coverage_status" != "fail" && "$coverage_status" != "pending" ]] || { echo "Gate open: coverage_status=$coverage_status" >&2; exit 1; }
 [[ "$browser_status" != "blocked" && "$browser_status" != "fail" && "$browser_status" != "pending" ]] || { echo "Gate open: browser_status=$browser_status" >&2; exit 1; }
+[[ "$feedback_loop_status" != "blocked" && "$feedback_loop_status" != "fail" && "$feedback_loop_status" != "pending" ]] || { echo "Gate open: feedback_loop_status=$feedback_loop_status" >&2; exit 1; }
+[[ "$behavior_evidence_status" != "blocked" && "$behavior_evidence_status" != "fail" && "$behavior_evidence_status" != "pending" ]] || { echo "Gate open: behavior_evidence_status=$behavior_evidence_status" >&2; exit 1; }
 [[ "$remaining_tasks" -eq 0 ]] || { echo "Gate open: remaining_tasks=$remaining_tasks" >&2; exit 1; }
 
 cat <<EOF
@@ -75,5 +79,7 @@ REVIEW_FRESHNESS=$review_freshness
 FAILURE_OWNERSHIP_OPEN=$failure_ownership_open
 COVERAGE_STATUS=$coverage_status
 BROWSER_STATUS=$browser_status
+FEEDBACK_LOOP_STATUS=$feedback_loop_status
+BEHAVIOR_EVIDENCE_STATUS=$behavior_evidence_status
 REMAINING_TASKS=$remaining_tasks
 EOF

@@ -10,6 +10,7 @@
 6. 如果文件结构变了，就同步对应目录的 `CLAUDE.md`
 7. PR / handoff 必须记录 `cc-check` 审过的 base/head SHA、review packet、finding triage 摘要
 8. readiness dashboard 必须说明 review freshness、QA coverage、browser evidence、failure ownership、documentation release、PR body accuracy
+9. behavior handoff 必须带上 QA feedback loop、expected / actual / reproduction steps，以及 durable follow-up brief
 
 ## Ship Decision Contract
 
@@ -35,6 +36,7 @@
 9. 删除 branch、worktree、未合并提交、归档 requirement 前必须列出对象；丢弃未合并工作需要显式确认
 10. verification 每次进入 `cc-act` 都必须重新跑；只有 push、PR 更新、文档生成等动作可以因为幂等状态跳过
 11. PR body accuracy 必须对照当前 report-card、当前 diff、当前 commits；旧 body 不能作为证据源
+12. follow-up 回写必须用行为契约表达，包含 current behavior、desired behavior、key interfaces、acceptance criteria、out of scope；不能只写文件路径或聊天 TODO
 
 ## Memory Consolidation
 
@@ -52,6 +54,7 @@
 - maintainer 知道怎么验证
 - PR / handoff / release 材料反映同一套事实
 - readiness dashboard 没有 blocker，PR body accuracy 已检查或明确阻塞
+- QA behavior evidence 和 feedback loop 已进入 PR / handoff / release 材料
 - post-merge closeout 反映 merged result 的验证事实，而不是只反映合并前事实
 - 下一轮计划入口更清楚
 - 文档入口可发现，changelog 不丢历史，TODO / backlog 只记录有证据的事项

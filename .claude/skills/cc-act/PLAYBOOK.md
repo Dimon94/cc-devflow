@@ -26,6 +26,7 @@
 2. 确认 `review/report-card.json` 是 `pass`，且没有未解释的 gaps / reroute
 3. 确认 `planning/tasks.md` 不再有未完成项
 4. 确认 `review.freshness` 新鲜、`runtime.failureOwnership` 无未解释失败、`qa.coverageAudit` / `qa.browserEvidence` 有证据或明确 skip
+5. 确认 `qa.feedbackLoop` / `qa.behaviorEvidence` 能支撑行为结论；不可复现时必须写清缺什么 artifact / 权限 / 输入
 
 如果 gate 没闭合，直接回 `cc-check` 或 `cc-do`，不要在 `cc-act` 自我安慰。
 
@@ -82,7 +83,7 @@ Ship 必须属于这 4 种模式之一：
 3. 检查提交边界，按逻辑单元拆分，保证提交顺序不引用未来代码。
 4. 如果有 WIP commit，只能用非破坏性 rebase / fixup 处理，不允许盲目 soft reset。
 5. push 前比较 local / remote HEAD；PR 前检查是否已有打开 PR / MR。
-6. 生成 readiness dashboard：review freshness、review quality、QA coverage、browser QA、failure ownership、documentation release、PR body accuracy。
+6. 生成 readiness dashboard：review freshness、review quality、QA coverage、browser QA、feedback loop、behavior evidence、failure ownership、documentation release、PR body accuracy。
 
 ## Phase 3: Build Delivery Pack
 
@@ -114,8 +115,10 @@ Ship 必须属于这 4 种模式之一：
 - review packet path / summary
 - finding triage summary
 - QA / claim evidence summary
+- QA behavior evidence and feedback-loop quality
 - readiness dashboard
 - PR body accuracy check
+- Durable follow-up briefs: current behavior、desired behavior、key interfaces、acceptance criteria、out of scope
 
 缺这些字段时，可以生成 local handoff，但不能声称 PR body 已经可 review。
 
@@ -183,6 +186,8 @@ Ship 必须属于这 4 种模式之一：
 - 长期方向写 `devflow/roadmap/roadmap.md`
 - 下一轮待排队动作写 `devflow/roadmap/backlog.md`
 - 不要把噪音和碎念回写成系统真相
+- follow-up 必须是 durable brief：用领域语言写 current behavior、desired behavior、key interfaces、acceptance criteria、out of scope
+- 独立行为拆独立条目；有依赖关系时写明顺序，方便下一轮并行或排队
 
 ## Phase 7: Declare The Next Entry
 
@@ -201,6 +206,7 @@ Ship 必须属于这 4 种模式之一：
 4. `cc-simplify`、单测、e2e、commit/push 的结果是不是都能追溯？
 5. PR body / release note / handoff / changelog 说的是不是同一套现实？
 6. readiness dashboard 有没有 blocker 或 stale warning？
+7. follow-up 是不是行为契约，而不是“改某文件某行”的易腐烂 TODO？
 
 如果第 1 或第 3 题答案不是“能”，说明 `cc-act` 仍然太重或太糊。
 

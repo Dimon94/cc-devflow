@@ -189,6 +189,30 @@ req_act_collect_followups() {
 
   if [[ -f "$report_card" ]]; then
     jq -r '(.gaps // [])[]?' "$report_card" 2>/dev/null | sed '/^$/d' > "$out_file" || true
+    jq -r '
+      (.followupBriefs // .review.followupBriefs // [])[]?
+      | [
+          ("summary: " + (.summary // .title // "follow-up")),
+          ("current: " + (.currentBehavior // "not recorded")),
+          ("desired: " + (.desiredBehavior // "not recorded")),
+          ("interfaces: " + ((.keyInterfaces // []) | join(", "))),
+          ("acceptance: " + ((.acceptanceCriteria // []) | join("; "))),
+          ("out-of-scope: " + ((.outOfScope // []) | join(", ")))
+        ]
+      | join(" | ")
+    ' "$report_card" 2>/dev/null | sed '/^$/d' >> "$out_file" || true
+    jq -r '
+      (.qa.architectureFollowUps // [])[]?
+      | [
+          ("summary: " + (.summary // .title // "architecture follow-up")),
+          ("current: " + (.currentBehavior // "not recorded")),
+          ("desired: " + (.desiredBehavior // "not recorded")),
+          ("interfaces: " + ((.keyInterfaces // []) | join(", "))),
+          ("acceptance: " + ((.acceptanceCriteria // []) | join("; "))),
+          ("out-of-scope: " + ((.outOfScope // []) | join(", ")))
+        ]
+      | join(" | ")
+    ' "$report_card" 2>/dev/null | sed '/^$/d' >> "$out_file" || true
   fi
 
   if [[ -f "$manifest" ]]; then
@@ -238,7 +262,9 @@ req_act_collect_evidence() {
     (.evidence // [])[]?,
     ((.claimEvidence // [])[]? | "- " + (.claim // "claim") + ": " + (.status // "unknown") + " via " + (.commandOrArtifact // "artifact") + " - " + (.keyObservation // "")),
     (if .qa.coverageAudit then "- qa.coverage: " + (.qa.coverageAudit.status // "unknown") + ", gaps=" + (((.qa.coverageAudit.gaps // []) | length) | tostring) else empty end),
-    (if .qa.browserEvidence then "- qa.browser: " + (.qa.browserEvidence.status // "unknown") + ", mode=" + (.qa.browserEvidence.mode // "unknown") else empty end)
+    (if .qa.browserEvidence then "- qa.browser: " + (.qa.browserEvidence.status // "unknown") + ", mode=" + (.qa.browserEvidence.mode // "unknown") else empty end),
+    (if .qa.feedbackLoop then "- qa.feedbackLoop: " + (.qa.feedbackLoop.status // "unknown") + ", mode=" + (.qa.feedbackLoop.mode // "unknown") + ", signal=" + (.qa.feedbackLoop.signalSharpness // "not recorded") else empty end),
+    (if .qa.behaviorEvidence then "- qa.behavior: " + (.qa.behaviorEvidence.status // "unknown") + ", expected=" + (.qa.behaviorEvidence.expectedBehavior // "not recorded") + ", actual=" + (.qa.behaviorEvidence.actualBehavior // "not recorded") else empty end)
   ' "$report_card" 2>/dev/null | sed '/^$/d' > "$out_file" || true
   req_act_dedup_file "$out_file"
 }

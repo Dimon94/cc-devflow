@@ -20,10 +20,19 @@
 
 - 
 
+## QA Behavior Evidence
+
+- Feedback loop:
+- User-visible behavior:
+- Reproduction / verification path:
+
 ## Ops Notes
 
 - 
 
 ## Follow-Ups
 
-- 
+- Current behavior:
+- Desired behavior:
+- Acceptance criteria:
+- Out of scope:
