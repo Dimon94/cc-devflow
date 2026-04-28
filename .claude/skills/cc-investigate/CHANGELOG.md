@@ -1,5 +1,11 @@
 # CC-Investigate Skill Changelog
 
+## v1.1.5 - 2026-04-28
+
+- add a feedback-loop contract so investigations record loop type, command, symptom match, runtime, determinism, failure rate, signal specificity, and sharpening plan before freezing root cause
+- require ranked candidate hypotheses before narrowing to active falsification targets, plus probe tags for cleanup-safe diagnostic instrumentation
+- add performance-regression, domain/ADR context, correct-test-seam, and evidence-request fields across the analysis, task, manifest, playbook, and investigation contract templates
+
 ## v1.1.4 - 2026-04-28
 
 - add boundary-probe, backward-trace, reference-comparison, diagnostic-instrumentation, and condition-wait investigation modes for multi-component, deep-stack, similar-path, and flaky failures

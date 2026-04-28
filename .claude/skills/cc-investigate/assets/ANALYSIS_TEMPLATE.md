@@ -17,9 +17,24 @@
 - What the user saw:
 - Reproduction command / path:
 - Repro stability: `stable` | `intermittent` | `not-yet-reproduced` | `narrowed-only`
+- Matches reported symptom: `yes` | `no` | `partial` | `unknown`
+- Symptom match evidence:
 - Expected:
 - Actual:
 - Impact / blast radius:
+
+## Feedback Loop Contract
+
+- Loop type: `failing-test` | `http-script` | `cli-fixture` | `browser-script` | `trace-replay` | `throwaway-harness` | `property-fuzz` | `bisect` | `differential` | `hitl`
+- Command or manual driver:
+- Expected failing signal:
+- Actual failing signal:
+- Runtime:
+- Determinism: `deterministic` | `high-rate-flaky` | `low-rate-flaky` | `unknown`
+- Failure rate:
+- Signal specificity:
+- Sharpening plan:
+- If no loop, evidence request:
 
 ## Evidence Chain
 
@@ -29,6 +44,7 @@
 - Existing tests:
 - Prior investigations:
 - TODO / backlog / report-card signals:
+- Domain / ADR context:
 
 ## Boundary Probe Matrix
 
@@ -55,9 +71,9 @@
 
 ## Diagnostic Instrumentation Plan
 
-| Probe location | Question answered | Command to run | Expected signal | Actual signal | Cleanup requirement |
-| --- | --- | --- | --- | --- | --- |
-| | | | | | |
+| Probe tag | Probe location | Question answered | Command to run | Expected signal | Actual signal | Cleanup requirement |
+| --- | --- | --- | --- | --- | --- | --- |
+| | | | | | | |
 
 ## Pattern Analysis
 
@@ -70,8 +86,15 @@
 | configuration drift | | ruled-out | |
 | stale cache | | ruled-out | |
 | resource leak | | ruled-out | |
+| performance regression | | ruled-out | |
 | trust boundary drift | | ruled-out | |
 | timing guess / flaky wait | | ruled-out | |
+
+## Candidate Hypotheses
+
+| Rank | Hypothesis | Why plausible | Prediction | Status |
+| --- | --- | --- | --- | --- |
+| 1 | | | | pending |
 
 ## Research Evidence
 
@@ -94,6 +117,7 @@
 - Attempted evidence:
 - Why current entry is suspect:
 - Next option: `continue-with-new-hypothesis` | `instrument-and-wait` | `human-review` | `reroute-cc-plan`
+- Evidence request:
 - Recommendation:
 
 ## Root Cause
@@ -107,6 +131,14 @@
 - Monitoring or future evidence needed:
 - Operator handling after fix:
 - Prior history relationship: `new` | `recurring` | `same-root-cause` | `architectural-smell-candidate`
+
+## Correct Test Seam
+
+- Test seam:
+- Public interface exercised:
+- Why this seam reaches the real trigger chain:
+- Why a shallower test would be false confidence:
+- If no correct seam exists:
 
 ## Repair Boundary
 
@@ -125,6 +157,9 @@
 ## Review Gate
 
 - Repro stable:
+- Feedback loop trustworthy:
+- Symptom match confirmed:
 - Root cause confirmed:
+- Correct test seam identified:
 - Repair scope still belongs to this requirement:
 - If not, reroute:

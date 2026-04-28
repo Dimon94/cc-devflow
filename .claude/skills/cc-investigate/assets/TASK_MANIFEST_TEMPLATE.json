@@ -20,7 +20,7 @@
     ]
   },
   "planningMeta": {
-    "ccInvestigateSkillVersion": "1.1.4",
+    "ccInvestigateSkillVersion": "1.1.5",
     "analysisVersion": "analysis.v1",
     "approvedAt": "2026-04-17T12:00:00.000Z",
     "approvedBy": "user",
@@ -29,10 +29,24 @@
   "investigationMeta": {
     "symptomStatus": "stable",
     "reproductionPath": "npm test -- src/feature/feature.test.ts",
+    "feedbackLoop": {
+      "loopType": "failing-test",
+      "commandOrDriver": "npm test -- src/feature/feature.test.ts",
+      "expectedFailingSignal": "The test fails with the user-reported behavior",
+      "actualFailingSignal": "Observed failure output from the current repo",
+      "symptomMatchEvidence": "Failure output matches the reported symptom, not a nearby unrelated failure",
+      "runtime": "under 10s",
+      "determinism": "deterministic",
+      "failureRate": "100%",
+      "signalSpecificity": "asserts the exact broken behavior",
+      "sharpeningPlan": "Narrow setup or assertions if the loop becomes slow or broad",
+      "evidenceRequest": ""
+    },
     "patternAnalysis": {
-      "selectedPattern": "implementation drift",
+      "selectedPattern": "null propagation",
       "ruledOutPatterns": [
         "race condition",
+        "performance regression",
         "configuration drift",
         "timing guess / flaky wait"
       ],
@@ -73,6 +87,7 @@
     },
     "diagnosticInstrumentation": [
       {
+        "probeTag": "[DEBUG-FIXXXX-a4f2]",
         "probeLocation": "file:line or component boundary",
         "questionAnswered": "Which boundary first emits the invalid value?",
         "commandToRun": "npm test -- src/feature/feature.test.ts",
@@ -81,8 +96,23 @@
         "cleanupRequirement": "Remove temporary probe or convert it into a durable assertion/log"
       }
     ],
+    "candidateHypotheses": [
+      {
+        "rank": 1,
+        "statement": "Specific, testable root-cause claim",
+        "whyPlausible": "Reproduction output points to the affected contract",
+        "prediction": "The failing signal disappears when that contract is restored",
+        "status": "accepted-for-testing"
+      }
+    ],
     "priorInvestigations": [],
     "researchEvidence": [],
+    "domainDecisionContext": {
+      "contextFilesRead": [],
+      "adrFilesRead": [],
+      "vocabularyNotes": [],
+      "adrConflicts": []
+    },
     "rootCauseHypothesis": {
       "statement": "Specific, testable root-cause claim",
       "falsificationMethod": "Command, log probe, assertion, or code-path check",
@@ -111,6 +141,13 @@
       "failedHypothesisCount": 0,
       "nextOption": "cc-do",
       "recommendation": "Repair the confirmed root cause"
+    },
+    "correctTestSeam": {
+      "testSeam": "public interface or end-to-end path that reaches the real trigger chain",
+      "publicInterfaceExercised": "CLI/API/UI behavior observed by callers",
+      "realTriggerChainCoverage": "The test enters through the same trigger path as the bug",
+      "whyShallowTestRejected": "A lower-level unit test would not prove the upstream contract",
+      "ifNoCorrectSeam": ""
     },
     "repairBoundary": {
       "affectedModule": "src/feature",
@@ -172,6 +209,8 @@
       ],
       "acceptance": [
         "The target bug is reproduced as a stable failure",
+        "The failing loop matches the user-reported symptom",
+        "The regression test uses the correct seam for the real trigger chain",
         "The failure output points to the confirmed root-cause path"
       ],
       "verification": [

@@ -16,6 +16,8 @@
 - Execution mode: `single-path` | `parallel-ready`
 - Confirmed root cause:
 - Root-cause hypothesis:
+- Feedback loop:
+- Symptom match evidence:
 - Frozen repair boundary:
 - Boundary probes:
 - Backward trace:
@@ -28,16 +30,19 @@
 - Commands to trust:
 - Do not re-decide:
 - Parallel boundaries:
+- Correct test seam:
+- Evidence request if blocked:
 
 ## Phase 1: Reproduce And Probe Guard
 
 - [ ] T001 [TEST] Capture the failing behavior as a stable reproduction (dependsOn:none) `path/to/test`
-  Goal: 让 bug 先变成一个可复跑的失败事实。
+  Goal: 让 bug 先变成一个快、准、可复跑且匹配用户症状的失败事实。
   Files: `path/to/test`
   Read first: `analysis.md`, `tasks.md`
   Verification: `npm test -- path/to/test`
-  Evidence: failing output or reproducible log
-  Ready when: reproduction path 已稳定，analysis 已记录必要的 boundary / trace / comparison evidence
+  Evidence: failing output or reproducible log + symptom match evidence
+  Correct seam: test must exercise the real trigger chain through a public interface
+  Ready when: feedback loop 已稳定，analysis 已记录必要的 boundary / trace / comparison evidence
 
 ## Phase 2: Repair
 
@@ -47,7 +52,7 @@
   Read first: `analysis.md`, `path/to/test`
   Verification: `npm test -- path/to/test`
   Evidence: passing output + checkpoint
-  Ready when: T001 已证明问题存在，analysis 已证明根因源头
+  Ready when: T001 已证明同一个用户症状存在，analysis 已证明根因源头
 
 ## Phase 3: Verify
 

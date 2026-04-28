@@ -11,6 +11,8 @@
 
 - symptom
 - reproduction path
+- feedback loop contract
+- symptom match evidence
 - expected vs actual
 - code path
 - recent change signal
@@ -20,9 +22,11 @@
 - reference comparison, when a similar working path exists
 - diagnostic instrumentation plan, when probes are needed
 - pattern analysis
+- ranked candidate hypotheses
 - root-cause hypothesis
 - falsification method
 - confirmed root cause
+- correct test seam
 - root cause class
 - repair boundary
 - blast radius
@@ -37,6 +41,7 @@
 
 每条假设都必须可证伪：
 
+- `candidateRank`：候选假设排序，避免第一直觉锚定
 - `hypothesis`：具体说明什么坏了，为什么会导致症状
 - `evidenceFor`
 - `evidenceAgainst`
@@ -46,6 +51,22 @@
 - `status`：`pending` / `confirmed` / `rejected` / `needs-more-evidence`
 
 只有 `confirmed` 假设可以进入 Root Cause。
+
+## Feedback Loop Contract
+
+调查必须先构造一个可信 pass/fail loop：
+
+- `loopType`: failing-test / http-script / cli-fixture / browser-script / trace-replay / throwaway-harness / property-fuzz / bisect / differential / hitl
+- `commandOrDriver`
+- `expectedFailingSignal`
+- `actualFailingSignal`
+- `symptomMatchEvidence`
+- `runtime`
+- `determinism`
+- `failureRate`
+- `sharpeningPlan`
+
+loop 必须复现用户报告的同一失败。无法构造 loop 时，只能进入 `Evidence Request`，不能冻结根因。
 
 ## Pattern Analysis
 
@@ -58,6 +79,7 @@
 - configuration drift
 - stale cache
 - resource leak
+- performance regression
 - trust boundary drift
 - timing guess / flaky wait
 
@@ -105,6 +127,7 @@
 
 临时探针必须回答一个明确问题：
 
+- probe tag
 - probe location
 - question answered
 - command to run
@@ -113,6 +136,28 @@
 - cleanup requirement
 
 探针不是修复。handoff 必须说明删除、保留为正式日志，或转成测试断言。
+
+debug 日志必须带唯一前缀，例如 `[DEBUG-FIX123-a4f2]`，确保 cleanup 可以用 grep 验证。
+
+## Correct Test Seam
+
+修复 handoff 必须记录回归测试是否覆盖真实触发链：
+
+- `testSeam`
+- `publicInterfaceExercised`
+- `realTriggerChainCoverage`
+- `whyShallowTestRejected`
+- `ifNoCorrectSeam`
+
+没有正确 seam 时，必须把它记录为架构事实，并保留原始 feedback loop 作为修复验证。
+
+## Domain And Decision Context
+
+如果仓库存在 `CONTEXT.md`、`CONTEXT-MAP.md` 或相关 ADR，调查前先读相关部分。
+
+- 输出中的领域概念、假设名、测试名使用项目既有词汇
+- 如果根因或修复方向违反 ADR，必须显式记录冲突和理由
+- 缺失领域词汇是调查信号，不要临时发明同义词掩盖契约缺口
 
 ## Prior History
 
@@ -166,6 +211,7 @@
 - attempted evidence
 - why current entry is suspect
 - recommended next option：continue / instrument-and-wait / human-review / reroute-cc-plan
+- evidence request：repro env / HAR / log dump / core dump / timestamped recording / temporary production instrumentation
 
 ## Reroute
 
