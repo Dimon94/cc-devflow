@@ -1,5 +1,11 @@
 # CC-Plan Skill Changelog
 
+## v3.7.0 - 2026-04-28
+
+- add glossary delta capture for canonical terms, aliases to avoid, ambiguities, and relationship constraints during context sweep
+- require non-trivial public interfaces to compare deliberately different shapes before freezing the final seam
+- mark vertical slices as `AFK` or `HITL` and require durable design / issue handoffs to describe behavior contracts instead of stale file paths
+
 ## v3.6.2 - 2026-04-28
 
 - clarify that canonical language and durable decisions come from cc-devflow native sources: `devflow/specs/`, roadmap/backlog handoff, planning design/analysis, and change metadata

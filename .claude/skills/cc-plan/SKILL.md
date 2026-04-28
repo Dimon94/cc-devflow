@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.6.2
+version: 3.7.0
 description: Use when a requirement, roadmap item, or bug needs scope clarification, design decisions, and executable task breakdown before coding starts.
 triggers:
   - 帮我规划这个需求
@@ -191,6 +191,7 @@ tool_budget:
 8. 测试框架真相源：优先读 `CLAUDE.md` / project docs 的测试约定，再用配置文件和目录结构补证。
 9. 如果有 UI scope，读取现有设计系统、组件、页面状态和交互模式。
 10. 如果是 API / CLI / SDK / developer-facing / operator-facing scope，读取 README、docs、package metadata、安装/运行/调试入口和当前 first-success path。
+11. 如果现有语言仍混乱，写出最小 glossary delta：canonical term、aliases to avoid、flagged ambiguity、关系约束；只记录领域或 capability 概念，不记录短期类名。
 
 先把这些材料压成 `Source Handoff`，再决定 discovery 还是 planning。
 
@@ -245,7 +246,7 @@ tool_budget:
 3. Implementation surface map：先锁定每个会新增或修改的文件、职责、归属理由、耦合风险，再拆任务。
 4. Option role check：非 trivial 方案必须比较 `minimal viable`、`ideal architecture`，必要时加 `hybrid`，并写清为什么推荐方案服务当前目标。
 5. Domain language check：核心名词、文件命名、测试名、任务标题必须对齐 `devflow/specs/`、roadmap handoff 或历史 design/analysis；没有来源时写 assumption，不要临时发明第二套语言。
-6. Interface depth check：新增或改动模块 / API / CLI / SDK 时，先说明调用方、公共操作、隐藏复杂度、易用错点；必要时做两种以上接口形态比较，优先小接口深模块。
+6. Interface depth check：新增或改动模块 / API / CLI / SDK 时，先说明调用方、公共操作、隐藏复杂度、易用错点；非 trivial 公共接口至少比较两种故意不同的形态，例如 `minimal/common-case` 与 `flexible/general-purpose`，再解释为什么最终形态更深、更不容易误用。
 7. Implementation decision horizon：提前写出 foundation、core logic、integration、polish/tests 阶段实现者会撞到的决策，能现在冻结就不要留给 `cc-do` 临场猜。
 8. Architecture diagram：跨模块或状态流变更要写 ASCII 数据流 / 依赖图。
 9. Error & Rescue map：`full-design` 必须按 codepath 写清 failure、rescue、user sees、test evidence；不适用时写 N/A 理由。
@@ -260,6 +261,7 @@ tool_budget:
 18. Performance and distribution：涉及批量、I/O、发布物、CLI、包、容器时，必须写清性能和分发边界。
 19. NOT in scope：所有被考虑但 defer 的内容要写理由，不能消失在聊天里。
 20. Review calibration：只有会导致 `cc-do` 建错、卡住、越界、漏测的问题才是 blocking；措辞偏好和非阻塞建议不能伪装成 gate failure。
+21. Durable brief check：设计摘要、PRD 化描述、issue / follow-up handoff 只写行为、契约、模块责任和验收标准；不要把易过期的文件路径、行号或当前实现细节当成长期事实。
 
 如果任一项无法从当前证据完成，写 `assumption` 或 `blocked question`，不要伪装成已经审过。
 
@@ -288,6 +290,7 @@ tool_budget:
 10. 只有纯文档、纯配置、纯生成文件、throwaway prototype 可以例外。例外必须写进 `planning/design.md` 和 `planning/tasks.md` 的 `TDD exceptions`，包含原因、风险、替代验证命令和后续补证入口。
 11. 并行只允许发生在已经满足上游 Red/Green 依赖之后。两个 `[P]` 任务如果共享同一个红灯或同一组 touched files，就不能并行。
 12. 如果当前需求找不到第一条失败测试，先把它写成 blocked question 或 exploratory spike，不准伪装成可执行实现任务。
+13. 每条垂直切片必须标注 `AFK` 或 `HITL`：`AFK` 代表执行者可在现有合同下独立完成并验证；`HITL` 代表仍需要用户判断、外部权限、设计取舍或人工验收。默认拆到可 `AFK`，只有证据证明必须人工参与时才保留 `HITL`。
 
 ## Design Modes
 
@@ -328,10 +331,12 @@ tool_budget:
 10. Test framework / regression scan：测试框架来源、覆盖质量、回归测试是否明确。
 11. Test seam / mock boundary scan：Red 任务是否通过公共 seam 证明行为，mock 是否只发生在系统边界，反馈循环是否可重复。
 12. Domain language scan：核心名词、测试名、文件职责是否沿用项目语言；冲突是否写成 blocked question / user challenge。
-13. Interface depth scan：新增接口是否足够小、隐藏复杂度是否足够深、调用方是否容易正确使用且不容易误用。
+13. Interface depth scan：新增接口是否足够小、隐藏复杂度是否足够深、调用方是否容易正确使用且不容易误用；非 trivial 接口是否已经做过至少两种形态比较。
 14. Tracer bullet scan：任务是否按一个行为一条 Red/Green/Refactor 链组织，而不是按测试层、服务层、UI 层水平堆叠。
-15. Review calibration：只把会导致实现错误、执行卡住、范围越界、验证缺失的问题标成 blocking；非阻塞建议必须降级为 advisory
-16. Final gate：明确 auto-decided items、taste decisions、user challenges 和最终 recommendation
+15. Slice readiness scan：每条切片是否能独立 demo / verify，是否标明 `AFK` / `HITL`、依赖和阻塞原因。
+16. Durable handoff scan：design / issue / follow-up 文案是否按行为和契约表达，没有把当前文件行号当成长期 truth。
+17. Review calibration：只把会导致实现错误、执行卡住、范围越界、验证缺失的问题标成 blocking；非阻塞建议必须降级为 advisory
+18. Final gate：明确 auto-decided items、taste decisions、user challenges 和最终 recommendation
 
 如果有 UI / interaction 明显范围，在 `planning/design.md` 里补 design completeness score 和状态覆盖表。
 如果有 API / CLI / developer-facing / operator-facing scope，在 `planning/design.md` 里补 target persona、time to first value、magic moment 和 DX / operator review 结论。
