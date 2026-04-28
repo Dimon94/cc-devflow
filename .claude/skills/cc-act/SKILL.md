@@ -1,6 +1,6 @@
 ---
 name: cc-act
-version: 1.7.0
+version: 1.8.0
 description: 'Use when verified work must be shipped or handed off with a clear landing path: run simplify and required tests, create or update a PR, prepare a local handoff, close out merged work, sync docs, write release notes, and fold follow-ups back into backlog or roadmap.'
 triggers:
   - 准备提 PR
@@ -215,6 +215,8 @@ tool_budget:
 8. Review range：PR brief / PR body 必须写清 `cc-check` 审过的 base/head SHA、review packet、finding triage 摘要。
 9. Post-integration verification：本地合并或 post-merge closeout 后，必须在 merged result 上跑必要 gate；不能只继承合并前绿色。
 10. Follow-up durability：PR brief / release note / backlog writeback 里的 follow-up 必须写成行为契约，包含 current behavior、desired behavior、key interfaces、acceptance criteria、out of scope；不要把当前文件路径或行号当成长期计划。
+11. Remote state consistency：如果本次 closeout 触碰 GitHub issue / PR / tracker，必须记录当前 state、目标 state、允许转换、已保留事实和下一位 owner；`needs-info` 必须保留已确认事实和具体问题，`ready-for-agent` 必须有可执行 brief。
+12. Tooling smoke：如果本次改动影响 hook、pre-commit、lint、publish、adapt 或验证脚本，必须跑真实入口或最接近真实入口的 smoke；只读配置文件不等于工具链可用。
 
 ## Readiness Dashboard
 
@@ -240,6 +242,7 @@ readiness dashboard 有 blocker 时，不能创建或更新 PR，只能 reroute 
 2. 丢弃未合并工作必须要求用户显式确认；没有确认时只能转 `local-handoff`。
 3. branch cleanup 只发生在 merge / PR / discard 语义已经清楚之后。
 4. `post-merge-closeout` 必须记录 merged-result verification：命令、exit status、关键观察、失败时 reroute。
+5. 危险 Git 动作必须有明确 ship 语义：`git push` 只在 `create-pr` / `update-pr` / release lane 执行，`git reset --hard`、`git clean -f`、`git branch -D`、整树 restore/checkout 必须先列出对象并取得用户确认；没有确认时写 handoff，不执行。
 
 ## Documentation Release
 
@@ -252,6 +255,16 @@ readiness dashboard 有 blocker 时，不能创建或更新 PR，只能 reroute 
 5. Changelog protection：只允许润色既有条目或新增由当前 diff 支撑的条目，不能重写历史、删除已有发布说明。
 6. Discoverability：新增文档必须能从 README、CLAUDE 或 handoff 入口找到。
 7. TODO/backlog cleanup：只把有 diff 证据完成的事项移到 completed；新 follow-up 写回 backlog/roadmap。
+
+## Issue And Follow-Up Handoff
+
+当本次交付产生或更新 issue / PR / backlog follow-up 时，文案必须耐 refactor：
+
+- 先写用户可观察行为：what happened / expected / reproduction 或 desired behavior。
+- 再写 agent 可执行 contract：acceptance criteria、allowed scope、blocked by、verification command。
+- 不把短期文件路径、行号、函数名写成长期事实；只有当前 reviewer 需要定位时才放进 PR brief 的实现备注。
+- 多个 follow-up 必须按独立可验证切片拆开，并标明 `AFK` / `HITL`、blocked-by 和 owner。
+- 已经问过或确认过的信息不能在 `needs-info` 里丢失；问题必须具体到 reporter 能直接补证据。
 
 ## Loop
 

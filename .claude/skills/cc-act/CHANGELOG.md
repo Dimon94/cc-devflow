@@ -1,5 +1,11 @@
 # CC-Act Skill Changelog
 
+## v1.8.0 - 2026-04-28
+
+- add remote state consistency rules for issue, PR, tracker, `needs-info`, and `ready-for-agent` closeout handoffs
+- require dangerous git actions to have explicit ship semantics and user confirmation before reset, clean, branch deletion, or whole-tree restore
+- require tooling changes to prove the real hook, adapt, publish, lint, or verification entrypoint still works
+
 ## v1.7.0 - 2026-04-28
 
 - carry cc-check QA feedback-loop and behavior evidence into PR briefs, handoffs, and release notes so ship materials preserve expected/actual/reproduction truth
