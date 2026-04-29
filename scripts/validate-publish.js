@@ -4,6 +4,7 @@ const path = require('path');
 const zlib = require('zlib');
 const { spawnSync } = require('child_process');
 const matter = require('gray-matter');
+const { validateSkillInventory } = require('../lib/compiler/inventory');
 
 const ROOT = path.resolve(__dirname, '..');
 const DISTRIBUTION_CONFIG = require(path.join(ROOT, 'config', 'distributable-skills.json'));
@@ -121,6 +122,16 @@ function validateTemplate(errors) {
   for (const skillName of PUBLIC_SKILLS) {
     ensurePath(`.claude/skills/${skillName}/PLAYBOOK.md`, 'file', errors);
   }
+}
+
+function validateInventoryParity(errors) {
+  errors.push(...validateSkillInventory({
+    root: ROOT,
+    publicSkills: PUBLIC_SKILLS,
+    distributedSkills: DISTRIBUTED_SKILLS,
+    internalSkills: INTERNAL_SKILLS,
+    codexSkills: [...new Set([...DISTRIBUTED_SKILLS, 'cc-devflow'])].sort()
+  }));
 }
 
 function ensureNonEmptyString(value, label, errors) {
@@ -466,6 +477,7 @@ function main() {
 
   validatePackageJson(errors);
   validateTemplate(errors);
+  validateInventoryParity(errors);
   validatePublicSkillContracts(errors);
   validateExampleBindings(errors);
   validatePackTarball(errors);
