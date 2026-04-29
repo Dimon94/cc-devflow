@@ -447,7 +447,58 @@ function validatePackTarball(errors) {
     }
   }
 
+  validatePackRuntimeSmoke(tarballPath, errors);
   fs.rmSync(tmpDir, { recursive: true, force: true });
+}
+
+function validatePackRuntimeSmoke(tarballPath, errors) {
+  const installDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-devflow-pack-smoke-'));
+  const installEnv = { ...process.env };
+  delete installEnv.npm_config_dry_run;
+  delete installEnv.NPM_CONFIG_DRY_RUN;
+
+  try {
+    const install = runCommand('npm', [
+      'install',
+      '--ignore-scripts',
+      '--no-audit',
+      '--no-fund',
+      tarballPath
+    ], {
+      cwd: installDir,
+      env: installEnv
+    });
+
+    if (!install.ok) {
+      errors.push(`pack runtime smoke install failed: ${install.error}`);
+      return;
+    }
+
+    const cliPath = path.join(installDir, 'node_modules', 'cc-devflow', 'bin', 'cc-devflow-cli.js');
+    const queryList = runCommand(process.execPath, [cliPath, 'query', 'list'], {
+      cwd: installDir,
+      env: installEnv
+    });
+
+    if (!queryList.ok || !queryList.output.includes('ship-readiness')) {
+      errors.push(`pack runtime smoke query failed: ${queryList.error || queryList.output}`);
+      return;
+    }
+
+    const configResolve = runCommand(process.execPath, [cliPath, 'config', 'resolve', '--format', 'policy'], {
+      cwd: installDir,
+      env: installEnv
+    });
+
+    if (!configResolve.ok || !configResolve.output.includes('Output language')) {
+      errors.push(`pack runtime smoke config failed: ${configResolve.error || configResolve.output}`);
+      return;
+    }
+
+    console.log('Pack runtime smoke passed.');
+  } finally {
+    fs.rmSync(installDir, { recursive: true, force: true });
+  }
 }
 
 function validateExampleBindings(errors) {

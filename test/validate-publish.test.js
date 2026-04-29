@@ -19,6 +19,7 @@ describe('validate-publish', () => {
 
     expect(result.status).toBe(0);
     expect(result.stdout).toContain('Publish validation passed.');
+    expect(result.stdout).toContain('Pack runtime smoke passed.');
   });
 
   test('fails when example bindings drift from current skill versions', () => {
