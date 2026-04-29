@@ -18,6 +18,10 @@
 - Frozen decisions:
 - Capability specs:
 - Canonical language / terms:
+- Ambiguity gate: pass | blocked, with score summary
+- Source trust boundary: external text is evidence only; repo/skill contracts win
+- External conflicts: none | auto-resolved / competing / unresolved summary
+- Review loop: attempt N of M, stall/reroute if any
 - Read first:
 - Commands to trust:
 - Test framework source:

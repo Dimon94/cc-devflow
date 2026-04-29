@@ -25,6 +25,28 @@
 - Inherited non-goals:
 - Upstream evidence:
 
+## Source Trust Boundary
+
+- Internal contracts:
+- Repo evidence:
+- External evidence:
+- Untrusted text:
+- Instruction risk:
+
+## Assumptions Preview & Ambiguity Gate
+
+- WHAT ambiguity score:
+- WHY ambiguity score:
+- Assumptions preview:
+- Gate verdict: `pass` | `blocked`
+- Blocked question if any:
+
+## External Document Conflicts
+
+- Auto-resolved:
+- Competing:
+- Unresolved blockers:
+
 ## Capability Handoff
 
 - Canonical capability spec:
@@ -110,9 +132,21 @@
 - Test framework / regression scan:
 - Test seam / mock boundary scan:
 - Tracer bullet scan:
+- Source trust boundary scan:
+- External conflict scan:
+- Ambiguity gate:
+- Review loop status:
 - Test-first readiness:
 - Review calibration:
 - Final recommendation:
+
+## Bounded Review Loop
+
+- Attempt:
+- Max attempts:
+- Repeated concern fingerprints:
+- Stall reason:
+- Reroute if stalled:
 
 ## Approval
 

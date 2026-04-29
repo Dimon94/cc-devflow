@@ -1,5 +1,11 @@
 # CC-Plan Skill Changelog
 
+## v3.7.1 - 2026-04-29
+
+- add ambiguity, review loop, source evidence, and external document conflict contracts
+- update design, tiny-design, tasks, and manifest templates so `cc-do` receives trust and ambiguity gates as machine-readable handoff
+- require external text to stay evidence-only unless it is promoted through repo-native contracts
+
 ## v3.7.0 - 2026-04-28
 
 - add glossary delta capture for canonical terms, aliases to avoid, ambiguities, and relationship constraints during context sweep

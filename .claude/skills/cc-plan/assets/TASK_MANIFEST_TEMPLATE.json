@@ -20,18 +20,47 @@
     ]
   },
   "planningMeta": {
-    "reqPlanSkillVersion": "3.7.0",
+    "reqPlanSkillVersion": "3.7.1",
     "designVersion": "design.v1",
     "approvedAt": "2026-04-15T12:00:00.000Z",
     "approvedBy": "user",
-    "basedOnOption": "Option A"
+    "basedOnOption": "Option A",
+    "ambiguityGate": {
+      "whatScore": 0,
+      "whyScore": 0,
+      "blockingThreshold": 3,
+      "status": "pass",
+      "assumptionsPreview": [],
+      "blockedQuestions": []
+    },
+    "reviewLoop": {
+      "attempt": 1,
+      "maxAttempts": 3,
+      "repeatedConcernFingerprints": [],
+      "stallReason": "",
+      "rerouteIfStalled": "ask-user"
+    }
   },
+  "sourceEvidence": [
+    {
+      "source": "planning/design.md",
+      "trust": "internal-contract",
+      "useAs": "contract",
+      "instructionRisk": "low",
+      "decision": "authoritative for this requirement"
+    }
+  ],
   "languageAndDecisions": {
     "languageSources": [],
     "canonicalTerms": [],
     "languageConflicts": [],
     "decisionDocs": [],
-    "adrOrSpecConflicts": []
+    "adrOrSpecConflicts": [],
+    "externalDocConflicts": {
+      "autoResolved": [],
+      "competing": [],
+      "unresolved": []
+    }
   },
   "executionDiscipline": {
     "default": "red-green-refactor",
