@@ -14,6 +14,10 @@ const {
   setConfigValue,
   writeConfigTemplate
 } = require(path.join(PACKAGE_ROOT, 'lib/skill-runtime/config.js'));
+const {
+  listQueryIds,
+  runQuery
+} = require(path.join(PACKAGE_ROOT, 'lib/skill-runtime/query.js'));
 const ADAPT_BIN = path.join(PACKAGE_ROOT, 'bin', 'adapt.js');
 const ADAPTER_BIN = path.join(PACKAGE_ROOT, 'bin', 'cc-devflow.js');
 const TEMPLATE_IGNORES = new Set(['.DS_Store', 'tsc-cache']);
@@ -54,6 +58,8 @@ Commands:
   config set          Set one project/user/local config value
   config resolve      Print resolved YAML config with key-level trace
   config doctor       Validate config and local ignore safety
+  query list          List typed runtime query ids
+  query <id>          Run a typed runtime query as JSON
 
 Init options:
   --dir <path>         Target project path (default: cwd)
@@ -79,6 +85,11 @@ Config options:
   --trace              Include key-level source trace with policy output
   --force              Overwrite an existing config template
 
+Query options:
+  --cwd <path>         Project path used for devflow artifact lookup
+  --change <id>        Change id, for example REQ-123
+  --change-id <id>     Alias for --change
+
 Examples:
   cc-devflow init
   cc-devflow init --dir /path/to/project
@@ -88,6 +99,8 @@ Examples:
   cc-devflow config set output.document_language zh-CN --cwd /path/to/project --project
   cc-devflow config set output.document_language zh-CN --user
   cc-devflow config resolve --cwd /path/to/project --format policy
+  cc-devflow query list
+  cc-devflow query ship-readiness --cwd /path/to/project --change REQ-123
 `);
 }
 
@@ -432,6 +445,75 @@ function runConfig(args) {
   return 0;
 }
 
+function parseQueryArgs(args) {
+  const parsed = {
+    cwd: null,
+    changeId: null,
+    rest: []
+  };
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+
+    if (arg === '--cwd') {
+      parsed.cwd = args[++i];
+      continue;
+    }
+
+    if (arg.startsWith('--cwd=')) {
+      parsed.cwd = arg.slice('--cwd='.length);
+      continue;
+    }
+
+    if (arg === '--change' || arg === '--change-id') {
+      parsed.changeId = args[++i];
+      continue;
+    }
+
+    if (arg.startsWith('--change=')) {
+      parsed.changeId = arg.slice('--change='.length);
+      continue;
+    }
+
+    if (arg.startsWith('--change-id=')) {
+      parsed.changeId = arg.slice('--change-id='.length);
+      continue;
+    }
+
+    parsed.rest.push(arg);
+  }
+
+  return parsed;
+}
+
+async function runQueryCommand(args) {
+  const [subcommand, ...rest] = args;
+
+  if (!subcommand || subcommand === '--help' || subcommand === '-h') {
+    console.error('Use: cc-devflow query list OR cc-devflow query <id> --change <changeId> [--cwd <path>]');
+    return 3;
+  }
+
+  if (subcommand === 'list') {
+    process.stdout.write(`${listQueryIds().join('\n')}\n`);
+    return 0;
+  }
+
+  const options = parseQueryArgs(rest);
+  if (!options.changeId) {
+    console.error('Query --change is required.');
+    return 3;
+  }
+
+  const result = await runQuery(subcommand, {
+    repoRoot: path.resolve(options.cwd || process.cwd()),
+    changeId: options.changeId
+  });
+
+  process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  return result.ok ? 0 : 2;
+}
+
 function runAdapt(args) {
   const { options, rest } = parseCliArgs(args);
 
@@ -475,7 +557,7 @@ function runAdapter(command, args) {
   return typeof result.status === 'number' ? result.status : 1;
 }
 
-function main() {
+async function main() {
   const argv = process.argv.slice(2);
   const [command, ...rest] = argv;
 
@@ -496,9 +578,18 @@ function main() {
     return runConfig(rest);
   }
 
+  if (command === 'query') {
+    return runQueryCommand(rest);
+  }
+
   return runAdapter(command, rest);
 }
 
 if (require.main === module) {
-  process.exit(main());
+  main()
+    .then((code) => process.exit(code))
+    .catch((error) => {
+      console.error(error.message);
+      process.exit(1);
+    });
 }
