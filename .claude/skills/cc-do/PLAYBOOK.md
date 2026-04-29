@@ -23,14 +23,15 @@
 
 ## Execution Loop
 
-1. 读取 `task-manifest.json`，先用 `scripts/select-ready-tasks.sh` 找出当前 ready tasks。
-2. 如果有多于一个 ready task，要先跑 `scripts/detect-file-conflicts.sh`；有共享触点或依赖关系就退回串行。
+1. 读取 `task-manifest.json`，先用 `scripts/select-ready-tasks.sh` 找出当前 ready tasks 和当前 wave。
+2. 如果有多于一个 ready task，要先跑 `scripts/detect-file-conflicts.sh`；有共享触点、父子路径触点或依赖关系就退回串行。
 3. 对每个要执行的 task，先用 `scripts/build-task-context.sh` 从 `planning/design.md`、`planning/tasks.md`、`planning/task-manifest.json` 组装上下文，再开始编码。
 4. 如果当前任务来自 `cc-investigate`，把 `planning/analysis.md` 当成上游合同，不准一边做一边重开调查。
 5. 进入 TDD 闭环：先红，再绿，再重构。
 6. 每个关键节点都写 runtime：失败测试、Green 通过、Refactor、Review 结论、阻塞原因。
 7. 任务实现后，先过 `spec review`，再过 `code review`，review 不通过就回到实现。
 8. 两道 review 门都通过后，才能把任务标成完成，并把结果留给 `cc-check`。
+9. quick lane 只允许减少叙事，不允许减少 current task、checkpoint、verification、handoff 和 review gates。
 
 ## Local Kit
 
@@ -98,8 +99,9 @@
 1. 任务处于当前 active phase
 2. `dependsOn` 已全部满足
 3. 任务显式允许并行，例如 `[P]`
-4. `touches` / `files` 不冲突
-5. 每个 subagent 都拿到了自己的 task context
+4. `touches` / `files` 不冲突，且父路径 / 子路径也不重叠
+5. submodule touches 已被标出；触达 submodule 的任务不能默认拿普通 worktree 隔离
+6. 每个 subagent 都拿到了自己的 task context
 
 少一条，都按顺序执行。
 

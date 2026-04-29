@@ -30,18 +30,41 @@ const sourceTasks = Array.isArray(parsed)
 const tasks = sourceTasks.filter((task) => task && task.parallel !== false);
 const fileConflicts = [];
 const dependencyConflicts = [];
+const submoduleTouches = [];
 const conflictedTaskIds = new Set();
 
 function touchesOf(task) {
-  return [...new Set([...(task.touches || []), ...(task.files || [])].filter(Boolean))];
+  return [...new Set([...(task.touches || []), ...(task.files || [])].filter(Boolean).map(normalizePath))];
+}
+
+function normalizePath(value) {
+  return String(value)
+    .replace(/\\/g, '/')
+    .replace(/\/+/g, '/')
+    .replace(/^\.\//, '')
+    .replace(/\/$/, '');
+}
+
+function overlaps(left, right) {
+  if (left === right) return left;
+  if (left && right.startsWith(`${left}/`)) return left;
+  if (right && left.startsWith(`${right}/`)) return right;
+  return '';
 }
 
 for (let index = 0; index < tasks.length; index += 1) {
   for (let offset = index + 1; offset < tasks.length; offset += 1) {
     const left = tasks[index];
     const right = tasks[offset];
-    const leftTouches = new Set(touchesOf(left));
-    const sharedTouches = touchesOf(right).filter((touch) => leftTouches.has(touch));
+    const leftTouches = touchesOf(left);
+    const rightTouches = touchesOf(right);
+    const sharedTouches = [
+      ...new Set(
+        leftTouches.flatMap((leftTouch) =>
+          rightTouches.map((rightTouch) => overlaps(leftTouch, rightTouch)).filter(Boolean)
+        )
+      )
+    ];
 
     if (sharedTouches.length > 0) {
       conflictedTaskIds.add(left.id);
@@ -68,6 +91,28 @@ for (let index = 0; index < tasks.length; index += 1) {
   }
 }
 
+const submodulePaths = (parsed.submodulePaths || [])
+  .map(normalizePath)
+  .filter(Boolean);
+
+if (submodulePaths.length > 0) {
+  for (const task of tasks) {
+    const taskTouches = touchesOf(task);
+
+    for (const submodulePath of submodulePaths) {
+      const matchedTouches = taskTouches.filter((touch) => overlaps(submodulePath, touch));
+
+      if (matchedTouches.length > 0) {
+        submoduleTouches.push({
+          task: task.id,
+          submodulePath,
+          touches: matchedTouches
+        });
+      }
+    }
+  }
+}
+
 const safeTaskIds = tasks
   .map((task) => task.id)
   .filter((taskId) => !conflictedTaskIds.has(taskId));
@@ -78,6 +123,7 @@ process.stdout.write(
       hasConflicts: fileConflicts.length > 0 || dependencyConflicts.length > 0,
       fileConflicts,
       dependencyConflicts,
+      submoduleTouches,
       safeTaskIds
     },
     null,

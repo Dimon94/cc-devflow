@@ -1,5 +1,11 @@
 # CC-Do Skill Changelog
 
+## v1.6.1 - 2026-04-29
+
+- reject parent/child touched-path overlaps when selecting parallel execution surfaces
+- report submodule touches separately so unrelated tasks are not serialized by mere `.gitmodules` presence
+- document quick-lane and wave scheduling gates so small tasks still leave checkpoint, verification, and handoff truth
+
 ## v1.6.0 - 2026-04-28
 
 - prohibit horizontal TDD execution by requiring one tracer bullet Red/Green/Refactor cycle per observable behavior

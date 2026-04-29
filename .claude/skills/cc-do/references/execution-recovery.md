@@ -7,6 +7,8 @@
 - 当前 task status
 - 当前 active phase
 - 当前 ready tasks
+- 当前 wave / parallel candidates / touch conflict verdict
+- submoduleTouches（如适用）
 - 当前 review gates（spec / code）
 - 已完成证据
 - 阻塞点
@@ -95,3 +97,4 @@
 - 验收标准
 - 验证命令
 - 不做项 / 边界
+- quick lane 是否仍有 mini manifest、checkpoint、verification 和唯一 next action
