@@ -63,6 +63,8 @@ NO PASS WITHOUT FRESH EVIDENCE
 6. 把每个成功声明映射到 `claimEvidence[]`
 7. 行为变更必须补 `qa` 证据或例外理由
 8. 失败输出必须写入 `runtime.failureOwnership[]`
+9. failure ownership 必须包含 named error、artifact refs 和 rescue action
+10. human UAT 必须 pass、fail、blocked 或带 skip reason；失败不能被测试绿灯覆盖
 
 ## Verification Layers
 
@@ -76,6 +78,8 @@ NO PASS WITHOUT FRESH EVIDENCE
 8. Review freshness and confidence calibration
 9. Failure ownership
 10. Spec alignment and sync readiness
+11. Human UAT
+12. Named runtime errors and rescue actions
 
 ## Claim Evidence Matrix
 

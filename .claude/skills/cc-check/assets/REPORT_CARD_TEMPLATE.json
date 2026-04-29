@@ -13,10 +13,17 @@
     "status": "blocked",
     "failureOwnership": [
       {
+        "errorName": "MissingSpecReviewProof",
         "failure": "missing spec review proof",
         "classification": "in-branch",
+        "owner": "branch",
         "touchedByDiff": true,
+        "artifactRefs": [
+          "planning/task-manifest.json",
+          "review/report-card.json"
+        ],
         "evidence": "planning/task-manifest.json tasks[T002].reviews.spec is empty",
+        "rescueAction": "record spec review proof for T002 or reroute to cc-do",
         "action": "reroute-cc-do",
         "status": "open"
       }
@@ -107,6 +114,16 @@
       "issues": [],
       "skipReason": "template example is not a UI browser QA scenario"
     },
+    "humanUat": {
+      "status": "skipped",
+      "required": false,
+      "scenario": "",
+      "tester": "",
+      "evidence": [],
+      "failure": "",
+      "reroute": "none",
+      "skipReason": "not required for this template scenario"
+    },
     "architectureFollowUps": [
       {
         "summary": "Add the missing public test seam before widening coverage",
@@ -183,6 +200,7 @@
           "summary": "T002 spec review proof is missing",
           "evidence": "planning/task-manifest.json tasks[T002].reviews.spec is empty",
           "action": "reroute-cc-do",
+          "rescueAction": "record spec review proof for T002 or return to cc-do",
           "triageStatus": "clarification-needed",
           "confidenceScore": 9,
           "fingerprint": "task-review:T002:missing-spec-review",

@@ -1,6 +1,6 @@
 ---
 name: cc-check
-version: 1.10.0
+version: 1.10.1
 description: Use when a planned or investigated change needs fresh verification evidence, layered gate proof, review truth, and an honest pass fail blocked verdict before entering cc-act.
 triggers:
   - 验收这个需求
@@ -25,7 +25,7 @@ entry_gate:
   - Re-run fresh commands instead of inheriting cc-do narration.
   - If evidence is stale or missing, reset context and rebuild the verdict from canonical artifacts.
 exit_criteria:
-  - review/report-card.json records pass, fail, or blocked using fresh evidence, review freshness, claim evidence, QA coverage and browser evidence, failure ownership, plus spec alignment and sync readiness.
+  - review/report-card.json records pass, fail, or blocked using fresh evidence, review freshness, claim evidence, QA coverage and browser evidence, human UAT when applicable, named failure ownership, plus spec alignment and sync readiness.
   - Task-level review and requirement-level diff review are separated clearly.
   - 'The next step is unambiguous: cc-act, cc-do, cc-investigate, or cc-plan.'
 reroutes:
@@ -169,6 +169,12 @@ NO PASS WITHOUT FRESH EVIDENCE
 10. **Behavior Contract Layer**
    - expected / actual / reproduction steps 是否用用户和领域语言写清
    - follow-up 是否是行为契约，而不是易腐烂的文件行号 TODO
+11. **Human UAT Layer**
+   - 人工验收是否 required、skipped with reason、pass、fail 或 blocked
+   - failed UAT 必须 reroute 到 `cc-do`、`cc-investigate` 或 `cc-plan`
+12. **Named Error Layer**
+   - runtime failure 必须有 `errorName`、artifact refs、failure owner 和 rescue action
+   - invalid JSON、stale artifact、missing report 不能变成静默 `blocked`
 
 任何一层失真，都不能写 `pass`。
 
@@ -283,6 +289,13 @@ NO PASS WITHOUT FRESH EVIDENCE
 3. `pre-existing` 必须有 base branch 或历史证据，不能靠猜。
 4. `environment` 必须记录缺失依赖、权限、服务、密钥或平台约束。
 5. `pass` 不能带未解释的 `in-branch` 或 `ambiguous` 失败。
+
+每条 failure ownership 还必须命名：
+
+- `errorName`：可搜索的错误名，例如 `MissingSpecReviewProof`
+- `artifactRefs`：指向 report、manifest、checkpoint、日志或命令输出
+- `rescueAction`：下一步救援动作，不写空泛“检查一下”
+- `owner`：`branch` / `baseline` / `environment` / `external` / `unknown`
 
 ## Entry Gate
 

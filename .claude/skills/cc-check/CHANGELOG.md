@@ -1,5 +1,11 @@
 # CC-Check Skill Changelog
 
+## v1.10.1 - 2026-04-29
+
+- add named runtime failure fields with artifact references, owners, and rescue actions
+- add human UAT evidence to the report card so manual acceptance can block or reroute honestly
+- require review findings to carry explicit rescue actions instead of vague follow-up text
+
 ## v1.10.0 - 2026-04-28
 
 - add test fixture honesty review for partial fixtures, generated stubs, casts, and missing mock payload fields
