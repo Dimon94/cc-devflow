@@ -36,6 +36,17 @@
 - Sharpening plan:
 - If no loop, evidence request:
 
+## Debug Session
+
+- Session ID:
+- Started at:
+- Current mode: `reproduce-first` | `feedback-loop` | `diff-trace` | `boundary-probe` | `backward-trace` | `reference-compare` | `condition-wait` | `history-trace` | `pattern-research` | `contract-check` | `diagnose-only` | `workflow-forensics`
+- Active hypothesis:
+- Completed probes:
+- Open probes:
+- Cleanup status:
+- Next evidence action:
+
 ## Evidence Chain
 
 - Logs / stack traces:
@@ -45,6 +56,12 @@
 - Prior investigations:
 - TODO / backlog / report-card signals:
 - Native domain / decision context:
+
+## Workflow Forensics
+
+| Failure surface | Observed state | Owner | Rescue action | Evidence |
+| --- | --- | --- | --- | --- |
+| artifact / git / runtime-state / tool / permission / process | | | | |
 
 ## Boundary Probe Matrix
 
@@ -132,6 +149,16 @@
 - Operator handling after fix:
 - Prior history relationship: `new` | `recurring` | `same-root-cause` | `architectural-smell-candidate`
 
+## Diagnose-Only Outcome
+
+- Applies: `yes` | `no`
+- Why no repair now:
+- Root cause owner:
+- Risk if left unresolved:
+- Monitoring / follow-up evidence:
+- Next action: `human-action` | `monitor` | `backlog` | `reroute-cc-plan` | `handoff-cc-do`
+- Explicit no-repair verdict:
+
 ## Correct Test Seam
 
 - Test seam:
@@ -160,6 +187,9 @@
 - Feedback loop trustworthy:
 - Symptom match confirmed:
 - Root cause confirmed:
+- Debug session cleanup complete:
+- Workflow forensics classified:
+- Diagnose-only verdict if applicable:
 - Correct test seam identified:
 - Repair scope still belongs to this requirement:
 - If not, reroute:

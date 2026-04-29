@@ -20,6 +20,8 @@
 7. 调查失败三次后先重建入口，不准继续乱补。
 8. 没有 frozen root-cause contract，不准进入 repair task。
 9. 多组件、深层调用、flaky 问题必须先补边界探针、反向追踪或条件等待证据。
+10. diagnose-only 只能输出根因、owner、风险和 next action，不能把未修复状态标成完成。
+11. workflow forensics 先分类 artifact / git / state / tool / permission / process failure，再决定是否进入修复。
 
 ## Iron Law
 
@@ -61,6 +63,8 @@ root-cause contract 至少包含：稳定复现或缩小后的可验证症状、
 | `history-trace` | 同一区域反复坏 | 查历史 `analysis.md`、TODO、report-card finding |
 | `pattern-research` | 陌生框架 / 依赖 / 平台错误 | 脱敏后查通用错误类型 |
 | `contract-check` | 修复边界可能扩大 | 判定 implementation drift / missing spec truth / roadmap mismatch |
+| `diagnose-only` | 用户只要问题解释或现在不能修 | 冻结 root cause、owner、risk、next action，不生成实现完成态 |
+| `workflow-forensics` | devflow artifact、git、状态、权限或工具链断裂 | 分类 failure owner 和 rescue action，再决定 reroute |
 
 ## Pattern Analysis
 
@@ -89,6 +93,9 @@ root-cause contract 至少包含：稳定复现或缩小后的可验证症状、
 - Diagnostic Instrumentation Plan：probe tag、probe location、question answered、command、expected signal、cleanup requirement
 - Feedback Loop Contract：loop type、command、expected / actual signal、symptom match、runtime、determinism、failure rate、sharpening plan
 - Correct Test Seam：test seam、public interface exercised、why it reaches the real trigger chain、why shallow tests are rejected
+- Persistent Debug Session：session id、active hypothesis、completed probes、cleanup state、next evidence action
+- Workflow Forensics：artifact state、git state、runtime state、tool/permission/process failure owner、rescue action
+- Diagnose-Only Outcome：root cause, owner, risk, next action, and explicit no-repair verdict
 
 这些字段不是装饰。它们的作用是证明根因位于源头，而不是报错点。
 

@@ -1,5 +1,11 @@
 # CC-Investigate Skill Changelog
 
+## v1.2.1 - 2026-04-29
+
+- add persistent debug session fields for active hypothesis, probes, cleanup state, and next evidence action
+- add diagnose-only and workflow-forensics modes so root-cause reports do not masquerade as completed repairs
+- update the analysis template with debug session, workflow forensics, and diagnose-only outcome sections
+
 ## v1.2.0 - 2026-04-28
 
 - treat feedback loops as investigation products that must be made faster, sharper, and more deterministic before root cause freeze

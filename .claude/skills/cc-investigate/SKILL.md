@@ -1,6 +1,6 @@
 ---
 name: cc-investigate
-version: 1.2.0
+version: 1.2.1
 description: "Use when a bug, regression, broken task, or unexpected behavior needs root-cause investigation, reproducible evidence, and a frozen repair handoff before cc-do resumes coding."
 triggers:
   - "帮我查这个 bug"
@@ -34,12 +34,15 @@ entry_gate:
   - "Read the current bug report, existing requirement artifacts, relevant code, tests, and recent history before forming any hypothesis."
   - "Use a FIX-<number>-<description> change key for new bug-fix investigations."
   - "Build a runnable feedback loop, confirm it matches the reported symptom, then freeze the evidence chain before proposing repair tasks."
+  - "Record persistent debug session state: active hypothesis, probes, cleanup status, and next evidence action."
   - "Search prior investigations, TODO/backlog signals, and recent fixes in the affected area before declaring the bug novel."
   - "For multi-component, deep-stack, or flaky symptoms, record boundary probes, backward trace, or condition-wait evidence before declaring the root cause."
   - "For performance regressions, collect a baseline or profile signal before treating logs as evidence."
   - "Do not write production code here; this stage ends with planning/analysis.md plus executable repair tasks for cc-do."
 exit_criteria:
   - "planning/analysis.md records symptom, reproduction, evidence chain, boundary probes or backward trace when applicable, pattern analysis, tested hypotheses, confirmed root cause, and repair boundary."
+  - "diagnose-only outcomes clearly stop before implementation while preserving root cause, owner, and next action."
+  - "workflow forensics classify artifact, git, state, or tool failures before repair tasks are generated."
   - "planning/tasks.md and planning/task-manifest.json are explicit enough that cc-do can repair the bug without chat memory."
   - "The honest next step is cc-do, cc-plan, or roadmap."
 reroutes:
@@ -141,6 +144,8 @@ NO REPAIR WITHOUT A FROZEN ROOT-CAUSE CONTRACT
 | 错误类型陌生，像框架 / 依赖 / 平台问题 | `pattern-research`，先做脱敏外部调研 |
 | 同一区域反复坏 | `history-trace`，先查 prior investigations 和最近修复 |
 | 看起来像 bug，实则是未定义行为或新需求 | 直接 reroute 到 `cc-plan` |
+| 用户只要根因报告、不要求修复 | `diagnose-only`，停止在报告与 next action，不生成完成态实现任务 |
+| 失败来自 workflow / artifact / git / state 断裂 | `workflow-forensics`，先分类坏在文件、状态、工具、权限还是流程 |
 
 先说“这是什么类问题”，再说“我要怎么修”。没有分类的 debug，最后都会变成乱打补丁。
 
@@ -173,6 +178,9 @@ NO REPAIR WITHOUT A FROZEN ROOT-CAUSE CONTRACT
    - 记录这次修复会如何影响 capability truth
 
 `cc-investigate` 不写生产代码，不在这里偷跑 `cc-do`。
+
+diagnose-only 仍然写 `planning/analysis.md`，但 `planning/tasks.md` 只能包含证据交接、
+监控、人工动作或明确的 `reroute`；不能把“已经诊断”伪装成“已经修复”。
 
 ## Entry Gate
 
@@ -228,6 +236,7 @@ NO REPAIR WITHOUT A FROZEN ROOT-CAUSE CONTRACT
 8. **Hand off**
    - 下一步明确写成 `cc-do`
    - 如果 repair contract 越过当前 requirement，就 reroute 到 `cc-plan`
+   - 如果是 diagnose-only，下一步写成 human action、monitoring、backlog、`cc-plan` 或 `cc-do`，但不得标记实现完成
 
 ## Pattern Analysis
 
