@@ -20,6 +20,13 @@
 
 - 
 
+## Rollback Guard
+
+- Safe state:
+- Rollback command / manual steps:
+- Side effects:
+- Owner:
+
 ## QA Behavior Evidence
 
 - Feedback loop:
@@ -36,3 +43,4 @@
 - Desired behavior:
 - Acceptance criteria:
 - Out of scope:
+- Learning extraction target:

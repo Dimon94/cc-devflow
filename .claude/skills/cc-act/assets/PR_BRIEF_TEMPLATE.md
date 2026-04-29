@@ -24,6 +24,27 @@
 - Base branch:
 - PR / MR:
 
+## Ship Preflight
+
+- Branch:
+- Base:
+- Remote:
+- Local / remote HEAD:
+- Auth:
+- Clean tree:
+- Review freshness:
+- Ship mode:
+- `ShipPreflightError`:
+- Rescue action:
+
+## PR Branch Hygiene
+
+- Existing PR / MR:
+- Duplicate PR risk:
+- Commit split:
+- Push idempotency:
+- Body source:
+
 ## Review Range
 
 - Reviewed base SHA:
@@ -58,6 +79,13 @@
 - `review/report-card.json` verdict:
 - Fresh evidence:
 - Merged-result verification:
+
+## Rollback Guard
+
+- Safe state:
+- Rollback command / manual steps:
+- Side effects:
+- Owner:
 
 ## QA Behavior Evidence
 
@@ -96,6 +124,7 @@
 - Key interfaces:
 - Acceptance criteria:
 - Out of scope:
+- Learning extraction target:
 
 ## Risks
 

@@ -84,6 +84,9 @@ Ship 必须属于这 4 种模式之一：
 4. 如果有 WIP commit，只能用非破坏性 rebase / fixup 处理，不允许盲目 soft reset。
 5. push 前比较 local / remote HEAD；PR 前检查是否已有打开 PR / MR。
 6. 生成 readiness dashboard：review freshness、review quality、QA coverage、browser QA、feedback loop、behavior evidence、failure ownership、documentation release、PR body accuracy。
+7. 生成 ship preflight：branch/base/remote/auth/clean tree/review freshness/ship mode。
+8. preflight 失败必须命名为 `ShipPreflightError`，并写明 rescue action 或切到 `local-handoff`。
+9. 发布、合并、PR 更新或 release note 前必须写 rollback guard。
 
 ## Phase 3: Build Delivery Pack
 
@@ -115,6 +118,8 @@ Ship 必须属于这 4 种模式之一：
 - review packet path / summary
 - finding triage summary
 - QA / claim evidence summary
+- ship preflight and `ShipPreflightError` rescue if any
+- rollback guard
 - QA behavior evidence and feedback-loop quality
 - readiness dashboard
 - PR body accuracy check
@@ -207,6 +212,8 @@ Ship 必须属于这 4 种模式之一：
 5. PR body / release note / handoff / changelog 说的是不是同一套现实？
 6. readiness dashboard 有没有 blocker 或 stale warning？
 7. follow-up 是不是行为契约，而不是“改某文件某行”的易腐烂 TODO？
+8. ship preflight failure 是否有 `ShipPreflightError`、artifact ref 和 rescue action？
+9. rollback guard 是否足够让下一位维护者不靠聊天记录回退？
 
 如果第 1 或第 3 题答案不是“能”，说明 `cc-act` 仍然太重或太糊。
 

@@ -1,6 +1,6 @@
 ---
 name: cc-act
-version: 1.8.0
+version: 1.8.1
 description: 'Use when verified work must be shipped or handed off with a clear landing path: run simplify and required tests, create or update a PR, prepare a local handoff, close out merged work, sync docs, write release notes, and fold follow-ups back into backlog or roadmap.'
 triggers:
   - 准备提 PR
@@ -37,7 +37,7 @@ effects:
   - roadmap or backlog follow-up updates when needed
 entry_gate:
   - Accept only a passing review/report-card.json with reroute=none and specSyncReady=true.
-  - Freeze current branch, PR, and ship-mode facts before writing delivery materials.
+  - Freeze current branch, PR, ship-mode, auth, clean-tree, and rollback facts before writing delivery materials.
   - If simplify, tests, or act changes code or verification scope, return to cc-check immediately.
 exit_criteria:
   - The ship mode is explicit, delivery materials match that mode, and the next maintainer has one clear entry point.
@@ -217,6 +217,29 @@ tool_budget:
 10. Follow-up durability：PR brief / release note / backlog writeback 里的 follow-up 必须写成行为契约，包含 current behavior、desired behavior、key interfaces、acceptance criteria、out of scope；不要把当前文件路径或行号当成长期计划。
 11. Remote state consistency：如果本次 closeout 触碰 GitHub issue / PR / tracker，必须记录当前 state、目标 state、允许转换、已保留事实和下一位 owner；`needs-info` 必须保留已确认事实和具体问题，`ready-for-agent` 必须有可执行 brief。
 12. Tooling smoke：如果本次改动影响 hook、pre-commit、lint、publish、adapt 或验证脚本，必须跑真实入口或最接近真实入口的 smoke；只读配置文件不等于工具链可用。
+
+## Ship Preflight And Rescue
+
+ship preflight 必须结构化记录：
+
+- `branch`: 当前分支、base、remote、local/remote HEAD 关系
+- `auth`: `gh` / registry / deploy / package publish 等权限是否可用
+- `workspace`: clean tree、staged files、未跟踪文件和相关 stash
+- `reviewFreshness`: `cc-check` 审查范围是否仍绑定当前 HEAD
+- `shipMode`: `create-pr` / `update-pr` / `local-handoff` / `post-merge-closeout`
+
+任何 preflight failure 都必须命名为 `ShipPreflightError`，并写清 rescue action。
+不能用“工具不可用”当作模糊失败；要明确切 `local-handoff`、补 auth、刷新 review，
+还是返回 `cc-check`。
+
+rollback guard 必须在 publish、merge、PR 更新或 release note 前写清：
+
+- safe state
+- rollback command 或人工回退步骤
+- data / migration / package / remote side effect
+- owner
+
+没有 rollback guard 的 release 只能停在 handoff，不准发布。
 
 ## Readiness Dashboard
 

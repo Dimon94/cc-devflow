@@ -1,5 +1,11 @@
 # CC-Act Skill Changelog
 
+## v1.8.1 - 2026-04-29
+
+- add structured ship preflight fields with `ShipPreflightError` rescue actions
+- require rollback guards before publish, merge, PR update, or release note handoff
+- add PR branch hygiene and learning extraction targets to delivery templates
+
 ## v1.8.0 - 2026-04-28
 
 - add remote state consistency rules for issue, PR, tracker, `needs-info`, and `ready-for-agent` closeout handoffs
