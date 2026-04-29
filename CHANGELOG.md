@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.4] - 2026-04-29
+
+### Fixed
+
+- Fixed typed runtime queries so malformed required artifacts, including invalid
+  `task-manifest.json`, return `InvalidQueryArtifactError` with `ok:false`
+  instead of reporting a successful query with an embedded error payload.
+
 ## [4.5.3] - 2026-04-29
 
 ### Skill Strategy Integration
