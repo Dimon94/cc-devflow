@@ -1,0 +1,71 @@
+{
+  "changeId": "REQ-002-unified-roadmap-truth",
+  "requirementId": "REQ-002-unified-roadmap-truth",
+  "outputPolicy": {
+    "documentLanguage": "en"
+  },
+  "sourceRoadmap": {
+    "itemId": "RM-ROADMAP-UNIFY",
+    "roadmapVersion": "office-hours-design-20260501-000317",
+    "roadmapSkillVersion": "4.4.1"
+  },
+  "spec": {
+    "primaryCapability": "roadmap-truth-model",
+    "secondaryCapabilities": [
+      "adapter-distribution",
+      "public-skill-runtime-policy"
+    ],
+    "changeType": "contract-change",
+    "specFiles": [
+      ".claude/skills/cc-roadmap/SKILL.md",
+      ".claude/skills/cc-roadmap/PLAYBOOK.md",
+      ".claude/skills/cc-roadmap/CHANGELOG.md",
+      ".claude/skills/cc-roadmap/assets/ROADMAP_TEMPLATE.md",
+      ".claude/skills/cc-roadmap/assets/BACKLOG_TEMPLATE.md",
+      ".claude/skills/cc-roadmap/assets/TRACKING_TEMPLATE.json",
+      ".claude/skills/cc-roadmap/scripts/roadmap-tracking.js",
+      ".claude/skills/cc-roadmap/scripts/lib/roadmap-tracking/schema.js",
+      ".claude/skills/cc-roadmap/scripts/lib/roadmap-tracking/markdown.js",
+      ".claude/skills/cc-roadmap/scripts/lib/roadmap-tracking/store.js",
+      ".claude/skills/cc-roadmap/scripts/lib/roadmap-tracking/query.js",
+      ".claude/skills/cc-roadmap/scripts/locate-roadmap-item.sh",
+      ".claude/skills/cc-roadmap/scripts/sync-roadmap-progress.sh",
+      ".codex/skills/cc-roadmap/**",
+      "README.md",
+      "README.zh-CN.md",
+      "docs/guides/getting-started.md",
+      "docs/examples/**",
+      "test/roadmap-tracking.test.js",
+      "test/locate-roadmap-item.test.js",
+      "lib/compiler/__tests__/skills-registry.test.js",
+      "lib/skill-runtime/__tests__/cli-bootstrap.integration.test.js"
+    ],
+    "expectedDelta": [
+      "Replace the two-document roadmap/backlog source model with `devflow/roadmap.json` as the only editable roadmap machine truth.",
+      "Render `devflow/ROADMAP.md` as the primary human roadmap view from `roadmap.json`.",
+      "Generate a deprecated `BACKLOG.md` projection for one compatibility release while preventing it from being the preferred input truth.",
+      "Render Mermaid technical architecture diagrams from `roadmap.json` architecture nodes and edges.",
+      "Preserve legacy `roadmap-tracking.json` and markdown fallback migration paths without losing RM queue, ready handoff, or parked fields.",
+      "Update public skill contracts, templates, examples, docs, generated Codex mirrors, and validation tests to the new roadmap truth model."
+    ],
+    "affectedInvariants": [
+      "Roadmap state has one editable machine truth source.",
+      "Generated Markdown projections do not become independent durable truth.",
+      "Legacy downstream projects can migrate from `roadmap-tracking.json` without a hard break.",
+      "Distributed `.claude` skills and generated `.codex` mirrors stay in sync through adapter checks."
+    ],
+    "gapsClosed": [
+      "`ROADMAP.md`, `BACKLOG.md`, and `roadmap-tracking.json` currently duplicate roadmap and backlog state.",
+      "Architecture diagrams are currently template text rather than data-driven generated output.",
+      "Example validation currently requires `BACKLOG.md` as a first-class roadmap artifact."
+    ],
+    "newGaps": [
+      "A later breaking cleanup should remove deprecated `BACKLOG.md` output after downstream compatibility evidence is collected."
+    ],
+    "syncStatus": "planned",
+    "notes": [
+      "No `devflow/specs/` capability tree exists in this repo yet; this planning package records capability truth through change-meta and public skill contracts.",
+      "The user approved the unified roadmap state path during office-hours before this cc-plan run."
+    ]
+  }
+}
