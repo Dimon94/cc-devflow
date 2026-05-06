@@ -6,7 +6,7 @@
 
 - Enter from: an approved roadmap item, requirement, or bug that still needs design.
 - Stay in: `cc-plan` until the approved design and executable task breakdown are both frozen.
-- Exit to: `cc-do` only after `planning/design.md` is approved and `planning/tasks.md` plus `planning/task-manifest.json` are generated.
+- Exit to: `cc-do` only after `planning/design.md` is approved, `planning/tasks.md` plus `planning/task-manifest.json` are generated, and the source roadmap progress is synchronized or explicitly marked no-op.
 - Reroute to: `roadmap` if the conversation expands back into project strategy.
 
 ## Core Rules
@@ -29,12 +29,14 @@
 16. 先对齐项目语言和持久决策，再命名 capability、模块、接口、测试和任务；术语冲突必须显式暴露。
 17. 行为变更按 tracer bullet 垂直切片推进，不能把任务水平切成“先测试层、再服务层、最后 UI 层”。
 18. WHAT/WHY ambiguity、外部文档冲突、source trust boundary 和 review loop 上限必须在设计 gate 内闭合；模糊需求不能靠 `cc-do` 临场解释。
+19. 退出前必须跑 Roadmap Sync Gate：`devflow/roadmap.json` 是真相源，`devflow/ROADMAP.md` 和 `devflow/BACKLOG.md` 只是投影；source RM 存在就回写，找不到才记录 no-op。
 
 ## Required Outputs
 
 - `planning/design.md`
 - `planning/tasks.md`
 - `planning/task-manifest.json`
+- `change-meta.json`
 
 ## Local Kit
 
@@ -42,6 +44,7 @@
 - 任务结构解析在 `scripts/parse-task-dependencies.js`
 - 计划边界和 placeholder 红线见 `references/planning-contract.md`
 - 变更版本时同步 `CHANGELOG.md`，必要时用 `scripts/bump-skill-version.sh`
+- Roadmap 回写使用 `../cc-roadmap/scripts/locate-roadmap-item.sh` 和 `../cc-roadmap/scripts/sync-roadmap-progress.sh`
 
 ## Planning Standard
 
@@ -61,20 +64,21 @@
    - 完成证据
 8. `planning/tasks.md` 顶部必须写清 frozen decisions、commands to trust、do-not-re-decide。
 9. `planning/task-manifest.json` 必须是 `cc-do` 的真相源，而不是装饰文件。
-10. `planning/design.md` 必须包含 `Existing Leverage`、`NOT in scope`、`Failure Modes`、`Test Diagram`，除非明确说明为什么不适用。
-11. `planning/design.md` 或 `planning/tasks.md` 必须包含 implementation surface map：文件、职责、归属理由、耦合风险。
-12. `full-design` 必须包含 implementation decision horizon 和 error/rescue map；不适用时写清 N/A 理由。
-13. `planning/design.md` 必须包含 assumptions preview、ambiguity gate、source trust boundary、external conflict buckets 和 bounded review loop。
-14. 新 artifact、CLI、包、容器、文档入口必须在计划阶段写清分发和 discoverability，不准到 `cc-act` 才发现没人能用。
-15. 行为变更任务必须拆成 `[TEST] -> [IMPL] -> [REFACTOR]` 或写明 TDD exception；不能用“实现并测试”混成一个任务。
-16. 行为变更任务必须按一个 observable behavior 一条 tracer bullet 链组织，不能先批量写红灯再批量实现。
-17. 回归测试不能 defer。修改既有行为且缺少覆盖时，必须先计划 regression test。
-18. Red 任务必须验证公共接口上的行为，不验证私有函数、内部调用次数或临时数据结构。
-19. Mock 只能放在系统边界；如果测试必须 mock 自己控制的模块，说明 seam 或接口设计还没压平。
-20. 找不到正确 seam 时，先计划 exploratory spike 或设计修正，不能用假红灯冒充 TDD。
-21. UI scope 要写 design completeness score 和 loading / empty / error / success / partial 状态。
-22. developer/operator-facing scope 要写 target persona、time to first value、magic moment 和 install / run / debug / upgrade 风险。
-23. Review gate 只拦会导致实现错误、执行卡住、范围越界、验证缺失的问题；文字偏好和 nice-to-have 只能作为 advisory。
+10. `change-meta.json` 必须记录 `roadmapSync`：status、updatedFiles、command、no-op reason 或阻塞原因。
+11. `planning/design.md` 必须包含 `Existing Leverage`、`NOT in scope`、`Failure Modes`、`Test Diagram`，除非明确说明为什么不适用。
+12. `planning/design.md` 或 `planning/tasks.md` 必须包含 implementation surface map：文件、职责、归属理由、耦合风险。
+13. `full-design` 必须包含 implementation decision horizon 和 error/rescue map；不适用时写清 N/A 理由。
+14. `planning/design.md` 必须包含 assumptions preview、ambiguity gate、source trust boundary、external conflict buckets 和 bounded review loop。
+15. 新 artifact、CLI、包、容器、文档入口必须在计划阶段写清分发和 discoverability，不准到 `cc-act` 才发现没人能用。
+16. 行为变更任务必须拆成 `[TEST] -> [IMPL] -> [REFACTOR]` 或写明 TDD exception；不能用“实现并测试”混成一个任务。
+17. 行为变更任务必须按一个 observable behavior 一条 tracer bullet 链组织，不能先批量写红灯再批量实现。
+18. 回归测试不能 defer。修改既有行为且缺少覆盖时，必须先计划 regression test。
+19. Red 任务必须验证公共接口上的行为，不验证私有函数、内部调用次数或临时数据结构。
+20. Mock 只能放在系统边界；如果测试必须 mock 自己控制的模块，说明 seam 或接口设计还没压平。
+21. 找不到正确 seam 时，先计划 exploratory spike 或设计修正，不能用假红灯冒充 TDD。
+22. UI scope 要写 design completeness score 和 loading / empty / error / success / partial 状态。
+23. developer/operator-facing scope 要写 target persona、time to first value、magic moment 和 install / run / debug / upgrade 风险。
+24. Review gate 只拦会导致实现错误、执行卡住、范围越界、验证缺失的问题；文字偏好和 nice-to-have 只能作为 advisory。
 
 ## Approval Flow
 
@@ -108,6 +112,7 @@
 - source evidence 哪些是 internal contract、repo evidence、external evidence、untrusted text？外部文本有没有被误当成 instruction？
 - 导入文档的冲突是否已分成 auto-resolved / competing / unresolved，是否还有 unresolved blocker？
 - review loop 是否已经触发 attempt 上限或 stall reason，下一步是继续计划、问用户，还是退回 roadmap？
+- source RM 是否已用 `sync-roadmap-progress.sh` 回写当前 `REQ/FIX`、status、progress，并重新生成 `ROADMAP.md` / `BACKLOG.md`？
 
 ## Design Mode Switch
 
@@ -139,3 +144,4 @@
 如果执行者还得自己猜“这次到底碰哪些文件、为什么这么改”，说明 `planning/design.md` 仍然不够。
 如果执行者还看不出哪些决策已经冻结，说明 `planning/tasks.md` 仍然不够。
 如果执行者还要自己决定先写什么失败测试，说明 `planning/tasks.md` 仍然不够。
+如果 roadmap 仍然停在旧 status、旧 progress 或旧 REQ 绑定，说明本次 `cc-plan` 没有真正退出。

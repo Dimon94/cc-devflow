@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.7.1
+version: 3.7.2
 description: Use when a requirement, roadmap item, or bug needs scope clarification, design decisions, and executable task breakdown before coding starts.
 triggers:
   - 帮我规划这个需求
@@ -18,6 +18,8 @@ reads:
   - assets/TASKS_TEMPLATE.md
   - assets/TASK_MANIFEST_TEMPLATE.json
   - references/planning-contract.md
+  - ../cc-roadmap/scripts/locate-roadmap-item.sh
+  - ../cc-roadmap/scripts/sync-roadmap-progress.sh
 writes:
   - path: devflow/changes/<change-key>/planning/design.md
     durability: durable
@@ -31,6 +33,8 @@ writes:
   - path: devflow/changes/<change-key>/change-meta.json
     durability: durable
     required: true
+effects:
+  - source roadmap progress sync when planning freezes, splits, or reroutes
 entry_gate:
   - Read roadmap handoff, current requirement files, code, docs, and tests before drafting design.
   - Load cc-devflow native language and decision sources (`devflow/specs/`, roadmap/backlog handoff, current or prior `planning/design.md` / `planning/analysis.md`, and `change-meta.json`) before naming concepts, modules, tests, or tasks.
@@ -40,10 +44,12 @@ entry_gate:
   - Plan executable work as Red/Green/Refactor by default; identify the first failing test before any production implementation task, or write an explicit TDD exception with replacement evidence.
   - Assign a canonical change key before writing artifacts; feature work must use `REQ-<number>-<description>`, and bug-fix work must use `FIX-<number>-<description>`.
   - Do not generate planning/tasks.md, planning/task-manifest.json, or change-meta.json until the recommended design is approved.
+  - Before exit, locate the source RM in `devflow/roadmap.json`, `devflow/ROADMAP.md`, optional `devflow/BACKLOG.md`, or legacy `devflow/roadmap-tracking.json`; plan the progress sync instead of relying on chat memory.
 exit_criteria:
   - planning/design.md captures the approved solution, boundaries, review conclusions, and execution edge cases.
   - planning/tasks.md, planning/task-manifest.json, and change-meta.json are explicit enough that cc-do can continue without chat memory.
   - The task breakdown preserves test-first execution; failing-test tasks precede implementation tasks, refactor checkpoints are visible, and any TDD exception is justified.
+  - The source roadmap item has been synchronized to the frozen planning state, or `planning/design.md` and `change-meta.json` record why no roadmap update is valid.
   - 'Only one next step remains: enter cc-do.'
 reroutes:
   - when: The discussion is still about project direction or stage order instead of one requirement.
@@ -55,9 +61,9 @@ recovery_modes:
     when: Execution feedback, review findings, or user correction invalidates the current design contract.
     action: Return to planning/design.md, reopen the approved decision explicitly, and regenerate tasks only after the design is stable again.
 tool_budget:
-  read_files: 10
+  read_files: 11
   search_steps: 6
-  shell_commands: 5
+  shell_commands: 6
 ---
 
 # CC-Plan
@@ -113,7 +119,7 @@ tool_budget:
 
 ## Harness Contract
 
-- Allowed actions: clarify scope, compare designs, split over-broad asks into separate planning candidates, freeze decisions, and write only `planning/design.md`, `planning/tasks.md`, `planning/task-manifest.json`, and `change-meta.json`.
+- Allowed actions: clarify scope, compare designs, split over-broad asks into separate planning candidates, freeze decisions, write `planning/design.md`, `planning/tasks.md`, `planning/task-manifest.json`, and `change-meta.json`, then run the final roadmap progress sync for the source RM.
 - Forbidden actions: writing production code, splitting planning into new side documents, or emitting tasks before approval.
 - Required evidence: design choices, task boundaries, and verification commands must point back to repo facts or explicit user approval.
 - Reroute rule: if the problem expands to project strategy go back to `roadmap`; if the plan is already frozen move straight to `cc-do`.
@@ -238,7 +244,8 @@ tool_budget:
 7. 把批准后的唯一方案冻结进 `planning/design.md`。
 8. 在 `planning/design.md` 内完成 review loop 与 final gate，不再额外拆出 `PLAN_REVIEW.md`。
 9. 只有 design gate 真正通过，才能写 `planning/tasks.md`、`planning/task-manifest.json` 和 `change-meta.json`。
-10. 计划完成后，下一步唯一答案是 `cc-do`。
+10. 退出前执行 Roadmap Sync Gate：用 `locate-roadmap-item.sh` 定位 `RM-ID`，再用 `sync-roadmap-progress.sh` 回写 `status`、`req`、`progress`、capability 和 spec delta；没有源 RM 时必须在 `planning/design.md` 与 `change-meta.json.roadmapSync` 写明 `no-source-rm`。
+11. 计划完成后，下一步唯一答案是 `cc-do`。
 
 ## Engineering Review Gate
 
@@ -342,7 +349,8 @@ tool_budget:
 18. External conflict scan：导入文档的冲突是否被分桶，`unresolved` 是否阻止 task manifest approval。
 19. Review loop scan：重复 review 是否有 attempt 上限、stall reason 和 reroute；不能无限追问、无限改计划。
 20. Review calibration：只把会导致实现错误、执行卡住、范围越界、验证缺失的问题标成 blocking；非阻塞建议必须降级为 advisory
-21. Final gate：明确 auto-decided items、taste decisions、user challenges 和最终 recommendation
+21. Roadmap sync scan：`change-meta.json.sourceRoadmap`、`devflow/roadmap.json`、`devflow/ROADMAP.md` 和 optional `devflow/BACKLOG.md` 是否同一套 RM / REQ / progress 现实。
+22. Final gate：明确 auto-decided items、taste decisions、user challenges 和最终 recommendation
 
 如果有 UI / interaction 明显范围，在 `planning/design.md` 里补 design completeness score 和状态覆盖表。
 如果有 API / CLI / developer-facing / operator-facing scope，在 `planning/design.md` 里补 target persona、time to first value、magic moment 和 DX / operator review 结论。
@@ -355,6 +363,7 @@ tool_budget:
 - `planning/tasks.md` 只保留能直接执行的任务和 handoff，不再承载重复背景介绍；行为变更默认拆成 tracer bullet 形式的 `[TEST] -> [IMPL] -> [REFACTOR]`，且 Red task 明确公共 seam、行为断言、mock 边界和反馈循环
 - `planning/task-manifest.json` 是 `cc-do` 的真相源，要写清 `planningMeta.ambiguityGate`、`planningMeta.reviewLoop`、`sourceEvidence[]`、`dependsOn`、`tddPhase`、`verticalSlice`、test seam、allowed mocks、feedback loop、并行资格、触点、验证命令，以及继承了哪版 roadmap / design / spec
 - `change-meta.json` 是 capability 真相源，要写清这次 change 准备如何改变长期 spec
+- roadmap sync 不是聊天提醒：如果 source RM 存在，必须更新 `devflow/roadmap.json` 并重新生成 `devflow/ROADMAP.md` / `devflow/BACKLOG.md`；如果不存在，必须记录 no-op reason
 - 看完第一屏，执行者就知道这次属于 `tiny-design` 还是 `full-design`，以及为什么
 
 ## Bundled Resources
@@ -368,6 +377,8 @@ tool_budget:
 - 范围检查：`scripts/validate-scope.sh`
 - 版本递增：`scripts/bump-skill-version.sh`
 - 计划契约：`references/planning-contract.md`
+- Roadmap 定位：`../cc-roadmap/scripts/locate-roadmap-item.sh`
+- Roadmap 回写：`../cc-roadmap/scripts/sync-roadmap-progress.sh`
 
 ## Working Rules
 
@@ -382,11 +393,13 @@ tool_budget:
 9. 任务一旦超过 2-5 分钟粒度就继续拆，直到可以稳定交给执行者。
 10. 三层以上判断说明设计还没压平，应回到 `planning/design.md` 继续简化。
 11. `tiny-design` 不得被当成“免审批”；只要要写任务，就必须先有已批准的设计卡片。
+12. Roadmap 相关文件以 `devflow/roadmap.json` 为真相源，`devflow/ROADMAP.md` / `devflow/BACKLOG.md` 只是投影；不要再写旧式 `devflow/roadmap/*` 路径。
 
 ## Exit Criteria
 
 - 范围边界清楚
 - 上游 roadmap handoff 已被显式装进 `planning/design.md`
+- Roadmap Sync Gate 已闭合：source RM 已回写为当前 `REQ/FIX` 的 planning-ready 状态，或 no-op reason 已落盘
 - 成功标准可验证
 - 推荐方案已被批准
 - review gate 已在 `planning/design.md` 里闭合

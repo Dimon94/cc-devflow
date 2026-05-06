@@ -1,5 +1,11 @@
 # CC-Plan Skill Changelog
 
+## v3.7.2 - 2026-05-06
+
+- add a Roadmap Sync Gate so approved planning runs must reconcile the source RM before handing off to `cc-do`
+- document `locate-roadmap-item.sh` and `sync-roadmap-progress.sh` as the canonical way to update `devflow/roadmap.json` and regenerate `ROADMAP.md` / `BACKLOG.md`
+- update design, tiny-design, tasks, and manifest templates with roadmap sync status fields
+
 ## v3.7.1 - 2026-04-29
 
 - add ambiguity, review loop, source evidence, and external document conflict contracts
