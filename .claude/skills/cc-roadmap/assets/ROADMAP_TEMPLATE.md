@@ -2,6 +2,7 @@
 
 ## Roadmap Meta
 
+- Roadmap state source: `devflow/roadmap.json`
 - Roadmap version:
 - Skill version:
 - Output language:
@@ -178,6 +179,15 @@ flowchart LR
 - Serial spine:
 - Parallel-ready branches:
 
+## Technical Architecture
+
+```mermaid
+flowchart TD
+  roadmap_json["roadmap.json"] --> roadmap_md["ROADMAP.md"]
+  roadmap_json --> backlog_md["BACKLOG.md (deprecated)"]
+  roadmap_md --> cc_plan["cc-plan"]
+```
+
 ## Parallel Waves
 
 | Wave | Ready when | Items | Why parallel |
@@ -197,7 +207,7 @@ flowchart LR
 
 ## Implementation Tracking
 
-- Tracking source: `devflow/roadmap-tracking.json`
+- Roadmap state source: `devflow/roadmap.json`
 
 <!-- roadmap-tracking:start -->
 | RM-ID | Item | Stage | Priority | Primary Capability | Secondary Capabilities | Expected Spec Delta | Depends On | Status | REQ | Progress |

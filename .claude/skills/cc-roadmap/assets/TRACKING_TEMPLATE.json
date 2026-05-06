@@ -1,20 +1,30 @@
 {
-  "version": 2,
+  "version": 3,
   "outputPolicy": {
     "documentLanguage": ""
   },
-  "lastSyncedAt": "2026-04-19",
-  "backlogMeta": {
+  "meta": {
     "roadmapVersion": "roadmap.v1",
-    "skillVersion": "4.4.1",
+    "skillVersion": "5.0.0",
+    "status": "active",
+    "lastUpdated": "2026-05-01",
     "currentFocusStage": "Stage 1"
   },
-  "dependencyHandoff": {
-    "serialSpine": "RM-001",
-    "parallelReadyNextWave": "-",
-    "decompositionNotes": "-",
-    "notesOnBlockers": "-"
+  "context": {
+    "planningPosture": "",
+    "evidenceMaturity": "",
+    "canonicalTerms": [],
+    "durableDecisionSources": []
   },
+  "evidence": [],
+  "route": {
+    "recommended": "",
+    "whyThisWinsNow": "",
+    "rejectedRoutes": [],
+    "firstSignal": "",
+    "killSignal": ""
+  },
+  "stages": [],
   "items": [
     {
       "rmId": "RM-001",
@@ -48,5 +58,42 @@
         "missingEvidence": ""
       }
     }
-  ]
+  ],
+  "handoff": {
+    "readyForCcPlan": [],
+    "parked": [],
+    "serialSpine": [
+      "RM-001"
+    ],
+    "parallelWaves": []
+  },
+  "architecture": {
+    "diagramType": "flowchart",
+    "nodes": [
+      {
+        "id": "roadmap_json",
+        "label": "roadmap.json"
+      },
+      {
+        "id": "roadmap_md",
+        "label": "ROADMAP.md"
+      },
+      {
+        "id": "cc_plan",
+        "label": "cc-plan"
+      }
+    ],
+    "edges": [
+      {
+        "from": "roadmap_json",
+        "to": "roadmap_md",
+        "label": "renders"
+      },
+      {
+        "from": "roadmap_md",
+        "to": "cc_plan",
+        "label": "hands off"
+      }
+    ]
+  }
 }

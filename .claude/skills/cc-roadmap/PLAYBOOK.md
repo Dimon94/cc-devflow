@@ -23,20 +23,20 @@
 
 ## Local Kit
 
-- 生成骨架时用 `assets/ROADMAP_TEMPLATE.md` 和 `assets/BACKLOG_TEMPLATE.md`
-- 需要结构化 tracking 时用 `assets/TRACKING_TEMPLATE.json`
+- 生成骨架时先用 `assets/TRACKING_TEMPLATE.json` 写 `devflow/roadmap.json`，再渲染 `assets/ROADMAP_TEMPLATE.md` / `assets/BACKLOG_TEMPLATE.md` 形状
+- 需要结构化 roadmap state 时用 `assets/TRACKING_TEMPLATE.json`
 - 需要追问脚本时看 `references/roadmap-dialogue.md`
 - 需要定位 / 回写条目时用 `scripts/locate-roadmap-item.sh` 和 `scripts/sync-roadmap-progress.sh`
-- `scripts/locate-roadmap-item.sh` 先读 `roadmap-tracking.json`，再回落到 `ROADMAP.md` / `BACKLOG.md`，避免定位依赖 markdown 列位或文案漂移
-- 只想把 sidecar 重渲染回 `ROADMAP.md` / `BACKLOG.md` 时，直接调用 `scripts/roadmap-tracking.js render`
-- `scripts/sync-roadmap-progress.sh` 会把 `roadmap-tracking.json` 当真相源，再回渲染 `ROADMAP.md` 和 `BACKLOG.md`
+- `scripts/locate-roadmap-item.sh` 先读 `roadmap.json`，再回落到旧 `roadmap-tracking.json` 和 Markdown，避免定位依赖 markdown 列位或文案漂移
+- 只想把 state 重渲染回 `ROADMAP.md` / `BACKLOG.md` 时，直接调用 `scripts/roadmap-tracking.js render`
+- `scripts/sync-roadmap-progress.sh` 会把 `roadmap.json` 当真相源，再回渲染 `ROADMAP.md` 和 deprecated `BACKLOG.md`
 - 变更版本时同步 `CHANGELOG.md`，必要时用 `scripts/bump-skill-version.sh`
 
 ## Context Sweep
 
 进入 roadmap 对话前，至少摸清：
 
-1. 现有 `devflow/ROADMAP.md` / `devflow/BACKLOG.md`
+1. 现有 `devflow/roadmap.json` / `devflow/ROADMAP.md` / `devflow/BACKLOG.md`
 2. `CLAUDE.md`、`README*`、`TODOS.md`
 3. 项目语言和持久决策：`devflow/specs/INDEX.md`、相关 capability specs、当前 roadmap/backlog、历史 `planning/design.md` / `planning/analysis.md`、`change-meta.json`、长期 design decision
 4. 最近相关 docs / specs / plans
@@ -116,6 +116,11 @@
 
 ## Output Contract
 
+`devflow/roadmap.json`
+- single editable roadmap state
+- output policy, meta, context, evidence, route, stages, items, handoff, and architecture
+- flat `architecture.nodes` / `architecture.edges` used to generate Mermaid
+
 `devflow/ROADMAP.md`
 - version / skill version / context snapshot / evidence ledger
 - 1-3 个阶段
@@ -128,13 +133,14 @@
 - 非目标
 - `RM Dependency Graph`
 - `Parallel waves`
-- `Implementation Tracking` 由 `devflow/roadmap-tracking.json` 渲染，避免手改 markdown 表格列位
+- `Implementation Tracking` 和 `Technical Architecture` 由 `devflow/roadmap.json` 渲染，避免手改 markdown 表格或 Mermaid
 
 `devflow/BACKLOG.md`
+- deprecated compatibility projection; edit `devflow/roadmap.json` instead
 - 只保留会真的进入下一轮 `cc-plan` 的事项
 - 每项注明来源阶段、优先级、证据、`Depends On`、`Parallel With`、当前未知点、下一决策、是否 ready
 - developer-facing / operator-facing 条目要带 target user、time to first value、magic moment 和 adoption bottleneck，方便 `cc-plan` 继续做 DX 设计
-- `Backlog Meta`、`Queue`、`Dependency Handoff`、`Ready For Req-Plan`、`Parked` 可由 `devflow/roadmap-tracking.json` 回渲染，避免 roadmap truth 和 backlog handoff 分叉
+- `Backlog Meta`、`Queue`、`Dependency Handoff`、`Ready For Req-Plan`、`Parked` 由 `devflow/roadmap.json` 回渲染，避免 roadmap truth 和 backlog handoff 分叉
 
 ## Review Loop
 
@@ -153,7 +159,7 @@
 ## Versioning
 
 - `patch`: 文案澄清、模板说明、小修补
-- `minor`: 上下文收集、评审、字段增强，且不破坏既有 tracking 习惯
+- `minor`: 上下文收集、评审、字段增强，且不破坏既有 roadmap state 习惯
 - `major`: 核心输出契约变化，需要 migration note
 
 ## Exit Rule

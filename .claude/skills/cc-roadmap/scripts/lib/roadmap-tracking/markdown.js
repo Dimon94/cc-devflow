@@ -445,13 +445,18 @@ function renderRoadmapTable(tracking) {
   return [header, separator, ...rows.map((row) => `| ${row} |`)].join('\n');
 }
 
+function isRoadmapState(tracking) {
+  return Number(tracking.version) === 3;
+}
+
 function buildTrackingBody(roadmapFile, trackingFile, tracking) {
   const relativePath = path.relative(path.dirname(roadmapFile), trackingFile).replace(/\\/g, '/');
   const displayPath = relativePath || path.basename(trackingFile);
+  const sourceLabel = isRoadmapState(tracking) ? 'Roadmap state source' : 'Tracking source';
 
   return [
     '',
-    `- Tracking source: \`${displayPath}\``,
+    `- ${sourceLabel}: \`${displayPath}\``,
     '',
     '<!-- roadmap-tracking:start -->',
     renderRoadmapTable(tracking),
@@ -460,14 +465,69 @@ function buildTrackingBody(roadmapFile, trackingFile, tracking) {
   ].join('\n');
 }
 
+function formatMermaidId(value) {
+  return String(value || '')
+    .trim()
+    .replace(/[^A-Za-z0-9_]/g, '_');
+}
+
+function formatMermaidLabel(value) {
+  return String(value || '').replace(/"/g, '\\"');
+}
+
+function renderArchitectureDiagram(tracking) {
+  const architecture = tracking.architecture || {};
+  const nodes = Array.isArray(architecture.nodes) ? architecture.nodes : [];
+  const edges = Array.isArray(architecture.edges) ? architecture.edges : [];
+
+  if (!nodes.length && !edges.length) {
+    return '';
+  }
+
+  const lines = ['## Technical Architecture', '', '```mermaid', 'flowchart TD'];
+
+  nodes.forEach((node) => {
+    const id = formatMermaidId(node.id);
+    if (id) {
+      lines.push(`  ${id}["${formatMermaidLabel(node.label || node.id)}"]`);
+    }
+  });
+
+  edges.forEach((edge) => {
+    const from = formatMermaidId(edge.from);
+    const to = formatMermaidId(edge.to);
+    if (!from || !to) {
+      return;
+    }
+
+    const label = String(edge.label || '').trim();
+    lines.push(label ? `  ${from} -->|${formatMermaidLabel(label)}| ${to}` : `  ${from} --> ${to}`);
+  });
+
+  lines.push('```', '');
+  return lines.join('\n');
+}
+
 function renderRoadmapDocument({ original = '# ROADMAP\n', roadmapFile, trackingFile, tracking }) {
   const section = extractSection(original, 'Implementation Tracking');
   const body = buildTrackingBody(roadmapFile, trackingFile, tracking);
   const nextSection = `## Implementation Tracking${body}`;
+  const architectureSection = isRoadmapState(tracking) ? `\n${renderArchitectureDiagram(tracking)}` : '';
 
-  return section
+  const rendered = section
     ? `${original.slice(0, section.start)}${nextSection}${original.slice(section.end)}`
     : `${original.replace(/\s*$/, '')}\n\n${nextSection}\n`;
+
+  if (!architectureSection.trim()) {
+    return rendered;
+  }
+
+  const existingArchitecture = extractSection(rendered, 'Technical Architecture');
+  if (existingArchitecture) {
+    return `${rendered.slice(0, existingArchitecture.start)}${architectureSection.trimEnd()}\n${rendered.slice(existingArchitecture.end)}`;
+  }
+
+  return `${rendered.replace(/\s*$/, '')}\n\n${architectureSection}`;
 }
 
 function renderBacklogQueue(tracking) {
@@ -564,17 +624,22 @@ function renderParked(tracking) {
 function renderBacklogDocument({ backlogFile, trackingFile, tracking }) {
   const relativePath = path.relative(path.dirname(backlogFile), trackingFile).replace(/\\/g, '/');
   const displayPath = relativePath || path.basename(trackingFile);
+  const sourceLabel = isRoadmapState(tracking) ? 'Roadmap state source' : 'Tracking source';
+  const deprecationNotice = isRoadmapState(tracking)
+    ? ['> Deprecated projection. Edit `roadmap.json` instead.', '']
+    : [];
 
   return [
     '# BACKLOG',
     '',
+    ...deprecationNotice,
     '## Backlog Meta',
     '',
     `- Roadmap version: ${formatInlineCode(tracking.backlogMeta.roadmapVersion)}`,
     `- Skill version: ${formatInlineCode(tracking.backlogMeta.skillVersion)}`,
     `- Last synced: ${formatInlineCode(tracking.lastSyncedAt)}`,
     `- Current focus stage: ${formatInlineCode(tracking.backlogMeta.currentFocusStage)}`,
-    `- Tracking source: \`${displayPath}\``,
+    `- ${sourceLabel}: \`${displayPath}\``,
     '',
     '## Queue',
     '',

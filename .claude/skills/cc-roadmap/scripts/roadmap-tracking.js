@@ -9,9 +9,9 @@ function usage() {
   process.stderr.write(
     [
       'Usage:',
-      '  roadmap-tracking.js sync --roadmap <ROADMAP.md> --backlog <BACKLOG.md> --tracking <roadmap-tracking.json> --rm <RM-ID> [field updates]',
-      '  roadmap-tracking.js render --roadmap <ROADMAP.md> --backlog <BACKLOG.md> --tracking <roadmap-tracking.json>',
-      '  roadmap-tracking.js find --tracking <roadmap-tracking.json> --id <RM-ID|REQ-ID>',
+      '  roadmap-tracking.js sync --roadmap <ROADMAP.md> --backlog <BACKLOG.md> --tracking <roadmap.json> --rm <RM-ID> [field updates]',
+      '  roadmap-tracking.js render --roadmap <ROADMAP.md> --backlog <BACKLOG.md> --tracking <roadmap.json>',
+      '  roadmap-tracking.js find --tracking <roadmap.json> --id <RM-ID|REQ-ID>',
       '',
       'Fields:',
       '  --item <title>',

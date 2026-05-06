@@ -1,5 +1,7 @@
 # BACKLOG
 
+> Deprecated projection. Edit `roadmap.json` instead.
+
 ## Backlog Meta
 
 - Roadmap version:
@@ -7,7 +9,7 @@
 - Output language:
 - Last synced:
 - Current focus stage:
-- Tracking source: `devflow/roadmap-tracking.json`
+- Roadmap state source: `devflow/roadmap.json`
 
 ## Queue
 

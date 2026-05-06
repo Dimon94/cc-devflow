@@ -65,6 +65,47 @@ const DEFAULT_TRACKING = {
   items: []
 };
 
+const DEFAULT_ROADMAP_STATE = {
+  version: 3,
+  outputPolicy: {
+    documentLanguage: 'en'
+  },
+  meta: {
+    roadmapVersion: '',
+    skillVersion: '',
+    status: 'active',
+    lastUpdated: '',
+    currentFocusStage: ''
+  },
+  context: {
+    planningPosture: '',
+    evidenceMaturity: '',
+    canonicalTerms: [],
+    durableDecisionSources: []
+  },
+  evidence: [],
+  route: {
+    recommended: '',
+    whyThisWinsNow: '',
+    rejectedRoutes: [],
+    firstSignal: '',
+    killSignal: ''
+  },
+  stages: [],
+  items: [],
+  handoff: {
+    readyForCcPlan: [],
+    parked: [],
+    serialSpine: [],
+    parallelWaves: []
+  },
+  architecture: {
+    diagramType: 'flowchart',
+    nodes: [],
+    edges: []
+  }
+};
+
 function normalizeHeader(value) {
   return String(value || '')
     .trim()
@@ -188,6 +229,83 @@ function normalizeTracking(raw) {
   };
 }
 
+function normalizeStringList(value) {
+  if (Array.isArray(value)) {
+    return value.map((entry) => String(entry).trim()).filter(Boolean);
+  }
+
+  return parseList(value);
+}
+
+function buildRoadmapHandoff(tracking, handoff = {}) {
+  const items = Array.isArray(tracking.items) ? tracking.items : [];
+  const dependencyHandoff = tracking.dependencyHandoff || {};
+  const readyForCcPlan = normalizeStringList(handoff.readyForCcPlan);
+  const parked = normalizeStringList(handoff.parked);
+
+  return {
+    readyForCcPlan: readyForCcPlan.length
+      ? readyForCcPlan
+      : items.filter((item) => item.backlog.ready && !item.backlog.parked).map((item) => item.rmId),
+    parked: parked.length
+      ? parked
+      : items.filter((item) => item.backlog.parked).map((item) => item.rmId),
+    serialSpine: normalizeStringList(handoff.serialSpine || dependencyHandoff.serialSpine),
+    parallelWaves: normalizeStringList(
+      handoff.parallelWaves || dependencyHandoff.parallelReadyNextWave
+    )
+  };
+}
+
+function normalizeRoadmapState(raw = {}) {
+  const tracking = normalizeTracking(raw);
+  const meta = raw.meta || {};
+  const context = raw.context || {};
+  const route = raw.route || {};
+  const architecture = raw.architecture || {};
+
+  return {
+    ...DEFAULT_ROADMAP_STATE,
+    version: 3,
+    outputPolicy: {
+      ...DEFAULT_ROADMAP_STATE.outputPolicy,
+      ...(raw.outputPolicy || {})
+    },
+    meta: {
+      ...DEFAULT_ROADMAP_STATE.meta,
+      roadmapVersion: String(meta.roadmapVersion || tracking.backlogMeta.roadmapVersion).trim(),
+      skillVersion: String(meta.skillVersion || tracking.backlogMeta.skillVersion).trim(),
+      status: String(meta.status || DEFAULT_ROADMAP_STATE.meta.status).trim(),
+      lastUpdated: String(meta.lastUpdated || tracking.lastSyncedAt).trim(),
+      currentFocusStage: String(meta.currentFocusStage || tracking.backlogMeta.currentFocusStage).trim()
+    },
+    context: {
+      ...DEFAULT_ROADMAP_STATE.context,
+      ...context,
+      canonicalTerms: normalizeStringList(context.canonicalTerms),
+      durableDecisionSources: normalizeStringList(context.durableDecisionSources)
+    },
+    evidence: Array.isArray(raw.evidence) ? raw.evidence : [],
+    route: {
+      ...DEFAULT_ROADMAP_STATE.route,
+      ...route,
+      rejectedRoutes: Array.isArray(route.rejectedRoutes) ? route.rejectedRoutes : []
+    },
+    stages: Array.isArray(raw.stages) ? raw.stages : [],
+    items: tracking.items,
+    backlogMeta: tracking.backlogMeta,
+    dependencyHandoff: tracking.dependencyHandoff,
+    lastSyncedAt: tracking.lastSyncedAt,
+    handoff: buildRoadmapHandoff(tracking, raw.handoff || {}),
+    architecture: {
+      ...DEFAULT_ROADMAP_STATE.architecture,
+      ...architecture,
+      nodes: Array.isArray(architecture.nodes) ? architecture.nodes : [],
+      edges: Array.isArray(architecture.edges) ? architecture.edges : []
+    }
+  };
+}
+
 const ROADMAP_HEADER_TO_KEY = new Map(
   ROADMAP_COLUMNS.map(([header, key]) => [normalizeHeader(header), key])
 );
@@ -225,6 +343,7 @@ const PARKED_FIELD_MAP = new Map(
 module.exports = {
   BACKLOG_QUEUE_COLUMNS,
   BACKLOG_QUEUE_HEADER_TO_KEY,
+  DEFAULT_ROADMAP_STATE,
   DEFAULT_TRACKING,
   PARKED_FIELD_MAP,
   READY_FIELD_MAP,
@@ -240,6 +359,7 @@ module.exports = {
   normalizeCell,
   normalizeHeader,
   normalizeItem,
+  normalizeRoadmapState,
   normalizeTracking,
   parseList
 };

@@ -1,6 +1,6 @@
 ---
 name: cc-roadmap
-version: 4.4.1
+version: 5.0.0
 description: "Use when defining, resetting, or narrowing project direction, stage order, or backlog priority before a concrete requirement enters the PDCA loop."
 triggers:
   - "帮我定路线图"
@@ -19,16 +19,20 @@ reads:
   - "assets/TRACKING_TEMPLATE.json"
   - "references/roadmap-dialogue.md"
 writes:
+  - path: "devflow/roadmap.json"
+    durability: "durable"
+    required: true
   - path: "devflow/ROADMAP.md"
     durability: "durable"
     required: true
   - path: "devflow/BACKLOG.md"
     durability: "durable"
-    required: true
+    required: false
+    when: "deprecated compatibility projection is generated for downstream readers"
   - path: "devflow/roadmap-tracking.json"
     durability: "durable"
     required: false
-    when: "roadmap/backlog tracking is maintained through bundled helper scripts"
+    when: "legacy projects are being migrated into devflow/roadmap.json"
 entry_gate:
   - "Read current roadmap, backlog, related capability specs, and surrounding repo context before proposing direction."
   - "Load cc-devflow native language and durable-decision sources (`devflow/specs/`, current roadmap/backlog, prior `planning/design.md` or `planning/analysis.md`, and `change-meta.json`) before naming stages, capabilities, users, or backlog items."
@@ -68,7 +72,7 @@ tool_budget:
 
 写入任何 durable Markdown 或 JSON metadata 前，先运行 `cc-devflow config resolve --format policy`。
 
-- `Output language` 是机器约束，`devflow/ROADMAP.md`、`devflow/BACKLOG.md` 和 tracking metadata 必须记录并遵守它。
+- `Output language` 是机器约束，`devflow/roadmap.json`、`devflow/ROADMAP.md` 和兼容投影必须记录并遵守它。
 - `agent_preferences` 是用户偏好建议，只影响表达方式和结构选择，不覆盖本 Skill 的工作流边界。
 - 如果配置解析失败，先修配置或向用户说明阻塞，不要用默认语言继续生成正式文档。
 
@@ -76,9 +80,10 @@ tool_budget:
 
 1. `PLAYBOOK.md`
 2. `CHANGELOG.md`
-3. `assets/ROADMAP_TEMPLATE.md`
-4. `assets/BACKLOG_TEMPLATE.md`
-5. `references/roadmap-dialogue.md`
+3. `assets/TRACKING_TEMPLATE.json`
+4. `assets/ROADMAP_TEMPLATE.md`
+5. `assets/BACKLOG_TEMPLATE.md`
+6. `references/roadmap-dialogue.md`
 
 ## Use This Skill When
 
@@ -104,14 +109,14 @@ tool_budget:
 
 ## Harness Contract
 
-- Allowed actions: read current strategy files, repo context, and recent reality; compare route shapes; decompose independent subsystems into stages and RM candidates; write `devflow/ROADMAP.md`, `devflow/BACKLOG.md`, and the optional `devflow/roadmap-tracking.json` sidecar used by bundled helpers as the shared roadmap/backlog truth source.
+- Allowed actions: read current strategy files, repo context, and recent reality; compare route shapes; decompose independent subsystems into stages and RM candidates; write `devflow/roadmap.json` as the editable roadmap state, then generate `devflow/ROADMAP.md` and the deprecated `devflow/BACKLOG.md` compatibility projection from that state.
 - Forbidden actions: decompose implementation tasks, invent hidden context, or jump into `cc-plan` before the roadmap is approved.
 - Required evidence: every stage and backlog item must point back to explicit repo facts, user constraints, or observed market signals.
 - Reroute rule: once the conversation collapses to one concrete requirement, stop strategic expansion and hand off to `cc-plan`.
 
 ## Entry Gate
 
-1. 如果 `devflow/ROADMAP.md` / `devflow/BACKLOG.md` 已存在，先读现状再重写。
+1. 如果 `devflow/roadmap.json`、`devflow/ROADMAP.md`、`devflow/BACKLOG.md` 或旧 `devflow/roadmap-tracking.json` 已存在，先读现状再重写。
 2. 先判断这是“项目方向问题”还是“单 requirement 执行问题”。
 3. 如果输入是多个独立子系统的混合目标，先拆成阶段和 `RM` 候选；不要继续追问某个子系统的实现细节。
 4. 先做一次上下文扫描，不能跳过现有事实直接写愿景。
@@ -232,7 +237,7 @@ tool_budget:
 
 ## Review Loop
 
-写完 `devflow/ROADMAP.md` / `devflow/BACKLOG.md` 后，至少完成这 6 个检查：
+写完 `devflow/roadmap.json` 并生成 `devflow/ROADMAP.md` / `devflow/BACKLOG.md` 后，至少完成这些检查：
 
 1. Placeholder scan：不能有 TBD、TODO、`[NEEDS CONTEXT]` 之类的逃避词。
 2. Evidence scan：每个阶段是否都能指回某个现实证据，而不是空洞愿景。
@@ -250,8 +255,9 @@ tool_budget:
 ## Output
 
 - `devflow/ROADMAP.md`
-- `devflow/BACKLOG.md`
-- `devflow/roadmap-tracking.json` when helper automation needs a shared roadmap/backlog truth source
+- `devflow/roadmap.json`
+- `devflow/BACKLOG.md` as a deprecated compatibility projection
+- `devflow/roadmap-tracking.json` only when migrating legacy projects
 
 ## Good Output
 
@@ -270,13 +276,13 @@ tool_budget:
 
 - `patch`：措辞、模板字段说明、非契约性澄清
 - `minor`：新增兼容字段、上下文收集规则、评审规则、输出结构增强
-- `major`：改变 `devflow/ROADMAP.md` / `devflow/BACKLOG.md` 的核心契约、阶段模型或 handoff 预期
+- `major`：改变 `devflow/roadmap.json`、生成投影、阶段模型或 handoff 预期
 
 每次修改都必须：
 
 1. 更新本文件 frontmatter 的 `version`
 2. 更新 `CHANGELOG.md`
-3. 如果会影响已有 `devflow/ROADMAP.md` / `devflow/BACKLOG.md` 使用方式，在 `CHANGELOG.md` 写清 migration note
+3. 如果会影响已有 `devflow/ROADMAP.md` / `devflow/BACKLOG.md` / `devflow/roadmap-tracking.json` 使用方式，在 `CHANGELOG.md` 写清 migration note
 
 ## Bundled Resources
 
@@ -286,7 +292,7 @@ tool_budget:
 - 结构化 tracking 模板：`assets/TRACKING_TEMPLATE.json`
 - 对话骨架：`references/roadmap-dialogue.md`
 - 条目定位：`scripts/locate-roadmap-item.sh`
-- tracking 渲染器：`scripts/roadmap-tracking.js`
+- roadmap state 渲染器：`scripts/roadmap-tracking.js`
 - 进度回写：`scripts/sync-roadmap-progress.sh`
 - 版本递增：`scripts/bump-skill-version.sh`
 
@@ -302,7 +308,7 @@ tool_budget:
 
 1. 先收上下文，再收意见。
 2. 没有现实证据时必须明确写成 assumption，而不是偷偷当事实。
-3. `devflow/ROADMAP.md` 是方向真相源，`devflow/BACKLOG.md` 是进入下一轮规划的缓冲区。
+3. `devflow/roadmap.json` 是唯一可编辑方向真相源，`devflow/ROADMAP.md` 和 `devflow/BACKLOG.md` 是生成投影。
 4. 决策理由必须保留下来，方便以后重跑时比较版本差异。
 5. 路线图里的术语必须沿用项目语言；没有 canonical term 时写 assumption，不要创造第二套概念系统。
 6. 不要为了显得完整而写 6 个阶段，能打赢下一仗比画完整战争图更重要。

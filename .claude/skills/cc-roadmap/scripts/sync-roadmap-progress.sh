@@ -11,7 +11,7 @@ usage() {
 Usage: sync-roadmap-progress.sh --rm RM-001 [--status Planned] [--req REQ-001] [--progress 50%] [--file devflow/ROADMAP.md]
        [--item "Add copy action"] [--stage "Stage 1"] [--priority P1] [--depends-on "RM-000"]
        [--primary-capability cap-example] [--secondary-capabilities "cap-a,cap-b"] [--spec-delta "tighten truth"]
-       [--tracking-file devflow/roadmap-tracking.json] [--backlog-file devflow/BACKLOG.md]
+       [--tracking-file devflow/roadmap.json] [--backlog-file devflow/BACKLOG.md]
 EOF
 }
 
@@ -49,7 +49,7 @@ while [[ $# -gt 0 ]]; do
     --secondary-capabilities) SECONDARY_CAPABILITIES="$2"; shift 2 ;;
     --spec-delta) SPEC_DELTA="$2"; shift 2 ;;
     --file) FILE="$2"; shift 2 ;;
-    --tracking-file) TRACKING_FILE="$2"; shift 2 ;;
+    --tracking|--tracking-file) TRACKING_FILE="$2"; shift 2 ;;
     --backlog-file) BACKLOG_FILE="$2"; shift 2 ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown arg: $1" >&2; usage; exit 1 ;;
@@ -70,7 +70,7 @@ if [[ -z "$RM_ID" || ! -f "$FILE" ]]; then
 fi
 
 if [[ -z "$TRACKING_FILE" ]]; then
-  TRACKING_FILE="$(cd "$(dirname "$FILE")" && pwd)/roadmap-tracking.json"
+  TRACKING_FILE="$(cd "$(dirname "$FILE")" && pwd)/roadmap.json"
 fi
 
 if [[ -z "$BACKLOG_FILE" ]]; then

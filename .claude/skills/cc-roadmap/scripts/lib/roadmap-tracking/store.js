@@ -1,8 +1,10 @@
 const fs = require('fs');
+const path = require('path');
 
 const {
   emptyBacklog,
   normalizeItem,
+  normalizeRoadmapState,
   normalizeTracking,
   parseList
 } = require('./schema');
@@ -63,7 +65,26 @@ function upgradeLegacyTracking(parsed) {
   });
 }
 
+function isRoadmapStateFile(filePath) {
+  return path.basename(filePath || '') === 'roadmap.json';
+}
+
+function legacyTrackingFileFor(filePath) {
+  return path.join(path.dirname(filePath), 'roadmap-tracking.json');
+}
+
 function loadTracking({ trackingFile, roadmapFile = '', backlogFile = '' }) {
+  if (isRoadmapStateFile(trackingFile)) {
+    if (fs.existsSync(trackingFile)) {
+      return normalizeRoadmapState(readJson(trackingFile));
+    }
+
+    const legacyTrackingFile = legacyTrackingFileFor(trackingFile);
+    if (fs.existsSync(legacyTrackingFile)) {
+      return normalizeRoadmapState(readJson(legacyTrackingFile));
+    }
+  }
+
   if (trackingFile && fs.existsSync(trackingFile)) {
     return upgradeLegacyTracking(readJson(trackingFile));
   }
@@ -112,7 +133,10 @@ function applySyncArgs(tracking, args) {
 }
 
 function persistTrackingFiles({ trackingFile, roadmapFile, backlogFile, tracking }) {
-  writeJson(trackingFile, tracking);
+  writeJson(
+    trackingFile,
+    isRoadmapStateFile(trackingFile) ? normalizeRoadmapState(tracking) : tracking
+  );
 
   const roadmapOutput = renderRoadmapDocument({
     original: readFileIfExists(roadmapFile) || '# ROADMAP\n',

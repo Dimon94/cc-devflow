@@ -1,5 +1,17 @@
 # Roadmap Skill Changelog
 
+## v5.0.0 - 2026-05-01
+
+- replace the roadmap/backlog/tracking split with `devflow/roadmap.json` as the single editable roadmap state
+- render `devflow/ROADMAP.md` and deprecated `devflow/BACKLOG.md` projections from the same state, including data-driven Mermaid architecture
+- make helper commands prefer `roadmap.json` while preserving legacy `roadmap-tracking.json` migration fallback
+
+Migration note:
+
+- edit `devflow/roadmap.json` for new roadmap work; treat `devflow/ROADMAP.md` and `devflow/BACKLOG.md` as generated views
+- existing `devflow/roadmap-tracking.json` files are read as legacy input and upgraded into `roadmap.json` on render or sync
+- `BACKLOG.md` remains generated for one compatibility release only and should not be used as durable truth
+
 ## v4.4.1 - 2026-04-28
 
 - clarify that roadmap language and durable decisions come from cc-devflow native sources: `devflow/specs/`, roadmap/backlog, historical design/analysis, and change metadata
