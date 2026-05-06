@@ -253,6 +253,54 @@ req_act_collect_spec_files() {
   req_act_dedup_file "$out_file"
 }
 
+req_act_roadmap_sync_summary() {
+  local manifest="$1"
+  local repo_root="${2:-$(req_act_repo_root)}"
+  local item_id=""
+  local sync_status=""
+  local sync_command=""
+  local no_op_reason=""
+  local updated_files=""
+  local existing_files=""
+
+  if [[ -f "$manifest" ]]; then
+    item_id="$(jq -r '.sourceRoadmap.itemId // empty' "$manifest" 2>/dev/null || true)"
+    sync_status="$(jq -r '.sourceRoadmap.syncStatus // .roadmapSync.status // "not recorded"' "$manifest" 2>/dev/null || true)"
+    sync_command="$(jq -r '.sourceRoadmap.syncCommand // .roadmapSync.command // empty' "$manifest" 2>/dev/null || true)"
+    no_op_reason="$(jq -r '.sourceRoadmap.noOpReason // .roadmapSync.noOpReason // empty' "$manifest" 2>/dev/null || true)"
+    updated_files="$(jq -r '(.sourceRoadmap.updatedFiles // .roadmapSync.updatedFiles // []) | join(", ")' "$manifest" 2>/dev/null || true)"
+  fi
+
+  for candidate in devflow/roadmap.json devflow/ROADMAP.md devflow/BACKLOG.md devflow/roadmap-tracking.json; do
+    if [[ -f "$repo_root/$candidate" ]]; then
+      if [[ -n "$existing_files" ]]; then
+        existing_files+=", "
+      fi
+      existing_files+="$candidate"
+    fi
+  done
+
+  [[ -n "$existing_files" ]] || existing_files="no roadmap files found"
+  [[ -n "$updated_files" ]] || updated_files="not recorded"
+  [[ -n "$sync_command" ]] || sync_command="not recorded"
+  [[ -n "$sync_status" ]] || sync_status="not recorded"
+
+  if [[ -z "$item_id" ]]; then
+    [[ -n "$no_op_reason" ]] || no_op_reason="no-source-rm"
+    printf 'source=none; status=no-op; files=%s; no-op=%s\n' "$existing_files" "$no_op_reason"
+    return 0
+  fi
+
+  printf 'source=%s; status=%s; files=%s; updated=%s; command=%s' \
+    "$item_id" "$sync_status" "$existing_files" "$updated_files" "$sync_command"
+
+  if [[ -n "$no_op_reason" ]]; then
+    printf '; no-op=%s' "$no_op_reason"
+  fi
+
+  printf '\n'
+}
+
 req_act_collect_evidence() {
   local report_card="$1"
   local out_file="$2"

@@ -102,6 +102,16 @@
 - `release-note.md`:
 - `resume-index.md`:
 
+## Roadmap Progress Sync
+
+- Source RM:
+- Roadmap files: `devflow/roadmap.json`, `devflow/ROADMAP.md`, optional `devflow/BACKLOG.md`
+- Sync command:
+- Status after sync:
+- Progress after sync:
+- Follow-up writeback:
+- No-op reason:
+
 ## Consolidated Memory
 
 - `handoff path`: 

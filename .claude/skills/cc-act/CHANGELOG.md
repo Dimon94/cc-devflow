@@ -1,5 +1,11 @@
 # CC-Act Skill Changelog
 
+## v1.8.2 - 2026-05-06
+
+- add an execution-time Roadmap Progress Check so act verifies source RM state before ship work continues
+- align all roadmap writeback guidance on `devflow/roadmap.json` with generated `ROADMAP.md` / `BACKLOG.md` projections
+- update delivery templates and act render scripts to surface roadmap sync state in PR briefs, release notes, resume indexes, and doc sync reports
+
 ## v1.8.1 - 2026-04-29
 
 - add structured ship preflight fields with `ShipPreflightError` rescue actions
