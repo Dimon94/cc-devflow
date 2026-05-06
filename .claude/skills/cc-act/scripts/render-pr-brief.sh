@@ -186,6 +186,7 @@ failure_ownership_summary="$(jq -r '
 ' "$report_card")"
 documentation_release_summary="CLAUDE=${claude_status}; README=${readme_status}"
 pr_body_accuracy_summary="body must be regenerated from this pr-brief, current report-card, and current diff before PR create/update"
+roadmap_sync_summary="$(req_act_roadmap_sync_summary "$manifest" "$REPO_ROOT")"
 
 {
   echo "# PR Brief"
@@ -231,6 +232,7 @@ pr_body_accuracy_summary="body must be regenerated from this pr-brief, current r
   echo "- Behavior evidence: $behavior_evidence_summary"
   echo "- Failure ownership: $failure_ownership_summary"
   echo "- Documentation release: $documentation_release_summary"
+  echo "- Roadmap progress: $roadmap_sync_summary"
   echo "- PR body accuracy: $pr_body_accuracy_summary"
   echo
   echo "## Summary"
@@ -297,6 +299,10 @@ pr_body_accuracy_summary="body must be regenerated from this pr-brief, current r
   else
     echo "- \`resume-index.md\`: missing"
   fi
+  echo
+  echo "## Roadmap Progress Sync"
+  echo
+  echo "- $roadmap_sync_summary"
   echo
   echo "## How To Verify"
   echo

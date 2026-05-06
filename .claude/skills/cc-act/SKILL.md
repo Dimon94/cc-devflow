@@ -1,6 +1,6 @@
 ---
 name: cc-act
-version: 1.8.1
+version: 1.8.2
 description: 'Use when verified work must be shipped or handed off with a clear landing path: run simplify and required tests, create or update a PR, prepare a local handoff, close out merged work, sync docs, write release notes, and fold follow-ups back into backlog or roadmap.'
 triggers:
   - 准备提 PR
@@ -17,6 +17,8 @@ reads:
   - references/git-commit-guidelines.md
   - assets/PR_BRIEF_TEMPLATE.md
   - assets/RELEASE_NOTE_TEMPLATE.md
+  - ../cc-roadmap/scripts/locate-roadmap-item.sh
+  - ../cc-roadmap/scripts/sync-roadmap-progress.sh
 writes:
   - path: devflow/changes/<change-key>/handoff/pr-brief.md
     durability: durable
@@ -34,15 +36,17 @@ writes:
     when: handoff mode is release
     exclusive_group: handoff
 effects:
-  - roadmap or backlog follow-up updates when needed
+  - roadmap progress and backlog follow-up updates when needed
 entry_gate:
   - Accept only a passing review/report-card.json with reroute=none and specSyncReady=true.
   - Freeze current branch, PR, ship-mode, auth, clean-tree, and rollback facts before writing delivery materials.
   - If simplify, tests, or act changes code or verification scope, return to cc-check immediately.
+  - Read source roadmap progress from `devflow/roadmap.json`, `devflow/ROADMAP.md`, optional `devflow/BACKLOG.md`, or legacy `devflow/roadmap-tracking.json`; act must not ship against stale RM state.
 exit_criteria:
   - The ship mode is explicit, delivery materials match that mode, and the next maintainer has one clear entry point.
   - Docs, PR text, release notes, handoff artifacts, review range, readiness dashboard, PR body accuracy check, and test evidence reflect the same proven facts.
   - Follow-up items are written back to roadmap/backlog instead of lingering in chat memory.
+  - The source roadmap item reflects the latest verified state, ship mode, and follow-up decision, or the handoff records a no-op reason.
 reroutes:
   - when: Verification is stale, incomplete, or changed during act.
     target: cc-check
@@ -58,7 +62,7 @@ recovery_modes:
 tool_budget:
   read_files: 8
   search_steps: 5
-  shell_commands: 10
+  shell_commands: 11
 ---
 
 # CC-Act
@@ -94,7 +98,7 @@ tool_budget:
 - 需要决定这次是 `create-pr`、`update-pr`、`local-handoff`，还是 `post-merge-closeout`
 - 需要在 ship 前再做一次 `cc-simplify`、单测、以及按协调器要求执行的 e2e
 - 需要同步最终文档、handoff、release note
-- 需要把遗留 follow-up / 优先级变化回写 `devflow/roadmap/backlog.md` 或 `devflow/roadmap/roadmap.md`
+- 需要把遗留 follow-up / 优先级变化回写 `devflow/roadmap.json`，并重新生成 `devflow/ROADMAP.md` / `devflow/BACKLOG.md`
 - 需要把已验证的 spec delta 正式回写 capability spec 与 `devflow/specs/INDEX.md`
 - 需要让下一轮入口比现在更清楚
 
@@ -128,7 +132,8 @@ tool_budget:
 4. 运行 `scripts/detect-ship-target.sh`，识别当前分支、base branch、PR 状态与推荐 ship 路径。
 5. 检查 `review.freshness`、`runtime.failureOwnership`、`qa.coverageAudit`、`qa.browserEvidence`，确认 readiness dashboard 没有 blocker。
 6. 检查 `qa.feedbackLoop`、`qa.behaviorEvidence`、`qa.architectureFollowUps` 和 follow-up brief，确认交付材料继承的是行为证据，不是聊天记忆或易腐烂 TODO。
-7. 如果在 `cc-act` 期间因为 `cc-simplify`、单测、e2e、review 修复而改了代码，必须回 `cc-check`，不能带着旧证明继续 ship。
+7. 定位 source RM：优先读 `change-meta.json` / `task-manifest.json` 的 `sourceRoadmap.itemId`，再用 `locate-roadmap-item.sh` 对照 `devflow/roadmap.json`、`devflow/ROADMAP.md` 和 optional `devflow/BACKLOG.md`；如果 roadmap 状态和 verified reality 冲突，先同步或 reroute，不能继续 ship。
+8. 如果在 `cc-act` 期间因为 `cc-simplify`、单测、e2e、review 修复而改了代码，必须回 `cc-check`，不能带着旧证明继续 ship。
 
 ## Ship Modes
 
@@ -173,7 +178,7 @@ tool_budget:
 4. `post-merge-closeout`
    - 必须完成 doc sync
    - 需要对外说明时生成 `handoff/release-note.md`
-   - 必须把 follow-up 回写到 `devflow/roadmap/backlog.md` / `devflow/roadmap/roadmap.md`
+   - 必须把 follow-up 回写到 `devflow/roadmap.json`，并重新生成 `devflow/ROADMAP.md` / `devflow/BACKLOG.md`
 
 不是每次都要把所有文件生成一遍。材料必须服务于当前 ship 模式，而不是为了流程好看。
 
@@ -312,11 +317,12 @@ readiness dashboard 有 blocker 时，不能创建或更新 PR，只能 reroute 
    - `post-merge-closeout`：跳过 PR，完成发布与闭环回写
 11. 处理 PR / MR body：从当前 `pr-brief.md`、最新验证、review、doc sync、TODO/backlog 结果重新渲染，不复用旧 body。
 12. 在 `handoff/pr-brief.md` 写入 readiness dashboard 与 PR body accuracy check；已有 PR body 与当前事实不一致时先刷新再继续。
-13. 回写 `devflow/roadmap/backlog.md` / `devflow/roadmap/roadmap.md`：
+13. 回写 `devflow/roadmap.json` 并重新生成 `devflow/ROADMAP.md` / `devflow/BACKLOG.md`：
    - 新发现的 follow-up
    - 被推迟但必须保留的事项
    - 因本次结果而改变优先级的事项
-14. 如果 requirement 真正闭环，更新状态摘要并归档；否则把下一位接手者的入口写清楚。
+14. 用 `sync-roadmap-progress.sh` 更新 source RM 的 status、REQ/FIX 绑定和 progress：`create-pr` / `update-pr` 通常写 `In review` + `100%`，`local-handoff` 写 `Ready for handoff`，`post-merge-closeout` 写 `Done`；如果无 source RM，必须在 handoff 写 no-op reason。
+15. 如果 requirement 真正闭环，更新状态摘要并归档；否则把下一位接手者的入口写清楚。
 
 ## Output
 
@@ -324,7 +330,7 @@ readiness dashboard 有 blocker 时，不能创建或更新 PR，只能 reroute 
 - `handoff/release-note.md`（需要对外发布时）
 - 更新后的 `handoff/resume-index.md`
 - 同步后的 `CLAUDE.md` / README / 架构文档
-- 必要时更新后的 `devflow/roadmap/backlog.md` / `devflow/roadmap/roadmap.md`
+- 必要时更新后的 `devflow/roadmap.json` / `devflow/ROADMAP.md` / `devflow/BACKLOG.md`
 - 单测 / e2e 的通过证据，或明确记录的 skip / blocker
 - 必要时创建或更新的 PR / MR
 - PR / MR body 中的 Summary、Test Coverage、Pre-Landing Review、Scope Drift、Plan Completion、Verification Results、Documentation、Test plan
@@ -339,6 +345,7 @@ readiness dashboard 有 blocker 时，不能创建或更新 PR，只能 reroute 
 - 现在谁都可以顺着 `handoff/pr-brief.md` 或 `handoff/resume-index.md` 继续往前走
 - 文档、PR 描述、release note 说的是同一套现实
 - `cc-simplify`、单测、e2e、commit/push 的结果都能被接手者追溯
+- source RM 的 status、REQ/FIX 绑定、progress 和 follow-up 已经和 ship 现实一致
 
 ## Bundled Resources
 
@@ -353,6 +360,8 @@ readiness dashboard 有 blocker 时，不能创建或更新 PR，只能 reroute 
 - 文档同步：`scripts/sync-act-docs.sh`
 - PR 简报生成：`scripts/render-pr-brief.sh`
 - requirement 归档：`scripts/archive-requirement.sh`
+- Roadmap 定位：`../cc-roadmap/scripts/locate-roadmap-item.sh`
+- Roadmap 回写：`../cc-roadmap/scripts/sync-roadmap-progress.sh`
 
 ## Working Rules
 
@@ -363,12 +372,13 @@ readiness dashboard 有 blocker 时，不能创建或更新 PR，只能 reroute 
 5. 分支决策必须明确属于 4 种模式之一，不要含糊。
 6. 已存在 PR / MR 时，优先更新，不重复创建。
 7. `cc-simplify`、单测、e2e 任何一步只要导致代码变化或验证口径变化，必须回 `cc-check`。
-8. `devflow/roadmap/backlog.md` / `devflow/roadmap/roadmap.md` 只回写真正改变优先级或产生 follow-up 的事项，不写噪音。
+8. `devflow/roadmap.json` 只回写真正改变优先级或产生 follow-up 的事项，并用 `sync-roadmap-progress.sh` 重新生成 `devflow/ROADMAP.md` / `devflow/BACKLOG.md`，不写噪音。
 9. `local-handoff` 不是偷懒模式，它仍然必须让下一位接手者知道做什么、怎么验证、卡在哪。
 10. `create-pr` / `update-pr` 模式默认要求提交历史符合 `references/git-commit-guidelines.md`，并完成正确的 push、PR 创建或更新动作。
 11. CHANGELOG 只能基于当前 diff / commit history / release truth 更新，不允许覆盖既有历史条目。
 12. PR / MR body 每次都从当前事实重建，不沿用旧 body 或旧测试输出。
 13. Verification 每次执行 `cc-act` 都必须重新运行；只有已完成且可证明幂等的动作可以跳过。
+14. source RM 找不到时不能编造新 RM；写 no-op reason。如果 follow-up 改变阶段顺序或优先级，reroute 到 `cc-roadmap`。
 
 ## Exit Criteria
 
@@ -377,7 +387,7 @@ readiness dashboard 有 blocker 时，不能创建或更新 PR，只能 reroute 
 - reviewer / maintainer 能直接接手
 - 需要同步的文档已经同步
 - `cc-simplify`、单测、e2e 已执行完毕，或 skip / blocker 已被明确记录
-- follow-up 已回写到正确的 backlog / roadmap 位置
+- source RM 已回写最新进度，follow-up 已回写到正确的 backlog / roadmap 位置
 - 下一轮该怎么继续已经写清楚
 - requirement 不是“看起来结束”，而是真正闭环
 

@@ -6,7 +6,7 @@
 
 - Enter from: `cc-check` with a passing report card.
 - Stay in: `cc-act` while ship mode, simplify/test evidence, docs, and handoff are being aligned to proven facts.
-- Exit to: the next roadmap/backlog loop once delivery artifacts and follow-up writeback are complete.
+- Exit to: the next roadmap/backlog loop once delivery artifacts, source RM progress, and follow-up writeback are complete.
 - Reroute to: `cc-check` if verification changes, or `cc-do` if act uncovers unfinished implementation.
 
 ## Core Thesis
@@ -27,8 +27,18 @@
 3. 确认 `planning/tasks.md` 不再有未完成项
 4. 确认 `review.freshness` 新鲜、`runtime.failureOwnership` 无未解释失败、`qa.coverageAudit` / `qa.browserEvidence` 有证据或明确 skip
 5. 确认 `qa.feedbackLoop` / `qa.behaviorEvidence` 能支撑行为结论；不可复现时必须写清缺什么 artifact / 权限 / 输入
+6. 定位 source RM，并确认 `devflow/roadmap.json`、`devflow/ROADMAP.md`、optional `devflow/BACKLOG.md` 没有和 verified reality 冲突
 
 如果 gate 没闭合，直接回 `cc-check` 或 `cc-do`，不要在 `cc-act` 自我安慰。
+
+## Phase 0.5: Check Roadmap Progress
+
+Roadmap 是执行链路的长期记忆，不是收尾时才想起的备忘录。
+
+1. 从 `change-meta.json` / `planning/task-manifest.json` 读取 `sourceRoadmap.itemId`、REQ/FIX、primary capability、expected spec delta。
+2. 用 `../cc-roadmap/scripts/locate-roadmap-item.sh <RM-ID>` 对照 `devflow/roadmap.json`、`devflow/ROADMAP.md`、optional `devflow/BACKLOG.md`。
+3. 如果 RM 已经指向另一个 change、被标成 blocked/deferred/done，或 progress 与 `review/report-card.json` 现实冲突，先同步或 reroute，不继续 ship。
+4. 如果没有 source RM，不编造；在 handoff 写 `roadmapSync.noOpReason: no-source-rm`。
 
 ## Phase 1: Freeze Ship Facts
 
@@ -180,19 +190,22 @@ Ship 必须属于这 4 种模式之一：
 
 ## Phase 6: Write Back The Learning
 
-以下情况必须回写 `devflow/roadmap/backlog.md` / `devflow/roadmap/roadmap.md`：
+以下情况必须回写 `devflow/roadmap.json`，再重新生成 `devflow/ROADMAP.md` / `devflow/BACKLOG.md`：
 
 1. 本次工作暴露了新的 follow-up
 2. 原有优先级被改变
 3. 有明确 deferred item 不能靠口头记忆保存
+4. source RM 的 ship 现实从 planned / repair planned 推进到了 in review / ready for handoff / done
 
 原则：
 
-- 长期方向写 `devflow/roadmap/roadmap.md`
-- 下一轮待排队动作写 `devflow/roadmap/backlog.md`
+- 长期方向写进 `devflow/roadmap.json` 的 stage / item / backlog 字段
+- 下一轮待排队动作写进对应 RM 的 backlog 字段，或交给 `cc-roadmap` 新增 RM
 - 不要把噪音和碎念回写成系统真相
 - follow-up 必须是 durable brief：用领域语言写 current behavior、desired behavior、key interfaces、acceptance criteria、out of scope
 - 独立行为拆独立条目；有依赖关系时写明顺序，方便下一轮并行或排队
+- 常规进度用 `../cc-roadmap/scripts/sync-roadmap-progress.sh --rm <RM-ID> --status <state> --req <REQ/FIX> --progress <percent>`
+- follow-up 改变阶段顺序或项目优先级时，不在 `cc-act` 临场重排，reroute 到 `cc-roadmap`
 
 ## Phase 7: Declare The Next Entry
 
@@ -214,6 +227,7 @@ Ship 必须属于这 4 种模式之一：
 7. follow-up 是不是行为契约，而不是“改某文件某行”的易腐烂 TODO？
 8. ship preflight failure 是否有 `ShipPreflightError`、artifact ref 和 rescue action？
 9. rollback guard 是否足够让下一位维护者不靠聊天记录回退？
+10. source RM 的 status、REQ/FIX、progress 是否已经和 ship 现实一致？
 
 如果第 1 或第 3 题答案不是“能”，说明 `cc-act` 仍然太重或太糊。
 
@@ -223,7 +237,7 @@ Ship 必须属于这 4 种模式之一：
 - `handoff/release-note.md`（需要发布时）
 - 更新后的 `handoff/resume-index.md`
 - 更新后的 `CLAUDE.md` / README / 架构文档（如果结构或行为变了）
-- 必要时更新后的 `devflow/roadmap/backlog.md` / `devflow/roadmap/roadmap.md`
+- 必要时更新后的 `devflow/roadmap.json` / `devflow/ROADMAP.md` / `devflow/BACKLOG.md`
 
 ## Local Kit
 
@@ -235,6 +249,8 @@ Ship 必须属于这 4 种模式之一：
 - `scripts/render-pr-brief.sh` 负责从 requirement 真相源渲染 `pr-brief.md`
 - `scripts/generate-status-report.sh` 负责汇总 requirement 与 ship 现状
 - `scripts/archive-requirement.sh` 负责 requirement 生命周期收尾
+- `../cc-roadmap/scripts/locate-roadmap-item.sh` 负责定位 source RM
+- `../cc-roadmap/scripts/sync-roadmap-progress.sh` 负责回写 roadmap progress 并渲染投影
 - `cc-simplify` 负责在 ship 前压掉重复、坏味道、低效实现
 - `references/git-commit-guidelines.md` 负责提交规范真相源
 

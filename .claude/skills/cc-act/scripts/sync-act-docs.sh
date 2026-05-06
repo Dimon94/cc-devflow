@@ -62,6 +62,7 @@ spec_sync_ready="$(req_act_spec_sync_ready "$report_card")"
 output_language="$(req_act_output_language "$report_card")"
 design_goal="$(req_act_design_goal "$design_file")"
 main_risk="$(req_act_main_risk "$design_file")"
+roadmap_sync_summary="$(req_act_roadmap_sync_summary "$manifest" "$REPO_ROOT")"
 
 tmp_changed="$(mktemp)"
 tmp_verify="$(mktemp)"
@@ -176,6 +177,11 @@ find "$REPO_ROOT" -maxdepth 2 -type f \( -iname 'README.md' -o -iname 'README*.m
   echo "- Base branch: ${base_branch:-unknown}"
   [[ -n "$pr_status" ]] && echo "- PR status: $pr_status"
   [[ -n "$pr_url" ]] && echo "- PR url: $pr_url"
+  echo "- Roadmap progress: $roadmap_sync_summary"
+  echo
+  echo "## Roadmap Progress"
+  echo
+  echo "- $roadmap_sync_summary"
   echo
   echo "## Follow-Ups"
   if [[ -s "$tmp_followups" ]]; then
@@ -225,6 +231,7 @@ esac
     echo "- Req-Check passed; see review/report-card.json for evidence."
   fi
   echo "- Ship mode decided as \`$ship_mode\`."
+  echo "- Roadmap progress: $roadmap_sync_summary"
   [[ -n "$pr_url" ]] && echo "- Active PR / MR: $pr_url"
   echo
   echo "## Follow-Ups"
@@ -241,6 +248,7 @@ esac
   echo
   echo "- $next_action"
   echo "- Formal spec sync belongs in cc-act before final ship closeout."
+  echo "- Roadmap progress must be synced through cc-roadmap before final closeout when a source RM exists."
   echo
   echo "## Parallel Notes"
   echo
@@ -289,6 +297,10 @@ esac
     echo "- No capability spec files recorded in task-manifest.json."
   fi
   echo
+  echo "## Roadmap Targets"
+  echo
+  echo "- $roadmap_sync_summary"
+  echo
   echo "## Project Doc Targets"
   echo
   echo "### CLAUDE Targets"
@@ -317,6 +329,7 @@ esac
   echo
   echo "- Update the listed \`CLAUDE.md\` files if structure, workflow, or operational truth changed."
   echo "- Update README candidates if user-visible behavior or setup flow changed."
+  echo "- Update \`devflow/roadmap.json\` via \`sync-roadmap-progress.sh\` when source RM status, progress, or follow-up truth changed."
   echo "- Re-render \`pr-brief.md\` after any manual doc edits so the PR body stays in sync."
   if [[ -n "$main_risk" ]]; then
     echo "- Main risk to reflect in docs: $main_risk"
