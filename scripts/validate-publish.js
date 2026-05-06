@@ -130,7 +130,7 @@ function validateInventoryParity(errors) {
     publicSkills: PUBLIC_SKILLS,
     distributedSkills: DISTRIBUTED_SKILLS,
     internalSkills: INTERNAL_SKILLS,
-    codexSkills: [...new Set([...DISTRIBUTED_SKILLS, 'cc-devflow'])].sort()
+    codexSkills: DISTRIBUTED_SKILLS
   }));
 }
 
