@@ -64,9 +64,9 @@ Use this when the only thing you know is the file in front of you.
 
 | If the main file you have is... | You are probably here | Read this first |
 | --- | --- | --- |
-| `ROADMAP.md` | `cc-roadmap` | [pdca-loop/ROADMAP.md](./pdca-loop/ROADMAP.md) |
-| `roadmap-tracking.json` | `cc-roadmap` machine truth source for roadmap + backlog | [pdca-loop/roadmap-tracking.json](./pdca-loop/roadmap-tracking.json) |
-| `BACKLOG.md` | `cc-roadmap` -> `cc-plan` handoff | [pdca-loop/BACKLOG.md](./pdca-loop/BACKLOG.md) |
+| `roadmap.json` | `cc-roadmap` editable machine truth source | [pdca-loop/roadmap.json](./pdca-loop/roadmap.json) |
+| `ROADMAP.md` | `cc-roadmap` generated human view | [pdca-loop/ROADMAP.md](./pdca-loop/ROADMAP.md) |
+| `BACKLOG.md` | deprecated `cc-roadmap` -> `cc-plan` projection | [pdca-loop/BACKLOG.md](./pdca-loop/BACKLOG.md) |
 | `design.md` | `cc-plan` | [pdca-loop/design.md](./pdca-loop/changes/REQ-001-copy-invite-link/planning/design.md) or [full-design-blocked/design.md](./full-design-blocked/changes/REQ-002-bulk-invite-import/planning/design.md) |
 | `tasks.md` | `cc-plan` or `cc-do` | [pdca-loop/tasks.md](./pdca-loop/changes/REQ-001-copy-invite-link/planning/tasks.md) |
 | `task-manifest.json` | `cc-do` | [pdca-loop/task-manifest.json](./pdca-loop/changes/REQ-001-copy-invite-link/planning/task-manifest.json) |

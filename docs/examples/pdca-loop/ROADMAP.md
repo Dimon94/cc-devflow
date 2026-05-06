@@ -3,7 +3,7 @@
 ## Roadmap Meta
 
 - Roadmap version: `roadmap.v1`
-- Skill version: `4.4.1`
+- Skill version: `5.0.0`
 - Status: `active`
 - Last updated: `2026-04-15`
 - Owner / decider: `product-owner`
@@ -122,7 +122,7 @@
 - What changed in this version: narrowed Stage 1 to the smallest visible sharing fix
 
 ## Implementation Tracking
-- Tracking source: `roadmap-tracking.json`
+- Roadmap state source: `roadmap.json`
 
 <!-- roadmap-tracking:start -->
 | RM-ID | Item | Stage | Priority | Primary Capability | Secondary Capabilities | Expected Spec Delta | Depends On | Status | REQ | Progress |
@@ -131,3 +131,17 @@
 | RM-002 | Add copied-state feedback to the share dialog | Stage 1 | P2 | cap-invite-links | - | extend invite-link feedback truth | RM-001 | Planned | - | 0% |
 | RM-004 | Collaboration analytics follow-up | - | - | - | - | - | - | - | - | - |
 <!-- roadmap-tracking:end -->
+
+
+## Technical Architecture
+
+```mermaid
+flowchart TD
+  roadmap_json["roadmap.json"]
+  roadmap_md["ROADMAP.md"]
+  backlog_md["BACKLOG.md (deprecated)"]
+  cc_plan["cc-plan"]
+  roadmap_json -->|renders| roadmap_md
+  roadmap_json -->|projects| backlog_md
+  roadmap_md -->|hands off| cc_plan
+```

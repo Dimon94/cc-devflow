@@ -62,7 +62,7 @@ After installation, ask your agent to use the workflow skills directly. Start wi
 
 | Skill | Use it when | Main output |
 | --- | --- | --- |
-| `cc-roadmap` | You need product direction, staged scope, or backlog order | `devflow/ROADMAP.md`, `devflow/BACKLOG.md` |
+| `cc-roadmap` | You need product direction, staged scope, or backlog order | `devflow/roadmap.json`, `devflow/ROADMAP.md`, deprecated `devflow/BACKLOG.md` |
 | `cc-plan` | A feature or change needs scope, design, and task freezing | `planning/design.md`, `planning/tasks.md`, `task-manifest.json` |
 | `cc-investigate` | A bug needs symptom, reproduction, root cause, and repair boundary | `planning/analysis.md`, `planning/tasks.md`, `task-manifest.json` |
 | `cc-do` | Planned or investigated work needs implementation | code, tests, checkpoints, scratch runtime |
@@ -78,7 +78,7 @@ Maintenance skills are shipped with the pack:
 
 `cc-roadmap` now records planning posture, evidence maturity, canonical project language, and durable decision context before recommending a route. That keeps idea-stage, active-user, paying-customer, infrastructure, and recovery work from being forced through the same questions, and prevents roadmap items from inventing a second vocabulary. Developer-facing or operator-facing roadmap items also carry target user, time to first value, magic moment, adoption bottleneck, and domain handoff into `cc-plan`.
 
-Canonical language and durable decisions stay inside cc-devflow-native sources: `devflow/specs/`, `devflow/ROADMAP.md`, `devflow/BACKLOG.md`, `planning/design.md`, `planning/analysis.md`, and `change-meta.json`.
+Canonical language and durable decisions stay inside cc-devflow-native sources: `devflow/specs/`, `devflow/roadmap.json`, `devflow/ROADMAP.md`, `planning/design.md`, `planning/analysis.md`, and `change-meta.json`.
 
 `cc-plan` freezes more implementation decisions before `cc-do` starts. Non-trivial plans compare minimal viable and ideal architecture options, full designs include decision horizon plus error/rescue mapping, and test-first plans record test framework evidence, public test seams, behavior assertions, mock boundaries, coverage quality, mandatory regression tests, interface depth, and vertical tracer-bullet slices when existing behavior changes.
 

@@ -157,7 +157,7 @@
       }
     ]
   },
-  "status": "planned",
+  "status": "implemented",
   "designMode": "full-design",
   "approvedOption": "Option B: Unified roadmap state",
   "designStatus": "approved",
@@ -202,8 +202,8 @@
   "userChallenges": [
     "User challenged the roadmap/backlog split and requested a technical architecture diagram."
   ],
-  "currentTaskId": "T001",
-  "activePhase": 1,
+  "currentTaskId": null,
+  "activePhase": null,
   "frozenDecisions": [
     "devflow/roadmap.json is the single editable roadmap state.",
     "devflow/ROADMAP.md is the primary generated human roadmap view.",
@@ -217,7 +217,7 @@
       "id": "T001",
       "title": "[TEST] Add failing v3 roadmap state and legacy upgrade coverage",
       "phase": 1,
-      "status": "pending",
+      "status": "passed",
       "tddPhase": "red",
       "verticalSlice": "Slice 1",
       "testSeam": {
@@ -273,15 +273,15 @@
         ]
       },
       "reviews": {
-        "spec": "pending",
-        "code": "pending"
+        "spec": "pass",
+        "code": "pass"
       }
     },
     {
       "id": "T002",
       "title": "[IMPL] Implement v3 roadmap state normalization and legacy upgrade",
       "phase": 1,
-      "status": "pending",
+      "status": "passed",
       "tddPhase": "green",
       "verticalSlice": "Slice 1",
       "dependsOn": [
@@ -318,15 +318,15 @@
         ]
       },
       "reviews": {
-        "spec": "pending",
-        "code": "pending"
+        "spec": "pass",
+        "code": "pass"
       }
     },
     {
       "id": "T003",
       "title": "[TEST] Add failing render coverage for ROADMAP and deprecated BACKLOG projection",
       "phase": 2,
-      "status": "pending",
+      "status": "passed",
       "tddPhase": "red",
       "verticalSlice": "Slice 2",
       "testSeam": {
@@ -383,15 +383,15 @@
         ]
       },
       "reviews": {
-        "spec": "pending",
-        "code": "pending"
+        "spec": "pass",
+        "code": "pass"
       }
     },
     {
       "id": "T004",
       "title": "[IMPL] Render roadmap view, architecture diagram, and deprecated backlog projection",
       "phase": 2,
-      "status": "pending",
+      "status": "passed",
       "tddPhase": "green",
       "verticalSlice": "Slice 2",
       "dependsOn": [
@@ -428,15 +428,15 @@
         ]
       },
       "reviews": {
-        "spec": "pending",
-        "code": "pending"
+        "spec": "pass",
+        "code": "pass"
       }
     },
     {
       "id": "T005",
       "title": "[TEST] Add failing locator and sync priority coverage for roadmap.json",
       "phase": 3,
-      "status": "pending",
+      "status": "passed",
       "tddPhase": "red",
       "verticalSlice": "Slice 3",
       "testSeam": {
@@ -494,15 +494,15 @@
         ]
       },
       "reviews": {
-        "spec": "pending",
-        "code": "pending"
+        "spec": "pass",
+        "code": "pass"
       }
     },
     {
       "id": "T006",
       "title": "[IMPL] Update helper defaults and compatibility aliases",
       "phase": 3,
-      "status": "pending",
+      "status": "passed",
       "tddPhase": "green",
       "verticalSlice": "Slice 3",
       "dependsOn": [
@@ -543,15 +543,15 @@
         ]
       },
       "reviews": {
-        "spec": "pending",
-        "code": "pending"
+        "spec": "pass",
+        "code": "pass"
       }
     },
     {
       "id": "T007",
       "title": "[TEST] Add failing public contract tests for roadmap outputs",
       "phase": 4,
-      "status": "pending",
+      "status": "passed",
       "tddPhase": "red",
       "verticalSlice": "Slice 4",
       "testSeam": {
@@ -607,15 +607,15 @@
         ]
       },
       "reviews": {
-        "spec": "pending",
-        "code": "pending"
+        "spec": "pass",
+        "code": "pass"
       }
     },
     {
       "id": "T008",
       "title": "[IMPL] Update cc-roadmap source contract, templates, and changelog",
       "phase": 4,
-      "status": "pending",
+      "status": "passed",
       "tddPhase": "green",
       "verticalSlice": "Slice 4",
       "dependsOn": [
@@ -657,15 +657,15 @@
         ]
       },
       "reviews": {
-        "spec": "pending",
-        "code": "pending"
+        "spec": "pass",
+        "code": "pass"
       }
     },
     {
       "id": "T009",
       "title": "[TEST] Add failing example validation expectations for roadmap.json",
       "phase": 4,
-      "status": "pending",
+      "status": "passed",
       "tddPhase": "red",
       "verticalSlice": "Slice 4",
       "testSeam": {
@@ -720,15 +720,15 @@
         ]
       },
       "reviews": {
-        "spec": "pending",
-        "code": "pending"
+        "spec": "pass",
+        "code": "pass"
       }
     },
     {
       "id": "T010",
       "title": "[IMPL] Update examples, docs, and generated Codex mirror",
       "phase": 4,
-      "status": "pending",
+      "status": "passed",
       "tddPhase": "exception",
       "verticalSlice": "Slice 4",
       "dependsOn": [
@@ -777,15 +777,15 @@
         ]
       },
       "reviews": {
-        "spec": "pending",
-        "code": "pending"
+        "spec": "pass",
+        "code": "pass"
       }
     },
     {
       "id": "T011",
       "title": "[REFACTOR] Simplify roadmap state renderer after green behavior",
       "phase": 5,
-      "status": "pending",
+      "status": "passed",
       "tddPhase": "refactor",
       "verticalSlice": "Slices 1-3",
       "dependsOn": [
@@ -829,15 +829,15 @@
         ]
       },
       "reviews": {
-        "spec": "pending",
-        "code": "pending"
+        "spec": "pass",
+        "code": "pass"
       }
     },
     {
       "id": "T012",
       "title": "[VERIFY] Run full planning gates for cc-check handoff",
       "phase": 5,
-      "status": "pending",
+      "status": "passed",
       "tddPhase": "evidence",
       "verticalSlice": "All slices",
       "dependsOn": [
@@ -887,8 +887,8 @@
         ]
       },
       "reviews": {
-        "spec": "pending",
-        "code": "pending"
+        "spec": "pass",
+        "code": "pass"
       }
     }
   ],

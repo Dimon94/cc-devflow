@@ -3,7 +3,7 @@
 ## Roadmap Meta
 
 - Roadmap version: `roadmap.v2`
-- Skill version: `4.4.1`
+- Skill version: `5.0.0`
 - Status: `active`
 - Last updated: `2026-04-16`
 - Owner / decider: `product-owner`
@@ -44,10 +44,24 @@
 - Kill signal / stop condition: if the team cannot specify bulk invite semantics before implementation starts
 
 ## Implementation Tracking
-- Tracking source: `roadmap-tracking.json`
+- Roadmap state source: `roadmap.json`
 
 <!-- roadmap-tracking:start -->
 | RM-ID | Item | Stage | Priority | Primary Capability | Secondary Capabilities | Expected Spec Delta | Depends On | Status | REQ | Progress |
 |------|------|------|------|------|------|------|------|------|------|------|
 | RM-010 | Add CSV bulk invite import for admins | Stage 2 | P1 | cap-bulk-invite-import | cap-workspace-membership | define import semantics before widening current truth | - | Verification blocked | REQ-002 | 80% |
 <!-- roadmap-tracking:end -->
+
+
+## Technical Architecture
+
+```mermaid
+flowchart TD
+  roadmap_json["roadmap.json"]
+  roadmap_md["ROADMAP.md"]
+  backlog_md["BACKLOG.md (deprecated)"]
+  cc_plan["cc-plan"]
+  roadmap_json -->|renders| roadmap_md
+  roadmap_json -->|projects| backlog_md
+  roadmap_md -->|hands off| cc_plan
+```

@@ -1,12 +1,14 @@
 # BACKLOG
 
+> Deprecated projection. Edit `roadmap.json` instead.
+
 ## Backlog Meta
 
 - Roadmap version: `roadmap.v1`
-- Skill version: `4.4.1`
+- Skill version: `5.0.0`
 - Last synced: `2026-04-19`
 - Current focus stage: `Stage 1`
-- Tracking source: `roadmap-tracking.json`
+- Roadmap state source: `roadmap.json`
 
 ## Queue
 

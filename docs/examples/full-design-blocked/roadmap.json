@@ -1,0 +1,123 @@
+{
+  "version": 3,
+  "outputPolicy": {
+    "documentLanguage": "en"
+  },
+  "meta": {
+    "roadmapVersion": "roadmap.v2",
+    "skillVersion": "5.0.0",
+    "status": "active",
+    "lastUpdated": "2026-04-19",
+    "currentFocusStage": "Stage 2"
+  },
+  "context": {
+    "planningPosture": "",
+    "evidenceMaturity": "",
+    "canonicalTerms": [],
+    "durableDecisionSources": []
+  },
+  "evidence": [],
+  "route": {
+    "recommended": "",
+    "whyThisWinsNow": "",
+    "rejectedRoutes": [],
+    "firstSignal": "",
+    "killSignal": ""
+  },
+  "stages": [],
+  "items": [
+    {
+      "rmId": "RM-010",
+      "item": "Add CSV bulk invite import for admins",
+      "stage": "Stage 2",
+      "priority": "P1",
+      "primaryCapability": "cap-bulk-invite-import",
+      "secondaryCapabilities": [
+        "cap-workspace-membership"
+      ],
+      "expectedSpecDelta": "define import semantics before widening current truth",
+      "dependsOn": [],
+      "status": "Verification blocked",
+      "req": "REQ-002",
+      "progress": "80%",
+      "backlog": {
+        "capabilityGap": "admins can invite one user at a time but cannot safely import invite batches",
+        "evidence": "sales onboarding asks for spreadsheet-scale invites",
+        "parallelWith": [],
+        "unknowns": "duplicate-email policy, seat enforcement, audit fan-out",
+        "nextDecision": "reroute to full design before more execution work",
+        "ready": true,
+        "whyNow": "demand is real, but the contract is too wide to keep improvising in code",
+        "successSignal": "the capability has a trusted import contract before implementation resumes",
+        "entryConstraints": "must freeze limits, duplicates, warnings, and audit behavior first",
+        "openRisks": "another partial implementation pass would deepen the semantic drift",
+        "firstPlanningQuestion": "which subflows share one import contract and which need explicit splits?",
+        "requiredContextToLoad": "invite limits, billing rules, duplicate handling, audit logging",
+        "whyReadyNow": "the blocker is design truth, not implementation effort",
+        "parked": false,
+        "parkedReason": "",
+        "triggerToReopen": "",
+        "missingEvidence": ""
+      }
+    }
+  ],
+  "handoff": {
+    "readyForCcPlan": [
+      "RM-010"
+    ],
+    "parked": [],
+    "serialSpine": [
+      "RM-010"
+    ],
+    "parallelWaves": []
+  },
+  "architecture": {
+    "diagramType": "flowchart",
+    "nodes": [
+      {
+        "id": "roadmap_json",
+        "label": "roadmap.json"
+      },
+      {
+        "id": "roadmap_md",
+        "label": "ROADMAP.md"
+      },
+      {
+        "id": "backlog_md",
+        "label": "BACKLOG.md (deprecated)"
+      },
+      {
+        "id": "cc_plan",
+        "label": "cc-plan"
+      }
+    ],
+    "edges": [
+      {
+        "from": "roadmap_json",
+        "to": "roadmap_md",
+        "label": "renders"
+      },
+      {
+        "from": "roadmap_json",
+        "to": "backlog_md",
+        "label": "projects"
+      },
+      {
+        "from": "roadmap_md",
+        "to": "cc_plan",
+        "label": "hands off"
+      }
+    ]
+  },
+  "backlogMeta": {
+    "roadmapVersion": "roadmap.v2",
+    "skillVersion": "4.4.1",
+    "currentFocusStage": "Stage 2"
+  },
+  "dependencyHandoff": {
+    "serialSpine": "RM-010",
+    "parallelReadyNextWave": "-",
+    "notesOnBlockers": "verification is blocked until the import contract covers limits, duplicates, billing, and audit consistency"
+  },
+  "lastSyncedAt": "2026-04-19"
+}

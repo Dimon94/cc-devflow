@@ -4,7 +4,7 @@
 
 - Example version: `1.0.0`
 - Last reviewed: `2026-04-17`
-- Bound skills: `cc-roadmap@4.4.1`, `cc-plan@3.7.1`, `cc-do@1.6.1`, `cc-check@1.10.1`, `cc-act@1.8.1`
+- Bound skills: `cc-roadmap@5.0.0`, `cc-plan@3.7.1`, `cc-do@1.6.1`, `cc-check@1.10.1`, `cc-act@1.8.1`
 
 This folder shows one minimal but complete `cc-roadmap -> cc-plan -> cc-do -> cc-check -> cc-act` loop.
 
@@ -27,9 +27,9 @@ The sample requirement is:
 
 ## Artifact Map
 
-- `ROADMAP.md`: what `cc-roadmap` decided and why this item is first
-- `roadmap-tracking.json`: machine-readable roadmap/backlog truth that renders `ROADMAP.md` and `BACKLOG.md`
-- `BACKLOG.md`: capability-aware handoff that makes `RM-001` ready for `cc-plan`
+- `roadmap.json`: editable roadmap truth that renders the generated views
+- `ROADMAP.md`: generated view of what `cc-roadmap` decided and why this item is first
+- `BACKLOG.md`: deprecated capability-aware projection that makes `RM-001` ready for `cc-plan`
 - `changes/REQ-001-copy-invite-link/planning/design.md`: approved tiny design
 - `changes/REQ-001-copy-invite-link/planning/tasks.md`: executable task handoff
 - `changes/REQ-001-copy-invite-link/planning/task-manifest.json`: machine-readable execution truth

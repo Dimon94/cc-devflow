@@ -83,7 +83,7 @@ find .codex/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort
 
 常见产物：
 
-- `cc-roadmap` 产出 `devflow/ROADMAP.md` 和 `devflow/BACKLOG.md`；如果使用内置同步脚本，还会维护 `devflow/roadmap-tracking.json` 作为 roadmap/backlog 的共享真相源
+- `cc-roadmap` 产出可编辑真相 `devflow/roadmap.json`，再生成 `devflow/ROADMAP.md` 和 deprecated `devflow/BACKLOG.md`
 - `cc-spec-init` 产出 `devflow/specs/INDEX.md`、capability spec 和 `change-meta.json`
 - `cc-plan` 产出 `planning/design.md`、`planning/tasks.md`、`task-manifest.json` 和 `change-meta.json`
 - `cc-investigate` 产出 `planning/analysis.md`、`planning/tasks.md`、`task-manifest.json` 和 `change-meta.json`

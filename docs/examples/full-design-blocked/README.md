@@ -4,7 +4,7 @@
 
 - Example version: `1.0.0`
 - Last reviewed: `2026-04-17`
-- Bound skills: `cc-roadmap@4.4.1`, `cc-plan@3.7.1`, `cc-do@1.6.1`, `cc-check@1.10.1`
+- Bound skills: `cc-roadmap@5.0.0`, `cc-plan@3.7.1`, `cc-do@1.6.1`, `cc-check@1.10.1`
 
 This example shows a requirement that **looked executable**, but `cc-check` correctly stopped it and sent it back to `cc-plan`.
 
@@ -40,9 +40,9 @@ The sample shows what happens when implementation moved before the integration d
 
 ## Artifact Map
 
-- `ROADMAP.md`
-- `roadmap-tracking.json` (shared roadmap/backlog truth)
-- `BACKLOG.md`
+- `roadmap.json` (editable roadmap truth)
+- `ROADMAP.md` (generated view)
+- `BACKLOG.md` (deprecated projection)
 - `changes/REQ-002-bulk-invite-import/planning/design.md`
 - `changes/REQ-002-bulk-invite-import/planning/tasks.md`
 - `changes/REQ-002-bulk-invite-import/planning/task-manifest.json`

@@ -83,7 +83,7 @@ Use the skills in this order:
 
 Typical outputs:
 
-- `cc-roadmap` writes `devflow/ROADMAP.md` and `devflow/BACKLOG.md`; helper sync can also maintain `devflow/roadmap-tracking.json` as the shared roadmap/backlog truth source
+- `cc-roadmap` writes `devflow/roadmap.json` as the editable roadmap truth, then generates `devflow/ROADMAP.md` and deprecated `devflow/BACKLOG.md`
 - `cc-spec-init` writes `devflow/specs/INDEX.md`, capability specs, and `change-meta.json`
 - `cc-plan` writes `planning/design.md`, `planning/tasks.md`, `task-manifest.json`, and `change-meta.json`
 - `cc-investigate` writes `planning/analysis.md`, `planning/tasks.md`, `task-manifest.json`, and `change-meta.json`

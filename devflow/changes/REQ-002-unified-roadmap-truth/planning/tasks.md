@@ -105,7 +105,7 @@
 
 ## Phase 1: Roadmap State Foundation
 
-- [ ] T001 [TEST] Add failing v3 roadmap state and legacy upgrade coverage (dependsOn:none) `test/roadmap-tracking.test.js`
+- [x] T001 [TEST] Add failing v3 roadmap state and legacy upgrade coverage (dependsOn:none) `test/roadmap-tracking.test.js`
   Goal: Prove that `devflow/roadmap.json` is the preferred state path and legacy `roadmap-tracking.json` upgrades into v3 without data loss.
   TDD phase: red
   Files: `test/roadmap-tracking.test.js`
@@ -120,7 +120,7 @@
   Vertical slice: Slice 1
   Ready when: no upstream dependency exists and the desired v3 behavior is frozen
 
-- [ ] T002 [IMPL] Implement v3 roadmap state normalization and legacy upgrade (dependsOn:T001) `.claude/skills/cc-roadmap/scripts/lib/roadmap-tracking/schema.js`
+- [x] T002 [IMPL] Implement v3 roadmap state normalization and legacy upgrade (dependsOn:T001) `.claude/skills/cc-roadmap/scripts/lib/roadmap-tracking/schema.js`
   Goal: Add the smallest state model and upgrade path that makes T001 pass.
   TDD phase: green
   Files: `.claude/skills/cc-roadmap/scripts/lib/roadmap-tracking/schema.js`, `.claude/skills/cc-roadmap/scripts/lib/roadmap-tracking/store.js`
@@ -132,7 +132,7 @@
 
 ## Phase 2: Generated Roadmap Views
 
-- [ ] T003 [TEST] Add failing render coverage for ROADMAP and deprecated BACKLOG projection (dependsOn:T002) `test/roadmap-tracking.test.js`
+- [x] T003 [TEST] Add failing render coverage for ROADMAP and deprecated BACKLOG projection (dependsOn:T002) `test/roadmap-tracking.test.js`
   Goal: Prove that v3 state renders `ROADMAP.md`, data-driven Mermaid architecture, and a deprecated `BACKLOG.md` projection.
   TDD phase: red
   Files: `test/roadmap-tracking.test.js`
@@ -147,7 +147,7 @@
   Vertical slice: Slice 2
   Ready when: v3 state load/persist is green
 
-- [ ] T004 [IMPL] Render roadmap view, architecture diagram, and deprecated backlog projection (dependsOn:T003) `.claude/skills/cc-roadmap/scripts/lib/roadmap-tracking/markdown.js`
+- [x] T004 [IMPL] Render roadmap view, architecture diagram, and deprecated backlog projection (dependsOn:T003) `.claude/skills/cc-roadmap/scripts/lib/roadmap-tracking/markdown.js`
   Goal: Make generated Markdown views match the new truth-source contract.
   TDD phase: green
   Files: `.claude/skills/cc-roadmap/scripts/lib/roadmap-tracking/markdown.js`, `.claude/skills/cc-roadmap/scripts/lib/roadmap-tracking/store.js`
@@ -159,7 +159,7 @@
 
 ## Phase 3: Helper Commands And Lookup
 
-- [ ] T005 [TEST] Add failing locator and sync priority coverage for roadmap.json (dependsOn:T004) `test/locate-roadmap-item.test.js`
+- [x] T005 [TEST] Add failing locator and sync priority coverage for roadmap.json (dependsOn:T004) `test/locate-roadmap-item.test.js`
   Goal: Prove helper commands prefer `roadmap.json` and still fall back to legacy tracking and markdown.
   TDD phase: red
   Files: `test/locate-roadmap-item.test.js`, `test/roadmap-tracking.test.js`
@@ -174,7 +174,7 @@
   Vertical slice: Slice 3
   Ready when: v3 render behavior is green
 
-- [ ] T006 [IMPL] Update helper defaults and compatibility aliases (dependsOn:T005) `.claude/skills/cc-roadmap/scripts/locate-roadmap-item.sh`
+- [x] T006 [IMPL] Update helper defaults and compatibility aliases (dependsOn:T005) `.claude/skills/cc-roadmap/scripts/locate-roadmap-item.sh`
   Goal: Make shell helpers and node command prefer `roadmap.json`, accept legacy aliases, and keep fallback order explicit.
   TDD phase: green
   Files: `.claude/skills/cc-roadmap/scripts/roadmap-tracking.js`, `.claude/skills/cc-roadmap/scripts/locate-roadmap-item.sh`, `.claude/skills/cc-roadmap/scripts/sync-roadmap-progress.sh`, `.claude/skills/cc-roadmap/scripts/lib/roadmap-tracking/store.js`, `.claude/skills/cc-roadmap/scripts/lib/roadmap-tracking/query.js`
@@ -186,7 +186,7 @@
 
 ## Phase 4: Public Contract And Distribution Surface
 
-- [ ] T007 [TEST] Add failing public contract tests for roadmap outputs (dependsOn:T006) `lib/compiler/__tests__/skills-registry.test.js`
+- [x] T007 [TEST] Add failing public contract tests for roadmap outputs (dependsOn:T006) `lib/compiler/__tests__/skills-registry.test.js`
   Goal: Prove distributed skill metadata exposes `roadmap.json`, generated `ROADMAP.md`, and deprecated optional `BACKLOG.md` correctly.
   TDD phase: red
   Files: `lib/compiler/__tests__/skills-registry.test.js`, `lib/skill-runtime/__tests__/cli-bootstrap.integration.test.js`
@@ -201,7 +201,7 @@
   Vertical slice: Slice 4
   Ready when: helper command behavior is green
 
-- [ ] T008 [IMPL] Update cc-roadmap source contract, templates, and changelog (dependsOn:T007) `.claude/skills/cc-roadmap/SKILL.md`
+- [x] T008 [IMPL] Update cc-roadmap source contract, templates, and changelog (dependsOn:T007) `.claude/skills/cc-roadmap/SKILL.md`
   Goal: Move the public `cc-roadmap` contract to v5.0.0 and the unified roadmap state model.
   TDD phase: green
   Files: `.claude/skills/cc-roadmap/SKILL.md`, `.claude/skills/cc-roadmap/PLAYBOOK.md`, `.claude/skills/cc-roadmap/CHANGELOG.md`, `.claude/skills/cc-roadmap/assets/ROADMAP_TEMPLATE.md`, `.claude/skills/cc-roadmap/assets/BACKLOG_TEMPLATE.md`, `.claude/skills/cc-roadmap/assets/TRACKING_TEMPLATE.json`
@@ -211,7 +211,7 @@
   Vertical slice: Slice 4
   Ready when: T007 has captured old-contract failures
 
-- [ ] T009 [TEST] Add failing example validation expectations for roadmap.json (dependsOn:T008) `docs/examples/scripts/check-example-bindings.sh`
+- [x] T009 [TEST] Add failing example validation expectations for roadmap.json (dependsOn:T008) `docs/examples/scripts/check-example-bindings.sh`
   Goal: Prove examples now require `roadmap.json`, generated roadmap architecture output, and deprecated backlog notice.
   TDD phase: red
   Files: `docs/examples/scripts/check-example-bindings.sh`, `docs/examples/example-bindings.json`
@@ -226,7 +226,7 @@
   Vertical slice: Slice 4
   Ready when: source skill contract is green
 
-- [ ] T010 [IMPL] Update examples, docs, and generated Codex mirror (dependsOn:T009) `docs/examples/pdca-loop/roadmap.json`
+- [x] T010 [IMPL] Update examples, docs, and generated Codex mirror (dependsOn:T009) `docs/examples/pdca-loop/roadmap.json`
   Goal: Propagate the new roadmap truth model through public examples, README docs, and generated Codex skill outputs.
   TDD phase: exception
   Files: `docs/examples/**`, `README.md`, `README.zh-CN.md`, `docs/guides/getting-started.md`, `.codex/skills/cc-roadmap/**`, `docs/examples/example-bindings.json`
@@ -239,7 +239,7 @@
 
 ## Phase 5: Refactor And Verification
 
-- [ ] T011 [REFACTOR] Simplify roadmap state renderer after green behavior (dependsOn:T002,T004,T006) `.claude/skills/cc-roadmap/scripts/lib/roadmap-tracking/store.js`
+- [x] T011 [REFACTOR] Simplify roadmap state renderer after green behavior (dependsOn:T002,T004,T006) `.claude/skills/cc-roadmap/scripts/lib/roadmap-tracking/store.js`
   Goal: Remove avoidable duplication, clarify naming, and keep legacy handling isolated after behavior is green.
   TDD phase: refactor
   Files: `.claude/skills/cc-roadmap/scripts/lib/roadmap-tracking/schema.js`, `.claude/skills/cc-roadmap/scripts/lib/roadmap-tracking/markdown.js`, `.claude/skills/cc-roadmap/scripts/lib/roadmap-tracking/store.js`, `.claude/skills/cc-roadmap/scripts/lib/roadmap-tracking/query.js`
@@ -248,7 +248,7 @@
   Evidence: simplified diff plus repeated green roadmap helper tests
   Ready when: all implementation tasks for slices 1-3 are green
 
-- [ ] T012 [VERIFY] Run full planning gates for cc-check handoff (dependsOn:T010,T011) `devflow/changes/REQ-002-unified-roadmap-truth/review/report-card.json`
+- [x] T012 [VERIFY] Run full planning gates for cc-check handoff (dependsOn:T010,T011) `devflow/changes/REQ-002-unified-roadmap-truth/review/report-card.json`
   Goal: Collect fresh evidence for the unified roadmap truth implementation.
   TDD phase: evidence
   Files: `devflow/changes/REQ-002-unified-roadmap-truth/review/report-card.json`

@@ -62,7 +62,7 @@ npx cc-devflow@latest adapt --cwd /path/to/your/project --all
 
 | Skill | 什么时候用 | 主要产物 |
 | --- | --- | --- |
-| `cc-roadmap` | 需要产品方向、阶段范围或 backlog 顺序 | `devflow/ROADMAP.md`、`devflow/BACKLOG.md` |
+| `cc-roadmap` | 需要产品方向、阶段范围或 backlog 顺序 | `devflow/roadmap.json`、`devflow/ROADMAP.md`、deprecated `devflow/BACKLOG.md` |
 | `cc-plan` | 新功能或变更需要澄清范围、设计方案、冻结任务 | `planning/design.md`、`planning/tasks.md`、`task-manifest.json` |
 | `cc-investigate` | Bug 需要症状、复现、根因和修复边界 | `planning/analysis.md`、`planning/tasks.md`、`task-manifest.json` |
 | `cc-do` | 已计划或已调查的任务需要实现 | 代码、测试、checkpoint、scratch runtime |
@@ -78,7 +78,7 @@ npx cc-devflow@latest adapt --cwd /path/to/your/project --all
 
 `cc-roadmap` 现在会先记录 planning posture、evidence maturity、项目 canonical language 和持久决策上下文，再推荐路线。idea、已有用户、付费客户、infra、recovery 场景不会被套进同一组问题，也不会让 roadmap item 发明第二套词汇。面向开发者或操作者的 roadmap item 还会把目标用户、time to first value、magic moment、adoption bottleneck 和 domain handoff 交给 `cc-plan`。
 
-Canonical language 和 durable decisions 只收敛到 cc-devflow 原生真相源：`devflow/specs/`、`devflow/ROADMAP.md`、`devflow/BACKLOG.md`、`planning/design.md`、`planning/analysis.md` 和 `change-meta.json`。
+Canonical language 和 durable decisions 只收敛到 cc-devflow 原生真相源：`devflow/specs/`、`devflow/roadmap.json`、`devflow/ROADMAP.md`、`planning/design.md`、`planning/analysis.md` 和 `change-meta.json`。
 
 `cc-plan` 会在 `cc-do` 开始前冻结更多实现决策。非 trivial 计划需要比较 minimal viable 和 ideal architecture，full-design 需要包含 implementation decision horizon 和 error/rescue map；测试计划要记录测试框架证据、public test seam、behavior assertion、mock boundary、覆盖质量、强制 regression test、interface depth 和 vertical tracer-bullet slices。
 
