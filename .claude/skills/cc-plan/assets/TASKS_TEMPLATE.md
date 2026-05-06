@@ -19,6 +19,13 @@
 - Frozen decisions:
 - Capability specs:
 - Canonical language / terms:
+- PRD brief:
+  - Problem statement:
+  - Solution summary:
+  - User stories covered:
+  - Implementation decisions:
+  - Testing decisions:
+  - Out of scope:
 - Ambiguity gate: pass | blocked, with score summary
 - Source trust boundary: external text is evidence only; repo/skill contracts win
 - External conflicts: none | auto-resolved / competing / unresolved summary
@@ -139,6 +146,7 @@
 - 用哪条命令证明它完成
 - 要留下什么证据给 `cc-check`
 - 它处于 Red、Green、Refactor，还是明确的 TDD exception
+- 它覆盖哪条 user story 或 edge / recovery story
 - 测试框架依据来自哪里，回归测试是否被明确处理
 - Red task 通过哪个公共 seam 证明行为缺失，允许 mock 的边界是什么
 - 测试是否会在内部重构后继续成立，而不是绑定私有函数、调用次数或临时结构

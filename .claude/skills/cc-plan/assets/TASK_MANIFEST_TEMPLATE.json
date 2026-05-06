@@ -28,11 +28,30 @@
     ]
   },
   "planningMeta": {
-    "reqPlanSkillVersion": "3.7.2",
+    "reqPlanSkillVersion": "3.7.3",
     "designVersion": "design.v1",
     "approvedAt": "2026-04-15T12:00:00.000Z",
     "approvedBy": "user",
     "basedOnOption": "Option A",
+    "requirementBrief": {
+      "problemStatement": "The user-perspective problem this requirement solves.",
+      "solutionSummary": "The user-perspective solution after the requirement lands.",
+      "actors": [],
+      "userStories": [
+        {
+          "id": "US-001",
+          "actor": "",
+          "want": "",
+          "benefit": "",
+          "acceptance": []
+        }
+      ],
+      "edgeOrRecoveryStories": [],
+      "implementationDecisions": [],
+      "testingDecisions": [],
+      "outOfScope": [],
+      "furtherNotes": []
+    },
     "ambiguityGate": {
       "whatScore": 0,
       "whyScore": 0,

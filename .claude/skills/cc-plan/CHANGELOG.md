@@ -1,5 +1,11 @@
 # CC-Plan Skill Changelog
 
+## v3.7.3 - 2026-05-06
+
+- add PRD-grade requirement brief fields to `cc-plan` design and execution handoff
+- require user-perspective problem / solution, user stories, implementation decisions, testing decisions, out-of-scope, and further notes to live inside `planning/design.md` instead of a new `PRD.md`
+- add `planningMeta.requirementBrief` to the manifest template and refresh example artifacts for `cc-plan@3.7.3`
+
 ## v3.7.2 - 2026-05-06
 
 - add a Roadmap Sync Gate so approved planning runs must reconcile the source RM before handing off to `cc-do`

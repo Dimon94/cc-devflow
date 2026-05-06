@@ -75,6 +75,20 @@
 
 > `tiny-design` 是短设计，不是免设计。没有明确批准状态、验证证据和升级触发条件，就不能继续拆任务。
 
+## PRD-Grade Brief
+
+- Problem statement:
+- Solution summary:
+- Actors / personas:
+- User stories:
+  - US-001: As a `<actor>`, I want `<feature>`, so that `<benefit>`.
+- Implementation decisions:
+- Testing decisions:
+- Out of scope:
+- Further notes:
+
+> 即使是 tiny-design，也要保留用户视角和验收口径。这里只写 durable 行为、契约和模块责任，不写易过期的行号或代码片段。
+
 ## Interface Shape
 
 - Callers:
@@ -144,6 +158,7 @@
 - Test framework / regression scan:
 - Test seam / mock boundary scan:
 - Tracer bullet scan:
+- PRD brief scan:
 - Source trust boundary scan:
 - External conflict scan:
 - Ambiguity gate:

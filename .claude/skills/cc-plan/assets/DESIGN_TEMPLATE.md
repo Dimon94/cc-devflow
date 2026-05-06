@@ -91,6 +91,40 @@
 > 写完这一段后，执行者应该能用一句话复述：
 > “这次要解决的是什么，不解决什么，最小落地点是什么。”
 
+## PRD-Grade Requirement Brief
+
+- Problem statement: 从用户视角描述当前痛点，不写实现猜测。
+- Solution summary: 从用户视角描述完成后能做什么，不写代码步骤。
+- Actors / personas:
+- Primary user stories:
+
+| ID | Actor | Wants | Benefit | Acceptance / evidence |
+|----|-------|-------|---------|-----------------------|
+| US-001 |  |  |  |  |
+
+- Edge / recovery stories:
+
+| ID | Actor | Failure / boundary | Desired outcome | Acceptance / evidence |
+|----|-------|--------------------|-----------------|-----------------------|
+| US-EDGE-001 |  |  |  |  |
+
+- Implementation decisions:
+  - 模块 / capability responsibilities:
+  - Public interfaces / contracts:
+  - Technical clarifications:
+  - Architecture decisions:
+  - Schema / API contracts:
+  - Specific interactions:
+- Testing decisions:
+  - Good-test definition:
+  - Modules / surfaces to test:
+  - Prior art in repo:
+  - Behavior-level acceptance:
+- Out of scope:
+- Further notes:
+
+> PRD brief 是 durable handoff。写行为、契约、模块责任和验收标准；不要写会快速腐烂的文件行号、代码片段或临时实现细节。
+
 ## Success Criteria
 
 - Observable success signals:
@@ -262,6 +296,7 @@
 - Test framework / regression scan:
 - Test seam / mock boundary scan:
 - Tracer bullet scan:
+- PRD brief scan:
 - Source trust boundary scan:
 - External conflict scan:
 - Ambiguity gate:

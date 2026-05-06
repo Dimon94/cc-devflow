@@ -30,6 +30,7 @@
 17. 行为变更按 tracer bullet 垂直切片推进，不能把任务水平切成“先测试层、再服务层、最后 UI 层”。
 18. WHAT/WHY ambiguity、外部文档冲突、source trust boundary 和 review loop 上限必须在设计 gate 内闭合；模糊需求不能靠 `cc-do` 临场解释。
 19. 退出前必须跑 Roadmap Sync Gate：`devflow/roadmap.json` 是真相源，`devflow/ROADMAP.md` 和 `devflow/BACKLOG.md` 只是投影；source RM 存在就回写，找不到才记录 no-op。
+20. PRD 的结构要吸收进 `planning/design.md`：用户视角的问题和方案、完整 user stories、实现决策、测试决策、out-of-scope 和 further notes；不要默认创建独立 `PRD.md`。
 
 ## Required Outputs
 
@@ -69,16 +70,17 @@
 12. `planning/design.md` 或 `planning/tasks.md` 必须包含 implementation surface map：文件、职责、归属理由、耦合风险。
 13. `full-design` 必须包含 implementation decision horizon 和 error/rescue map；不适用时写清 N/A 理由。
 14. `planning/design.md` 必须包含 assumptions preview、ambiguity gate、source trust boundary、external conflict buckets 和 bounded review loop。
-15. 新 artifact、CLI、包、容器、文档入口必须在计划阶段写清分发和 discoverability，不准到 `cc-act` 才发现没人能用。
-16. 行为变更任务必须拆成 `[TEST] -> [IMPL] -> [REFACTOR]` 或写明 TDD exception；不能用“实现并测试”混成一个任务。
-17. 行为变更任务必须按一个 observable behavior 一条 tracer bullet 链组织，不能先批量写红灯再批量实现。
-18. 回归测试不能 defer。修改既有行为且缺少覆盖时，必须先计划 regression test。
-19. Red 任务必须验证公共接口上的行为，不验证私有函数、内部调用次数或临时数据结构。
-20. Mock 只能放在系统边界；如果测试必须 mock 自己控制的模块，说明 seam 或接口设计还没压平。
-21. 找不到正确 seam 时，先计划 exploratory spike 或设计修正，不能用假红灯冒充 TDD。
-22. UI scope 要写 design completeness score 和 loading / empty / error / success / partial 状态。
-23. developer/operator-facing scope 要写 target persona、time to first value、magic moment 和 install / run / debug / upgrade 风险。
-24. Review gate 只拦会导致实现错误、执行卡住、范围越界、验证缺失的问题；文字偏好和 nice-to-have 只能作为 advisory。
+15. `planning/design.md` 必须包含 PRD-grade brief：Problem Statement、Solution、actors / user stories、Implementation Decisions、Testing Decisions、Out of Scope 和 Further Notes。
+16. 新 artifact、CLI、包、容器、文档入口必须在计划阶段写清分发和 discoverability，不准到 `cc-act` 才发现没人能用。
+17. 行为变更任务必须拆成 `[TEST] -> [IMPL] -> [REFACTOR]` 或写明 TDD exception；不能用“实现并测试”混成一个任务。
+18. 行为变更任务必须按一个 observable behavior 一条 tracer bullet 链组织，不能先批量写红灯再批量实现。
+19. 回归测试不能 defer。修改既有行为且缺少覆盖时，必须先计划 regression test。
+20. Red 任务必须验证公共接口上的行为，不验证私有函数、内部调用次数或临时数据结构。
+21. Mock 只能放在系统边界；如果测试必须 mock 自己控制的模块，说明 seam 或接口设计还没压平。
+22. 找不到正确 seam 时，先计划 exploratory spike 或设计修正，不能用假红灯冒充 TDD。
+23. UI scope 要写 design completeness score 和 loading / empty / error / success / partial 状态。
+24. developer/operator-facing scope 要写 target persona、time to first value、magic moment 和 install / run / debug / upgrade 风险。
+25. Review gate 只拦会导致实现错误、执行卡住、范围越界、验证缺失的问题；文字偏好和 nice-to-have 只能作为 advisory。
 
 ## Approval Flow
 
@@ -93,6 +95,9 @@
 计划内的工程审查至少回答：
 
 - 现有代码已经解决了哪些子问题？
+- 用户视角的问题和方案是否已经能独立发布成 issue / PRD brief？
+- user stories 是否覆盖主要 actor、happy path、edge/recovery、operator/DX 行为，而不是只写一条 happy path？
+- 实现决策和测试决策是否写成 durable 模块责任、接口契约和行为验收，而不是短期文件行号？
 - 最小完整方案触达哪些文件，为什么没有更小边界？
 - 数据流、状态流或执行流怎么走？
 - 每个会触达的文件职责是什么，为什么属于这个文件，而不是另一个平行位置？

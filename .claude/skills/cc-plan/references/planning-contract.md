@@ -26,6 +26,7 @@
 22. 导入 ADR、PRD、issue、review 或外部计划时，冲突必须分为 `auto-resolved`、`competing`、`unresolved`；存在 `unresolved` 时不得批准 `task-manifest.json`。
 23. review loop 必须有 attempt 上限和 stall reroute；不能靠无限 review 掩盖需求仍不清楚。
 24. Roadmap Sync Gate 必须在退出前闭合：source RM 存在就回写 `devflow/roadmap.json` 并重新生成 `devflow/ROADMAP.md` / `devflow/BACKLOG.md`；不存在就记录 no-op reason。
+25. PRD-grade requirement brief 必须并入 `planning/design.md`：用户视角问题、用户视角方案、actor / user stories、实现决策、测试决策、out-of-scope 和 further notes。默认不得额外产出 `PRD.md`。
 
 ## Design Modes
 
@@ -51,6 +52,7 @@
 每个任务至少写清：
 
 - 目标
+- 对应 user story / edge story
 - TDD phase：`red` / `green` / `refactor` / `exception`
 - Vertical slice / tracer bullet
 - Test seam / public interface
@@ -81,13 +83,14 @@
 11. Interface depth scan
 12. Test seam / mock boundary scan
 13. Tracer bullet scan
-14. Source trust boundary scan
-15. External conflict scan
-16. Ambiguity gate
-17. Bounded review loop
-18. NOT in scope
-19. Test-first readiness
-20. Final recommendation
+14. PRD brief scan
+15. Source trust boundary scan
+16. External conflict scan
+17. Ambiguity gate
+18. Bounded review loop
+19. NOT in scope
+20. Test-first readiness
+21. Final recommendation
 
 如有 UI scope，再补 design review 结论。
 如有 developer-facing scope，再补 DX review 结论。
