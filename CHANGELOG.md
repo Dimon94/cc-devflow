@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Updated `cc-plan` and `cc-investigate` with Roadmap Sync Gates so frozen planning and root-cause handoffs reconcile source RM progress before moving to `cc-do`.
+- Updated `cc-act` to check roadmap progress during closeout and to write source RM status through `devflow/roadmap.json` with regenerated `ROADMAP.md` / `BACKLOG.md` projections.
+
 ## [4.5.4] - 2026-04-29
 
 ### Fixed
