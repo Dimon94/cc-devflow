@@ -8,6 +8,7 @@
 - Output language:
 - Source roadmap item:
 - Source roadmap version:
+- Roadmap sync status:
 - Change meta: `change-meta.json`
 
 ## Execution Handoff

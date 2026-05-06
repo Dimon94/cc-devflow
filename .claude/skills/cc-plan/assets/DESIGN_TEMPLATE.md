@@ -13,6 +13,7 @@
 - Source roadmap item:
 - Source roadmap version:
 - Source roadmap skill version:
+- Roadmap sync status:
 - Primary capability:
 - Secondary capabilities:
 - Date:
@@ -252,6 +253,7 @@
 - Ambiguity scan:
 - Feasibility scan:
 - Source alignment:
+- Roadmap sync:
 - Domain language scan:
 - Implementation surface scan:
 - Interface depth scan:
@@ -285,6 +287,17 @@
 
 - User approval status:
 - Follow-up changes after review:
+
+## Roadmap Sync Gate
+
+- Source RM:
+- Locate command:
+- Sync command:
+- Updated files: `devflow/roadmap.json`, `devflow/ROADMAP.md`, optional `devflow/BACKLOG.md`
+- Status after sync: `Planned` | `Split` | `Rerouted` | `No source RM`
+- Progress after sync:
+- No-op reason:
+- Blocking mismatch:
 
 ## First-Read Test
 

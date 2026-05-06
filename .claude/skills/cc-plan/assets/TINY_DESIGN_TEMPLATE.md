@@ -12,6 +12,7 @@
 - Approval status: `draft` | `in-review` | `approved`
 - Source roadmap item:
 - Source roadmap version:
+- Roadmap sync status:
 - Primary capability:
 - Secondary capabilities:
 
@@ -103,6 +104,17 @@
 - Regression test required:
 - Primary check:
 - Secondary checks:
+
+## Roadmap Sync Gate
+
+- Source RM:
+- Locate command:
+- Sync command:
+- Updated files: `devflow/roadmap.json`, `devflow/ROADMAP.md`, optional `devflow/BACKLOG.md`
+- Status after sync: `Planned` | `Split` | `Rerouted` | `No source RM`
+- Progress after sync:
+- No-op reason:
+- Blocking mismatch:
 - Evidence to collect:
 
 ## Conditional Design Checks
