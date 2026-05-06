@@ -167,6 +167,14 @@
 - Frozen decisions:
 - Deferred questions:
 
+## Decision Questions
+
+| ID | Gate | Known evidence | Recommendation | User choice | Impact on `cc-do` | Status |
+|----|------|----------------|----------------|-------------|-------------------|--------|
+| D1 | planning-mode / ambiguity-blocker / approach-approval / taste-or-user-challenge / final-design-approval |  |  |  |  | asked / answered / auto-decided |
+
+> 只记录真正改变设计或任务的用户判断。机械选择可以 auto-decide，但必须说明证据和影响。
+
 ## Design
 
 - Modules touched:
@@ -318,6 +326,7 @@
 - External conflict scan:
 - Ambiguity gate:
 - Review loop status:
+- Decision question scan:
 - UI / interaction review summary:
 - DX / operator review summary:
 - Test-first readiness:

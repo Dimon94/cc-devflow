@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-002.v2`
 - Design version: `design.v2`
-- CC-Plan skill version: `3.7.5`
+- CC-Plan skill version: `3.7.6`
 - Requirement ID: `REQ-002`
 - Design mode: `full-design`
 - Why not `tiny-design`: the feature crosses import parsing, invite rules, billing limits, duplicate handling, and audit logging
@@ -120,6 +120,13 @@
 - Deferred questions:
   - whether partial success needs an explicit rollback option
 
+## Decision Questions
+
+| ID | Gate | Known evidence | Recommendation | User choice | Impact on `cc-do` | Status |
+|----|------|----------------|----------------|-------------|-------------------|--------|
+| D1 | approach-approval | Best-effort upload would let duplicate, invalid, and seat-limit semantics drift during execution | Choose Option B and freeze a rule matrix first | Option B | Keep execution blocked until row outcomes are modeled | answered |
+| D2 | ambiguity-blocker | Duplicate and seat-limit outcomes are still not explicit enough for tests or audit mapping | Answer the row-outcome matrix before task generation | pending | `cc-do` must not start implementation until this is answered | asked |
+
 ## Design
 
 - Modules touched:
@@ -169,6 +176,7 @@
 - Feasibility scan: pass
 - Source alignment: pass; roadmap still prioritizes trust over speed
 - PRD brief scan: pass for actors and stories; blocked on duplicate and seat-limit semantics
+- Decision question scan: blocked; `D2` is still unanswered
 - UI / interaction review summary: result states are acceptable if semantics are frozen first
 - DX review summary: execution still needs a single row-outcome matrix
 - Auto-decided items:

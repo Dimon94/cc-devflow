@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.7.5
+version: 3.7.6
 description: Use when a requirement, roadmap item, or bug needs scope clarification, design decisions, and executable task breakdown before coding starts.
 triggers:
   - 帮我规划这个需求
@@ -44,6 +44,7 @@ entry_gate:
   - "For non-trivial designs, compare named option roles: minimal viable, ideal architecture, and optional hybrid. Do not default to smallest unless it best serves the goal."
   - Plan executable work as Red/Green/Refactor by default; identify the first failing test before any production implementation task, or write an explicit TDD exception with replacement evidence.
   - For behavior changes, freeze the spec-style test name, one logical behavior, public verification path, and interface-testability decision before task split.
+  - When user judgment is required, ask with the fixed `cc-plan` Decision Question Protocol (`D<N>`, evidence, recommendation, 2-3 options, impact, STOP) instead of free-form prose.
   - Assign a canonical change key before writing artifacts; feature work must use `REQ-<number>-<description>`, and bug-fix work must use `FIX-<number>-<description>`. REQ and FIX use independent number sequences.
   - Do not generate planning/tasks.md, planning/task-manifest.json, or change-meta.json until the recommended design is approved.
   - Before exit, locate the source RM in `devflow/roadmap.json`, `devflow/ROADMAP.md`, optional `devflow/BACKLOG.md`, or legacy `devflow/roadmap-tracking.json`; plan the progress sync instead of relying on chat memory.
@@ -52,6 +53,7 @@ exit_criteria:
   - planning/tasks.md, planning/task-manifest.json, and change-meta.json are explicit enough that cc-do can continue without chat memory.
   - The task breakdown preserves test-first execution; failing-test tasks precede implementation tasks, refactor checkpoints are visible, and any TDD exception is justified.
   - "Testability decisions make the public seam natural: small interface, deep implementation, injected boundary dependencies, returned results where practical, and boundary mocks only where the system genuinely leaves the repo."
+  - Required user decisions were asked through numbered decision questions and recorded in `planning/design.md` / `task-manifest.json` instead of left in chat.
   - The source roadmap item has been synchronized to the frozen planning state, or `planning/design.md` and `change-meta.json` record why no roadmap update is valid.
   - 'Only one next step remains: enter cc-do.'
 reroutes:
@@ -240,6 +242,52 @@ PRD 的好处要进入 `planning/design.md`，不要变成第 5 个文件。`cc-
 5. 具体场景优先于抽象概念。每个关键边界至少用一个真实 codepath、user flow、operator flow 或 failure path 压测。
 6. 只有满足 hard to reverse、surprising without context、real trade-off 三个条件的决策，才建议沉淀为 capability spec delta 或 roadmap/backlog decision note；否则留在本次 design decision log。
 
+## Decision Question Protocol
+
+`cc-plan` 不是自由聊天。只在用户答案会改变设计、任务或交付边界时提问；能从 repo evidence、roadmap handoff、spec、测试或 git history 确认的，不问用户。
+
+必须使用固定 `D<N>` 决策问题，而不是临场自由发挥。第一个问题是 `D1`，之后递增。每次只问一个决策点，并在问题后 STOP，等待用户回答；没有回答前不得继续写 `planning/tasks.md`、`task-manifest.json` 或 `change-meta.json`。
+
+触发点只允许这些 gate：
+
+1. `planning-mode`：`clarify-first` / `tiny-design` / `full-design` 无法由证据直接决定。
+2. `ambiguity-blocker`：WHAT / WHY ambiguity gate 阻塞，且缺口不能从代码或文档补齐。
+3. `approach-approval`：需要用户批准 `minimal viable` / `ideal architecture` / `hybrid` 中的推荐方案。
+4. `taste-or-user-challenge`：推荐方案挑战用户原始方向，或属于品味 / 取舍判断。
+5. `final-design-approval`：`planning/design.md` 已闭合 review gate，准备生成执行任务。
+
+固定格式：
+
+```text
+D<N> - <decision title>
+Planning object: <REQ/FIX/RM id, branch, or change key>
+Known evidence: <repo / roadmap / code / test facts that constrain the choice>
+Decision needed: <the downstream design or task split this answer changes>
+Recommendation: <A/B/C> because <one concrete reason>
+Completeness: A=<score>/10, B=<score>/10, C=<score>/10
+Options:
+A) <label> (recommended)
+  Good: <concrete upside tied to this requirement>
+  Cost/Risk: <honest cost, risk, or what it leaves out>
+B) <label>
+  Good: <concrete upside tied to this requirement>
+  Cost/Risk: <honest cost, risk, or what it leaves out>
+C) <label, optional>
+  Good: <concrete upside tied to this requirement>
+  Cost/Risk: <honest cost, risk, or what it leaves out>
+Impact: <what cc-do will do differently after this answer>
+STOP: wait for the user answer before continuing.
+```
+
+规则：
+
+1. 选项必须是 2-3 个互斥选择；不要输出开放式“大段想法”让用户自己整理。
+2. 必须有推荐项，且推荐项标注 `(recommended)`；机械选择可以 auto-decide，但必须写进 decision log。
+3. 如果选项不是覆盖度差异，而是方向差异，`Completeness` 写 `different-kind` 并说明为什么不能打分。
+4. 每个选项都要说清 `Good` 与 `Cost/Risk`。没有代价的确认不是选择，应改为执行说明或 final approval。
+5. 用户回答后，把结果写入 `planning/design.md` 的 `Decision Questions`，并同步到 `task-manifest.json.planningMeta.decisionQuestions`。聊天不是真相源。
+6. 如果连续两个问题都被用户纠正为“你应该能自己判断”，停止追问，回到 evidence sweep，修正问题选择标准。
+
 ## Session Protocol
 
 1. 先探索上下文，再写结论。
@@ -249,6 +297,7 @@ PRD 的好处要进入 `planning/design.md`，不要变成第 5 个文件。`cc-
    - `full-design` 的方案必须至少包含 `minimal viable` 和 `ideal architecture` 两个角色。
    - 两个角色权重相等；小方案不是默认答案，理想架构也不是默认过度设计。
    - 只有一个方案成立时，必须写清其它方案为何被排除。
+   - 用户批准必须走 `Decision Question Protocol`，不能用自由问句代替。
 5. 推荐方案没有得到用户明确批准前，不允许生成 `planning/tasks.md`。
 6. 批准后先判断这次用 `tiny-design` 还是 `full-design`。
 7. 把批准后的唯一方案冻结进 `planning/design.md`。

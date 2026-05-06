@@ -180,6 +180,7 @@
 - External conflict scan:
 - Ambiguity gate:
 - Review loop status:
+- Decision question scan:
 - Test-first readiness:
 - Review calibration:
 - Final recommendation:
@@ -191,6 +192,12 @@
 - Repeated concern fingerprints:
 - Stall reason:
 - Reroute if stalled:
+
+## Decision Questions
+
+| ID | Gate | Known evidence | Recommendation | User choice | Impact on `cc-do` | Status |
+|----|------|----------------|----------------|-------------|-------------------|--------|
+| D1 | planning-mode / ambiguity-blocker / approach-approval / taste-or-user-challenge / final-design-approval |  |  |  |  | asked / answered / auto-decided |
 
 ## Approval
 

@@ -28,6 +28,8 @@
 24. review loop 必须有 attempt 上限和 stall reroute；不能靠无限 review 掩盖需求仍不清楚。
 25. Roadmap Sync Gate 必须在退出前闭合：source RM 存在就回写 `devflow/roadmap.json` 并重新生成 `devflow/ROADMAP.md` / `devflow/BACKLOG.md`；不存在就记录 no-op reason。
 26. PRD-grade requirement brief 必须并入 `planning/design.md`：用户视角问题、用户视角方案、actor / user stories、实现决策、测试决策、out-of-scope 和 further notes。默认不得额外产出 `PRD.md`。
+27. 需要用户判断时必须使用固定 Decision Question：`D<N>`、证据、推荐、2-3 个互斥选项、影响和 STOP 都必须出现；禁止用自由问句代替审批 gate。
+28. 所有用户决策必须写入 `planning/design.md` 的 `Decision Questions`，并同步到 `task-manifest.json.planningMeta.decisionQuestions`，不能只留在聊天里。
 
 ## Design Modes
 
@@ -73,6 +75,21 @@
 不要把计划拆成水平层：一批测试、一批服务、一批 UI。每个切片完成后都应该能证明一个真实行为。
 也不要把一批 Red 一次性写完再批量实现。每条 tracer bullet 只证明一个可观察行为，Green 只做当前红灯要求的最小实现；下一条 Red 可以吸收上一轮学到的事实，但不能越过冻结边界。
 
+## Decision Question Fields
+
+每个需要用户判断的 gate 至少记录：
+
+- questionId：`D1` / `D2` / ...
+- gate：`planning-mode` / `ambiguity-blocker` / `approach-approval` / `taste-or-user-challenge` / `final-design-approval`
+- knownEvidence
+- recommendation
+- options
+- userChoice
+- impact
+- status：`asked` / `answered` / `auto-decided`
+
+如果选项不是覆盖度差异，completeness 使用 `different-kind`，并写清不能打分的原因。
+
 ## Review Gate
 
 `planning/design.md` 至少完成：
@@ -100,7 +117,8 @@
 21. Bounded review loop
 22. NOT in scope
 23. Test-first readiness
-24. Final recommendation
+24. Decision questions recorded
+25. Final recommendation
 
 如有 UI scope，再补 design review 结论。
 如有 developer-facing scope，再补 DX review 结论。

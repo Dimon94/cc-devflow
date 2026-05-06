@@ -62,4 +62,25 @@ describe('validate-publish', () => {
     expect(errors[0]).toContain('got object');
     expect(errors[0]).toContain('Quote YAML list items that contain ": "');
   });
+
+  test('cc-plan carries the fixed decision question contract', () => {
+    const skill = fs.readFileSync(
+      path.join(ROOT, '.claude/skills/cc-plan/SKILL.md'),
+      'utf8'
+    );
+    const fullDesign = fs.readFileSync(
+      path.join(ROOT, '.claude/skills/cc-plan/assets/DESIGN_TEMPLATE.md'),
+      'utf8'
+    );
+    const manifest = fs.readFileSync(
+      path.join(ROOT, '.claude/skills/cc-plan/assets/TASK_MANIFEST_TEMPLATE.json'),
+      'utf8'
+    );
+
+    expect(skill).toContain('## Decision Question Protocol');
+    expect(skill).toContain('D<N> - <decision title>');
+    expect(skill).toContain('STOP: wait for the user answer before continuing.');
+    expect(fullDesign).toContain('## Decision Questions');
+    expect(manifest).toContain('"decisionQuestions"');
+  });
 });

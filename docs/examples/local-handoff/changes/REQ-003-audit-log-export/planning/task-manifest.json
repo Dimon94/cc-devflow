@@ -6,7 +6,7 @@
   "requirementId": "REQ-003",
   "requirementVersion": "REQ-003.v1",
   "planningMeta": {
-    "reqPlanSkillVersion": "3.7.5",
+    "reqPlanSkillVersion": "3.7.6",
     "designVersion": "design.v1",
     "approvedAt": "2026-04-16T13:10:00.000Z",
     "approvedBy": "user",
@@ -29,7 +29,36 @@
       "testingDecisions": ["Test through the admin panel action and visible row data"],
       "outOfScope": ["JSON export", "scheduled reporting", "shared reporting backend"],
       "furtherNotes": ["Richer machine-readable exports should become a separate requirement"]
-    }
+    },
+    "decisionQuestions": [
+      {
+        "questionId": "D1",
+        "gate": "approach-approval",
+        "knownEvidence": ["Existing admin panel already owns the visible summary rows", "No reporting backend is needed for the first useful export"],
+        "recommendation": "Approve the tiny-design CSV export",
+        "options": [
+          {
+            "id": "A",
+            "label": "Tiny design CSV export",
+            "recommended": true,
+            "completeness": "8/10",
+            "good": "Solves weekly reporting friction with the current panel data",
+            "costRisk": "Does not handle JSON, scheduling, or shared reporting contracts"
+          },
+          {
+            "id": "B",
+            "label": "Shared reporting pipeline",
+            "recommended": false,
+            "completeness": "10/10",
+            "good": "Could support more formats and future scheduled reports",
+            "costRisk": "Creates a larger platform surface before the local export is proven"
+          }
+        ],
+        "userChoice": "A",
+        "impact": "cc-do exports only visible rows from the current panel and avoids new reporting contracts",
+        "status": "answered"
+      }
+    ]
   },
   "currentTaskId": null,
   "activePhase": null,

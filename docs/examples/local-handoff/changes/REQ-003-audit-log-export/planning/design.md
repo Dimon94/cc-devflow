@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-003.v1`
 - Design version: `design.v1`
-- CC-Plan skill version: `3.7.5`
+- CC-Plan skill version: `3.7.6`
 - Requirement ID: `REQ-003`
 - Design mode: `tiny-design`
 - Why this stays `tiny-design`: the patch adds one export action inside the existing admin audit UI without changing data contracts
@@ -74,7 +74,14 @@
 - Ambiguity scan: pass
 - Feasibility scan: pass
 - PRD brief scan: pass; the export story and scope boundaries are explicit
+- Decision question scan: pass; `D1` approved the tiny-design CSV-export boundary
 - Final recommendation: approved as `tiny-design`
+
+## Decision Questions
+
+| ID | Gate | Known evidence | Recommendation | User choice | Impact on `cc-do` | Status |
+|----|------|----------------|----------------|-------------|-------------------|--------|
+| D1 | approach-approval | Existing admin panel already owns visible summary rows and the change does not need a reporting backend | Approve the tiny-design CSV export | Tiny design CSV export | Export only visible rows from the current panel; do not create reporting contracts | answered |
 
 ## Approval
 

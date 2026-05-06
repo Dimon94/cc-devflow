@@ -6,7 +6,7 @@
   "requirementId": "REQ-002",
   "requirementVersion": "REQ-002.v2",
   "planningMeta": {
-    "reqPlanSkillVersion": "3.7.5",
+    "reqPlanSkillVersion": "3.7.6",
     "designVersion": "design.v2",
     "approvedAt": null,
     "approvedBy": null,
@@ -44,7 +44,63 @@
       "testingDecisions": ["Test row semantics through bulk-import rules and the admin upload flow"],
       "outOfScope": ["enterprise SCIM provisioning", "background job redesign", "rollback wizard for partial success"],
       "furtherNotes": ["Design remains blocked until duplicate and seat-limit semantics are approved"]
-    }
+    },
+    "decisionQuestions": [
+      {
+        "questionId": "D1",
+        "gate": "approach-approval",
+        "knownEvidence": ["Best-effort upload would hide duplicate, invalid, and seat-limit semantics", "Audit mapping depends on deterministic row outcomes"],
+        "recommendation": "Choose Option B and freeze a rule matrix first",
+        "options": [
+          {
+            "id": "A",
+            "label": "Front-end-only CSV upload",
+            "recommended": false,
+            "completeness": "5/10",
+            "good": "Fastest prototype and reuses the existing single-invite API",
+            "costRisk": "Lets hidden backend edge cases define user-visible semantics"
+          },
+          {
+            "id": "B",
+            "label": "Rule matrix first",
+            "recommended": true,
+            "completeness": "9/10",
+            "good": "Makes billing, duplicate, invalid, and audit behavior reviewable",
+            "costRisk": "Requires one more planning pass before execution can start"
+          }
+        ],
+        "userChoice": "B",
+        "impact": "cc-do stays blocked until row outcomes are modeled",
+        "status": "answered"
+      },
+      {
+        "questionId": "D2",
+        "gate": "ambiguity-blocker",
+        "knownEvidence": ["Duplicate and seat-limit outcomes are still not explicit enough for tests", "Audit entries must match visible row outcomes"],
+        "recommendation": "Answer the row-outcome matrix before task generation",
+        "options": [
+          {
+            "id": "A",
+            "label": "Block execution until matrix is explicit",
+            "recommended": true,
+            "completeness": "10/10",
+            "good": "Prevents cc-do from inventing semantics during implementation",
+            "costRisk": "Requires user/product input before coding can continue"
+          },
+          {
+            "id": "B",
+            "label": "Let implementation choose defaults",
+            "recommended": false,
+            "completeness": "4/10",
+            "good": "Starts coding sooner with fewer planning minutes",
+            "costRisk": "Creates invisible product decisions inside implementation tasks"
+          }
+        ],
+        "userChoice": null,
+        "impact": "No executable task manifest should be approved until this is answered",
+        "status": "asked"
+      }
+    ]
   },
   "currentTaskId": null,
   "activePhase": null,

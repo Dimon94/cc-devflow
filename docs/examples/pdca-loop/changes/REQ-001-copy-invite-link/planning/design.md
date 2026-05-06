@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-001.v1`
 - Design version: `design.v1`
-- CC-Plan skill version: `3.7.5`
+- CC-Plan skill version: `3.7.6`
 - Requirement ID: `REQ-001`
 - Design mode: `tiny-design`
 - Why this stays `tiny-design`: the patch is limited to an existing dialog and test file, with no API or data model changes
@@ -75,7 +75,14 @@
 - Ambiguity scan: pass; execution does not need to re-decide button placement or clipboard source
 - Feasibility scan: pass; existing dialog and tests already cover the target surface
 - PRD brief scan: pass; problem, story, implementation decision, testing decision, and out-of-scope are durable
+- Decision question scan: pass; `D1` approved the tiny-design copy-action boundary
 - Final recommendation: approved as `tiny-design`
+
+## Decision Questions
+
+| ID | Gate | Known evidence | Recommendation | User choice | Impact on `cc-do` | Status |
+|----|------|----------------|----------------|-------------|-------------------|--------|
+| D1 | approach-approval | Existing dialog already renders the invite URL and the change stays inside one UI/test surface | Approve the tiny-design copy action | Tiny design copy action | Keep implementation inside the share dialog; do not add backend or permission work | answered |
 
 ## Approval
 

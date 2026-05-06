@@ -1,5 +1,11 @@
 # CC-Plan Skill Changelog
 
+## v3.7.6 - 2026-05-06
+
+- add a fixed Decision Question Protocol so user-facing planning gates use numbered questions, recommendations, options, impact, and STOP instead of free-form prose
+- record required user decisions in `planning/design.md` and `task-manifest.json.planningMeta.decisionQuestions`
+- update design, tiny-design, manifest, and example bindings for the new decision-question contract
+
 ## v3.7.5 - 2026-05-06
 
 - absorb the external TDD skill's interface-testability details into native planning: injected dependencies, returned results, concrete boundary operations, and small-interface/deep-implementation checks

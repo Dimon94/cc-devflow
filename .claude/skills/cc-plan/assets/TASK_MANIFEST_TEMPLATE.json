@@ -28,7 +28,7 @@
     ]
   },
   "planningMeta": {
-    "reqPlanSkillVersion": "3.7.5",
+    "reqPlanSkillVersion": "3.7.6",
     "designVersion": "design.v1",
     "approvedAt": "2026-04-15T12:00:00.000Z",
     "approvedBy": "user",
@@ -66,7 +66,36 @@
       "repeatedConcernFingerprints": [],
       "stallReason": "",
       "rerouteIfStalled": "ask-user"
-    }
+    },
+    "decisionQuestions": [
+      {
+        "questionId": "D1",
+        "gate": "approach-approval",
+        "knownEvidence": [],
+        "recommendation": "Option A",
+        "options": [
+          {
+            "id": "A",
+            "label": "Minimal viable",
+            "recommended": true,
+            "completeness": "7/10",
+            "good": "",
+            "costRisk": ""
+          },
+          {
+            "id": "B",
+            "label": "Ideal architecture",
+            "recommended": false,
+            "completeness": "10/10",
+            "good": "",
+            "costRisk": ""
+          }
+        ],
+        "userChoice": "A",
+        "impact": "cc-do follows the approved implementation surface and task split",
+        "status": "answered"
+      }
+    ]
   },
   "sourceEvidence": [
     {
