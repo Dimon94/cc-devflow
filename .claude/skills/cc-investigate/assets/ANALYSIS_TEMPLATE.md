@@ -8,6 +8,7 @@
 - Output language:
 - Source roadmap item:
 - Source roadmap version:
+- Roadmap sync status:
 - Incident / bug ID:
 - Primary capability:
 - Related capability specs:
@@ -181,6 +182,18 @@
 - Verification after fix:
 - Why this can enter `cc-do`:
 
+## Roadmap Sync Gate
+
+- Source RM:
+- Locate command:
+- Sync command:
+- Updated files: `devflow/roadmap.json`, `devflow/ROADMAP.md`, optional `devflow/BACKLOG.md`
+- Spec diagnosis effect: `implementation drift` | `missing spec truth` | `roadmap mismatch`
+- Status after sync: `Repair planned` | `Reroute to cc-plan` | `Reroute to roadmap` | `No source RM`
+- Progress after sync:
+- No-op reason:
+- Blocking mismatch:
+
 ## Review Gate
 
 - Repro stable:
@@ -192,4 +205,5 @@
 - Diagnose-only verdict if applicable:
 - Correct test seam identified:
 - Repair scope still belongs to this requirement:
+- Roadmap sync closed:
 - If not, reroute:

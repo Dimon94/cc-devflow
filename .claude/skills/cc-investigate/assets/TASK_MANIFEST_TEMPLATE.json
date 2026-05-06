@@ -9,6 +9,14 @@
     "itemId": "RM-001",
     "roadmapVersion": "1.0",
     "roadmapSkillVersion": "2.1.0",
+    "syncStatus": "pending",
+    "syncCommand": ".claude/skills/cc-roadmap/scripts/sync-roadmap-progress.sh --rm RM-001 --status \"Repair planned\" --req FIX-XXX --progress 0%",
+    "updatedFiles": [
+      "devflow/roadmap.json",
+      "devflow/ROADMAP.md",
+      "devflow/BACKLOG.md"
+    ],
+    "noOpReason": "",
     "sourceStage": "Stage 1",
     "successSignal": "The broken behavior is reproducible and then fixed without widening scope",
     "killSignal": "Repair requires reopening product scope or redesigning unrelated modules",
@@ -20,7 +28,7 @@
     ]
   },
   "planningMeta": {
-    "ccInvestigateSkillVersion": "1.1.6",
+    "ccInvestigateSkillVersion": "1.2.2",
     "analysisVersion": "analysis.v1",
     "approvedAt": "2026-04-17T12:00:00.000Z",
     "approvedBy": "user",

@@ -7,6 +7,7 @@
 - Investigate skill version:
 - Output language:
 - Source bug / incident:
+- Roadmap sync status:
 - Change meta: `change-meta.json`
 
 ## Execution Handoff
