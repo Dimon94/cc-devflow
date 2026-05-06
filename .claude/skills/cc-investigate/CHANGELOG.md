@@ -1,5 +1,11 @@
 # CC-Investigate Skill Changelog
 
+## v1.2.2 - 2026-05-06
+
+- add a Roadmap Sync Gate so frozen investigations must reconcile the source RM before handing off repair work
+- classify roadmap updates by `implementation drift`, `missing spec truth`, and `roadmap mismatch` outcomes
+- update analysis, tasks, and manifest templates with roadmap sync status fields
+
 ## v1.2.1 - 2026-04-29
 
 - add persistent debug session fields for active hypothesis, probes, cleanup state, and next evidence action

@@ -6,7 +6,7 @@
 
 - Enter from: a bug, regression, or broken requirement whose root cause is still unclear.
 - Stay in: `cc-investigate` until `planning/analysis.md` and the repair handoff are both frozen.
-- Exit to: `cc-do` only after root cause and repair boundary are explicit in canonical artifacts.
+- Exit to: `cc-do` only after root cause, repair boundary, and source roadmap progress are explicit in canonical artifacts.
 - Reroute to: `cc-plan` for scope/design truth changes, or `roadmap` for project-level priority decisions.
 
 ## Core Rules
@@ -22,6 +22,7 @@
 9. 多组件、深层调用、flaky 问题必须先补边界探针、反向追踪或条件等待证据。
 10. diagnose-only 只能输出根因、owner、风险和 next action，不能把未修复状态标成完成。
 11. workflow forensics 先分类 artifact / git / state / tool / permission / process failure，再决定是否进入修复。
+12. 退出前必须跑 Roadmap Sync Gate：`implementation drift`、`missing spec truth`、`roadmap mismatch` 三种结论都要让 source RM 的状态和 next action 跟上。
 
 ## Iron Law
 
@@ -36,6 +37,7 @@ root-cause contract 至少包含：稳定复现或缩小后的可验证症状、
 - `planning/analysis.md`
 - `planning/tasks.md`
 - `planning/task-manifest.json`
+- `change-meta.json`
 
 ## Investigation Standard
 
@@ -159,6 +161,7 @@ root-cause contract 至少包含：稳定复现或缩小后的可验证症状、
 - 模板在 `assets/`
 - 调查契约在 `references/investigation-contract.md`
 - 需要分析骨架时用 `scripts/bootstrap-analysis.sh`
+- Roadmap 回写使用 `../cc-roadmap/scripts/locate-roadmap-item.sh` 和 `../cc-roadmap/scripts/sync-roadmap-progress.sh`
 
 ## Exit Rule
 
@@ -170,3 +173,4 @@ root-cause contract 至少包含：稳定复现或缩小后的可验证症状、
 - 用什么命令证明修好了
 
 这次调查才算合格。
+如果 source RM 仍然停在旧 status、旧 progress 或旧 REQ/FIX 绑定，说明本次 `cc-investigate` 没有真正退出。
