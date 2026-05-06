@@ -80,13 +80,13 @@ Maintenance skills are shipped with the pack:
 
 Canonical language and durable decisions stay inside cc-devflow-native sources: `devflow/specs/`, `devflow/roadmap.json`, `devflow/ROADMAP.md`, `planning/design.md`, `planning/analysis.md`, and `change-meta.json`.
 
-`cc-plan` freezes more implementation decisions before `cc-do` starts. Non-trivial plans compare minimal viable and ideal architecture options, full designs include decision horizon plus error/rescue mapping, and test-first plans record test framework evidence, public test seams, behavior assertions, mock boundaries, coverage quality, mandatory regression tests, interface depth, and vertical tracer-bullet slices when existing behavior changes.
+`cc-plan` freezes more implementation decisions before `cc-do` starts. Non-trivial plans compare minimal viable and ideal architecture options, full designs include decision horizon plus error/rescue mapping, and test-first plans record test framework evidence, public test seams, behavior assertions, mock boundaries, coverage quality, mandatory regression tests, interface depth, and vertical tracer-bullet slices when existing behavior changes. Before handoff, `cc-plan` and `cc-investigate` also reconcile the source roadmap item so RM status, REQ/FIX binding, progress, and spec diagnosis do not drift from the frozen change artifacts.
 
 ## Verification And Ship Gates
 
 `cc-check` now treats QA as a feedback-loop problem, not only a green-test problem. Bugfix and behavior work records the loop used to prove reality, expected versus actual behavior, reproduction steps, test boundary quality, and architecture follow-ups when no clean public test seam exists.
 
-`cc-act` carries that evidence into PR briefs, handoffs, and release notes. Follow-ups must be durable behavior briefs with current behavior, desired behavior, key interfaces, acceptance criteria, and explicit out-of-scope notes before they are written back to roadmap or backlog.
+`cc-act` carries that evidence into PR briefs, handoffs, and release notes. It checks source roadmap progress during closeout, updates `devflow/roadmap.json`, and regenerates `devflow/ROADMAP.md` / `devflow/BACKLOG.md` when verified reality changes. Follow-ups must be durable behavior briefs with current behavior, desired behavior, key interfaces, acceptance criteria, and explicit out-of-scope notes before they are written back to roadmap or backlog.
 
 ## Installation Modes
 
