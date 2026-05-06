@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.7.3
+version: 3.7.4
 description: Use when a requirement, roadmap item, or bug needs scope clarification, design decisions, and executable task breakdown before coding starts.
 triggers:
   - 帮我规划这个需求
@@ -43,7 +43,7 @@ entry_gate:
   - If the raw ask spans multiple independent subsystems, split it back into roadmap stages or separate REQ/FIX candidates before asking implementation details.
   - "For non-trivial designs, compare named option roles: minimal viable, ideal architecture, and optional hybrid. Do not default to smallest unless it best serves the goal."
   - Plan executable work as Red/Green/Refactor by default; identify the first failing test before any production implementation task, or write an explicit TDD exception with replacement evidence.
-  - Assign a canonical change key before writing artifacts; feature work must use `REQ-<number>-<description>`, and bug-fix work must use `FIX-<number>-<description>`.
+  - Assign a canonical change key before writing artifacts; feature work must use `REQ-<number>-<description>`, and bug-fix work must use `FIX-<number>-<description>`. REQ and FIX use independent number sequences.
   - Do not generate planning/tasks.md, planning/task-manifest.json, or change-meta.json until the recommended design is approved.
   - Before exit, locate the source RM in `devflow/roadmap.json`, `devflow/ROADMAP.md`, optional `devflow/BACKLOG.md`, or legacy `devflow/roadmap-tracking.json`; plan the progress sync instead of relying on chat memory.
 exit_criteria:
@@ -133,6 +133,8 @@ PRD 的好处要进入 `planning/design.md`，不要变成第 5 个文件。`cc-
 
 - 需求 / 功能 / 规格变更：`REQ-<number>-<description>`
 - 缺陷 / 回归 / 修复变更：`FIX-<number>-<description>`
+
+`REQ` 和 `FIX` 是两个独立编号空间。选择下一个编号时，只扫描同前缀的现有目录：新 `REQ` 只看 `devflow/changes/REQ-*` 的最大编号，新 `FIX` 只看 `devflow/changes/FIX-*` 的最大编号。`REQ-038-*` 与 `FIX-038-*` 可以同时存在，不因为另一个前缀用了相同数字就跳号、改名或合并编号。编号位宽沿用项目现状。
 
 描述部分使用 kebab-case，可以保留中文词组，但不允许丢掉大写 `REQ` / `FIX` 前缀。不要再创建 `req-123-...`、`bug-123-...`、纯描述目录或没有编号的目录。旧的小写目录只能作为历史兼容读取目标，不作为新 planning 输出。
 

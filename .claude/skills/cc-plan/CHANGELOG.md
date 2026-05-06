@@ -1,5 +1,10 @@
 # CC-Plan Skill Changelog
 
+## v3.7.4 - 2026-05-06
+
+- clarify that `REQ-*` and `FIX-*` are independent numbering namespaces, so the same numeric suffix can exist under both prefixes
+- require new `REQ` numbers to increment from existing `REQ-*` directories and new `FIX` numbers to increment from existing `FIX-*` directories
+
 ## v3.7.3 - 2026-05-06
 
 - add PRD-grade requirement brief fields to `cc-plan` design and execution handoff
