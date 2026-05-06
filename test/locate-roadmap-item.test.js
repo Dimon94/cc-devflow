@@ -4,6 +4,138 @@ const path = require('path');
 const { spawnSync } = require('child_process');
 
 describe('cc-roadmap locator', () => {
+  test('prefers roadmap.json over legacy tracking when locating RM and REQ ids', () => {
+    const repoRoot = path.resolve(__dirname, '..');
+    const script = path.join(
+      repoRoot,
+      '.claude/skills/cc-roadmap/scripts/locate-roadmap-item.sh'
+    );
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-roadmap-locate-v3-'));
+    const roadmapDir = path.join(tempDir, 'devflow');
+    const roadmapPath = path.join(roadmapDir, 'ROADMAP.md');
+    const backlogPath = path.join(roadmapDir, 'BACKLOG.md');
+
+    fs.mkdirSync(roadmapDir, { recursive: true });
+    fs.writeFileSync(roadmapPath, '# ROADMAP\n');
+    fs.writeFileSync(backlogPath, '# BACKLOG\n');
+    fs.writeFileSync(
+      path.join(roadmapDir, 'roadmap-tracking.json'),
+      `${JSON.stringify({
+        version: 2,
+        items: [
+          {
+            rmId: 'RM-020',
+            item: 'Legacy stale item',
+            primaryCapability: 'legacy-capability',
+            req: 'REQ-020',
+            backlog: { ready: false }
+          }
+        ]
+      })}\n`
+    );
+    fs.writeFileSync(
+      path.join(roadmapDir, 'roadmap.json'),
+      `${JSON.stringify({
+        version: 3,
+        items: [
+          {
+            rmId: 'RM-020',
+            item: 'Canonical roadmap state item',
+            stage: 'Stage 1',
+            priority: 'P0',
+            primaryCapability: 'roadmap-truth-model',
+            secondaryCapabilities: ['adapter-distribution'],
+            expectedSpecDelta: 'prefer roadmap.json',
+            dependsOn: [],
+            status: 'Ready',
+            req: 'REQ-020',
+            progress: '40%',
+            backlog: {
+              ready: true,
+              capabilityGap: 'legacy tracking is stale',
+              evidence: 'roadmap.json has fresher contract',
+              parallelWith: [],
+              nextDecision: 'plan from canonical state',
+              whyNow: 'single truth is available',
+              whyReadyNow: 'the RM is already normalized',
+              parked: false
+            }
+          }
+        ]
+      })}\n`
+    );
+
+    const locateReq = spawnSync('bash', [script, 'REQ-020', '--roadmap', roadmapPath, '--backlog', backlogPath], {
+      cwd: repoRoot,
+      encoding: 'utf8'
+    });
+    expect(locateReq.status).toBe(0);
+    expect(locateReq.stdout).toContain('Item: Canonical roadmap state item');
+    expect(locateReq.stdout).toContain('Primary Capability: roadmap-truth-model');
+    expect(locateReq.stdout).toContain('Queue Ready: Yes');
+    expect(locateReq.stdout).not.toContain('legacy-capability');
+
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  });
+
+  test('sync writes roadmap.json by default beside the roadmap file', () => {
+    const repoRoot = path.resolve(__dirname, '..');
+    const script = path.join(
+      repoRoot,
+      '.claude/skills/cc-roadmap/scripts/sync-roadmap-progress.sh'
+    );
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-roadmap-sync-v3-'));
+    const roadmapDir = path.join(tempDir, 'devflow');
+    const roadmapPath = path.join(roadmapDir, 'ROADMAP.md');
+    const backlogPath = path.join(roadmapDir, 'BACKLOG.md');
+    const statePath = path.join(roadmapDir, 'roadmap.json');
+
+    fs.mkdirSync(roadmapDir, { recursive: true });
+    fs.writeFileSync(roadmapPath, '# ROADMAP\n');
+    fs.writeFileSync(backlogPath, '# BACKLOG\n');
+
+    const result = spawnSync(
+      'bash',
+      [
+        script,
+        '--rm',
+        'RM-030',
+        '--item',
+        'Sync progress through state',
+        '--status',
+        'In review',
+        '--req',
+        'REQ-030',
+        '--progress',
+        '70%',
+        '--primary-capability',
+        'roadmap-truth-model',
+        '--file',
+        roadmapPath
+      ],
+      { cwd: repoRoot, encoding: 'utf8' }
+    );
+
+    expect(result.status).toBe(0);
+    expect(fs.existsSync(statePath)).toBe(true);
+    expect(fs.existsSync(path.join(roadmapDir, 'roadmap-tracking.json'))).toBe(false);
+
+    const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
+    expect(state.version).toBe(3);
+    expect(state.items).toEqual([
+      expect.objectContaining({
+        rmId: 'RM-030',
+        item: 'Sync progress through state',
+        primaryCapability: 'roadmap-truth-model',
+        status: 'In review',
+        req: 'REQ-030',
+        progress: '70%'
+      })
+    ]);
+
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  });
+
   test('prefers roadmap-tracking.json when locating RM and REQ ids', () => {
     const repoRoot = path.resolve(__dirname, '..');
     const script = path.join(

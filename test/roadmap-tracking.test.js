@@ -4,6 +4,238 @@ const path = require('path');
 const { spawnSync } = require('child_process');
 
 describe('cc-roadmap tracking sync', () => {
+  test('renders canonical v3 roadmap state from legacy tracking data', () => {
+    const repoRoot = path.resolve(__dirname, '..');
+    const script = path.join(
+      repoRoot,
+      '.claude/skills/cc-roadmap/scripts/roadmap-tracking.js'
+    );
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-roadmap-v3-state-'));
+    const roadmapDir = path.join(tempDir, 'devflow');
+    const roadmapPath = path.join(roadmapDir, 'ROADMAP.md');
+    const backlogPath = path.join(roadmapDir, 'BACKLOG.md');
+    const statePath = path.join(roadmapDir, 'roadmap.json');
+    const legacyTrackingPath = path.join(roadmapDir, 'roadmap-tracking.json');
+
+    fs.mkdirSync(roadmapDir, { recursive: true });
+    fs.writeFileSync(roadmapPath, '# ROADMAP\n');
+    fs.writeFileSync(backlogPath, '# BACKLOG\n');
+    fs.writeFileSync(
+      legacyTrackingPath,
+      `${JSON.stringify(
+        {
+          version: 2,
+          lastSyncedAt: '2026-04-30',
+          backlogMeta: {
+            roadmapVersion: 'roadmap.v1',
+            skillVersion: '4.4.1',
+            currentFocusStage: 'Stage 1'
+          },
+          dependencyHandoff: {
+            serialSpine: 'RM-001',
+            parallelReadyNextWave: 'RM-002',
+            notesOnBlockers: 'keep the first wedge serial'
+          },
+          items: [
+            {
+              rmId: 'RM-001',
+              item: 'Unify roadmap truth',
+              stage: 'Stage 1',
+              priority: 'P0',
+              primaryCapability: 'roadmap-truth-model',
+              secondaryCapabilities: ['adapter-distribution'],
+              expectedSpecDelta: 'replace tracking sidecar with roadmap state',
+              dependsOn: [],
+              status: 'Planned',
+              req: 'REQ-002',
+              progress: '0%',
+              backlog: {
+                capabilityGap: 'roadmap and backlog duplicate RM state',
+                evidence: 'three files carry overlapping roadmap data',
+                parallelWith: [],
+                unknowns: '',
+                nextDecision: 'freeze v3 state contract',
+                ready: true,
+                whyNow: 'the sidecar is already acting as shared truth',
+                successSignal: 'one structured state renders all roadmap views',
+                entryConstraints: 'preserve legacy input migration',
+                openRisks: 'downstream projects may still have old tracking files',
+                firstPlanningQuestion: 'can this stay one compatibility release?',
+                requiredContextToLoad: 'roadmap scripts and examples',
+                whyReadyNow: 'the drift surface is visible and bounded',
+                parked: false,
+                parkedReason: '',
+                triggerToReopen: '',
+                missingEvidence: ''
+              }
+            }
+          ]
+        },
+        null,
+        2
+      )}\n`
+    );
+
+    const result = spawnSync(
+      'node',
+      [script, 'render', '--roadmap', roadmapPath, '--backlog', backlogPath, '--tracking', statePath],
+      { cwd: repoRoot, encoding: 'utf8' }
+    );
+
+    expect(result.status).toBe(0);
+
+    const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
+    expect(state.version).toBe(3);
+    expect(state.meta).toEqual(
+      expect.objectContaining({
+        roadmapVersion: 'roadmap.v1',
+        skillVersion: '4.4.1',
+        currentFocusStage: 'Stage 1'
+      })
+    );
+    expect(state.context).toEqual(expect.any(Object));
+    expect(state.handoff).toEqual(
+      expect.objectContaining({
+        readyForCcPlan: ['RM-001'],
+        parked: [],
+        serialSpine: ['RM-001'],
+        parallelWaves: ['RM-002']
+      })
+    );
+    expect(state.architecture).toEqual(
+      expect.objectContaining({
+        diagramType: 'flowchart',
+        nodes: expect.any(Array),
+        edges: expect.any(Array)
+      })
+    );
+    expect(state.items).toEqual([
+      expect.objectContaining({
+        rmId: 'RM-001',
+        item: 'Unify roadmap truth',
+        primaryCapability: 'roadmap-truth-model',
+        secondaryCapabilities: ['adapter-distribution'],
+        expectedSpecDelta: 'replace tracking sidecar with roadmap state',
+        backlog: expect.objectContaining({
+          capabilityGap: 'roadmap and backlog duplicate RM state',
+          ready: true,
+          whyNow: 'the sidecar is already acting as shared truth'
+        })
+      })
+    ]);
+
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  });
+
+  test('renders roadmap and deprecated backlog projections from v3 state', () => {
+    const repoRoot = path.resolve(__dirname, '..');
+    const script = path.join(
+      repoRoot,
+      '.claude/skills/cc-roadmap/scripts/roadmap-tracking.js'
+    );
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-roadmap-v3-render-'));
+    const roadmapDir = path.join(tempDir, 'devflow');
+    const roadmapPath = path.join(roadmapDir, 'ROADMAP.md');
+    const backlogPath = path.join(roadmapDir, 'BACKLOG.md');
+    const statePath = path.join(roadmapDir, 'roadmap.json');
+
+    fs.mkdirSync(roadmapDir, { recursive: true });
+    fs.writeFileSync(roadmapPath, '# ROADMAP\n');
+    fs.writeFileSync(backlogPath, '# BACKLOG\n');
+    fs.writeFileSync(
+      statePath,
+      `${JSON.stringify(
+        {
+          version: 3,
+          meta: {
+            roadmapVersion: 'roadmap.v2',
+            skillVersion: '5.0.0',
+            status: 'active',
+            lastUpdated: '2026-05-01',
+            currentFocusStage: 'Stage 1'
+          },
+          items: [
+            {
+              rmId: 'RM-010',
+              item: 'Generate roadmap views from state',
+              stage: 'Stage 1',
+              priority: 'P0',
+              primaryCapability: 'roadmap-truth-model',
+              secondaryCapabilities: [],
+              expectedSpecDelta: 'render views from roadmap.json',
+              dependsOn: [],
+              status: 'Ready',
+              req: 'REQ-010',
+              progress: '20%',
+              backlog: {
+                capabilityGap: 'views are not state generated',
+                evidence: 'manual markdown drift',
+                parallelWith: [],
+                unknowns: '',
+                nextDecision: 'ship renderer',
+                ready: true,
+                whyNow: 'state is canonical',
+                successSignal: 'generated views cite roadmap.json',
+                entryConstraints: '',
+                openRisks: '',
+                firstPlanningQuestion: '',
+                requiredContextToLoad: '',
+                whyReadyNow: 'contract is frozen',
+                parked: false
+              }
+            }
+          ],
+          handoff: {
+            readyForCcPlan: ['RM-010'],
+            parked: [],
+            serialSpine: ['RM-010'],
+            parallelWaves: []
+          },
+          architecture: {
+            diagramType: 'flowchart',
+            nodes: [
+              { id: 'roadmap_json', label: 'roadmap.json' },
+              { id: 'roadmap_md', label: 'ROADMAP.md' },
+              { id: 'cc_plan', label: 'cc-plan' }
+            ],
+            edges: [
+              { from: 'roadmap_json', to: 'roadmap_md', label: 'renders' },
+              { from: 'roadmap_md', to: 'cc_plan', label: 'hands off' }
+            ]
+          }
+        },
+        null,
+        2
+      )}\n`
+    );
+
+    const result = spawnSync(
+      'node',
+      [script, 'render', '--roadmap', roadmapPath, '--backlog', backlogPath, '--tracking', statePath],
+      { cwd: repoRoot, encoding: 'utf8' }
+    );
+
+    expect(result.status).toBe(0);
+
+    const renderedRoadmap = fs.readFileSync(roadmapPath, 'utf8');
+    expect(renderedRoadmap).toContain('- Roadmap state source: `roadmap.json`');
+    expect(renderedRoadmap).toContain('## Technical Architecture');
+    expect(renderedRoadmap).toContain('```mermaid');
+    expect(renderedRoadmap).toContain('flowchart TD');
+    expect(renderedRoadmap).toContain('roadmap_json["roadmap.json"]');
+    expect(renderedRoadmap).toContain('roadmap_json -->|renders| roadmap_md');
+    expect(renderedRoadmap).toContain('roadmap_md -->|hands off| cc_plan');
+
+    const renderedBacklog = fs.readFileSync(backlogPath, 'utf8');
+    expect(renderedBacklog.startsWith('# BACKLOG\n\n> Deprecated projection. Edit `roadmap.json` instead.')).toBe(
+      true
+    );
+    expect(renderedBacklog).toContain('- Roadmap state source: `roadmap.json`');
+    expect(renderedBacklog).toContain('| RM-010 | Generate roadmap views from state |');
+
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  });
+
   test('bootstraps legacy tracking tables into json truth and rerenders roadmap', () => {
     const repoRoot = path.resolve(__dirname, '..');
     const script = path.join(

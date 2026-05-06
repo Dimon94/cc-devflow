@@ -67,7 +67,7 @@ while IFS= read -r encoded; do
   review_dir="$change_dir/review"
   handoff_dir="$change_dir/handoff"
 
-  for file in "$readme" "$root/ROADMAP.md" "$root/BACKLOG.md" "$root/roadmap-tracking.json" "$planning_dir/design.md" "$planning_dir/tasks.md" "$planning_dir/task-manifest.json"; do
+  for file in "$readme" "$root/ROADMAP.md" "$root/BACKLOG.md" "$root/roadmap.json" "$planning_dir/design.md" "$planning_dir/tasks.md" "$planning_dir/task-manifest.json"; do
     if [[ ! -f "$file" ]]; then
       echo "Example $example_id is missing required file: $file" >&2
       exit 1
@@ -75,14 +75,17 @@ while IFS= read -r encoded; do
   done
 
   assert_contains "$root/ROADMAP.md" "- Skill version: \`$ROADMAP_VERSION\`"
-  assert_contains "$root/ROADMAP.md" "- Tracking source: \`roadmap-tracking.json\`"
+  assert_contains "$root/ROADMAP.md" "- Roadmap state source: \`roadmap.json\`"
+  assert_contains "$root/ROADMAP.md" "## Technical Architecture"
+  assert_contains "$root/ROADMAP.md" "\`\`\`mermaid"
   assert_contains "$root/BACKLOG.md" "- Skill version: \`$ROADMAP_VERSION\`"
-  assert_contains "$root/BACKLOG.md" "- Tracking source: \`roadmap-tracking.json\`"
+  assert_contains "$root/BACKLOG.md" "> Deprecated projection. Edit \`roadmap.json\` instead."
+  assert_contains "$root/BACKLOG.md" "- Roadmap state source: \`roadmap.json\`"
   assert_contains "$root/BACKLOG.md" "| RM-ID | Title | Source Stage | Priority | Primary Capability | Secondary Capabilities | Capability Gap | Expected Spec Delta | Evidence | Depends On | Parallel With | Unknowns | Next Decision | Ready |"
   assert_contains "$root/BACKLOG.md" "## Ready For Req-Plan"
   assert_contains "$root/BACKLOG.md" "  - Primary Capability:"
   assert_contains "$root/BACKLOG.md" "  - Expected spec delta:"
-  jq -er '.version == 2 and (.items | length) > 0 and (.backlogMeta | type == "object") and (.dependencyHandoff | type == "object") and any(.items[]; .backlog != null)' "$root/roadmap-tracking.json" >/dev/null
+  jq -er '.version == 3 and (.items | length) > 0 and (.meta | type == "object") and (.handoff | type == "object") and (.architecture.nodes | length) > 0 and any(.items[]; .backlog != null)' "$root/roadmap.json" >/dev/null
   assert_contains "$planning_dir/design.md" "- CC-Plan skill version: \`$REQ_PLAN_VERSION\`"
   assert_contains "$planning_dir/tasks.md" "- CC-Plan skill version: \`$REQ_PLAN_VERSION\`"
 
