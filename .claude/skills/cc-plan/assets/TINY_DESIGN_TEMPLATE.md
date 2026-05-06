@@ -97,6 +97,14 @@
 - Misuse risk:
 - Why this stays simple:
 
+## Interface Testability
+
+- Dependency shape: injected / created internally
+- Result shape: returned result / side effect
+- Boundary adapter shape: specific operation / generic fetcher / N/A
+- Test setup complexity: simple / conditional / brittle
+- Decision:
+
 ## Implementation Surface Map
 
 | Surface | Responsibility | Why here | Coupling risk |
@@ -108,12 +116,18 @@
 - Test framework source:
 - First failing test:
 - Test seam / public interface:
+- Spec-style test name:
+- One logical behavior:
+- Public verification path:
 - Behavior asserted:
 - Mock boundary:
+- Boundary adapter shape:
 - Feedback loop type:
 - Tracer bullet order:
 - Green implementation check:
+- Green minimality guard:
 - Refactor checkpoint:
+- Refactor candidates:
 - TDD exceptions:
 - Regression test required:
 - Primary check:
@@ -155,9 +169,12 @@
 - Domain language scan:
 - Implementation surface scan:
 - Interface depth scan:
+- Interface testability scan:
 - Test framework / regression scan:
 - Test seam / mock boundary scan:
+- Public verification path scan:
 - Tracer bullet scan:
+- Green minimality / refactor candidate scan:
 - PRD brief scan:
 - Source trust boundary scan:
 - External conflict scan:

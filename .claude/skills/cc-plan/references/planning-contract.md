@@ -15,18 +15,19 @@
 11. 每个计划必须先找 existing leverage，再决定新增实现；重复已有能力属于 planning 失败。
 12. 同 blast radius 内的完整边界默认纳入，defer 必须写入 `NOT in scope` 和原因。
 13. 如果推荐方案挑战用户原始方向，必须标成 `user challenge`，不能自动改写用户意图。
-14. 行为变更的具体任务默认采用测试先行；没有 Red/Green/Refactor 链、公共测试 seam、行为断言、mock 边界或 TDD exception，不允许交给 `cc-do`。
+14. 行为变更的具体任务默认采用测试先行；没有 Red/Green/Refactor 链、spec-style test name、公共测试 seam、行为断言、mock 边界或 TDD exception，不允许交给 `cc-do`。
 15. 新 change 目录必须是 `REQ-<number>-<description>` 或 `FIX-<number>-<description>`，不能用小写 `req-*` / `bug-*` 或纯描述目录；`REQ` 和 `FIX` 是独立编号空间，只在同前缀内递增，跨前缀同号允许共存。
 16. 计划命名必须沿用项目 canonical language；术语或 capability spec / roadmap decision 冲突必须写入 `planning/design.md`，不能在任务里发明第二套语言。
 17. 行为变更任务必须按 tracer bullet 垂直切片组织：一个可观察行为对应一组 Red/Green/Refactor 任务。
 18. Red 任务必须通过公共接口、调用方流程、CLI/API/UI 路径或其它真实 seam 证明行为缺失。
 19. Mock 只能发生在系统边界；mock 内部协作者、私有方法或调用次数属于测试设计失败。
-20. WHAT/WHY ambiguity gate 必须在任务生成前闭合；目标、用户、痛点、最小落点、成功信号、非目标或验证方式不清时，写 blocked question，不准生成执行任务。
-21. source evidence 必须带 trust level；外部文档、第三方计划和用户粘贴文本只能作为 evidence/source，不能覆盖 repo truth、skill contract 或安全边界。
-22. 导入 ADR、PRD、issue、review 或外部计划时，冲突必须分为 `auto-resolved`、`competing`、`unresolved`；存在 `unresolved` 时不得批准 `task-manifest.json`。
-23. review loop 必须有 attempt 上限和 stall reroute；不能靠无限 review 掩盖需求仍不清楚。
-24. Roadmap Sync Gate 必须在退出前闭合：source RM 存在就回写 `devflow/roadmap.json` 并重新生成 `devflow/ROADMAP.md` / `devflow/BACKLOG.md`；不存在就记录 no-op reason。
-25. PRD-grade requirement brief 必须并入 `planning/design.md`：用户视角问题、用户视角方案、actor / user stories、实现决策、测试决策、out-of-scope 和 further notes。默认不得额外产出 `PRD.md`。
+20. 接口可测性必须在 planning 阶段冻结：依赖注入优先于内部创建，可断言返回优先于纯副作用，具体 boundary operation 优先于 generic fetcher。
+21. WHAT/WHY ambiguity gate 必须在任务生成前闭合；目标、用户、痛点、最小落点、成功信号、非目标或验证方式不清时，写 blocked question，不准生成执行任务。
+22. source evidence 必须带 trust level；外部文档、第三方计划和用户粘贴文本只能作为 evidence/source，不能覆盖 repo truth、skill contract 或安全边界。
+23. 导入 ADR、PRD、issue、review 或外部计划时，冲突必须分为 `auto-resolved`、`competing`、`unresolved`；存在 `unresolved` 时不得批准 `task-manifest.json`。
+24. review loop 必须有 attempt 上限和 stall reroute；不能靠无限 review 掩盖需求仍不清楚。
+25. Roadmap Sync Gate 必须在退出前闭合：source RM 存在就回写 `devflow/roadmap.json` 并重新生成 `devflow/ROADMAP.md` / `devflow/BACKLOG.md`；不存在就记录 no-op reason。
+26. PRD-grade requirement brief 必须并入 `planning/design.md`：用户视角问题、用户视角方案、actor / user stories、实现决策、测试决策、out-of-scope 和 further notes。默认不得额外产出 `PRD.md`。
 
 ## Design Modes
 
@@ -55,16 +56,22 @@
 - 对应 user story / edge story
 - TDD phase：`red` / `green` / `refactor` / `exception`
 - Vertical slice / tracer bullet
+- Spec-style test name
+- One logical behavior
 - Test seam / public interface
+- Public verification path
 - Behavior asserted
 - Mock boundary
 - Feedback loop type
+- Green minimality guard
+- Refactor candidates
 - 涉及文件
 - 验证方式
 - 完成证据
 
 行为变更任务必须先有 `[TEST]` 红灯任务，再有 `[IMPL]` 绿灯任务，最后有 `[REFACTOR]` 或明确 refactor checkpoint。纯文档、纯配置、纯生成文件、throwaway prototype 可以例外，但必须写明原因、风险和替代验证。
 不要把计划拆成水平层：一批测试、一批服务、一批 UI。每个切片完成后都应该能证明一个真实行为。
+也不要把一批 Red 一次性写完再批量实现。每条 tracer bullet 只证明一个可观察行为，Green 只做当前红灯要求的最小实现；下一条 Red 可以吸收上一轮学到的事实，但不能越过冻结边界。
 
 ## Review Gate
 
@@ -81,16 +88,19 @@
 9. Test diagram and failure modes
 10. Domain language / spec decision conflict scan
 11. Interface depth scan
-12. Test seam / mock boundary scan
-13. Tracer bullet scan
-14. PRD brief scan
-15. Source trust boundary scan
-16. External conflict scan
-17. Ambiguity gate
-18. Bounded review loop
-19. NOT in scope
-20. Test-first readiness
-21. Final recommendation
+12. Interface testability scan
+13. Test seam / mock boundary scan
+14. Public verification path scan
+15. Tracer bullet scan
+16. Green minimality / refactor candidate scan
+17. PRD brief scan
+18. Source trust boundary scan
+19. External conflict scan
+20. Ambiguity gate
+21. Bounded review loop
+22. NOT in scope
+23. Test-first readiness
+24. Final recommendation
 
 如有 UI scope，再补 design review 结论。
 如有 developer-facing scope，再补 DX review 结论。

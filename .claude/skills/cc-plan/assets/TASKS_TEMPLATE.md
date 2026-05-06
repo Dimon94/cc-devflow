@@ -35,6 +35,8 @@
 - Test framework source:
 - Test seam policy: Red tasks verify behavior through public interfaces, caller flows, CLI/API/UI paths, or other real seams.
 - Mock boundary policy: mock only system boundaries; do not mock internal collaborators owned by this codebase.
+- Test shape policy: one Red proves one logical behavior with a spec-style test name and a public verification path.
+- Interface testability policy: prefer injected boundary dependencies, returned results, and specific boundary operations over generic fetchers that force conditional mocks.
 - Feedback loop ladder: automated test -> HTTP/curl -> CLI fixture -> browser script -> trace replay -> harness -> property/fuzz -> differential -> HITL.
 - TDD plan: `Red -> Green -> Refactor`
 - Tracer bullet plan: one observable behavior at a time; no horizontal "all tests first, all code later" slice
@@ -55,9 +57,9 @@
 
 ## Tracer Bullet Map
 
-| Slice | Observable behavior | Public test seam | Feedback loop | Red task | Green task | Refactor / evidence | Why vertical |
-|-------|---------------------|------------------|---------------|----------|------------|---------------------|--------------|
-| Slice 1 |  |  | automated test | T001 | T002 | T005 |  |
+| Slice | Observable behavior | Spec-style test name | Public test seam | Public verification path | Feedback loop | Red task | Green task | Refactor / evidence | Why vertical |
+|-------|---------------------|----------------------|------------------|--------------------------|---------------|----------|------------|---------------------|--------------|
+| Slice 1 |  |  |  |  | automated test | T001 | T002 | T005 |  |
 
 > 每个 slice 必须能独立证明一个端到端行为，不要按“只改数据层 / 只改 UI 层”横切。
 
@@ -71,10 +73,13 @@
   Verification: `npm test -- path/to/test`
   Evidence: failing output
   Coverage: unit / integration / e2e / eval; regression: yes / no
+  Spec-style test name: 测试名像规格说明，描述可观察行为
+  One logical behavior: yes / no
   Test seam: public interface / caller flow / CLI / API / UI / trace replay / harness
+  Public verification path: 从同一公共入口或用户可见路径读回结果；除非 DB / filesystem 本身是被测边界，不绕过接口侧查
   Behavior asserted: 描述用户或调用方可观察行为，不描述内部实现步骤
   Allowed mocks: none / external API / time / randomness / filesystem / database boundary
-  Test quality guard: no private methods, no internal call-count assertions, no internal collaborator mocks
+  Test quality guard: no private methods, no internal call-count assertions, no internal collaborator mocks, no broad bulk Red
   Vertical slice: Slice 1
   Ready when: 没有上游依赖，且测试路径已经确定
 
@@ -85,6 +90,7 @@
   Read first: `design.md`, `path/to/test`
   Verification: `npm test -- path/to/test`
   Evidence: passing output + checkpoint
+  Green minimality guard: 只写当前红灯要求的最小实现，不预铺未来行为、分支或 API
   Vertical slice: Slice 1
   Ready when: T001 已经见红，且当前 touched files 不和其他并行任务冲突
 
@@ -98,10 +104,13 @@
   Verification: `npm test -- path/to/other.test`
   Evidence: failing output
   Coverage: unit / integration / e2e / eval; regression: yes / no
+  Spec-style test name: 测试名像规格说明，描述可观察行为
+  One logical behavior: yes / no
   Test seam: public interface / caller flow / CLI / API / UI / trace replay / harness
+  Public verification path: 从同一公共入口或用户可见路径读回结果；除非 DB / filesystem 本身是被测边界，不绕过接口侧查
   Behavior asserted: 描述用户或调用方可观察行为，不描述内部实现步骤
   Allowed mocks: none / external API / time / randomness / filesystem / database boundary
-  Test quality guard: no private methods, no internal call-count assertions, no internal collaborator mocks
+  Test quality guard: no private methods, no internal call-count assertions, no internal collaborator mocks, no broad bulk Red
   Vertical slice: Slice 2
   Ready when: T002 完成，且该测试覆盖的是独立行为
 
@@ -112,6 +121,7 @@
   Read first: `design.md`, `path/to/other.test`
   Verification: `npm test -- path/to/other.test`
   Evidence: passing output + review notes
+  Green minimality guard: 只写当前红灯要求的最小实现，不预铺未来行为、分支或 API
   Vertical slice: Slice 2
   Ready when: T003 已经见红，且文件触点与其他 `[P]` 任务不冲突
 
@@ -124,6 +134,7 @@
   Read first: `design.md`, green test outputs
   Verification: `npm test -- path/to/test path/to/other.test`
   Evidence: refactor diff + repeated green output
+  Refactor candidates: duplication / long method / shallow module / feature envy / primitive obsession / naming / >3 nesting / newly exposed old code smell
   Ready when: 对应 Red/Green 任务都已完成，且清理不会扩大 scope
 
 - [ ] T006 Run checks and collect evidence (dependsOn:T005) `command or file`
@@ -149,5 +160,8 @@
 - 它覆盖哪条 user story 或 edge / recovery story
 - 测试框架依据来自哪里，回归测试是否被明确处理
 - Red task 通过哪个公共 seam 证明行为缺失，允许 mock 的边界是什么
+- Red task 的测试名是否像规格，一个测试是否只证明一个逻辑行为，结果是否从公共入口读回
+- Green task 如何保证只写当前红灯要求的最小代码
+- Refactor task 要清理哪些具体坏味道，且只在相关测试已绿后执行
 - 测试是否会在内部重构后继续成立，而不是绑定私有函数、调用次数或临时结构
 - 它属于哪个 tracer bullet 垂直切片，完成后哪个可观察行为被证明

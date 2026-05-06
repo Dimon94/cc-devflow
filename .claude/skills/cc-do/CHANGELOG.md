@@ -1,5 +1,11 @@
 # CC-Do Skill Changelog
 
+## v1.6.2 - 2026-05-06
+
+- absorb the external TDD skill's execution details into native `cc-do`: spec-style test names, one logical behavior per Red, and public verification paths
+- strengthen Green evidence with minimality guards so implementation does not pre-build future unproven behavior
+- expand checkpoint recovery fields with interface-testability proof and concrete refactor candidates such as duplication, long methods, shallow modules, feature envy, primitive obsession, naming, and nested branches
+
 ## v1.6.1 - 2026-04-29
 
 - reject parent/child touched-path overlaps when selecting parallel execution surfaces

@@ -53,10 +53,11 @@
 2. 确认红灯是预期失败，不是测试写错、fixture 缺失或环境没接上。
 3. 确认红灯通过公共 seam 证明行为缺失，而不是测私有函数、内部调用次数或临时结构。
 4. 确认 mock 只发生在系统边界；内部协作者不 mock。
-5. 只写让当前测试转绿的最小实现。
-6. 绿后才允许重构。
-7. 重构后必须保持绿。
-8. 测试没先红过，或红灯不是公共 seam 上的行为失败，就不能宣称这次变更受 TDD 保护。
+5. 确认测试名像规格说明，一个 Red 只证明一个逻辑行为，结果从公共验证路径读回。
+6. 只写让当前测试转绿的最小实现，不提前实现未来测试尚未要求的分支、状态或 API。
+7. 绿后才允许重构。
+8. 重构后必须保持绿，并说明处理了重复、长方法、浅模块、feature envy、primitive obsession、命名、三层以上分支或其它具体坏味道。
+9. 测试没先红过，或红灯不是公共 seam 上的行为失败，就不能宣称这次变更受 TDD 保护。
 
 ## TDD Exception Rule
 
@@ -84,9 +85,9 @@
 3. `red_seam_verified`: 红灯通过公共接口、调用方流程、CLI/API/UI 或真实边界进入系统
 4. `red_behavior_verified`: 测试断言用户或调用方可观察行为，不断言内部实现细节
 5. `mock_boundary_verified`: mock 只在系统边界，内部协作者没有被 mock
-6. `green_passed`: 当前任务实现转绿
+6. `green_passed`: 当前任务实现转绿，且实现只覆盖当前红灯要求的最小行为
 7. `refactor_done` 或 `refactor_not_needed`
-8. `refactor_green`: 重构后相关测试仍绿
+8. `refactor_green`: 重构后相关测试仍绿，且没有在 Red 状态做结构清理
 9. `spec_review_pass`
 10. `code_review_pass`
 

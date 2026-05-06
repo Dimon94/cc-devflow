@@ -28,7 +28,7 @@
     ]
   },
   "planningMeta": {
-    "reqPlanSkillVersion": "3.7.4",
+    "reqPlanSkillVersion": "3.7.5",
     "designVersion": "design.v1",
     "approvedAt": "2026-04-15T12:00:00.000Z",
     "approvedBy": "user",
@@ -97,8 +97,13 @@
     "testQualityPolicy": {
       "publicInterfaceRequired": true,
       "behaviorAssertionRequired": true,
+      "specStyleTestNameRequired": true,
+      "oneLogicalBehaviorPerRed": true,
+      "publicVerificationPathRequired": true,
       "mockBoundary": "system-boundaries-only",
       "implementationDetailTests": "blocked",
+      "bulkRedTests": "blocked",
+      "boundaryAdapterShape": "specific-operations-preferred",
       "feedbackLoopPreference": [
         "automated-test",
         "http-curl",
@@ -152,6 +157,9 @@
       "testSeam": {
         "entry": "public interface / caller flow / CLI / API / UI / trace replay / harness",
         "behaviorAsserted": "The user or caller observable behavior that should exist",
+        "specStyleTestName": "caller can observe the required behavior",
+        "oneLogicalBehavior": true,
+        "publicVerificationPath": "Read back through the same public interface or user-visible path",
         "implementationDetailRisk": "low"
       },
       "feedbackLoop": {
@@ -165,9 +173,26 @@
       "testQuality": {
         "usesPublicInterface": true,
         "describesBehavior": true,
+        "specStyleName": true,
+        "oneLogicalBehavior": true,
+        "verifiesThroughPublicPath": true,
         "survivesInternalRefactor": true,
-        "mocksOnlySystemBoundaries": true
+        "mocksOnlySystemBoundaries": true,
+        "noBulkRed": true
       },
+      "greenMinimality": {
+        "guard": "Implement only the code needed to pass this Red behavior",
+        "noSpeculativeBranches": true
+      },
+      "refactorCandidates": [
+        "duplication",
+        "long method",
+        "shallow module",
+        "feature envy",
+        "primitive obsession",
+        "naming",
+        "more than three nested branches"
+      ],
       "dependsOn": [],
       "parallel": false,
       "touches": [

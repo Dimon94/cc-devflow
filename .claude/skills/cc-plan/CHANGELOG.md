@@ -1,5 +1,11 @@
 # CC-Plan Skill Changelog
 
+## v3.7.5 - 2026-05-06
+
+- absorb the external TDD skill's interface-testability details into native planning: injected dependencies, returned results, concrete boundary operations, and small-interface/deep-implementation checks
+- require Red task handoff to include spec-style test names, one logical behavior, public verification paths, and no bulk Red slices
+- update design, tiny-design, tasks, and manifest templates with Green minimality guards and concrete refactor candidate fields
+
 ## v3.7.4 - 2026-05-06
 
 - clarify that `REQ-*` and `FIX-*` are independent numbering namespaces, so the same numeric suffix can exist under both prefixes

@@ -183,6 +183,14 @@
 
 > 新增或改动公共接口时，优先小接口深模块。若有两个合理形态，写清为什么没有选择另一个。
 
+## Interface Testability Check
+
+| Surface | Dependency shape | Result shape | Boundary adapter shape | Test setup complexity | Decision |
+|---------|------------------|--------------|------------------------|-----------------------|----------|
+|  | injected / created internally | returned result / side effect | specific operation / generic fetcher / N/A | simple / conditional / brittle |  |
+
+> 好 seam 让测试自然经过公共入口。依赖尽量注入，结果尽量可断言，外部 boundary 尽量是具体 SDK-style 操作，避免测试里写条件分支 mock 内部实现。
+
 ## Implementation Decision Horizon
 
 | Phase | Decision `cc-do` would otherwise hit | Frozen answer | Evidence / owner |
@@ -225,11 +233,17 @@
 - Test framework source:
 - First failing tests:
 - Test seams / public interfaces:
+- Spec-style test names:
+- One behavior per Red:
+- Public verification paths:
 - Behavior assertions:
 - Mock boundaries:
+- Boundary adapter shape:
 - Feedback loop types:
 - Tracer bullet order:
 - Red/Green/Refactor task chain:
+- Green minimality guard:
+- Refactor candidate list:
 - TDD exceptions:
 - Regression tests required:
 - Unit:
@@ -241,9 +255,9 @@
 
 ## Test Coverage Map
 
-| Code path / user flow | Public seam | Behavior asserted | Existing coverage | Quality | Required test | Level | Mock boundary | Implementation-detail risk | Regression? |
-|-----------------------|-------------|-------------------|-------------------|---------|---------------|-------|---------------|----------------------------|-------------|
-|  |  |  |  | strong / happy-path-only / smoke-only / missing |  | unit / integration / e2e / eval | none / system boundary | low / medium / high | Yes / No |
+| Code path / user flow | Public seam | Public verification path | Behavior asserted | One logical behavior? | Existing coverage | Quality | Required test | Level | Mock boundary | Implementation-detail risk | Regression? |
+|-----------------------|-------------|--------------------------|-------------------|-----------------------|-------------------|---------|---------------|-------|---------------|----------------------------|-------------|
+|  |  |  |  | Yes / No |  | strong / happy-path-only / smoke-only / missing |  | unit / integration / e2e / eval | none / system boundary | low / medium / high | Yes / No |
 
 ## Error & Rescue Map
 
@@ -291,11 +305,14 @@
 - Domain language scan:
 - Implementation surface scan:
 - Interface depth scan:
+- Interface testability scan:
 - Decision horizon scan:
 - Error & rescue scan:
 - Test framework / regression scan:
 - Test seam / mock boundary scan:
+- Public verification path scan:
 - Tracer bullet scan:
+- Green minimality / refactor candidate scan:
 - PRD brief scan:
 - Source trust boundary scan:
 - External conflict scan:
