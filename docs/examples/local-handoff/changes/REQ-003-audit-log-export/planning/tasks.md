@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-003.v1`
 - Design version: `design.v1`
-- CC-Plan skill version: `3.7.2`
+- CC-Plan skill version: `3.7.3`
 - Source roadmap item: `RM-020`
 - Source roadmap version: `roadmap.v3`
 
@@ -15,6 +15,13 @@
 - Frozen decisions:
   - export only the visible audit summary rows
   - CSV is the only format in this requirement
+- PRD brief:
+  - Problem statement: admins manually copy audit summaries into weekly reports
+  - Solution summary: CSV download action for currently visible audit summary rows
+  - User stories covered: `US-001`
+  - Implementation decisions: export visible rows only, CSV only
+  - Testing decisions: test through admin panel action and visible row data
+  - Out of scope: JSON export, scheduled reporting, shared reporting backend
 - Read first:
   - `design.md`
   - `src/admin/AuditSummaryPanel.tsx`

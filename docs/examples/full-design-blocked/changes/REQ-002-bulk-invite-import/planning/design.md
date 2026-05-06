@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-002.v2`
 - Design version: `design.v2`
-- CC-Plan skill version: `3.7.2`
+- CC-Plan skill version: `3.7.3`
 - Requirement ID: `REQ-002`
 - Design mode: `full-design`
 - Why not `tiny-design`: the feature crosses import parsing, invite rules, billing limits, duplicate handling, and audit logging
@@ -41,6 +41,43 @@
 - Out of scope:
   - enterprise SCIM provisioning
   - background retry orchestration
+
+## PRD-Grade Requirement Brief
+
+- Problem statement: admins onboarding larger teams spend too much time sending individual invites, and they cannot predict how duplicates, invalid rows, and seat limits will resolve in bulk.
+- Solution summary: admins upload a CSV and receive deterministic row outcomes before the invite flow can be trusted for execution.
+- Actors / personas:
+  - workspace admin onboarding 20-200 collaborators
+  - support operator explaining invite outcomes
+- Primary user stories:
+
+| ID | Actor | Wants | Benefit | Acceptance / evidence |
+|----|-------|-------|---------|-----------------------|
+| US-001 | Workspace admin | upload a CSV of invite emails | invite many collaborators without one-by-one entry | mixed valid rows produce visible accepted outcomes |
+| US-002 | Workspace admin | see duplicate, invalid, and over-limit row states | understand what happened without support help | every skipped or rejected row has a reason |
+| US-003 | Support operator | trust the audit trail for each row outcome | explain invite history consistently | audit entries match visible row outcomes |
+
+- Edge / recovery stories:
+
+| ID | Actor | Failure / boundary | Desired outcome | Acceptance / evidence |
+|----|-------|--------------------|-----------------|-----------------------|
+| US-EDGE-001 | Workspace admin | CSV contains duplicates and invalid emails | safe rows can proceed while bad rows are explained | rule matrix covers duplicate and invalid cases |
+| US-EDGE-002 | Workspace admin | upload exceeds seat limits | over-limit rows are rejected consistently | billing-seat tests match UI summary |
+
+- Implementation decisions:
+  - Freeze one row-outcome matrix before execution resumes.
+  - Reuse the existing invite engine, billing seat checks, and audit log contract.
+  - Keep enterprise provisioning and background retry orchestration outside this requirement.
+- Testing decisions:
+  - Test row semantics through bulk-import rules and the admin upload flow.
+  - Verify audit mapping against visible row outcomes.
+  - Use existing invite and admin panel tests as prior art.
+- Out of scope:
+  - enterprise SCIM provisioning
+  - background job redesign
+  - rollback wizard for partial success
+- Further notes:
+  - This design remains blocked until duplicate and seat-limit semantics are approved.
 
 ## Success Criteria
 
@@ -131,6 +168,7 @@
 - Ambiguity scan: blocked; duplicate + seat-limit semantics still need sharper wording
 - Feasibility scan: pass
 - Source alignment: pass; roadmap still prioritizes trust over speed
+- PRD brief scan: pass for actors and stories; blocked on duplicate and seat-limit semantics
 - UI / interaction review summary: result states are acceptable if semantics are frozen first
 - DX review summary: execution still needs a single row-outcome matrix
 - Auto-decided items:

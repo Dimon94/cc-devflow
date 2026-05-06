@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-001.v1`
 - Design version: `design.v1`
-- CC-Plan skill version: `3.7.2`
+- CC-Plan skill version: `3.7.3`
 - Requirement ID: `REQ-001`
 - Design mode: `tiny-design`
 - Why this stays `tiny-design`: the patch is limited to an existing dialog and test file, with no API or data model changes
@@ -34,6 +34,23 @@
   - show a lightweight copied-state confirmation inside the current dialog
 - Upgrade trigger to `full-design`: if clipboard support requires new platform fallbacks, or if the patch spills into shared share-service contracts
 
+## PRD-Grade Brief
+
+- Problem statement: users can see the invite URL, but copying it still requires manual selection and creates avoidable share-flow friction.
+- Solution summary: users get a one-click copy action in the existing share dialog and see lightweight confirmation after the link is copied.
+- Actors / personas:
+  - workspace member sharing an invite
+- User stories:
+  - US-001: As a workspace member, I want to copy the invite link with one click, so that I can share it without manually selecting text.
+- Implementation decisions:
+  - Reuse the existing invite URL source and dialog props.
+  - Keep clipboard behavior inside the current share dialog surface.
+- Testing decisions:
+  - Test through the dialog behavior, not an internal helper.
+  - Existing share-dialog tests are the prior art.
+- Out of scope: new invite generation, role controls, analytics, or clipboard fallback redesign.
+- Further notes: if confirmation remains unclear, open a separate UX requirement.
+
 ## Validation
 
 - Primary check: targeted dialog test proves the button renders and copies the current invite URL
@@ -57,6 +74,7 @@
 - Scope scan: pass; no backend, no permission work
 - Ambiguity scan: pass; execution does not need to re-decide button placement or clipboard source
 - Feasibility scan: pass; existing dialog and tests already cover the target surface
+- PRD brief scan: pass; problem, story, implementation decision, testing decision, and out-of-scope are durable
 - Final recommendation: approved as `tiny-design`
 
 ## Approval

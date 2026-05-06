@@ -22,11 +22,30 @@
     ]
   },
   "planningMeta": {
-    "reqPlanSkillVersion": "3.7.2",
+    "reqPlanSkillVersion": "3.7.3",
     "designVersion": "design.v1",
     "approvedAt": "2026-04-15T10:05:00.000Z",
     "approvedBy": "user",
-    "basedOnOption": "Tiny design card"
+    "basedOnOption": "Tiny design card",
+    "requirementBrief": {
+      "problemStatement": "Users can see the invite URL, but copying it still requires manual selection.",
+      "solutionSummary": "Add a one-click copy action with lightweight confirmation inside the existing share dialog.",
+      "actors": ["workspace member sharing an invite"],
+      "userStories": [
+        {
+          "id": "US-001",
+          "actor": "workspace member",
+          "want": "copy the invite link with one click",
+          "benefit": "share it without manually selecting text",
+          "acceptance": ["Dialog behavior test proves the current invite URL is copied"]
+        }
+      ],
+      "edgeOrRecoveryStories": [],
+      "implementationDecisions": ["Reuse the existing invite URL source and dialog props"],
+      "testingDecisions": ["Test through the share dialog behavior, not an internal helper"],
+      "outOfScope": ["invite generation", "role controls", "analytics", "clipboard fallback redesign"],
+      "furtherNotes": ["Richer copied-state feedback is a separate UX requirement"]
+    }
   },
   "currentTaskId": null,
   "activePhase": null,

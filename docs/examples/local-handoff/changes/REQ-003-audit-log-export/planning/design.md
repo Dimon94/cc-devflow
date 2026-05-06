@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-003.v1`
 - Design version: `design.v1`
-- CC-Plan skill version: `3.7.2`
+- CC-Plan skill version: `3.7.3`
 - Requirement ID: `REQ-003`
 - Design mode: `tiny-design`
 - Why this stays `tiny-design`: the patch adds one export action inside the existing admin audit UI without changing data contracts
@@ -34,6 +34,23 @@
   - keep the action inside the current admin panel
 - Upgrade trigger to `full-design`: if export needs background generation or new reporting contracts
 
+## PRD-Grade Brief
+
+- Problem statement: admins can review audit summary rows in the UI, but taking them into weekly reports requires manual copying.
+- Solution summary: admins can download the currently visible audit summary rows as a CSV from the existing admin panel.
+- Actors / personas:
+  - workspace admin reviewing weekly activity
+- User stories:
+  - US-001: As a workspace admin, I want to download visible audit summary rows as CSV, so that I can include them in weekly reporting without manual copying.
+- Implementation decisions:
+  - Export only the rows already visible in the panel.
+  - Keep CSV as the only output format.
+- Testing decisions:
+  - Test through the admin panel action and visible row data.
+  - Existing audit summary panel tests are the prior art.
+- Out of scope: JSON export, scheduled reporting, and shared reporting backend work.
+- Further notes: richer machine-readable exports should become a separate requirement.
+
 ## Validation
 
 - Primary check: targeted panel test proves the export action is available and uses current summary rows
@@ -56,6 +73,7 @@
 - Scope scan: pass
 - Ambiguity scan: pass
 - Feasibility scan: pass
+- PRD brief scan: pass; the export story and scope boundaries are explicit
 - Final recommendation: approved as `tiny-design`
 
 ## Approval

@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-001.v1`
 - Design version: `design.v1`
-- CC-Plan skill version: `3.7.2`
+- CC-Plan skill version: `3.7.3`
 - Source roadmap item: `RM-001`
 - Source roadmap version: `roadmap.v1`
 
@@ -16,6 +16,13 @@
   - copy from the existing invite URL source
   - keep the patch inside the current dialog
   - leave richer feedback for a future requirement if needed
+- PRD brief:
+  - Problem statement: copying the visible invite URL still requires manual selection
+  - Solution summary: one-click copy action with lightweight confirmation
+  - User stories covered: `US-001`
+  - Implementation decisions: reuse existing invite URL source and dialog props
+  - Testing decisions: test through share dialog behavior
+  - Out of scope: invite generation, role controls, analytics, clipboard fallback redesign
 - Read first:
   - `design.md`
   - `src/features/share/ShareDialog.tsx`

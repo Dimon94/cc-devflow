@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-002.v2`
 - Design version: `design.v2`
-- CC-Plan skill version: `3.7.2`
+- CC-Plan skill version: `3.7.3`
 - Source roadmap item: `RM-010`
 - Source roadmap version: `roadmap.v2`
 
@@ -15,6 +15,13 @@
 - Frozen decisions:
   - bulk invite results must classify each row
   - audit behavior must match visible results
+- PRD brief:
+  - Problem statement: admins need predictable CSV invite outcomes for duplicates, invalid rows, and seat limits
+  - Solution summary: freeze deterministic row outcomes before executing the bulk invite flow
+  - User stories covered: `US-001`, `US-002`, `US-003`, `US-EDGE-001`, `US-EDGE-002`
+  - Implementation decisions: reuse invite engine, billing checks, and audit contract after the row-outcome matrix is approved
+  - Testing decisions: test bulk-import rules, admin upload flow, and audit mapping
+  - Out of scope: SCIM provisioning, background jobs, rollback wizard
 - Read first:
   - `design.md`
   - `src/admin/BulkInvitePanel.tsx`

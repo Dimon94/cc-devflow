@@ -5,6 +5,32 @@
   "updatedAt": "2026-04-16T14:20:00.000Z",
   "requirementId": "REQ-003",
   "requirementVersion": "REQ-003.v1",
+  "planningMeta": {
+    "reqPlanSkillVersion": "3.7.3",
+    "designVersion": "design.v1",
+    "approvedAt": "2026-04-16T13:10:00.000Z",
+    "approvedBy": "user",
+    "basedOnOption": "Tiny design card",
+    "requirementBrief": {
+      "problemStatement": "Admins can review audit summary rows in the UI, but weekly reporting requires manual copying.",
+      "solutionSummary": "Add a CSV download action for the currently visible audit summary rows.",
+      "actors": ["workspace admin reviewing weekly activity"],
+      "userStories": [
+        {
+          "id": "US-001",
+          "actor": "workspace admin",
+          "want": "download visible audit summary rows as CSV",
+          "benefit": "include them in weekly reporting without manual copying",
+          "acceptance": ["Panel behavior test proves the export action uses current summary rows"]
+        }
+      ],
+      "edgeOrRecoveryStories": [],
+      "implementationDecisions": ["Export only rows already visible in the panel", "Keep CSV as the only output format"],
+      "testingDecisions": ["Test through the admin panel action and visible row data"],
+      "outOfScope": ["JSON export", "scheduled reporting", "shared reporting backend"],
+      "furtherNotes": ["Richer machine-readable exports should become a separate requirement"]
+    }
+  },
   "currentTaskId": null,
   "activePhase": null,
   "tasks": [
