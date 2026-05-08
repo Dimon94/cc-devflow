@@ -93,7 +93,7 @@ find .codex/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort
 durable truth 分两层：
 
 - `devflow/specs/`：capability 真相，保留 `INDEX.md` 与 `capabilities/*.md`
-- 新 change 目录必须命名为 `REQ-<number>-<description>`（需求）或 `FIX-<number>-<description>`（修复）；`REQ` 和 `FIX` 分别维护自己的递增编号，旧小写目录只作为历史兼容读取。
+- 新 change 目录必须命名为 `REQ-<number>-<description>`（需求）或 `FIX-<number>-<description>`（修复）；`REQ` 和 `FIX` 分别维护自己的递增编号，跨前缀同号不是冲突；并行工作树造成重复编号时，完整 change key 的描述负责区分业务内容，旧小写目录只作为历史兼容读取。
 - `devflow/changes/<change>/`：变更真相，保留 `change-state.json`、`change-meta.json`、planning 文档、`task-manifest.json`、可选 `team-state.json`、任务级 `checkpoint.json`、`report-card.json` 和唯一的最终 handoff 文件。
 - worker prompt、journal、assignment、session log 统一放到 `devflow/workspaces/<change>/`，作为 ephemeral scratch。
 

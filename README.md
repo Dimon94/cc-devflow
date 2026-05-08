@@ -193,7 +193,7 @@ The currently distributed skill folders are:
 ## Durable vs Ephemeral
 
 - `devflow/specs/` stores durable capability truth: `INDEX.md` plus `capabilities/*.md`.
-- New change directories use `REQ-<number>-<description>` for requirements or `FIX-<number>-<description>` for bug fixes. `REQ` and `FIX` numbers advance independently, so the same number may exist in both prefixes.
+- New change directories use `REQ-<number>-<description>` for requirements or `FIX-<number>-<description>` for bug fixes. `REQ` and `FIX` numbers advance independently, so the same number may exist in both prefixes. Parallel worktrees may also create repeated numbers; the full change key must use a specific description to distinguish the work.
 - `devflow/changes/<change>/` stores durable change truth: `change-state.json`, `change-meta.json`, planning docs, `task-manifest.json`, `team-state.json`, task `checkpoint.json`, `report-card.json`, and one final handoff file.
 - `devflow/workspaces/<change>/` stores ephemeral runtime scratch such as worker assignment, journals, prompts, and session logs.
 - Regenerable files should not be persisted under `devflow/changes/`.

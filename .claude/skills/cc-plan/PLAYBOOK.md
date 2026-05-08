@@ -19,7 +19,7 @@
 6. 机械决策自动落盘；taste decision 和 user challenge 必须显式交给用户拍板。
 7. 同 blast radius 内的完整边界优先做完，跨系统或无证据扩张才 defer。
 8. 具体执行计划默认测试先行；没有 Red/Green/Refactor 链、spec-style test name、公共测试 seam、行为断言、mock 边界或 TDD exception，不准交给 `cc-do`。
-9. 新 change 目录必须使用 `REQ-<number>-<description>` 或 `FIX-<number>-<description>`；`REQ` 和 `FIX` 各自递增自己的编号，跨前缀同号不是冲突；旧小写目录只读兼容，不再作为新输出。
+9. 新 change 目录必须使用 `REQ-<number>-<description>` 或 `FIX-<number>-<description>`；`REQ` 和 `FIX` 各自递增自己的编号，跨前缀同号不是冲突；并行工作树造成同前缀同号时，完整 change key 靠描述区分；旧小写目录只读兼容，不再作为新输出。
 10. 原始需求跨多个独立子系统时，先拆回 roadmap / 多个 REQ/FIX；不要把一个大杂烩压成单个计划。
 11. `tiny-design` 仍然必须被批准，它只是短设计，不是跳过设计。
 12. 非 trivial 方案必须至少比较 `minimal viable` 和 `ideal architecture` 两种角色，小方案没有天然优先权。
@@ -54,7 +54,7 @@
 1. 一份 `planning/design.md` 讲清 clarification、方案、review 和 final gate。
 2. 一份 `planning/tasks.md` 讲清执行任务和 handoff。
 3. `planning/task-manifest.json` 只做机器真相源，不再重复人类叙事。
-4. 先固定 canonical change key：需求用 `REQ-*`，修复用 `FIX-*`，编号只在同前缀内取最大值后递增。
+4. 先固定 canonical change key：需求用 `REQ-*`，修复用 `FIX-*`，编号只在同前缀内取最大值后递增；并行 PR 已经产生同号时不强制重排，完整 key 的描述承担身份区分。
 5. 推荐方案获批前，不得生成 `planning/tasks.md`。
 6. `planning/tasks.md` 之前，`planning/design.md` 内的 review gate 必须闭合。
 7. 每个任务都要写清：

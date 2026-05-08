@@ -1,5 +1,11 @@
 # CC-Plan Skill Changelog
 
+## v3.7.7 - 2026-05-08
+
+- treat the full `REQ/FIX-<number>-<description>` change key as identity so duplicate numbers from parallel worktrees are valid
+- stop requiring local planning to resequence or rename changes solely because another worktree used the same numeric suffix
+- make runtime path resolution fail clearly when a bare `REQ/FIX-<number>` is ambiguous and no explicit `changeKey` was supplied
+
 ## v3.7.6 - 2026-05-06
 
 - add a fixed Decision Question Protocol so user-facing planning gates use numbered questions, recommendations, options, impact, and STOP instead of free-form prose

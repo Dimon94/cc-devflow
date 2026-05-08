@@ -193,7 +193,7 @@ npx cc-devflow config doctor --cwd /path/to/your/project
 ## Durable 与 Ephemeral
 
 - `devflow/specs/` 保存 durable capability truth：`INDEX.md` 和 `capabilities/*.md`。
-- 新 change 目录使用 `REQ-<number>-<description>` 表示需求，使用 `FIX-<number>-<description>` 表示 Bug 修复。`REQ` 和 `FIX` 各自递增自己的编号，跨前缀同号允许共存。
+- 新 change 目录使用 `REQ-<number>-<description>` 表示需求，使用 `FIX-<number>-<description>` 表示 Bug 修复。`REQ` 和 `FIX` 各自递增自己的编号，跨前缀同号允许共存。并行工作树也可能产生重复编号，必须用完整 change key 的描述区分业务内容。
 - `devflow/changes/<change>/` 保存 durable change truth：`change-state.json`、`change-meta.json`、planning 文档、`task-manifest.json`、`team-state.json`、任务级 `checkpoint.json`、`report-card.json` 和唯一最终 handoff 文件。
 - `devflow/workspaces/<change>/` 保存 ephemeral runtime scratch，例如 worker assignment、journal、prompt 和 session log。
 - 能从 durable truth 再生成的文件，不应该持久化到 `devflow/changes/`。
