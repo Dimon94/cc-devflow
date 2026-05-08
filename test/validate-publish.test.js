@@ -76,11 +76,19 @@ describe('validate-publish', () => {
       path.join(ROOT, '.claude/skills/cc-plan/assets/TASK_MANIFEST_TEMPLATE.json'),
       'utf8'
     );
+    const planningContract = fs.readFileSync(
+      path.join(ROOT, '.claude/skills/cc-plan/references/planning-contract.md'),
+      'utf8'
+    );
 
     expect(skill).toContain('## Decision Question Protocol');
     expect(skill).toContain('D<N> - <decision title>');
+    expect(skill).toContain('A) <label> (recommended)');
+    expect(skill).toContain('B) <label>');
+    expect(skill).toContain('禁止输出 `1)` / `2)` / `3)`');
     expect(skill).toContain('STOP: wait for the user answer before continuing.');
     expect(fullDesign).toContain('## Decision Questions');
     expect(manifest).toContain('"decisionQuestions"');
+    expect(planningContract).toContain('options：只能使用 `A` / `B` / `C`');
   });
 });

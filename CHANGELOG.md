@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Updated `cc-plan` Decision Question options to require `A/B/C` lettered choices while keeping `D1` / `D2` as question IDs.
+
 ## [4.5.6] - 2026-05-08
 
 ### Changed

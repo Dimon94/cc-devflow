@@ -1,5 +1,10 @@
 # CC-Plan Skill Changelog
 
+## v3.7.8 - 2026-05-08
+
+- require decision-question options to use `A` / `B` / `C` letter labels instead of numeric `1` / `2` / `3` labels
+- clarify that `D1` / `D2` are question identifiers, while answer options remain lettered
+
 ## v3.7.7 - 2026-05-08
 
 - treat the full `REQ/FIX-<number>-<description>` change key as identity so duplicate numbers from parallel worktrees are valid

@@ -32,7 +32,7 @@
 19. 退出前必须跑 Roadmap Sync Gate：`devflow/roadmap.json` 是真相源，`devflow/ROADMAP.md` 和 `devflow/BACKLOG.md` 只是投影；source RM 存在就回写，找不到才记录 no-op。
 20. PRD 的结构要吸收进 `planning/design.md`：用户视角的问题和方案、完整 user stories、实现决策、测试决策、out-of-scope 和 further notes；不要默认创建独立 `PRD.md`。
 21. 接口可测性必须在计划阶段解决：依赖尽量注入，结果尽量可返回和断言，系统边界 adapter 拆成具体操作，避免让测试用条件分支 mock 一个万能 fetcher。
-22. 需要用户判断时必须走固定 `D<N>` Decision Question：证据、推荐、2-3 个互斥选项、影响和 STOP 都要出现，答案写回 design / manifest。
+22. 需要用户判断时必须走固定 `D<N>` Decision Question：证据、推荐、2-3 个互斥的 `A/B/C` 字母选项、影响和 STOP 都要出现，答案写回 design / manifest；选项禁止用 `1/2/3`。
 
 ## Required Outputs
 

@@ -6,7 +6,7 @@
   "requirementId": "REQ-003",
   "requirementVersion": "REQ-003.v1",
   "planningMeta": {
-    "reqPlanSkillVersion": "3.7.7",
+    "reqPlanSkillVersion": "3.7.8",
     "designVersion": "design.v1",
     "approvedAt": "2026-04-16T13:10:00.000Z",
     "approvedBy": "user",

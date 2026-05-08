@@ -28,7 +28,7 @@
 24. review loop 必须有 attempt 上限和 stall reroute；不能靠无限 review 掩盖需求仍不清楚。
 25. Roadmap Sync Gate 必须在退出前闭合：source RM 存在就回写 `devflow/roadmap.json` 并重新生成 `devflow/ROADMAP.md` / `devflow/BACKLOG.md`；不存在就记录 no-op reason。
 26. PRD-grade requirement brief 必须并入 `planning/design.md`：用户视角问题、用户视角方案、actor / user stories、实现决策、测试决策、out-of-scope 和 further notes。默认不得额外产出 `PRD.md`。
-27. 需要用户判断时必须使用固定 Decision Question：`D<N>`、证据、推荐、2-3 个互斥选项、影响和 STOP 都必须出现；禁止用自由问句代替审批 gate。
+27. 需要用户判断时必须使用固定 Decision Question：`D<N>`、证据、推荐、2-3 个互斥的 `A/B/C` 字母选项、影响和 STOP 都必须出现；禁止用自由问句或 `1/2/3` 数字选项代替审批 gate。
 28. 所有用户决策必须写入 `planning/design.md` 的 `Decision Questions`，并同步到 `task-manifest.json.planningMeta.decisionQuestions`，不能只留在聊天里。
 
 ## Design Modes
@@ -83,7 +83,7 @@
 - gate：`planning-mode` / `ambiguity-blocker` / `approach-approval` / `taste-or-user-challenge` / `final-design-approval`
 - knownEvidence
 - recommendation
-- options
+- options：只能使用 `A` / `B` / `C` 作为 option id
 - userChoice
 - impact
 - status：`asked` / `answered` / `auto-decided`

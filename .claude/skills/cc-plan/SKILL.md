@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.7.7
+version: 3.7.8
 description: Use when a requirement, roadmap item, or bug needs scope clarification, design decisions, and executable task breakdown before coding starts.
 triggers:
   - 帮我规划这个需求
@@ -44,7 +44,7 @@ entry_gate:
   - "For non-trivial designs, compare named option roles: minimal viable, ideal architecture, and optional hybrid. Do not default to smallest unless it best serves the goal."
   - Plan executable work as Red/Green/Refactor by default; identify the first failing test before any production implementation task, or write an explicit TDD exception with replacement evidence.
   - For behavior changes, freeze the spec-style test name, one logical behavior, public verification path, and interface-testability decision before task split.
-  - When user judgment is required, ask with the fixed `cc-plan` Decision Question Protocol (`D<N>`, evidence, recommendation, 2-3 options, impact, STOP) instead of free-form prose.
+  - When user judgment is required, ask with the fixed `cc-plan` Decision Question Protocol (`D<N>`, evidence, recommendation, lettered A/B/C options, impact, STOP) instead of free-form prose.
   - Assign a canonical change key before writing artifacts; feature work must use `REQ-<number>-<description>`, and bug-fix work must use `FIX-<number>-<description>`. REQ and FIX use independent local number sequences, and the full change key, including description, is the identity when parallel worktrees produce repeated numbers.
   - Do not generate planning/tasks.md, planning/task-manifest.json, or change-meta.json until the recommended design is approved.
   - Before exit, locate the source RM in `devflow/roadmap.json`, `devflow/ROADMAP.md`, optional `devflow/BACKLOG.md`, or legacy `devflow/roadmap-tracking.json`; plan the progress sync instead of relying on chat memory.
@@ -53,7 +53,7 @@ exit_criteria:
   - planning/tasks.md, planning/task-manifest.json, and change-meta.json are explicit enough that cc-do can continue without chat memory.
   - The task breakdown preserves test-first execution; failing-test tasks precede implementation tasks, refactor checkpoints are visible, and any TDD exception is justified.
   - "Testability decisions make the public seam natural: small interface, deep implementation, injected boundary dependencies, returned results where practical, and boundary mocks only where the system genuinely leaves the repo."
-  - Required user decisions were asked through numbered decision questions and recorded in `planning/design.md` / `task-manifest.json` instead of left in chat.
+  - Required user decisions were asked through numbered decision question IDs with lettered A/B/C options and recorded in `planning/design.md` / `task-manifest.json` instead of left in chat.
   - The source roadmap item has been synchronized to the frozen planning state, or `planning/design.md` and `change-meta.json` record why no roadmap update is valid.
   - 'Only one next step remains: enter cc-do.'
 reroutes:
@@ -248,7 +248,7 @@ PRD 的好处要进入 `planning/design.md`，不要变成第 5 个文件。`cc-
 
 `cc-plan` 不是自由聊天。只在用户答案会改变设计、任务或交付边界时提问；能从 repo evidence、roadmap handoff、spec、测试或 git history 确认的，不问用户。
 
-必须使用固定 `D<N>` 决策问题，而不是临场自由发挥。第一个问题是 `D1`，之后递增。每次只问一个决策点，并在问题后 STOP，等待用户回答；没有回答前不得继续写 `planning/tasks.md`、`task-manifest.json` 或 `change-meta.json`。
+必须使用固定 `D<N>` 决策问题，而不是临场自由发挥。第一个问题是 `D1`，之后递增。问题编号可以是数字，但用户选项只能是字母 `A` / `B` / `C`，禁止用 `1` / `2` / `3` 表示选项。每次只问一个决策点，并在问题后 STOP，等待用户回答；没有回答前不得继续写 `planning/tasks.md`、`task-manifest.json` 或 `change-meta.json`。
 
 触发点只允许这些 gate：
 
@@ -283,7 +283,7 @@ STOP: wait for the user answer before continuing.
 
 规则：
 
-1. 选项必须是 2-3 个互斥选择；不要输出开放式“大段想法”让用户自己整理。
+1. 选项必须是 2-3 个互斥选择，并且必须以 `A)` / `B)` / `C)` 开头；禁止输出 `1)` / `2)` / `3)` 或纯数字选项。
 2. 必须有推荐项，且推荐项标注 `(recommended)`；机械选择可以 auto-decide，但必须写进 decision log。
 3. 如果选项不是覆盖度差异，而是方向差异，`Completeness` 写 `different-kind` 并说明为什么不能打分。
 4. 每个选项都要说清 `Good` 与 `Cost/Risk`。没有代价的确认不是选择，应改为执行说明或 final approval。
