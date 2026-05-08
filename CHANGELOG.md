@@ -9,9 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.6] - 2026-05-08
+
 ### Changed
 
 - Updated `cc-plan` with a fixed Decision Question Protocol so approval gates use numbered questions, recommendations, option tradeoffs, impact, and STOP instead of ad hoc prose.
+- Updated `cc-plan` to treat the full `REQ/FIX-<number>-<description>` change key as identity, so repeated numbers from parallel worktrees stay distinct.
+
+### Fixed
+
+- Fixed typed runtime queries and `cc-devflow query` so duplicate local change numbers can be resolved with an explicit `--change-key`.
+- Fixed ambiguous query path resolution so duplicate change ids return a structured JSON failure instead of escaping the query registry.
 
 ## [4.5.5] - 2026-05-06
 
