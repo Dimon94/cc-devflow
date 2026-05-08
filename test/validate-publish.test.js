@@ -119,4 +119,40 @@ describe('validate-publish', () => {
       'manifest.planningMeta.decisionQuestions[0].userChoice must match a lettered option id'
     ]));
   });
+
+  test('cc-plan carries the opt-in external best-practice validation contract', () => {
+    const skill = fs.readFileSync(
+      path.join(ROOT, '.claude/skills/cc-plan/SKILL.md'),
+      'utf8'
+    );
+    const playbook = fs.readFileSync(
+      path.join(ROOT, '.claude/skills/cc-plan/PLAYBOOK.md'),
+      'utf8'
+    );
+    const fullDesign = fs.readFileSync(
+      path.join(ROOT, '.claude/skills/cc-plan/assets/DESIGN_TEMPLATE.md'),
+      'utf8'
+    );
+    const tinyDesign = fs.readFileSync(
+      path.join(ROOT, '.claude/skills/cc-plan/assets/TINY_DESIGN_TEMPLATE.md'),
+      'utf8'
+    );
+    const tasks = fs.readFileSync(
+      path.join(ROOT, '.claude/skills/cc-plan/assets/TASKS_TEMPLATE.md'),
+      'utf8'
+    );
+    const manifest = fs.readFileSync(
+      path.join(ROOT, '.claude/skills/cc-plan/assets/TASK_MANIFEST_TEMPLATE.json'),
+      'utf8'
+    );
+
+    expect(skill).toContain('## External Best-Practice Validation');
+    expect(skill).toContain('external-best-practice');
+    expect(skill).toContain('generalized');
+    expect(playbook).toContain('external best-practice validation');
+    expect(fullDesign).toContain('## External Best-Practice Validation');
+    expect(tinyDesign).toContain('## External Best-Practice Validation');
+    expect(tasks).toContain('External best-practice validation');
+    expect(manifest).toContain('"externalBestPractice"');
+  });
 });
