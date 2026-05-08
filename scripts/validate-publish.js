@@ -221,7 +221,101 @@ function collectDecisionQuestionOptionErrors(manifest, label, errors) {
   });
 }
 
-function validateCcPlanDecisionQuestionContract(errors) {
+const EXTERNAL_BEST_PRACTICE_STATUSES = ['not-needed', 'ask-user', 'approved', 'declined', 'search-unavailable'];
+const EXTERNAL_BEST_PRACTICE_VERDICTS = ['confirmed', 'adjusted', 'contradicted', 'skipped'];
+const EXTERNAL_BEST_PRACTICE_TRUST_LEVELS = [
+  'internal-contract',
+  'repo-evidence',
+  'external-evidence',
+  'untrusted-text'
+];
+
+function collectExternalSourceErrors(sources, label, errors) {
+  if (!Array.isArray(sources)) {
+    errors.push(`${label}.sourcesChecked must be an array`);
+    return;
+  }
+
+  sources.forEach((source, index) => {
+    const sourceLabel = `${label}.sourcesChecked[${index}]`;
+    if (!source || typeof source !== 'object' || Array.isArray(source)) {
+      errors.push(`${sourceLabel} must be an object`);
+      return;
+    }
+
+    ensureNonEmptyString(source.source, `${sourceLabel}.source`, errors);
+    if (!EXTERNAL_BEST_PRACTICE_TRUST_LEVELS.includes(source.trustLevel)) {
+      errors.push(`${sourceLabel}.trustLevel must be one of ${EXTERNAL_BEST_PRACTICE_TRUST_LEVELS.join(', ')}`);
+    }
+    ensureNonEmptyString(source.keyPoint, `${sourceLabel}.keyPoint`, errors);
+    if (!EXTERNAL_BEST_PRACTICE_VERDICTS.includes(source.repoFitVerdict)) {
+      errors.push(`${sourceLabel}.repoFitVerdict must be one of ${EXTERNAL_BEST_PRACTICE_VERDICTS.join(', ')}`);
+    }
+    ensureNonEmptyString(source.designImpact, `${sourceLabel}.designImpact`, errors);
+  });
+}
+
+function collectExternalBestPracticeErrors(manifest, label, errors) {
+  const value = manifest?.planningMeta?.externalBestPractice;
+  const fieldLabel = `${label}.planningMeta.externalBestPractice`;
+
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    errors.push(`${fieldLabel} must be an object`);
+    return;
+  }
+
+  if (typeof value.needed !== 'boolean') {
+    errors.push(`${fieldLabel}.needed must be a boolean`);
+  }
+
+  if (!EXTERNAL_BEST_PRACTICE_STATUSES.includes(value.decisionStatus)) {
+    errors.push(`${fieldLabel}.decisionStatus must be one of ${EXTERNAL_BEST_PRACTICE_STATUSES.join(', ')}`);
+  }
+
+  if (typeof value.privacyGuard !== 'string' || !value.privacyGuard.includes('generalized terms only')) {
+    errors.push(`${fieldLabel}.privacyGuard must require generalized terms only`);
+  }
+
+  if (!Array.isArray(value.generalizedSearchTerms)) {
+    errors.push(`${fieldLabel}.generalizedSearchTerms must be an array`);
+  }
+
+  collectExternalSourceErrors(value.sourcesChecked, fieldLabel, errors);
+
+  if (!EXTERNAL_BEST_PRACTICE_VERDICTS.includes(value.repoFitVerdict)) {
+    errors.push(`${fieldLabel}.repoFitVerdict must be one of ${EXTERNAL_BEST_PRACTICE_VERDICTS.join(', ')}`);
+  }
+
+  if (!Array.isArray(value.designImpacts)) {
+    errors.push(`${fieldLabel}.designImpacts must be an array`);
+  }
+
+  if (value.needed === false && value.decisionStatus !== 'not-needed') {
+    errors.push(`${fieldLabel}.decisionStatus must be not-needed when needed is false`);
+  }
+
+  if (value.needed === true && value.decisionStatus === 'not-needed') {
+    errors.push(`${fieldLabel}.decisionStatus must not be not-needed when needed is true`);
+  }
+
+  if (['not-needed', 'declined', 'search-unavailable'].includes(value.decisionStatus)) {
+    ensureNonEmptyString(value.skippedReason, `${fieldLabel}.skippedReason`, errors);
+  }
+
+  if (value.decisionStatus === 'approved') {
+    ensureStringArray(value.generalizedSearchTerms, `${fieldLabel}.generalizedSearchTerms`, errors);
+    if (!Array.isArray(value.sourcesChecked) || value.sourcesChecked.length === 0) {
+      errors.push(`${fieldLabel}.sourcesChecked must be non-empty when decisionStatus is approved`);
+    }
+    ensureNonEmptyString(value.conventionalWisdom, `${fieldLabel}.conventionalWisdom`, errors);
+    ensureNonEmptyString(value.currentDiscourse, `${fieldLabel}.currentDiscourse`, errors);
+    if (value.repoFitVerdict === 'skipped') {
+      errors.push(`${fieldLabel}.repoFitVerdict must not be skipped when decisionStatus is approved`);
+    }
+  }
+}
+
+function validateCcPlanPlanningContracts(errors) {
   const skill = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-plan/SKILL.md'), 'utf8');
   const fullDesign = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-plan/assets/DESIGN_TEMPLATE.md'), 'utf8');
   const manifestPath = path.join(ROOT, '.claude/skills/cc-plan/assets/TASK_MANIFEST_TEMPLATE.json');
@@ -252,6 +346,11 @@ function validateCcPlanDecisionQuestionContract(errors) {
     '.claude/skills/cc-plan/assets/TASK_MANIFEST_TEMPLATE.json',
     errors
   );
+  collectExternalBestPracticeErrors(
+    JSON.parse(fs.readFileSync(manifestPath, 'utf8')),
+    '.claude/skills/cc-plan/assets/TASK_MANIFEST_TEMPLATE.json',
+    errors
+  );
 
   const examplesRoot = path.join(ROOT, 'docs/examples');
   for (const exampleName of fs.readdirSync(examplesRoot)) {
@@ -267,6 +366,11 @@ function validateCcPlanDecisionQuestionContract(errors) {
       }
 
       collectDecisionQuestionOptionErrors(
+        JSON.parse(fs.readFileSync(exampleManifestPath, 'utf8')),
+        path.relative(ROOT, exampleManifestPath),
+        errors
+      );
+      collectExternalBestPracticeErrors(
         JSON.parse(fs.readFileSync(exampleManifestPath, 'utf8')),
         path.relative(ROOT, exampleManifestPath),
         errors
@@ -622,7 +726,7 @@ function main() {
   validatePackageJson(errors);
   validateTemplate(errors);
   validateInventoryParity(errors);
-  validateCcPlanDecisionQuestionContract(errors);
+  validateCcPlanPlanningContracts(errors);
   validatePublicSkillContracts(errors);
   validateExampleBindings(errors);
   validatePackTarball(errors);
@@ -644,5 +748,6 @@ if (require.main === module) {
 
 module.exports = {
   collectDecisionQuestionOptionErrors,
+  collectExternalBestPracticeErrors,
   ensureStringArray
 };

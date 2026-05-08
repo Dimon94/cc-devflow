@@ -1,12 +1,15 @@
 # CC-Plan Skill Changelog
 
+## v3.7.9 - 2026-05-08
+
+- add an opt-in External Best-Practice Validation gate before approach approval
+- require generalized search terms, user approval, source trust classification, repo-fit verdicts, and explicit skip reasons
+- update design, tiny-design, tasks, and manifest templates so the validation result is durable handoff instead of chat-only context
+
 ## v3.7.8 - 2026-05-08
 
 - require decision-question options to use `A` / `B` / `C` letter labels instead of numeric `1` / `2` / `3` labels
 - clarify that `D1` / `D2` are question identifiers, while answer options remain lettered
-- add an opt-in External Best-Practice Validation gate before approach approval
-- require generalized search terms, user approval, source trust classification, repo-fit verdicts, and explicit skip reasons
-- update design, tiny-design, tasks, and manifest templates so the validation result is durable handoff instead of chat-only context
 
 ## v3.7.7 - 2026-05-08
 

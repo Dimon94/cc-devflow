@@ -4,6 +4,7 @@ const os = require('os');
 const { spawnSync } = require('child_process');
 const {
   collectDecisionQuestionOptionErrors,
+  collectExternalBestPracticeErrors,
   ensureStringArray
 } = require('../scripts/validate-publish');
 
@@ -154,5 +155,56 @@ describe('validate-publish', () => {
     expect(tinyDesign).toContain('## External Best-Practice Validation');
     expect(tasks).toContain('External best-practice validation');
     expect(manifest).toContain('"externalBestPractice"');
+  });
+
+  test('rejects invalid external best-practice handoff metadata', () => {
+    const errors = [];
+
+    collectExternalBestPracticeErrors({
+      planningMeta: {
+        externalBestPractice: {
+          needed: true,
+          decisionStatus: 'not-needed',
+          privacyGuard: 'send project details',
+          generalizedSearchTerms: 'best practices',
+          sourcesChecked: 'none',
+          repoFitVerdict: 'maybe',
+          designImpacts: 'none',
+          skippedReason: ''
+        }
+      }
+    }, 'manifest', errors);
+    collectExternalBestPracticeErrors({
+      planningMeta: {
+        externalBestPractice: {
+          needed: true,
+          decisionStatus: 'approved',
+          privacyGuard: 'generalized terms only',
+          generalizedSearchTerms: [],
+          sourcesChecked: [{}],
+          conventionalWisdom: '',
+          currentDiscourse: '',
+          repoFitVerdict: 'skipped',
+          designImpacts: []
+        }
+      }
+    }, 'approvedManifest', errors);
+
+    expect(errors).toEqual(expect.arrayContaining([
+      'manifest.planningMeta.externalBestPractice.privacyGuard must require generalized terms only',
+      'manifest.planningMeta.externalBestPractice.generalizedSearchTerms must be an array',
+      'manifest.planningMeta.externalBestPractice.sourcesChecked must be an array',
+      'manifest.planningMeta.externalBestPractice.repoFitVerdict must be one of confirmed, adjusted, contradicted, skipped',
+      'manifest.planningMeta.externalBestPractice.designImpacts must be an array',
+      'manifest.planningMeta.externalBestPractice.decisionStatus must not be not-needed when needed is true',
+      'manifest.planningMeta.externalBestPractice.skippedReason must be a non-empty string',
+      'approvedManifest.planningMeta.externalBestPractice.sourcesChecked[0].source must be a non-empty string',
+      'approvedManifest.planningMeta.externalBestPractice.sourcesChecked[0].trustLevel must be one of internal-contract, repo-evidence, external-evidence, untrusted-text',
+      'approvedManifest.planningMeta.externalBestPractice.sourcesChecked[0].keyPoint must be a non-empty string',
+      'approvedManifest.planningMeta.externalBestPractice.generalizedSearchTerms must be a non-empty array',
+      'approvedManifest.planningMeta.externalBestPractice.conventionalWisdom must be a non-empty string',
+      'approvedManifest.planningMeta.externalBestPractice.currentDiscourse must be a non-empty string',
+      'approvedManifest.planningMeta.externalBestPractice.repoFitVerdict must not be skipped when decisionStatus is approved'
+    ]));
   });
 });
