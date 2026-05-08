@@ -67,6 +67,19 @@
       "stallReason": "",
       "rerouteIfStalled": "ask-user"
     },
+    "externalBestPractice": {
+      "needed": false,
+      "decisionStatus": "not-needed",
+      "decisionQuestionId": "",
+      "privacyGuard": "generalized terms only; no project names, private requirements, customer names, secrets, logs, or proprietary concepts",
+      "generalizedSearchTerms": [],
+      "sourcesChecked": [],
+      "conventionalWisdom": "",
+      "currentDiscourse": "",
+      "repoFitVerdict": "skipped",
+      "designImpacts": [],
+      "skippedReason": "repo evidence is sufficient for this plan"
+    },
     "decisionQuestions": [
       {
         "questionId": "D1",

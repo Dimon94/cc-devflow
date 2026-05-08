@@ -48,6 +48,20 @@
 - Competing:
 - Unresolved blockers:
 
+## External Best-Practice Validation
+
+- Needed: Yes / No
+- Decision status: not-needed / ask-user / approved / declined / search-unavailable
+- Decision question:
+- Privacy guard: generalized terms only; no project names, private requirements, customer names, secrets, logs, or proprietary concepts
+- Generalized search terms:
+- Sources checked:
+- Conventional wisdom:
+- Current discourse:
+- Repo-fit verdict: confirmed / adjusted / contradicted / skipped
+- Changes to frozen design:
+- Skipped reason:
+
 ## Capability Handoff
 
 - Canonical capability spec:
@@ -177,6 +191,7 @@
 - Green minimality / refactor candidate scan:
 - PRD brief scan:
 - Source trust boundary scan:
+- External best-practice scan:
 - External conflict scan:
 - Ambiguity gate:
 - Review loop status:

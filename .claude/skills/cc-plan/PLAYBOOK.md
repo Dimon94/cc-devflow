@@ -33,6 +33,7 @@
 20. PRD 的结构要吸收进 `planning/design.md`：用户视角的问题和方案、完整 user stories、实现决策、测试决策、out-of-scope 和 further notes；不要默认创建独立 `PRD.md`。
 21. 接口可测性必须在计划阶段解决：依赖尽量注入，结果尽量可返回和断言，系统边界 adapter 拆成具体操作，避免让测试用条件分支 mock 一个万能 fetcher。
 22. 需要用户判断时必须走固定 `D<N>` Decision Question：证据、推荐、2-3 个互斥的 `A/B/C` 字母选项、影响和 STOP 都要出现，答案写回 design / manifest；选项禁止用 `1/2/3`。
+23. 内部证据扫完后，判断是否需要外部最佳实践验证；需要时先问用户是否允许用泛化关键词搜索，结果只作为 `external-evidence`，不能覆盖 repo truth。
 
 ## Required Outputs
 
@@ -71,22 +72,23 @@
 11. `planning/design.md` 必须包含 `Existing Leverage`、`NOT in scope`、`Failure Modes`、`Test Diagram`，除非明确说明为什么不适用。
 12. `planning/design.md` 或 `planning/tasks.md` 必须包含 implementation surface map：文件、职责、归属理由、耦合风险。
 13. `full-design` 必须包含 implementation decision horizon 和 error/rescue map；不适用时写清 N/A 理由。
-14. `planning/design.md` 必须包含 assumptions preview、ambiguity gate、source trust boundary、external conflict buckets 和 bounded review loop。
+14. `planning/design.md` 必须包含 assumptions preview、ambiguity gate、source trust boundary、external best-practice validation、external conflict buckets 和 bounded review loop。
 15. `planning/design.md` 必须包含 PRD-grade brief：Problem Statement、Solution、actors / user stories、Implementation Decisions、Testing Decisions、Out of Scope 和 Further Notes。
 16. `planning/design.md` 必须包含 Decision Questions：哪些问题问过、推荐项、用户选择、影响、是否已写入任务。
-17. 新 artifact、CLI、包、容器、文档入口必须在计划阶段写清分发和 discoverability，不准到 `cc-act` 才发现没人能用。
-18. 行为变更任务必须拆成 `[TEST] -> [IMPL] -> [REFACTOR]` 或写明 TDD exception；不能用“实现并测试”混成一个任务。
-19. 行为变更任务必须按一个 observable behavior 一条 tracer bullet 链组织，不能先批量写红灯再批量实现。
-20. 回归测试不能 defer。修改既有行为且缺少覆盖时，必须先计划 regression test。
-21. Red 任务必须验证公共接口上的行为，不验证私有函数、内部调用次数或临时数据结构。
-22. Mock 只能放在系统边界；如果测试必须 mock 自己控制的模块，说明 seam 或接口设计还没压平。
-23. 找不到正确 seam 时，先计划 exploratory spike 或设计修正，不能用假红灯冒充 TDD。
-24. Red 任务必须说明 public verification path：从同一公共接口或用户可见路径读回结果。直接查 DB / 内部状态只在该边界本身就是被测对象时允许。
-25. Green 任务必须写 minimality guard：只做当前红灯要求的最少实现，不预铺未来测试尚未要求的分支、状态或 API。
-26. Refactor 任务必须列候选坏味道：重复、长方法、浅模块、feature envy、primitive obsession、命名、三层以上分支，以及新代码暴露出的旧代码问题。
-27. UI scope 要写 design completeness score 和 loading / empty / error / success / partial 状态。
-28. developer/operator-facing scope 要写 target persona、time to first value、magic moment 和 install / run / debug / upgrade 风险。
-29. Review gate 只拦会导致实现错误、执行卡住、范围越界、验证缺失的问题；文字偏好和 nice-to-have 只能作为 advisory。
+17. `planning/design.md` 必须包含 External Best-Practice Validation：是否需要、是否获用户允许、泛化搜索词、来源、conventional wisdom、repo-fit verdict、设计影响和跳过原因。
+18. 新 artifact、CLI、包、容器、文档入口必须在计划阶段写清分发和 discoverability，不准到 `cc-act` 才发现没人能用。
+19. 行为变更任务必须拆成 `[TEST] -> [IMPL] -> [REFACTOR]` 或写明 TDD exception；不能用“实现并测试”混成一个任务。
+20. 行为变更任务必须按一个 observable behavior 一条 tracer bullet 链组织，不能先批量写红灯再批量实现。
+21. 回归测试不能 defer。修改既有行为且缺少覆盖时，必须先计划 regression test。
+22. Red 任务必须验证公共接口上的行为，不验证私有函数、内部调用次数或临时数据结构。
+23. Mock 只能放在系统边界；如果测试必须 mock 自己控制的模块，说明 seam 或接口设计还没压平。
+24. 找不到正确 seam 时，先计划 exploratory spike 或设计修正，不能用假红灯冒充 TDD。
+25. Red 任务必须说明 public verification path：从同一公共接口或用户可见路径读回结果。直接查 DB / 内部状态只在该边界本身就是被测对象时允许。
+26. Green 任务必须写 minimality guard：只做当前红灯要求的最少实现，不预铺未来测试尚未要求的分支、状态或 API。
+27. Refactor 任务必须列候选坏味道：重复、长方法、浅模块、feature envy、primitive obsession、命名、三层以上分支，以及新代码暴露出的旧代码问题。
+28. UI scope 要写 design completeness score 和 loading / empty / error / success / partial 状态。
+29. developer/operator-facing scope 要写 target persona、time to first value、magic moment 和 install / run / debug / upgrade 风险。
+30. Review gate 只拦会导致实现错误、执行卡住、范围越界、验证缺失的问题；文字偏好和 nice-to-have 只能作为 advisory。
 
 ## Approval Flow
 
@@ -119,6 +121,7 @@
 - 验证是否通过公共入口读回结果，而不是绕到私有状态、内部数据结构或数据库侧查？
 - 哪些依赖允许 mock，哪些内部协作者禁止 mock？
 - 反馈循环是自动测试、HTTP、CLI、浏览器、trace replay、harness、property/fuzz、differential，还是 HITL；为什么这是当前最短可信循环？
+- 外部最佳实践是否可能改变方案？如果可能，用户是否批准泛化搜索？搜索结果是确认、调整、反驳，还是跳过当前计划？
 - 测试框架来源是什么，现有覆盖是 strong、happy-path-only、smoke-only 还是 missing？
 - task 是否以端到端 tracer bullet 为单位，而不是按层水平拆？
 - Green 任务的 minimality guard 是什么，如何防止提前实现未来测试还没要求的代码？

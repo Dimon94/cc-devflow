@@ -61,6 +61,25 @@
 |--------|--------|----------|----------------------|
 |  | auto-resolved / competing / unresolved |  |  |
 
+## External Best-Practice Validation
+
+- Needed: Yes / No
+- Decision status: not-needed / ask-user / approved / declined / search-unavailable
+- Decision question:
+- Privacy guard: generalized terms only; no project names, private requirements, customer names, secrets, logs, or proprietary concepts
+- Generalized search terms:
+- Sources checked:
+
+| Source | Trust level | Key point | Repo-fit verdict | Design impact |
+|--------|-------------|-----------|------------------|---------------|
+|  | external-evidence |  | confirmed / adjusted / contradicted / skipped |  |
+
+- Conventional wisdom:
+- Current discourse:
+- Repo-fit verdict:
+- Changes to options / tasks:
+- Skipped reason:
+
 ## Capability Handoff
 
 - Canonical capability spec:
@@ -323,6 +342,7 @@
 - Green minimality / refactor candidate scan:
 - PRD brief scan:
 - Source trust boundary scan:
+- External best-practice scan:
 - External conflict scan:
 - Ambiguity gate:
 - Review loop status:
