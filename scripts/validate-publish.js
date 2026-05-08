@@ -182,6 +182,99 @@ function ensureWritesArray(value, label, errors) {
   }
 }
 
+function collectDecisionQuestionOptionErrors(manifest, label, errors) {
+  const questions = manifest?.planningMeta?.decisionQuestions || [];
+  if (!Array.isArray(questions)) {
+    errors.push(`${label}.planningMeta.decisionQuestions must be an array`);
+    return;
+  }
+
+  questions.forEach((question, questionIndex) => {
+    const options = question?.options || [];
+    const questionLabel = `${label}.planningMeta.decisionQuestions[${questionIndex}]`;
+
+    if (!Array.isArray(options) || options.length < 2 || options.length > 3) {
+      errors.push(`${questionLabel}.options must contain 2-3 lettered options`);
+      return;
+    }
+
+    const ids = new Set();
+    options.forEach((option, optionIndex) => {
+      const optionLabel = `${questionLabel}.options[${optionIndex}].id`;
+      const optionId = option?.id;
+
+      if (!/^[A-C]$/.test(optionId || '')) {
+        errors.push(`${optionLabel} must be A, B, or C; got ${JSON.stringify(optionId)}`);
+        return;
+      }
+
+      if (ids.has(optionId)) {
+        errors.push(`${questionLabel}.options must not repeat option id ${optionId}`);
+      }
+      ids.add(optionId);
+    });
+
+    const userChoice = question?.userChoice;
+    if (userChoice !== null && userChoice !== undefined && !ids.has(userChoice)) {
+      errors.push(`${questionLabel}.userChoice must match a lettered option id`);
+    }
+  });
+}
+
+function validateCcPlanDecisionQuestionContract(errors) {
+  const skill = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-plan/SKILL.md'), 'utf8');
+  const fullDesign = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-plan/assets/DESIGN_TEMPLATE.md'), 'utf8');
+  const manifestPath = path.join(ROOT, '.claude/skills/cc-plan/assets/TASK_MANIFEST_TEMPLATE.json');
+  const planningContract = fs.readFileSync(
+    path.join(ROOT, '.claude/skills/cc-plan/references/planning-contract.md'),
+    'utf8'
+  );
+
+  const requiredSnippets = [
+    ['cc-plan SKILL.md', skill, '## Decision Question Protocol'],
+    ['cc-plan SKILL.md', skill, 'D<N> - <decision title>'],
+    ['cc-plan SKILL.md', skill, 'A) <label> (recommended)'],
+    ['cc-plan SKILL.md', skill, 'B) <label>'],
+    ['cc-plan SKILL.md', skill, '禁止输出 `1)` / `2)` / `3)`'],
+    ['cc-plan SKILL.md', skill, 'STOP: wait for the user answer before continuing.'],
+    ['cc-plan DESIGN_TEMPLATE.md', fullDesign, '## Decision Questions'],
+    ['cc-plan planning-contract.md', planningContract, 'options：只能使用 `A` / `B` / `C`']
+  ];
+
+  for (const [label, content, snippet] of requiredSnippets) {
+    if (!content.includes(snippet)) {
+      errors.push(`${label} missing decision-question snippet: ${snippet}`);
+    }
+  }
+
+  collectDecisionQuestionOptionErrors(
+    JSON.parse(fs.readFileSync(manifestPath, 'utf8')),
+    '.claude/skills/cc-plan/assets/TASK_MANIFEST_TEMPLATE.json',
+    errors
+  );
+
+  const examplesRoot = path.join(ROOT, 'docs/examples');
+  for (const exampleName of fs.readdirSync(examplesRoot)) {
+    const changesRoot = path.join(examplesRoot, exampleName, 'changes');
+    if (!fs.existsSync(changesRoot)) {
+      continue;
+    }
+
+    for (const changeName of fs.readdirSync(changesRoot)) {
+      const exampleManifestPath = path.join(changesRoot, changeName, 'planning/task-manifest.json');
+      if (!fs.existsSync(exampleManifestPath)) {
+        continue;
+      }
+
+      collectDecisionQuestionOptionErrors(
+        JSON.parse(fs.readFileSync(exampleManifestPath, 'utf8')),
+        path.relative(ROOT, exampleManifestPath),
+        errors
+      );
+    }
+  }
+}
+
 function validatePublicSkillContracts(errors) {
   for (const skillName of PUBLIC_SKILLS) {
     const skillPath = path.join(ROOT, '.claude', 'skills', skillName, 'SKILL.md');
@@ -529,6 +622,7 @@ function main() {
   validatePackageJson(errors);
   validateTemplate(errors);
   validateInventoryParity(errors);
+  validateCcPlanDecisionQuestionContract(errors);
   validatePublicSkillContracts(errors);
   validateExampleBindings(errors);
   validatePackTarball(errors);
@@ -549,5 +643,6 @@ if (require.main === module) {
 }
 
 module.exports = {
+  collectDecisionQuestionOptionErrors,
   ensureStringArray
 };

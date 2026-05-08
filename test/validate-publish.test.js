@@ -2,7 +2,10 @@ const path = require('path');
 const fs = require('fs');
 const os = require('os');
 const { spawnSync } = require('child_process');
-const { ensureStringArray } = require('../scripts/validate-publish');
+const {
+  collectDecisionQuestionOptionErrors,
+  ensureStringArray
+} = require('../scripts/validate-publish');
 
 const ROOT = path.resolve(__dirname, '..');
 
@@ -90,5 +93,30 @@ describe('validate-publish', () => {
     expect(fullDesign).toContain('## Decision Questions');
     expect(manifest).toContain('"decisionQuestions"');
     expect(planningContract).toContain('options：只能使用 `A` / `B` / `C`');
+  });
+
+  test('rejects numeric decision option ids in planning manifests', () => {
+    const errors = [];
+
+    collectDecisionQuestionOptionErrors({
+      planningMeta: {
+        decisionQuestions: [
+          {
+            questionId: 'D1',
+            options: [
+              { id: '1', label: 'Numeric option' },
+              { id: '2', label: 'Another numeric option' }
+            ],
+            userChoice: '1'
+          }
+        ]
+      }
+    }, 'manifest', errors);
+
+    expect(errors).toEqual(expect.arrayContaining([
+      'manifest.planningMeta.decisionQuestions[0].options[0].id must be A, B, or C; got "1"',
+      'manifest.planningMeta.decisionQuestions[0].options[1].id must be A, B, or C; got "2"',
+      'manifest.planningMeta.decisionQuestions[0].userChoice must match a lettered option id'
+    ]));
   });
 });
