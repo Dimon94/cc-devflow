@@ -2,6 +2,9 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { spawnSync } = require('child_process');
+const {
+  getReportCardPath
+} = require('../lib/skill-runtime/store');
 
 const ROOT = path.resolve(__dirname, '..');
 const CLI = path.join(ROOT, 'bin', 'cc-devflow-cli.js');
@@ -46,6 +49,57 @@ describe('cc-devflow query', () => {
       trace: {
         event: 'query.ship-readiness.failed',
         changeId: 'REQ-123'
+      }
+    });
+  });
+
+  test('passes full change keys through to typed queries', () => {
+    const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-devflow-cli-query-key-'));
+    const firstKey = 'REQ-124-first-plan';
+    const secondKey = 'REQ-124-second-plan';
+    fs.mkdirSync(path.join(repoRoot, 'devflow', 'changes', firstKey), { recursive: true });
+    fs.mkdirSync(path.dirname(getReportCardPath(repoRoot, 'REQ-124', { changeKey: secondKey })), { recursive: true });
+    fs.writeFileSync(
+      getReportCardPath(repoRoot, 'REQ-124', { changeKey: secondKey }),
+      `${JSON.stringify({
+        changeId: 'REQ-124',
+        verdict: 'pass',
+        overall: 'pass',
+        reroute: 'none',
+        specSyncReady: true,
+        blockingFindings: [],
+        timestamp: '2026-05-08T01:11:00.000Z'
+      }, null, 2)}\n`
+    );
+
+    const result = spawnSync(
+      process.execPath,
+      [
+        CLI,
+        'query',
+        'ship-readiness',
+        '--cwd',
+        repoRoot,
+        '--change',
+        'REQ-124',
+        '--change-key',
+        secondKey
+      ],
+      {
+        cwd: ROOT,
+        encoding: 'utf8'
+      }
+    );
+
+    const payload = JSON.parse(result.stdout);
+
+    expect(result.status).toBe(0);
+    expect(payload).toMatchObject({
+      ok: true,
+      queryId: 'ship-readiness',
+      data: {
+        ready: true,
+        verdict: 'pass'
       }
     });
   });

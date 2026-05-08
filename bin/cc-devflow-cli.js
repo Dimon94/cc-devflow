@@ -89,6 +89,7 @@ Query options:
   --cwd <path>         Project path used for devflow artifact lookup
   --change <id>        Change id, for example REQ-123
   --change-id <id>     Alias for --change
+  --change-key <key>   Full change key, for example REQ-123-my-feature
 
 Examples:
   cc-devflow init
@@ -101,6 +102,7 @@ Examples:
   cc-devflow config resolve --cwd /path/to/project --format policy
   cc-devflow query list
   cc-devflow query ship-readiness --cwd /path/to/project --change REQ-123
+  cc-devflow query progress --change REQ-123 --change-key REQ-123-my-feature
 `);
 }
 
@@ -449,6 +451,7 @@ function parseQueryArgs(args) {
   const parsed = {
     cwd: null,
     changeId: null,
+    changeKey: null,
     rest: []
   };
 
@@ -480,6 +483,16 @@ function parseQueryArgs(args) {
       continue;
     }
 
+    if (arg === '--change-key') {
+      parsed.changeKey = args[++i];
+      continue;
+    }
+
+    if (arg.startsWith('--change-key=')) {
+      parsed.changeKey = arg.slice('--change-key='.length);
+      continue;
+    }
+
     parsed.rest.push(arg);
   }
 
@@ -490,7 +503,7 @@ async function runQueryCommand(args) {
   const [subcommand, ...rest] = args;
 
   if (!subcommand || subcommand === '--help' || subcommand === '-h') {
-    console.error('Use: cc-devflow query list OR cc-devflow query <id> --change <changeId> [--cwd <path>]');
+    console.error('Use: cc-devflow query list OR cc-devflow query <id> --change <changeId> [--change-key <key>] [--cwd <path>]');
     return 3;
   }
 
@@ -507,7 +520,8 @@ async function runQueryCommand(args) {
 
   const result = await runQuery(subcommand, {
     repoRoot: path.resolve(options.cwd || process.cwd()),
-    changeId: options.changeId
+    changeId: options.changeId,
+    changeKey: options.changeKey
   });
 
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
