@@ -66,6 +66,16 @@
 - Risk: admins may soon ask for more export formats
 - Mitigation: treat JSON or scheduled exports as later roadmap items
 
+## External Best-Practice Validation
+
+- Needed: No
+- Decision status: not-needed
+- Generalized search terms:
+- Sources checked:
+- Repo-fit verdict: skipped
+- Changes to frozen design:
+- Skipped reason: the local handoff exports existing visible rows and does not introduce a new reporting standard
+
 ## Review Gate
 
 - Placeholder scan: pass
@@ -74,6 +84,7 @@
 - Ambiguity scan: pass
 - Feasibility scan: pass
 - PRD brief scan: pass; the export story and scope boundaries are explicit
+- External best-practice scan: pass; not needed for a repo-local visible-row export
 - Decision question scan: pass; `D1` approved the tiny-design CSV-export boundary
 - Final recommendation: approved as `tiny-design`
 

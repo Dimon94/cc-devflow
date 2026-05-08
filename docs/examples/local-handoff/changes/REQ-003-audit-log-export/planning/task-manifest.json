@@ -30,6 +30,19 @@
       "outOfScope": ["JSON export", "scheduled reporting", "shared reporting backend"],
       "furtherNotes": ["Richer machine-readable exports should become a separate requirement"]
     },
+    "externalBestPractice": {
+      "needed": false,
+      "decisionStatus": "not-needed",
+      "decisionQuestionId": "",
+      "privacyGuard": "generalized terms only; no project names, private requirements, customer names, secrets, logs, or proprietary concepts",
+      "generalizedSearchTerms": [],
+      "sourcesChecked": [],
+      "conventionalWisdom": "",
+      "currentDiscourse": "",
+      "repoFitVerdict": "skipped",
+      "designImpacts": [],
+      "skippedReason": "the local handoff exports existing visible rows and does not introduce a new reporting standard"
+    },
     "decisionQuestions": [
       {
         "questionId": "D1",

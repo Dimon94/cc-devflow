@@ -120,12 +120,29 @@
 - Deferred questions:
   - whether partial success needs an explicit rollback option
 
+## External Best-Practice Validation
+
+- Needed: Yes
+- Decision status: declined
+- Decision question: `D2`
+- Privacy guard: generalized terms only; no project names, private requirements, customer names, secrets, logs, or proprietary concepts
+- Generalized search terms:
+  - `bulk invite CSV import validation best practices`
+- Sources checked:
+- Conventional wisdom:
+- Current discourse:
+- Repo-fit verdict: skipped
+- Changes to options / tasks:
+  - keep the design blocked until row-outcome semantics are approved from internal evidence
+- Skipped reason: user kept the example repo-local for the blocked design
+
 ## Decision Questions
 
 | ID | Gate | Known evidence | Recommendation | User choice | Impact on `cc-do` | Status |
 |----|------|----------------|----------------|-------------|-------------------|--------|
 | D1 | approach-approval | Best-effort upload would let duplicate, invalid, and seat-limit semantics drift during execution | Choose Option B and freeze a rule matrix first | Option B | Keep execution blocked until row outcomes are modeled | answered |
-| D2 | ambiguity-blocker | Duplicate and seat-limit outcomes are still not explicit enough for tests or audit mapping | Answer the row-outcome matrix before task generation | pending | `cc-do` must not start implementation until this is answered | asked |
+| D2 | external-best-practice | Bulk CSV import semantics could benefit from generalized external practice, but this example stays repo-local | Stay repo-local for this blocked example | Stay repo-local | `cc-do` still must not start implementation until row outcomes are answered from internal evidence | answered |
+| D3 | ambiguity-blocker | Duplicate and seat-limit outcomes are still not explicit enough for tests or audit mapping | Answer the row-outcome matrix before task generation | pending | `cc-do` must not start implementation until this is answered | asked |
 
 ## Design
 
@@ -176,7 +193,8 @@
 - Feasibility scan: pass
 - Source alignment: pass; roadmap still prioritizes trust over speed
 - PRD brief scan: pass for actors and stories; blocked on duplicate and seat-limit semantics
-- Decision question scan: blocked; `D2` is still unanswered
+- External best-practice scan: pass; declined and recorded before task generation
+- Decision question scan: blocked; `D3` is still unanswered
 - UI / interaction review summary: result states are acceptable if semantics are frozen first
 - DX review summary: execution still needs a single row-outcome matrix
 - Auto-decided items:

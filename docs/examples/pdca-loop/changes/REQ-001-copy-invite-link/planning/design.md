@@ -67,6 +67,16 @@
 - Risk: copied-state feedback may be too subtle for users
 - Mitigation: keep the first patch minimal and log a follow-up roadmap item if support friction remains
 
+## External Best-Practice Validation
+
+- Needed: No
+- Decision status: not-needed
+- Generalized search terms:
+- Sources checked:
+- Repo-fit verdict: skipped
+- Changes to frozen design:
+- Skipped reason: existing share-dialog behavior and repo tests are sufficient for the tiny design
+
 ## Review Gate
 
 - Placeholder scan: pass
@@ -75,6 +85,7 @@
 - Ambiguity scan: pass; execution does not need to re-decide button placement or clipboard source
 - Feasibility scan: pass; existing dialog and tests already cover the target surface
 - PRD brief scan: pass; problem, story, implementation decision, testing decision, and out-of-scope are durable
+- External best-practice scan: pass; not needed for a repo-local tiny design
 - Decision question scan: pass; `D1` approved the tiny-design copy-action boundary
 - Final recommendation: approved as `tiny-design`
 

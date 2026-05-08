@@ -46,6 +46,19 @@
       "outOfScope": ["invite generation", "role controls", "analytics", "clipboard fallback redesign"],
       "furtherNotes": ["Richer copied-state feedback is a separate UX requirement"]
     },
+    "externalBestPractice": {
+      "needed": false,
+      "decisionStatus": "not-needed",
+      "decisionQuestionId": "",
+      "privacyGuard": "generalized terms only; no project names, private requirements, customer names, secrets, logs, or proprietary concepts",
+      "generalizedSearchTerms": [],
+      "sourcesChecked": [],
+      "conventionalWisdom": "",
+      "currentDiscourse": "",
+      "repoFitVerdict": "skipped",
+      "designImpacts": [],
+      "skippedReason": "existing share-dialog behavior and repo tests are sufficient for the tiny design"
+    },
     "decisionQuestions": [
       {
         "questionId": "D1",

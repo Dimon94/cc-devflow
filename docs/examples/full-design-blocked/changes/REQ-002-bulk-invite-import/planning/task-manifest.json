@@ -45,6 +45,19 @@
       "outOfScope": ["enterprise SCIM provisioning", "background job redesign", "rollback wizard for partial success"],
       "furtherNotes": ["Design remains blocked until duplicate and seat-limit semantics are approved"]
     },
+    "externalBestPractice": {
+      "needed": true,
+      "decisionStatus": "declined",
+      "decisionQuestionId": "D2",
+      "privacyGuard": "generalized terms only; no project names, private requirements, customer names, secrets, logs, or proprietary concepts",
+      "generalizedSearchTerms": ["bulk invite CSV import validation best practices"],
+      "sourcesChecked": [],
+      "conventionalWisdom": "",
+      "currentDiscourse": "",
+      "repoFitVerdict": "skipped",
+      "designImpacts": ["keep the design blocked until row-outcome semantics are approved from internal evidence"],
+      "skippedReason": "user kept the example repo-local for the blocked design"
+    },
     "decisionQuestions": [
       {
         "questionId": "D1",
@@ -75,6 +88,33 @@
       },
       {
         "questionId": "D2",
+        "gate": "external-best-practice",
+        "knownEvidence": ["Bulk CSV import semantics could benefit from generalized external practice", "The example keeps private details out of any external lookup"],
+        "recommendation": "Stay repo-local for this blocked example",
+        "options": [
+          {
+            "id": "A",
+            "label": "Search generalized best practices",
+            "recommended": false,
+            "completeness": "9/10",
+            "good": "Could improve row-outcome terminology before task generation",
+            "costRisk": "Sends generalized category terms outside the local repo"
+          },
+          {
+            "id": "B",
+            "label": "Stay repo-local",
+            "recommended": true,
+            "completeness": "7/10",
+            "good": "Keeps the blocked example private and focused on internal semantics",
+            "costRisk": "Does not compare against external CSV-import conventions"
+          }
+        ],
+        "userChoice": "B",
+        "impact": "cc-do still must not start implementation until row outcomes are answered from internal evidence",
+        "status": "answered"
+      },
+      {
+        "questionId": "D3",
         "gate": "ambiguity-blocker",
         "knownEvidence": ["Duplicate and seat-limit outcomes are still not explicit enough for tests", "Audit entries must match visible row outcomes"],
         "recommendation": "Answer the row-outcome matrix before task generation",
