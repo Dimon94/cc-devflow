@@ -6,7 +6,7 @@
   "requirementId": "REQ-002",
   "requirementVersion": "REQ-002.v2",
   "planningMeta": {
-    "reqPlanSkillVersion": "3.8.0",
+    "reqPlanSkillVersion": "3.8.1",
     "designVersion": "design.v2",
     "approvedAt": null,
     "approvedBy": null,
@@ -14,21 +14,28 @@
     "requirementBrief": {
       "problemStatement": "Admins onboarding larger teams need predictable bulk invite behavior for duplicates, invalid rows, and seat limits.",
       "solutionSummary": "Freeze deterministic CSV row outcomes before executing the bulk invite flow.",
-      "actors": ["workspace admin", "support operator"],
+      "actors": [
+        "workspace admin",
+        "support operator"
+      ],
       "userStories": [
         {
           "id": "US-001",
           "actor": "workspace admin",
           "want": "upload a CSV of invite emails",
           "benefit": "invite many collaborators without one-by-one entry",
-          "acceptance": ["Mixed valid rows produce visible accepted outcomes"]
+          "acceptance": [
+            "Mixed valid rows produce visible accepted outcomes"
+          ]
         },
         {
           "id": "US-002",
           "actor": "workspace admin",
           "want": "see duplicate, invalid, and over-limit row states",
           "benefit": "understand what happened without support help",
-          "acceptance": ["Every skipped or rejected row has a reason"]
+          "acceptance": [
+            "Every skipped or rejected row has a reason"
+          ]
         }
       ],
       "edgeOrRecoveryStories": [
@@ -37,32 +44,51 @@
           "actor": "workspace admin",
           "boundary": "CSV contains duplicates, invalid emails, or over-limit rows",
           "desiredOutcome": "safe rows can proceed while bad rows are explained",
-          "acceptance": ["Rule matrix covers duplicate, invalid, and seat-limit cases"]
+          "acceptance": [
+            "Rule matrix covers duplicate, invalid, and seat-limit cases"
+          ]
         }
       ],
-      "implementationDecisions": ["Freeze one row-outcome matrix before execution resumes"],
-      "testingDecisions": ["Test row semantics through bulk-import rules and the admin upload flow"],
-      "outOfScope": ["enterprise SCIM provisioning", "background job redesign", "rollback wizard for partial success"],
-      "furtherNotes": ["Design remains blocked until duplicate and seat-limit semantics are approved"]
+      "implementationDecisions": [
+        "Freeze one row-outcome matrix before execution resumes"
+      ],
+      "testingDecisions": [
+        "Test row semantics through bulk-import rules and the admin upload flow"
+      ],
+      "outOfScope": [
+        "enterprise SCIM provisioning",
+        "background job redesign",
+        "rollback wizard for partial success"
+      ],
+      "furtherNotes": [
+        "Design remains blocked until duplicate and seat-limit semantics are approved"
+      ]
     },
     "externalBestPractice": {
       "needed": true,
       "decisionStatus": "declined",
       "decisionQuestionId": "D2",
       "privacyGuard": "generalized terms only; no project names, private requirements, customer names, secrets, logs, or proprietary concepts",
-      "generalizedSearchTerms": ["bulk invite CSV import validation best practices"],
+      "generalizedSearchTerms": [
+        "bulk invite CSV import validation best practices"
+      ],
       "sourcesChecked": [],
       "conventionalWisdom": "",
       "currentDiscourse": "",
       "repoFitVerdict": "skipped",
-      "designImpacts": ["keep the design blocked until row-outcome semantics are approved from internal evidence"],
+      "designImpacts": [
+        "keep the design blocked until row-outcome semantics are approved from internal evidence"
+      ],
       "skippedReason": "user kept the example repo-local for the blocked design"
     },
     "decisionQuestions": [
       {
         "questionId": "D1",
         "gate": "approach-approval",
-        "knownEvidence": ["Best-effort upload would hide duplicate, invalid, and seat-limit semantics", "Audit mapping depends on deterministic row outcomes"],
+        "knownEvidence": [
+          "Best-effort upload would hide duplicate, invalid, and seat-limit semantics",
+          "Audit mapping depends on deterministic row outcomes"
+        ],
         "recommendation": "Choose Option B and freeze a rule matrix first",
         "options": [
           {
@@ -89,7 +115,10 @@
       {
         "questionId": "D2",
         "gate": "external-best-practice",
-        "knownEvidence": ["Bulk CSV import semantics could benefit from generalized external practice", "The example keeps private details out of any external lookup"],
+        "knownEvidence": [
+          "Bulk CSV import semantics could benefit from generalized external practice",
+          "The example keeps private details out of any external lookup"
+        ],
         "recommendation": "Stay repo-local for this blocked example",
         "options": [
           {
@@ -115,9 +144,12 @@
       },
       {
         "questionId": "D3",
-        "gate": "ambiguity-blocker",
-        "knownEvidence": ["Duplicate and seat-limit outcomes are still not explicit enough for tests", "Audit entries must match visible row outcomes"],
-        "recommendation": "Answer the row-outcome matrix before task generation",
+        "gate": "review-blocker",
+        "knownEvidence": [
+          "Duplicate and seat-limit outcomes are still not explicit enough for final requirement proof",
+          "Audit entries must match visible row outcomes"
+        ],
+        "recommendation": "Answer the row-outcome matrix before retry or cc-act",
         "options": [
           {
             "id": "A",
@@ -137,10 +169,31 @@
           }
         ],
         "userChoice": null,
-        "impact": "No executable task manifest should be approved until this is answered",
+        "impact": "cc-do retry and cc-act must stay blocked until this is answered",
         "status": "asked"
       }
-    ]
+    ],
+    "aiLeverageDecisionLens": {
+      "realUserOrOperator": "workspace admin onboarding larger teams",
+      "statusQuoWorkaround": "paste invite emails one by one or track them in spreadsheets",
+      "humanTeamEffortForFullScope": "multiple weeks across product, engineering, billing, and support review",
+      "ccAgentEffortForFullScope": "several hours once row semantics are approved, but unbounded before that",
+      "aiCompressionRatio": "high after semantics freeze, low while the product contract is ambiguous",
+      "completeLakeBoundary": "row classification, admin upload flow, billing-seat checks, and audit mapping after rule approval",
+      "oceanBoundary": "SCIM, background retries, rollback wizard, and unspecified billing semantics",
+      "scopeRecommendation": "sharp-wedge",
+      "costModel": {
+        "agentTime": "medium after rule approval",
+        "humanReviewTime": "high until semantics are approved",
+        "verificationCost": "bulk rules, admin flow, billing, and audit tests",
+        "maintenanceCost": "medium after semantics freeze",
+        "failureCost": "high if billing or audit outcomes drift",
+        "reversibility": "limited once execution semantics ship"
+      },
+      "verdict": "sharp-wedge",
+      "missingEvidenceOrPivotReason": "none at plan approval; cc-check later reopened duplicate, invalid-row, partial-success, and seat-limit semantics before retry or cc-act",
+      "impactOnApprovedDirection": "allow bounded import-path execution, then block final proof if review finds row semantics drift"
+    }
   },
   "currentTaskId": null,
   "activePhase": null,
@@ -152,19 +205,44 @@
       "phase": 1,
       "parallel": false,
       "dependsOn": [],
-      "touches": ["bulk-invite-rules"],
-      "files": ["src/invite/bulk-import.test.ts"],
-      "run": ["npm test -- src/invite/bulk-import.test.ts"],
-      "checks": ["tests fail before implementation"],
-      "acceptance": ["dangerous row outcomes are reproduced as explicit failing tests"],
-      "verification": ["npm test -- src/invite/bulk-import.test.ts"],
-      "evidence": ["failing test output"],
+      "touches": [
+        "bulk-invite-rules"
+      ],
+      "files": [
+        "src/invite/bulk-import.test.ts"
+      ],
+      "run": [
+        "npm test -- src/invite/bulk-import.test.ts"
+      ],
+      "checks": [
+        "tests fail before implementation"
+      ],
+      "acceptance": [
+        "dangerous row outcomes are reproduced as explicit failing tests"
+      ],
+      "verification": [
+        "npm test -- src/invite/bulk-import.test.ts"
+      ],
+      "evidence": [
+        "failing test output"
+      ],
       "context": {
-        "readFiles": ["design.md", "tasks.md", "src/invite/bulk-import.ts"],
-        "commands": ["npm test -- src/invite/bulk-import.test.ts"],
-        "notes": ["freeze row semantics before broader execution"]
+        "readFiles": [
+          "design.md",
+          "tasks.md",
+          "src/invite/bulk-import.ts"
+        ],
+        "commands": [
+          "npm test -- src/invite/bulk-import.test.ts"
+        ],
+        "notes": [
+          "freeze row semantics before broader execution"
+        ]
       },
-      "reviews": { "spec": "pass", "code": "pass" },
+      "reviews": {
+        "spec": "pass",
+        "code": "pass"
+      },
       "status": "passed",
       "attempts": 1,
       "maxRetries": 1
@@ -175,20 +253,48 @@
       "type": "IMPL",
       "phase": 1,
       "parallel": false,
-      "dependsOn": ["T001"],
-      "touches": ["bulk-invite-rules"],
-      "files": ["src/invite/bulk-import.ts"],
-      "run": ["npm test -- src/invite/bulk-import.test.ts"],
-      "checks": ["rule tests pass"],
-      "acceptance": ["bulk invite rows receive deterministic initial states"],
-      "verification": ["npm test -- src/invite/bulk-import.test.ts"],
-      "evidence": ["passing test output", "checkpoint summary"],
+      "dependsOn": [
+        "T001"
+      ],
+      "touches": [
+        "bulk-invite-rules"
+      ],
+      "files": [
+        "src/invite/bulk-import.ts"
+      ],
+      "run": [
+        "npm test -- src/invite/bulk-import.test.ts"
+      ],
+      "checks": [
+        "rule tests pass"
+      ],
+      "acceptance": [
+        "bulk invite rows receive deterministic initial states"
+      ],
+      "verification": [
+        "npm test -- src/invite/bulk-import.test.ts"
+      ],
+      "evidence": [
+        "passing test output",
+        "checkpoint summary"
+      ],
       "context": {
-        "readFiles": ["design.md", "tasks.md", "src/invite/bulk-import.test.ts"],
-        "commands": ["npm test -- src/invite/bulk-import.test.ts"],
-        "notes": ["do not invent partial-failure semantics outside the approved design"]
+        "readFiles": [
+          "design.md",
+          "tasks.md",
+          "src/invite/bulk-import.test.ts"
+        ],
+        "commands": [
+          "npm test -- src/invite/bulk-import.test.ts"
+        ],
+        "notes": [
+          "do not invent partial-failure semantics outside the approved design"
+        ]
       },
-      "reviews": { "spec": "pass", "code": "pass" },
+      "reviews": {
+        "spec": "pass",
+        "code": "pass"
+      },
       "status": "passed",
       "attempts": 1,
       "maxRetries": 1
@@ -199,20 +305,47 @@
       "type": "TEST",
       "phase": 2,
       "parallel": false,
-      "dependsOn": ["T002"],
-      "touches": ["admin-bulk-invite-ui"],
-      "files": ["src/admin/BulkInvitePanel.test.tsx"],
-      "run": ["npm test -- src/admin/BulkInvitePanel.test.tsx"],
-      "checks": ["admin panel tests fail before UI integration"],
-      "acceptance": ["mixed row outcomes are visible as UI failures before implementation"],
-      "verification": ["npm test -- src/admin/BulkInvitePanel.test.tsx"],
-      "evidence": ["failing test output"],
+      "dependsOn": [
+        "T002"
+      ],
+      "touches": [
+        "admin-bulk-invite-ui"
+      ],
+      "files": [
+        "src/admin/BulkInvitePanel.test.tsx"
+      ],
+      "run": [
+        "npm test -- src/admin/BulkInvitePanel.test.tsx"
+      ],
+      "checks": [
+        "admin panel tests fail before UI integration"
+      ],
+      "acceptance": [
+        "mixed row outcomes are visible as UI failures before implementation"
+      ],
+      "verification": [
+        "npm test -- src/admin/BulkInvitePanel.test.tsx"
+      ],
+      "evidence": [
+        "failing test output"
+      ],
       "context": {
-        "readFiles": ["design.md", "tasks.md", "src/admin/BulkInvitePanel.tsx"],
-        "commands": ["npm test -- src/admin/BulkInvitePanel.test.tsx"],
-        "notes": ["UI must not hide ambiguous row states"]
+        "readFiles": [
+          "design.md",
+          "tasks.md",
+          "src/admin/BulkInvitePanel.tsx"
+        ],
+        "commands": [
+          "npm test -- src/admin/BulkInvitePanel.test.tsx"
+        ],
+        "notes": [
+          "UI must not hide ambiguous row states"
+        ]
       },
-      "reviews": { "spec": "pass", "code": "pass" },
+      "reviews": {
+        "spec": "pass",
+        "code": "pass"
+      },
       "status": "passed",
       "attempts": 1,
       "maxRetries": 1
@@ -223,20 +356,48 @@
       "type": "IMPL",
       "phase": 2,
       "parallel": false,
-      "dependsOn": ["T003"],
-      "touches": ["admin-bulk-invite-ui"],
-      "files": ["src/admin/BulkInvitePanel.tsx"],
-      "run": ["npm test -- src/admin/BulkInvitePanel.test.tsx"],
-      "checks": ["admin panel tests pass"],
-      "acceptance": ["admins can see accepted, skipped, and rejected rows in the panel"],
-      "verification": ["npm test -- src/admin/BulkInvitePanel.test.tsx"],
-      "evidence": ["passing test output", "review notes"],
+      "dependsOn": [
+        "T003"
+      ],
+      "touches": [
+        "admin-bulk-invite-ui"
+      ],
+      "files": [
+        "src/admin/BulkInvitePanel.tsx"
+      ],
+      "run": [
+        "npm test -- src/admin/BulkInvitePanel.test.tsx"
+      ],
+      "checks": [
+        "admin panel tests pass"
+      ],
+      "acceptance": [
+        "admins can see accepted, skipped, and rejected rows in the panel"
+      ],
+      "verification": [
+        "npm test -- src/admin/BulkInvitePanel.test.tsx"
+      ],
+      "evidence": [
+        "passing test output",
+        "review notes"
+      ],
       "context": {
-        "readFiles": ["design.md", "tasks.md", "src/admin/BulkInvitePanel.test.tsx"],
-        "commands": ["npm test -- src/admin/BulkInvitePanel.test.tsx"],
-        "notes": ["surface row states without redefining backend truth"]
+        "readFiles": [
+          "design.md",
+          "tasks.md",
+          "src/admin/BulkInvitePanel.test.tsx"
+        ],
+        "commands": [
+          "npm test -- src/admin/BulkInvitePanel.test.tsx"
+        ],
+        "notes": [
+          "surface row states without redefining backend truth"
+        ]
       },
-      "reviews": { "spec": "pass", "code": "pass" },
+      "reviews": {
+        "spec": "pass",
+        "code": "pass"
+      },
       "status": "passed",
       "attempts": 1,
       "maxRetries": 1
@@ -247,29 +408,52 @@
       "type": "OTHER",
       "phase": 3,
       "parallel": false,
-      "dependsOn": ["T004"],
-      "touches": ["quality-gates"],
-      "files": ["src/admin/BulkInvitePanel.tsx", "src/invite/bulk-import.ts"],
+      "dependsOn": [
+        "T004"
+      ],
+      "touches": [
+        "quality-gates"
+      ],
+      "files": [
+        "src/admin/BulkInvitePanel.tsx",
+        "src/invite/bulk-import.ts"
+      ],
       "run": [
         "npm test -- src/invite/bulk-import.test.ts",
         "npm test -- src/admin/BulkInvitePanel.test.tsx"
       ],
-      "checks": ["targeted tests pass", "review evidence collected"],
-      "acceptance": ["fresh verification evidence exists for cc-check"],
+      "checks": [
+        "targeted tests pass",
+        "review evidence collected"
+      ],
+      "acceptance": [
+        "fresh verification evidence exists for cc-check"
+      ],
       "verification": [
         "npm test -- src/invite/bulk-import.test.ts",
         "npm test -- src/admin/BulkInvitePanel.test.tsx"
       ],
-      "evidence": ["passing targeted test output", "review notes"],
+      "evidence": [
+        "passing targeted test output",
+        "review notes"
+      ],
       "context": {
-        "readFiles": ["tasks.md", "task-manifest.json"],
+        "readFiles": [
+          "tasks.md",
+          "task-manifest.json"
+        ],
         "commands": [
           "npm test -- src/invite/bulk-import.test.ts",
           "npm test -- src/admin/BulkInvitePanel.test.tsx"
         ],
-        "notes": ["fresh evidence can still block if the design contract is incomplete"]
+        "notes": [
+          "fresh evidence can still block if the design contract is incomplete"
+        ]
       },
-      "reviews": { "spec": "pass", "code": "pass" },
+      "reviews": {
+        "spec": "pass",
+        "code": "pass"
+      },
       "status": "passed",
       "attempts": 1,
       "maxRetries": 1

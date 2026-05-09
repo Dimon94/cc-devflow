@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-003.v1`
 - Design version: `design.v1`
-- CC-Plan skill version: `3.8.0`
+- CC-Plan skill version: `3.8.1`
 - Requirement ID: `REQ-003`
 - Design mode: `tiny-design`
 - Why this stays `tiny-design`: the patch adds one export action inside the existing admin audit UI without changing data contracts
@@ -66,6 +66,20 @@
 - Risk: admins may soon ask for more export formats
 - Mitigation: treat JSON or scheduled exports as later roadmap items
 
+## AI Leverage Decision Lens
+
+- Real user / operator: workspace admin preparing weekly review notes
+- Status quo workaround: manually copy visible audit rows
+- Human-team effort for full scope: about one day for an engineer to implement, test, and document the local export
+- CC / agent effort for full scope: about 30 minutes for visible-row CSV export plus targeted test and lint
+- AI compression ratio: roughly 10x for the bounded local export path
+- Complete-lake boundary: visible-row CSV export, panel action, current data source, targeted panel test, and lint
+- Ocean boundary: JSON export, scheduled reporting, shared reporting backend, and cross-panel reporting platform
+- Scope recommendation: `boil-lake`
+- Cost model: low agent time, low human review time, targeted panel test plus lint, low maintenance cost while scoped to visible rows, reversible UI action
+- Verdict: `boil-lake`
+- Missing evidence or pivot reason: none
+
 ## External Best-Practice Validation
 
 - Needed: No
@@ -84,6 +98,7 @@
 - Ambiguity scan: pass
 - Feasibility scan: pass
 - PRD brief scan: pass; the export story and scope boundaries are explicit
+- AI Leverage Decision Lens scan: pass; visible-row export lake is bounded enough to complete while reporting platform work stays out
 - External best-practice scan: pass; not needed for a repo-local visible-row export
 - Decision question scan: pass; `D1` approved the tiny-design CSV-export boundary
 - Final recommendation: approved as `tiny-design`

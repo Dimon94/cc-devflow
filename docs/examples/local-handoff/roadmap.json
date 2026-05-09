@@ -5,7 +5,7 @@
   },
   "meta": {
     "roadmapVersion": "roadmap.v2",
-    "skillVersion": "5.1.0",
+    "skillVersion": "5.2.0",
     "status": "active",
     "lastUpdated": "2026-04-19",
     "currentFocusStage": "Stage 2"
@@ -14,7 +14,21 @@
     "planningPosture": "",
     "evidenceMaturity": "",
     "canonicalTerms": [],
-    "durableDecisionSources": []
+    "durableDecisionSources": [],
+    "aiLeverageRouteLens": {
+      "realUserOrOperator": "workspace admin preparing weekly activity review notes",
+      "statusQuoWorkaround": "manual copy of visible audit rows into an internal note",
+      "humanTeamEffortForFullScope": "about one day for an engineer to implement, test, and document the local export",
+      "ccAgentEffortForFullScope": "about 30 minutes for visible-row CSV export plus targeted test and lint",
+      "aiCompressionRatio": "roughly 10x for the bounded local export path",
+      "completeLakeBoundary": "visible-row CSV export, panel action, current data source, targeted panel test, and lint",
+      "oceanBoundary": "JSON export, scheduled reporting, shared reporting backend, and cross-panel reporting platform",
+      "scopeRecommendation": "boil-lake",
+      "firstSuccessSignal": "admins finish weekly review without manual row copying",
+      "killSignal": "implementation requires shared reporting pipeline redesign",
+      "verdict": "boil-lake",
+      "missingEvidence": []
+    }
   },
   "evidence": [],
   "route": {

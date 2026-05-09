@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-003.v1`
 - Design version: `design.v1`
-- CC-Plan skill version: `3.8.0`
+- CC-Plan skill version: `3.8.1`
 - Source roadmap item: `RM-020`
 - Source roadmap version: `roadmap.v3`
 
@@ -22,6 +22,7 @@
   - Implementation decisions: export visible rows only, CSV only
   - Testing decisions: test through admin panel action and visible row data
   - Out of scope: JSON export, scheduled reporting, shared reporting backend
+- AI Leverage Decision Lens: boil-lake; complete visible-row CSV export while keeping reporting-platform work outside the lake
 - Read first:
   - `design.md`
   - `src/admin/AuditSummaryPanel.tsx`

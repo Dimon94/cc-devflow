@@ -3,7 +3,7 @@
 ## Roadmap Meta
 
 - Roadmap version: `roadmap.v1`
-- Skill version: `5.1.0`
+- Skill version: `5.2.0`
 - Status: `active`
 - Last updated: `2026-04-15`
 - Owner / decider: `product-owner`
@@ -35,6 +35,21 @@
 | Timing | Beta reset is one week away | High | launch plan | The fix must land this cycle |
 | Feasibility | Existing dialog already renders the URL and clipboard API is available | High | current UI behavior | This is a tiny patch, not a redesign |
 | Distribution | Successful sharing unlocks more beta seats | Med | product notes | A smoother invite loop increases activation |
+
+## AI Leverage Route Lens
+
+- Real user / operator: workspace member sharing an invite during beta onboarding
+- Status quo workaround: manually select and copy the visible invite URL
+- Human-team effort for full scope: about half a day for one engineer including test and review
+- CC / agent effort for full scope: about 20 minutes for a targeted UI patch plus test update
+- AI compression ratio: roughly 10x for this bounded UI slice
+- Complete-lake boundary: copy action, current invite URL source, copied-state feedback, and dialog behavior test
+- Ocean boundary: backend invite generation, permissions, analytics, and clipboard fallback redesign
+- Scope recommendation: `boil-lake`
+- First success signal: users copy the invite link without asking support
+- Kill signal: implementation requires backend or permission changes
+- Verdict: `boil-lake`
+- Missing evidence before ready-for-cc-plan: none
 
 ## Route Options
 

@@ -5,7 +5,7 @@
   },
   "meta": {
     "roadmapVersion": "roadmap.v1",
-    "skillVersion": "5.1.0",
+    "skillVersion": "5.2.0",
     "status": "active",
     "lastUpdated": "2026-04-19",
     "currentFocusStage": "Stage 1"
@@ -14,7 +14,21 @@
     "planningPosture": "",
     "evidenceMaturity": "",
     "canonicalTerms": [],
-    "durableDecisionSources": []
+    "durableDecisionSources": [],
+    "aiLeverageRouteLens": {
+      "realUserOrOperator": "workspace member sharing an invite during beta onboarding",
+      "statusQuoWorkaround": "manual selection and copy of the visible invite URL",
+      "humanTeamEffortForFullScope": "about half a day for one engineer including test and review",
+      "ccAgentEffortForFullScope": "about 20 minutes for a targeted UI patch plus test update",
+      "aiCompressionRatio": "roughly 10x for this bounded UI slice",
+      "completeLakeBoundary": "copy action, current invite URL source, copied-state feedback, and dialog behavior test",
+      "oceanBoundary": "backend invite generation, permissions, analytics, and clipboard fallback redesign",
+      "scopeRecommendation": "boil-lake",
+      "firstSuccessSignal": "users copy the invite link without asking support",
+      "killSignal": "implementation requires backend or permission changes",
+      "verdict": "boil-lake",
+      "missingEvidence": []
+    }
   },
   "evidence": [],
   "route": {

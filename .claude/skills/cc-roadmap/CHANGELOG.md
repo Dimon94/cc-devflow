@@ -1,8 +1,10 @@
 # Roadmap Skill Changelog
 
-## v5.1.0 - 2026-05-09
+## v5.2.0 - 2026-05-09
 
 - add project-direction routing and brand-neutral founder guardrails
+- add the AI Leverage Route Lens so roadmap recommendations must name the real user/operator, current workaround, human-vs-agent effort, complete-lake boundary, ocean boundary, first success signal, kill signal, and boil-lake/sharp-wedge/needs-evidence/pivot verdict
+- update roadmap and tracking templates so AI-era scope choices can choose complete same-blast-radius lakes instead of timid MVP slices
 
 ## v5.0.0 - 2026-05-01
 

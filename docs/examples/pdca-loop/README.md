@@ -4,7 +4,7 @@
 
 - Example version: `1.0.0`
 - Last reviewed: `2026-04-17`
-- Bound skills: `cc-roadmap@5.1.0`, `cc-plan@3.8.0`, `cc-do@1.6.2`, `cc-check@1.10.1`, `cc-act@1.8.2`
+- Bound skills: `cc-roadmap@5.2.0`, `cc-plan@3.8.1`, `cc-do@1.6.2`, `cc-check@1.10.1`, `cc-act@1.8.2`
 
 This folder shows one minimal but complete `cc-roadmap -> cc-plan -> cc-do -> cc-check -> cc-act` loop.
 

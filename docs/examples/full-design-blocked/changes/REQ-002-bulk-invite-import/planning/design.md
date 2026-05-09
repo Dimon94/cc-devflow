@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-002.v2`
 - Design version: `design.v2`
-- CC-Plan skill version: `3.8.0`
+- CC-Plan skill version: `3.8.1`
 - Requirement ID: `REQ-002`
 - Design mode: `full-design`
 - Why not `tiny-design`: the feature crosses import parsing, invite rules, billing limits, duplicate handling, and audit logging
@@ -120,6 +120,20 @@
 - Deferred questions:
   - whether partial success needs an explicit rollback option
 
+## AI Leverage Decision Lens
+
+- Real user / operator: workspace admin onboarding larger teams
+- Status quo workaround: paste invite emails one by one or track them in spreadsheets
+- Human-team effort for full scope: multiple weeks across product, engineering, billing, and support review
+- CC / agent effort for full scope: several hours once row semantics are approved, but unbounded before that
+- AI compression ratio: high after semantics freeze, low while the product contract is ambiguous
+- Complete-lake boundary: row classification, admin upload flow, billing-seat checks, and audit mapping after rule approval
+- Ocean boundary: SCIM, background retries, rollback wizard, and unspecified billing semantics
+- Scope recommendation: `sharp-wedge`
+- Cost model: medium agent time after rule approval, high human review time until semantics are approved, high failure cost if billing or audit outcomes drift
+- Verdict: `sharp-wedge`
+- Missing evidence or pivot reason: none at plan approval; cc-check later reopened duplicate, invalid-row, partial-success, and seat-limit semantics before retry or cc-act
+
 ## External Best-Practice Validation
 
 - Needed: Yes
@@ -142,7 +156,7 @@
 |----|------|----------------|----------------|-------------|-------------------|--------|
 | D1 | approach-approval | Best-effort upload would let duplicate, invalid, and seat-limit semantics drift during execution | Choose Option B and freeze a rule matrix first | Option B | Keep execution blocked until row outcomes are modeled | answered |
 | D2 | external-best-practice | Bulk CSV import semantics could benefit from generalized external practice, but this example stays repo-local | Stay repo-local for this blocked example | Stay repo-local | `cc-do` still must not start implementation until row outcomes are answered from internal evidence | answered |
-| D3 | ambiguity-blocker | Duplicate and seat-limit outcomes are still not explicit enough for tests or audit mapping | Answer the row-outcome matrix before task generation | pending | `cc-do` must not start implementation until this is answered | asked |
+| D3 | review-blocker | Duplicate and seat-limit outcomes are still not explicit enough for final requirement proof | Answer the row-outcome matrix before retry or cc-act | pending | `cc-do` retry and `cc-act` must stay blocked until this is answered | asked |
 
 ## Design
 
@@ -193,6 +207,7 @@
 - Feasibility scan: pass
 - Source alignment: pass; roadmap still prioritizes trust over speed
 - PRD brief scan: pass for actors and stories; blocked on duplicate and seat-limit semantics
+- AI Leverage Decision Lens scan: pass at plan approval as a sharp wedge; cc-check later blocked final proof because product semantics were still unbounded evidence risk
 - External best-practice scan: pass; declined and recorded before task generation
 - Decision question scan: blocked; `D3` is still unanswered
 - UI / interaction review summary: result states are acceptable if semantics are frozen first

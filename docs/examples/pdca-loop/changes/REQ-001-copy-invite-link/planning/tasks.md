@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-001.v1`
 - Design version: `design.v1`
-- CC-Plan skill version: `3.8.0`
+- CC-Plan skill version: `3.8.1`
 - Source roadmap item: `RM-001`
 - Source roadmap version: `roadmap.v1`
 
@@ -23,6 +23,7 @@
   - Implementation decisions: reuse existing invite URL source and dialog props
   - Testing decisions: test through share dialog behavior
   - Out of scope: invite generation, role controls, analytics, clipboard fallback redesign
+- AI Leverage Decision Lens: boil-lake; complete the bounded same-dialog copy lake instead of stopping at a happy-path button
 - Read first:
   - `design.md`
   - `src/features/share/ShareDialog.tsx`

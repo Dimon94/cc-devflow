@@ -1,5 +1,10 @@
 # CC-Plan Skill Changelog
 
+## v3.8.1 - 2026-05-09
+
+- add the AI Leverage Decision Lens before approach approval so plans must name the real user/operator, current workaround, human-vs-agent effort, complete-lake boundary, ocean boundary, scope recommendation, cost model, and boil-lake/sharp-wedge/needs-evidence/pivot verdict
+- update full-design, tiny-design, tasks, manifest, and planning contract templates so AI-era completeness is a durable handoff instead of chat-only advice
+
 ## v3.8.0 - 2026-05-09
 
 - change key assignment now uses `cc-devflow next-change-key` script instead of LLM mental arithmetic

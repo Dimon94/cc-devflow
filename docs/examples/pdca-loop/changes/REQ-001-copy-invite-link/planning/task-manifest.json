@@ -9,7 +9,7 @@
   "sourceRoadmap": {
     "itemId": "RM-001",
     "roadmapVersion": "roadmap.v1",
-    "roadmapSkillVersion": "5.1.0",
+    "roadmapSkillVersion": "5.2.0",
     "sourceStage": "Stage 1",
     "successSignal": "Users can copy the invite link with one click",
     "killSignal": "The patch requires backend or permission changes",
@@ -22,7 +22,7 @@
     ]
   },
   "planningMeta": {
-    "reqPlanSkillVersion": "3.8.0",
+    "reqPlanSkillVersion": "3.8.1",
     "designVersion": "design.v1",
     "approvedAt": "2026-04-15T10:05:00.000Z",
     "approvedBy": "user",
@@ -30,21 +30,36 @@
     "requirementBrief": {
       "problemStatement": "Users can see the invite URL, but copying it still requires manual selection.",
       "solutionSummary": "Add a one-click copy action with lightweight confirmation inside the existing share dialog.",
-      "actors": ["workspace member sharing an invite"],
+      "actors": [
+        "workspace member sharing an invite"
+      ],
       "userStories": [
         {
           "id": "US-001",
           "actor": "workspace member",
           "want": "copy the invite link with one click",
           "benefit": "share it without manually selecting text",
-          "acceptance": ["Dialog behavior test proves the current invite URL is copied"]
+          "acceptance": [
+            "Dialog behavior test proves the current invite URL is copied"
+          ]
         }
       ],
       "edgeOrRecoveryStories": [],
-      "implementationDecisions": ["Reuse the existing invite URL source and dialog props"],
-      "testingDecisions": ["Test through the share dialog behavior, not an internal helper"],
-      "outOfScope": ["invite generation", "role controls", "analytics", "clipboard fallback redesign"],
-      "furtherNotes": ["Richer copied-state feedback is a separate UX requirement"]
+      "implementationDecisions": [
+        "Reuse the existing invite URL source and dialog props"
+      ],
+      "testingDecisions": [
+        "Test through the share dialog behavior, not an internal helper"
+      ],
+      "outOfScope": [
+        "invite generation",
+        "role controls",
+        "analytics",
+        "clipboard fallback redesign"
+      ],
+      "furtherNotes": [
+        "Richer copied-state feedback is a separate UX requirement"
+      ]
     },
     "externalBestPractice": {
       "needed": false,
@@ -63,7 +78,10 @@
       {
         "questionId": "D1",
         "gate": "approach-approval",
-        "knownEvidence": ["Existing dialog already renders the invite URL", "The patch stays inside one UI/test surface"],
+        "knownEvidence": [
+          "Existing dialog already renders the invite URL",
+          "The patch stays inside one UI/test surface"
+        ],
         "recommendation": "Approve the tiny-design copy action",
         "options": [
           {
@@ -87,7 +105,28 @@
         "impact": "cc-do keeps implementation inside the share dialog and avoids backend or permission work",
         "status": "answered"
       }
-    ]
+    ],
+    "aiLeverageDecisionLens": {
+      "realUserOrOperator": "workspace member sharing an invite",
+      "statusQuoWorkaround": "manual selection and copy of the visible invite URL",
+      "humanTeamEffortForFullScope": "about half a day for one engineer including test and review",
+      "ccAgentEffortForFullScope": "about 20 minutes for a targeted UI patch plus test update",
+      "aiCompressionRatio": "roughly 10x for this bounded UI slice",
+      "completeLakeBoundary": "copy action, current invite URL source, copied-state feedback, and dialog behavior test",
+      "oceanBoundary": "invite generation, permissions, analytics, or clipboard fallback redesign",
+      "scopeRecommendation": "boil-lake",
+      "costModel": {
+        "agentTime": "low",
+        "humanReviewTime": "low",
+        "verificationCost": "targeted dialog test",
+        "maintenanceCost": "low while scoped to the dialog",
+        "failureCost": "sharing friction remains",
+        "reversibility": "reversible UI patch"
+      },
+      "verdict": "boil-lake",
+      "missingEvidenceOrPivotReason": "",
+      "impactOnApprovedDirection": "cover the full same-dialog copy lake instead of only a happy-path button render"
+    }
   },
   "currentTaskId": null,
   "activePhase": null,

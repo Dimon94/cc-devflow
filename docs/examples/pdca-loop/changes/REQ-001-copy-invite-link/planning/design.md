@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-001.v1`
 - Design version: `design.v1`
-- CC-Plan skill version: `3.8.0`
+- CC-Plan skill version: `3.8.1`
 - Requirement ID: `REQ-001`
 - Design mode: `tiny-design`
 - Why this stays `tiny-design`: the patch is limited to an existing dialog and test file, with no API or data model changes
@@ -67,6 +67,20 @@
 - Risk: copied-state feedback may be too subtle for users
 - Mitigation: keep the first patch minimal and log a follow-up roadmap item if support friction remains
 
+## AI Leverage Decision Lens
+
+- Real user / operator: workspace member sharing an invite
+- Status quo workaround: manually select the visible invite URL
+- Human-team effort for full scope: about half a day for one engineer including test and review
+- CC / agent effort for full scope: about 20 minutes for a targeted UI patch plus test update
+- AI compression ratio: roughly 10x for this bounded UI slice
+- Complete-lake boundary: copy action, current invite URL source, copied-state feedback, and dialog behavior test
+- Ocean boundary: invite generation, permissions, analytics, and clipboard fallback redesign
+- Scope recommendation: `boil-lake`
+- Cost model: low agent time, low human review time, targeted dialog test, no backend maintenance cost, reversible UI patch
+- Verdict: `boil-lake`
+- Missing evidence or pivot reason: none
+
 ## External Best-Practice Validation
 
 - Needed: No
@@ -85,6 +99,7 @@
 - Ambiguity scan: pass; execution does not need to re-decide button placement or clipboard source
 - Feasibility scan: pass; existing dialog and tests already cover the target surface
 - PRD brief scan: pass; problem, story, implementation decision, testing decision, and out-of-scope are durable
+- AI Leverage Decision Lens scan: pass; bounded same-dialog lake is cheap enough to complete, not just render a happy-path button
 - External best-practice scan: pass; not needed for a repo-local tiny design
 - Decision question scan: pass; `D1` approved the tiny-design copy-action boundary
 - Final recommendation: approved as `tiny-design`

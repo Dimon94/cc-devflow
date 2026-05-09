@@ -3,7 +3,7 @@
 ## Roadmap Meta
 
 - Roadmap version: `roadmap.v3`
-- Skill version: `5.1.0`
+- Skill version: `5.2.0`
 - Status: `active`
 - Last updated: `2026-04-16`
 - Owner / decider: `product-owner`
@@ -26,6 +26,21 @@
 - Hard constraints: keep export local to the current admin console
 - Adoption / trust bottleneck: admins want proof they can take activity history out of the UI cleanly
 - Known unknowns: whether CSV alone is enough or if JSON export will be needed later
+
+## AI Leverage Route Lens
+
+- Real user / operator: workspace admin preparing weekly activity review notes
+- Status quo workaround: manually copy visible audit rows into an internal note
+- Human-team effort for full scope: about one day for an engineer to implement, test, and document the local export
+- CC / agent effort for full scope: about 30 minutes for visible-row CSV export plus targeted test and lint
+- AI compression ratio: roughly 10x for the bounded local export path
+- Complete-lake boundary: visible-row CSV export, panel action, current data source, targeted panel test, and lint
+- Ocean boundary: JSON export, scheduled reporting, shared reporting backend, and cross-panel reporting platform
+- Scope recommendation: `boil-lake`
+- First success signal: admins finish weekly review without manual row copying
+- Kill signal: implementation requires shared reporting pipeline redesign
+- Verdict: `boil-lake`
+- Missing evidence before ready-for-cc-plan: none
 
 ## Recommended Route
 

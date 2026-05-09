@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-002.v2`
 - Design version: `design.v2`
-- CC-Plan skill version: `3.8.0`
+- CC-Plan skill version: `3.8.1`
 - Source roadmap item: `RM-010`
 - Source roadmap version: `roadmap.v2`
 
@@ -22,6 +22,7 @@
   - Implementation decisions: reuse invite engine, billing checks, and audit contract after the row-outcome matrix is approved
   - Testing decisions: test bulk-import rules, admin upload flow, and audit mapping
   - Out of scope: SCIM provisioning, background jobs, rollback wizard
+- AI Leverage Decision Lens: sharp-wedge; AI can implement this bounded import path fast, but cc-check may still block final proof if row semantics drift
 - Read first:
   - `design.md`
   - `src/admin/BulkInvitePanel.tsx`

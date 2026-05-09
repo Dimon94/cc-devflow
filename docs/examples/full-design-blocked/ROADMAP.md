@@ -3,7 +3,7 @@
 ## Roadmap Meta
 
 - Roadmap version: `roadmap.v2`
-- Skill version: `5.1.0`
+- Skill version: `5.2.0`
 - Status: `active`
 - Last updated: `2026-04-16`
 - Owner / decider: `product-owner`
@@ -26,6 +26,21 @@
 - Hard constraints: billing and audit behavior must remain trustworthy
 - Adoption / trust bottleneck: admins will not trust bulk invite if seat usage and audit logs drift
 - Known unknowns: how duplicate users, seat limits, and partial imports should behave
+
+## AI Leverage Route Lens
+
+- Real user / operator: workspace admin onboarding 20-200 collaborators
+- Status quo workaround: paste individual invite emails or coordinate in external spreadsheets
+- Human-team effort for full scope: multiple weeks across product, engineering, billing, and support review
+- CC / agent effort for full scope: several hours once row semantics are approved, but unbounded before that
+- AI compression ratio: high after semantics freeze, low while the product contract is ambiguous
+- Complete-lake boundary: row classification, admin upload flow, billing-seat checks, and audit mapping after rule approval
+- Ocean boundary: SCIM, background retries, rollback wizard, and unspecified billing semantics
+- Scope recommendation: `sharp-wedge`
+- First success signal: admins can predict duplicate, invalid, and over-limit outcomes
+- Kill signal: duplicate and seat-limit semantics remain unresolved
+- Verdict: `sharp-wedge`
+- Missing evidence before ready-for-cc-plan: none recorded at route handoff; cc-check later reopened duplicate, invalid-row, partial-success, and seat-limit semantics
 
 ## Route Options
 

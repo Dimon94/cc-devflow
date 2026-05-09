@@ -6,7 +6,7 @@
   "requirementId": "REQ-003",
   "requirementVersion": "REQ-003.v1",
   "planningMeta": {
-    "reqPlanSkillVersion": "3.8.0",
+    "reqPlanSkillVersion": "3.8.1",
     "designVersion": "design.v1",
     "approvedAt": "2026-04-16T13:10:00.000Z",
     "approvedBy": "user",
@@ -14,21 +14,36 @@
     "requirementBrief": {
       "problemStatement": "Admins can review audit summary rows in the UI, but weekly reporting requires manual copying.",
       "solutionSummary": "Add a CSV download action for the currently visible audit summary rows.",
-      "actors": ["workspace admin reviewing weekly activity"],
+      "actors": [
+        "workspace admin reviewing weekly activity"
+      ],
       "userStories": [
         {
           "id": "US-001",
           "actor": "workspace admin",
           "want": "download visible audit summary rows as CSV",
           "benefit": "include them in weekly reporting without manual copying",
-          "acceptance": ["Panel behavior test proves the export action uses current summary rows"]
+          "acceptance": [
+            "Panel behavior test proves the export action uses current summary rows"
+          ]
         }
       ],
       "edgeOrRecoveryStories": [],
-      "implementationDecisions": ["Export only rows already visible in the panel", "Keep CSV as the only output format"],
-      "testingDecisions": ["Test through the admin panel action and visible row data"],
-      "outOfScope": ["JSON export", "scheduled reporting", "shared reporting backend"],
-      "furtherNotes": ["Richer machine-readable exports should become a separate requirement"]
+      "implementationDecisions": [
+        "Export only rows already visible in the panel",
+        "Keep CSV as the only output format"
+      ],
+      "testingDecisions": [
+        "Test through the admin panel action and visible row data"
+      ],
+      "outOfScope": [
+        "JSON export",
+        "scheduled reporting",
+        "shared reporting backend"
+      ],
+      "furtherNotes": [
+        "Richer machine-readable exports should become a separate requirement"
+      ]
     },
     "externalBestPractice": {
       "needed": false,
@@ -47,7 +62,10 @@
       {
         "questionId": "D1",
         "gate": "approach-approval",
-        "knownEvidence": ["Existing admin panel already owns the visible summary rows", "No reporting backend is needed for the first useful export"],
+        "knownEvidence": [
+          "Existing admin panel already owns the visible summary rows",
+          "No reporting backend is needed for the first useful export"
+        ],
         "recommendation": "Approve the tiny-design CSV export",
         "options": [
           {
@@ -71,7 +89,28 @@
         "impact": "cc-do exports only visible rows from the current panel and avoids new reporting contracts",
         "status": "answered"
       }
-    ]
+    ],
+    "aiLeverageDecisionLens": {
+      "realUserOrOperator": "workspace admin preparing weekly review notes",
+      "statusQuoWorkaround": "manual copy of visible audit rows",
+      "humanTeamEffortForFullScope": "about one day for an engineer to implement, test, and document the local export",
+      "ccAgentEffortForFullScope": "about 30 minutes for visible-row CSV export plus targeted test and lint",
+      "aiCompressionRatio": "roughly 10x for the bounded local export path",
+      "completeLakeBoundary": "visible-row CSV export, panel action, current data source, targeted panel test, and lint",
+      "oceanBoundary": "JSON export, scheduled reporting, shared reporting backend, and cross-panel reporting platform",
+      "scopeRecommendation": "boil-lake",
+      "costModel": {
+        "agentTime": "low",
+        "humanReviewTime": "low",
+        "verificationCost": "targeted panel test plus lint",
+        "maintenanceCost": "low while scoped to visible rows",
+        "failureCost": "admins keep copying rows manually",
+        "reversibility": "reversible UI action"
+      },
+      "verdict": "boil-lake",
+      "missingEvidenceOrPivotReason": "",
+      "impactOnApprovedDirection": "complete the local visible-row export lake while deferring reporting platform work"
+    }
   },
   "currentTaskId": null,
   "activePhase": null,
@@ -83,19 +122,45 @@
       "phase": 1,
       "parallel": false,
       "dependsOn": [],
-      "touches": ["audit-summary", "tests"],
-      "files": ["src/admin/AuditSummaryPanel.test.tsx"],
-      "run": ["npm test -- src/admin/AuditSummaryPanel.test.tsx"],
-      "checks": ["test fails before implementation"],
-      "acceptance": ["the missing download action is reproduced as a failing test"],
-      "verification": ["npm test -- src/admin/AuditSummaryPanel.test.tsx"],
-      "evidence": ["failing test output"],
+      "touches": [
+        "audit-summary",
+        "tests"
+      ],
+      "files": [
+        "src/admin/AuditSummaryPanel.test.tsx"
+      ],
+      "run": [
+        "npm test -- src/admin/AuditSummaryPanel.test.tsx"
+      ],
+      "checks": [
+        "test fails before implementation"
+      ],
+      "acceptance": [
+        "the missing download action is reproduced as a failing test"
+      ],
+      "verification": [
+        "npm test -- src/admin/AuditSummaryPanel.test.tsx"
+      ],
+      "evidence": [
+        "failing test output"
+      ],
       "context": {
-        "readFiles": ["design.md", "tasks.md", "src/admin/AuditSummaryPanel.tsx"],
-        "commands": ["npm test -- src/admin/AuditSummaryPanel.test.tsx"],
-        "notes": ["stay inside the current audit summary panel"]
+        "readFiles": [
+          "design.md",
+          "tasks.md",
+          "src/admin/AuditSummaryPanel.tsx"
+        ],
+        "commands": [
+          "npm test -- src/admin/AuditSummaryPanel.test.tsx"
+        ],
+        "notes": [
+          "stay inside the current audit summary panel"
+        ]
       },
-      "reviews": { "spec": "pass", "code": "pass" },
+      "reviews": {
+        "spec": "pass",
+        "code": "pass"
+      },
       "status": "passed",
       "attempts": 1,
       "maxRetries": 1
@@ -106,20 +171,48 @@
       "type": "IMPL",
       "phase": 1,
       "parallel": false,
-      "dependsOn": ["T001"],
-      "touches": ["audit-summary"],
-      "files": ["src/admin/AuditSummaryPanel.tsx"],
-      "run": ["npm test -- src/admin/AuditSummaryPanel.test.tsx"],
-      "checks": ["panel test passes"],
-      "acceptance": ["admins can trigger a CSV download from the existing summary panel"],
-      "verification": ["npm test -- src/admin/AuditSummaryPanel.test.tsx"],
-      "evidence": ["passing test output", "checkpoint summary"],
+      "dependsOn": [
+        "T001"
+      ],
+      "touches": [
+        "audit-summary"
+      ],
+      "files": [
+        "src/admin/AuditSummaryPanel.tsx"
+      ],
+      "run": [
+        "npm test -- src/admin/AuditSummaryPanel.test.tsx"
+      ],
+      "checks": [
+        "panel test passes"
+      ],
+      "acceptance": [
+        "admins can trigger a CSV download from the existing summary panel"
+      ],
+      "verification": [
+        "npm test -- src/admin/AuditSummaryPanel.test.tsx"
+      ],
+      "evidence": [
+        "passing test output",
+        "checkpoint summary"
+      ],
       "context": {
-        "readFiles": ["design.md", "tasks.md", "src/admin/AuditSummaryPanel.test.tsx"],
-        "commands": ["npm test -- src/admin/AuditSummaryPanel.test.tsx"],
-        "notes": ["reuse visible summary rows as the export source"]
+        "readFiles": [
+          "design.md",
+          "tasks.md",
+          "src/admin/AuditSummaryPanel.test.tsx"
+        ],
+        "commands": [
+          "npm test -- src/admin/AuditSummaryPanel.test.tsx"
+        ],
+        "notes": [
+          "reuse visible summary rows as the export source"
+        ]
       },
-      "reviews": { "spec": "pass", "code": "pass" },
+      "reviews": {
+        "spec": "pass",
+        "code": "pass"
+      },
       "status": "passed",
       "attempts": 1,
       "maxRetries": 1
@@ -130,29 +223,52 @@
       "type": "OTHER",
       "phase": 2,
       "parallel": false,
-      "dependsOn": ["T002"],
-      "touches": ["quality-gates"],
-      "files": ["src/admin/AuditSummaryPanel.tsx", "src/admin/AuditSummaryPanel.test.tsx"],
+      "dependsOn": [
+        "T002"
+      ],
+      "touches": [
+        "quality-gates"
+      ],
+      "files": [
+        "src/admin/AuditSummaryPanel.tsx",
+        "src/admin/AuditSummaryPanel.test.tsx"
+      ],
       "run": [
         "npm test -- src/admin/AuditSummaryPanel.test.tsx",
         "npm run lint -- src/admin/AuditSummaryPanel.tsx"
       ],
-      "checks": ["targeted tests pass", "lint passes"],
-      "acceptance": ["fresh verification evidence exists for local handoff"],
+      "checks": [
+        "targeted tests pass",
+        "lint passes"
+      ],
+      "acceptance": [
+        "fresh verification evidence exists for local handoff"
+      ],
       "verification": [
         "npm test -- src/admin/AuditSummaryPanel.test.tsx",
         "npm run lint -- src/admin/AuditSummaryPanel.tsx"
       ],
-      "evidence": ["passing test output", "clean lint output"],
+      "evidence": [
+        "passing test output",
+        "clean lint output"
+      ],
       "context": {
-        "readFiles": ["tasks.md", "task-manifest.json"],
+        "readFiles": [
+          "tasks.md",
+          "task-manifest.json"
+        ],
         "commands": [
           "npm test -- src/admin/AuditSummaryPanel.test.tsx",
           "npm run lint -- src/admin/AuditSummaryPanel.tsx"
         ],
-        "notes": ["remote push is intentionally out of scope for this example"]
+        "notes": [
+          "remote push is intentionally out of scope for this example"
+        ]
       },
-      "reviews": { "spec": "pass", "code": "pass" },
+      "reviews": {
+        "spec": "pass",
+        "code": "pass"
+      },
       "status": "passed",
       "attempts": 1,
       "maxRetries": 1

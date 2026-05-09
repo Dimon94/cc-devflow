@@ -5,7 +5,7 @@
   },
   "meta": {
     "roadmapVersion": "roadmap.v2",
-    "skillVersion": "5.1.0",
+    "skillVersion": "5.2.0",
     "status": "active",
     "lastUpdated": "2026-04-19",
     "currentFocusStage": "Stage 2"
@@ -14,7 +14,23 @@
     "planningPosture": "",
     "evidenceMaturity": "",
     "canonicalTerms": [],
-    "durableDecisionSources": []
+    "durableDecisionSources": [],
+    "aiLeverageRouteLens": {
+      "realUserOrOperator": "workspace admin onboarding 20-200 collaborators",
+      "statusQuoWorkaround": "paste individual invite emails or coordinate in spreadsheets",
+      "humanTeamEffortForFullScope": "multiple weeks across product, engineering, billing, and support review",
+      "ccAgentEffortForFullScope": "several hours once row semantics are approved, but unbounded before that",
+      "aiCompressionRatio": "high after semantics freeze, low while the product contract is ambiguous",
+      "completeLakeBoundary": "row classification, admin upload flow, billing-seat checks, and audit mapping after rule approval",
+      "oceanBoundary": "SCIM, background retries, rollback wizard, and unspecified billing semantics",
+      "scopeRecommendation": "sharp-wedge",
+      "firstSuccessSignal": "admins can predict duplicate, invalid, and over-limit outcomes",
+      "killSignal": "duplicate and seat-limit semantics remain unresolved",
+      "verdict": "sharp-wedge",
+      "missingEvidence": [
+        "none recorded at route handoff; cc-check later reopened duplicate, invalid-row, partial-success, and seat-limit semantics"
+      ]
+    }
   },
   "evidence": [],
   "route": {
