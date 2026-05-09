@@ -49,6 +49,25 @@
 
 > 顶部 handoff 只保留执行者必须知道的现实，不重复讲背景故事。
 
+## Execution Protocol
+
+ClaudeCode / Codex 执行本计划时，必须把本文件当成任务模板合同，而不是普通 TODO 列表。
+
+- Template source: `assets/TASKS_TEMPLATE.md`
+- Task selection: read `planning/task-manifest.json.currentTaskId`; if empty, run the ready-task selector before choosing work.
+- Task block rule: read the full task block before coding; title-only execution is invalid.
+- Completion rule: after verification and review gates pass, run the completion script; do not manually edit checkbox, status, or `currentTaskId`.
+- Completion failure: if the script fails, fix the missing checkpoint / review / dependency evidence and rerun it. Do not bypass it by editing JSON or Markdown.
+
+```bash
+SCRIPT_ROOT=".claude/skills/cc-do/scripts"
+if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then
+  SCRIPT_ROOT=".codex/skills/cc-do/scripts"
+fi
+bash "$SCRIPT_ROOT/select-ready-tasks.sh" --manifest devflow/changes/<change-key>/planning/task-manifest.json
+bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task <task-id>
+```
+
 ## Implementation Surface Map
 
 | Surface | Responsibility | Tasks | Coupling risk |
@@ -74,6 +93,7 @@
   Read first: `design.md`, `tasks.md`
   Verification: `npm test -- path/to/test`
   Evidence: failing output
+  Completion: after failing evidence and required checkpoint/review records exist, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task T001`; do not hand-edit status.
   Coverage: unit / integration / e2e / eval; regression: yes / no
   Spec-style test name: 测试名像规格说明，描述可观察行为
   One logical behavior: yes / no
@@ -92,6 +112,7 @@
   Read first: `design.md`, `path/to/test`
   Verification: `npm test -- path/to/test`
   Evidence: passing output + checkpoint
+  Completion: after green evidence and required checkpoint/review records exist, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task T002`; do not hand-edit status.
   Green minimality guard: 只写当前红灯要求的最小实现，不预铺未来行为、分支或 API
   Vertical slice: Slice 1
   Ready when: T001 已经见红，且当前 touched files 不和其他并行任务冲突
@@ -105,6 +126,7 @@
   Read first: `design.md`, `tasks.md`
   Verification: `npm test -- path/to/other.test`
   Evidence: failing output
+  Completion: after failing evidence and required checkpoint/review records exist, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task T003`; do not hand-edit status.
   Coverage: unit / integration / e2e / eval; regression: yes / no
   Spec-style test name: 测试名像规格说明，描述可观察行为
   One logical behavior: yes / no
@@ -123,6 +145,7 @@
   Read first: `design.md`, `path/to/other.test`
   Verification: `npm test -- path/to/other.test`
   Evidence: passing output + review notes
+  Completion: after green evidence and required checkpoint/review records exist, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task T004`; do not hand-edit status.
   Green minimality guard: 只写当前红灯要求的最小实现，不预铺未来行为、分支或 API
   Vertical slice: Slice 2
   Ready when: T003 已经见红，且文件触点与其他 `[P]` 任务不冲突
@@ -136,6 +159,7 @@
   Read first: `design.md`, green test outputs
   Verification: `npm test -- path/to/test path/to/other.test`
   Evidence: refactor diff + repeated green output
+  Completion: after refactor evidence and required checkpoint/review records exist, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task T005`; do not hand-edit status.
   Refactor candidates: duplication / long method / shallow module / feature envy / primitive obsession / naming / >3 nesting / newly exposed old code smell
   Ready when: 对应 Red/Green 任务都已完成，且清理不会扩大 scope
 
@@ -146,6 +170,7 @@
   Read first: `tasks.md`, `task-manifest.json`
   Verification: `npm test && npm run lint`
   Evidence: gate output
+  Completion: after gate evidence and required checkpoint/review records exist, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task T006`; do not hand-edit status.
   Ready when: 当前 requirement 的实现任务都已收口
 
 > `[P]` 只表示“依赖满足后有资格并行”，不表示可以无脑同时开发。
@@ -167,3 +192,4 @@
 - Refactor task 要清理哪些具体坏味道，且只在相关测试已绿后执行
 - 测试是否会在内部重构后继续成立，而不是绑定私有函数、调用次数或临时结构
 - 它属于哪个 tracer bullet 垂直切片，完成后哪个可观察行为被证明
+- 它完成后要运行哪条 `mark-task-complete.sh` 命令，以及为什么不能手工改状态

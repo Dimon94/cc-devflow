@@ -1,5 +1,11 @@
 # CC-Do Skill Changelog
 
+## v1.6.3 - 2026-05-10
+
+- require task completion to go through `scripts/mark-task-complete.sh` instead of manual checkbox or manifest edits
+- add a ClaudeCode / Codex task status protocol so execution reads full task blocks and advances `currentTaskId` through scripts
+- document failure behavior when the completion script rejects missing checkpoint or review-gate evidence
+
 ## v1.6.2 - 2026-05-06
 
 - absorb the external TDD skill's execution details into native `cc-do`: spec-style test names, one logical behavior per Red, and public verification paths

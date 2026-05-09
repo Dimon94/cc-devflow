@@ -1,6 +1,6 @@
 ---
 name: cc-do
-version: 1.6.2
+version: 1.6.3
 description: Use when implementing planned tasks, resuming interrupted work, applying a frozen investigation handoff, or landing review feedback after cc-plan or cc-investigate.
 triggers:
   - 开始做 T003
@@ -44,6 +44,7 @@ entry_gate:
 exit_criteria:
   - The current task has red/green evidence, public-seam test quality evidence, review evidence, and a resumable checkpoint trail.
   - Red evidence proves one observable behavior through a public verification path; Green evidence shows only the minimal production change; Refactor evidence names the concrete smell removed or says why none was needed.
+  - The completed task was closed through `scripts/mark-task-complete.sh`; manual checkbox/status edits are not valid completion evidence.
   - Execution leaves the next verifier enough runtime truth to judge the task without chat memory.
   - The honest next step is cc-check or an explicit reroute.
 reroutes:
@@ -234,6 +235,27 @@ Refactor 只能发生在 Green 之后。优先处理当前 slice 暴露出的重
 13. 失败和阻塞都要留下恢复证据。
 14. 给 subagent 的输入必须包含：当前进度、当前任务全文、依赖状态、必读文件、验收标准、可信命令。
 15. 三次失败修补后必须先质疑调查合同或设计合同，而不是继续堆补丁。
+16. 完成任务后必须调用 `scripts/mark-task-complete.sh` 同步 `planning/task-manifest.json` 和 `planning/tasks.md`；禁止手工改 checkbox、status、currentTaskId 来冒充完成。
+17. 如果 `mark-task-complete.sh` 失败，说明 checkpoint、review gate 或任务依赖还没闭合；先修证据，再重跑脚本，不准绕过。
+
+## Task Status Protocol
+
+ClaudeCode / Codex 执行 `cc-do` 时必须把任务状态当成状态机，不是普通 Markdown TODO。
+
+1. 开始前用 `planning/task-manifest.json.currentTaskId` 或 ready-task 脚本确认当前任务。
+2. 执行时读取完整 task block，包含 Goal、TDD phase、Files、Read first、Verification、Evidence、test seam、mock boundary、minimality / refactor 字段。
+3. 完成验证和 review gate 后运行完成脚本：
+
+```bash
+SCRIPT_ROOT=".claude/skills/cc-do/scripts"
+if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then
+  SCRIPT_ROOT=".codex/skills/cc-do/scripts"
+fi
+bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task <task-id>
+```
+
+4. 脚本会先跑任务 gate，再同步 manifest、checkbox、`currentTaskId` 和整体状态。不要手动改这些字段。
+5. 如果任务不能完成，写 checkpoint / event / blocker；不要把失败任务标成完成。
 
 ## Exit Criteria
 

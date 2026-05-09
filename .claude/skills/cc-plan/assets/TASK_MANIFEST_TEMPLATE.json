@@ -28,7 +28,7 @@
     ]
   },
   "planningMeta": {
-    "reqPlanSkillVersion": "3.8.1",
+    "reqPlanSkillVersion": "3.8.2",
     "designVersion": "design.v1",
     "approvedAt": "2026-04-15T12:00:00.000Z",
     "approvedBy": "user",
@@ -130,6 +130,40 @@
         "status": "answered"
       }
     ]
+  },
+  "executionProtocol": {
+    "templateCompliance": {
+      "required": true,
+      "sourceTemplate": "assets/TASKS_TEMPLATE.md",
+      "taskBlockMustInclude": [
+        "Goal",
+        "TDD phase",
+        "Files",
+        "Read first",
+        "Verification",
+        "Evidence",
+        "Test seam",
+        "Public verification path",
+        "Allowed mocks",
+        "Completion"
+      ],
+      "titleOnlyTasks": "forbidden"
+    },
+    "selection": {
+      "sourceOfTruth": "planning/task-manifest.json.currentTaskId",
+      "commandTemplate": "SCRIPT_ROOT=\".claude/skills/cc-do/scripts\"; if [[ ! -d \"$SCRIPT_ROOT\" && -d \".codex/skills/cc-do/scripts\" ]]; then SCRIPT_ROOT=\".codex/skills/cc-do/scripts\"; fi; bash \"$SCRIPT_ROOT/select-ready-tasks.sh\" --manifest devflow/changes/<change-key>/planning/task-manifest.json"
+    },
+    "completion": {
+      "manualStatusEdit": "forbidden",
+      "commandTemplate": "SCRIPT_ROOT=\".claude/skills/cc-do/scripts\"; if [[ ! -d \"$SCRIPT_ROOT\" && -d \".codex/skills/cc-do/scripts\" ]]; then SCRIPT_ROOT=\".codex/skills/cc-do/scripts\"; fi; bash \"$SCRIPT_ROOT/mark-task-complete.sh\" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task <task-id>",
+      "failurePolicy": "Do not hand-edit status; fix missing checkpoint, review gate, or dependency evidence and rerun the script.",
+      "updates": [
+        "planning/task-manifest.json.tasks[].status",
+        "planning/task-manifest.json.currentTaskId",
+        "planning/task-manifest.json.status",
+        "planning/tasks.md checkbox"
+      ]
+    }
   },
   "sourceEvidence": [
     {
@@ -246,6 +280,20 @@
       "greenMinimality": {
         "guard": "Implement only the code needed to pass this Red behavior",
         "noSpeculativeBranches": true
+      },
+      "completion": {
+        "command": "SCRIPT_ROOT=\".claude/skills/cc-do/scripts\"; if [[ ! -d \"$SCRIPT_ROOT\" && -d \".codex/skills/cc-do/scripts\" ]]; then SCRIPT_ROOT=\".codex/skills/cc-do/scripts\"; fi; bash \"$SCRIPT_ROOT/mark-task-complete.sh\" --manifest devflow/changes/REQ-XXX-short-name/planning/task-manifest.json --tasks devflow/changes/REQ-XXX-short-name/planning/tasks.md --task T001",
+        "requiredBeforeCompletion": [
+          "verification evidence captured",
+          "checkpoint written",
+          "spec review gate recorded",
+          "code review gate recorded"
+        ],
+        "forbiddenShortcuts": [
+          "manual checkbox edit",
+          "manual manifest status edit",
+          "leaving currentTaskId stale"
+        ]
       },
       "refactorCandidates": [
         "duplication",

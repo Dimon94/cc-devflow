@@ -1,5 +1,11 @@
 # CC-Plan Skill Changelog
 
+## v3.8.2 - 2026-05-10
+
+- require `cc-plan` to generate executable tasks from the bundled task template instead of loose Markdown checklists
+- add a durable execution protocol for ClaudeCode and Codex so ready-task selection and task completion are script-driven
+- require task manifests to record template compliance and `mark-task-complete.sh` commands so task status is not hand-edited or forgotten
+
 ## v3.8.1 - 2026-05-09
 
 - add the AI Leverage Decision Lens before approach approval so plans must name the real user/operator, current workaround, human-vs-agent effort, complete-lake boundary, ocean boundary, scope recommendation, cost model, and boil-lake/sharp-wedge/needs-evidence/pivot verdict

@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.8.1
+version: 3.8.2
 description: Use when a requirement, roadmap item, or bug needs scope clarification, design decisions, and executable task breakdown before coding starts.
 triggers:
   - 帮我规划这个需求
@@ -18,6 +18,8 @@ reads:
   - assets/TASKS_TEMPLATE.md
   - assets/TASK_MANIFEST_TEMPLATE.json
   - references/planning-contract.md
+  - ../cc-do/scripts/select-ready-tasks.sh
+  - ../cc-do/scripts/mark-task-complete.sh
   - ../cc-roadmap/scripts/locate-roadmap-item.sh
   - ../cc-roadmap/scripts/sync-roadmap-progress.sh
 writes:
@@ -43,6 +45,8 @@ entry_gate:
   - If the raw ask spans multiple independent subsystems, split it back into roadmap stages or separate REQ/FIX candidates before asking implementation details.
   - "For non-trivial designs, compare named option roles: minimal viable, ideal architecture, and optional hybrid. Do not default to smallest unless it best serves the goal."
   - Plan executable work as Red/Green/Refactor by default; identify the first failing test before any production implementation task, or write an explicit TDD exception with replacement evidence.
+  - Generate `planning/tasks.md` from `assets/TASKS_TEMPLATE.md` semantics, including every required task field, the execution protocol, and the exact task completion command; do not free-form a loose checklist.
+  - Generate `planning/task-manifest.json.executionProtocol` so ClaudeCode / Codex execution can select ready tasks and mark completion through scripts instead of hand-editing status.
   - For behavior changes, freeze the spec-style test name, one logical behavior, public verification path, and interface-testability decision before task split.
   - "Before approach approval, run the AI Leverage Decision Lens: real user/operator, status quo workaround, human-vs-agent effort, complete-lake boundary, ocean boundary, scope recommendation, and boil-lake/sharp-wedge/needs-evidence/pivot verdict."
   - Before approach approval, decide whether external best-practice validation could materially change the plan; if yes, ask the user through the Decision Question Protocol before any web or external lookup.
@@ -53,6 +57,8 @@ entry_gate:
 exit_criteria:
   - planning/design.md captures the approved solution, PRD-grade requirement brief, boundaries, review conclusions, and execution edge cases.
   - planning/tasks.md, planning/task-manifest.json, and change-meta.json are explicit enough that cc-do can continue without chat memory.
+  - planning/tasks.md contains the task-template compliance section and script-based completion protocol, and every task block includes its completion command.
+  - task-manifest.json records `executionProtocol.templateCompliance.required = true` and a `completion.commandTemplate` that calls `mark-task-complete.sh`.
   - The task breakdown preserves test-first execution; failing-test tasks precede implementation tasks, refactor checkpoints are visible, and any TDD exception is justified.
   - "Testability decisions make the public seam natural: small interface, deep implementation, injected boundary dependencies, returned results where practical, and boundary mocks only where the system genuinely leaves the repo."
   - AI Leverage Decision Lens is recorded in planning/design.md and task-manifest.json.planningMeta.aiLeverageDecisionLens before executable tasks are generated.
@@ -181,10 +187,11 @@ bash .claude/skills/cc-plan/scripts/next-change-key.sh --prefix REQ --descriptio
    - 记录 source handoff、PRD-grade requirement brief、问题定义、备选方案、批准方案、设计决策、review gate、执行边界
 2. `planning/tasks.md`
    - 只保留可执行任务和执行 handoff
-   - 顶部写清 frozen decisions、read first、commands to trust、TDD plan、并行边界
+   - 顶部写清 frozen decisions、read first、commands to trust、TDD plan、并行边界、任务模板遵循规则、任务完成脚本
 3. `planning/task-manifest.json`
    - 从 `planning/tasks.md` 编译出的机器真相源
    - 只服务执行与调度，不再承担人类阅读的叙事职责
+   - 必须包含 `executionProtocol`：模板字段完整性、ready-task 选择命令、任务完成命令、禁止手工修改状态
 4. `change-meta.json`
    - 绑定 roadmap item、primary capability、secondary capabilities、expected spec delta、spec sync status
    - 作为 `cc-do`、`cc-check`、`cc-act` 的 capability 机器真相源
@@ -198,6 +205,39 @@ bash .claude/skills/cc-plan/scripts/next-change-key.sh --prefix REQ --descriptio
 - `handoff/resume-index.md`
 
 这些信息如果仍然需要，必须并入 `planning/design.md` 或 `planning/tasks.md`，而不是再拆新文件。
+
+## ClaudeCode / Codex Execution Compliance
+
+`cc-plan` 不能只产出“看起来像任务”的列表。它必须把执行者遵循任务模板和状态脚本的能力写进 durable artifacts，尤其是 ClaudeCode 这类容易把 Markdown checklist 当普通 TODO 的宿主。
+
+生成 `planning/tasks.md` 时必须包含一个清晰的 `Execution Protocol` 区块，写明：
+
+1. 执行者必须逐个读取完整 task block，不得只看标题或 checkbox。
+2. 当前可做任务由 `planning/task-manifest.json.currentTaskId` 和 ready-task 脚本决定，不得凭聊天记忆挑任务。
+3. 每个 task 必须保留模板字段：Goal、TDD phase、Files、Read first、Verification、Evidence、test seam、mock boundary、green minimality 或 refactor candidates。
+4. 任务完成后必须调用 `mark-task-complete.sh` 同步 `planning/task-manifest.json` 和 `planning/tasks.md`；禁止手工把 checkbox 改成 `[x]`，禁止只改 manifest，禁止完成后不标记。
+5. 如果完成脚本失败，不能手改绕过；先修复缺失 gate、checkpoint 或 review evidence，再重跑脚本。
+
+生成 `planning/task-manifest.json` 时必须写入：
+
+- `executionProtocol.templateCompliance.required = true`
+- `executionProtocol.templateCompliance.sourceTemplate = "assets/TASKS_TEMPLATE.md"`
+- `executionProtocol.selection.commandTemplate`
+- `executionProtocol.completion.commandTemplate`
+- `executionProtocol.completion.manualStatusEdit = "forbidden"`
+- 每个 `tasks[]` 的 `completion` 字段，至少包含 command、requiredBeforeCompletion、forbiddenShortcuts。
+
+脚本路径必须支持 ClaudeCode 和 Codex mirror：
+
+```bash
+SCRIPT_ROOT=".claude/skills/cc-do/scripts"
+if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then
+  SCRIPT_ROOT=".codex/skills/cc-do/scripts"
+fi
+bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task <task-id>
+```
+
+这段命令要出现在 `planning/tasks.md` 的 `Execution Protocol` 和每个 task 的 `Completion` 字段里。执行者不应该再问“怎么标记完成”。
 
 ## Entry Gate
 
@@ -503,7 +543,9 @@ STOP: wait for the user answer before continuing.
 - `planning/design.md` 必须说明接口为什么可测：依赖注入、可断言返回、系统边界 adapter 形状、以及为什么测试不需要 mock 内部协作者
 - `planning/design.md` 必须暴露 assumptions preview、ambiguity gate、source trust boundary、external best-practice validation、external conflict buckets 和 bounded review loop；这些是阻止模糊需求进入执行期的合同，不是可选美化项
 - `planning/tasks.md` 只保留能直接执行的任务和 handoff，不再承载重复背景介绍；行为变更默认拆成 tracer bullet 形式的 `[TEST] -> [IMPL] -> [REFACTOR]`，且 Red task 明确 spec-style test name、单一行为、公共 seam、行为断言、mock 边界和反馈循环
-- `planning/task-manifest.json` 是 `cc-do` 的真相源，要写清 `planningMeta.requirementBrief`、`planningMeta.ambiguityGate`、`planningMeta.reviewLoop`、`sourceEvidence[]`、`dependsOn`、`tddPhase`、`verticalSlice`、test seam、public verification path、allowed mocks、feedback loop、minimality guard、refactor candidates、并行资格、触点、验证命令，以及继承了哪版 roadmap / design / spec
+- `planning/tasks.md` 必须把 `assets/TASKS_TEMPLATE.md` 的任务字段实例化到每个 task；不能只生成标题清单，也不能让 ClaudeCode / Codex 靠猜测补字段
+- `planning/tasks.md` 必须写出任务完成脚本，要求执行者完成每个 task 后调用 `mark-task-complete.sh`，禁止手动勾选或漏标
+- `planning/task-manifest.json` 是 `cc-do` 的真相源，要写清 `planningMeta.requirementBrief`、`planningMeta.ambiguityGate`、`planningMeta.reviewLoop`、`executionProtocol`、`sourceEvidence[]`、`dependsOn`、`tddPhase`、`verticalSlice`、test seam、public verification path、allowed mocks、feedback loop、minimality guard、refactor candidates、completion command、并行资格、触点、验证命令，以及继承了哪版 roadmap / design / spec
 - `change-meta.json` 是 capability 真相源，要写清这次 change 准备如何改变长期 spec
 - roadmap sync 不是聊天提醒：如果 source RM 存在，必须更新 `devflow/roadmap.json` 并重新生成 `devflow/ROADMAP.md` / `devflow/BACKLOG.md`；如果不存在，必须记录 no-op reason
 - 看完第一屏，执行者就知道这次属于 `tiny-design` 还是 `full-design`，以及为什么

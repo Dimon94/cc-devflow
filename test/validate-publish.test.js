@@ -192,9 +192,16 @@ describe('validate-publish', () => {
     expect(manifest).toContain('"aiLeverageDecisionLens"');
     expect(manifest).toContain('"humanTeamEffortForFullScope"');
     expect(manifest).toContain('"completeLakeBoundary"');
-    expect(parsedManifest.planningMeta.reqPlanSkillVersion).toBe('3.8.1');
+    expect(parsedManifest.planningMeta.reqPlanSkillVersion).toBe('3.8.2');
     expect(parsedManifest.sourceRoadmap.roadmapSkillVersion).toBe('5.2.0');
     expect(planningContract).toContain('AI Leverage Decision Lens 必须在任务生成前闭合');
+    expect(skill).toContain('## ClaudeCode / Codex Execution Compliance');
+    expect(tasks).toContain('## Execution Protocol');
+    expect(tasks).toContain('mark-task-complete.sh');
+    expect(parsedManifest.executionProtocol.templateCompliance.required).toBe(true);
+    expect(parsedManifest.executionProtocol.completion.manualStatusEdit).toBe('forbidden');
+    expect(parsedManifest.tasks[0].completion.command).toContain('mark-task-complete.sh');
+    expect(planningContract).toContain('## Execution Protocol Fields');
   });
 
   test('cc-roadmap carries the AI leverage route lens contract', () => {

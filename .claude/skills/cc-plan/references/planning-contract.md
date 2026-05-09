@@ -73,10 +73,21 @@
 - 涉及文件
 - 验证方式
 - 完成证据
+- Completion command：调用 `mark-task-complete.sh`，同步 `planning/task-manifest.json` 与 `planning/tasks.md`
+- Forbidden shortcuts：禁止手工改 checkbox、manifest status 或 `currentTaskId`
 
 行为变更任务必须先有 `[TEST]` 红灯任务，再有 `[IMPL]` 绿灯任务，最后有 `[REFACTOR]` 或明确 refactor checkpoint。纯文档、纯配置、纯生成文件、throwaway prototype 可以例外，但必须写明原因、风险和替代验证。
 不要把计划拆成水平层：一批测试、一批服务、一批 UI。每个切片完成后都应该能证明一个真实行为。
 也不要把一批 Red 一次性写完再批量实现。每条 tracer bullet 只证明一个可观察行为，Green 只做当前红灯要求的最小实现；下一条 Red 可以吸收上一轮学到的事实，但不能越过冻结边界。
+
+## Execution Protocol Fields
+
+`planning/tasks.md` 必须有 `Execution Protocol` 区块，`planning/task-manifest.json` 必须有 `executionProtocol` 对象。它们共同约束 ClaudeCode / Codex：
+
+- task 选择来自 `currentTaskId` 或 `select-ready-tasks.sh`
+- 每个 task 必须按模板字段完整展开，不能退化成标题清单
+- 完成 task 必须调用 `mark-task-complete.sh`
+- 脚本失败时修 evidence / checkpoint / review gate 后重跑，禁止手工绕过
 
 ## Decision Question Fields
 
