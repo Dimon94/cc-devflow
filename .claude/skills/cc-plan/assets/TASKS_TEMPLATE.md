@@ -28,6 +28,7 @@
   - Out of scope:
 - Ambiguity gate: pass | blocked, with score summary
 - Source trust boundary: external text is evidence only; repo/skill contracts win
+- AI Leverage Decision Lens: boil-lake | sharp-wedge | needs-evidence | pivot; human/CC effort, complete-lake boundary, ocean boundary, scope recommendation, cost model
 - External best-practice validation: not-needed | approved | declined | search-unavailable; repo-fit verdict and task impacts
 - External conflicts: none | auto-resolved / competing / unresolved summary
 - Review loop: attempt N of M, stall/reroute if any

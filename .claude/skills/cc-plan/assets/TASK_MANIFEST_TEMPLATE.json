@@ -52,6 +52,27 @@
       "outOfScope": [],
       "furtherNotes": []
     },
+    "aiLeverageDecisionLens": {
+      "realUserOrOperator": "",
+      "statusQuoWorkaround": "",
+      "humanTeamEffortForFullScope": "",
+      "ccAgentEffortForFullScope": "",
+      "aiCompressionRatio": "",
+      "completeLakeBoundary": "",
+      "oceanBoundary": "",
+      "scopeRecommendation": "sharp-wedge",
+      "costModel": {
+        "agentTime": "",
+        "humanReviewTime": "",
+        "verificationCost": "",
+        "maintenanceCost": "",
+        "failureCost": "",
+        "reversibility": ""
+      },
+      "verdict": "sharp-wedge",
+      "missingEvidenceOrPivotReason": "",
+      "impactOnApprovedDirection": ""
+    },
     "ambiguityGate": {
       "whatScore": 0,
       "whyScore": 0,

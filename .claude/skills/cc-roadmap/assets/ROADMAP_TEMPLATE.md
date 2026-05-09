@@ -53,6 +53,21 @@
 | Feasibility |  | High / Med / Low |  |  |
 | Distribution |  | High / Med / Low |  |  |
 
+## AI Leverage Route Lens
+
+- Real user / operator:
+- Status quo workaround:
+- Human-team effort for full scope:
+- CC / agent effort for full scope:
+- AI compression ratio:
+- Complete-lake boundary:
+- Ocean boundary:
+- Scope recommendation: `boil-lake` | `sharp-wedge`
+- First success signal:
+- Kill signal:
+- Verdict: `boil-lake` | `sharp-wedge` | `needs-evidence` | `pivot`
+- Missing evidence before ready-for-cc-plan:
+
 ## Route Options
 
 | Shape | Why this could work | Why this may fail | Decision |

@@ -48,6 +48,20 @@
 - Competing:
 - Unresolved blockers:
 
+## AI Leverage Decision Lens
+
+- Real user / operator:
+- Status quo workaround:
+- Human-team effort for full scope:
+- CC / agent effort for full scope:
+- AI compression ratio:
+- Complete-lake boundary:
+- Ocean boundary:
+- Scope recommendation: `boil-lake` | `sharp-wedge`
+- Cost model:
+- Verdict: `boil-lake` | `sharp-wedge` | `needs-evidence` | `pivot`
+- Missing evidence or pivot reason:
+
 ## External Best-Practice Validation
 
 - Needed: Yes / No
@@ -191,6 +205,7 @@
 - Green minimality / refactor candidate scan:
 - PRD brief scan:
 - Source trust boundary scan:
+- AI Leverage Decision Lens scan:
 - External best-practice scan:
 - External conflict scan:
 - Ambiguity gate:

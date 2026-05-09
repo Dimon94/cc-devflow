@@ -27,11 +27,12 @@
 23. 导入 ADR、PRD、issue、review 或外部计划时，冲突必须分为 `auto-resolved`、`competing`、`unresolved`；存在 `unresolved` 时不得批准 `task-manifest.json`。
 24. 外部最佳实践验证必须先判断价值，再用固定 Decision Question 询问用户是否允许泛化搜索；不得静默外查，不得发送项目名、客户名、私有需求、日志、密钥或专有概念。
 25. 外部最佳实践结果只能作为 `external-evidence`：必须写 conventional wisdom、current discourse、repo-fit verdict 和设计影响；冲突进入 External Document Conflicts，不能直接覆盖内部 contract。
-26. review loop 必须有 attempt 上限和 stall reroute；不能靠无限 review 掩盖需求仍不清楚。
-27. Roadmap Sync Gate 必须在退出前闭合：source RM 存在就回写 `devflow/roadmap.json` 并重新生成 `devflow/ROADMAP.md` / `devflow/BACKLOG.md`；不存在就记录 no-op reason。
-28. PRD-grade requirement brief 必须并入 `planning/design.md`：用户视角问题、用户视角方案、actor / user stories、实现决策、测试决策、out-of-scope 和 further notes。默认不得额外产出 `PRD.md`。
-29. 需要用户判断时必须使用固定 Decision Question：`D<N>`、证据、推荐、2-3 个互斥的 `A/B/C` 字母选项、影响和 STOP 都必须出现；禁止用自由问句或 `1/2/3` 数字选项代替审批 gate。
-30. 所有用户决策必须写入 `planning/design.md` 的 `Decision Questions`，并同步到 `task-manifest.json.planningMeta.decisionQuestions`，不能只留在聊天里。
+26. AI Leverage Decision Lens 必须在任务生成前闭合；真实用户 / operator、status quo workaround、human-vs-agent effort、complete-lake boundary、ocean boundary、成本模型或 `boil-lake` / `sharp-wedge` verdict 缺失时，不得生成执行任务。`boil-lake` verdict 下不得退缩成 happy-path MVP。
+27. review loop 必须有 attempt 上限和 stall reroute；不能靠无限 review 掩盖需求仍不清楚。
+28. Roadmap Sync Gate 必须在退出前闭合：source RM 存在就回写 `devflow/roadmap.json` 并重新生成 `devflow/ROADMAP.md` / `devflow/BACKLOG.md`；不存在就记录 no-op reason。
+29. PRD-grade requirement brief 必须并入 `planning/design.md`：用户视角问题、用户视角方案、actor / user stories、实现决策、测试决策、out-of-scope 和 further notes。默认不得额外产出 `PRD.md`。
+30. 需要用户判断时必须使用固定 Decision Question：`D<N>`、证据、推荐、2-3 个互斥的 `A/B/C` 字母选项、影响和 STOP 都必须出现；禁止用自由问句或 `1/2/3` 数字选项代替审批 gate。
+31. 所有用户决策必须写入 `planning/design.md` 的 `Decision Questions`，并同步到 `task-manifest.json.planningMeta.decisionQuestions`，不能只留在聊天里。
 
 ## Design Modes
 
@@ -115,9 +116,10 @@
 17. PRD brief scan
 18. Source trust boundary scan
 19. External best-practice validation scan
-20. External conflict scan
-21. Ambiguity gate
-22. Bounded review loop
+20. AI Leverage Decision Lens scan
+21. External conflict scan
+22. Ambiguity gate
+23. Bounded review loop
 23. NOT in scope
 24. Test-first readiness
 25. Decision questions recorded
