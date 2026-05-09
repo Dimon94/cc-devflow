@@ -1,5 +1,10 @@
 # CC-Investigate Skill Changelog
 
+## v1.3.0 - 2026-05-09
+
+- FIX change key assignment now uses `cc-devflow next-change-key` instead of prose instructions
+- fixes reliability gap where Claude models could not reliably compute the next FIX number
+
 ## v1.2.2 - 2026-05-06
 
 - add a Roadmap Sync Gate so frozen investigations must reconcile the source RM before handing off repair work

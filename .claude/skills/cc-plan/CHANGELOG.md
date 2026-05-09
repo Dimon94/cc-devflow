@@ -1,5 +1,11 @@
 # CC-Plan Skill Changelog
 
+## v3.8.0 - 2026-05-09
+
+- change key assignment now uses `cc-devflow next-change-key` script instead of LLM mental arithmetic
+- add `scripts/next-change-key.sh` as local fallback when CLI is unavailable
+- fixes reliability gap where Claude models could not reliably scan directories and increment numbers
+
 ## v3.7.9 - 2026-05-08
 
 - add an opt-in External Best-Practice Validation gate before approach approval

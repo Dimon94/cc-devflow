@@ -1,6 +1,6 @@
 ---
 name: cc-investigate
-version: 1.2.2
+version: 1.3.0
 description: "Use when a bug, regression, broken task, or unexpected behavior needs root-cause investigation, reproducible evidence, and a frozen repair handoff before cc-do resumes coding."
 triggers:
   - "帮我查这个 bug"
@@ -36,7 +36,7 @@ effects:
   - source roadmap progress sync when investigation freezes, reroutes, or diagnoses a roadmap mismatch
 entry_gate:
   - "Read the current bug report, existing requirement artifacts, relevant code, tests, and recent history before forming any hypothesis."
-  - "Use a FIX-<number>-<description> change key for new bug-fix investigations."
+  - "Assign the change key by running `cc-devflow next-change-key --prefix FIX --description \"<short bug name>\"`. Use both output lines: first is changeId for task-manifest, second is the full changeKey for the directory."
   - "Build a runnable feedback loop, confirm it matches the reported symptom, then freeze the evidence chain before proposing repair tasks."
   - "Record persistent debug session state: active hypothesis, probes, cleanup status, and next evidence action."
   - "Search prior investigations, TODO/backlog signals, and recent fixes in the affected area before declaring the bug novel."

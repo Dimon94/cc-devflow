@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.7.9
+version: 3.8.0
 description: Use when a requirement, roadmap item, or bug needs scope clarification, design decisions, and executable task breakdown before coding starts.
 triggers:
   - 帮我规划这个需求
@@ -46,7 +46,7 @@ entry_gate:
   - For behavior changes, freeze the spec-style test name, one logical behavior, public verification path, and interface-testability decision before task split.
   - Before approach approval, decide whether external best-practice validation could materially change the plan; if yes, ask the user through the Decision Question Protocol before any web or external lookup.
   - When user judgment is required, ask with the fixed `cc-plan` Decision Question Protocol (`D<N>`, evidence, recommendation, lettered A/B/C options, impact, STOP) instead of free-form prose.
-  - Assign a canonical change key before writing artifacts; feature work must use `REQ-<number>-<description>`, and bug-fix work must use `FIX-<number>-<description>`. REQ and FIX use independent local number sequences, and the full change key, including description, is the identity when parallel worktrees produce repeated numbers.
+  - Assign a canonical change key before writing artifacts by running `cc-devflow next-change-key --prefix REQ|FIX --description "<short name>"`. Use the script output directly; do not manually scan directories or compute numbers.
   - Do not generate planning/tasks.md, planning/task-manifest.json, or change-meta.json until the recommended design is approved.
   - Before exit, locate the source RM in `devflow/roadmap.json`, `devflow/ROADMAP.md`, optional `devflow/BACKLOG.md`, or legacy `devflow/roadmap-tracking.json`; plan the progress sync instead of relying on chat memory.
 exit_criteria:
@@ -139,9 +139,21 @@ PRD 的好处要进入 `planning/design.md`，不要变成第 5 个文件。`cc-
 - 需求 / 功能 / 规格变更：`REQ-<number>-<description>`
 - 缺陷 / 回归 / 修复变更：`FIX-<number>-<description>`
 
-`REQ` 和 `FIX` 是两个独立编号空间。选择下一个编号时，只扫描同前缀的现有目录：新 `REQ` 只看 `devflow/changes/REQ-*` 的最大编号，新 `FIX` 只看 `devflow/changes/FIX-*` 的最大编号。`REQ-038-*` 与 `FIX-038-*` 可以同时存在，不因为另一个前缀用了相同数字就跳号、改名或合并编号。编号位宽沿用项目现状。
+分配下一个编号时，**运行脚本而非心算**：
 
-编号不是合并后的全局身份。工作树开 PR 的并行模式下，多个 `REQ-038-*` 或多个 `FIX-038-*` 也可能同时存在；合并后不因为同号而强制改名、跳号或重排历史。完整 `<prefix>-<number>-<description>` 才是 canonical change key，描述必须具体到能区分业务内容。只有用户明确要求统一编号时，才做批量重编号。
+```bash
+cc-devflow next-change-key --prefix REQ --description "short feature name"
+```
+
+脚本输出两行：第一行是 `changeId`（如 `REQ-003`），第二行是完整 `changeKey`（如 `REQ-003-short-feature-name`）。直接使用输出，不要手动扫描目录或心算编号。
+
+如果 `cc-devflow` CLI 不可用，使用 skill 本地脚本：
+
+```bash
+bash .claude/skills/cc-plan/scripts/next-change-key.sh --prefix REQ --description "short feature name"
+```
+
+`REQ` 和 `FIX` 是两个独立编号空间。编号不是合并后的全局身份。工作树开 PR 的并行模式下，多个 `REQ-038-*` 或多个 `FIX-038-*` 也可能同时存在；合并后不因为同号而强制改名、跳号或重排历史。完整 `<prefix>-<number>-<description>` 才是 canonical change key，描述必须具体到能区分业务内容。只有用户明确要求统一编号时，才做批量重编号。
 
 描述部分使用 kebab-case，可以保留中文词组，但不允许丢掉大写 `REQ` / `FIX` 前缀。不要再创建 `req-123-...`、`bug-123-...`、纯描述目录或没有编号的目录。旧的小写目录只能作为历史兼容读取目标，不作为新 planning 输出。
 
@@ -478,6 +490,7 @@ STOP: wait for the user answer before continuing.
 - 模板：`assets/TASK_MANIFEST_TEMPLATE.json`
 - 任务解析：`scripts/parse-task-dependencies.js`
 - 范围检查：`scripts/validate-scope.sh`
+- 下一编号分配：`scripts/next-change-key.sh`
 - 版本递增：`scripts/bump-skill-version.sh`
 - 计划契约：`references/planning-contract.md`
 - Roadmap 定位：`../cc-roadmap/scripts/locate-roadmap-item.sh`
