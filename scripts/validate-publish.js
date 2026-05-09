@@ -318,6 +318,8 @@ function collectExternalBestPracticeErrors(manifest, label, errors) {
 function validateCcPlanPlanningContracts(errors) {
   const skill = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-plan/SKILL.md'), 'utf8');
   const fullDesign = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-plan/assets/DESIGN_TEMPLATE.md'), 'utf8');
+  const tinyDesign = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-plan/assets/TINY_DESIGN_TEMPLATE.md'), 'utf8');
+  const tasks = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-plan/assets/TASKS_TEMPLATE.md'), 'utf8');
   const manifestPath = path.join(ROOT, '.claude/skills/cc-plan/assets/TASK_MANIFEST_TEMPLATE.json');
   const planningContract = fs.readFileSync(
     path.join(ROOT, '.claude/skills/cc-plan/references/planning-contract.md'),
@@ -335,19 +337,42 @@ function validateCcPlanPlanningContracts(errors) {
     ['cc-plan planning-contract.md', planningContract, 'options：只能使用 `A` / `B` / `C`']
   ];
 
+  const aiLeverageSnippets = [
+    ['cc-plan SKILL.md', skill, '## AI Leverage Decision Lens'],
+    ['cc-plan SKILL.md', skill, '`boil-lake` / `sharp-wedge` / `needs-evidence` / `pivot`'],
+    ['cc-plan DESIGN_TEMPLATE.md', fullDesign, '## AI Leverage Decision Lens'],
+    ['cc-plan TINY_DESIGN_TEMPLATE.md', tinyDesign, '## AI Leverage Decision Lens'],
+    ['cc-plan TASKS_TEMPLATE.md', tasks, 'AI Leverage Decision Lens: boil-lake | sharp-wedge | needs-evidence | pivot'],
+    ['cc-plan planning-contract.md', planningContract, 'AI Leverage Decision Lens 必须在任务生成前闭合']
+  ];
+
   for (const [label, content, snippet] of requiredSnippets) {
     if (!content.includes(snippet)) {
       errors.push(`${label} missing decision-question snippet: ${snippet}`);
     }
   }
 
+  for (const [label, content, snippet] of aiLeverageSnippets) {
+    if (!content.includes(snippet)) {
+      errors.push(`${label} missing ai-leverage-decision snippet: ${snippet}`);
+    }
+  }
+
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  if (!manifest?.planningMeta?.aiLeverageDecisionLens) {
+    errors.push('cc-plan TASK_MANIFEST_TEMPLATE.json missing planningMeta.aiLeverageDecisionLens');
+  }
+  if (!Object.prototype.hasOwnProperty.call(manifest?.planningMeta?.aiLeverageDecisionLens || {}, 'completeLakeBoundary')) {
+    errors.push('cc-plan TASK_MANIFEST_TEMPLATE.json missing planningMeta.aiLeverageDecisionLens.completeLakeBoundary');
+  }
+
   collectDecisionQuestionOptionErrors(
-    JSON.parse(fs.readFileSync(manifestPath, 'utf8')),
+    manifest,
     '.claude/skills/cc-plan/assets/TASK_MANIFEST_TEMPLATE.json',
     errors
   );
   collectExternalBestPracticeErrors(
-    JSON.parse(fs.readFileSync(manifestPath, 'utf8')),
+    manifest,
     '.claude/skills/cc-plan/assets/TASK_MANIFEST_TEMPLATE.json',
     errors
   );
@@ -376,6 +401,34 @@ function validateCcPlanPlanningContracts(errors) {
         errors
       );
     }
+  }
+}
+
+function validateCcRoadmapContracts(errors) {
+  const skill = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-roadmap/SKILL.md'), 'utf8');
+  const roadmap = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-roadmap/assets/ROADMAP_TEMPLATE.md'), 'utf8');
+  const tracking = JSON.parse(
+    fs.readFileSync(path.join(ROOT, '.claude/skills/cc-roadmap/assets/TRACKING_TEMPLATE.json'), 'utf8')
+  );
+
+  const requiredSnippets = [
+    ['cc-roadmap SKILL.md', skill, '## AI Leverage Route Lens'],
+    ['cc-roadmap SKILL.md', skill, '`boil-lake`：已有真实用户'],
+    ['cc-roadmap ROADMAP_TEMPLATE.md', roadmap, '## AI Leverage Route Lens'],
+    ['cc-roadmap ROADMAP_TEMPLATE.md', roadmap, 'Verdict: `boil-lake` | `sharp-wedge` | `needs-evidence` | `pivot`']
+  ];
+
+  for (const [label, content, snippet] of requiredSnippets) {
+    if (!content.includes(snippet)) {
+      errors.push(`${label} missing ai-leverage-route snippet: ${snippet}`);
+    }
+  }
+
+  if (!tracking?.context?.aiLeverageRouteLens) {
+    errors.push('cc-roadmap TRACKING_TEMPLATE.json missing context.aiLeverageRouteLens');
+  }
+  if (!Object.prototype.hasOwnProperty.call(tracking?.context?.aiLeverageRouteLens || {}, 'completeLakeBoundary')) {
+    errors.push('cc-roadmap TRACKING_TEMPLATE.json missing context.aiLeverageRouteLens.completeLakeBoundary');
   }
 }
 
@@ -726,6 +779,7 @@ function main() {
   validatePackageJson(errors);
   validateTemplate(errors);
   validateInventoryParity(errors);
+  validateCcRoadmapContracts(errors);
   validateCcPlanPlanningContracts(errors);
   validatePublicSkillContracts(errors);
   validateExampleBindings(errors);

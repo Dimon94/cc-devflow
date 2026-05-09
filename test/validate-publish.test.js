@@ -157,6 +157,65 @@ describe('validate-publish', () => {
     expect(manifest).toContain('"externalBestPractice"');
   });
 
+  test('cc-plan carries the AI leverage decision lens contract', () => {
+    const skill = fs.readFileSync(
+      path.join(ROOT, '.claude/skills/cc-plan/SKILL.md'),
+      'utf8'
+    );
+    const fullDesign = fs.readFileSync(
+      path.join(ROOT, '.claude/skills/cc-plan/assets/DESIGN_TEMPLATE.md'),
+      'utf8'
+    );
+    const tinyDesign = fs.readFileSync(
+      path.join(ROOT, '.claude/skills/cc-plan/assets/TINY_DESIGN_TEMPLATE.md'),
+      'utf8'
+    );
+    const tasks = fs.readFileSync(
+      path.join(ROOT, '.claude/skills/cc-plan/assets/TASKS_TEMPLATE.md'),
+      'utf8'
+    );
+    const manifest = fs.readFileSync(
+      path.join(ROOT, '.claude/skills/cc-plan/assets/TASK_MANIFEST_TEMPLATE.json'),
+      'utf8'
+    );
+    const planningContract = fs.readFileSync(
+      path.join(ROOT, '.claude/skills/cc-plan/references/planning-contract.md'),
+      'utf8'
+    );
+
+    expect(skill).toContain('## AI Leverage Decision Lens');
+    expect(skill).toContain('`boil-lake` / `sharp-wedge` / `needs-evidence` / `pivot`');
+    expect(fullDesign).toContain('## AI Leverage Decision Lens');
+    expect(tinyDesign).toContain('## AI Leverage Decision Lens');
+    expect(tasks).toContain('AI Leverage Decision Lens: boil-lake | sharp-wedge | needs-evidence | pivot');
+    expect(manifest).toContain('"aiLeverageDecisionLens"');
+    expect(manifest).toContain('"humanTeamEffortForFullScope"');
+    expect(manifest).toContain('"completeLakeBoundary"');
+    expect(planningContract).toContain('AI Leverage Decision Lens 必须在任务生成前闭合');
+  });
+
+  test('cc-roadmap carries the AI leverage route lens contract', () => {
+    const skill = fs.readFileSync(
+      path.join(ROOT, '.claude/skills/cc-roadmap/SKILL.md'),
+      'utf8'
+    );
+    const roadmap = fs.readFileSync(
+      path.join(ROOT, '.claude/skills/cc-roadmap/assets/ROADMAP_TEMPLATE.md'),
+      'utf8'
+    );
+    const tracking = fs.readFileSync(
+      path.join(ROOT, '.claude/skills/cc-roadmap/assets/TRACKING_TEMPLATE.json'),
+      'utf8'
+    );
+
+    expect(skill).toContain('## AI Leverage Route Lens');
+    expect(skill).toContain('`boil-lake`：已有真实用户');
+    expect(roadmap).toContain('## AI Leverage Route Lens');
+    expect(roadmap).toContain('Verdict: `boil-lake` | `sharp-wedge` | `needs-evidence` | `pivot`');
+    expect(tracking).toContain('"aiLeverageRouteLens"');
+    expect(tracking).toContain('"completeLakeBoundary"');
+  });
+
   test('rejects invalid external best-practice handoff metadata', () => {
     const errors = [];
 

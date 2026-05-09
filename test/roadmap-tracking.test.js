@@ -149,7 +149,7 @@ describe('cc-roadmap tracking sync', () => {
           version: 3,
           meta: {
             roadmapVersion: 'roadmap.v2',
-            skillVersion: '5.1.0',
+            skillVersion: '5.2.0',
             status: 'active',
             lastUpdated: '2026-05-01',
             currentFocusStage: 'Stage 1'
