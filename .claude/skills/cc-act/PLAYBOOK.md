@@ -182,7 +182,7 @@ Ship 必须属于这 4 种模式之一：
 
 ### destructive cleanup
 
-- 删除 branch、worktree、未合并提交、requirement archive 前，先列出对象
+- 删除 branch、worktree、未合并提交、change archive 前，先列出对象
 - 丢弃未合并工作必须要求用户显式确认
 - 无法确认时保留现场，切到 `local-handoff`
 
@@ -248,7 +248,7 @@ Ship 必须属于这 4 种模式之一：
 - `scripts/sync-act-docs.sh` 负责同步 requirement 级文档与 doc target 报告
 - `scripts/render-pr-brief.sh` 负责从 requirement 真相源渲染 `pr-brief.md`
 - `scripts/generate-status-report.sh` 负责汇总 requirement 与 ship 现状
-- `scripts/archive-requirement.sh` 负责 requirement 生命周期收尾
+- `scripts/archive-change.sh` 负责 change 生命周期收尾（归档到 `devflow/changes/archive/YYYY-MM/`）
 - `../cc-roadmap/scripts/locate-roadmap-item.sh` 负责定位 source RM
 - `../cc-roadmap/scripts/sync-roadmap-progress.sh` 负责回写 roadmap progress 并渲染投影
 - `cc-simplify` 负责在 ship 前压掉重复、坏味道、低效实现

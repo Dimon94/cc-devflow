@@ -322,7 +322,7 @@ readiness dashboard 有 blocker 时，不能创建或更新 PR，只能 reroute 
    - 被推迟但必须保留的事项
    - 因本次结果而改变优先级的事项
 14. 用 `sync-roadmap-progress.sh` 更新 source RM 的 status、REQ/FIX 绑定和 progress：`create-pr` / `update-pr` 通常写 `In review` + `100%`，`local-handoff` 写 `Ready for handoff`，`post-merge-closeout` 写 `Done`；如果无 source RM，必须在 handoff 写 no-op reason。
-15. 如果 requirement 真正闭环，更新状态摘要并归档；否则把下一位接手者的入口写清楚。
+15. 如果 requirement 真正闭环，更新状态摘要并归档：运行 `cc-devflow archive-change <change-key>` 将已完成变更移入 `devflow/changes/archive/YYYY-MM/`；否则把下一位接手者的入口写清楚。
 
 ## Output
 
@@ -359,7 +359,7 @@ readiness dashboard 有 blocker 时，不能创建或更新 PR，只能 reroute 
 - Ship 目标识别：`scripts/detect-ship-target.sh`
 - 文档同步：`scripts/sync-act-docs.sh`
 - PR 简报生成：`scripts/render-pr-brief.sh`
-- requirement 归档：`scripts/archive-requirement.sh`
+- 变更归档：`scripts/archive-change.sh`
 - Roadmap 定位：`../cc-roadmap/scripts/locate-roadmap-item.sh`
 - Roadmap 回写：`../cc-roadmap/scripts/sync-roadmap-progress.sh`
 
