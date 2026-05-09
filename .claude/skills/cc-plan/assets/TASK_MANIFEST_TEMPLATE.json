@@ -8,7 +8,7 @@
   "sourceRoadmap": {
     "itemId": "RM-001",
     "roadmapVersion": "1.0",
-    "roadmapSkillVersion": "2.1.0",
+    "roadmapSkillVersion": "5.2.0",
     "syncStatus": "pending",
     "syncCommand": ".claude/skills/cc-roadmap/scripts/sync-roadmap-progress.sh --rm RM-001 --status Planned --req REQ-XXX --progress 0%",
     "updatedFiles": [
@@ -28,7 +28,7 @@
     ]
   },
   "planningMeta": {
-    "reqPlanSkillVersion": "3.7.9",
+    "reqPlanSkillVersion": "3.8.1",
     "designVersion": "design.v1",
     "approvedAt": "2026-04-15T12:00:00.000Z",
     "approvedBy": "user",

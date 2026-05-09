@@ -182,6 +182,11 @@ function ensureWritesArray(value, label, errors) {
   }
 }
 
+function readSkillVersion(skillName) {
+  const skill = fs.readFileSync(path.join(ROOT, '.claude/skills', skillName, 'SKILL.md'), 'utf8');
+  return matter(skill).data?.version || '';
+}
+
 function collectDecisionQuestionOptionErrors(manifest, label, errors) {
   const questions = manifest?.planningMeta?.decisionQuestions || [];
   if (!Array.isArray(questions)) {
@@ -359,6 +364,18 @@ function validateCcPlanPlanningContracts(errors) {
   }
 
   const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  const currentPlanVersion = readSkillVersion('cc-plan');
+  const currentRoadmapVersion = readSkillVersion('cc-roadmap');
+  if (manifest?.planningMeta?.reqPlanSkillVersion !== currentPlanVersion) {
+    errors.push(
+      `cc-plan TASK_MANIFEST_TEMPLATE.json planningMeta.reqPlanSkillVersion must be ${currentPlanVersion}`
+    );
+  }
+  if (manifest?.sourceRoadmap?.roadmapSkillVersion !== currentRoadmapVersion) {
+    errors.push(
+      `cc-plan TASK_MANIFEST_TEMPLATE.json sourceRoadmap.roadmapSkillVersion must be ${currentRoadmapVersion}`
+    );
+  }
   if (!manifest?.planningMeta?.aiLeverageDecisionLens) {
     errors.push('cc-plan TASK_MANIFEST_TEMPLATE.json missing planningMeta.aiLeverageDecisionLens');
   }

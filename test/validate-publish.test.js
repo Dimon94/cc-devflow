@@ -178,6 +178,7 @@ describe('validate-publish', () => {
       path.join(ROOT, '.claude/skills/cc-plan/assets/TASK_MANIFEST_TEMPLATE.json'),
       'utf8'
     );
+    const parsedManifest = JSON.parse(manifest);
     const planningContract = fs.readFileSync(
       path.join(ROOT, '.claude/skills/cc-plan/references/planning-contract.md'),
       'utf8'
@@ -191,6 +192,8 @@ describe('validate-publish', () => {
     expect(manifest).toContain('"aiLeverageDecisionLens"');
     expect(manifest).toContain('"humanTeamEffortForFullScope"');
     expect(manifest).toContain('"completeLakeBoundary"');
+    expect(parsedManifest.planningMeta.reqPlanSkillVersion).toBe('3.8.1');
+    expect(parsedManifest.sourceRoadmap.roadmapSkillVersion).toBe('5.2.0');
     expect(planningContract).toContain('AI Leverage Decision Lens 必须在任务生成前闭合');
   });
 
