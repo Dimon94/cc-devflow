@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.7] - 2026-05-10
+
 ### Changed
 
 - Added public `cc-review` as an optional deep review skill that branches between plan-stage and implementation-stage review, keeps heavyweight methods in progressive references, checks in-scope code smells, and records Browser/Computer Use plus log evidence when UI or runtime behavior is involved.
