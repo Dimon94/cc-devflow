@@ -14,6 +14,7 @@
         ".claude/skills/cc-plan/",
         ".claude/skills/cc-investigate/",
         ".claude/skills/cc-do/",
+        ".claude/skills/cc-review/",
         ".claude/skills/cc-check/",
         ".claude/skills/cc-act/",
         ".claude/skills/cc-spec-init/",

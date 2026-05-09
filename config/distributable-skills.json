@@ -4,6 +4,7 @@
     "cc-plan",
     "cc-investigate",
     "cc-do",
+    "cc-review",
     "cc-check",
     "cc-act"
   ],
@@ -12,6 +13,7 @@
     "cc-plan",
     "cc-investigate",
     "cc-do",
+    "cc-review",
     "cc-check",
     "cc-act",
     "cc-spec-init",
