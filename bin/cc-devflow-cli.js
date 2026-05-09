@@ -61,6 +61,9 @@ Commands:
   query list          List typed runtime query ids
   query <id>          Run a typed runtime query as JSON
   next-change-key     Compute the next REQ/FIX change key
+  archive-change      Archive a completed change to devflow/changes/archive/YYYY-MM/
+  restore-change      Restore an archived change back to devflow/changes/
+  list-archived       List all archived changes
 
 Init options:
   --dir <path>         Target project path (default: cwd)
@@ -602,6 +605,75 @@ function runAdapter(command, args) {
   return typeof result.status === 'number' ? result.status : 1;
 }
 
+function runArchiveChange(args) {
+  const parsed = { changeKey: null, cwd: null };
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (arg === '--cwd') { parsed.cwd = args[++i]; continue; }
+    if (arg.startsWith('--cwd=')) { parsed.cwd = arg.slice('--cwd='.length); continue; }
+    if (!arg.startsWith('-') && !parsed.changeKey) { parsed.changeKey = arg; continue; }
+  }
+
+  if (!parsed.changeKey) {
+    console.error('Use: cc-devflow archive-change <change-key> [--cwd path]');
+    return 1;
+  }
+
+  const { archiveChange } = require(path.join(PACKAGE_ROOT, 'lib/skill-runtime/archive-change.js'));
+  const repoRoot = path.resolve(parsed.cwd || process.cwd());
+  const result = archiveChange(repoRoot, parsed.changeKey);
+  process.stdout.write(`Archived to ${result.archived}\n`);
+  return 0;
+}
+
+function runRestoreChange(args) {
+  const parsed = { archivedPath: null, cwd: null };
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (arg === '--cwd') { parsed.cwd = args[++i]; continue; }
+    if (arg.startsWith('--cwd=')) { parsed.cwd = arg.slice('--cwd='.length); continue; }
+    if (!arg.startsWith('-') && !parsed.archivedPath) { parsed.archivedPath = arg; continue; }
+  }
+
+  if (!parsed.archivedPath) {
+    console.error('Use: cc-devflow restore-change <archived-path> [--cwd path]');
+    return 1;
+  }
+
+  const { restoreChange } = require(path.join(PACKAGE_ROOT, 'lib/skill-runtime/archive-change.js'));
+  const repoRoot = path.resolve(parsed.cwd || process.cwd());
+  const archivePath = path.resolve(parsed.archivedPath);
+  const result = restoreChange(repoRoot, archivePath);
+  process.stdout.write(`Restored to ${result.restored}\n`);
+  return 0;
+}
+
+function runListArchived(args) {
+  const parsed = { cwd: null };
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (arg === '--cwd') { parsed.cwd = args[++i]; continue; }
+    if (arg.startsWith('--cwd=')) { parsed.cwd = arg.slice('--cwd='.length); continue; }
+  }
+
+  const { listArchived } = require(path.join(PACKAGE_ROOT, 'lib/skill-runtime/archive-change.js'));
+  const repoRoot = path.resolve(parsed.cwd || process.cwd());
+  const items = listArchived(repoRoot);
+
+  if (items.length === 0) {
+    process.stdout.write('No archived changes.\n');
+    return 0;
+  }
+
+  for (const item of items) {
+    process.stdout.write(`${item.month}  ${item.changeKey}\n`);
+  }
+  return 0;
+}
+
 async function main() {
   const argv = process.argv.slice(2);
   const [command, ...rest] = argv;
@@ -629,6 +701,18 @@ async function main() {
 
   if (command === 'next-change-key') {
     return runNextChangeKey(rest);
+  }
+
+  if (command === 'archive-change') {
+    return runArchiveChange(rest);
+  }
+
+  if (command === 'restore-change') {
+    return runRestoreChange(rest);
+  }
+
+  if (command === 'list-archived') {
+    return runListArchived(rest);
   }
 
   return runAdapter(command, rest);
