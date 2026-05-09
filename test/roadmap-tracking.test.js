@@ -149,10 +149,19 @@ describe('cc-roadmap tracking sync', () => {
           version: 3,
           meta: {
             roadmapVersion: 'roadmap.v2',
-            skillVersion: '5.0.0',
+            skillVersion: '5.1.0',
             status: 'active',
             lastUpdated: '2026-05-01',
             currentFocusStage: 'Stage 1'
+          },
+          context: {
+            projectDirectionMode: 'founder-business',
+            projectDirectionRationale: 'the roadmap is choosing a paid wedge',
+            directionQuestionsSelected: ['demand reality', 'narrowest paid wedge'],
+            directionQuestionsSkipped: ['long-term platform architecture'],
+            directionGuardrailsApplied: ['brand-neutral founder advice'],
+            planningPosture: 'startup',
+            evidenceMaturity: 'idea'
           },
           items: [
             {
@@ -231,6 +240,14 @@ describe('cc-roadmap tracking sync', () => {
       true
     );
     expect(renderedBacklog).toContain('- Roadmap state source: `roadmap.json`');
+    expect(renderedBacklog).toContain('## Project Direction Handoff');
+    expect(renderedBacklog).toContain('- Project direction mode: founder-business');
+    expect(renderedBacklog).toContain(
+      '- Direction-specific questions selected: demand reality, narrowest paid wedge'
+    );
+    expect(renderedBacklog).toContain(
+      '- Direction guardrails applied: brand-neutral founder advice'
+    );
     expect(renderedBacklog).toContain('| RM-010 | Generate roadmap views from state |');
 
     fs.rmSync(tempDir, { recursive: true, force: true });
