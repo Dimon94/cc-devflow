@@ -14,13 +14,13 @@ CC-DevFlow is a small, explicit workflow system for agent coding. It gives an AI
 ```text
 cc-roadmap
 
-PDCA: cc-plan        -> cc-do -> cc-check -> cc-act
-IDCA: cc-investigate -> cc-do -> cc-check -> cc-act
+PDCA: cc-plan        -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
+IDCA: cc-investigate -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
 ```
 
 ## Why cc-devflow
 
-- **Small public surface**: six visible workflow skills plus a CLI for installation and platform adaptation.
+- **Small public surface**: six core workflow skills, one optional deep review skill, plus a CLI for installation and platform adaptation.
 - **Evidence before done**: implementation must pass through verification proof before shipping or handoff.
 - **Skill-first distribution**: the public contract lives in `.claude/skills/<skill>/SKILL.md` and `PLAYBOOK.md`, not in hidden runtime behavior.
 - **Multi-platform output**: install once, then adapt for Codex, Cursor, Qwen, Antigravity, and related agent environments.
@@ -56,7 +56,7 @@ Refresh every supported platform output:
 npx cc-devflow@latest adapt --cwd /path/to/your/project --all
 ```
 
-After installation, ask your agent to use the workflow skills directly. Start with `cc-roadmap` for product direction, use `cc-plan` for new work, use `cc-investigate` for bugs, then continue through `cc-do`, `cc-check`, and `cc-act`.
+After installation, ask your agent to use the workflow skills directly. Start with `cc-roadmap` for product direction, use `cc-plan` for new work, use `cc-investigate` for bugs, optionally run `cc-review` on complex frozen plans or investigations, then continue through `cc-do`, optional implementation `cc-review`, `cc-check`, and `cc-act`.
 
 ## Workflow Skills
 
@@ -66,6 +66,7 @@ After installation, ask your agent to use the workflow skills directly. Start wi
 | `cc-plan` | A feature or change needs scope, design, and task freezing | `planning/design.md`, `planning/tasks.md`, `task-manifest.json` |
 | `cc-investigate` | A bug needs symptom, reproduction, root cause, and repair boundary | `planning/analysis.md`, `planning/tasks.md`, `task-manifest.json` |
 | `cc-do` | Planned or investigated work needs implementation | code, tests, checkpoints, scratch runtime |
+| `cc-review` | Complex plans, investigations, or diffs need optional deep multi-round review before implementation or verification | `cc-review-report.md`, optional `cc-review-findings.json` |
 | `cc-check` | Work needs fresh verification evidence | `report-card.json` |
 | `cc-act` | Verified work needs a PR, local handoff, release note, or closeout | one final handoff file |
 
@@ -81,6 +82,8 @@ Maintenance skills are shipped with the pack:
 Canonical language and durable decisions stay inside cc-devflow-native sources: `devflow/specs/`, `devflow/roadmap.json`, `devflow/ROADMAP.md`, `planning/design.md`, `planning/analysis.md`, and `change-meta.json`.
 
 `cc-plan` freezes more implementation decisions before `cc-do` starts. Non-trivial plans compare minimal viable and ideal architecture options, full designs include decision horizon plus error/rescue mapping, and test-first plans record test framework evidence, public test seams, spec-style test names, public verification paths, behavior assertions, mock boundaries, coverage quality, mandatory regression tests, interface depth, Green minimality guards, refactor candidates, and vertical tracer-bullet slices when existing behavior changes. Before handoff, `cc-plan` and `cc-investigate` also reconcile the source roadmap item so RM status, REQ/FIX binding, progress, and spec diagnosis do not drift from the frozen change artifacts.
+
+`cc-review` is optional and deeper than `cc-check`. It can run immediately after `cc-plan` / `cc-investigate` to review the frozen plan or root-cause contract, or after `cc-do` to review the implementation. It classifies the input as plan-stage or implementation-stage, then runs the matching review branch: plan reviews borrow strategy/design/engineering/DX methods through progressive references, while implementation reviews inspect diff scope, code smells, tests, UI/runtime behavior, Browser/Computer Use evidence, and logs when applicable. Findings route back to `cc-plan` or `cc-do`; clean implementation reviews continue to `cc-check`.
 
 ## Verification And Ship Gates
 
@@ -120,6 +123,7 @@ npx skills add https://github.com/Dimon94/cc-devflow --skill cc-roadmap
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-plan
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-investigate
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-do
+npx skills add https://github.com/Dimon94/cc-devflow --skill cc-review
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-check
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-act
 ```
@@ -185,6 +189,7 @@ The currently distributed skill folders are:
 - `.claude/skills/cc-plan/`
 - `.claude/skills/cc-investigate/`
 - `.claude/skills/cc-do/`
+- `.claude/skills/cc-review/`
 - `.claude/skills/cc-check/`
 - `.claude/skills/cc-act/`
 - `.claude/skills/cc-spec-init/`

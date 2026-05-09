@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Added public `cc-review` as an optional deep review skill that branches between plan-stage and implementation-stage review, keeps heavyweight methods in progressive references, checks in-scope code smells, and records Browser/Computer Use plus log evidence when UI or runtime behavior is involved.
 - Updated `cc-plan` with an opt-in External Best-Practice Validation gate that records generalized search approval, source trust, repo-fit verdicts, and skip reasons in durable planning artifacts.
 - Updated `cc-plan` Decision Question options to require `A/B/C` lettered choices while keeping `D1` / `D2` as question IDs.
 

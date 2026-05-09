@@ -11,13 +11,13 @@ CC-DevFlow has two entry paths:
 - `cc-devflow init`: install the whole `.claude` pack into your project
 - `cc-devflow adapt`: generate platform outputs such as Codex rules
 
-The workflow itself is driven by six visible skills:
+The core workflow is driven by six visible skills, with `cc-review` available as an optional deep review pass:
 
 ```text
 cc-roadmap
 
-PDCA: cc-plan -> cc-do -> cc-check -> cc-act
-IDCA: cc-investigate -> cc-do -> cc-check -> cc-act
+PDCA: cc-plan -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
+IDCA: cc-investigate -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
 ```
 
 The public skills are the visible harness. Each distributed `SKILL.md` now carries structured frontmatter plus a `Harness Contract`, and each `PLAYBOOK.md` carries the stage transition rules in a `Visible State Machine` section.
@@ -36,7 +36,7 @@ The public skills are the visible harness. Each distributed `SKILL.md` now carri
 npx cc-devflow init --dir /path/to/your/project
 ```
 
-The whole-pack install includes the six visible workflow skills plus `cc-spec-init` and `cc-simplify` as maintenance helpers.
+The whole-pack install includes the six core workflow skills, optional `cc-review`, plus `cc-spec-init` and `cc-simplify` as maintenance helpers.
 
 ### Single Skill Install
 
@@ -75,10 +75,12 @@ Use the skills in this order:
 ```text
 1. cc-roadmap
 2. choose cc-plan or cc-investigate
-3. cc-do
-4. cc-check
-5. cc-act
-6. repeat
+3. optional cc-review for complex frozen plans or investigations
+4. cc-do
+5. optional cc-review for complex implementations
+6. cc-check
+7. cc-act
+8. repeat
 ```
 
 Typical outputs:
@@ -87,6 +89,7 @@ Typical outputs:
 - `cc-spec-init` writes `devflow/specs/INDEX.md`, capability specs, and `change-meta.json`
 - `cc-plan` writes `planning/design.md`, `planning/tasks.md`, `task-manifest.json`, and `change-meta.json`
 - `cc-investigate` writes `planning/analysis.md`, `planning/tasks.md`, `task-manifest.json`, and `change-meta.json`
+- `cc-review` writes `cc-review-report.md` and optional structured findings for deep plan or implementation review
 - `cc-check` writes `report-card.json`
 - `cc-act` writes exactly one final handoff file: `handoff/pr-brief.md`, `handoff/resume-index.md`, or `handoff/release-note.md`
 
@@ -151,7 +154,7 @@ npx cc-devflow adapt --cwd /path/to/your/project --platform codex
 
 If your project has no optional `.claude/commands/` input, this is expected: the compiler will still generate the skills registry and mirror the distributed skill set for Codex.
 
-Codex mirrors the distributed skills from `.claude/skills/<skill>/` into `.codex/skills/<skill>/`. That set includes the six public workflow skills plus `cc-spec-init` and `cc-simplify`, and the mirror is additive-only: existing project-owned Codex skills are preserved instead of being deleted.
+Codex mirrors the distributed skills from `.claude/skills/<skill>/` into `.codex/skills/<skill>/`. That set includes the six core workflow skills, optional `cc-review`, `cc-spec-init`, and `cc-simplify`, and the mirror is additive-only: existing project-owned Codex skills are preserved instead of being deleted.
 
 ### Keep skills and examples in sync
 

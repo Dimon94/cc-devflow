@@ -11,13 +11,13 @@ CC-DevFlow 现在有两条入口：
 - `cc-devflow init`：把整包 `.claude` 安装到你的项目里
 - `cc-devflow adapt`：生成 Codex、Cursor、Qwen、Antigravity 等平台产物
 
-真正的工作流由 6 个可见 Skill 组成：
+核心工作流由 6 个可见 Skill 组成，复杂工作可选 `cc-review` 做深度 Review：
 
 ```text
 cc-roadmap
 
-PDCA: cc-plan -> cc-do -> cc-check -> cc-act
-IDCA: cc-investigate -> cc-do -> cc-check -> cc-act
+PDCA: cc-plan -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
+IDCA: cc-investigate -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
 ```
 
 公开 Skill 本身就是可见 harness。现在每个分发 `SKILL.md` 都带结构化 frontmatter 和 `Harness Contract`，每个 `PLAYBOOK.md` 都带 `Visible State Machine`，不再依赖隐藏运行时语义来理解阶段流转。
@@ -36,7 +36,7 @@ IDCA: cc-investigate -> cc-do -> cc-check -> cc-act
 npx cc-devflow init --dir /path/to/your/project
 ```
 
-整包安装会带上 6 个可见 workflow skill，以及维护用的 `cc-spec-init` 和 `cc-simplify`。
+整包安装会带上 6 个核心 workflow skill、可选 `cc-review`，以及维护用的 `cc-spec-init` 和 `cc-simplify`。
 
 ### 单个 Skill 安装
 
@@ -75,10 +75,12 @@ find .codex/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort
 ```text
 1. cc-roadmap
 2. 在 cc-plan 和 cc-investigate 里二选一
-3. cc-do
-4. cc-check
-5. cc-act
-6. repeat
+3. 复杂计划或调查根因冻结后可选 cc-review
+4. cc-do
+5. 复杂实现可选 cc-review
+6. cc-check
+7. cc-act
+8. repeat
 ```
 
 常见产物：
@@ -87,6 +89,7 @@ find .codex/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort
 - `cc-spec-init` 产出 `devflow/specs/INDEX.md`、capability spec 和 `change-meta.json`
 - `cc-plan` 产出 `planning/design.md`、`planning/tasks.md`、`task-manifest.json` 和 `change-meta.json`
 - `cc-investigate` 产出 `planning/analysis.md`、`planning/tasks.md`、`task-manifest.json` 和 `change-meta.json`
+- `cc-review` 产出 `cc-review-report.md`，以及可选的结构化深度 Review findings
 - `cc-check` 产出 `report-card.json`
 - `cc-act` 只产出一个最终 handoff 文件：`handoff/pr-brief.md`、`handoff/resume-index.md` 或 `handoff/release-note.md`
 
@@ -150,7 +153,7 @@ npx cc-devflow adapt --cwd /path/to/your/project --platform codex
 
 如果你的项目没有可选的 `.claude/commands/` 输入目录，这也是正常的；编译器仍然会生成 skills registry，并为 Codex 镜像正式分发 skill 集合。
 
-Codex 现在会把正式分发的 skill 从 `.claude/skills/<skill>/` 镜像到 `.codex/skills/<skill>/`。这套集合包含 6 个公开 workflow skill 和维护类 skill `cc-spec-init`、`cc-simplify`，并且镜像是纯增量的：项目里已有的自定义 Codex skill 不会被删除。
+Codex 现在会把正式分发的 skill 从 `.claude/skills/<skill>/` 镜像到 `.codex/skills/<skill>/`。这套集合包含 6 个核心 workflow skill、可选 `cc-review` 和维护类 skill `cc-spec-init`、`cc-simplify`，并且镜像是纯增量的：项目里已有的自定义 Codex skill 不会被删除。
 
 ### 保持 skill 和样例同步
 
