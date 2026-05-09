@@ -23,6 +23,9 @@ describe('cc-devflow init', () => {
       fs.existsSync(path.join(tempDir, '.claude', 'skills', 'cc-simplify', 'SKILL.md'))
     ).toBe(true);
     expect(
+      fs.existsSync(path.join(tempDir, '.claude', 'skills', 'cc-review', 'SKILL.md'))
+    ).toBe(true);
+    expect(
       fs.existsSync(path.join(tempDir, '.claude', 'skills', 'docs-sync', 'SKILL.md'))
     ).toBe(false);
 

@@ -38,6 +38,7 @@ ROADMAP_VERSION="$(skill_version cc-roadmap)"
 REQ_PLAN_VERSION="$(skill_version cc-plan)"
 INVESTIGATE_VERSION="$(skill_version cc-investigate)"
 REQ_DO_VERSION="$(skill_version cc-do)"
+REQ_REVIEW_VERSION="$(skill_version cc-review)"
 REQ_CHECK_VERSION="$(skill_version cc-check)"
 REQ_ACT_VERSION="$(skill_version cc-act)"
 
@@ -46,6 +47,7 @@ for pair in \
   "cc-plan:$REQ_PLAN_VERSION" \
   "cc-investigate:$INVESTIGATE_VERSION" \
   "cc-do:$REQ_DO_VERSION" \
+  "cc-review:$REQ_REVIEW_VERSION" \
   "cc-check:$REQ_CHECK_VERSION" \
   "cc-act:$REQ_ACT_VERSION"
 do
