@@ -1,7 +1,7 @@
 ---
 name: cc-simplify
-version: 1.4.0
-description: "Use when changed code needs a Codex-native simplification pass for scope drift, reuse, code quality, efficiency, test quality, and confidence-gated smell fixes before cc-check or cc-act."
+version: 1.4.1
+description: "Use when changed code needs an automatic subagent-backed simplification pass for scope drift, reuse, code quality, efficiency, test quality, and confidence-gated smell fixes before cc-check or cc-act."
 ---
 
 # CC-Simplify
@@ -35,20 +35,31 @@ ONLY FIX CONFIRMED SMELLS. DO NOT BEAUTIFY BY GUESS.
 3. 如果变更跨多个互不相关模块，先按模块分组；不要让一个 cleanup pass 变成大扫除。
 4. 只审当前 diff 新增或本次改动扩大后的坏味道。历史债只在它阻挡当前交付或被本次 diff 放大时进入清理范围。
 
-## Phase 2: Codex 智能体评审
+## Phase 2: 自动子智能体评审
 
-如果当前环境支持 Codex 多智能体，并且用户已经明确触发 `cc-simplify` 或要求并行评审，可以构建只读评审智能体。
+触发 `cc-simplify` 本身就构成用户对子智能体 / subAgent 评审的明确授权。不要要求用户在 `[$cc-simplify]` 之外再补一句“请开启子智能体”。
+
+只要当前宿主支持子智能体，必须自动启动只读评审智能体；主线程只负责汇总、验证 finding、实际修复和最终验证。
 
 ### 调度原则
 
-- Codex 中优先使用 `spawn_agent(agent_type="explorer")` 创建只读评审智能体。
-- 如果当前环境没有 `explorer`，使用默认智能体也必须在 prompt 里写明：只读审查，不编辑文件。
+- ClaudeCode 环境：使用可用的 `Task` / subAgent 机制自动创建只读评审 subAgent。
+- Codex App / Codex 工具环境：优先使用内置 `explorer` 子智能体做只读评审；不要假设 ClaudeCode 的 `Task` / `subAgent` 语义存在。
+- 在暴露 `spawn_agent` 工具的 Codex 环境里，使用 `spawn_agent(agent_type="explorer", fork_context=false, ...)`；如果没有 `explorer`，使用 `default` 也必须在 prompt 里写明：只读审查，不编辑文件。
+- `cc-simplify` 的触发就是对子智能体的明确请求；不要再等待用户二次授权。
+- 不依赖 repo-local `.codex/agents/*.toml` 自定义 agent 名称来完成核心流程。自定义 agent 可以作为增强，但主流程必须能依赖 Codex 内置 `explorer` / `default` 或宿主内置 subAgent 机制。
 - 只把只读评审交给智能体；主线程负责最终判断和实际编辑。
 - 每个智能体拿到同一份完整 diff、相关任务/设计/spec 路径、当前 repo 根目录。
 - 智能体不能改文件，只输出结构化 findings。
-- 如果没有多智能体能力，主线程按同样清单顺序执行。
-- 小 diff 不强制开智能体：少于约 50 行且只触碰单一文件时，主线程执行同一清单即可。
+- 如果当前运行时没有子智能体工具，或工具调用被上层策略禁止，主线程按同样清单顺序执行，并在报告里写 `Agents used: no (subagent tool unavailable)`；不要伪造子智能体结果。
+- 小 diff 也要尝试启动子智能体；如果资源或宿主限制不适合三路并行，至少启动一个合并维度的只读 reviewer。
 - 条件 specialist 只在对应 scope 出现时启用；不要为了“完整”启动无关评审。
+
+默认调度：
+
+- 大 diff / 多文件 diff：启动 Agent A、Agent B、Agent C 三个只读评审智能体。
+- 小 diff / 单文件 diff：至少启动一个 combined reviewer，覆盖 A/B/C 三组检查。
+- 命中 security / api-contract / release / frontend-performance 时，再启动对应 specialist；如果 specialist 发现 `critical`，再启动 Red Team 只读复查。
 
 智能体 prompt 必须自包含：
 

@@ -1,5 +1,11 @@
 # CC-Simplify Skill Changelog
 
+## v1.4.1 - 2026-05-10
+
+- make `cc-simplify` itself the explicit trigger for automatic read-only subagent review in ClaudeCode and Codex environments
+- prefer ClaudeCode `Task` / subAgent support or Codex built-in `explorer` / `default` agents without requiring an extra user prompt
+- require a truthful fallback report when the host does not expose any subagent tool, instead of pretending subagents ran
+
 ## v1.4.0 - 2026-04-28
 
 - add deep-module architecture review checks for shallow wrappers, hypothetical seams, and complexity that should move behind a smaller interface
