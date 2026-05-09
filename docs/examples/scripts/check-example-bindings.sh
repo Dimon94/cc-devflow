@@ -93,8 +93,18 @@ while IFS= read -r encoded; do
 
   jq -er --arg roadmap "$ROADMAP_VERSION" --arg reqplan "$REQ_PLAN_VERSION" '
     (.sourceRoadmap.roadmapSkillVersion // $roadmap) == $roadmap and
-    (.planningMeta.reqPlanSkillVersion // $reqplan) == $reqplan
+    (.planningMeta.reqPlanSkillVersion // $reqplan) == $reqplan and
+    .executionProtocol.templateCompliance.required == true and
+    .executionProtocol.completion.manualStatusEdit == "forbidden" and
+    (.executionProtocol.completion.commandTemplate | contains("mark-task-complete.sh")) and
+    all(.tasks[]; (.completion.command | contains("mark-task-complete.sh")) and (.tddPhase | type == "string") and (.testSeam.publicVerificationPath | type == "string"))
   ' "$planning_dir/task-manifest.json" >/dev/null
+
+  assert_contains "$planning_dir/tasks.md" "## Execution Protocol"
+  assert_contains "$planning_dir/tasks.md" "mark-task-complete.sh"
+  assert_contains "$planning_dir/tasks.md" "TDD phase:"
+  assert_contains "$planning_dir/tasks.md" "Completion:"
+  assert_contains "$planning_dir/tasks.md" "Public verification path:"
 
   assert_contains "$readme" "## Example Meta"
   assert_contains "$readme" "\`cc-roadmap@$ROADMAP_VERSION\`"

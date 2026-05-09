@@ -179,7 +179,60 @@
       },
       "status": "passed",
       "attempts": 1,
-      "maxRetries": 1
+      "maxRetries": 1,
+      "tddPhase": "red",
+      "verticalSlice": "Slice 1",
+      "testSeam": {
+        "entry": "share dialog UI behavior",
+        "behaviorAsserted": "The missing copy action is reproduced as a failing test",
+        "specStyleTestName": "The missing copy action is reproduced as a failing test",
+        "oneLogicalBehavior": true,
+        "publicVerificationPath": "Run the share dialog test and observe the copy action through the rendered dialog",
+        "implementationDetailRisk": "low"
+      },
+      "feedbackLoop": {
+        "type": "automated-test",
+        "determinism": "deterministic",
+        "expectedFailure": "Fails before the behavior exists"
+      },
+      "allowedMocks": [
+        "clipboard boundary"
+      ],
+      "testQuality": {
+        "usesPublicInterface": true,
+        "describesBehavior": true,
+        "specStyleName": true,
+        "oneLogicalBehavior": true,
+        "verifiesThroughPublicPath": true,
+        "survivesInternalRefactor": true,
+        "mocksOnlySystemBoundaries": true,
+        "noBulkRed": true
+      },
+      "greenMinimality": {
+        "guard": "Keep the task scoped to its stated verification evidence",
+        "noSpeculativeBranches": true
+      },
+      "completion": {
+        "command": "SCRIPT_ROOT=\".claude/skills/cc-do/scripts\"; if [[ ! -d \"$SCRIPT_ROOT\" && -d \".codex/skills/cc-do/scripts\" ]]; then SCRIPT_ROOT=\".codex/skills/cc-do/scripts\"; fi; bash \"$SCRIPT_ROOT\"/mark-task-complete.sh --manifest docs/examples/pdca-loop/changes/REQ-001-copy-invite-link/planning/task-manifest.json --tasks docs/examples/pdca-loop/changes/REQ-001-copy-invite-link/planning/tasks.md --task T001",
+        "requiredBeforeCompletion": [
+          "verification evidence captured",
+          "checkpoint written",
+          "spec review gate recorded",
+          "code review gate recorded"
+        ],
+        "forbiddenShortcuts": [
+          "manual checkbox edit",
+          "manual manifest status edit",
+          "leaving currentTaskId stale"
+        ]
+      },
+      "refactorCandidates": [
+        "duplication",
+        "long method",
+        "primitive obsession",
+        "naming",
+        "more than three nested branches"
+      ]
     },
     {
       "id": "T002",
@@ -231,7 +284,60 @@
       },
       "status": "passed",
       "attempts": 1,
-      "maxRetries": 1
+      "maxRetries": 1,
+      "tddPhase": "green",
+      "verticalSlice": "Slice 2",
+      "testSeam": {
+        "entry": "share dialog UI behavior",
+        "behaviorAsserted": "The dialog exposes a copy button and confirms the copied state",
+        "specStyleTestName": "The dialog exposes a copy button and confirms the copied state",
+        "oneLogicalBehavior": true,
+        "publicVerificationPath": "Run the share dialog test and observe the copy action through the rendered dialog",
+        "implementationDetailRisk": "low"
+      },
+      "feedbackLoop": {
+        "type": "automated-test",
+        "determinism": "deterministic",
+        "expectedFailure": ""
+      },
+      "allowedMocks": [
+        "clipboard boundary"
+      ],
+      "testQuality": {
+        "usesPublicInterface": true,
+        "describesBehavior": true,
+        "specStyleName": true,
+        "oneLogicalBehavior": true,
+        "verifiesThroughPublicPath": true,
+        "survivesInternalRefactor": true,
+        "mocksOnlySystemBoundaries": true,
+        "noBulkRed": true
+      },
+      "greenMinimality": {
+        "guard": "Implement only the code needed to pass the current red behavior",
+        "noSpeculativeBranches": true
+      },
+      "completion": {
+        "command": "SCRIPT_ROOT=\".claude/skills/cc-do/scripts\"; if [[ ! -d \"$SCRIPT_ROOT\" && -d \".codex/skills/cc-do/scripts\" ]]; then SCRIPT_ROOT=\".codex/skills/cc-do/scripts\"; fi; bash \"$SCRIPT_ROOT\"/mark-task-complete.sh --manifest docs/examples/pdca-loop/changes/REQ-001-copy-invite-link/planning/task-manifest.json --tasks docs/examples/pdca-loop/changes/REQ-001-copy-invite-link/planning/tasks.md --task T002",
+        "requiredBeforeCompletion": [
+          "verification evidence captured",
+          "checkpoint written",
+          "spec review gate recorded",
+          "code review gate recorded"
+        ],
+        "forbiddenShortcuts": [
+          "manual checkbox edit",
+          "manual manifest status edit",
+          "leaving currentTaskId stale"
+        ]
+      },
+      "refactorCandidates": [
+        "duplication",
+        "long method",
+        "primitive obsession",
+        "naming",
+        "more than three nested branches"
+      ]
     },
     {
       "id": "T003",
@@ -287,7 +393,60 @@
       },
       "status": "passed",
       "attempts": 1,
-      "maxRetries": 1
+      "maxRetries": 1,
+      "tddPhase": "evidence",
+      "verticalSlice": "Slice 3",
+      "testSeam": {
+        "entry": "share dialog UI behavior",
+        "behaviorAsserted": "Fresh verification evidence is ready for cc-check",
+        "specStyleTestName": "Fresh verification evidence is ready for cc-check",
+        "oneLogicalBehavior": true,
+        "publicVerificationPath": "Run the share dialog test and observe the copy action through the rendered dialog",
+        "implementationDetailRisk": "low"
+      },
+      "feedbackLoop": {
+        "type": "automated-test",
+        "determinism": "deterministic",
+        "expectedFailure": ""
+      },
+      "allowedMocks": [
+        "clipboard boundary"
+      ],
+      "testQuality": {
+        "usesPublicInterface": true,
+        "describesBehavior": true,
+        "specStyleName": true,
+        "oneLogicalBehavior": true,
+        "verifiesThroughPublicPath": true,
+        "survivesInternalRefactor": true,
+        "mocksOnlySystemBoundaries": true,
+        "noBulkRed": true
+      },
+      "greenMinimality": {
+        "guard": "Keep the task scoped to its stated verification evidence",
+        "noSpeculativeBranches": true
+      },
+      "completion": {
+        "command": "SCRIPT_ROOT=\".claude/skills/cc-do/scripts\"; if [[ ! -d \"$SCRIPT_ROOT\" && -d \".codex/skills/cc-do/scripts\" ]]; then SCRIPT_ROOT=\".codex/skills/cc-do/scripts\"; fi; bash \"$SCRIPT_ROOT\"/mark-task-complete.sh --manifest docs/examples/pdca-loop/changes/REQ-001-copy-invite-link/planning/task-manifest.json --tasks docs/examples/pdca-loop/changes/REQ-001-copy-invite-link/planning/tasks.md --task T003",
+        "requiredBeforeCompletion": [
+          "verification evidence captured",
+          "checkpoint written",
+          "spec review gate recorded",
+          "code review gate recorded"
+        ],
+        "forbiddenShortcuts": [
+          "manual checkbox edit",
+          "manual manifest status edit",
+          "leaving currentTaskId stale"
+        ]
+      },
+      "refactorCandidates": [
+        "duplication",
+        "long method",
+        "primitive obsession",
+        "naming",
+        "more than three nested branches"
+      ]
     }
   ],
   "metadata": {
@@ -297,5 +456,39 @@
   },
   "deferredQuestions": [
     "If users still miss the copied-state confirmation, open RM-002 for richer feedback."
-  ]
+  ],
+  "executionProtocol": {
+    "templateCompliance": {
+      "required": true,
+      "sourceTemplate": "assets/TASKS_TEMPLATE.md",
+      "taskBlockMustInclude": [
+        "Goal",
+        "TDD phase",
+        "Files",
+        "Read first",
+        "Verification",
+        "Evidence",
+        "Test seam",
+        "Public verification path",
+        "Allowed mocks",
+        "Completion"
+      ],
+      "titleOnlyTasks": "forbidden"
+    },
+    "selection": {
+      "sourceOfTruth": "planning/task-manifest.json.currentTaskId",
+      "commandTemplate": "SCRIPT_ROOT=\".claude/skills/cc-do/scripts\"; if [[ ! -d \"$SCRIPT_ROOT\" && -d \".codex/skills/cc-do/scripts\" ]]; then SCRIPT_ROOT=\".codex/skills/cc-do/scripts\"; fi; bash \"$SCRIPT_ROOT\"/select-ready-tasks.sh --manifest docs/examples/pdca-loop/changes/REQ-001-copy-invite-link/planning/task-manifest.json"
+    },
+    "completion": {
+      "manualStatusEdit": "forbidden",
+      "commandTemplate": "SCRIPT_ROOT=\".claude/skills/cc-do/scripts\"; if [[ ! -d \"$SCRIPT_ROOT\" && -d \".codex/skills/cc-do/scripts\" ]]; then SCRIPT_ROOT=\".codex/skills/cc-do/scripts\"; fi; bash \"$SCRIPT_ROOT\"/mark-task-complete.sh --manifest docs/examples/pdca-loop/changes/REQ-001-copy-invite-link/planning/task-manifest.json --tasks docs/examples/pdca-loop/changes/REQ-001-copy-invite-link/planning/tasks.md --task <task-id>",
+      "failurePolicy": "Do not hand-edit status; fix missing checkpoint, review gate, or dependency evidence and rerun the script.",
+      "updates": [
+        "planning/task-manifest.json.tasks[].status",
+        "planning/task-manifest.json.currentTaskId",
+        "planning/task-manifest.json.status",
+        "planning/tasks.md checkbox"
+      ]
+    }
+  }
 }
