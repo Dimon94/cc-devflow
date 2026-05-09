@@ -60,6 +60,7 @@ Commands:
   config doctor       Validate config and local ignore safety
   query list          List typed runtime query ids
   query <id>          Run a typed runtime query as JSON
+  next-change-key     Compute the next REQ/FIX change key
 
 Init options:
   --dir <path>         Target project path (default: cwd)
@@ -90,6 +91,11 @@ Query options:
   --change <id>        Change id, for example REQ-123
   --change-id <id>     Alias for --change
   --change-key <key>   Full change key, for example REQ-123-my-feature
+
+Next-change-key options:
+  --prefix <REQ|FIX>   Change type prefix (required)
+  --description <text> Short description, will be slugified (required)
+  --cwd <path>         Project path (default: cwd)
 
 Examples:
   cc-devflow init
@@ -528,6 +534,31 @@ async function runQueryCommand(args) {
   return result.ok ? 0 : 2;
 }
 
+function runNextChangeKey(args) {
+  const parsed = { prefix: null, description: null, cwd: null };
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (arg === '--prefix') { parsed.prefix = args[++i]; continue; }
+    if (arg.startsWith('--prefix=')) { parsed.prefix = arg.slice('--prefix='.length); continue; }
+    if (arg === '--description') { parsed.description = args[++i]; continue; }
+    if (arg.startsWith('--description=')) { parsed.description = arg.slice('--description='.length); continue; }
+    if (arg === '--cwd') { parsed.cwd = args[++i]; continue; }
+    if (arg.startsWith('--cwd=')) { parsed.cwd = arg.slice('--cwd='.length); continue; }
+  }
+
+  if (!parsed.prefix || !parsed.description) {
+    console.error('Use: cc-devflow next-change-key --prefix REQ|FIX --description "short description"');
+    return 1;
+  }
+
+  const { nextChangeKey } = require(path.join(PACKAGE_ROOT, 'lib/skill-runtime/paths.js'));
+  const repoRoot = path.resolve(parsed.cwd || process.cwd());
+  const result = nextChangeKey(repoRoot, parsed.prefix, parsed.description);
+  process.stdout.write(`${result.changeId}\n${result.changeKey}\n`);
+  return 0;
+}
+
 function runAdapt(args) {
   const { options, rest } = parseCliArgs(args);
 
@@ -594,6 +625,10 @@ async function main() {
 
   if (command === 'query') {
     return runQueryCommand(rest);
+  }
+
+  if (command === 'next-change-key') {
+    return runNextChangeKey(rest);
   }
 
   return runAdapter(command, rest);
