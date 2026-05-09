@@ -621,6 +621,20 @@ function renderParked(tracking) {
     .join('\n\n');
 }
 
+function renderProjectDirectionHandoff(tracking) {
+  const context = tracking.context || {};
+
+  return [
+    `- Project direction mode: ${formatBacklogValue(context.projectDirectionMode)}`,
+    `- Direction mode rationale: ${formatBacklogValue(context.projectDirectionRationale)}`,
+    `- Direction-specific questions selected: ${formatList(context.directionQuestionsSelected || [])}`,
+    `- Direction-specific questions skipped: ${formatList(context.directionQuestionsSkipped || [])}`,
+    `- Direction guardrails applied: ${formatList(context.directionGuardrailsApplied || [])}`,
+    `- Planning posture: ${formatBacklogValue(context.planningPosture)}`,
+    `- Evidence maturity: ${formatBacklogValue(context.evidenceMaturity)}`
+  ].join('\n');
+}
+
 function renderBacklogDocument({ backlogFile, trackingFile, tracking }) {
   const relativePath = path.relative(path.dirname(backlogFile), trackingFile).replace(/\\/g, '/');
   const displayPath = relativePath || path.basename(trackingFile);
@@ -650,6 +664,10 @@ function renderBacklogDocument({ backlogFile, trackingFile, tracking }) {
     `- Serial spine: ${formatBacklogValue(tracking.dependencyHandoff.serialSpine)}`,
     `- Parallel-ready next wave: ${formatBacklogValue(tracking.dependencyHandoff.parallelReadyNextWave)}`,
     `- Notes on blockers: ${formatBacklogValue(tracking.dependencyHandoff.notesOnBlockers)}`,
+    '',
+    '## Project Direction Handoff',
+    '',
+    renderProjectDirectionHandoff(tracking),
     '',
     '## Ready For Req-Plan',
     '',

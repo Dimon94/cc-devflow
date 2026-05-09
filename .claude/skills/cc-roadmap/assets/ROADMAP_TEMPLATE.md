@@ -16,6 +16,8 @@
 ## Context Snapshot
 
 - Product / repo:
+- Project direction mode:
+- Direction mode rationale:
 - Planning posture:
 - Project stage:
 - Evidence maturity:
@@ -89,6 +91,10 @@
 
 ## Evidence-Maturity Routing
 
+- Project direction mode:
+- Direction-specific questions selected:
+- Direction-specific questions skipped:
+- Founder / builder / infra guardrails applied:
 - Planning posture:
 - Evidence maturity:
 - Questions selected:
@@ -200,6 +206,8 @@ flowchart TD
 - Rejected path A:
 - Rejected path B:
 - Rejected maturity route:
+- Project direction mode decision:
+- Promotional / brand-neutrality check:
 - Language / spec decision conflicts:
 - Developer / operator adoption assumptions:
 - Open assumptions to verify next:

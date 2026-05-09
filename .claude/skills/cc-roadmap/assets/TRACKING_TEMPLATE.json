@@ -5,12 +5,17 @@
   },
   "meta": {
     "roadmapVersion": "roadmap.v1",
-    "skillVersion": "5.0.0",
+    "skillVersion": "5.1.0",
     "status": "active",
     "lastUpdated": "2026-05-01",
     "currentFocusStage": "Stage 1"
   },
   "context": {
+    "projectDirectionMode": "",
+    "projectDirectionRationale": "",
+    "directionQuestionsSelected": [],
+    "directionQuestionsSkipped": [],
+    "directionGuardrailsApplied": [],
     "planningPosture": "",
     "evidenceMaturity": "",
     "canonicalTerms": [],

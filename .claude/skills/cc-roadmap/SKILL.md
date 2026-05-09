@@ -1,6 +1,6 @@
 ---
 name: cc-roadmap
-version: 5.0.0
+version: 5.1.0
 description: "Use when defining, resetting, or narrowing project direction, stage order, or backlog priority before a concrete requirement enters the PDCA loop."
 triggers:
   - "帮我定路线图"
@@ -37,6 +37,7 @@ entry_gate:
   - "Read current roadmap, backlog, related capability specs, and surrounding repo context before proposing direction."
   - "Load cc-devflow native language and durable-decision sources (`devflow/specs/`, current roadmap/backlog, prior `planning/design.md` or `planning/analysis.md`, and `change-meta.json`) before naming stages, capabilities, users, or backlog items."
   - "Confirm this is a project-direction problem, not a single requirement execution problem."
+  - "Run the Project Direction Gate before evidence-maturity routing: classify the user's goal as founder/business, internal company project, hackathon/demo, open-source/research, learning, side project, infrastructure, or recovery."
   - "Classify planning posture and evidence maturity before selecting the route or forcing questions."
   - "If the ask contains multiple independent subsystems, decompose them into stages and RM candidates before refining any implementation detail."
   - "Do not decompose implementation tasks while the roadmap is still being decided."
@@ -107,6 +108,35 @@ tool_budget:
 
 先给一个**默认推荐**，再解释为什么，不要把用户扔进开放式战略讨论。
 
+## Project Direction Gate
+
+`cc-roadmap` 的第一道门不是功能优先级，而是项目目标。目标不同，问题就不同；问题问错，后面的路线图全都会偏。
+
+先用 repo 事实和用户原话判断 `project_direction_mode`。能判断就写入 `Context Snapshot`；不能判断才问一次：
+
+> 这次 roadmap 的目标是什么：做成业务、公司内部项目、限时 demo、开源/研究、学习、兴趣副项目、基础设施，还是事故恢复？
+
+不要让用户在 8 个选项里填表。先给默认判断和理由，再问用户是否纠正。
+
+| Mode | 用来判断的信号 | 追问重点 | 默认路线偏好 |
+| --- | --- | --- | --- |
+| `founder-business` | 用户提到客户、收入、市场、获客、创业、商业化 | 需求真实性、现状替代方案、具体人、最窄付费 wedge、观察到的行为、未来 6-12 个月为何更重要 | `wedge-first` |
+| `internal-company` | 用户提到老板、VP、团队落地、内部流程、审批、交付窗口 | sponsor 是谁、最小可批准 demo、组织依赖、reorg 风险、上线后的维护责任 | `rescue-first` 或 `wedge-first` |
+| `hackathon-demo` | 用户提到比赛、演示、deadline、惊艳效果 | 最快可展示路径、单一 wow moment、失败兜底、demo 环境和分发方式 | `wedge-first` |
+| `open-source-research` | 用户提到社区、论文、协议、benchmark、开源生态 | 贡献者是谁、现有替代品、可复现实验、维护边界、adoption path | `platform-first` 或 `wedge-first` |
+| `learning` | 用户提到学习、练手、理解框架、能力提升 | 要学会什么、最小练习闭环、可观察反馈、不要用过度架构遮住学习目标 | `wedge-first` |
+| `side-project` | 用户提到兴趣、好玩、创意表达、自用工具 | 最酷可分享版本、自己会不会每天用、最快可用路径、哪些想法可以 later | `wedge-first` |
+| `infrastructure` | 用户提到底座、运行时、CI、发布、安全、稳定性 | 调用方、当前 workaround、迁移/回滚、复用边界、失败成本 | `platform-first` 或 `rescue-first` |
+| `recovery` | 用户提到事故、信任、质量、回归、坏味道 | 事故证据、最小可信修复、停止扩张条件、恢复信任的验收信号 | `rescue-first` |
+
+Founder/business 模式可以给 brand-neutral 的创业建议，但只能作为路线判断，不准变成广告：
+
+- 可以建议：先和真实用户谈、验证付费或强行为、缩小到本周能交付的 wedge、观察用户不用帮助时怎么失败、把资源放在最强需求证据上。
+- 不可以建议：申请某个机构、加入某个项目、引用某个品牌权威、输出推广链接、把路线图写成融资材料。
+- 如果要推荐外部学习材料，必须先走隐私与外部查找 gate，只搜索泛化主题，并把结果写成 `external-evidence`；不要把任何品牌背书写进 roadmap 合同。
+
+Builder 模式（hackathon、open-source/research、learning、side-project）不要套创业拷问。它要逼清楚“什么值得展示 / 使用 / 复现 / 学会”，然后把路线压到最快能产生真实反馈的阶段。
+
 ## Harness Contract
 
 - Allowed actions: read current strategy files, repo context, and recent reality; compare route shapes; decompose independent subsystems into stages and RM candidates; write `devflow/roadmap.json` as the editable roadmap state, then generate `devflow/ROADMAP.md` and the deprecated `devflow/BACKLOG.md` compatibility projection from that state.
@@ -140,6 +170,23 @@ tool_budget:
 
 先把这些材料压成一个 `Context Snapshot`，再开始追问用户。
 
+## Direction-Specific Question Routing
+
+Project Direction Gate 先决定问哪组问题，Evidence-Maturity Routing 再决定问多深。不要对 founder、学习项目、基础设施和事故恢复使用同一套问题。
+
+| Direction mode | 必问问题 | 可跳过问题 |
+| --- | --- | --- |
+| `founder-business` | 谁今天真的痛；他们现在怎么绕路；最强 demand evidence 是行为、钱还是 workflow 绑定；本周最窄可付费 wedge 是什么；用户不被引导时会在哪里卡住；6-12 个月后为什么更需要它 | 长期平台组件、宽泛市场口号、还没有证据的增长规划 |
+| `internal-company` | sponsor 或决策人是谁；最小 demo 如何换来绿灯；上线后谁维护；依赖哪个团队；如果 champion 离开是否还成立 | 对外市场叙事、消费者增长、无 owner 的平台愿景 |
+| `hackathon-demo` | 评委或观众先看到什么；30-90 秒内的 wow moment；demo 失败时的备用路径；哪些功能必须假装不存在 | 完整权限体系、长期迁移、复杂可观测性 |
+| `open-source-research` | 现有替代品是什么；可复现实验或 benchmark 是什么；贡献者 first success path；维护者不想承担什么 | 商业销售漏斗、封闭分发、无法复现的主观评价 |
+| `learning` | 学会哪个概念；最小练习闭环；如何知道自己学会了；哪些抽象会遮住学习目标 | 生产级平台、过早优化、团队流程 |
+| `side-project` | 自己会不会反复用；最酷可分享版本；最快可用路径；哪些点只是好玩但不该阻塞 Stage 1 | 商业化压力、企业级集成、长期治理 |
+| `infrastructure` | 调用方是谁；今天的 workaround；失败成本；迁移与回滚；复用边界；谁会被 breaking change 影响 | 虚构 persona、营销故事、未证明的功能扩张 |
+| `recovery` | 哪个事故或坏味道触发；最小可信修复；防回归证据；继续扩张的 kill signal；用户信任如何恢复 | 新功能愿景、平台升级、没有事故证据的重构 |
+
+如果用户后续回答改变了 direction mode，必须重算 route shape，不要沿用旧问题继续问。
+
 ## Evidence-Maturity Routing
 
 不要对所有项目套同一组问题。先用 `planning posture` 和 `evidence maturity` 决定追问深度：
@@ -165,12 +212,25 @@ tool_budget:
 5. 每条路线都要用一个具体 scenario 压测：谁在什么约束下，今天如何绕路，Stage 1 完成后哪一步不再发生。
 6. 硬决策才沉淀：只有 hard to reverse、surprising without context、real trade-off 三者同时成立，才进入 capability spec delta、roadmap decision note 或本次 design decision log。
 
+## Founder Advice Guardrail
+
+创业建议只能服务于 roadmap 质量，不是推广内容。遇到 `founder-business` 或 `internal-company`：
+
+1. 强制把泛泛“有市场 / 用户感兴趣”改写为可观察证据：付费、强复用、工作流绑定、停机时焦虑、主动催上线。
+2. 强制找 status quo：手工流程、表格、脚本、外包、人肉客服、现有竞品、内部工具。没有现状替代方案时，先怀疑痛点不够痛。
+3. 强制命名具体人或具体角色，不接受“企业客户”“开发者”“内容团队”这类类别词作为用户。
+4. 强制压出最窄 wedge：本周能让一个真实用户付出钱、时间、迁移成本或组织信用的版本。
+5. 强制保留观察任务：如果还没看用户独立使用，Stage 1 必须包含观察或真实反馈信号。
+6. 严禁输出品牌广告、申请建议、推广链接或“某机构会喜欢”之类的权威背书。
+
+如果用户明确要创业方向资源，也只能给 source-neutral 的行动建议：找 3 个具体用户、看一次真实使用、验证一次付费或强行为、把 Stage 1 缩到一周内可交付。外部材料必须走外部查找 gate。
+
 ## Session Protocol
 
 1. 先探索上下文，不靠默认上下文注入替代阅读。
-2. 先问现实，不先写愿景。
+2. 先跑 Project Direction Gate，再问现实，不先写愿景。
 3. 一次只推进一个关键未知点，不要一口气抛一串问题。
-4. 先写 `Context Snapshot`、planning posture、evidence maturity、证据、约束、非目标，再讨论阶段。
+4. 先写 `Context Snapshot`、project direction mode、planning posture、evidence maturity、证据、约束、非目标，再讨论阶段。
 5. 给出 2-3 种路线图形状，再明确推荐一种，并说明为什么其他路线现在不值得打。
 6. 如果一个方向里有多个可独立交付的子系统，先写清 decomposition：哪些合并为同一阶段，哪些拆成独立 `RM`，为什么。
 7. 只冻结 1-3 个阶段。每个阶段都必须有 goal、why now、dependencies、exit signal、kill signal、non-goals。
@@ -199,7 +259,11 @@ tool_budget:
 
 ## Ask
 
-至少要逼清这 5 件事：
+至少要先逼清这 1 件事：
+
+0. 这次 roadmap 的目标模式是什么，以及为什么不是其它模式
+
+再逼清这 5 件事：
 
 1. 这个项目真正服务谁
 2. 用户今天用什么笨办法解决
@@ -225,7 +289,7 @@ tool_budget:
 ## Approval Gates
 
 1. 没有 `Context Snapshot`，不准给路线推荐。
-2. 没有 planning posture、evidence maturity 和 framing check，不准给路线推荐。
+2. 没有 project direction mode、planning posture、evidence maturity 和 framing check，不准给路线推荐。
 3. 没有 native language / durable decision scan，不准给路线推荐；如果缺少 `devflow/specs/` 或历史决策材料，写成 `not present`，不要假装已对齐。
 4. 没有 2-3 条路线对比，不准直接拍脑袋定主线。
 5. 没有 exit signal / kill signal / non-goals，不算阶段冻结。
@@ -248,9 +312,11 @@ tool_budget:
 7. Decomposition scan：多个独立子系统是否已拆成阶段 / `RM` 候选，而不是塞进一个含糊阶段。
 8. Handoff scan：第一批 roadmap item 是否已经自然长成可进入 `cc-plan` 的对象。
 9. Evidence maturity scan：问题路由是否匹配 idea / user / paying / infra / recovery 状态，还是拿同一套问题硬套所有项目。
-10. Adoption scan：developer-facing / operator-facing item 是否写清目标人、time to first value、magic moment 和 adoption bottleneck。
-11. Domain language scan：stage、capability、RM title、backlog handoff 是否沿用项目语言；冲突是否显式交给下一轮决策。
-12. Durable decision scan：路线是否违背既有 capability spec、roadmap decision 或历史 design decision；如需重开，是否说明为什么值得重开。
+10. Project direction scan：问题和路线是否匹配 founder-business / internal / demo / OSS / learning / side-project / infra / recovery；是否错误套用了创业问题或 builder 问题。
+11. Promotional scan：roadmap 是否没有品牌广告、申请建议、推广链接或外部权威背书；创业建议是否只保留 source-neutral 行动和证据要求。
+12. Adoption scan：developer-facing / operator-facing item 是否写清目标人、time to first value、magic moment 和 adoption bottleneck。
+13. Domain language scan：stage、capability、RM title、backlog handoff 是否沿用项目语言；冲突是否显式交给下一轮决策。
+14. Durable decision scan：路线是否违背既有 capability spec、roadmap decision 或历史 design decision；如需重开，是否说明为什么值得重开。
 
 ## Output
 

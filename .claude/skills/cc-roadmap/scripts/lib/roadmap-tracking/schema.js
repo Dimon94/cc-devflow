@@ -78,6 +78,11 @@ const DEFAULT_ROADMAP_STATE = {
     currentFocusStage: ''
   },
   context: {
+    projectDirectionMode: '',
+    projectDirectionRationale: '',
+    directionQuestionsSelected: [],
+    directionQuestionsSkipped: [],
+    directionGuardrailsApplied: [],
     planningPosture: '',
     evidenceMaturity: '',
     canonicalTerms: [],
@@ -282,6 +287,9 @@ function normalizeRoadmapState(raw = {}) {
     context: {
       ...DEFAULT_ROADMAP_STATE.context,
       ...context,
+      directionQuestionsSelected: normalizeStringList(context.directionQuestionsSelected),
+      directionQuestionsSkipped: normalizeStringList(context.directionQuestionsSkipped),
+      directionGuardrailsApplied: normalizeStringList(context.directionGuardrailsApplied),
       canonicalTerms: normalizeStringList(context.canonicalTerms),
       durableDecisionSources: normalizeStringList(context.durableDecisionSources)
     },

@@ -1,5 +1,9 @@
 # Roadmap Skill Changelog
 
+## v5.1.0 - 2026-05-09
+
+- add project-direction routing and brand-neutral founder guardrails
+
 ## v5.0.0 - 2026-05-01
 
 - replace the roadmap/backlog/tracking split with `devflow/roadmap.json` as the single editable roadmap state

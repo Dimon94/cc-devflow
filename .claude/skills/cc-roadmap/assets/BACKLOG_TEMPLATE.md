@@ -26,6 +26,9 @@
 
 ## Adoption Handoff
 
+- Project direction mode:
+- Direction-specific first question:
+- Founder / builder / infra guardrail:
 - Planning posture:
 - Evidence maturity:
 - Target developer / operator:
