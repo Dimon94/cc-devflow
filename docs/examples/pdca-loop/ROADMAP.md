@@ -3,7 +3,7 @@
 ## Roadmap Meta
 
 - Roadmap version: `roadmap.v1`
-- Skill version: `5.0.0`
+- Skill version: `5.1.0`
 - Status: `active`
 - Last updated: `2026-04-15`
 - Owner / decider: `product-owner`
