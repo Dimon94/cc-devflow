@@ -4,7 +4,7 @@ Use this reference for every `cc-review` run. It defines the shared method libra
 
 ## Method Selection
 
-Use only methods that fit the risk:
+Select every method needed by the current risk and write the selected methods into `cc-review-plan.md`. This table is a routing map, not a cap.
 
 | Risk | Method |
 | --- | --- |
@@ -14,6 +14,46 @@ Use only methods that fit the risk:
 | uncertain fix impact | future reality tree |
 | implementation complexity | logic tree and smell scan |
 | UI/runtime mismatch | E2E/plugin verification |
+| code quality or simplification risk | cc-simplify reference plus smell scan |
+
+## Review Plan Nodes
+
+Before findings, create ordered nodes:
+
+```text
+R001 plan.strategy.outcome
+  target: planning/design.md
+  method: goal tree
+  check: outcome and scope consistency
+  status: pending
+
+R002 plan.engineering.data-flow
+  target: planning/design.md + referenced code
+  method: engineering facet
+  check: single truth source and state transitions
+  status: pending
+```
+
+Node rules:
+
+- one node reviews one coherent question, artifact, or changed surface
+- every selected method creates at least one node
+- every changed file or user-facing surface is assigned to a node or explicitly skipped
+- every node ends as `checked`, `skipped`, or `blocked`
+- no finding limit exists while nodes remain pending
+- when a prior ledger exists, reuse checked nodes only if their target and dependencies did not change
+
+## Stateful Delta Review
+
+Use git and prior records to avoid repeating stale work:
+
+1. Find the previous reviewed SHA from `cc-review-ledger.jsonl` or `cc-review-report.md`.
+2. Compare `git diff <previous-sha>...HEAD` when possible.
+3. If no previous SHA exists, compare against the base branch or reviewed artifact timestamps.
+4. Re-review changed nodes and dependent nodes.
+5. Preserve previous clean nodes only when their target content and assumptions are unchanged.
+
+If git cannot identify the delta, mark the delta source as `unknown` and review the full in-scope surface.
 
 ## Thinking Tools
 
@@ -107,7 +147,7 @@ Only report smells inside the current requirement blast radius or smells made wo
 
 ## Decision Questions
 
-Ask only when a finding requires user judgment.
+Ask only when a finding requires user judgment. Do not stop the whole review at the first decision unless that answer blocks the next review node.
 
 Use:
 
@@ -123,4 +163,13 @@ C) <skip> - impact
 STOP: wait for the user answer before continuing.
 ```
 
-Do not batch unrelated issues. One issue, one decision.
+After the node pass, present a decision queue:
+
+```text
+Decision Queue
+├── D1 scope or architecture decision
+├── D2 user-visible behavior decision
+└── D3 test strategy decision
+```
+
+Then ask decisions one by one. Do not batch unrelated issues inside one decision.

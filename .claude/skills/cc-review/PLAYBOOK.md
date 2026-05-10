@@ -14,18 +14,24 @@
 ## Core Rules
 
 1. 先判断 review 对象是计划、实现，还是混合。
-2. 只读当前需求范围内的坏味道；历史债只在被本次变更放大时进入。
-3. `cc-check` 是证据验收，`cc-review` 是深度诊断，两者不要混成一个门。
-4. 计划分支按 strategy / design / engineering / DX 渐进加载，不把所有方法一次塞进上下文。
-5. 实现分支先读 diff 和意图，再读周边代码，最后才给 finding。
-6. UI 或运行时链路有风险时，必须用 Browser / Computer Use / CLI / logs 做端到端证明或写清阻塞原因。
-7. 每个坏味道必须有 evidence、scope、recommendation 和 route。
-8. 没有证据就写 unknown，不准把审美判断伪装成缺陷。
-9. 发现计划合同错误，回 `cc-plan`；发现代码错误，回 `cc-do`；只差验收，进 `cc-check`。
-10. 输出必须落到 `review/cc-review-report.md`，不能只留在聊天里。
+2. 先读上一次 `cc-review` 的 plan / report / ledger / findings，再看当前 git 或 artifact delta。
+3. 先写 `cc-review-plan.md`，列出要用哪些 Review 工具和哪些节点需要遍历。
+4. 按节点逐个 Review：review 一个、check 一个、ledger 记录一个。
+5. 只读当前需求范围内的坏味道；历史债只在被本次变更放大时进入。
+6. `cc-check` 是证据验收，`cc-review` 是深度诊断，两者不要混成一个门。
+7. 计划分支按 strategy / design / engineering / DX 选择节点，不把所有方法一次塞进上下文，但不能因为渐进加载而跳过未审节点。
+8. 实现分支先读 diff 和意图，再读周边代码；每个 changed surface 都要 checked、skipped 或 blocked。
+9. UI 或运行时链路有风险时，必须用 Browser / Computer Use / CLI / logs 做端到端证明或写清阻塞原因。
+10. 每个坏味道必须有 evidence、scope、recommendation 和 route。
+11. 没有证据就写 unknown，不准把审美判断伪装成缺陷。
+12. 不允许固定只列 3 个问题；finding 数量由节点遍历和证据决定。
+13. 发现计划合同错误，回 `cc-plan`；发现代码错误，回 `cc-do`；只差验收，进 `cc-check`。
+14. 输出必须落到 `review/cc-review-plan.md`、`review/cc-review-ledger.jsonl` 和 `review/cc-review-report.md`，不能只留在聊天里。
 
 ## Required Outputs
 
+- `review/cc-review-plan.md`
+- `review/cc-review-ledger.jsonl`
 - `review/cc-review-report.md`
 - `review/cc-review-findings.json` when later agents need structured findings
 
@@ -35,6 +41,20 @@
 - `references/plan-review-branch.md`: plan-stage deep review
 - `references/implementation-review-branch.md`: diff and code-stage deep review
 - `references/e2e-and-plugin-verification.md`: Browser / Computer Use / logs evidence
+- `scripts/collect-review-context.sh`: git delta and prior-review state helper
+
+## Stateful Review Plan
+
+`cc-review-plan.md` 必须至少包含：
+
+- review mode：plan / implementation / mixed
+- previous review state：上次 report、ledger、findings 是否存在
+- delta：本次相对哪个 SHA、哪些文件、哪些 artifacts 变了
+- selected tools：CEO/strategy、engineering、design、DX、TOC、code smell、cc-simplify、E2E/plugin/logs
+- skipped tools：为什么不需要
+- node list：`R001`、`R002` ...，每个节点有 target、method、evidence source、status
+
+Review 过程中每完成一个节点，就追加一条 ledger；不要等最后一次性补记。
 
 ## Review Standard
 
@@ -47,8 +67,10 @@
 - 哪些代码坏味道在当前 blast radius 内？
 - 哪些测试、日志、UI 操作或端到端证据缺失？
 - 哪些 finding 必须修，哪些可以 defer，哪些只是 advisory？
+- 哪些节点已经被审过，哪些因为 delta 需要复审？
+- 哪些节点没有审，为什么 skip 或 blocked？
 - 下一步为什么是 `cc-plan` / `cc-do` / `cc-check`？
 
 ## Decision Rule
 
-一个 finding 如果会改变范围、架构、用户可见行为、公共 API、测试策略或超过机械局部清理，必须交给用户决策或 reroute 到上游 skill。机械且低风险的问题可以作为 `cc-do` 的明确修复项，但 `cc-review` 自身不偷偷改代码。
+一个 finding 如果会改变范围、架构、用户可见行为、公共 API、测试策略或超过机械局部清理，必须进入用户决策队列或 reroute 到上游 skill。先列完整决策清单，再逐个问题向用户确认；确认前不做非机械修复。机械且低风险的问题可以作为 `cc-do` 的明确修复项，但 `cc-review` 自身不偷偷改代码。

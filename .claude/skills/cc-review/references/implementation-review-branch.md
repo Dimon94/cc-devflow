@@ -30,6 +30,8 @@ Out-of-scope files are findings only when they change behavior or expand blast r
 
 ## Diff Review Passes
 
+Turn these passes into review nodes before reporting findings. Every changed file, public behavior, test surface, documentation surface, and UI/runtime flow must belong to a node or have a skip reason.
+
 ### 1. Contract Fidelity
 
 Check whether implementation matches the frozen plan or investigation:
@@ -43,6 +45,8 @@ Check whether implementation matches the frozen plan or investigation:
 ### 2. Code Smell Scan
 
 Use `review-methods.md` smell taxonomy.
+
+If this pass finds duplication, over-complexity, awkward abstraction, branch forests, unclear ownership, or broad architecture cleanup risk, load `cc-simplify` and record it as a selected tool in `cc-review-plan.md`.
 
 Look for:
 
@@ -90,6 +94,25 @@ Flag:
 
 If changed behavior affects README, guides, CLI help, package install, public API, agent skill usage, or examples, check whether docs changed too.
 
+## Delta Node Selection
+
+Use git and prior review records:
+
+1. Find changed files with `git diff <base>...HEAD --name-only`.
+2. If prior `cc-review-ledger.jsonl` records a reviewed SHA, narrow to `git diff <reviewedSha>...HEAD`.
+3. Group changed files by behavior surface, not just extension.
+4. Add dependent nodes for direct importers/callers when a shared helper, enum, state shape, API contract, or skill contract changes.
+5. Preserve prior clean nodes only when the target file and dependent contract did not change.
+
+Example:
+
+```text
+R101 implementation.contract.skill-frontmatter
+R102 implementation.smell.review-state
+R103 implementation.tests.distribution
+R104 implementation.docs.workflow-map
+```
+
 ## Fix Policy
 
 `cc-review` does not silently edit code. It writes findings and routes:
@@ -106,6 +129,7 @@ Add to `cc-review-report.md`:
 
 - base branch and diff summary
 - scope check
+- implementation review nodes checked, skipped, or blocked
 - code smell findings
 - structural findings
 - test and E2E coverage map

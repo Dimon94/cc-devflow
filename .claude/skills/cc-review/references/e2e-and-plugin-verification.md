@@ -17,6 +17,8 @@ Skip with reason for backend-only, docs-only, or pure planning reviews.
 
 ## Evidence Chain
 
+Each affected path becomes a review node. Do not claim E2E/plugin review is done until each selected path is checked, skipped, or blocked.
+
 1. Identify the user path:
    - page, route, command, app screen, or plugin operation
    - expected visible result
@@ -71,6 +73,8 @@ Add an E2E section to `cc-review-report.md`:
 | --- | --- | --- | --- |
 | ... | Browser / Computer Use / CLI | screenshot, log, command, artifact | pass / fail / blocked |
 ```
+
+Also append one ledger record per flow so a later review can skip unchanged flows or re-open only changed flows.
 
 If blocked, include:
 

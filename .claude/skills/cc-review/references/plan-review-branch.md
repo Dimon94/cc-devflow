@@ -16,7 +16,7 @@ If no change directory exists, review the user-provided plan text and clearly ma
 
 ## Review Shape
 
-Run only applicable facets. Do not load every facet when the plan is small.
+First select applicable facets, then create one or more review nodes for each selected facet. Do not load every facet when the plan is small, but do not skip a selected facet merely to keep the answer short.
 
 ### 1. Strategy Facet
 
@@ -33,6 +33,12 @@ Output:
 ```text
 CURRENT -> THIS PLAN -> 12-MONTH IDEAL
 ```
+
+Node examples:
+
+- `plan.strategy.problem-fit`
+- `plan.strategy.outcome-signal`
+- `plan.strategy.do-nothing-risk`
 
 ### 2. Engineering Facet
 
@@ -55,6 +61,13 @@ Entry -> validate -> transform -> persist -> output
  empty   wrong type   timeout      duplicate  partial
 ```
 
+Node examples:
+
+- `plan.engineering.boundaries`
+- `plan.engineering.data-flow`
+- `plan.engineering.state-transitions`
+- `plan.engineering.testability`
+
 ### 3. Design Facet
 
 Run only for user-facing UI or interaction flows.
@@ -66,6 +79,12 @@ Check:
 - responsive and accessibility intent
 - generic UI or AI slop risk
 - whether live design review will be needed after implementation
+
+Node examples:
+
+- `plan.design.primary-flow`
+- `plan.design.states`
+- `plan.design.responsive-accessibility`
 
 ### 4. DX Facet
 
@@ -79,6 +98,12 @@ Check:
 - actionable errors: problem + cause + fix
 - copy-paste examples and escape hatches
 
+Node examples:
+
+- `plan.dx.first-value`
+- `plan.dx.errors`
+- `plan.dx.examples`
+
 ## TOC Root-Cause Pass
 
 For complex bugs, use:
@@ -88,6 +113,12 @@ For complex bugs, use:
 3. Future reality tree: what the proposed fix changes and what it may break.
 
 If the root cause is not proven, reroute to `cc-investigate`, not `cc-do`.
+
+Record each TOC pass as a separate node so the review can resume:
+
+- current reality tree
+- conflict diagram
+- future reality tree
 
 ## Code Smell Pass In Planning
 
@@ -106,6 +137,7 @@ Each planning smell must become a plan finding and route to `cc-plan`.
 
 Add to `cc-review-report.md`:
 
+- plan review nodes checked, skipped, or blocked
 - plan artifacts read
 - strategy/engineering/design/DX facets used
 - diagrams produced
