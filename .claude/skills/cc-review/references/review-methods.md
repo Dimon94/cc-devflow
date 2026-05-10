@@ -15,6 +15,7 @@ Select every method needed by the current risk and write the selected methods in
 | implementation complexity | logic tree and smell scan |
 | UI/runtime mismatch | E2E/plugin verification |
 | code quality or simplification risk | cc-simplify reference plus smell scan |
+| broad implementation diff | risk-lane review swarm profile |
 
 ## Review Plan Nodes
 
@@ -66,6 +67,27 @@ rejected   -> out-of-scope, stale, speculative, or contradicted by evidence
 ```
 
 Record these states in `cc-review-report.md` and preserve raw reviewer output in `cc-review-agent-results.jsonl`.
+
+## Risk-Lane Review Swarm Profile
+
+Use this profile when a broad implementation diff, PR landing review, or mixed review benefits from independent read-only context. The profile is a default decomposition, not a requirement to manufacture findings.
+
+| Lane | Reviewer question |
+| --- | --- |
+| intent-regression | Does the diff match the intended behavior without extra behavior drift, broken edge cases, fallback loss, or caller/callee contract drift? |
+| security-privacy | Did the diff weaken auth, validation, secret handling, sensitive data boundaries, defaults, or trust of external input? |
+| performance-reliability | Did the diff add duplicate work, hot-path cost, missing cleanup, retry storms, ordering races, or brittle failure handling? |
+| contracts-coverage | Did the diff miss API/schema/type/config/flag alignment, migration fallout, regression tests, logs, metrics, assertions, or error paths? |
+
+Small diffs may use one combined reviewer that covers all lanes. Large or multi-surface diffs should assign separate reviewers for the highest-risk lanes when the host supports subagents.
+
+The main thread owns aggregation:
+
+- Merge duplicate findings under the clearest evidence.
+- Reject style preferences, nits, and speculative concerns with no concrete impact.
+- Downgrade low-confidence notes unless they point to critical impact.
+- Convert intent-unclear claims into decision questions instead of findings.
+- Order final findings by severity, confidence, and current-scope impact.
 
 ## Stateful Delta Review
 

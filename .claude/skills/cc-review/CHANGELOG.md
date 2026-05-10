@@ -1,5 +1,11 @@
 # CC-Review Changelog
 
+## 1.3.0
+
+- Added a risk-lane review swarm profile for broad implementation and PR-landing reviews.
+- Required `cc-review-plan.md` and `cc-review-report.md` to record intent/regression, security/privacy, performance/reliability, and contracts/coverage lane coverage when applicable.
+- Hardened main-thread aggregation so raw reviewer findings are accepted, merged, downgraded, or rejected before becoming final findings.
+
 ## 1.2.0
 
 - Added automatic read-only reviewer subAgent dispatch for selected plan and implementation review nodes.

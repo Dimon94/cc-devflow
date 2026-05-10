@@ -34,6 +34,15 @@ Turn these passes into review nodes before reporting findings. Every changed fil
 
 For complex diffs, assign independent read-only reviewers by facet: contract, smell, test, docs/DX, and runtime. Keep reviewer outputs separate until the main thread validates evidence and merges duplicates.
 
+For broad or PR-landing diffs, prefer the risk-lane review swarm profile from `review-methods.md` before reporting findings:
+
+1. Intent and regression
+2. Security and privacy
+3. Performance and reliability
+4. Contracts and coverage
+
+The lanes may map onto the passes below, but they should stay separate in `cc-review-plan.md` and raw reviewer output when separate reviewers are used.
+
 ### 1. Contract Fidelity
 
 Check whether implementation matches the frozen plan or investigation:
@@ -133,6 +142,7 @@ Add to `cc-review-report.md`:
 - scope check
 - implementation review nodes checked, skipped, or blocked
 - implementation reviewer agents used or fallback reason
+- risk-lane coverage and raw finding triage
 - code smell findings
 - structural findings
 - test and E2E coverage map

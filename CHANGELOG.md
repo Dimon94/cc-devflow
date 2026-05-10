@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Updated `cc-review` with a risk-lane review swarm profile so broad implementation and PR-landing reviews separate intent/regression, security/privacy, performance/reliability, and contracts/coverage findings before main-thread triage.
+
 ## [4.5.7] - 2026-05-10
 
 ### Changed

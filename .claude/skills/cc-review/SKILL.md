@@ -1,7 +1,7 @@
 ---
 name: cc-review
-version: 1.2.0
-description: Use when a complex requirement, bug fix, plan, or implementation diff needs optional deep multi-round review beyond cc-check. Builds a review plan from prior records and current git/artifact delta, dispatches independent read-only reviewer agents when available, records node results, identifies in-scope code smells, queues user decisions, and reroutes to cc-plan, cc-do, or cc-check.
+version: 1.3.0
+description: Use when a complex requirement, bug fix, plan, or implementation diff needs optional deep multi-round review beyond cc-check. Builds a review plan from prior records and current git/artifact delta, dispatches independent read-only reviewer agents when available, applies a risk-lane review swarm profile for broad implementation diffs, records node results, identifies in-scope code smells, queues user decisions, and reroutes to cc-plan, cc-do, or cc-check.
 triggers:
   - 深度 review 这个方案
   - review 这个复杂需求
@@ -39,6 +39,7 @@ writes:
 effects:
   - optional deep review
   - read-only reviewer agent dispatch
+  - risk-lane finding aggregation
   - durable findings
   - reroute recommendation
 entry_gate:
@@ -49,12 +50,13 @@ entry_gate:
   - Classify the review branch as plan, implementation, or mixed before loading detailed references.
   - Write or refresh cc-review-plan.md before producing findings.
   - Decide whether nodes need independent reviewer agents before starting node execution; record the decision in cc-review-plan.md.
+  - For broad implementation or mixed reviews, decide whether the risk-lane review swarm profile is required; record used, skipped, or unavailable lanes in cc-review-plan.md.
   - Freeze the requested scope before finding smells; only report smells inside the requirement blast radius or clearly amplified by the current work.
 exit_criteria:
   - cc-review-plan.md records selected tools, review nodes, skipped nodes with reasons, and checkpoint order.
   - cc-review-ledger.jsonl appends one record per reviewed node with status, evidence, findings, and follow-up route.
   - cc-review-agent-results.jsonl records read-only reviewer outputs when subagents are used, or cc-review-report.md records why agents were unavailable or unnecessary.
-  - cc-review-report.md records branch classification, scope, prior-review delta, methods used, node coverage, findings, user decisions needed, quick fixes, and next route.
+  - cc-review-report.md records branch classification, scope, prior-review delta, methods used, node coverage, reviewer-lane coverage, findings triage, user decisions needed, quick fixes, and next route.
   - Plan-stage reviews record every selected strategy/design/engineering/DX facet as checked, skipped, or blocked.
   - Implementation-stage reviews include diff evidence, code-smell evidence, test and E2E/plugin verification evidence for every selected changed surface.
   - Every in-scope code smell has a concrete recommendation or an explicit skip/defer rationale.
@@ -168,6 +170,17 @@ REVIEW THE RIGHT THING AT THE RIGHT STAGE.
 - 每个 subagent 必须输出 JSONL findings；没有发现时输出 `NO FINDINGS`。
 - 主线程必须验证 subagent finding 的路径、证据、scope 和置信度，不能因为 reviewer 说了就接受。
 
+### Risk-Lane Review Swarm Profile
+
+复杂实现、跨模块 diff、PR landing 前复审、或用户要求 parallel / swarm review 时，优先把实现节点拆成四类只读风险 lane。小 diff 可以由一个 combined reviewer 覆盖全部 lane，但计划里必须写明。
+
+1. Intent and regression reviewer: 检查 diff 是否兑现意图、是否引入范围外行为漂移、边界和 fallback 是否坏掉、caller/callee 合同是否漂移。
+2. Security and privacy reviewer: 检查 authn/authz、输入验证、注入风险、secret/token/sensitive data 暴露、默认权限扩大、信任未验证数据。
+3. Performance and reliability reviewer: 检查热路径重复 I/O、启动/渲染/请求成本、cleanup 泄漏、retry storm、订阅漂移、排序/竞态/失败处理。
+4. Contracts and coverage reviewer: 检查 API/schema/type/config/flag 不匹配、迁移/兼容 fallout、回归测试缺口、日志/metrics/assertion/error-path 缺失。
+
+这些 lane 是审查视角，不是 finding 配额。主线程必须把 raw findings 合并后再输出：重复项合并，弱证据或 speculative claim 降级或拒收，和冻结意图冲突的 finding 转成 decision question 或 reject。
+
 ### Dispatch Heuristics
 
 - Plan review:
@@ -181,6 +194,7 @@ REVIEW THE RIGHT THING AT THE RIGHT STAGE.
   - Smell reviewer: rigidity, duplication, cycle, fragility, obscurity, data-clump, unnecessary complexity; may load `cc-simplify`.
   - Test reviewer: public seam, regression quality, fixture honesty, coverage gaps.
   - Runtime reviewer: Browser/Computer Use/CLI/log proof for UI or behavior surfaces.
+  - Risk-lane reviewers: intent/regression, security/privacy, performance/reliability, contracts/coverage when a broad diff benefits from parallel independent context.
 
 Large or multi-surface reviews should use at least two independent reviewers when the host supports it. Small reviews should use at least one combined read-only reviewer unless the plan explicitly records why subagent dispatch is unnecessary.
 
@@ -199,7 +213,7 @@ Required artifacts: <paths>
 Reference to use: <review-methods / plan / implementation / e2e / cc-simplify>
 Output: JSONL findings or NO FINDINGS.
 Finding schema:
-{"nodeId":"R001","severity":"critical|important|advisory","confidence":8,"path":"file","line":12,"smell":"rigidity|duplication|cycle|fragility|obscurity|data-clump|unnecessary-complexity|none","summary":"...","evidence":"...","recommendation":"...","route":"cc-plan|cc-do|cc-check|cc-act|no-op","fingerprint":"...","reviewer":"strategy|engineering|design|dx|toc|contract|smell|test|runtime"}
+{"nodeId":"R001","severity":"critical|important|advisory","confidence":8,"path":"file","line":12,"smell":"rigidity|duplication|cycle|fragility|obscurity|data-clump|unnecessary-complexity|none","summary":"...","evidence":"...","recommendation":"...","route":"cc-plan|cc-do|cc-check|cc-act|no-op","fingerprint":"...","reviewer":"strategy|engineering|design|dx|toc|contract|smell|test|runtime|intent-regression|security-privacy|performance-reliability|contracts-coverage"}
 ```
 
 Low-confidence notes below `5` stay out of final findings unless they point to critical impact. Put those in report notes as leads, not findings.
@@ -261,7 +275,8 @@ Write `review/cc-review-plan.md` before the review pass with:
 3. Current git/artifact delta.
 4. Selected tools and skipped tools with reasons.
 5. Reviewer dispatch plan: agents used, unavailable, skipped, or unnecessary.
-6. Ordered review nodes and per-node check plan.
+6. Risk-lane coverage for implementation or mixed reviews.
+7. Ordered review nodes and per-node check plan.
 
 Write `review/cc-review-report.md` with:
 
@@ -270,12 +285,13 @@ Write `review/cc-review-report.md` with:
 3. Current delta against previous review or base.
 4. Review methods used and methods intentionally skipped.
 5. Node coverage table.
-6. Reviewer dispatch summary and agent result paths.
-7. Findings by severity, each with evidence, smell category when relevant, recommendation, and route.
-8. Quick mechanical fixes that can be handled by `cc-do`.
-9. Decision questions still needing user input.
-10. E2E / Browser / Computer Use evidence when applicable.
-11. Final next action.
+6. Reviewer dispatch summary, risk-lane coverage, and agent result paths.
+7. Raw finding triage: accepted, merged, downgraded, rejected.
+8. Findings by severity, each with evidence, smell category when relevant, recommendation, and route.
+9. Quick mechanical fixes that can be handled by `cc-do`.
+10. Decision questions still needing user input.
+11. E2E / Browser / Computer Use evidence when applicable.
+12. Final next action.
 
 Append one JSON line to `review/cc-review-ledger.jsonl` per reviewed node:
 
