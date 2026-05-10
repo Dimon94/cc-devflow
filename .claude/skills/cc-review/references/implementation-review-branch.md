@@ -32,6 +32,8 @@ Out-of-scope files are findings only when they change behavior or expand blast r
 
 Turn these passes into review nodes before reporting findings. Every changed file, public behavior, test surface, documentation surface, and UI/runtime flow must belong to a node or have a skip reason.
 
+For complex diffs, assign independent read-only reviewers by facet: contract, smell, test, docs/DX, and runtime. Keep reviewer outputs separate until the main thread validates evidence and merges duplicates.
+
 ### 1. Contract Fidelity
 
 Check whether implementation matches the frozen plan or investigation:
@@ -130,6 +132,7 @@ Add to `cc-review-report.md`:
 - base branch and diff summary
 - scope check
 - implementation review nodes checked, skipped, or blocked
+- implementation reviewer agents used or fallback reason
 - code smell findings
 - structural findings
 - test and E2E coverage map

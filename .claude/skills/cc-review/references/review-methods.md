@@ -39,9 +39,33 @@ Node rules:
 - one node reviews one coherent question, artifact, or changed surface
 - every selected method creates at least one node
 - every changed file or user-facing surface is assigned to a node or explicitly skipped
+- every node has an owner: `main` or a named read-only reviewer
 - every node ends as `checked`, `skipped`, or `blocked`
 - no finding limit exists while nodes remain pending
 - when a prior ledger exists, reuse checked nodes only if their target and dependencies did not change
+
+## Independent Reviewer Assignment
+
+Use subagents to preserve independent context when the host supports them.
+
+Assignment rules:
+
+- Assign independent reviewers by facet, not by random file chunks.
+- Keep each reviewer packet self-contained: scope, delta, node ids, required artifacts, reference to use, and output schema.
+- Do not ask one reviewer to wait for another reviewer result unless the dependency is explicit in `cc-review-plan.md`.
+- Do not assign two reviewers to the same node unless a critical finding needs a second opinion.
+- Main thread validates reviewer evidence before final findings.
+
+Reviewer result states:
+
+```text
+accepted   -> finding has concrete in-scope evidence
+merged     -> duplicate finding folded into stronger finding
+downgraded -> real note but not blocking or confidence too low
+rejected   -> out-of-scope, stale, speculative, or contradicted by evidence
+```
+
+Record these states in `cc-review-report.md` and preserve raw reviewer output in `cc-review-agent-results.jsonl`.
 
 ## Stateful Delta Review
 

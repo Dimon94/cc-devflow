@@ -1,5 +1,12 @@
 # CC-Review Changelog
 
+## 1.2.0
+
+- Added automatic read-only reviewer subAgent dispatch for selected plan and implementation review nodes.
+- Required reviewer packets to be self-contained so each subAgent works from independent context instead of inherited chat assumptions.
+- Added `cc-review-agent-results.jsonl` for raw reviewer outputs and report-level accepted/merged/downgraded/rejected triage.
+- Required truthful main-thread fallback when the host does not expose subAgent tools.
+
 ## 1.1.0
 
 - Added stateful review planning with `cc-review-plan.md` and per-node `cc-review-ledger.jsonl`.

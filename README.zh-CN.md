@@ -83,7 +83,7 @@ Canonical language 和 durable decisions 只收敛到 cc-devflow 原生真相源
 
 `cc-plan` 会在 `cc-do` 开始前冻结更多实现决策。非 trivial 计划需要比较 minimal viable 和 ideal architecture，full-design 需要包含 implementation decision horizon 和 error/rescue map；测试计划要记录测试框架证据、public test seam、spec-style test name、public verification path、behavior assertion、mock boundary、覆盖质量、强制 regression test、interface depth、Green minimality guard、refactor candidates 和 vertical tracer-bullet slices。交接前，`cc-plan` 和 `cc-investigate` 还会校准 source roadmap item，让 RM 状态、REQ/FIX 绑定、progress 和 spec diagnosis 不再漂移。
 
-`cc-review` 是可选的深度 Review，不替代 `cc-check`。它可以接在 `cc-plan` / `cc-investigate` 后审冻结的计划或根因合同，也可以接在 `cc-do` 后审实现。它先读取上次 Review 记录和当前 git/artifact delta，写出 Review 计划，再逐节点检查并写 ledger。计划 Review 通过渐进式 references 借鉴 strategy / design / engineering / DX 方法；实现 Review 检查 diff 范围、代码坏味道、测试、UI/runtime 行为、Browser/Computer Use 证据和日志。Finding 回到 `cc-plan` 或 `cc-do`；实现 Review 干净后再进入 `cc-check`。
+`cc-review` 是可选的深度 Review，不替代 `cc-check`。它可以接在 `cc-plan` / `cc-investigate` 后审冻结的计划或根因合同，也可以接在 `cc-do` 后审实现。它先读取上次 Review 记录和当前 git/artifact delta，写出 Review 计划，再逐节点检查并写 ledger。宿主支持 subAgent 时，选中的节点可以派给独立只读 reviewer，让 strategy、engineering、design、DX、坏味道、测试和运行时审查不共享同一个被污染的上下文。计划 Review 通过渐进式 references 借鉴 strategy / design / engineering / DX 方法；实现 Review 检查 diff 范围、代码坏味道、测试、UI/runtime 行为、Browser/Computer Use 证据和日志。Finding 回到 `cc-plan` 或 `cc-do`；实现 Review 干净后再进入 `cc-check`。
 
 ## 验证与交付门禁
 

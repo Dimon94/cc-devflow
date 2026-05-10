@@ -18,6 +18,8 @@ If no change directory exists, review the user-provided plan text and clearly ma
 
 First select applicable facets, then create one or more review nodes for each selected facet. Do not load every facet when the plan is small, but do not skip a selected facet merely to keep the answer short.
 
+For complex plans, assign selected facets to independent read-only reviewers when subagent support is available. Strategy, engineering, design, DX, and TOC reviewers should not share intermediate conclusions; the main thread merges their findings after each reviewer returns.
+
 ### 1. Strategy Facet
 
 Use a native strategy review question set:
@@ -138,6 +140,7 @@ Each planning smell must become a plan finding and route to `cc-plan`.
 Add to `cc-review-report.md`:
 
 - plan review nodes checked, skipped, or blocked
+- plan reviewer agents used or fallback reason
 - plan artifacts read
 - strategy/engineering/design/DX facets used
 - diagrams produced

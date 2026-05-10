@@ -16,23 +16,26 @@
 1. 先判断 review 对象是计划、实现，还是混合。
 2. 先读上一次 `cc-review` 的 plan / report / ledger / findings，再看当前 git 或 artifact delta。
 3. 先写 `cc-review-plan.md`，列出要用哪些 Review 工具和哪些节点需要遍历。
-4. 按节点逐个 Review：review 一个、check 一个、ledger 记录一个。
-5. 只读当前需求范围内的坏味道；历史债只在被本次变更放大时进入。
-6. `cc-check` 是证据验收，`cc-review` 是深度诊断，两者不要混成一个门。
-7. 计划分支按 strategy / design / engineering / DX 选择节点，不把所有方法一次塞进上下文，但不能因为渐进加载而跳过未审节点。
-8. 实现分支先读 diff 和意图，再读周边代码；每个 changed surface 都要 checked、skipped 或 blocked。
-9. UI 或运行时链路有风险时，必须用 Browser / Computer Use / CLI / logs 做端到端证明或写清阻塞原因。
-10. 每个坏味道必须有 evidence、scope、recommendation 和 route。
-11. 没有证据就写 unknown，不准把审美判断伪装成缺陷。
-12. 不允许固定只列 3 个问题；finding 数量由节点遍历和证据决定。
-13. 发现计划合同错误，回 `cc-plan`；发现代码错误，回 `cc-do`；只差验收，进 `cc-check`。
-14. 输出必须落到 `review/cc-review-plan.md`、`review/cc-review-ledger.jsonl` 和 `review/cc-review-report.md`，不能只留在聊天里。
+4. 对适合独立审查的节点，优先派发只读 reviewer subAgent；没有工具时如实降级。
+5. 按节点逐个 Review：review 一个、check 一个、ledger 记录一个。
+6. 主线程必须验证 subAgent findings，不盲信 reviewer。
+7. 只读当前需求范围内的坏味道；历史债只在被本次变更放大时进入。
+8. `cc-check` 是证据验收，`cc-review` 是深度诊断，两者不要混成一个门。
+9. 计划分支按 strategy / design / engineering / DX 选择节点，不把所有方法一次塞进上下文，但不能因为渐进加载而跳过未审节点。
+10. 实现分支先读 diff 和意图，再读周边代码；每个 changed surface 都要 checked、skipped 或 blocked。
+11. UI 或运行时链路有风险时，必须用 Browser / Computer Use / CLI / logs 做端到端证明或写清阻塞原因。
+12. 每个坏味道必须有 evidence、scope、recommendation 和 route。
+13. 没有证据就写 unknown，不准把审美判断伪装成缺陷。
+14. 不允许固定只列 3 个问题；finding 数量由节点遍历和证据决定。
+15. 发现计划合同错误，回 `cc-plan`；发现代码错误，回 `cc-do`；只差验收，进 `cc-check`。
+16. 输出必须落到 `review/cc-review-plan.md`、`review/cc-review-ledger.jsonl` 和 `review/cc-review-report.md`，不能只留在聊天里。
 
 ## Required Outputs
 
 - `review/cc-review-plan.md`
 - `review/cc-review-ledger.jsonl`
 - `review/cc-review-report.md`
+- `review/cc-review-agent-results.jsonl` when subagent reviewers are used
 - `review/cc-review-findings.json` when later agents need structured findings
 
 ## Local Kit
@@ -52,9 +55,32 @@
 - delta：本次相对哪个 SHA、哪些文件、哪些 artifacts 变了
 - selected tools：CEO/strategy、engineering、design、DX、TOC、code smell、cc-simplify、E2E/plugin/logs
 - skipped tools：为什么不需要
-- node list：`R001`、`R002` ...，每个节点有 target、method、evidence source、status
+- reviewer dispatch：哪些节点交给 subAgent、哪些主线程执行、为什么
+- node list：`R001`、`R002` ...，每个节点有 target、method、owner、evidence source、status
 
 Review 过程中每完成一个节点，就追加一条 ledger；不要等最后一次性补记。
+
+## SubAgent Review
+
+触发 `cc-review` 本身就授权只读 reviewer subAgent。主线程不要为了“再确认是否能用 subAgent”打断用户。
+
+调度规则：
+
+- 大范围 / 多文件 / 多 facet review：至少尝试两个独立 reviewer。
+- 小范围 review：至少尝试一个 combined reviewer，除非 `cc-review-plan.md` 写明不需要。
+- Plan 节点可分配 strategy、engineering、design、DX、TOC reviewer。
+- Implementation 节点可分配 contract、smell、test、runtime reviewer。
+- Codex 环境优先用 `explorer`；ClaudeCode 环境用可用的 `Task` / subAgent。
+- reviewer 只读，不编辑文件，不改计划，不直接决定最终 route。
+- reviewer 的上下文应独立，只给 review packet，不给完整聊天历史。
+- 主线程负责合并、验证、去重和降级 false positive。
+
+如果没有 subAgent 工具，报告必须写：
+
+```text
+Agents used: no (subagent tool unavailable)
+Fallback: main-thread node-by-node review
+```
 
 ## Review Standard
 
@@ -69,6 +95,7 @@ Review 过程中每完成一个节点，就追加一条 ledger；不要等最后
 - 哪些 finding 必须修，哪些可以 defer，哪些只是 advisory？
 - 哪些节点已经被审过，哪些因为 delta 需要复审？
 - 哪些节点没有审，为什么 skip 或 blocked？
+- 哪些 reviewer 被派发，哪些 findings 被接受、合并、降级或拒绝？
 - 下一步为什么是 `cc-plan` / `cc-do` / `cc-check`？
 
 ## Decision Rule

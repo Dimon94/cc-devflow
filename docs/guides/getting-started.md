@@ -89,7 +89,7 @@ Typical outputs:
 - `cc-spec-init` writes `devflow/specs/INDEX.md`, capability specs, and `change-meta.json`
 - `cc-plan` writes `planning/design.md`, `planning/tasks.md`, `task-manifest.json`, and `change-meta.json`
 - `cc-investigate` writes `planning/analysis.md`, `planning/tasks.md`, `task-manifest.json`, and `change-meta.json`
-- `cc-review` writes `cc-review-plan.md`, `cc-review-ledger.jsonl`, `cc-review-report.md`, and optional structured findings for deep plan or implementation review
+- `cc-review` writes `cc-review-plan.md`, `cc-review-ledger.jsonl`, `cc-review-report.md`, optional `cc-review-agent-results.jsonl`, and optional structured findings for deep plan or implementation review
 - `cc-check` writes `report-card.json`
 - `cc-act` writes exactly one final handoff file: `handoff/pr-brief.md`, `handoff/resume-index.md`, or `handoff/release-note.md`
 

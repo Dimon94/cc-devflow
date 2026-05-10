@@ -1,7 +1,7 @@
 ---
 name: cc-review
-version: 1.1.0
-description: Use when a complex requirement, bug fix, plan, or implementation diff needs optional deep multi-round review beyond cc-check. First builds a review plan from previous review records and current git/artifact delta, then traverses unreviewed plan-stage or implementation-stage nodes one by one, records each node result, identifies in-scope code smells, queues user decisions, and writes durable findings before rerouting to cc-plan, cc-do, or cc-check.
+version: 1.2.0
+description: Use when a complex requirement, bug fix, plan, or implementation diff needs optional deep multi-round review beyond cc-check. Builds a review plan from prior records and current git/artifact delta, dispatches independent read-only reviewer agents when available, records node results, identifies in-scope code smells, queues user decisions, and reroutes to cc-plan, cc-do, or cc-check.
 triggers:
   - 深度 review 这个方案
   - review 这个复杂需求
@@ -29,11 +29,16 @@ writes:
   - path: devflow/changes/<change-key>/review/cc-review-ledger.jsonl
     durability: durable
     required: true
+  - path: devflow/changes/<change-key>/review/cc-review-agent-results.jsonl
+    durability: durable
+    required: false
+    when: subagent reviewers are used
   - path: devflow/changes/<change-key>/review/cc-review-findings.json
     durability: durable
     required: false
 effects:
   - optional deep review
+  - read-only reviewer agent dispatch
   - durable findings
   - reroute recommendation
 entry_gate:
@@ -43,15 +48,18 @@ entry_gate:
   - Use git diff or scripts/collect-review-context.sh to identify content changed since the last review before deciding what to re-review.
   - Classify the review branch as plan, implementation, or mixed before loading detailed references.
   - Write or refresh cc-review-plan.md before producing findings.
+  - Decide whether nodes need independent reviewer agents before starting node execution; record the decision in cc-review-plan.md.
   - Freeze the requested scope before finding smells; only report smells inside the requirement blast radius or clearly amplified by the current work.
 exit_criteria:
   - cc-review-plan.md records selected tools, review nodes, skipped nodes with reasons, and checkpoint order.
   - cc-review-ledger.jsonl appends one record per reviewed node with status, evidence, findings, and follow-up route.
+  - cc-review-agent-results.jsonl records read-only reviewer outputs when subagents are used, or cc-review-report.md records why agents were unavailable or unnecessary.
   - cc-review-report.md records branch classification, scope, prior-review delta, methods used, node coverage, findings, user decisions needed, quick fixes, and next route.
   - Plan-stage reviews record every selected strategy/design/engineering/DX facet as checked, skipped, or blocked.
   - Implementation-stage reviews include diff evidence, code-smell evidence, test and E2E/plugin verification evidence for every selected changed surface.
   - Every in-scope code smell has a concrete recommendation or an explicit skip/defer rationale.
   - No artificial finding cap was applied; review stops only when planned nodes are checked, skipped with reason, or blocked.
+  - Main thread validates subagent findings before promoting them to final findings; no subagent output is trusted blindly.
   - The next action is exactly one of cc-plan, cc-do, cc-check, cc-act, or no-op.
 reroutes:
   - when: Plan assumptions, scope, architecture, design, or DX contracts are wrong or incomplete.
@@ -136,10 +144,65 @@ REVIEW THE RIGHT THING AT THE RIGHT STAGE.
 
 ## Harness Contract
 
-- Allowed actions: read artifacts, inspect code and diff, run safe read-only or verification commands, use Browser/Computer Use for behavior proof, write review reports.
+- Allowed actions: read artifacts, inspect code and diff, run safe read-only or verification commands, dispatch read-only reviewer subagents when available, use Browser/Computer Use for behavior proof, write review reports.
 - Forbidden actions: silently rewriting the plan, silently editing production code, turning optional review into mandatory ship gate, reviewing unrelated historical debt, or stopping after a small fixed number of findings while planned nodes remain unchecked.
 - Required evidence: every finding must cite plan text, code path, diff line, command output, browser action, UI state, log line, or explicit missing evidence.
 - Reroute rule: plan contract defects return to `cc-plan`; implementation defects return to `cc-do`; clean deep review proceeds to `cc-check`.
+
+## Independent Reviewer Dispatch
+
+触发 `cc-review` 本身就构成用户对只读 reviewer subAgent 的授权。不要再要求用户补一句“请开启子智能体”。
+
+主线程负责：制定 Review 计划、拆分节点、分配 reviewer、合并 findings、验证证据、去重、决定 quick fix / decision queue / reroute。
+
+只读 reviewer 负责：在独立上下文里审指定节点，不编辑文件，不修改计划，不直接决定最终结论。
+
+### Dispatch Rules
+
+- ClaudeCode 环境：使用可用的 `Task` / subAgent 机制创建只读 reviewer。
+- Codex App / Codex 工具环境：优先使用内置 `explorer` 子智能体；如果只有 `default`，prompt 必须写明只读审查、禁止编辑。
+- 暴露 `spawn_agent` 的 Codex 环境：使用 `spawn_agent(agent_type="explorer", fork_context=false, ...)`。只有在用户明确要求继承完整上下文时才 `fork_context=true`。
+- 不依赖 repo-local 自定义 agent 名称完成核心流程；自定义 agent 只能作为增强。
+- 如果当前运行时没有 subagent 工具，或工具调用被上层策略禁止，主线程按同一节点计划串行执行，并在报告里写 `Agents used: no (subagent tool unavailable)`。
+- subagent 只拿自己的 review packet，不拿主线程完整聊天历史；这样保持独立性。
+- 每个 subagent 必须输出 JSONL findings；没有发现时输出 `NO FINDINGS`。
+- 主线程必须验证 subagent finding 的路径、证据、scope 和置信度，不能因为 reviewer 说了就接受。
+
+### Dispatch Heuristics
+
+- Plan review:
+  - Strategy reviewer: outcome, scope, goal tree, do-nothing risk.
+  - Engineering reviewer: architecture, data flow, state, testability, rollback.
+  - Design reviewer: user-visible flows, states, accessibility, visual/interaction risk.
+  - DX reviewer: CLI/API/docs/operator journey, errors, examples.
+  - TOC reviewer: current reality tree, conflict diagram, future reality tree for complex bugs.
+- Implementation review:
+  - Contract reviewer: diff vs plan/investigation contract.
+  - Smell reviewer: rigidity, duplication, cycle, fragility, obscurity, data-clump, unnecessary complexity; may load `cc-simplify`.
+  - Test reviewer: public seam, regression quality, fixture honesty, coverage gaps.
+  - Runtime reviewer: Browser/Computer Use/CLI/log proof for UI or behavior surfaces.
+
+Large or multi-surface reviews should use at least two independent reviewers when the host supports it. Small reviews should use at least one combined read-only reviewer unless the plan explicitly records why subagent dispatch is unnecessary.
+
+### Reviewer Packet
+
+Each reviewer receives:
+
+```text
+You are a read-only cc-review reviewer. Do not edit files.
+Repo root: <path>
+Review mode: plan | implementation | mixed
+Node ids: <R001,R002>
+Scope: <requirement blast radius>
+Current delta: <base/reviewed sha -> head sha + changed files>
+Required artifacts: <paths>
+Reference to use: <review-methods / plan / implementation / e2e / cc-simplify>
+Output: JSONL findings or NO FINDINGS.
+Finding schema:
+{"nodeId":"R001","severity":"critical|important|advisory","confidence":8,"path":"file","line":12,"smell":"rigidity|duplication|cycle|fragility|obscurity|data-clump|unnecessary-complexity|none","summary":"...","evidence":"...","recommendation":"...","route":"cc-plan|cc-do|cc-check|cc-act|no-op","fingerprint":"...","reviewer":"strategy|engineering|design|dx|toc|contract|smell|test|runtime"}
+```
+
+Low-confidence notes below `5` stay out of final findings unless they point to critical impact. Put those in report notes as leads, not findings.
 
 ## Stateful Review Loop
 
@@ -162,19 +225,26 @@ Every run follows this loop:
    - TOC root-cause review
    - code-smell / simplification review
    - E2E / Browser / Computer Use / logs review
-4. Write `cc-review-plan.md` before findings:
+4. Decide reviewer dispatch:
+   - which nodes need independent subagent review
+   - which nodes stay in main thread
+   - why any eligible reviewer was skipped
+5. Write `cc-review-plan.md` before findings:
    - node id
    - target artifact or code surface
    - tool/reference to load
    - reason selected
+   - owner: `main` or reviewer name
    - check command or evidence source
    - status: `pending`
-5. Traverse nodes one by one:
+6. Traverse nodes one by one:
    - review the node
    - run the smallest useful check for that node
+   - collect subagent JSONL output when assigned
+   - validate and deduplicate reviewer findings
    - append one ledger record
    - mark the node `checked`, `skipped`, or `blocked`
-6. Summarize:
+7. Summarize:
    - quick mechanical fixes
    - user-decision queue
    - reroute list
@@ -190,7 +260,8 @@ Write `review/cc-review-plan.md` before the review pass with:
 2. Prior review records found.
 3. Current git/artifact delta.
 4. Selected tools and skipped tools with reasons.
-5. Ordered review nodes and per-node check plan.
+5. Reviewer dispatch plan: agents used, unavailable, skipped, or unnecessary.
+6. Ordered review nodes and per-node check plan.
 
 Write `review/cc-review-report.md` with:
 
@@ -199,11 +270,12 @@ Write `review/cc-review-report.md` with:
 3. Current delta against previous review or base.
 4. Review methods used and methods intentionally skipped.
 5. Node coverage table.
-6. Findings by severity, each with evidence, smell category when relevant, recommendation, and route.
-7. Quick mechanical fixes that can be handled by `cc-do`.
-8. Decision questions still needing user input.
-9. E2E / Browser / Computer Use evidence when applicable.
-10. Final next action.
+6. Reviewer dispatch summary and agent result paths.
+7. Findings by severity, each with evidence, smell category when relevant, recommendation, and route.
+8. Quick mechanical fixes that can be handled by `cc-do`.
+9. Decision questions still needing user input.
+10. E2E / Browser / Computer Use evidence when applicable.
+11. Final next action.
 
 Append one JSON line to `review/cc-review-ledger.jsonl` per reviewed node:
 
@@ -212,6 +284,8 @@ Append one JSON line to `review/cc-review-ledger.jsonl` per reviewed node:
 ```
 
 Write `review/cc-review-findings.json` when findings need machine consumption by later agents.
+
+Write `review/cc-review-agent-results.jsonl` when subagents are used. It contains raw reviewer findings plus reviewer identity. The report must say which raw findings were accepted, merged, downgraded, or rejected.
 
 ## Finding Rules
 

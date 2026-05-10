@@ -89,7 +89,7 @@ find .codex/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort
 - `cc-spec-init` 产出 `devflow/specs/INDEX.md`、capability spec 和 `change-meta.json`
 - `cc-plan` 产出 `planning/design.md`、`planning/tasks.md`、`task-manifest.json` 和 `change-meta.json`
 - `cc-investigate` 产出 `planning/analysis.md`、`planning/tasks.md`、`task-manifest.json` 和 `change-meta.json`
-- `cc-review` 产出 `cc-review-plan.md`、`cc-review-ledger.jsonl`、`cc-review-report.md`，以及可选的结构化深度 Review findings
+- `cc-review` 产出 `cc-review-plan.md`、`cc-review-ledger.jsonl`、`cc-review-report.md`、可选 `cc-review-agent-results.jsonl`，以及可选的结构化深度 Review findings
 - `cc-check` 产出 `report-card.json`
 - `cc-act` 只产出一个最终 handoff 文件：`handoff/pr-brief.md`、`handoff/resume-index.md` 或 `handoff/release-note.md`
 

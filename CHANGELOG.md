@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Added public `cc-review` as an optional deep review skill that branches between plan-stage and implementation-stage review, builds a stateful review plan, records per-node review ledger entries, checks in-scope code smells, and records Browser/Computer Use plus log evidence when UI or runtime behavior is involved.
+- Added public `cc-review` as an optional deep review skill that branches between plan-stage and implementation-stage review, builds a stateful review plan, dispatches read-only reviewer subAgents when available, records per-node review ledger entries, checks in-scope code smells, and records Browser/Computer Use plus log evidence when UI or runtime behavior is involved.
 - Updated `cc-roadmap` and `cc-plan` with AI Leverage Route/Decision Lens gates that require real user/operator, status quo workaround, human-vs-agent effort, complete-lake boundary, ocean boundary, and boil-lake/sharp-wedge/needs-evidence/pivot verdicts before work becomes implementation-ready.
 - Updated `cc-plan` with an opt-in External Best-Practice Validation gate that records generalized search approval, source trust, repo-fit verdicts, and skip reasons in durable planning artifacts.
 - Updated `cc-plan` Decision Question options to require `A/B/C` lettered choices while keeping `D1` / `D2` as question IDs.
