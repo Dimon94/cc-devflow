@@ -535,6 +535,93 @@ function validateArtifactOwnershipContracts(errors) {
   }
 }
 
+function validateProjectPostmortemContracts(errors) {
+  ensurePath('docs/guides/project-postmortem.md', 'file', errors);
+
+  const contract = fs.readFileSync(path.join(ROOT, 'docs/guides/project-postmortem.md'), 'utf8');
+  const plan = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-plan/SKILL.md'), 'utf8');
+  const investigate = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-investigate/SKILL.md'), 'utf8');
+  const execute = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-do/SKILL.md'), 'utf8');
+  const act = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-act/SKILL.md'), 'utf8');
+  const design = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-plan/assets/DESIGN_TEMPLATE.md'), 'utf8');
+  const tinyDesign = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-plan/assets/TINY_DESIGN_TEMPLATE.md'), 'utf8');
+  const planTasks = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-plan/assets/TASKS_TEMPLATE.md'), 'utf8');
+  const analysis = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-investigate/assets/ANALYSIS_TEMPLATE.md'), 'utf8');
+  const investigateTasks = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-investigate/assets/TASKS_TEMPLATE.md'), 'utf8');
+
+  for (const relPath of [
+    '.claude/skills/cc-act/assets/PROJECT_POSTMORTEM_TEMPLATE.md',
+    '.claude/skills/cc-act/assets/PROJECT_POSTMORTEM_INDEX_TEMPLATE.md',
+    '.claude/skills/cc-act/assets/PROJECT_POSTMORTEM_PRINCIPLES_TEMPLATE.md'
+  ]) {
+    ensurePath(relPath, 'file', errors);
+  }
+
+  const requiredSnippets = [
+    ['project-postmortem guide', contract, '## Storage Layout'],
+    ['project-postmortem guide', contract, '## Progressive Disclosure'],
+    ['project-postmortem guide', contract, '## Required Incident Evidence'],
+    ['cc-plan SKILL.md', plan, '## Project Postmortem Recall Gate'],
+    ['cc-investigate SKILL.md', investigate, '## Project Postmortem Recall Gate'],
+    ['cc-do SKILL.md', execute, 'Project Postmortem quick search'],
+    ['cc-act SKILL.md', act, '## Project Postmortem Writeback'],
+    ['cc-plan DESIGN_TEMPLATE.md', design, '## Project Postmortem Recall'],
+    ['cc-plan TINY_DESIGN_TEMPLATE.md', tinyDesign, '## Project Postmortem Recall'],
+    ['cc-plan TASKS_TEMPLATE.md', planTasks, 'Postmortem recall rule'],
+    ['cc-investigate ANALYSIS_TEMPLATE.md', analysis, '## Project Postmortem Recall'],
+    ['cc-investigate TASKS_TEMPLATE.md', investigateTasks, 'Project postmortem search:']
+  ];
+
+  for (const [label, content, snippet] of requiredSnippets) {
+    if (!content.includes(snippet)) {
+      errors.push(`${label} missing project-postmortem snippet: ${snippet}`);
+    }
+  }
+}
+
+function validateCcActArchiveContracts(errors) {
+  const skill = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-act/SKILL.md'), 'utf8');
+  const playbook = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-act/PLAYBOOK.md'), 'utf8');
+  const closure = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-act/references/closure-contract.md'), 'utf8');
+  const syncDocs = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-act/scripts/sync-act-docs.sh'), 'utf8');
+
+  const requiredSnippets = [
+    ['cc-act SKILL.md', skill, 'For `post-merge-closeout`, freeze the archive target and run `cc-devflow archive-change <change-key>`'],
+    ['cc-act SKILL.md', skill, '`post-merge-closeout` has archived the closed change under `devflow/changes/archive/YYYY-MM/`'],
+    ['cc-act SKILL.md', skill, 'ArchiveSkip'],
+    ['cc-act PLAYBOOK.md', playbook, '归档是 exit gate'],
+    ['cc-act closure-contract.md', closure, '`post-merge-closeout` 的归档必须真实执行'],
+    ['cc-act sync-act-docs.sh', syncDocs, 'cc-devflow archive-change $requirement_id']
+  ];
+
+  for (const [label, content, snippet] of requiredSnippets) {
+    if (!content.includes(snippet)) {
+      errors.push(`${label} missing archive-closeout snippet: ${snippet}`);
+    }
+  }
+}
+
+function validateCcNextCandidateContracts(errors) {
+  const skill = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-next/SKILL.md'), 'utf8');
+  const playbook = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-next/PLAYBOOK.md'), 'utf8');
+
+  const requiredSnippets = [
+    ['cc-next SKILL.md', skill, '## Unarchived Change Candidate Rules'],
+    ['cc-next SKILL.md', skill, 'If an active change appears done but is not archived, do not skip it as `already done`.'],
+    ['cc-next SKILL.md', skill, 'archive-closeout'],
+    ['cc-next SKILL.md', skill, 'ArchiveSkip'],
+    ['cc-next PLAYBOOK.md', playbook, '## Unarchived Change Scan'],
+    ['cc-next PLAYBOOK.md', playbook, 'find devflow/changes -maxdepth 1 -type d'],
+    ['cc-next PLAYBOOK.md', playbook, '`archive-closeout`: 已 merged/done，但仍在 active changes 根目录。']
+  ];
+
+  for (const [label, content, snippet] of requiredSnippets) {
+    if (!content.includes(snippet)) {
+      errors.push(`${label} missing unarchived-change candidate snippet: ${snippet}`);
+    }
+  }
+}
+
 function validateCcRoadmapContracts(errors) {
   const skill = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-roadmap/SKILL.md'), 'utf8');
   const playbook = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-roadmap/PLAYBOOK.md'), 'utf8');
@@ -1055,6 +1142,9 @@ function main() {
   validateCcActCommitGuidelines(errors);
   validateCcActPrBodyTemplateContracts(errors);
   validateArtifactOwnershipContracts(errors);
+  validateProjectPostmortemContracts(errors);
+  validateCcActArchiveContracts(errors);
+  validateCcNextCandidateContracts(errors);
   validatePublicSkillContracts(errors);
   validateExampleBindings(errors);
   validatePackTarball(errors);

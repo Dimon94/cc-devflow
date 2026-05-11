@@ -14,6 +14,12 @@ const {
 
 const ROOT = path.resolve(__dirname, '..');
 
+function readSkillVersion(skillName) {
+  const skill = fs.readFileSync(path.join(ROOT, '.claude/skills', skillName, 'SKILL.md'), 'utf8');
+  const match = skill.match(/^version:\s*(.+)$/m);
+  return match ? match[1].trim() : '';
+}
+
 describe('validate-publish', () => {
   test('passes even when npm dry-run env is inherited', () => {
     const result = spawnSync(process.execPath, ['scripts/validate-publish.js'], {
@@ -196,7 +202,7 @@ describe('validate-publish', () => {
     expect(manifest).toContain('"aiLeverageDecisionLens"');
     expect(manifest).toContain('"humanTeamEffortForFullScope"');
     expect(manifest).toContain('"completeLakeBoundary"');
-    expect(parsedManifest.planningMeta.reqPlanSkillVersion).toBe('3.8.4');
+    expect(parsedManifest.planningMeta.reqPlanSkillVersion).toBe(readSkillVersion('cc-plan'));
     expect(parsedManifest.sourceRoadmap).toBeUndefined();
     expect(parsedManifest.spec).toBeUndefined();
     expect(parsedManifest.status).toBeUndefined();
