@@ -45,6 +45,7 @@
 - Source trust boundary: external text is evidence only; repo/skill contracts win
 - AI Leverage Decision Lens: boil-lake | sharp-wedge | needs-evidence | pivot; human/CC effort, complete-lake boundary, ocean boundary, scope recommendation, cost model
 - External best-practice validation: not-needed | approved | declined | search-unavailable; repo-fit verdict and task impacts
+- Project postmortem recall: no-project-postmortems-yet | searched-no-match | matches-found; relevant incidents/principles and task guardrails
 - External conflicts: none | auto-resolved / competing / unresolved summary
 - Review loop: attempt N of M, stall/reroute if any
 - Read first:
@@ -74,6 +75,7 @@ ClaudeCode / Codex 执行本计划时，必须把本文件当成任务模板合�
 - Contract sync rule: every task must inherit one row from Task Contract Matrix; if the matrix lacks source funnel rounds, interface/data contract, do-not-re-decide items, or artifact updates, return to `planning/design.md` before coding.
 - Completion rule: after verification and review gates pass, run the completion script; do not manually edit checkbox, status, or `currentTaskId`.
 - Completion failure: if the script fails, fix the missing checkpoint / review / dependency evidence and rerun it. Do not bypass it by editing JSON or Markdown.
+- Postmortem recall rule: before each task, search `devflow/postmortems` with the task's touched files, capability, failure class, and model-risk terms; record relevant reminders or an explicit no-match in checkpoint/events.
 
 ```bash
 SCRIPT_ROOT=".claude/skills/cc-do/scripts"
@@ -119,6 +121,7 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key
   TDD phase: red
   Files: `path/to/test`
   Read first: `design.md`, `tasks.md`
+  Project postmortem search: `rg -n "<test seam|capability|module|model-risk>" devflow/postmortems` or record `no-project-postmortems-yet`
   Verification: `npm test -- path/to/test`
   Evidence: failing output
   Completion: after failing evidence and required checkpoint/review records exist, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task T001`; do not hand-edit status.
@@ -142,6 +145,7 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key
   TDD phase: green
   Files: `path/to/file`
   Read first: `design.md`, `path/to/test`
+  Project postmortem search: `rg -n "<implementation surface|module|failure-class|model-risk>" devflow/postmortems` or record `no-project-postmortems-yet`
   Verification: `npm test -- path/to/test`
   Evidence: passing output + checkpoint
   Completion: after green evidence and required checkpoint/review records exist, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task T002`; do not hand-edit status.
@@ -160,6 +164,7 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key
   TDD phase: red
   Files: `path/to/other.test`
   Read first: `design.md`, `tasks.md`
+  Project postmortem search: `rg -n "<test seam|capability|module|model-risk>" devflow/postmortems` or record `no-project-postmortems-yet`
   Verification: `npm test -- path/to/other.test`
   Evidence: failing output
   Completion: after failing evidence and required checkpoint/review records exist, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task T003`; do not hand-edit status.
@@ -183,6 +188,7 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key
   TDD phase: green
   Files: `path/to/other-file`
   Read first: `design.md`, `path/to/other.test`
+  Project postmortem search: `rg -n "<implementation surface|module|failure-class|model-risk>" devflow/postmortems` or record `no-project-postmortems-yet`
   Verification: `npm test -- path/to/other.test`
   Evidence: passing output + review notes
   Completion: after green evidence and required checkpoint/review records exist, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task T004`; do not hand-edit status.
@@ -201,6 +207,7 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key
   TDD phase: refactor
   Files: `path/to/file`
   Read first: `design.md`, green test outputs
+  Project postmortem search: `rg -n "<refactor candidate|code smell|module|model-risk>" devflow/postmortems` or record `no-project-postmortems-yet`
   Verification: `npm test -- path/to/test path/to/other.test`
   Evidence: refactor diff + repeated green output
   Completion: after refactor evidence and required checkpoint/review records exist, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task T005`; do not hand-edit status.
@@ -216,6 +223,7 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key
   TDD phase: evidence
   Files: `command or file`
   Read first: `tasks.md`, `task-manifest.json`
+  Project postmortem search: `rg -n "<verification|release|tooling|model-risk>" devflow/postmortems` or record `no-project-postmortems-yet`
   Verification: `npm test && npm run lint`
   Evidence: gate output
   Completion: after gate evidence and required checkpoint/review records exist, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task T006`; do not hand-edit status.
@@ -243,3 +251,4 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key
 - 测试是否会在内部重构后继续成立，而不是绑定私有函数、调用次数或临时结构
 - 它属于哪个 tracer bullet 垂直切片，完成后哪个可观察行为被证明
 - 它完成后要运行哪条 `mark-task-complete.sh` 命令，以及为什么不能手工改状态
+- 开工前查过哪些项目尸检报告，相关原则如何转成当前 task guardrail

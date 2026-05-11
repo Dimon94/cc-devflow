@@ -1,6 +1,6 @@
 ---
 name: cc-act
-version: 1.8.6
+version: 1.8.7
 description: 'Use when verified work must be shipped or handed off with a clear landing path: run simplify and required tests, create or update a PR, prepare a local handoff, close out merged work, sync docs, write release notes, and fold follow-ups back into backlog or roadmap.'
 triggers:
   - 准备提 PR
@@ -17,6 +17,10 @@ reads:
   - references/git-commit-guidelines.md
   - assets/PR_BRIEF_TEMPLATE.md
   - assets/RELEASE_NOTE_TEMPLATE.md
+  - assets/PROJECT_POSTMORTEM_TEMPLATE.md
+  - assets/PROJECT_POSTMORTEM_INDEX_TEMPLATE.md
+  - assets/PROJECT_POSTMORTEM_PRINCIPLES_TEMPLATE.md
+  - docs/guides/project-postmortem.md
   - ../cc-roadmap/scripts/locate-roadmap-item.sh
   - ../cc-roadmap/scripts/sync-roadmap-progress.sh
   - scripts/ensure-ship-branch.sh
@@ -36,6 +40,18 @@ writes:
     required: false
     when: handoff mode is release
     exclusive_group: handoff
+  - path: devflow/postmortems/INDEX.md
+    durability: durable
+    required: false
+    when: closing a FIX or recurring AI/process/engineering failure
+  - path: devflow/postmortems/principles.md
+    durability: durable
+    required: false
+    when: an incident yields a generalized model or engineering lesson
+  - path: devflow/postmortems/incidents/<date>-<change-key>.md
+    durability: durable
+    required: false
+    when: closing a FIX or recurring AI/process/engineering failure
 effects:
   - roadmap progress and backlog follow-up updates when needed
 entry_gate:
@@ -43,10 +59,14 @@ entry_gate:
   - Freeze current branch, PR, ship-mode, auth, clean-tree, and rollback facts before writing delivery materials.
   - If simplify, tests, or act changes code or verification scope, return to cc-check immediately.
   - Read source roadmap progress from `devflow/roadmap.json`, `devflow/ROADMAP.md`, optional `devflow/BACKLOG.md`, or legacy `devflow/roadmap-tracking.json`; act must not ship against stale RM state.
+  - For FIX closeout or recurring AI/process/engineering failures, update the project postmortem under `devflow/postmortems/` before final ship/handoff material is declared complete.
+  - 'For `post-merge-closeout`, freeze the archive target and run `cc-devflow archive-change <change-key>` after release note and roadmap writeback; only skip with an explicit `ArchiveSkip` blocker in the handoff.'
 exit_criteria:
   - The ship mode is explicit, delivery materials match that mode, and the next maintainer has one clear entry point.
   - Docs, PR text, release notes, handoff artifacts, review range, readiness dashboard, PR body accuracy check, and test evidence reflect the same proven facts.
   - Follow-up items are written back to roadmap/backlog instead of lingering in chat memory.
+  - FIX closeout and recurring failures have a progressive project postmortem entry with factual Git evidence, prevention summary, and principle extraction decision.
+  - '`post-merge-closeout` has archived the closed change under `devflow/changes/archive/YYYY-MM/`, or the handoff records an explicit `ArchiveSkip` blocker with the exact retry command.'
   - The source roadmap item reflects the latest verified state, ship mode, and follow-up decision, or the handoff records a no-op reason.
 reroutes:
   - when: Verification is stale, incomplete, or changed during act.
@@ -92,6 +112,7 @@ tool_budget:
 2. `CHANGELOG.md`
 3. `references/closure-contract.md`
 4. `references/git-commit-guidelines.md`
+5. `docs/guides/project-postmortem.md`
 
 ## Use This Skill When
 
@@ -125,6 +146,30 @@ tool_budget:
 - Forbidden actions: shipping with a stale report card, claiming readiness without simplify/test evidence or explicit skip evidence, inventing a fifth ambiguous mode, or continuing feature development inside act.
 - Required evidence: PR briefs, status reports, release notes, resume indexes, and test evidence must summarize already-proven facts only.
 - Reroute rule: changed verification goes back to `cc-check`; unfinished implementation or new fixes go back to `cc-do`.
+
+## Project Postmortem Writeback
+
+`cc-act` 是项目级 AI 尸检报告的唯一默认写入者，因为它能看到 verified reality、Git 状态、review range、ship mode 和 follow-up。
+
+固定位置：
+
+- `devflow/postmortems/INDEX.md`
+- `devflow/postmortems/principles.md`
+- `devflow/postmortems/incidents/<date>-<change-key>.md`
+
+触发条件：
+
+1. 当前 change key 是 `FIX-*`。
+2. `cc-check` / `cc-act` 暴露重复的 AI、流程、测试、release、Git 或架构错误。
+3. 用户明确要求记录一次教训。
+
+写入规则：
+
+1. 先用 `assets/PROJECT_POSTMORTEM_TEMPLATE.md` 写具体 incident；事实必须包含 branch、base/head SHA、review range、相关 commits、PR/handoff、验证命令和关键输出。
+2. 再更新 `INDEX.md` 的短入口：日期、change、severity、tags、one-line lesson、incident 链接。
+3. 只有能从 incident 和 Git 证据提炼出可迁移规则时，才更新 `principles.md`；原则必须引用 incident 和 Git 证据。
+4. 报告使用渐进式披露：默认层只给检索和提醒，深层 incident 才放完整时间线、根因、逃逸原因和验证记录。
+5. 尸检报告不拥有 roadmap、task、review 或 spec 状态；只能引用对应 owner artifact 和 Git 证据。
 
 ## Entry Gate
 
@@ -185,6 +230,7 @@ tool_budget:
    - 必须完成 doc sync
    - 需要对外说明时生成 `handoff/release-note.md`
    - 必须把 follow-up 回写到 `devflow/roadmap.json`，并重新生成 `devflow/ROADMAP.md` / `devflow/BACKLOG.md`
+   - 必须运行 `cc-devflow archive-change <change-key>` 归档已闭环 change；除非存在明确安全阻塞并写入 `ArchiveSkip`
 
 不是每次都要把所有文件生成一遍。材料必须服务于当前 ship 模式，而不是为了流程好看。
 
@@ -340,7 +386,8 @@ PR body 不是聊天摘要，而是 reviewer 的第一份执行材料。`create-
    - 被推迟但必须保留的事项
    - 因本次结果而改变优先级的事项
 14. 用 `sync-roadmap-progress.sh` 更新 source RM 的 status、REQ/FIX 绑定和 progress：`create-pr` / `update-pr` 通常写 `In review` + `100%`，`local-handoff` 写 `Ready for handoff`，`post-merge-closeout` 写 `Done`；如果无 source RM，必须在 handoff 写 no-op reason。
-15. 如果 requirement 真正闭环，更新状态摘要并归档：运行 `cc-devflow archive-change <change-key>` 将已完成变更移入 `devflow/changes/archive/YYYY-MM/`；否则把下一位接手者的入口写清楚。
+15. 如果 ship mode 是 `post-merge-closeout`，归档不是建议而是 exit gate：运行 `cc-devflow archive-change <change-key>` 将已完成变更移入 `devflow/changes/archive/YYYY-MM/`，然后用 `cc-devflow list-archived` 或文件路径确认归档成功。
+16. 只有在归档会丢失未合并证据、用户明确要求保留 active change、或 archive target 已冲突时，才允许跳过；跳过必须在 handoff 写 `ArchiveSkip`、原因、受影响路径、以及精确 retry command。
 
 ## Output
 
@@ -353,6 +400,7 @@ PR body 不是聊天摘要，而是 reviewer 的第一份执行材料。`create-
 - 必要时创建或更新的 PR / MR
 - PR / MR body 中按 `Output language` 生成的 Summary/摘要、Problem/问题、Changes/变更、Validation/验证、Review/Gate Evidence、Risk/Rollback、Docs/Writeback、Follow-ups
 - readiness dashboard 和 PR body accuracy check
+- `post-merge-closeout` 的 archive path，或显式 `ArchiveSkip` blocker
 
 ## Good Output
 

@@ -24,7 +24,7 @@
 - Default read: Requirement Snapshot, Approved Direction, Validation Strategy, Roadmap Sync Gate.
 - Open for scope/design questions: Source Handoff, Options Considered, Design, Implementation Surface Map.
 - Open for trust/conflict questions: Source Trust Boundary, External Document Conflicts, Domain Language & Durable Decisions.
-- Open for audit/recovery: Review Gate, Bounded Review Loop, Decision Questions, Risks.
+- Open for audit/recovery: Project Postmortem Recall, Review Gate, Bounded Review Loop, Decision Questions, Risks.
 
 ## Source Handoff
 
@@ -121,6 +121,28 @@
 - Repo-fit verdict:
 - Changes to options / tasks:
 - Skipped reason:
+
+## Project Postmortem Recall
+
+- Search status: `no-project-postmortems-yet` | `searched-no-match` | `matches-found`
+- Search command:
+- Search terms:
+- Sources opened:
+  - `devflow/postmortems/INDEX.md`
+  - `devflow/postmortems/principles.md`
+  - `devflow/postmortems/incidents/<date>-<change-key>.md`
+- Matching incidents:
+- Matching principles:
+- Relevant Git evidence:
+- Planning impact:
+  - Scope impact:
+  - Test seam impact:
+  - Verification impact:
+  - Files / surfaces to avoid:
+  - Review gate impact:
+- No-op reason:
+
+> 尸检报告先做检索提醒，再做深读。只有标签、模块、失败类或模型风险匹配时，才打开具体 incident。
 
 ## Capability Handoff
 

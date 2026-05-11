@@ -1,5 +1,11 @@
 # CC-Do Skill Changelog
 
+## v1.6.5 - 2026-05-11
+
+- require a per-task Project Postmortem quick search before execution touches code
+- record postmortem recall results in checkpoint/events so recurring model and engineering failures become task guardrails
+- update the execution loop to open matching incident prevention summaries and Git evidence before Red/Green work starts
+
 ## v1.6.4 - 2026-05-11
 
 - stop writing derived top-level `task-manifest.json.status`; task completion is owned by `tasks[].status` and aggregate state is derived

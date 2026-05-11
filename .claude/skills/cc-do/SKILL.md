@@ -1,6 +1,6 @@
 ---
 name: cc-do
-version: 1.6.4
+version: 1.6.5
 description: Use when implementing planned tasks, resuming interrupted work, applying a frozen investigation handoff, or landing review feedback after cc-plan or cc-investigate.
 triggers:
   - 开始做 T003
@@ -15,6 +15,7 @@ reads:
   - CHANGELOG.md
   - references/execution-recovery.md
   - references/parallel-dispatch.md
+  - docs/guides/project-postmortem.md
 writes:
   - path: devflow/changes/<change-key>/execution/tasks/<task-id>/checkpoint.json
     durability: durable
@@ -40,12 +41,14 @@ entry_gate:
   - Select only ready tasks whose dependencies, wave, touched paths, and file ownership are clear.
   - Reject parallel execution when touched paths overlap by exact path or parent/child path; submodule touches must be isolated unless the task explicitly owns that submodule.
   - If the current task cannot be restated from canonical artifacts, run a context reset before coding.
+  - Before each single-task execution, run a quick Project Postmortem search against `devflow/postmortems` using the task's touched files, capability, failure class, and model-risk terms; record applicable reminders or `no-project-postmortems-yet` in the checkpoint/events.
   - "Validate the current task's TDD shape before coding: spec-style test name, one logical behavior, public verification path, allowed boundary mocks, Green minimality guard, and refactor candidates."
 exit_criteria:
   - The current task has red/green evidence, public-seam test quality evidence, review evidence, and a resumable checkpoint trail.
   - Red evidence proves one observable behavior through a public verification path; Green evidence shows only the minimal production change; Refactor evidence names the concrete smell removed or says why none was needed.
   - The completed task was closed through `scripts/mark-task-complete.sh`; manual checkbox/status edits are not valid completion evidence.
   - Execution leaves the next verifier enough runtime truth to judge the task without chat memory.
+  - The task checkpoint or event log records the postmortem recall result for this task, including relevant principle/incident links or an explicit no-match verdict.
   - The honest next step is cc-check or an explicit reroute.
 reroutes:
   - when: Three failed repair attempts or new evidence show the investigation contract is wrong.
@@ -98,6 +101,7 @@ tool_budget:
 2. `CHANGELOG.md`
 3. `references/execution-recovery.md`
 4. `references/parallel-dispatch.md`
+5. `docs/guides/project-postmortem.md`
 
 ## Use This Skill When
 
@@ -165,22 +169,24 @@ Refactor 只能发生在 Green 之后。优先处理当前 slice 暴露出的重
 5. 没有任务上下文，不准把任务扔给 subagent；先用 `scripts/build-task-context.sh` 从 `planning/design.md` 或 `planning/analysis.md`、`planning/tasks.md`、`planning/task-manifest.json`、`change-meta.json` 与相关 capability spec 组装上下文。
 6. 如果 `task-manifest.json.metadata.lane == "quick"`，仍然必须有 current task、verification、checkpoint 和 handoff；quick 只缩短文档密度，不跳过证据。
 7. 如果仓库含 `.gitmodules` 或 manifest 提供 `submodulePaths`，先用 `scripts/detect-file-conflicts.sh` 标出 `submoduleTouches`；只有触达该 submodule 的任务失去默认 worktree 隔离资格，未触达任务不能被无辜串行化。
+8. 每个单 task 开工前，用当前 task 的 touched files、capability、错误类型、模型风险词快速检索 `devflow/postmortems`；命中时把相关原则转成当前 task 的 guardrail，未命中也要在 checkpoint / events 里记录。
 
 ## Loop
 
 1. 读取当前任务，而不是重新发明任务。
-2. 依赖没满足前，不准提前做下游任务；不同 wave 之间不允许抢跑。
-3. 没有明确并行资格，不准把多个实现任务同时推进；`touches` 父子路径重叠也算同一执行表面。
-4. 先 `fail-first`：先写失败测试，先看见预期红，再写生产代码。
-5. 如果红灯不是预期失败（语法错、fixture 错、测试没连上），先修测试直到它正确失败。
-6. 如果红灯通过错误 seam 得到，比如私有方法、内部调用次数、mock 内部协作者，先修测试 seam，不准进入 Green。
-7. 如果红灯只断言实现形状、直接查内部状态或一次证明多个逻辑行为，先改测试，不准进入 Green。
-8. 按 `Red -> Green -> Refactor` 推进，Green 只允许最小实现，不预铺未来测试尚未要求的分支、状态或 API。
-9. 如果当前 Red 需要新的 fixture 或 mock，先证明它仍从公共 seam 触发真实行为；fixture 缺字段、类型强转或内部 mock 都要写入 `tdd.testQuality.fixtureRisk` 或先修 seam。
-10. Refactor 后必须重跑相关测试，保持 Green；Red 状态下不重构。
-11. 每次推进都写 task runtime：`events.jsonl` + `checkpoint.json`，并记录 `tdd.testQuality`、`tdd.greenMinimality`、`tdd.refactorCandidates` 或 `tddException`。
-12. 任务实现后，先过 `spec review`，再过 `code review`，两道门都过才算任务收口；这里只验证 spec delta，不回写长期 spec。
-13. 当前任务完成后，把可验证证据留给 `cc-check`。
+2. 先执行当前 task 的 Project Postmortem quick search；如果命中同类 incident，先打开对应 incident 的 Prevention Summary 和 Git Evidence，再开始 Red。
+3. 依赖没满足前，不准提前做下游任务；不同 wave 之间不允许抢跑。
+4. 没有明确并行资格，不准把多个实现任务同时推进；`touches` 父子路径重叠也算同一执行表面。
+5. 先 `fail-first`：先写失败测试，先看见预期红，再写生产代码。
+6. 如果红灯不是预期失败（语法错、fixture 错、测试没连上），先修测试直到它正确失败。
+7. 如果红灯通过错误 seam 得到，比如私有方法、内部调用次数、mock 内部协作者，先修测试 seam，不准进入 Green。
+8. 如果红灯只断言实现形状、直接查内部状态或一次证明多个逻辑行为，先改测试，不准进入 Green。
+9. 按 `Red -> Green -> Refactor` 推进，Green 只允许最小实现，不预铺未来测试尚未要求的分支、状态或 API。
+10. 如果当前 Red 需要新的 fixture 或 mock，先证明它仍从公共 seam 触发真实行为；fixture 缺字段、类型强转或内部 mock 都要写入 `tdd.testQuality.fixtureRisk` 或先修 seam。
+11. Refactor 后必须重跑相关测试，保持 Green；Red 状态下不重构。
+12. 每次推进都写 task runtime：`events.jsonl` + `checkpoint.json`，并记录 `postmortemRecall`、`tdd.testQuality`、`tdd.greenMinimality`、`tdd.refactorCandidates` 或 `tddException`。
+13. 任务实现后，先过 `spec review`，再过 `code review`，两道门都过才算任务收口；这里只验证 spec delta，不回写长期 spec。
+14. 当前任务完成后，把可验证证据留给 `cc-check`。
 
 ## Output
 

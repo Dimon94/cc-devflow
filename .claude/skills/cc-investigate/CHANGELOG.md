@@ -1,5 +1,11 @@
 # CC-Investigate Skill Changelog
 
+## v1.4.1 - 2026-05-11
+
+- add the Project Postmortem Recall Gate so investigations search `devflow/postmortems` before final hypotheses are frozen
+- update analysis and repair-task templates to connect similar incidents, principles, Git evidence, and model-risk lessons to the current root-cause table
+- require recurring or same-root-cause findings to be classified explicitly instead of treated as novel bugs
+
 ## v1.4.0 - 2026-05-11
 
 - add the Root Cause Proof Ladder so investigations must prove symptom site, first bad state, violated contract, original trigger, counterfactual proof, and escape reason before repair tasks are generated
