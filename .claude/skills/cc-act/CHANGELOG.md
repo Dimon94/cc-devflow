@@ -1,5 +1,11 @@
 # CC-Act Skill Changelog
 
+## v1.8.6 - 2026-05-11
+
+- add a language-aware Pull Request Body Contract so `create-pr` and `update-pr` derive PR title/body language from runtime `Output language`
+- render a detailed PR body draft in `pr-brief.md` with summary, problem, changes, validation, review/gate evidence, risk/rollback, docs/writeback, and follow-ups
+- block shallow PR descriptions by requiring current diff/report-card/doc-sync/roadmap facts, real validation evidence, and no leftover placeholders before `gh pr create` or `gh pr edit`
+
 ## v1.8.5 - 2026-05-11
 
 - expand `references/git-commit-guidelines.md` from title-only guidance into a structured commit-record contract with problem, change, rationale, validation, risk, and refs sections

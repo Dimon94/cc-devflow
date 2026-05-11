@@ -1,6 +1,6 @@
 ---
 name: cc-act
-version: 1.8.5
+version: 1.8.6
 description: 'Use when verified work must be shipped or handed off with a clear landing path: run simplify and required tests, create or update a PR, prepare a local handoff, close out merged work, sync docs, write release notes, and fold follow-ups back into backlog or roadmap.'
 triggers:
   - 准备提 PR
@@ -269,6 +269,16 @@ PR / handoff 之前必须把 readiness 压成一屏事实：
 
 readiness dashboard 有 blocker 时，不能创建或更新 PR，只能 reroute 到 `cc-check` / `cc-do` 或生成 local handoff。
 
+## Pull Request Body Template Contract
+
+PR body 不是聊天摘要，而是 reviewer 的第一份执行材料。`create-pr` / `update-pr` 必须从当前事实生成一版可直接提交的 PR body draft：
+
+1. Language decision：读取 `Output language`。中文项目输出中文 PR 标题和正文；英文项目输出英文 PR 标题和正文；`type(scope)`、路径、命令、issue key、REQ/FIX/RM ID 保持机器可读。
+2. Required shape：必须包含 summary、problem、changes、validation、review/gate evidence、risk/rollback、docs/writeback、follow-ups。
+3. Evidence density：validation 不能只有“tests passed”，必须列命令、退出结果或关键观察；review/gate evidence 必须带 reviewed base/head SHA、finding triage、QA/claim evidence 和 readiness 摘要。
+4. Freshness：已有 PR body 只能作为远端旧状态参考，不能继承；每次 `gh pr create` / `gh pr edit` 前都用当前 `handoff/pr-brief.md`、当前 diff、当前 report-card、doc sync 和 roadmap writeback 重建。
+5. Completeness gate：空标题、`<placeholder>`、泛化句子、缺少风险/回滚边界、缺少文档/回写状态时，不准创建或更新 PR。
+
 ## Integration Safety
 
 `cc-act` 可以清理交付路径，但不能悄悄做破坏性动作：
@@ -341,7 +351,7 @@ readiness dashboard 有 blocker 时，不能创建或更新 PR，只能 reroute 
 - 必要时更新后的 `devflow/roadmap.json` / `devflow/ROADMAP.md` / `devflow/BACKLOG.md`
 - 单测 / e2e 的通过证据，或明确记录的 skip / blocker
 - 必要时创建或更新的 PR / MR
-- PR / MR body 中的 Summary、Test Coverage、Pre-Landing Review、Scope Drift、Plan Completion、Verification Results、Documentation、Test plan
+- PR / MR body 中按 `Output language` 生成的 Summary/摘要、Problem/问题、Changes/变更、Validation/验证、Review/Gate Evidence、Risk/Rollback、Docs/Writeback、Follow-ups
 - readiness dashboard 和 PR body accuracy check
 
 ## Good Output

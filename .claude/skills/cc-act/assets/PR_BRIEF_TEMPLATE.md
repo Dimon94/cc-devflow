@@ -66,13 +66,69 @@
 - Documentation release:
 - PR body accuracy:
 
+## Pull Request Body Contract
+
+- Language source: `Output language: <value from report-card>`
+- PR body language: `中文` / `English`
+- Title rule: same language as the PR body after the Conventional Commits `type(scope)` prefix; keep identifiers, paths, commands, and issue keys unchanged.
+- Body source: current `pr-brief.md`, current diff, current `review/report-card.json`, doc sync output, and roadmap/backlog writeback.
+- Required sections: summary, problem, changes, validation, review/gate evidence, risk/rollback, docs/writeback, follow-ups.
+- Completeness gate: no empty headings, no stale inherited PR body, no generic "tests passed" without command or evidence, and no `<placeholder>` text before `gh pr create` or `gh pr edit`.
+
+## Pull Request Body Draft
+
+```markdown
+## Summary / 摘要
+
+- TBD
+
+## Problem / 问题
+
+- Requirement / 需求:
+- User-visible gap / 用户可见缺口:
+
+## Changes / 变更
+
+- TBD
+
+## Validation / 验证
+
+- `report-card.json` verdict / 结论:
+- Commands / 命令:
+- Key observations / 关键观察:
+
+## Review / Gate Evidence
+
+- Reviewed base SHA:
+- Reviewed head SHA:
+- Review packet:
+- Finding triage:
+- QA / claim evidence:
+- Readiness:
+
+## Risk And Rollback / 风险与回滚
+
+- Main risk / 主要风险:
+- Rollback boundary / 回滚边界:
+
+## Docs And Writeback / 文档与回写
+
+- `CLAUDE.md`:
+- `README.md`:
+- Roadmap progress:
+
+## Follow-ups / 后续事项
+
+- TBD
+```
+
 ## Summary
 
-- 
+- TBD
 
 ## What Changed
 
-- 
+- TBD
 
 ## Verification Evidence
 
@@ -125,7 +181,7 @@
 
 ## How To Verify
 
-- 
+- TBD
 
 ## Follow-Ups
 
@@ -138,4 +194,4 @@
 
 ## Risks
 
-- 
+- TBD

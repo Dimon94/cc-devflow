@@ -8,6 +8,7 @@ const {
   collectSlimManifestErrors,
   validateArtifactOwnershipContracts,
   validateCcActCommitGuidelines,
+  validateCcActPrBodyTemplateContracts,
   ensureStringArray
 } = require('../scripts/validate-publish');
 
@@ -285,6 +286,14 @@ describe('validate-publish', () => {
     const errors = [];
 
     validateCcActCommitGuidelines(errors);
+
+    expect(errors).toEqual([]);
+  });
+
+  test('cc-act PR body templates are language-aware and evidence-dense', () => {
+    const errors = [];
+
+    validateCcActPrBodyTemplateContracts(errors);
 
     expect(errors).toEqual([]);
   });

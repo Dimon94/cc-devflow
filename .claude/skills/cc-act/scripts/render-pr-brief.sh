@@ -66,6 +66,17 @@ requirement_id="$(req_act_requirement_id "$manifest" "$CHANGE_DIR")"
 report_summary="$(req_act_report_summary "$report_card")"
 report_verdict="$(req_act_report_verdict "$report_card")"
 output_language="$(req_act_output_language "$report_card")"
+normalized_output_language="$(printf '%s' "$output_language" | tr '[:upper:]' '[:lower:]')"
+case "$normalized_output_language" in
+  *zh*|*chinese*|*中文*)
+    pr_body_locale="zh"
+    pr_language_label="中文"
+    ;;
+  *)
+    pr_body_locale="en"
+    pr_language_label="English"
+    ;;
+esac
 design_goal="$(req_act_design_goal "$design_file")"
 main_risk="$(req_act_main_risk "$design_file")"
 review_base_sha="$(jq -r '[.review.taskReviews.reviewPacket.baseSha?, .review.diffReview.reviewPacket.baseSha?] | map(select(. != null and . != "")) | first // "not recorded"' "$report_card")"
@@ -240,6 +251,159 @@ roadmap_sync_summary="$(req_act_roadmap_sync_summary "$manifest" "$REPO_ROOT")"
   echo "- Documentation release: $documentation_release_summary"
   echo "- Roadmap progress: $roadmap_sync_summary"
   echo "- PR body accuracy: $pr_body_accuracy_summary"
+  echo
+  echo "## Pull Request Body Contract"
+  echo
+  echo "- Language source: \`Output language: $output_language\`"
+  echo "- PR body language: $pr_language_label"
+  echo "- Title rule: use the same language as the PR body after the Conventional Commits \`type(scope)\` prefix; keep identifiers, paths, commands, and issue keys unchanged."
+  echo "- Body source: rebuild from this \`pr-brief.md\`, current diff, current \`review/report-card.json\`, doc sync output, and roadmap/backlog writeback; do not reuse a stale PR body."
+  echo "- Required sections: summary, problem, changes, validation, review/gate evidence, risk/rollback, docs/writeback, and follow-ups."
+  echo "- Completeness gate: no empty headings, no generic \"tests passed\" claim without commands or evidence, and no \`<placeholder>\` text may remain before \`gh pr create\` or \`gh pr edit\`."
+  echo
+  echo "## Pull Request Body Draft"
+  echo
+  echo '```markdown'
+  if [[ "$pr_body_locale" == "zh" ]]; then
+    echo "## 摘要"
+    if [[ -n "$report_summary" ]]; then
+      echo "- $report_summary"
+    fi
+    if [[ -n "$design_goal" && "$design_goal" != "$report_summary" ]]; then
+      echo "- $design_goal"
+    fi
+    if [[ -z "$report_summary" && -z "$design_goal" ]]; then
+      echo "- 未记录顶层摘要；创建或更新 PR 前必须补齐。"
+    fi
+    echo
+    echo "## 问题"
+    echo "- 需求：$requirement_id"
+    echo "- 用户可见缺口：${design_goal:-需要从 planning 产物补齐}"
+    echo
+    echo "## 变更"
+    if [[ -s "$tmp_changed" ]]; then
+      while IFS= read -r line; do
+        echo "- $line"
+      done < "$tmp_changed"
+    else
+      echo "- 未捕获完成任务列表；创建或更新 PR 前必须补齐。"
+    fi
+    echo
+    echo "## 验证"
+    echo "- \`report-card.json\` 结论：$report_verdict"
+    if [[ -s "$tmp_evidence" ]]; then
+      while IFS= read -r line; do
+        echo "- $line"
+      done < "$tmp_evidence"
+    else
+      echo "- 未记录证据行；必须补充命令、退出码或关键观察。"
+    fi
+    if [[ -s "$tmp_verify" ]]; then
+      while IFS= read -r cmd; do
+        echo "- \`$cmd\`"
+      done < "$tmp_verify"
+    fi
+    echo
+    echo "## Review / Gate 证据"
+    echo "- Reviewed base SHA: $review_base_sha"
+    echo "- Reviewed head SHA: $review_head_sha"
+    echo "- Review packet: $review_packet_summary"
+    echo "- Finding triage: $finding_triage_summary"
+    echo "- QA / claim evidence: $qa_claim_summary"
+    echo "- Readiness: review freshness=[$review_freshness_summary]; qa coverage=[$qa_coverage_summary]; browser QA=[$browser_qa_summary]"
+    echo
+    echo "## 风险与回滚"
+    if [[ -n "$main_risk" ]]; then
+      echo "- 主要风险：$main_risk"
+    else
+      echo "- 主要风险：planning/design.md 未记录新增风险。"
+    fi
+    echo "- 回滚边界：按 \`Rollback Guard\` 的 safe state、side effects 和 owner 执行；如未补齐，不得合并。"
+    echo
+    echo "## 文档与回写"
+    echo "- \`CLAUDE.md\`: $claude_status"
+    echo "- \`README.md\`: $readme_status"
+    echo "- Roadmap progress: $roadmap_sync_summary"
+    echo
+    echo "## 后续事项"
+    if [[ -s "$tmp_followups" ]]; then
+      while IFS= read -r line; do
+        echo "- $line"
+      done < "$tmp_followups"
+    else
+      echo "- 无已记录后续事项。"
+    fi
+  else
+    echo "## Summary"
+    if [[ -n "$report_summary" ]]; then
+      echo "- $report_summary"
+    fi
+    if [[ -n "$design_goal" && "$design_goal" != "$report_summary" ]]; then
+      echo "- $design_goal"
+    fi
+    if [[ -z "$report_summary" && -z "$design_goal" ]]; then
+      echo "- No top-line summary recorded; fill this before creating or updating the PR."
+    fi
+    echo
+    echo "## Problem"
+    echo "- Requirement: $requirement_id"
+    echo "- User-visible gap: ${design_goal:-fill from planning artifacts before PR update}"
+    echo
+    echo "## Changes"
+    if [[ -s "$tmp_changed" ]]; then
+      while IFS= read -r line; do
+        echo "- $line"
+      done < "$tmp_changed"
+    else
+      echo "- No completed task list captured; fill this before creating or updating the PR."
+    fi
+    echo
+    echo "## Validation"
+    echo "- \`report-card.json\` verdict: $report_verdict"
+    if [[ -s "$tmp_evidence" ]]; then
+      while IFS= read -r line; do
+        echo "- $line"
+      done < "$tmp_evidence"
+    else
+      echo "- No evidence lines recorded; add command, exit status, or key observation evidence."
+    fi
+    if [[ -s "$tmp_verify" ]]; then
+      while IFS= read -r cmd; do
+        echo "- \`$cmd\`"
+      done < "$tmp_verify"
+    fi
+    echo
+    echo "## Review / Gate Evidence"
+    echo "- Reviewed base SHA: $review_base_sha"
+    echo "- Reviewed head SHA: $review_head_sha"
+    echo "- Review packet: $review_packet_summary"
+    echo "- Finding triage: $finding_triage_summary"
+    echo "- QA / claim evidence: $qa_claim_summary"
+    echo "- Readiness: review freshness=[$review_freshness_summary]; qa coverage=[$qa_coverage_summary]; browser QA=[$browser_qa_summary]"
+    echo
+    echo "## Risk And Rollback"
+    if [[ -n "$main_risk" ]]; then
+      echo "- Main risk: $main_risk"
+    else
+      echo "- Main risk: no additional risk captured in planning/design.md."
+    fi
+    echo "- Rollback boundary: follow the \`Rollback Guard\` safe state, side effects, and owner; do not merge if this is incomplete."
+    echo
+    echo "## Docs And Writeback"
+    echo "- \`CLAUDE.md\`: $claude_status"
+    echo "- \`README.md\`: $readme_status"
+    echo "- Roadmap progress: $roadmap_sync_summary"
+    echo
+    echo "## Follow-ups"
+    if [[ -s "$tmp_followups" ]]; then
+      while IFS= read -r line; do
+        echo "- $line"
+      done < "$tmp_followups"
+    else
+      echo "- None recorded."
+    fi
+  fi
+  echo '```'
   echo
   echo "## Summary"
   echo

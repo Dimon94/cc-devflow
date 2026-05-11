@@ -140,6 +140,7 @@ Ship 必须属于这 4 种模式之一：
 - QA behavior evidence and feedback-loop quality
 - readiness dashboard
 - PR body accuracy check
+- Pull Request Body Draft: 按 `Output language` 生成中文或英文 PR 正文草稿，包含 summary/problem/changes/validation/review-gate/risk-rollback/docs-writeback/follow-ups
 - Durable follow-up briefs: current behavior、desired behavior、key interfaces、acceptance criteria、out of scope
 
 缺这些字段时，可以生成 local handoff，但不能声称 PR body 已经可 review。
@@ -166,15 +167,16 @@ Ship 必须属于这 4 种模式之一：
 - 如果当前是 detached HEAD，先运行 `scripts/ensure-ship-branch.sh --dir <requirement-dir>`
 - 推送当前分支
 - 用 `gh pr create` 创建 PR / MR
-- PR body 以 `pr-brief.md` 为真相源，并包含 Summary、Test Coverage、Pre-Landing Review、Readiness Dashboard、Scope Drift、Plan Completion、Verification Results、Documentation、Test plan
-- 创建前检查 PR body 是否来自当前 report-card 和当前 diff，不继承旧 body
+- PR body 以 `pr-brief.md` 的 `Pull Request Body Draft` 为真相源，并按 `Output language` 输出中文或英文
+- PR body 必须包含 Summary/摘要、Problem/问题、Changes/变更、Validation/验证、Review/Gate Evidence、Risk/Rollback、Docs/Writeback、Follow-ups
+- 创建前检查 PR body 是否来自当前 report-card、当前 diff、doc sync 和 roadmap writeback，不继承旧 body、不保留 `<placeholder>`、不只写一句泛化摘要
 
 ### `update-pr`
 
 - 如果有新增提交，先按 `references/git-commit-guidelines.md` 完成 commit / push
 - 不重新造一个 PR
 - 刷新已有 PR / MR body
-- 确保 body 由本次最新 `cc-check` 结果与 doc sync 状态重建，不沿用旧 body
+- 确保 body 由本次最新 `cc-check` 结果、doc sync 状态和 `Pull Request Body Draft` 重建，不沿用旧 body
 - PR body 与当前 commits / diff 不一致时，必须先更新 body，再继续交付判断
 
 ### `local-handoff`
