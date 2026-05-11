@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added project-level AI postmortem contracts under `devflow/postmortems/`, with `cc-act` writing progressive incident, index, and principle records that include Git evidence and verification facts.
+
+### Changed
+
+- Updated `cc-plan`, `cc-investigate`, and `cc-do` to search project postmortems before freezing plans, finalizing root-cause hypotheses, or executing individual tasks.
+- Updated `cc-act` so `post-merge-closeout` must run `cc-devflow archive-change <change-key>` and prove the archive path, instead of leaving archive as an optional next action.
+- Updated `cc-next` so unarchived `devflow/changes/<REQ|FIX>-*` directories are next-work candidates, including done-but-unarchived closeout work.
+
 ## [4.5.8] - 2026-05-11
 
 ### Changed

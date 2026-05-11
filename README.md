@@ -94,7 +94,7 @@ flowchart TD
 | Skill | Use it when | Main output |
 | --- | --- | --- |
 | `cc-roadmap` | You need product direction, staged scope, or backlog order | `devflow/roadmap.json`, `devflow/ROADMAP.md`, deprecated `devflow/BACKLOG.md` |
-| `cc-next` | You need to pick the next roadmap-aware ready target from roadmap and issue truth | one Goal Packet for `cc-dev` |
+| `cc-next` | You need to pick the next roadmap-aware ready target from roadmap, unarchived local changes, and issue truth | one Goal Packet for `cc-dev` |
 | `cc-dev` | A selected objective should be driven in the current worktree to a remote PR | PDCA/IDCA artifacts plus a PR or handoff |
 | `cc-plan` | A feature or change needs scope, design, and task freezing | `planning/design.md`, `planning/tasks.md`, `task-manifest.json` |
 | `cc-investigate` | A bug needs symptom, reproduction, root cause, and repair boundary | `planning/analysis.md`, `planning/tasks.md`, `task-manifest.json` |
