@@ -6,7 +6,7 @@
   "requirementId": "REQ-002",
   "requirementVersion": "REQ-002.v2",
   "planningMeta": {
-    "reqPlanSkillVersion": "3.8.4",
+    "reqPlanSkillVersion": "3.8.5",
     "designVersion": "design.v2",
     "approvedAt": null,
     "basedOnOption": "Option B",
