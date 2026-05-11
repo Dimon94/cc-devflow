@@ -49,6 +49,9 @@ mkdir -p "$(dirname "$resume_index")"
 
 ship_context="$("$script_dir/detect-ship-target.sh" 2>/dev/null || true)"
 current_branch="$(req_act_ship_field "$ship_context" "CURRENT_BRANCH")"
+branch_state="$(req_act_ship_field "$ship_context" "BRANCH_STATE")"
+branch_rescue="$(req_act_ship_field "$ship_context" "BRANCH_RESCUE")"
+rescue_action="$(req_act_ship_field "$ship_context" "RESCUE_ACTION")"
 base_branch="$(req_act_ship_field "$ship_context" "BASE_BRANCH")"
 ship_mode="$(req_act_ship_field "$ship_context" "DECISION_HINT")"
 pr_status="$(req_act_ship_field "$ship_context" "PR_STATUS")"
@@ -172,9 +175,12 @@ find "$REPO_ROOT" -maxdepth 2 -type f \( -iname 'README.md' -o -iname 'README*.m
   echo "## Ops Notes"
   echo
   echo "- Ship mode: $ship_mode"
+  [[ -n "$branch_state" ]] && echo "- Branch state: $branch_state"
   echo "- Spec sync ready: $spec_sync_ready"
   echo "- Current branch: ${current_branch:-unknown}"
   echo "- Base branch: ${base_branch:-unknown}"
+  [[ -n "$branch_rescue" && "$branch_rescue" != "none" ]] && echo "- Branch rescue: $branch_rescue"
+  [[ -n "$rescue_action" ]] && echo "- Rescue action: $rescue_action"
   [[ -n "$pr_status" ]] && echo "- PR status: $pr_status"
   [[ -n "$pr_url" ]] && echo "- PR url: $pr_url"
   echo "- Roadmap progress: $roadmap_sync_summary"
@@ -205,6 +211,11 @@ case "$ship_mode" in
   local-handoff) next_action="Hand off with pr-brief.md and this resume index." ;;
   post-merge-closeout) next_action="Finish release note, backlog writeback, and archive the requirement." ;;
 esac
+if [[ "$branch_rescue" == "create-branch-before-pr" ]]; then
+  next_action="Run ensure-ship-branch.sh, rerun final verification, then push the named branch and create PR / MR from pr-brief.md."
+elif [[ "$branch_rescue" == "create-local-branch-or-handoff" ]]; then
+  next_action="Run ensure-ship-branch.sh before local closeout, or keep local-handoff only if no branch should be created."
+fi
 
 {
   echo "# Resume Index"
@@ -216,6 +227,7 @@ esac
   echo "- Requirement: $requirement_id"
   echo "- Current stage: cc-act"
   echo "- Current task: ship:$ship_mode"
+  [[ -n "$branch_state" ]] && echo "- Branch state: $branch_state"
   if [[ -s "$tmp_followups" ]]; then
     echo "- Ready tasks: follow-up review"
   else
@@ -231,6 +243,8 @@ esac
     echo "- Req-Check passed; see review/report-card.json for evidence."
   fi
   echo "- Ship mode decided as \`$ship_mode\`."
+  [[ -n "$branch_rescue" && "$branch_rescue" != "none" ]] && echo "- Branch rescue: \`$branch_rescue\`."
+  [[ -n "$rescue_action" ]] && echo "- Rescue action: $rescue_action"
   echo "- Roadmap progress: $roadmap_sync_summary"
   [[ -n "$pr_url" ]] && echo "- Active PR / MR: $pr_url"
   echo

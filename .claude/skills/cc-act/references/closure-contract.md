@@ -24,6 +24,10 @@
 
 如果当前状态不属于这 4 类之一，说明事实还没搞清，不准继续 ship。
 
+detached HEAD 是分支事实，不是第 5 种 ship 模式。若远端可用且用户目标是
+继续 / 提交远程 PR，必须先运行 `scripts/ensure-ship-branch.sh --dir <requirement-dir>`
+在当前 HEAD 创建命名分支，再回到 `create-pr` 流程。
+
 ## During Act
 
 1. 如果 Act 阶段修改了代码、测试、验证口径，必须回 `cc-check`
