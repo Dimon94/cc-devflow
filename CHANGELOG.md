@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.9] - 2026-05-11
+
 ### Added
 
 - Added project-level AI postmortem contracts under `devflow/postmortems/`, with `cc-act` writing progressive incident, index, and principle records that include Git evidence and verification facts.
