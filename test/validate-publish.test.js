@@ -196,7 +196,7 @@ describe('validate-publish', () => {
     expect(manifest).toContain('"aiLeverageDecisionLens"');
     expect(manifest).toContain('"humanTeamEffortForFullScope"');
     expect(manifest).toContain('"completeLakeBoundary"');
-    expect(parsedManifest.planningMeta.reqPlanSkillVersion).toBe('3.8.3');
+    expect(parsedManifest.planningMeta.reqPlanSkillVersion).toBe('3.8.4');
     expect(parsedManifest.sourceRoadmap).toBeUndefined();
     expect(parsedManifest.spec).toBeUndefined();
     expect(parsedManifest.status).toBeUndefined();

@@ -1,14 +1,17 @@
 # CC-Plan Skill Changelog
 
+## v3.8.4 - 2026-05-11
+
+- add the Deep Planning Funnel so `cc-plan` must confirm requirement reality, system shape, interface/data contracts, abstraction boundaries, execution architecture, task contracts, and final approval before task generation
+- update full-design, tiny-design, and tasks templates so confirmed architecture, methods, fields, categories, failure paths, source funnel rounds, and task grain survive as durable execution handoff without bloating the manifest
+- require every generated task to carry a task contract with do-not-re-decide items and artifact updates instead of relying on chat memory or loose TODO titles
+
 ## v3.8.3 - 2026-05-11
 
 - slim `task-manifest.json` back to execution graph truth instead of duplicating `planning/design.md` and `planning/tasks.md`
 - retire manifest-only narrative/protocol/status mirrors: top-level `status`, `activePhase`, `sourceRoadmap`, `spec`, `executionProtocol`, `planningMeta.requirementBrief`, `planningMeta.ambiguityGate`, `planningMeta.reviewLoop`, `sourceEvidence[]`, `languageAndDecisions`, `executionDiscipline`, and task-level `completion`
 - keep roadmap/spec state in `change-meta.json` and `devflow/roadmap.json`, task completion commands in `planning/tasks.md`, and execution graph state in `task-manifest.json`
 - add progressive disclosure indexes to design and task templates so lower-frequency context is opened only when needed
-- add the Deep Planning Funnel so `cc-plan` must confirm requirement reality, system shape, interface/data contracts, abstraction boundaries, execution architecture, task contracts, and final approval before task generation
-- update full-design, tiny-design, and tasks templates so confirmed architecture, methods, fields, categories, failure paths, source funnel rounds, and task grain survive as durable execution handoff without bloating the manifest
-- require every generated task to carry a task contract with do-not-re-decide items and artifact updates instead of relying on chat memory or loose TODO titles
 
 ## v3.8.2 - 2026-05-10
 
