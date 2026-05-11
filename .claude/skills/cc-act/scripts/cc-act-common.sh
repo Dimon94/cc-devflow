@@ -34,6 +34,10 @@ req_act_manifest_path() {
   printf '%s/task-manifest.json\n' "$(req_act_planning_dir "$1")"
 }
 
+req_act_change_meta_path() {
+  printf '%s/change-meta.json\n' "$(req_act_change_dir "$1")"
+}
+
 req_act_tasks_path() {
   printf '%s/tasks.md\n' "$(req_act_planning_dir "$1")"
 }
@@ -243,11 +247,22 @@ req_act_collect_touched_files() {
 req_act_collect_spec_files() {
   local manifest="$1"
   local out_file="$2"
+  local change_dir=""
+  local change_meta=""
 
   : > "$out_file"
 
   if [[ -f "$manifest" ]]; then
-    jq -r '(.spec.specFiles // [])[]?' "$manifest" 2>/dev/null | sed '/^$/d' > "$out_file" || true
+    change_dir="$(req_act_change_dir "$(dirname "$manifest")")"
+    change_meta="$(req_act_change_meta_path "$change_dir")"
+  fi
+
+  if [[ -n "$change_meta" && -f "$change_meta" ]]; then
+    jq -r '(.spec.specFiles // [])[]?' "$change_meta" 2>/dev/null | sed '/^$/d' > "$out_file" || true
+  fi
+
+  if [[ -f "$manifest" ]]; then
+    jq -r '(.spec.specFiles // [])[]?' "$manifest" 2>/dev/null | sed '/^$/d' >> "$out_file" || true
   fi
 
   req_act_dedup_file "$out_file"
@@ -262,8 +277,21 @@ req_act_roadmap_sync_summary() {
   local no_op_reason=""
   local updated_files=""
   local existing_files=""
+  local change_dir=""
+  local change_meta=""
 
   if [[ -f "$manifest" ]]; then
+    change_dir="$(req_act_change_dir "$(dirname "$manifest")")"
+    change_meta="$(req_act_change_meta_path "$change_dir")"
+  fi
+
+  if [[ -n "$change_meta" && -f "$change_meta" ]]; then
+    item_id="$(jq -r '.sourceRoadmap.itemId // empty' "$change_meta" 2>/dev/null || true)"
+    sync_status="$(jq -r '.roadmapSync.status // .sourceRoadmap.syncStatus // "not recorded"' "$change_meta" 2>/dev/null || true)"
+    sync_command="$(jq -r '.roadmapSync.command // .sourceRoadmap.syncCommand // empty' "$change_meta" 2>/dev/null || true)"
+    no_op_reason="$(jq -r '.roadmapSync.noOpReason // .sourceRoadmap.noOpReason // empty' "$change_meta" 2>/dev/null || true)"
+    updated_files="$(jq -r '(.roadmapSync.updatedFiles // .sourceRoadmap.updatedFiles // []) | join(", ")' "$change_meta" 2>/dev/null || true)"
+  elif [[ -f "$manifest" ]]; then
     item_id="$(jq -r '.sourceRoadmap.itemId // empty' "$manifest" 2>/dev/null || true)"
     sync_status="$(jq -r '.sourceRoadmap.syncStatus // .roadmapSync.status // "not recorded"' "$manifest" 2>/dev/null || true)"
     sync_command="$(jq -r '.sourceRoadmap.syncCommand // .roadmapSync.command // empty' "$manifest" 2>/dev/null || true)"

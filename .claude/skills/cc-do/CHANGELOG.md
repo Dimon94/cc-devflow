@@ -1,5 +1,10 @@
 # CC-Do Skill Changelog
 
+## v1.6.4 - 2026-05-11
+
+- stop writing derived top-level `task-manifest.json.status`; task completion is owned by `tasks[].status` and aggregate state is derived
+- read capability/spec handoff from `change-meta.json` first when building task context, keeping spec sync state out of task manifests
+
 ## v1.6.3 - 2026-05-10
 
 - require task completion to go through `scripts/mark-task-complete.sh` instead of manual checkbox or manifest edits

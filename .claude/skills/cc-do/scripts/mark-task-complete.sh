@@ -95,12 +95,6 @@ if [[ -n "$MANIFEST" ]]; then
   tmp_manifest="$(mktemp)"
   jq --arg next "$next_task" '
     .currentTaskId = (if $next == "" then null else $next end)
-    | .status = (
-        if ([.tasks[] | select((.status // "pending") != "passed" and (.status // "pending") != "completed" and (.status // "pending") != "done" and (.status // "pending") != "verified")] | length) == 0
-        then "implemented"
-        else "in_progress"
-        end
-      )
   ' "$MANIFEST" > "$tmp_manifest"
   mv "$tmp_manifest" "$MANIFEST"
 fi
