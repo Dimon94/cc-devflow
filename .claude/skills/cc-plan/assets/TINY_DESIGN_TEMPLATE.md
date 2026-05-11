@@ -49,6 +49,20 @@
 - Gate verdict: `pass` | `blocked`
 - Blocked question if any:
 
+## Deep Planning Funnel
+
+| Round | Confirmed answer | Evidence / user answer | Status | Artifact impact |
+|-------|------------------|------------------------|--------|-----------------|
+| Requirement Reality |  |  | confirmed / auto-decided / blocked / not-applicable | Frozen Design Card |
+| System Shape |  |  | confirmed / auto-decided / blocked / not-applicable | Implementation Surface Map |
+| Interface & Data Contract |  |  | confirmed / auto-decided / blocked / not-applicable | Interface Shape / Validation |
+| Abstraction & Encapsulation |  |  | confirmed / auto-decided / blocked / not-applicable | Interface Shape |
+| Execution Architecture |  |  | confirmed / auto-decided / blocked / not-applicable | Validation / Roadmap Sync Gate |
+| Task Contract |  |  | confirmed / auto-decided / blocked / not-applicable | planning/tasks.md / task-manifest.json |
+| Final Approval |  |  | confirmed / blocked | Approval |
+
+> tiny-design 也必须把关键确认落盘。若出现新接口、字段、状态机或跨模块决策，优先升级 `full-design`。
+
 ## External Document Conflicts
 
 - Auto-resolved:
@@ -128,9 +142,15 @@
 
 - Callers:
 - Public operations:
+- Methods / operations:
+- Key fields:
+- Input / output:
+- Error shape:
+- Category / type source:
 - Complexity hidden:
 - Misuse risk:
 - Why this stays simple:
+- Rejected abstraction:
 
 ## Interface Testability
 
@@ -167,6 +187,12 @@
 - Regression test required:
 - Primary check:
 - Secondary checks:
+
+## Task Contract Preview
+
+| Task | User / edge story | File responsibility | Method / interface | Key fields | Failure path | Verification | AFK / HITL |
+|------|-------------------|---------------------|--------------------|------------|--------------|--------------|------------|
+| T001 |  |  |  |  |  |  | AFK / HITL |
 
 ## Roadmap Sync Gate
 

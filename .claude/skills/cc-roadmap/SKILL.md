@@ -1,6 +1,6 @@
 ---
 name: cc-roadmap
-version: 5.2.0
+version: 5.3.0
 description: "Use when defining, resetting, or narrowing project direction, stage order, or backlog priority before a concrete requirement enters the PDCA loop."
 triggers:
   - "帮我定路线图"
@@ -42,6 +42,7 @@ entry_gate:
   - "If the ask contains multiple independent subsystems, decompose them into stages and RM candidates before refining any implementation detail."
   - "Do not decompose implementation tasks while the roadmap is still being decided."
   - "Apply the AI Leverage Route Lens before route approval: name the reachable user/operator, current workaround, human-vs-agent effort, complete-lake boundary, ocean boundary, first success signal, and kill signal."
+  - "Run the Roadmap Funnel Protocol as fixed one-question rounds; every round must either be answered from repo evidence, asked to the user, or explicitly skipped with reason."
   - "If AI makes a complete same-blast-radius route cheap and verifiable, prefer boil-lake over a timid MVP slice."
   - "If the route cannot name a real user/operator and current workaround, mark it as needs-evidence instead of producing implementation-ready RM handoff."
 exit_criteria:
@@ -50,6 +51,7 @@ exit_criteria:
   - "The roadmap shows an explicit RM dependency graph so serial blockers and parallel-ready work are obvious."
   - "The user-approved recommendation is explicit and grounded in current evidence."
   - "Each Stage 1 or ready-for-cc-plan item records an AI Leverage Route Lens verdict: boil-lake, sharp-wedge, needs-evidence, or pivot."
+  - "The Roadmap Funnel Transcript is persisted in `devflow/roadmap.json`, rendered into `devflow/ROADMAP.md`, and each ready RM carries the source funnel rounds, frozen decisions, and remaining blocking question."
 reroutes:
   - when: "The user is already discussing one concrete requirement, bug, or execution task."
     target: "cc-plan"
@@ -240,6 +242,39 @@ Verdict 只允许四种：
 5. 每条路线都要用一个具体 scenario 压测：谁在什么约束下，今天如何绕路，Stage 1 完成后哪一步不再发生。
 6. 硬决策才沉淀：只有 hard to reverse、surprising without context、real trade-off 三者同时成立，才进入 capability spec delta、roadmap decision note 或本次 design decision log。
 
+## Roadmap Funnel Protocol
+
+路线图必须像 office-hours 一样固定推进多轮，但输出必须是 source-neutral 的 `cc-roadmap` 产物，不暴露外部来源。
+
+每轮只允许处理一个 route-changing unknown。能从仓库证据回答就写 `answered-by-evidence`；不能回答才问用户；用户催促跳过时最多保留 2 个最关键问题，然后进入 premise challenge 和 alternatives。每个问题都必须给推荐答案、证据、反对时会改变的路线，并在回答后更新 `Roadmap Funnel Transcript`。
+
+固定轮次：
+
+1. `F0 Direction Mode`：确认项目目标模式，说明为什么不是其它模式。
+2. `F1 Demand / Operator Reality`：确认真实用户或操作者，以及他们今天是否真的痛。
+3. `F2 Status Quo`：确认现状 workaround、成本、失败方式；没有 workaround 默认 `needs-evidence`。
+4. `F3 Specific Human / Sponsor`：把类别词压成可命名角色、具体约束、职业/组织后果。
+5. `F4 Narrowest Wedge / Lake Boundary`：比较最窄 wedge、完整 same-blast-radius lake、ocean boundary。
+6. `F5 Observation / Feedback Signal`：确认看过真实使用、失败日志、运营证据或可复现实验；没有观察就写 Stage 1 observation task。
+7. `F6 Future Fit`：确认 6-12 个月后为什么更需要这条路，而不是只靠今天的热词。
+8. `F7 Premise Challenge`：把本轮隐含前提写成 2-4 条，逐条确认或修正。
+9. `F8 Alternatives`：至少给 2 条路线，非平凡项目给 3 条；必须包含最小路径与理想架构路径。
+10. `F9 Route Approval`：冻结推荐路线、拒绝路线、第一成功信号、kill signal、下一批 ready RM。
+
+STOP 规则：
+
+- 每次需要用户判断时只问一个 `D<N> - <decision title>`。
+- 选项只用 `A` / `B` / `C`，推荐项必须标 `(recommended)`。
+- 问完必须停止等待，不能同一轮继续生成最终 roadmap。
+- 用户回答后，先更新 transcript，再决定是否进入下一轮。
+
+产物规则：
+
+- `devflow/roadmap.json.context.roadmapFunnel.rounds[]` 记录每轮 `id`、`question`、`answerSource`、`answer`、`evidence`、`decisionImpact`、`status`。
+- `devflow/ROADMAP.md` 必须渲染 `## Roadmap Funnel Transcript`，让后续读者知道路线不是拍脑袋。
+- `devflow/BACKLOG.md` 的 ready RM 必须记录 `Source funnel rounds`、`Frozen decisions`、`Do not re-decide`、`Remaining blocking question`。
+- 没有闭合 `F7` 和 `F8` 时，不允许把任何 RM 标成 ready for `cc-plan`，除非用户给出已成形且有证据的计划；即便如此也要把跳过理由写入 transcript。
+
 ## Founder Advice Guardrail
 
 创业建议只能服务于 roadmap 质量，不是推广内容。遇到 `founder-business` 或 `internal-company`：
@@ -319,13 +354,15 @@ Verdict 只允许四种：
 1. 没有 `Context Snapshot`，不准给路线推荐。
 2. 没有 project direction mode、planning posture、evidence maturity 和 framing check，不准给路线推荐。
 3. 没有 native language / durable decision scan，不准给路线推荐；如果缺少 `devflow/specs/` 或历史决策材料，写成 `not present`，不要假装已对齐。
-4. 没有 2-3 条路线对比，不准直接拍脑袋定主线。
-5. 没有 exit signal / kill signal / non-goals，不算阶段冻结。
-6. 没有明确成功信号和下一决策，不准把事项放进 `Ready For Req-Plan`。
-7. developer-facing / operator-facing item 没有 target user、time to first value 或 adoption bottleneck，不准标成 ready。
-8. 没有 `RM dependency graph` 或 parallel-ready wave，不准宣称事项可以并发推进。
-9. 没有独立子系统拆分判断，不准把大而混杂的方向伪装成单一主线。
-10. 没有用户批准，不准把 roadmap item 下放到 `cc-plan`。
+4. 没有 `Roadmap Funnel Transcript`，不准给路线推荐。
+5. 没有 `F7 Premise Challenge` 和 `F8 Alternatives`，不准把事项标成 ready。
+6. 没有 2-3 条路线对比，不准直接拍脑袋定主线。
+7. 没有 exit signal / kill signal / non-goals，不算阶段冻结。
+8. 没有明确成功信号和下一决策，不准把事项放进 `Ready For Req-Plan`。
+9. developer-facing / operator-facing item 没有 target user、time to first value 或 adoption bottleneck，不准标成 ready。
+10. 没有 `RM dependency graph` 或 parallel-ready wave，不准宣称事项可以并发推进。
+11. 没有独立子系统拆分判断，不准把大而混杂的方向伪装成单一主线。
+12. 没有用户批准，不准把 roadmap item 下放到 `cc-plan`。
 
 ## Review Loop
 

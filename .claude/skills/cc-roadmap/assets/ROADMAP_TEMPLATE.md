@@ -53,6 +53,28 @@
 | Feasibility |  | High / Med / Low |  |  |
 | Distribution |  | High / Med / Low |  |  |
 
+## Roadmap Funnel Transcript
+
+| Round | Question | Answer source | Answer / decision | Evidence | Decision impact | Status |
+|-------|----------|---------------|-------------------|----------|-----------------|--------|
+| F0 Direction Mode |  | repo-evidence / user-answer / skipped |  |  |  | pending |
+| F1 Demand / Operator Reality |  | repo-evidence / user-answer / skipped |  |  |  | pending |
+| F2 Status Quo |  | repo-evidence / user-answer / skipped |  |  |  | pending |
+| F3 Specific Human / Sponsor |  | repo-evidence / user-answer / skipped |  |  |  | pending |
+| F4 Narrowest Wedge / Lake Boundary |  | repo-evidence / user-answer / skipped |  |  |  | pending |
+| F5 Observation / Feedback Signal |  | repo-evidence / user-answer / skipped |  |  |  | pending |
+| F6 Future Fit |  | repo-evidence / user-answer / skipped |  |  |  | pending |
+| F7 Premise Challenge |  | repo-evidence / user-answer / skipped |  |  |  | pending |
+| F8 Alternatives |  | repo-evidence / user-answer / skipped |  |  |  | pending |
+| F9 Route Approval |  | repo-evidence / user-answer / skipped |  |  |  | pending |
+
+- Premises confirmed:
+- Premises rejected / revised:
+- Alternatives reviewed:
+- Approved route:
+- Open concerns:
+- Skipped rounds and reasons:
+
 ## AI Leverage Route Lens
 
 - Real user / operator:

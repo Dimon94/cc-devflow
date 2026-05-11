@@ -7,6 +7,7 @@ const {
   collectExternalBestPracticeErrors,
   collectSlimManifestErrors,
   validateArtifactOwnershipContracts,
+  validateCcActCommitGuidelines,
   ensureStringArray
 } = require('../scripts/validate-publish');
 
@@ -278,6 +279,14 @@ describe('validate-publish', () => {
     expect(roadmap).toContain('Verdict: `boil-lake` | `sharp-wedge` | `needs-evidence` | `pivot`');
     expect(tracking).toContain('"aiLeverageRouteLens"');
     expect(tracking).toContain('"completeLakeBoundary"');
+  });
+
+  test('cc-act commit guidelines require detailed Chinese commit records', () => {
+    const errors = [];
+
+    validateCcActCommitGuidelines(errors);
+
+    expect(errors).toEqual([]);
   });
 
   test('rejects invalid external best-practice handoff metadata', () => {

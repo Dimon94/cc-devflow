@@ -27,6 +27,10 @@
 ## Adoption Handoff
 
 - Project direction mode:
+- Source funnel rounds:
+- Frozen decisions:
+- Do not re-decide:
+- Remaining blocking question:
 - Direction-specific first question:
 - Founder / builder / infra guardrail:
 - Planning posture:
@@ -56,6 +60,10 @@
   - Expected spec delta:
   - Open risks:
   - First planning question:
+  - Source funnel rounds:
+  - Frozen decisions:
+  - Do not re-decide:
+  - Remaining blocking question:
   - Evidence maturity:
   - Target developer / operator:
   - Time to first value:

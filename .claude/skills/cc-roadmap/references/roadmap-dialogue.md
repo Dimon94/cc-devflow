@@ -3,28 +3,27 @@
 ## Order
 
 0. 先做 `Context Snapshot`：现有 roadmap / backlog、capability specs、历史 design/analysis、最近提交、forcing functions、项目语言 / durable decisions
-1. 先判断 project direction mode：founder-business / internal-company / hackathon-demo / open-source-research / learning / side-project / infrastructure / recovery
-2. 用户是谁
-3. 今天靠什么笨办法活着
-4. 最强需求证据是什么
-5. 为什么现在必须解决
-6. deadline / capacity / dependency / distribution 约束是什么
-7. 当前最大的 adoption / trust / delivery 卡点是什么
-8. 核心术语是否已有 canonical definition，是否和现有 capability spec / roadmap decision 冲突
-9. 最窄突破口是什么
-10. 6-12 个月后会长成什么
-11. 给出 2-3 条路线图形状并明确推荐
-12. 冻结 1-3 个阶段，写 exit signal / kill signal / non-goals
-13. 画出 `RM dependency graph`，标出串行主链和 parallel-ready wave
-14. 标出哪些事项真的 ready for `cc-plan`
+1. `F0 Direction Mode`：project direction mode，为什么不是其它模式
+2. `F1 Demand / Operator Reality`：用户是谁，最强需求或运营证据是什么
+3. `F2 Status Quo`：今天靠什么笨办法活着，成本和失败方式是什么
+4. `F3 Specific Human / Sponsor`：具体人、具体角色、具体组织后果
+5. `F4 Narrowest Wedge / Lake Boundary`：最窄突破口、完整 lake、ocean boundary
+6. `F5 Observation / Feedback Signal`：真实观察、运行证据、demo 使用或待补证据任务
+7. `F6 Future Fit`：6-12 个月后为什么更需要它
+8. `F7 Premise Challenge`：核心前提、canonical language、capability/spec 冲突
+9. `F8 Alternatives`：给出 2-3 条路线图形状并明确推荐
+10. `F9 Route Approval`：冻结 1-3 个阶段、dependency graph、parallel wave、ready RM
 
 ## Question Rules
 
 - 一次只推进一个关键未知点
 - 每个问题附带推荐答案、证据来源，以及用户反对时会改变哪条路线
+- 问题编号使用 `D<N> - <decision title>`；选项只用 `A` / `B` / `C`，推荐项标 `(recommended)`
+- 每轮回答必须落入 `Roadmap Funnel Transcript`
 - 能从 repo / capability spec / roadmap / design / git history 得到答案时先查证，不问用户
 - 没证据时明确写 assumption
 - 用户没批准前，不把事项偷下放成 requirement
+- 用户催促跳过时，最多补问 2 个关键问题，但不能跳过 `F7 Premise Challenge` 和 `F8 Alternatives`
 
 ## Project Direction Modes
 
@@ -54,3 +53,4 @@
 - backlog 只收下一轮真会进入 `cc-plan` 的事项
 - ready 项必须带成功信号、下一决策、`Depends On`、`Parallel With`
 - ready 项必须带 canonical terms、capability spec context 或明确的 language / decision conflict
+- ready 项必须带 Source funnel rounds、Frozen decisions、Do not re-decide、Remaining blocking question

@@ -407,6 +407,26 @@ function validateCcPlanPlanningContracts(errors) {
     ['cc-plan planning-contract.md', planningContract, 'AI Leverage Decision Lens 必须在任务生成前闭合']
   ];
 
+  const deepPlanningSnippets = [
+    ['cc-plan SKILL.md', skill, '## Deep Planning Funnel'],
+    ['cc-plan SKILL.md', skill, 'Requirement Reality Round'],
+    ['cc-plan DESIGN_TEMPLATE.md', fullDesign, '## Deep Planning Funnel'],
+    ['cc-plan DESIGN_TEMPLATE.md', fullDesign, '## Task Contract Preview'],
+    ['cc-plan TINY_DESIGN_TEMPLATE.md', tinyDesign, '## Deep Planning Funnel'],
+    ['cc-plan TINY_DESIGN_TEMPLATE.md', tinyDesign, '## Task Contract Preview'],
+    ['cc-plan TASKS_TEMPLATE.md', tasks, 'Deep Planning Funnel:'],
+    ['cc-plan TASKS_TEMPLATE.md', tasks, '## Task Contract Matrix'],
+    ['cc-plan TASKS_TEMPLATE.md', tasks, 'Contract: user story'],
+    ['cc-plan TASKS_TEMPLATE.md', tasks, 'Do not re-decide:'],
+    ['cc-plan TASKS_TEMPLATE.md', tasks, 'Artifact updates:'],
+    ['cc-plan TASK_MANIFEST_TEMPLATE.json', fs.readFileSync(manifestPath, 'utf8'), '"contract"'],
+    ['cc-plan TASK_MANIFEST_TEMPLATE.json', fs.readFileSync(manifestPath, 'utf8'), '"sourceFunnelRounds"'],
+    ['cc-plan TASK_MANIFEST_TEMPLATE.json', fs.readFileSync(manifestPath, 'utf8'), '"doNotRedecide"'],
+    ['cc-plan TASK_MANIFEST_TEMPLATE.json', fs.readFileSync(manifestPath, 'utf8'), '"artifactUpdates"'],
+    ['cc-plan planning-contract.md', planningContract, 'Deep Planning Funnel 必须在任务生成前闭合'],
+    ['cc-plan planning-contract.md', planningContract, '没有 task contract 的任务不允许交给 `cc-do`']
+  ];
+
   for (const [label, content, snippet] of requiredSnippets) {
     if (!content.includes(snippet)) {
       errors.push(`${label} missing decision-question snippet: ${snippet}`);
@@ -416,6 +436,12 @@ function validateCcPlanPlanningContracts(errors) {
   for (const [label, content, snippet] of aiLeverageSnippets) {
     if (!content.includes(snippet)) {
       errors.push(`${label} missing ai-leverage-decision snippet: ${snippet}`);
+    }
+  }
+
+  for (const [label, content, snippet] of deepPlanningSnippets) {
+    if (!content.includes(snippet)) {
+      errors.push(`${label} missing deep-planning-funnel snippet: ${snippet}`);
     }
   }
 
@@ -511,7 +537,10 @@ function validateArtifactOwnershipContracts(errors) {
 
 function validateCcRoadmapContracts(errors) {
   const skill = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-roadmap/SKILL.md'), 'utf8');
+  const playbook = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-roadmap/PLAYBOOK.md'), 'utf8');
   const roadmap = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-roadmap/assets/ROADMAP_TEMPLATE.md'), 'utf8');
+  const backlog = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-roadmap/assets/BACKLOG_TEMPLATE.md'), 'utf8');
+  const dialogue = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-roadmap/references/roadmap-dialogue.md'), 'utf8');
   const tracking = JSON.parse(
     fs.readFileSync(path.join(ROOT, '.claude/skills/cc-roadmap/assets/TRACKING_TEMPLATE.json'), 'utf8')
   );
@@ -520,7 +549,15 @@ function validateCcRoadmapContracts(errors) {
     ['cc-roadmap SKILL.md', skill, '## AI Leverage Route Lens'],
     ['cc-roadmap SKILL.md', skill, '`boil-lake`：已有真实用户'],
     ['cc-roadmap ROADMAP_TEMPLATE.md', roadmap, '## AI Leverage Route Lens'],
-    ['cc-roadmap ROADMAP_TEMPLATE.md', roadmap, 'Verdict: `boil-lake` | `sharp-wedge` | `needs-evidence` | `pivot`']
+    ['cc-roadmap ROADMAP_TEMPLATE.md', roadmap, 'Verdict: `boil-lake` | `sharp-wedge` | `needs-evidence` | `pivot`'],
+    ['cc-roadmap SKILL.md', skill, '## Roadmap Funnel Protocol'],
+    ['cc-roadmap SKILL.md', skill, 'F7 Premise Challenge'],
+    ['cc-roadmap SKILL.md', skill, 'F8 Alternatives'],
+    ['cc-roadmap PLAYBOOK.md', playbook, '## Roadmap Funnel Protocol'],
+    ['cc-roadmap ROADMAP_TEMPLATE.md', roadmap, '## Roadmap Funnel Transcript'],
+    ['cc-roadmap BACKLOG_TEMPLATE.md', backlog, 'Source funnel rounds:'],
+    ['cc-roadmap BACKLOG_TEMPLATE.md', backlog, 'Do not re-decide:'],
+    ['cc-roadmap roadmap-dialogue.md', dialogue, 'F9 Route Approval']
   ];
 
   for (const [label, content, snippet] of requiredSnippets) {
@@ -534,6 +571,93 @@ function validateCcRoadmapContracts(errors) {
   }
   if (!Object.prototype.hasOwnProperty.call(tracking?.context?.aiLeverageRouteLens || {}, 'completeLakeBoundary')) {
     errors.push('cc-roadmap TRACKING_TEMPLATE.json missing context.aiLeverageRouteLens.completeLakeBoundary');
+  }
+  if (!tracking?.context?.roadmapFunnel) {
+    errors.push('cc-roadmap TRACKING_TEMPLATE.json missing context.roadmapFunnel');
+  }
+  if (!Array.isArray(tracking?.context?.roadmapFunnel?.rounds)) {
+    errors.push('cc-roadmap TRACKING_TEMPLATE.json context.roadmapFunnel.rounds must be an array');
+  }
+  const currentRoadmapVersion = readSkillVersion('cc-roadmap');
+  if (tracking?.meta?.skillVersion !== currentRoadmapVersion) {
+    errors.push(`cc-roadmap TRACKING_TEMPLATE.json meta.skillVersion must be ${currentRoadmapVersion}`);
+  }
+}
+
+function validateCcInvestigateContracts(errors) {
+  const skill = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-investigate/SKILL.md'), 'utf8');
+  const playbook = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-investigate/PLAYBOOK.md'), 'utf8');
+  const analysis = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-investigate/assets/ANALYSIS_TEMPLATE.md'), 'utf8');
+  const tasks = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-investigate/assets/TASKS_TEMPLATE.md'), 'utf8');
+  const manifestPath = path.join(ROOT, '.claude/skills/cc-investigate/assets/TASK_MANIFEST_TEMPLATE.json');
+  const manifestText = fs.readFileSync(manifestPath, 'utf8');
+  const contract = fs.readFileSync(
+    path.join(ROOT, '.claude/skills/cc-investigate/references/investigation-contract.md'),
+    'utf8'
+  );
+
+  const requiredSnippets = [
+    ['cc-investigate SKILL.md', skill, '## Root Cause Proof Ladder'],
+    ['cc-investigate SKILL.md', skill, 'First bad state'],
+    ['cc-investigate SKILL.md', skill, 'Counterfactual proof'],
+    ['cc-investigate PLAYBOOK.md', playbook, '## Root Cause Proof Ladder'],
+    ['cc-investigate ANALYSIS_TEMPLATE.md', analysis, '## Root Cause Proof Ladder'],
+    ['cc-investigate ANALYSIS_TEMPLATE.md', analysis, 'First bad state:'],
+    ['cc-investigate TASKS_TEMPLATE.md', tasks, 'Root Cause Proof Ladder:'],
+    ['cc-investigate TASKS_TEMPLATE.md', tasks, 'Do not repair symptom site unless analysis proves it is the original trigger'],
+    ['cc-investigate TASK_MANIFEST_TEMPLATE.json', manifestText, '"rootCauseProof"'],
+    ['cc-investigate TASK_MANIFEST_TEMPLATE.json', manifestText, '"firstBadState"'],
+    ['cc-investigate TASK_MANIFEST_TEMPLATE.json', manifestText, '"counterfactualProof"'],
+    ['cc-investigate investigation-contract.md', contract, '## Root Cause Proof Ladder']
+  ];
+
+  for (const [label, content, snippet] of requiredSnippets) {
+    if (!content.includes(snippet)) {
+      errors.push(`${label} missing root-cause-proof snippet: ${snippet}`);
+    }
+  }
+
+  const manifest = JSON.parse(manifestText);
+  const currentInvestigateVersion = readSkillVersion('cc-investigate');
+  if (manifest?.planningMeta?.ccInvestigateSkillVersion !== currentInvestigateVersion) {
+    errors.push(
+      `cc-investigate TASK_MANIFEST_TEMPLATE.json planningMeta.ccInvestigateSkillVersion must be ${currentInvestigateVersion}`
+    );
+  }
+  if (!manifest?.investigationMeta?.rootCauseProof) {
+    errors.push('cc-investigate TASK_MANIFEST_TEMPLATE.json missing investigationMeta.rootCauseProof');
+  }
+}
+
+function validateCcActCommitGuidelines(errors) {
+  const guidelines = fs.readFileSync(
+    path.join(ROOT, '.claude/skills/cc-act/references/git-commit-guidelines.md'),
+    'utf8'
+  );
+
+  const requiredSnippets = [
+    ['cc-act git-commit-guidelines.md', guidelines, '## Commit Record Contract'],
+    ['cc-act git-commit-guidelines.md', guidelines, '中文项目输出中文 commit 文本'],
+    ['cc-act git-commit-guidelines.md', guidelines, '问题:'],
+    ['cc-act git-commit-guidelines.md', guidelines, '变更:'],
+    ['cc-act git-commit-guidelines.md', guidelines, '原因:'],
+    ['cc-act git-commit-guidelines.md', guidelines, '验证:'],
+    ['cc-act git-commit-guidelines.md', guidelines, '风险:'],
+    ['cc-act git-commit-guidelines.md', guidelines, '关联:'],
+    ['cc-act git-commit-guidelines.md', guidelines, 'Commit plan 模板'],
+    ['cc-act git-commit-guidelines.md', guidelines, '根因:'],
+    ['cc-act git-commit-guidelines.md', guidelines, 'Footer Trailers'],
+    ['cc-act git-commit-guidelines.md', guidelines, 'CC-Act Enforcement']
+  ];
+
+  for (const [label, content, snippet] of requiredSnippets) {
+    if (!content.includes(snippet)) {
+      errors.push(`${label} missing commit-guideline snippet: ${snippet}`);
+    }
+  }
+
+  if (guidelines.includes('Problem:\n- <')) {
+    errors.push('cc-act git-commit-guidelines.md must not use English body headings in templates');
   }
 }
 
@@ -888,6 +1012,8 @@ function main() {
   validateInventoryParity(errors);
   validateCcRoadmapContracts(errors);
   validateCcPlanPlanningContracts(errors);
+  validateCcInvestigateContracts(errors);
+  validateCcActCommitGuidelines(errors);
   validateArtifactOwnershipContracts(errors);
   validatePublicSkillContracts(errors);
   validateExampleBindings(errors);
@@ -913,5 +1039,6 @@ module.exports = {
   collectExternalBestPracticeErrors,
   collectSlimManifestErrors,
   validateArtifactOwnershipContracts,
+  validateCcActCommitGuidelines,
   ensureStringArray
 };

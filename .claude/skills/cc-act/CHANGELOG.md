@@ -1,5 +1,11 @@
 # CC-Act Skill Changelog
 
+## v1.8.5 - 2026-05-11
+
+- expand `references/git-commit-guidelines.md` from title-only guidance into a structured commit-record contract with problem, change, rationale, validation, risk, and refs sections
+- require Chinese commit subjects and body text for Chinese output contexts while keeping the Conventional Commits `type(scope)` prefix machine-readable
+- add type-specific commit body templates so fixes carry root cause, tests carry real seam evidence, and docs/tooling commits explain validation and risk instead of shipping one-line summaries
+
 ## v1.8.4 - 2026-05-11
 
 - prefer `change-meta.json` for roadmap sync and spec file summaries so `task-manifest.json` stays focused on execution state

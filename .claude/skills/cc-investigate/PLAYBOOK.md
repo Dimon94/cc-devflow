@@ -23,6 +23,7 @@
 10. diagnose-only 只能输出根因、owner、风险和 next action，不能把未修复状态标成完成。
 11. workflow forensics 先分类 artifact / git / state / tool / permission / process failure，再决定是否进入修复。
 12. 退出前必须跑 Roadmap Sync Gate：`implementation drift`、`missing spec truth`、`roadmap mismatch` 三种结论都要让 source RM 的状态和 next action 跟上。
+13. Root Cause Proof Ladder 必须证明 symptom site、first bad state、violated contract、original trigger、counterfactual proof 和 escape reason。
 
 ## Iron Law
 
@@ -31,6 +32,19 @@ NO REPAIR WITHOUT A FROZEN ROOT-CAUSE CONTRACT
 ```
 
 root-cause contract 至少包含：稳定复现或缩小后的可验证症状、被破坏的代码 / 配置 / 数据 / 依赖契约、已证伪假设、最小修复边界。
+
+## Root Cause Proof Ladder
+
+根因要从“看到错误的地方”追到“错误第一次被制造的地方”：
+
+1. `L1 Symptom Site`：用户看到的失败。
+2. `L2 First Bad State`：第一个坏字段、坏 artifact、坏队列消息、坏配置或坏状态。
+3. `L3 Violated Contract`：被破坏的 schema、invariant、state transition、权限边界或协议。
+4. `L4 Original Trigger`：制造坏状态的用户动作、命令、事件、recent diff、配置或外部响应。
+5. `L5 Counterfactual Proof`：恢复 contract 或替换输入后，症状变化的实际观察。
+6. `L6 Escape Reason`：为什么测试、类型、review、监控或 artifact gate 没挡住。
+
+缺 `L2`、`L4` 或 `L5` 时，`analysis.md` 只能写 `needs-more-evidence`、`Evidence Request` 或 reroute，不能生成 `cc-do` repair task。
 
 ## Required Outputs
 
@@ -91,6 +105,7 @@ root-cause contract 至少包含：稳定复现或缩小后的可验证症状、
 
 - Boundary Probe Matrix：component boundary、input observed、output observed、config/env observed、state observed、verdict
 - Backward Trace Chain：immediate failure site、caller chain、bad value origin、original trigger、why symptom-site fix is rejected
+- Root Cause Proof Ladder：symptom site、first bad state、violated contract、original trigger、counterfactual proof、escape reason
 - Reference Comparison：similar working example、broken path、differences accepted / ruled out
 - Diagnostic Instrumentation Plan：probe tag、probe location、question answered、command、expected signal、cleanup requirement
 - Feedback Loop Contract：loop type、command、expected / actual signal、symptom match、runtime、determinism、failure rate、sharpening plan
