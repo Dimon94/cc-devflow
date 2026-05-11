@@ -223,6 +223,14 @@ npm run verify:publish
 
 The main contributor guide is [`CONTRIBUTING.md`](./CONTRIBUTING.md). It explains the public surface rules, local CLI smoke tests, documentation rules, and PR expectations.
 
+## Discussion
+
+Scan the QR code to join the cc-devflow WeChat group for feedback, usage notes, and feature requests.
+
+<img src="./docs/assets/wechat-group-qr.jpg" alt="cc-devflow WeChat group QR code" width="320" />
+
+If the QR code expires, please open an issue so the maintainers can refresh it.
+
 ## Community
 
 - Star the project if the workflow is useful: [GitHub stars](https://github.com/Dimon94/cc-devflow/stargazers)
