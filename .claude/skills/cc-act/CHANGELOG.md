@@ -1,5 +1,10 @@
 # CC-Act Skill Changelog
 
+## v1.8.4 - 2026-05-11
+
+- prefer `change-meta.json` for roadmap sync and spec file summaries so `task-manifest.json` stays focused on execution state
+- keep backward-compatible manifest fallback for older change folders while preserving one owner for roadmap/spec status
+
 ## v1.8.3 - 2026-05-11
 
 - add `ensure-ship-branch.sh` so detached HEAD closeouts can create a named branch and continue toward `create-pr`

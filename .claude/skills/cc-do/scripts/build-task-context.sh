@@ -85,11 +85,15 @@ completed_tasks="$(jq -r '
 ready_tasks="$(echo "$ready_json" | jq -r '.readyTasks[]?.id')"
 running_tasks="$(echo "$ready_json" | jq -r '.runningTasks[]?.id')"
 active_phase="$(echo "$ready_json" | jq -r '.activePhase // "unknown"')"
-primary_capability="$(jq -r '.spec.primaryCapability // empty' "$manifest" 2>/dev/null || true)"
-secondary_capabilities="$(jq -r '(.spec.secondaryCapabilities // [])[]?' "$manifest" 2>/dev/null || true)"
-spec_files="$(jq -r '(.spec.specFiles // [])[]?' "$manifest" 2>/dev/null || true)"
-expected_delta="$(jq -r '(.spec.expectedDelta // [])[]?' "$manifest" 2>/dev/null || true)"
-sync_status="$(jq -r '.spec.syncStatus // "unknown"' "$manifest" 2>/dev/null || true)"
+spec_source="$manifest"
+if [[ -f "$change_meta" ]]; then
+  spec_source="$change_meta"
+fi
+primary_capability="$(jq -r '.spec.primaryCapability // empty' "$spec_source" 2>/dev/null || true)"
+secondary_capabilities="$(jq -r '(.spec.secondaryCapabilities // [])[]?' "$spec_source" 2>/dev/null || true)"
+spec_files="$(jq -r '(.spec.specFiles // [])[]?' "$spec_source" 2>/dev/null || true)"
+expected_delta="$(jq -r '(.spec.expectedDelta // [])[]?' "$spec_source" 2>/dev/null || true)"
+sync_status="$(jq -r '.spec.syncStatus // "unknown"' "$spec_source" 2>/dev/null || true)"
 
 {
   echo "# Task Context"
