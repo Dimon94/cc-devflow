@@ -223,6 +223,14 @@ npm run verify:publish
 
 主要贡献说明见 [`CONTRIBUTING.zh-CN.md`](./CONTRIBUTING.zh-CN.md)，里面包含公开入口规则、本地 CLI 冒烟验证、文档规则和 PR 期望。
 
+## 讨论交流
+
+欢迎扫码加入 cc-devflow 交流 1 群，反馈问题、交流使用体验或提出新功能建议。
+
+<img src="./docs/assets/wechat-group-qr.jpg" alt="cc-devflow 交流 1 群微信群二维码" width="320" />
+
+如果二维码过期，请在 issue 中提醒维护者更新。
+
 ## 社区与贡献
 
 - 如果这个工作流对你有用，可以给项目一个 Star：[GitHub stars](https://github.com/Dimon94/cc-devflow/stargazers)
