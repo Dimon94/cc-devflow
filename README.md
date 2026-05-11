@@ -14,13 +14,42 @@ CC-DevFlow is a small, explicit workflow system for agent coding. It gives an AI
 ```text
 cc-roadmap
 
+PR Harness: cc-next -> cc-dev -> cc-pr-review -> cc-pr-land
+
 PDCA: cc-plan        -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
 IDCA: cc-investigate -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
 ```
 
+```mermaid
+flowchart TD
+  Roadmap["cc-roadmap\nProduct direction and staged truth"] --> Next["cc-next\nPick next ready Goal Packet"]
+  Next --> Dev["cc-dev\nDrive current worktree to PR"]
+
+  Dev --> Route{"Route"}
+  Route -->|Feature or change| Plan["cc-plan\nFreeze scope and tasks"]
+  Route -->|Bug or regression| Investigate["cc-investigate\nFreeze root cause and repair boundary"]
+
+  Plan --> PlanReview["cc-review\nOptional plan review"]
+  Investigate --> PlanReview
+  PlanReview --> Do["cc-do\nImplement with evidence"]
+  Plan --> Do
+  Investigate --> Do
+
+  Do --> ImplReview["cc-review\nOptional implementation review"]
+  ImplReview --> Check["cc-check\nFresh verification verdict"]
+  Do --> Check
+  Check --> Act["cc-act\nCreate or update remote PR"]
+  Act --> PRReview["cc-pr-review\nSeparate PR review session"]
+  PRReview --> PRLand["cc-pr-land\nRebase, land, prove main parity"]
+  PRReview -->|Fixes required| Dev
+  PRLand --> Main["main\nLocal and remote parity"]
+```
+
+![CC-DevFlow PR Harness visual workflow](./docs/assets/cc-devflow-pr-harness-en.svg)
+
 ## Why cc-devflow
 
-- **Small public surface**: six core workflow skills, one optional deep review skill, plus a CLI for installation and platform adaptation.
+- **Small public surface**: core workflow skills, a PR Harness lane, one optional deep review skill, plus a CLI for installation and platform adaptation.
 - **Evidence before done**: implementation must pass through verification proof before shipping or handoff.
 - **Skill-first distribution**: the public contract lives in `.claude/skills/<skill>/SKILL.md` and `PLAYBOOK.md`, not in hidden runtime behavior.
 - **Multi-platform output**: install once, then adapt for Codex, Cursor, Qwen, Antigravity, and related agent environments.
@@ -56,17 +85,21 @@ Refresh every supported platform output:
 npx cc-devflow@latest adapt --cwd /path/to/your/project --all
 ```
 
-After installation, ask your agent to use the workflow skills directly. Start with `cc-roadmap` for product direction, use `cc-plan` for new work, use `cc-investigate` for bugs, optionally run `cc-review` on complex frozen plans or investigations, then continue through `cc-do`, optional implementation `cc-review`, `cc-check`, and `cc-act`.
+After installation, ask your agent to use the workflow skills directly. Start with `cc-roadmap` for product direction. Use `cc-next` to select the next roadmap-aware target, `cc-dev` to drive the current worktree through PDCA or IDCA until a remote PR is opened, `cc-pr-review` to review that PR in a separate session, and `cc-pr-land` to land reviewed PRs into main. For manual core workflow work, use `cc-plan` for new work, use `cc-investigate` for bugs, optionally run `cc-review` on complex frozen plans or investigations, then continue through `cc-do`, optional implementation `cc-review`, `cc-check`, and `cc-act`.
 
 ## Workflow Skills
 
 | Skill | Use it when | Main output |
 | --- | --- | --- |
 | `cc-roadmap` | You need product direction, staged scope, or backlog order | `devflow/roadmap.json`, `devflow/ROADMAP.md`, deprecated `devflow/BACKLOG.md` |
+| `cc-next` | You need to pick the next roadmap-aware ready target from roadmap and issue truth | one Goal Packet for `cc-dev` |
+| `cc-dev` | A selected objective should be driven in the current worktree to a remote PR | PDCA/IDCA artifacts plus a PR or handoff |
 | `cc-plan` | A feature or change needs scope, design, and task freezing | `planning/design.md`, `planning/tasks.md`, `task-manifest.json` |
 | `cc-investigate` | A bug needs symptom, reproduction, root cause, and repair boundary | `planning/analysis.md`, `planning/tasks.md`, `task-manifest.json` |
 | `cc-do` | Planned or investigated work needs implementation | code, tests, checkpoints, scratch runtime |
 | `cc-review` | Complex plans, investigations, or diffs need optional deep multi-round review before implementation or verification | `cc-review-report.md`, optional `cc-review-findings.json` |
+| `cc-pr-review` | A remote PR needs an independent review session before landing | PR review packet, findings, and landing verdict |
+| `cc-pr-land` | Reviewed PRs need rebase-first landing into main with parity proof | integrated main plus local/remote parity evidence |
 | `cc-check` | Work needs fresh verification evidence | `report-card.json` |
 | `cc-act` | Verified work needs a PR, local handoff, release note, or closeout | one final handoff file |
 
@@ -120,10 +153,14 @@ node bin/cc-devflow-cli.js adapt --cwd /tmp/example-project --platform codex
 
 ```bash
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-roadmap
+npx skills add https://github.com/Dimon94/cc-devflow --skill cc-next
+npx skills add https://github.com/Dimon94/cc-devflow --skill cc-dev
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-plan
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-investigate
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-do
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-review
+npx skills add https://github.com/Dimon94/cc-devflow --skill cc-pr-review
+npx skills add https://github.com/Dimon94/cc-devflow --skill cc-pr-land
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-check
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-act
 ```
@@ -186,10 +223,14 @@ Each shipped skill keeps its runtime contract local:
 The currently distributed skill folders are:
 
 - `.claude/skills/cc-roadmap/`
+- `.claude/skills/cc-next/`
+- `.claude/skills/cc-dev/`
 - `.claude/skills/cc-plan/`
 - `.claude/skills/cc-investigate/`
 - `.claude/skills/cc-do/`
 - `.claude/skills/cc-review/`
+- `.claude/skills/cc-pr-review/`
+- `.claude/skills/cc-pr-land/`
 - `.claude/skills/cc-check/`
 - `.claude/skills/cc-act/`
 - `.claude/skills/cc-spec-init/`
