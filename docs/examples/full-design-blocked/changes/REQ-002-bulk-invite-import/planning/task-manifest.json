@@ -6,63 +6,30 @@
   "requirementId": "REQ-002",
   "requirementVersion": "REQ-002.v2",
   "planningMeta": {
-    "reqPlanSkillVersion": "3.8.2",
+    "reqPlanSkillVersion": "3.8.3",
     "designVersion": "design.v2",
     "approvedAt": null,
-    "approvedBy": null,
     "basedOnOption": "Option B",
-    "requirementBrief": {
-      "problemStatement": "Admins onboarding larger teams need predictable bulk invite behavior for duplicates, invalid rows, and seat limits.",
-      "solutionSummary": "Freeze deterministic CSV row outcomes before executing the bulk invite flow.",
-      "actors": [
-        "workspace admin",
-        "support operator"
-      ],
-      "userStories": [
-        {
-          "id": "US-001",
-          "actor": "workspace admin",
-          "want": "upload a CSV of invite emails",
-          "benefit": "invite many collaborators without one-by-one entry",
-          "acceptance": [
-            "Mixed valid rows produce visible accepted outcomes"
-          ]
-        },
-        {
-          "id": "US-002",
-          "actor": "workspace admin",
-          "want": "see duplicate, invalid, and over-limit row states",
-          "benefit": "understand what happened without support help",
-          "acceptance": [
-            "Every skipped or rejected row has a reason"
-          ]
-        }
-      ],
-      "edgeOrRecoveryStories": [
-        {
-          "id": "US-EDGE-001",
-          "actor": "workspace admin",
-          "boundary": "CSV contains duplicates, invalid emails, or over-limit rows",
-          "desiredOutcome": "safe rows can proceed while bad rows are explained",
-          "acceptance": [
-            "Rule matrix covers duplicate, invalid, and seat-limit cases"
-          ]
-        }
-      ],
-      "implementationDecisions": [
-        "Freeze one row-outcome matrix before execution resumes"
-      ],
-      "testingDecisions": [
-        "Test row semantics through bulk-import rules and the admin upload flow"
-      ],
-      "outOfScope": [
-        "enterprise SCIM provisioning",
-        "background job redesign",
-        "rollback wizard for partial success"
-      ],
-      "furtherNotes": [
-        "Design remains blocked until duplicate and seat-limit semantics are approved"
-      ]
+    "aiLeverageDecisionLens": {
+      "realUserOrOperator": "workspace admin onboarding larger teams",
+      "statusQuoWorkaround": "paste invite emails one by one or track them in spreadsheets",
+      "humanTeamEffortForFullScope": "multiple weeks across product, engineering, billing, and support review",
+      "ccAgentEffortForFullScope": "several hours once row semantics are approved, but unbounded before that",
+      "aiCompressionRatio": "high after semantics freeze, low while the product contract is ambiguous",
+      "completeLakeBoundary": "row classification, admin upload flow, billing-seat checks, and audit mapping after rule approval",
+      "oceanBoundary": "SCIM, background retries, rollback wizard, and unspecified billing semantics",
+      "scopeRecommendation": "sharp-wedge",
+      "costModel": {
+        "agentTime": "medium after rule approval",
+        "humanReviewTime": "high until semantics are approved",
+        "verificationCost": "bulk rules, admin flow, billing, and audit tests",
+        "maintenanceCost": "medium after semantics freeze",
+        "failureCost": "high if billing or audit outcomes drift",
+        "reversibility": "limited once execution semantics ship"
+      },
+      "verdict": "sharp-wedge",
+      "missingEvidenceOrPivotReason": "none at plan approval; cc-check later reopened duplicate, invalid-row, partial-success, and seat-limit semantics before retry or cc-act",
+      "impactOnApprovedDirection": "allow bounded import-path execution, then block final proof if review finds row semantics drift"
     },
     "externalBestPractice": {
       "needed": true,
@@ -172,31 +139,9 @@
         "impact": "cc-do retry and cc-act must stay blocked until this is answered",
         "status": "asked"
       }
-    ],
-    "aiLeverageDecisionLens": {
-      "realUserOrOperator": "workspace admin onboarding larger teams",
-      "statusQuoWorkaround": "paste invite emails one by one or track them in spreadsheets",
-      "humanTeamEffortForFullScope": "multiple weeks across product, engineering, billing, and support review",
-      "ccAgentEffortForFullScope": "several hours once row semantics are approved, but unbounded before that",
-      "aiCompressionRatio": "high after semantics freeze, low while the product contract is ambiguous",
-      "completeLakeBoundary": "row classification, admin upload flow, billing-seat checks, and audit mapping after rule approval",
-      "oceanBoundary": "SCIM, background retries, rollback wizard, and unspecified billing semantics",
-      "scopeRecommendation": "sharp-wedge",
-      "costModel": {
-        "agentTime": "medium after rule approval",
-        "humanReviewTime": "high until semantics are approved",
-        "verificationCost": "bulk rules, admin flow, billing, and audit tests",
-        "maintenanceCost": "medium after semantics freeze",
-        "failureCost": "high if billing or audit outcomes drift",
-        "reversibility": "limited once execution semantics ship"
-      },
-      "verdict": "sharp-wedge",
-      "missingEvidenceOrPivotReason": "none at plan approval; cc-check later reopened duplicate, invalid-row, partial-success, and seat-limit semantics before retry or cc-act",
-      "impactOnApprovedDirection": "allow bounded import-path execution, then block final proof if review finds row semantics drift"
-    }
+    ]
   },
   "currentTaskId": null,
-  "activePhase": null,
   "tasks": [
     {
       "id": "T001",
@@ -260,46 +205,7 @@
         "type": "automated-test",
         "determinism": "deterministic",
         "expectedFailure": "Fails before the behavior exists"
-      },
-      "allowedMocks": [
-        "file upload boundary",
-        "billing / seat limit boundary"
-      ],
-      "testQuality": {
-        "usesPublicInterface": true,
-        "describesBehavior": true,
-        "specStyleName": true,
-        "oneLogicalBehavior": true,
-        "verifiesThroughPublicPath": true,
-        "survivesInternalRefactor": true,
-        "mocksOnlySystemBoundaries": true,
-        "noBulkRed": true
-      },
-      "greenMinimality": {
-        "guard": "Keep the task scoped to its stated verification evidence",
-        "noSpeculativeBranches": true
-      },
-      "completion": {
-        "command": "SCRIPT_ROOT=\".claude/skills/cc-do/scripts\"; if [[ ! -d \"$SCRIPT_ROOT\" && -d \".codex/skills/cc-do/scripts\" ]]; then SCRIPT_ROOT=\".codex/skills/cc-do/scripts\"; fi; bash \"$SCRIPT_ROOT\"/mark-task-complete.sh --manifest docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/task-manifest.json --tasks docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/tasks.md --task T001",
-        "requiredBeforeCompletion": [
-          "verification evidence captured",
-          "checkpoint written",
-          "spec review gate recorded",
-          "code review gate recorded"
-        ],
-        "forbiddenShortcuts": [
-          "manual checkbox edit",
-          "manual manifest status edit",
-          "leaving currentTaskId stale"
-        ]
-      },
-      "refactorCandidates": [
-        "duplication",
-        "long method",
-        "primitive obsession",
-        "naming",
-        "more than three nested branches"
-      ]
+      }
     },
     {
       "id": "T002",
@@ -366,46 +272,7 @@
         "type": "automated-test",
         "determinism": "deterministic",
         "expectedFailure": ""
-      },
-      "allowedMocks": [
-        "file upload boundary",
-        "billing / seat limit boundary"
-      ],
-      "testQuality": {
-        "usesPublicInterface": true,
-        "describesBehavior": true,
-        "specStyleName": true,
-        "oneLogicalBehavior": true,
-        "verifiesThroughPublicPath": true,
-        "survivesInternalRefactor": true,
-        "mocksOnlySystemBoundaries": true,
-        "noBulkRed": true
-      },
-      "greenMinimality": {
-        "guard": "Implement only the code needed to pass the current red behavior",
-        "noSpeculativeBranches": true
-      },
-      "completion": {
-        "command": "SCRIPT_ROOT=\".claude/skills/cc-do/scripts\"; if [[ ! -d \"$SCRIPT_ROOT\" && -d \".codex/skills/cc-do/scripts\" ]]; then SCRIPT_ROOT=\".codex/skills/cc-do/scripts\"; fi; bash \"$SCRIPT_ROOT\"/mark-task-complete.sh --manifest docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/task-manifest.json --tasks docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/tasks.md --task T002",
-        "requiredBeforeCompletion": [
-          "verification evidence captured",
-          "checkpoint written",
-          "spec review gate recorded",
-          "code review gate recorded"
-        ],
-        "forbiddenShortcuts": [
-          "manual checkbox edit",
-          "manual manifest status edit",
-          "leaving currentTaskId stale"
-        ]
-      },
-      "refactorCandidates": [
-        "duplication",
-        "long method",
-        "primitive obsession",
-        "naming",
-        "more than three nested branches"
-      ]
+      }
     },
     {
       "id": "T003",
@@ -471,46 +338,7 @@
         "type": "automated-test",
         "determinism": "deterministic",
         "expectedFailure": "Fails before the behavior exists"
-      },
-      "allowedMocks": [
-        "file upload boundary",
-        "billing / seat limit boundary"
-      ],
-      "testQuality": {
-        "usesPublicInterface": true,
-        "describesBehavior": true,
-        "specStyleName": true,
-        "oneLogicalBehavior": true,
-        "verifiesThroughPublicPath": true,
-        "survivesInternalRefactor": true,
-        "mocksOnlySystemBoundaries": true,
-        "noBulkRed": true
-      },
-      "greenMinimality": {
-        "guard": "Keep the task scoped to its stated verification evidence",
-        "noSpeculativeBranches": true
-      },
-      "completion": {
-        "command": "SCRIPT_ROOT=\".claude/skills/cc-do/scripts\"; if [[ ! -d \"$SCRIPT_ROOT\" && -d \".codex/skills/cc-do/scripts\" ]]; then SCRIPT_ROOT=\".codex/skills/cc-do/scripts\"; fi; bash \"$SCRIPT_ROOT\"/mark-task-complete.sh --manifest docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/task-manifest.json --tasks docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/tasks.md --task T003",
-        "requiredBeforeCompletion": [
-          "verification evidence captured",
-          "checkpoint written",
-          "spec review gate recorded",
-          "code review gate recorded"
-        ],
-        "forbiddenShortcuts": [
-          "manual checkbox edit",
-          "manual manifest status edit",
-          "leaving currentTaskId stale"
-        ]
-      },
-      "refactorCandidates": [
-        "duplication",
-        "long method",
-        "primitive obsession",
-        "naming",
-        "more than three nested branches"
-      ]
+      }
     },
     {
       "id": "T004",
@@ -577,46 +405,7 @@
         "type": "automated-test",
         "determinism": "deterministic",
         "expectedFailure": ""
-      },
-      "allowedMocks": [
-        "file upload boundary",
-        "billing / seat limit boundary"
-      ],
-      "testQuality": {
-        "usesPublicInterface": true,
-        "describesBehavior": true,
-        "specStyleName": true,
-        "oneLogicalBehavior": true,
-        "verifiesThroughPublicPath": true,
-        "survivesInternalRefactor": true,
-        "mocksOnlySystemBoundaries": true,
-        "noBulkRed": true
-      },
-      "greenMinimality": {
-        "guard": "Implement only the code needed to pass the current red behavior",
-        "noSpeculativeBranches": true
-      },
-      "completion": {
-        "command": "SCRIPT_ROOT=\".claude/skills/cc-do/scripts\"; if [[ ! -d \"$SCRIPT_ROOT\" && -d \".codex/skills/cc-do/scripts\" ]]; then SCRIPT_ROOT=\".codex/skills/cc-do/scripts\"; fi; bash \"$SCRIPT_ROOT\"/mark-task-complete.sh --manifest docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/task-manifest.json --tasks docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/tasks.md --task T004",
-        "requiredBeforeCompletion": [
-          "verification evidence captured",
-          "checkpoint written",
-          "spec review gate recorded",
-          "code review gate recorded"
-        ],
-        "forbiddenShortcuts": [
-          "manual checkbox edit",
-          "manual manifest status edit",
-          "leaving currentTaskId stale"
-        ]
-      },
-      "refactorCandidates": [
-        "duplication",
-        "long method",
-        "primitive obsession",
-        "naming",
-        "more than three nested branches"
-      ]
+      }
     },
     {
       "id": "T005",
@@ -687,85 +476,12 @@
         "type": "automated-test",
         "determinism": "deterministic",
         "expectedFailure": ""
-      },
-      "allowedMocks": [
-        "file upload boundary",
-        "billing / seat limit boundary"
-      ],
-      "testQuality": {
-        "usesPublicInterface": true,
-        "describesBehavior": true,
-        "specStyleName": true,
-        "oneLogicalBehavior": true,
-        "verifiesThroughPublicPath": true,
-        "survivesInternalRefactor": true,
-        "mocksOnlySystemBoundaries": true,
-        "noBulkRed": true
-      },
-      "greenMinimality": {
-        "guard": "Keep the task scoped to its stated verification evidence",
-        "noSpeculativeBranches": true
-      },
-      "completion": {
-        "command": "SCRIPT_ROOT=\".claude/skills/cc-do/scripts\"; if [[ ! -d \"$SCRIPT_ROOT\" && -d \".codex/skills/cc-do/scripts\" ]]; then SCRIPT_ROOT=\".codex/skills/cc-do/scripts\"; fi; bash \"$SCRIPT_ROOT\"/mark-task-complete.sh --manifest docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/task-manifest.json --tasks docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/tasks.md --task T005",
-        "requiredBeforeCompletion": [
-          "verification evidence captured",
-          "checkpoint written",
-          "spec review gate recorded",
-          "code review gate recorded"
-        ],
-        "forbiddenShortcuts": [
-          "manual checkbox edit",
-          "manual manifest status edit",
-          "leaving currentTaskId stale"
-        ]
-      },
-      "refactorCandidates": [
-        "duplication",
-        "long method",
-        "primitive obsession",
-        "naming",
-        "more than three nested branches"
-      ]
+      }
     }
   ],
   "metadata": {
     "source": "tasks.md",
     "generatedBy": "docs-example",
     "planVersion": 1
-  },
-  "executionProtocol": {
-    "templateCompliance": {
-      "required": true,
-      "sourceTemplate": "assets/TASKS_TEMPLATE.md",
-      "taskBlockMustInclude": [
-        "Goal",
-        "TDD phase",
-        "Files",
-        "Read first",
-        "Verification",
-        "Evidence",
-        "Test seam",
-        "Public verification path",
-        "Allowed mocks",
-        "Completion"
-      ],
-      "titleOnlyTasks": "forbidden"
-    },
-    "selection": {
-      "sourceOfTruth": "planning/task-manifest.json.currentTaskId",
-      "commandTemplate": "SCRIPT_ROOT=\".claude/skills/cc-do/scripts\"; if [[ ! -d \"$SCRIPT_ROOT\" && -d \".codex/skills/cc-do/scripts\" ]]; then SCRIPT_ROOT=\".codex/skills/cc-do/scripts\"; fi; bash \"$SCRIPT_ROOT\"/select-ready-tasks.sh --manifest docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/task-manifest.json"
-    },
-    "completion": {
-      "manualStatusEdit": "forbidden",
-      "commandTemplate": "SCRIPT_ROOT=\".claude/skills/cc-do/scripts\"; if [[ ! -d \"$SCRIPT_ROOT\" && -d \".codex/skills/cc-do/scripts\" ]]; then SCRIPT_ROOT=\".codex/skills/cc-do/scripts\"; fi; bash \"$SCRIPT_ROOT\"/mark-task-complete.sh --manifest docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/task-manifest.json --tasks docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/tasks.md --task <task-id>",
-      "failurePolicy": "Do not hand-edit status; fix missing checkpoint, review gate, or dependency evidence and rerun the script.",
-      "updates": [
-        "planning/task-manifest.json.tasks[].status",
-        "planning/task-manifest.json.currentTaskId",
-        "planning/task-manifest.json.status",
-        "planning/tasks.md checkbox"
-      ]
-    }
   }
 }

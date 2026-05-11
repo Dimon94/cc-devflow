@@ -3,63 +3,33 @@
   "goal": "Add a one-click copy action to the existing share dialog without changing backend contracts.",
   "createdAt": "2026-04-15T10:00:00.000Z",
   "updatedAt": "2026-04-15T11:10:00.000Z",
-  "status": "verified",
   "requirementId": "REQ-001",
   "requirementVersion": "REQ-001.v1",
-  "sourceRoadmap": {
-    "itemId": "RM-001",
-    "roadmapVersion": "roadmap.v1",
-    "roadmapSkillVersion": "5.2.0",
-    "sourceStage": "Stage 1",
-    "successSignal": "Users can copy the invite link with one click",
-    "killSignal": "The patch requires backend or permission changes",
-    "dependencies": [
-      "Existing share dialog stays intact"
-    ],
-    "nonGoals": [
-      "No invite role redesign",
-      "No share analytics"
-    ]
-  },
   "planningMeta": {
-    "reqPlanSkillVersion": "3.8.2",
+    "reqPlanSkillVersion": "3.8.3",
     "designVersion": "design.v1",
     "approvedAt": "2026-04-15T10:05:00.000Z",
-    "approvedBy": "user",
     "basedOnOption": "Tiny design card",
-    "requirementBrief": {
-      "problemStatement": "Users can see the invite URL, but copying it still requires manual selection.",
-      "solutionSummary": "Add a one-click copy action with lightweight confirmation inside the existing share dialog.",
-      "actors": [
-        "workspace member sharing an invite"
-      ],
-      "userStories": [
-        {
-          "id": "US-001",
-          "actor": "workspace member",
-          "want": "copy the invite link with one click",
-          "benefit": "share it without manually selecting text",
-          "acceptance": [
-            "Dialog behavior test proves the current invite URL is copied"
-          ]
-        }
-      ],
-      "edgeOrRecoveryStories": [],
-      "implementationDecisions": [
-        "Reuse the existing invite URL source and dialog props"
-      ],
-      "testingDecisions": [
-        "Test through the share dialog behavior, not an internal helper"
-      ],
-      "outOfScope": [
-        "invite generation",
-        "role controls",
-        "analytics",
-        "clipboard fallback redesign"
-      ],
-      "furtherNotes": [
-        "Richer copied-state feedback is a separate UX requirement"
-      ]
+    "aiLeverageDecisionLens": {
+      "realUserOrOperator": "workspace member sharing an invite",
+      "statusQuoWorkaround": "manual selection and copy of the visible invite URL",
+      "humanTeamEffortForFullScope": "about half a day for one engineer including test and review",
+      "ccAgentEffortForFullScope": "about 20 minutes for a targeted UI patch plus test update",
+      "aiCompressionRatio": "roughly 10x for this bounded UI slice",
+      "completeLakeBoundary": "copy action, current invite URL source, copied-state feedback, and dialog behavior test",
+      "oceanBoundary": "invite generation, permissions, analytics, or clipboard fallback redesign",
+      "scopeRecommendation": "boil-lake",
+      "costModel": {
+        "agentTime": "low",
+        "humanReviewTime": "low",
+        "verificationCost": "targeted dialog test",
+        "maintenanceCost": "low while scoped to the dialog",
+        "failureCost": "sharing friction remains",
+        "reversibility": "reversible UI patch"
+      },
+      "verdict": "boil-lake",
+      "missingEvidenceOrPivotReason": "",
+      "impactOnApprovedDirection": "cover the full same-dialog copy lake instead of only a happy-path button render"
     },
     "externalBestPractice": {
       "needed": false,
@@ -105,31 +75,9 @@
         "impact": "cc-do keeps implementation inside the share dialog and avoids backend or permission work",
         "status": "answered"
       }
-    ],
-    "aiLeverageDecisionLens": {
-      "realUserOrOperator": "workspace member sharing an invite",
-      "statusQuoWorkaround": "manual selection and copy of the visible invite URL",
-      "humanTeamEffortForFullScope": "about half a day for one engineer including test and review",
-      "ccAgentEffortForFullScope": "about 20 minutes for a targeted UI patch plus test update",
-      "aiCompressionRatio": "roughly 10x for this bounded UI slice",
-      "completeLakeBoundary": "copy action, current invite URL source, copied-state feedback, and dialog behavior test",
-      "oceanBoundary": "invite generation, permissions, analytics, or clipboard fallback redesign",
-      "scopeRecommendation": "boil-lake",
-      "costModel": {
-        "agentTime": "low",
-        "humanReviewTime": "low",
-        "verificationCost": "targeted dialog test",
-        "maintenanceCost": "low while scoped to the dialog",
-        "failureCost": "sharing friction remains",
-        "reversibility": "reversible UI patch"
-      },
-      "verdict": "boil-lake",
-      "missingEvidenceOrPivotReason": "",
-      "impactOnApprovedDirection": "cover the full same-dialog copy lake instead of only a happy-path button render"
-    }
+    ]
   },
   "currentTaskId": null,
-  "activePhase": null,
   "tasks": [
     {
       "id": "T001",
@@ -194,45 +142,7 @@
         "type": "automated-test",
         "determinism": "deterministic",
         "expectedFailure": "Fails before the behavior exists"
-      },
-      "allowedMocks": [
-        "clipboard boundary"
-      ],
-      "testQuality": {
-        "usesPublicInterface": true,
-        "describesBehavior": true,
-        "specStyleName": true,
-        "oneLogicalBehavior": true,
-        "verifiesThroughPublicPath": true,
-        "survivesInternalRefactor": true,
-        "mocksOnlySystemBoundaries": true,
-        "noBulkRed": true
-      },
-      "greenMinimality": {
-        "guard": "Keep the task scoped to its stated verification evidence",
-        "noSpeculativeBranches": true
-      },
-      "completion": {
-        "command": "SCRIPT_ROOT=\".claude/skills/cc-do/scripts\"; if [[ ! -d \"$SCRIPT_ROOT\" && -d \".codex/skills/cc-do/scripts\" ]]; then SCRIPT_ROOT=\".codex/skills/cc-do/scripts\"; fi; bash \"$SCRIPT_ROOT\"/mark-task-complete.sh --manifest docs/examples/pdca-loop/changes/REQ-001-copy-invite-link/planning/task-manifest.json --tasks docs/examples/pdca-loop/changes/REQ-001-copy-invite-link/planning/tasks.md --task T001",
-        "requiredBeforeCompletion": [
-          "verification evidence captured",
-          "checkpoint written",
-          "spec review gate recorded",
-          "code review gate recorded"
-        ],
-        "forbiddenShortcuts": [
-          "manual checkbox edit",
-          "manual manifest status edit",
-          "leaving currentTaskId stale"
-        ]
-      },
-      "refactorCandidates": [
-        "duplication",
-        "long method",
-        "primitive obsession",
-        "naming",
-        "more than three nested branches"
-      ]
+      }
     },
     {
       "id": "T002",
@@ -299,45 +209,7 @@
         "type": "automated-test",
         "determinism": "deterministic",
         "expectedFailure": ""
-      },
-      "allowedMocks": [
-        "clipboard boundary"
-      ],
-      "testQuality": {
-        "usesPublicInterface": true,
-        "describesBehavior": true,
-        "specStyleName": true,
-        "oneLogicalBehavior": true,
-        "verifiesThroughPublicPath": true,
-        "survivesInternalRefactor": true,
-        "mocksOnlySystemBoundaries": true,
-        "noBulkRed": true
-      },
-      "greenMinimality": {
-        "guard": "Implement only the code needed to pass the current red behavior",
-        "noSpeculativeBranches": true
-      },
-      "completion": {
-        "command": "SCRIPT_ROOT=\".claude/skills/cc-do/scripts\"; if [[ ! -d \"$SCRIPT_ROOT\" && -d \".codex/skills/cc-do/scripts\" ]]; then SCRIPT_ROOT=\".codex/skills/cc-do/scripts\"; fi; bash \"$SCRIPT_ROOT\"/mark-task-complete.sh --manifest docs/examples/pdca-loop/changes/REQ-001-copy-invite-link/planning/task-manifest.json --tasks docs/examples/pdca-loop/changes/REQ-001-copy-invite-link/planning/tasks.md --task T002",
-        "requiredBeforeCompletion": [
-          "verification evidence captured",
-          "checkpoint written",
-          "spec review gate recorded",
-          "code review gate recorded"
-        ],
-        "forbiddenShortcuts": [
-          "manual checkbox edit",
-          "manual manifest status edit",
-          "leaving currentTaskId stale"
-        ]
-      },
-      "refactorCandidates": [
-        "duplication",
-        "long method",
-        "primitive obsession",
-        "naming",
-        "more than three nested branches"
-      ]
+      }
     },
     {
       "id": "T003",
@@ -408,87 +280,12 @@
         "type": "automated-test",
         "determinism": "deterministic",
         "expectedFailure": ""
-      },
-      "allowedMocks": [
-        "clipboard boundary"
-      ],
-      "testQuality": {
-        "usesPublicInterface": true,
-        "describesBehavior": true,
-        "specStyleName": true,
-        "oneLogicalBehavior": true,
-        "verifiesThroughPublicPath": true,
-        "survivesInternalRefactor": true,
-        "mocksOnlySystemBoundaries": true,
-        "noBulkRed": true
-      },
-      "greenMinimality": {
-        "guard": "Keep the task scoped to its stated verification evidence",
-        "noSpeculativeBranches": true
-      },
-      "completion": {
-        "command": "SCRIPT_ROOT=\".claude/skills/cc-do/scripts\"; if [[ ! -d \"$SCRIPT_ROOT\" && -d \".codex/skills/cc-do/scripts\" ]]; then SCRIPT_ROOT=\".codex/skills/cc-do/scripts\"; fi; bash \"$SCRIPT_ROOT\"/mark-task-complete.sh --manifest docs/examples/pdca-loop/changes/REQ-001-copy-invite-link/planning/task-manifest.json --tasks docs/examples/pdca-loop/changes/REQ-001-copy-invite-link/planning/tasks.md --task T003",
-        "requiredBeforeCompletion": [
-          "verification evidence captured",
-          "checkpoint written",
-          "spec review gate recorded",
-          "code review gate recorded"
-        ],
-        "forbiddenShortcuts": [
-          "manual checkbox edit",
-          "manual manifest status edit",
-          "leaving currentTaskId stale"
-        ]
-      },
-      "refactorCandidates": [
-        "duplication",
-        "long method",
-        "primitive obsession",
-        "naming",
-        "more than three nested branches"
-      ]
+      }
     }
   ],
   "metadata": {
     "source": "tasks.md",
     "generatedBy": "docs-example",
     "planVersion": 1
-  },
-  "deferredQuestions": [
-    "If users still miss the copied-state confirmation, open RM-002 for richer feedback."
-  ],
-  "executionProtocol": {
-    "templateCompliance": {
-      "required": true,
-      "sourceTemplate": "assets/TASKS_TEMPLATE.md",
-      "taskBlockMustInclude": [
-        "Goal",
-        "TDD phase",
-        "Files",
-        "Read first",
-        "Verification",
-        "Evidence",
-        "Test seam",
-        "Public verification path",
-        "Allowed mocks",
-        "Completion"
-      ],
-      "titleOnlyTasks": "forbidden"
-    },
-    "selection": {
-      "sourceOfTruth": "planning/task-manifest.json.currentTaskId",
-      "commandTemplate": "SCRIPT_ROOT=\".claude/skills/cc-do/scripts\"; if [[ ! -d \"$SCRIPT_ROOT\" && -d \".codex/skills/cc-do/scripts\" ]]; then SCRIPT_ROOT=\".codex/skills/cc-do/scripts\"; fi; bash \"$SCRIPT_ROOT\"/select-ready-tasks.sh --manifest docs/examples/pdca-loop/changes/REQ-001-copy-invite-link/planning/task-manifest.json"
-    },
-    "completion": {
-      "manualStatusEdit": "forbidden",
-      "commandTemplate": "SCRIPT_ROOT=\".claude/skills/cc-do/scripts\"; if [[ ! -d \"$SCRIPT_ROOT\" && -d \".codex/skills/cc-do/scripts\" ]]; then SCRIPT_ROOT=\".codex/skills/cc-do/scripts\"; fi; bash \"$SCRIPT_ROOT\"/mark-task-complete.sh --manifest docs/examples/pdca-loop/changes/REQ-001-copy-invite-link/planning/task-manifest.json --tasks docs/examples/pdca-loop/changes/REQ-001-copy-invite-link/planning/tasks.md --task <task-id>",
-      "failurePolicy": "Do not hand-edit status; fix missing checkpoint, review gate, or dependency evidence and rerun the script.",
-      "updates": [
-        "planning/task-manifest.json.tasks[].status",
-        "planning/task-manifest.json.currentTaskId",
-        "planning/task-manifest.json.status",
-        "planning/tasks.md checkbox"
-      ]
-    }
   }
 }
