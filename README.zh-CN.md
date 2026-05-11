@@ -11,40 +11,6 @@
 
 CC-DevFlow 是一个给 Agent 编程时代准备的小而明确的工作流系统。它先用一个 roadmap 入口确定方向，再让每个变更进入「新需求闭环」或「Bug 调查闭环」，最后必须经过验证和交付收口。
 
-```text
-cc-roadmap
-
-PR Harness: cc-next -> cc-dev -> cc-pr-review -> cc-pr-land
-
-PDCA: cc-plan        -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
-IDCA: cc-investigate -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
-```
-
-```mermaid
-flowchart TD
-  Roadmap["cc-roadmap\n产品方向和阶段真相"] --> Next["cc-next\n选择下一个 Goal Packet"]
-  Next --> Dev["cc-dev\n当前 worktree 自动推进到 PR"]
-
-  Dev --> Route{"路线"}
-  Route -->|新需求或变更| Plan["cc-plan\n冻结范围和任务"]
-  Route -->|Bug 或回归| Investigate["cc-investigate\n冻结根因和修复边界"]
-
-  Plan --> PlanReview["cc-review\n可选方案 Review"]
-  Investigate --> PlanReview
-  PlanReview --> Do["cc-do\n实现并留下证据"]
-  Plan --> Do
-  Investigate --> Do
-
-  Do --> ImplReview["cc-review\n可选实现 Review"]
-  ImplReview --> Check["cc-check\n新鲜验证裁决"]
-  Do --> Check
-  Check --> Act["cc-act\n创建或更新远程 PR"]
-  Act --> PRReview["cc-pr-review\n单独会话 Review PR"]
-  PRReview --> PRLand["cc-pr-land\nRebase 合并并证明 main parity"]
-  PRReview -->|需要修复| Dev
-  PRLand --> Main["main\n本地和远程一致"]
-```
-
 ![CC-DevFlow PR Harness 中文可视化流程](./docs/assets/cc-devflow-pr-harness-zh.svg)
 
 ## 为什么用 cc-devflow
@@ -86,6 +52,42 @@ npx cc-devflow@latest adapt --cwd /path/to/your/project --all
 ```
 
 安装完成后，直接让 Agent 使用这些 workflow skill。产品方向先走 `cc-roadmap`。需要自动选择下一步时走 `cc-next`；选中目标后用 `cc-dev` 在当前 worktree 内自动跑 PDCA 或 IDCA，直到远程 PR 打开；PR 用单独会话跑 `cc-pr-review`；review 后用单独会话跑 `cc-pr-land` 合并并证明 main parity。手动核心链路仍然是：新需求走 `cc-plan`，Bug 和 regression 走 `cc-investigate`；复杂计划或根因合同冻结后可以先接 `cc-review`，再进入 `cc-do`；实现复杂时还可以再接一次实现 `cc-review`，最后进入 `cc-check` 和 `cc-act`。
+
+## 流程图
+
+```text
+cc-roadmap
+
+PR Harness: cc-next -> cc-dev -> cc-pr-review -> cc-pr-land
+
+PDCA: cc-plan        -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
+IDCA: cc-investigate -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
+```
+
+```mermaid
+flowchart TD
+  Roadmap["cc-roadmap\n产品方向和阶段真相"] --> Next["cc-next\n选择下一个 Goal Packet"]
+  Next --> Dev["cc-dev\n当前 worktree 自动推进到 PR"]
+
+  Dev --> Route{"路线"}
+  Route -->|新需求或变更| Plan["cc-plan\n冻结范围和任务"]
+  Route -->|Bug 或回归| Investigate["cc-investigate\n冻结根因和修复边界"]
+
+  Plan --> PlanReview["cc-review\n可选方案 Review"]
+  Investigate --> PlanReview
+  PlanReview --> Do["cc-do\n实现并留下证据"]
+  Plan --> Do
+  Investigate --> Do
+
+  Do --> ImplReview["cc-review\n可选实现 Review"]
+  ImplReview --> Check["cc-check\n新鲜验证裁决"]
+  Do --> Check
+  Check --> Act["cc-act\n创建或更新远程 PR"]
+  Act --> PRReview["cc-pr-review\n单独会话 Review PR"]
+  PRReview --> PRLand["cc-pr-land\nRebase 合并并证明 main parity"]
+  PRReview -->|需要修复| Dev
+  PRLand --> Main["main\n本地和远程一致"]
+```
 
 ## Workflow Skill
 
