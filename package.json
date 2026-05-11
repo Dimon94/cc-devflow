@@ -10,6 +10,7 @@
         "bin/",
         "lib/",
         "config/",
+        "docs/assets/",
         ".claude/skills/cc-roadmap/",
         ".claude/skills/cc-next/",
         ".claude/skills/cc-dev/",
