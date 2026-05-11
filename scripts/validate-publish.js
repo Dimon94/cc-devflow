@@ -96,6 +96,7 @@ function validatePackageJson(errors) {
   ensureArrayIncludes(pkg.files, 'bin/', errors, 'package.json files');
   ensureArrayIncludes(pkg.files, 'lib/', errors, 'package.json files');
   ensureArrayIncludes(pkg.files, 'config/', errors, 'package.json files');
+  ensureArrayIncludes(pkg.files, 'docs/assets/', errors, 'package.json files');
   for (const skillName of DISTRIBUTED_SKILLS) {
     ensureArrayIncludes(pkg.files, `.claude/skills/${skillName}/`, errors, 'package.json files');
   }
@@ -679,6 +680,8 @@ function validatePackTarball(errors) {
     'package/bin/cc-devflow.js',
     'package/lib/compiler/index.js',
     'package/config/adapters.yml',
+    'package/docs/assets/cc-devflow-pr-harness-en.svg',
+    'package/docs/assets/cc-devflow-pr-harness-zh.svg',
     'package/README.md',
     'package/README.zh-CN.md',
     'package/CHANGELOG.md',
