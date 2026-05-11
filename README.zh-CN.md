@@ -94,7 +94,7 @@ flowchart TD
 | Skill | 什么时候用 | 主要产物 |
 | --- | --- | --- |
 | `cc-roadmap` | 需要产品方向、阶段范围或 backlog 顺序 | `devflow/roadmap.json`、`devflow/ROADMAP.md`、deprecated `devflow/BACKLOG.md` |
-| `cc-next` | 需要从 roadmap 和 issue truth 里选下一个 ready 目标 | 交给 `cc-dev` 的 Goal Packet |
+| `cc-next` | 需要从 roadmap、未归档本地 change 和 issue truth 里选下一个 ready 目标 | 交给 `cc-dev` 的 Goal Packet |
 | `cc-dev` | 已选目标要在当前 worktree 内自动推进到远程 PR | PDCA/IDCA 产物加 PR 或 handoff |
 | `cc-plan` | 新功能或变更需要澄清范围、设计方案、冻结任务 | `planning/design.md`、`planning/tasks.md`、`task-manifest.json` |
 | `cc-investigate` | Bug 需要症状、复现、根因和修复边界 | `planning/analysis.md`、`planning/tasks.md`、`task-manifest.json` |
