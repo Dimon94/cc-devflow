@@ -11,40 +11,6 @@
 
 CC-DevFlow is a small, explicit workflow system for agent coding. It gives an AI agent one roadmap entry point, then routes every change through either a feature loop or a bug-investigation loop before work can be called done.
 
-```text
-cc-roadmap
-
-PR Harness: cc-next -> cc-dev -> cc-pr-review -> cc-pr-land
-
-PDCA: cc-plan        -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
-IDCA: cc-investigate -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
-```
-
-```mermaid
-flowchart TD
-  Roadmap["cc-roadmap\nProduct direction and staged truth"] --> Next["cc-next\nPick next ready Goal Packet"]
-  Next --> Dev["cc-dev\nDrive current worktree to PR"]
-
-  Dev --> Route{"Route"}
-  Route -->|Feature or change| Plan["cc-plan\nFreeze scope and tasks"]
-  Route -->|Bug or regression| Investigate["cc-investigate\nFreeze root cause and repair boundary"]
-
-  Plan --> PlanReview["cc-review\nOptional plan review"]
-  Investigate --> PlanReview
-  PlanReview --> Do["cc-do\nImplement with evidence"]
-  Plan --> Do
-  Investigate --> Do
-
-  Do --> ImplReview["cc-review\nOptional implementation review"]
-  ImplReview --> Check["cc-check\nFresh verification verdict"]
-  Do --> Check
-  Check --> Act["cc-act\nCreate or update remote PR"]
-  Act --> PRReview["cc-pr-review\nSeparate PR review session"]
-  PRReview --> PRLand["cc-pr-land\nRebase, land, prove main parity"]
-  PRReview -->|Fixes required| Dev
-  PRLand --> Main["main\nLocal and remote parity"]
-```
-
 ![CC-DevFlow PR Harness visual workflow](./docs/assets/cc-devflow-pr-harness-en.svg)
 
 ## Why cc-devflow
@@ -86,6 +52,42 @@ npx cc-devflow@latest adapt --cwd /path/to/your/project --all
 ```
 
 After installation, ask your agent to use the workflow skills directly. Start with `cc-roadmap` for product direction. Use `cc-next` to select the next roadmap-aware target, `cc-dev` to drive the current worktree through PDCA or IDCA until a remote PR is opened, `cc-pr-review` to review that PR in a separate session, and `cc-pr-land` to land reviewed PRs into main. For manual core workflow work, use `cc-plan` for new work, use `cc-investigate` for bugs, optionally run `cc-review` on complex frozen plans or investigations, then continue through `cc-do`, optional implementation `cc-review`, `cc-check`, and `cc-act`.
+
+## Workflow Map
+
+```text
+cc-roadmap
+
+PR Harness: cc-next -> cc-dev -> cc-pr-review -> cc-pr-land
+
+PDCA: cc-plan        -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
+IDCA: cc-investigate -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
+```
+
+```mermaid
+flowchart TD
+  Roadmap["cc-roadmap\nProduct direction and staged truth"] --> Next["cc-next\nPick next ready Goal Packet"]
+  Next --> Dev["cc-dev\nDrive current worktree to PR"]
+
+  Dev --> Route{"Route"}
+  Route -->|Feature or change| Plan["cc-plan\nFreeze scope and tasks"]
+  Route -->|Bug or regression| Investigate["cc-investigate\nFreeze root cause and repair boundary"]
+
+  Plan --> PlanReview["cc-review\nOptional plan review"]
+  Investigate --> PlanReview
+  PlanReview --> Do["cc-do\nImplement with evidence"]
+  Plan --> Do
+  Investigate --> Do
+
+  Do --> ImplReview["cc-review\nOptional implementation review"]
+  ImplReview --> Check["cc-check\nFresh verification verdict"]
+  Do --> Check
+  Check --> Act["cc-act\nCreate or update remote PR"]
+  Act --> PRReview["cc-pr-review\nSeparate PR review session"]
+  PRReview --> PRLand["cc-pr-land\nRebase, land, prove main parity"]
+  PRReview -->|Fixes required| Dev
+  PRLand --> Main["main\nLocal and remote parity"]
+```
 
 ## Workflow Skills
 
