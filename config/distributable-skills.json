@@ -1,19 +1,27 @@
 {
   "publicSkills": [
     "cc-roadmap",
+    "cc-next",
+    "cc-dev",
     "cc-plan",
     "cc-investigate",
     "cc-do",
     "cc-review",
+    "cc-pr-review",
+    "cc-pr-land",
     "cc-check",
     "cc-act"
   ],
   "distributedSkills": [
     "cc-roadmap",
+    "cc-next",
+    "cc-dev",
     "cc-plan",
     "cc-investigate",
     "cc-do",
     "cc-review",
+    "cc-pr-review",
+    "cc-pr-land",
     "cc-check",
     "cc-act",
     "cc-spec-init",
