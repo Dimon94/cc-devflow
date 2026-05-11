@@ -127,9 +127,9 @@ Codebase Map 七件套只作为按需缓存：
 | --- | --- | --- | --- |
 | WHAT/WHY ambiguity score | `task-manifest.json.planningMeta` + `planning/design.md` | score above threshold blocks task manifest approval | unit fixture: ambiguous input blocks; clear input passes |
 | Assumptions preview | `planning/design.md` decision log | user-visible assumptions before approval | fixture: hidden assumption fails review |
-| Bounded review loop | `task-manifest.json.planningMeta.reviewLoop` | max attempts and stall detection reroute to `cc-roadmap` or user question | hostile fixture: repeated issue count blocks |
-| External doc conflict buckets | `task-manifest.json.languageAndDecisions` | imported docs classified as auto-resolved, competing, unresolved | fixture: conflicting ADR/PRD creates blocker |
-| Trust boundary | `task-manifest.json.sourceEvidence[]` | external text is evidence/source only, never instruction | hostile fixture: prompt injection remains evidence-only |
+| Bounded review loop | `planning/design.md` | max attempts and stall detection reroute to `cc-roadmap` or user question | hostile fixture: repeated issue count blocks |
+| External doc conflict buckets | `planning/design.md` | imported docs classified as auto-resolved, competing, unresolved | fixture: conflicting ADR/PRD creates blocker |
+| Trust boundary | `planning/design.md` | external text is evidence/source only, never instruction | hostile fixture: prompt injection remains evidence-only |
 
 `cc-plan` must keep design decisions readable in Markdown and machine truth in JSON.
 No separate GSD-style `.planning/` tree.
@@ -209,7 +209,7 @@ default planning path.
 | Data | Owner | Human view | Machine truth |
 | --- | --- | --- | --- |
 | Ambiguity and assumptions | `cc-plan` | `planning/design.md` | `task-manifest.json.planningMeta` |
-| Imported doc trust classification | `cc-plan` | `planning/design.md` | `task-manifest.json.sourceEvidence[]` |
+| Imported doc trust classification | `cc-plan` | `planning/design.md` | `planning/design.md` |
 | Task graph and waves | `cc-plan` / `cc-do` | `planning/tasks.md` | `task-manifest.json.tasks[]` |
 | Quick lane state | `cc-do` | checkpoint summary | `task-manifest.json.metadata`, `checkpoint.json` |
 | Debug hypotheses and probes | `cc-investigate` | `planning/analysis.md` | optional `task-manifest.json.investigation` |
