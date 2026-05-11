@@ -321,6 +321,61 @@ function collectExternalBestPracticeErrors(manifest, label, errors) {
   }
 }
 
+const RETIRED_CC_PLAN_MANIFEST_FIELDS = [
+  'status',
+  'activePhase',
+  'sourceRoadmap',
+  'spec',
+  'executionProtocol',
+  'sourceEvidence',
+  'languageAndDecisions',
+  'executionDiscipline',
+  'approvedOption',
+  'designStatus',
+  'reviewStatus',
+  'tasteDecisions',
+  'userChallenges',
+  'frozenDecisions',
+  'deferredQuestions'
+];
+
+const RETIRED_CC_PLAN_META_FIELDS = [
+  'requirementBrief',
+  'ambiguityGate',
+  'reviewLoop',
+  'approvedBy'
+];
+
+const RETIRED_CC_PLAN_TASK_FIELDS = [
+  'completion',
+  'testQuality',
+  'allowedMocks',
+  'greenMinimality',
+  'refactorCandidates'
+];
+
+function collectSlimManifestErrors(manifest, label, errors) {
+  for (const field of RETIRED_CC_PLAN_MANIFEST_FIELDS) {
+    if (Object.prototype.hasOwnProperty.call(manifest || {}, field)) {
+      errors.push(`${label}.${field} is retired; keep that detail in planning/design.md or planning/tasks.md`);
+    }
+  }
+
+  for (const field of RETIRED_CC_PLAN_META_FIELDS) {
+    if (Object.prototype.hasOwnProperty.call(manifest?.planningMeta || {}, field)) {
+      errors.push(`${label}.planningMeta.${field} is retired; keep that detail in planning/design.md`);
+    }
+  }
+
+  (manifest?.tasks || []).forEach((task, index) => {
+    for (const field of RETIRED_CC_PLAN_TASK_FIELDS) {
+      if (Object.prototype.hasOwnProperty.call(task || {}, field)) {
+        errors.push(`${label}.tasks[${index}].${field} is retired; keep that detail in planning/tasks.md`);
+      }
+    }
+  });
+}
+
 function validateCcPlanPlanningContracts(errors) {
   const skill = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-plan/SKILL.md'), 'utf8');
   const fullDesign = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-plan/assets/DESIGN_TEMPLATE.md'), 'utf8');
@@ -366,15 +421,9 @@ function validateCcPlanPlanningContracts(errors) {
 
   const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
   const currentPlanVersion = readSkillVersion('cc-plan');
-  const currentRoadmapVersion = readSkillVersion('cc-roadmap');
   if (manifest?.planningMeta?.reqPlanSkillVersion !== currentPlanVersion) {
     errors.push(
       `cc-plan TASK_MANIFEST_TEMPLATE.json planningMeta.reqPlanSkillVersion must be ${currentPlanVersion}`
-    );
-  }
-  if (manifest?.sourceRoadmap?.roadmapSkillVersion !== currentRoadmapVersion) {
-    errors.push(
-      `cc-plan TASK_MANIFEST_TEMPLATE.json sourceRoadmap.roadmapSkillVersion must be ${currentRoadmapVersion}`
     );
   }
   if (!manifest?.planningMeta?.aiLeverageDecisionLens) {
@@ -383,6 +432,11 @@ function validateCcPlanPlanningContracts(errors) {
   if (!Object.prototype.hasOwnProperty.call(manifest?.planningMeta?.aiLeverageDecisionLens || {}, 'completeLakeBoundary')) {
     errors.push('cc-plan TASK_MANIFEST_TEMPLATE.json missing planningMeta.aiLeverageDecisionLens.completeLakeBoundary');
   }
+  collectSlimManifestErrors(
+    manifest,
+    '.claude/skills/cc-plan/assets/TASK_MANIFEST_TEMPLATE.json',
+    errors
+  );
 
   collectDecisionQuestionOptionErrors(
     manifest,
@@ -418,7 +472,40 @@ function validateCcPlanPlanningContracts(errors) {
         path.relative(ROOT, exampleManifestPath),
         errors
       );
+      collectSlimManifestErrors(
+        JSON.parse(fs.readFileSync(exampleManifestPath, 'utf8')),
+        path.relative(ROOT, exampleManifestPath),
+        errors
+      );
     }
+  }
+}
+
+function validateArtifactOwnershipContracts(errors) {
+  ensurePath('docs/guides/artifact-contract.md', 'file', errors);
+  const contract = fs.readFileSync(path.join(ROOT, 'docs/guides/artifact-contract.md'), 'utf8');
+  for (const snippet of [
+    '## Progressive Disclosure',
+    '## State Owners',
+    'Task manifests must not duplicate PRD narrative',
+    'Who owns this state?'
+  ]) {
+    if (!contract.includes(snippet)) {
+      errors.push(`docs/guides/artifact-contract.md missing artifact contract snippet: ${snippet}`);
+    }
+  }
+
+  const manifestTemplates = [
+    '.claude/skills/cc-plan/assets/TASK_MANIFEST_TEMPLATE.json',
+    '.claude/skills/cc-investigate/assets/TASK_MANIFEST_TEMPLATE.json'
+  ];
+
+  for (const relPath of manifestTemplates) {
+    collectSlimManifestErrors(
+      JSON.parse(fs.readFileSync(path.join(ROOT, relPath), 'utf8')),
+      relPath,
+      errors
+    );
   }
 }
 
@@ -801,6 +888,7 @@ function main() {
   validateInventoryParity(errors);
   validateCcRoadmapContracts(errors);
   validateCcPlanPlanningContracts(errors);
+  validateArtifactOwnershipContracts(errors);
   validatePublicSkillContracts(errors);
   validateExampleBindings(errors);
   validatePackTarball(errors);
@@ -823,5 +911,7 @@ if (require.main === module) {
 module.exports = {
   collectDecisionQuestionOptionErrors,
   collectExternalBestPracticeErrors,
+  collectSlimManifestErrors,
+  validateArtifactOwnershipContracts,
   ensureStringArray
 };

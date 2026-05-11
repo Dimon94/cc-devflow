@@ -5,6 +5,8 @@ const { spawnSync } = require('child_process');
 const {
   collectDecisionQuestionOptionErrors,
   collectExternalBestPracticeErrors,
+  collectSlimManifestErrors,
+  validateArtifactOwnershipContracts,
   ensureStringArray
 } = require('../scripts/validate-publish');
 
@@ -192,16 +194,68 @@ describe('validate-publish', () => {
     expect(manifest).toContain('"aiLeverageDecisionLens"');
     expect(manifest).toContain('"humanTeamEffortForFullScope"');
     expect(manifest).toContain('"completeLakeBoundary"');
-    expect(parsedManifest.planningMeta.reqPlanSkillVersion).toBe('3.8.2');
-    expect(parsedManifest.sourceRoadmap.roadmapSkillVersion).toBe('5.2.0');
+    expect(parsedManifest.planningMeta.reqPlanSkillVersion).toBe('3.8.3');
+    expect(parsedManifest.sourceRoadmap).toBeUndefined();
+    expect(parsedManifest.spec).toBeUndefined();
+    expect(parsedManifest.status).toBeUndefined();
+    expect(parsedManifest.activePhase).toBeUndefined();
     expect(planningContract).toContain('AI Leverage Decision Lens 必须在任务生成前闭合');
     expect(skill).toContain('## ClaudeCode / Codex Execution Compliance');
     expect(tasks).toContain('## Execution Protocol');
     expect(tasks).toContain('mark-task-complete.sh');
-    expect(parsedManifest.executionProtocol.templateCompliance.required).toBe(true);
-    expect(parsedManifest.executionProtocol.completion.manualStatusEdit).toBe('forbidden');
-    expect(parsedManifest.tasks[0].completion.command).toContain('mark-task-complete.sh');
+    expect(parsedManifest.executionProtocol).toBeUndefined();
+    expect(parsedManifest.tasks[0].completion).toBeUndefined();
+    expect(parsedManifest.tasks[0].run).toContain('npm test -- src/feature/feature.test.ts');
     expect(planningContract).toContain('## Execution Protocol Fields');
+  });
+
+  test('rejects retired cc-plan manifest fields', () => {
+    const errors = [];
+
+    collectSlimManifestErrors({
+      executionProtocol: {},
+      sourceEvidence: [],
+      sourceRoadmap: {},
+      spec: {},
+      status: 'planned',
+      activePhase: 1,
+      planningMeta: {
+        requirementBrief: {},
+        ambiguityGate: {},
+        reviewLoop: {}
+      },
+      tasks: [
+        {
+          id: 'T001',
+          completion: {},
+          testQuality: {},
+          allowedMocks: []
+        }
+      ]
+    }, 'manifest', errors);
+
+    expect(errors).toEqual(expect.arrayContaining([
+      'manifest.executionProtocol is retired; keep that detail in planning/design.md or planning/tasks.md',
+      'manifest.sourceEvidence is retired; keep that detail in planning/design.md or planning/tasks.md',
+      'manifest.sourceRoadmap is retired; keep that detail in planning/design.md or planning/tasks.md',
+      'manifest.spec is retired; keep that detail in planning/design.md or planning/tasks.md',
+      'manifest.status is retired; keep that detail in planning/design.md or planning/tasks.md',
+      'manifest.activePhase is retired; keep that detail in planning/design.md or planning/tasks.md',
+      'manifest.planningMeta.requirementBrief is retired; keep that detail in planning/design.md',
+      'manifest.planningMeta.ambiguityGate is retired; keep that detail in planning/design.md',
+      'manifest.planningMeta.reviewLoop is retired; keep that detail in planning/design.md',
+      'manifest.tasks[0].completion is retired; keep that detail in planning/tasks.md',
+      'manifest.tasks[0].testQuality is retired; keep that detail in planning/tasks.md',
+      'manifest.tasks[0].allowedMocks is retired; keep that detail in planning/tasks.md'
+    ]));
+  });
+
+  test('carries the shared artifact ownership contract', () => {
+    const errors = [];
+
+    validateArtifactOwnershipContracts(errors);
+
+    expect(errors).toEqual([]);
   });
 
   test('cc-roadmap carries the AI leverage route lens contract', () => {

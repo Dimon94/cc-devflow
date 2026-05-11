@@ -100,12 +100,16 @@ while IFS= read -r encoded; do
   assert_contains "$planning_dir/tasks.md" "- CC-Plan skill version: \`$REQ_PLAN_VERSION\`"
 
   jq -er --arg roadmap "$ROADMAP_VERSION" --arg reqplan "$REQ_PLAN_VERSION" '
-    (.sourceRoadmap.roadmapSkillVersion // $roadmap) == $roadmap and
     (.planningMeta.reqPlanSkillVersion // $reqplan) == $reqplan and
-    .executionProtocol.templateCompliance.required == true and
-    .executionProtocol.completion.manualStatusEdit == "forbidden" and
-    (.executionProtocol.completion.commandTemplate | contains("mark-task-complete.sh")) and
-    all(.tasks[]; (.completion.command | contains("mark-task-complete.sh")) and (.tddPhase | type == "string") and (.testSeam.publicVerificationPath | type == "string"))
+    (.status? == null) and
+    (.activePhase? == null) and
+    (.sourceRoadmap? == null) and
+    (.spec? == null) and
+    (.executionProtocol? == null) and
+    (.planningMeta.requirementBrief? == null) and
+    (.planningMeta.ambiguityGate? == null) and
+    (.planningMeta.reviewLoop? == null) and
+    all(.tasks[]; (.completion? == null) and (.tddPhase | type == "string") and (.testSeam.publicVerificationPath | type == "string"))
   ' "$planning_dir/task-manifest.json" >/dev/null
 
   assert_contains "$planning_dir/tasks.md" "## Execution Protocol"

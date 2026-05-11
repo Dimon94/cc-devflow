@@ -6,44 +6,30 @@
   "requirementId": "REQ-003",
   "requirementVersion": "REQ-003.v1",
   "planningMeta": {
-    "reqPlanSkillVersion": "3.8.2",
+    "reqPlanSkillVersion": "3.8.3",
     "designVersion": "design.v1",
     "approvedAt": "2026-04-16T13:10:00.000Z",
-    "approvedBy": "user",
     "basedOnOption": "Tiny design card",
-    "requirementBrief": {
-      "problemStatement": "Admins can review audit summary rows in the UI, but weekly reporting requires manual copying.",
-      "solutionSummary": "Add a CSV download action for the currently visible audit summary rows.",
-      "actors": [
-        "workspace admin reviewing weekly activity"
-      ],
-      "userStories": [
-        {
-          "id": "US-001",
-          "actor": "workspace admin",
-          "want": "download visible audit summary rows as CSV",
-          "benefit": "include them in weekly reporting without manual copying",
-          "acceptance": [
-            "Panel behavior test proves the export action uses current summary rows"
-          ]
-        }
-      ],
-      "edgeOrRecoveryStories": [],
-      "implementationDecisions": [
-        "Export only rows already visible in the panel",
-        "Keep CSV as the only output format"
-      ],
-      "testingDecisions": [
-        "Test through the admin panel action and visible row data"
-      ],
-      "outOfScope": [
-        "JSON export",
-        "scheduled reporting",
-        "shared reporting backend"
-      ],
-      "furtherNotes": [
-        "Richer machine-readable exports should become a separate requirement"
-      ]
+    "aiLeverageDecisionLens": {
+      "realUserOrOperator": "workspace admin preparing weekly review notes",
+      "statusQuoWorkaround": "manual copy of visible audit rows",
+      "humanTeamEffortForFullScope": "about one day for an engineer to implement, test, and document the local export",
+      "ccAgentEffortForFullScope": "about 30 minutes for visible-row CSV export plus targeted test and lint",
+      "aiCompressionRatio": "roughly 10x for the bounded local export path",
+      "completeLakeBoundary": "visible-row CSV export, panel action, current data source, targeted panel test, and lint",
+      "oceanBoundary": "JSON export, scheduled reporting, shared reporting backend, and cross-panel reporting platform",
+      "scopeRecommendation": "boil-lake",
+      "costModel": {
+        "agentTime": "low",
+        "humanReviewTime": "low",
+        "verificationCost": "targeted panel test plus lint",
+        "maintenanceCost": "low while scoped to visible rows",
+        "failureCost": "admins keep copying rows manually",
+        "reversibility": "reversible UI action"
+      },
+      "verdict": "boil-lake",
+      "missingEvidenceOrPivotReason": "",
+      "impactOnApprovedDirection": "complete the local visible-row export lake while deferring reporting platform work"
     },
     "externalBestPractice": {
       "needed": false,
@@ -89,31 +75,9 @@
         "impact": "cc-do exports only visible rows from the current panel and avoids new reporting contracts",
         "status": "answered"
       }
-    ],
-    "aiLeverageDecisionLens": {
-      "realUserOrOperator": "workspace admin preparing weekly review notes",
-      "statusQuoWorkaround": "manual copy of visible audit rows",
-      "humanTeamEffortForFullScope": "about one day for an engineer to implement, test, and document the local export",
-      "ccAgentEffortForFullScope": "about 30 minutes for visible-row CSV export plus targeted test and lint",
-      "aiCompressionRatio": "roughly 10x for the bounded local export path",
-      "completeLakeBoundary": "visible-row CSV export, panel action, current data source, targeted panel test, and lint",
-      "oceanBoundary": "JSON export, scheduled reporting, shared reporting backend, and cross-panel reporting platform",
-      "scopeRecommendation": "boil-lake",
-      "costModel": {
-        "agentTime": "low",
-        "humanReviewTime": "low",
-        "verificationCost": "targeted panel test plus lint",
-        "maintenanceCost": "low while scoped to visible rows",
-        "failureCost": "admins keep copying rows manually",
-        "reversibility": "reversible UI action"
-      },
-      "verdict": "boil-lake",
-      "missingEvidenceOrPivotReason": "",
-      "impactOnApprovedDirection": "complete the local visible-row export lake while deferring reporting platform work"
-    }
+    ]
   },
   "currentTaskId": null,
-  "activePhase": null,
   "tasks": [
     {
       "id": "T001",
@@ -178,45 +142,7 @@
         "type": "automated-test",
         "determinism": "deterministic",
         "expectedFailure": "Fails before the behavior exists"
-      },
-      "allowedMocks": [
-        "download / blob boundary"
-      ],
-      "testQuality": {
-        "usesPublicInterface": true,
-        "describesBehavior": true,
-        "specStyleName": true,
-        "oneLogicalBehavior": true,
-        "verifiesThroughPublicPath": true,
-        "survivesInternalRefactor": true,
-        "mocksOnlySystemBoundaries": true,
-        "noBulkRed": true
-      },
-      "greenMinimality": {
-        "guard": "Keep the task scoped to its stated verification evidence",
-        "noSpeculativeBranches": true
-      },
-      "completion": {
-        "command": "SCRIPT_ROOT=\".claude/skills/cc-do/scripts\"; if [[ ! -d \"$SCRIPT_ROOT\" && -d \".codex/skills/cc-do/scripts\" ]]; then SCRIPT_ROOT=\".codex/skills/cc-do/scripts\"; fi; bash \"$SCRIPT_ROOT\"/mark-task-complete.sh --manifest docs/examples/local-handoff/changes/REQ-003-audit-log-export/planning/task-manifest.json --tasks docs/examples/local-handoff/changes/REQ-003-audit-log-export/planning/tasks.md --task T001",
-        "requiredBeforeCompletion": [
-          "verification evidence captured",
-          "checkpoint written",
-          "spec review gate recorded",
-          "code review gate recorded"
-        ],
-        "forbiddenShortcuts": [
-          "manual checkbox edit",
-          "manual manifest status edit",
-          "leaving currentTaskId stale"
-        ]
-      },
-      "refactorCandidates": [
-        "duplication",
-        "long method",
-        "primitive obsession",
-        "naming",
-        "more than three nested branches"
-      ]
+      }
     },
     {
       "id": "T002",
@@ -283,45 +209,7 @@
         "type": "automated-test",
         "determinism": "deterministic",
         "expectedFailure": ""
-      },
-      "allowedMocks": [
-        "download / blob boundary"
-      ],
-      "testQuality": {
-        "usesPublicInterface": true,
-        "describesBehavior": true,
-        "specStyleName": true,
-        "oneLogicalBehavior": true,
-        "verifiesThroughPublicPath": true,
-        "survivesInternalRefactor": true,
-        "mocksOnlySystemBoundaries": true,
-        "noBulkRed": true
-      },
-      "greenMinimality": {
-        "guard": "Implement only the code needed to pass the current red behavior",
-        "noSpeculativeBranches": true
-      },
-      "completion": {
-        "command": "SCRIPT_ROOT=\".claude/skills/cc-do/scripts\"; if [[ ! -d \"$SCRIPT_ROOT\" && -d \".codex/skills/cc-do/scripts\" ]]; then SCRIPT_ROOT=\".codex/skills/cc-do/scripts\"; fi; bash \"$SCRIPT_ROOT\"/mark-task-complete.sh --manifest docs/examples/local-handoff/changes/REQ-003-audit-log-export/planning/task-manifest.json --tasks docs/examples/local-handoff/changes/REQ-003-audit-log-export/planning/tasks.md --task T002",
-        "requiredBeforeCompletion": [
-          "verification evidence captured",
-          "checkpoint written",
-          "spec review gate recorded",
-          "code review gate recorded"
-        ],
-        "forbiddenShortcuts": [
-          "manual checkbox edit",
-          "manual manifest status edit",
-          "leaving currentTaskId stale"
-        ]
-      },
-      "refactorCandidates": [
-        "duplication",
-        "long method",
-        "primitive obsession",
-        "naming",
-        "more than three nested branches"
-      ]
+      }
     },
     {
       "id": "T003",
@@ -392,84 +280,12 @@
         "type": "automated-test",
         "determinism": "deterministic",
         "expectedFailure": ""
-      },
-      "allowedMocks": [
-        "download / blob boundary"
-      ],
-      "testQuality": {
-        "usesPublicInterface": true,
-        "describesBehavior": true,
-        "specStyleName": true,
-        "oneLogicalBehavior": true,
-        "verifiesThroughPublicPath": true,
-        "survivesInternalRefactor": true,
-        "mocksOnlySystemBoundaries": true,
-        "noBulkRed": true
-      },
-      "greenMinimality": {
-        "guard": "Keep the task scoped to its stated verification evidence",
-        "noSpeculativeBranches": true
-      },
-      "completion": {
-        "command": "SCRIPT_ROOT=\".claude/skills/cc-do/scripts\"; if [[ ! -d \"$SCRIPT_ROOT\" && -d \".codex/skills/cc-do/scripts\" ]]; then SCRIPT_ROOT=\".codex/skills/cc-do/scripts\"; fi; bash \"$SCRIPT_ROOT\"/mark-task-complete.sh --manifest docs/examples/local-handoff/changes/REQ-003-audit-log-export/planning/task-manifest.json --tasks docs/examples/local-handoff/changes/REQ-003-audit-log-export/planning/tasks.md --task T003",
-        "requiredBeforeCompletion": [
-          "verification evidence captured",
-          "checkpoint written",
-          "spec review gate recorded",
-          "code review gate recorded"
-        ],
-        "forbiddenShortcuts": [
-          "manual checkbox edit",
-          "manual manifest status edit",
-          "leaving currentTaskId stale"
-        ]
-      },
-      "refactorCandidates": [
-        "duplication",
-        "long method",
-        "primitive obsession",
-        "naming",
-        "more than three nested branches"
-      ]
+      }
     }
   ],
   "metadata": {
     "source": "tasks.md",
     "generatedBy": "docs-example",
     "planVersion": 1
-  },
-  "executionProtocol": {
-    "templateCompliance": {
-      "required": true,
-      "sourceTemplate": "assets/TASKS_TEMPLATE.md",
-      "taskBlockMustInclude": [
-        "Goal",
-        "TDD phase",
-        "Files",
-        "Read first",
-        "Verification",
-        "Evidence",
-        "Test seam",
-        "Public verification path",
-        "Allowed mocks",
-        "Completion"
-      ],
-      "titleOnlyTasks": "forbidden"
-    },
-    "selection": {
-      "sourceOfTruth": "planning/task-manifest.json.currentTaskId",
-      "commandTemplate": "SCRIPT_ROOT=\".claude/skills/cc-do/scripts\"; if [[ ! -d \"$SCRIPT_ROOT\" && -d \".codex/skills/cc-do/scripts\" ]]; then SCRIPT_ROOT=\".codex/skills/cc-do/scripts\"; fi; bash \"$SCRIPT_ROOT\"/select-ready-tasks.sh --manifest docs/examples/local-handoff/changes/REQ-003-audit-log-export/planning/task-manifest.json"
-    },
-    "completion": {
-      "manualStatusEdit": "forbidden",
-      "commandTemplate": "SCRIPT_ROOT=\".claude/skills/cc-do/scripts\"; if [[ ! -d \"$SCRIPT_ROOT\" && -d \".codex/skills/cc-do/scripts\" ]]; then SCRIPT_ROOT=\".codex/skills/cc-do/scripts\"; fi; bash \"$SCRIPT_ROOT\"/mark-task-complete.sh --manifest docs/examples/local-handoff/changes/REQ-003-audit-log-export/planning/task-manifest.json --tasks docs/examples/local-handoff/changes/REQ-003-audit-log-export/planning/tasks.md --task <task-id>",
-      "failurePolicy": "Do not hand-edit status; fix missing checkpoint, review gate, or dependency evidence and rerun the script.",
-      "updates": [
-        "planning/task-manifest.json.tasks[].status",
-        "planning/task-manifest.json.currentTaskId",
-        "planning/task-manifest.json.status",
-        "planning/tasks.md checkbox"
-      ]
-    }
   }
 }
