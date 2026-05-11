@@ -21,7 +21,7 @@
 - Default read: Frozen Design Card, Validation, Main Risk, Approval.
 - Open for scope questions: Source Handoff, Capability Handoff, Implementation Surface Map.
 - Open for trust/conflict questions: Source Trust Boundary, External Document Conflicts, Domain Language & Decisions.
-- Open for audit/recovery: Review Gate, Bounded Review Loop, Decision Questions.
+- Open for audit/recovery: Project Postmortem Recall, Review Gate, Bounded Review Loop, Decision Questions.
 
 ## Source Handoff
 
@@ -96,6 +96,19 @@
 - Repo-fit verdict: confirmed / adjusted / contradicted / skipped
 - Changes to frozen design:
 - Skipped reason:
+
+## Project Postmortem Recall
+
+- Search status: `no-project-postmortems-yet` | `searched-no-match` | `matches-found`
+- Search command:
+- Search terms:
+- Sources opened:
+- Matching incidents:
+- Matching principles:
+- Planning impact:
+- No-op reason:
+
+> tiny-design 也必须查尸检报告。越小的改动越容易让模型凭直觉重复旧错误。
 
 ## Capability Handoff
 

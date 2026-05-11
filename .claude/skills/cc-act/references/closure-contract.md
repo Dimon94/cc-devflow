@@ -12,6 +12,7 @@
 8. readiness dashboard 必须说明 review freshness、QA coverage、browser evidence、failure ownership、documentation release、PR body accuracy
 9. behavior handoff 必须带上 QA feedback loop、expected / actual / reproduction steps，以及 durable follow-up brief
 10. source RM 必须已从 `devflow/roadmap.json` 定位，且 roadmap progress 与 verified reality 一致；没有 source RM 时记录 no-op reason
+11. `post-merge-closeout` 必须预先冻结 archive target；最终只能是已归档，或带 `ArchiveSkip` blocker 的未完成 closeout
 
 ## Ship Decision Contract
 
@@ -43,6 +44,7 @@ detached HEAD 是分支事实，不是第 5 种 ship 模式。若远端可用且
 11. PR body accuracy 必须对照当前 report-card、当前 diff、当前 commits；旧 body 不能作为证据源
 12. follow-up 回写必须用行为契约表达，包含 current behavior、desired behavior、key interfaces、acceptance criteria、out of scope；不能只写文件路径或聊天 TODO
 13. roadmap 回写只更新 `devflow/roadmap.json`，并通过 `sync-roadmap-progress.sh` 重新生成 `devflow/ROADMAP.md` / `devflow/BACKLOG.md`
+14. `post-merge-closeout` 的归档必须真实执行：`cc-devflow archive-change <change-key>`，不能只把“可归档”写进 next action
 
 ## Memory Consolidation
 
@@ -63,5 +65,6 @@ detached HEAD 是分支事实，不是第 5 种 ship 模式。若远端可用且
 - QA behavior evidence 和 feedback loop 已进入 PR / handoff / release 材料
 - post-merge closeout 反映 merged result 的验证事实，而不是只反映合并前事实
 - source RM 的 status、REQ/FIX 绑定、progress 和 follow-up 已经落入 roadmap truth
+- closed change 已经移动到 `devflow/changes/archive/YYYY-MM/<change-key>`；如果没有，必须有 `ArchiveSkip` blocker、原因、受影响路径和 retry command
 - 下一轮计划入口更清楚
 - 文档入口可发现，changelog 不丢历史，TODO / backlog 只记录有证据的事项

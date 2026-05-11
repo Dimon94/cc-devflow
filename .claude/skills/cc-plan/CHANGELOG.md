@@ -1,5 +1,11 @@
 # CC-Plan Skill Changelog
 
+## v3.8.5 - 2026-05-11
+
+- add the Project Postmortem Recall Gate so plans search `devflow/postmortems` before freezing direction
+- update design and task templates to record matching incidents, generalized principles, Git evidence, and concrete task impacts
+- require postmortem matches to become scope, test-seam, verification, file-boundary, or review guardrails instead of chat-only reminders
+
 ## v3.8.4 - 2026-05-11
 
 - add the Deep Planning Funnel so `cc-plan` must confirm requirement reality, system shape, interface/data contracts, abstraction boundaries, execution architecture, task contracts, and final approval before task generation

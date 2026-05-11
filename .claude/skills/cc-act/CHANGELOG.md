@@ -1,5 +1,14 @@
 # CC-Act Skill Changelog
 
+## v1.8.7 - 2026-05-11
+
+- add project-level AI postmortem writeback under `devflow/postmortems/` for FIX closeout and recurring AI/process/engineering failures
+- add index, principle, and incident templates with progressive disclosure, Git evidence, verification evidence, and prevention summaries
+- make `cc-act` the default postmortem writer because ship closeout has the verified review range, branch state, commits, PR/handoff, and follow-up truth
+- make post-merge archive a hard closeout gate instead of a soft next-action suggestion
+- require `cc-devflow archive-change <change-key>` plus archive-path proof for `post-merge-closeout`
+- allow skipping archive only with an explicit `ArchiveSkip` blocker and retry command in handoff material
+
 ## v1.8.6 - 2026-05-11
 
 - add a language-aware Pull Request Body Contract so `create-pr` and `update-pr` derive PR title/body language from runtime `Output language`

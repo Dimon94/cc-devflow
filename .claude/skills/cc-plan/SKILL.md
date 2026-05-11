@@ -17,6 +17,7 @@ reads:
   - assets/TINY_DESIGN_TEMPLATE.md
   - assets/TASKS_TEMPLATE.md
   - assets/TASK_MANIFEST_TEMPLATE.json
+  - docs/guides/project-postmortem.md
   - references/planning-contract.md
   - ../cc-do/scripts/select-ready-tasks.sh
   - ../cc-do/scripts/mark-task-complete.sh
@@ -50,6 +51,7 @@ entry_gate:
   - "Keep `planning/task-manifest.json` lean: it is the machine execution graph, not a mirror of the design narrative or task protocol prose."
   - For behavior changes, freeze the spec-style test name, one logical behavior, public verification path, and interface-testability decision before task split.
   - "Before approach approval, run the AI Leverage Decision Lens: real user/operator, status quo workaround, human-vs-agent effort, complete-lake boundary, ocean boundary, scope recommendation, and boil-lake/sharp-wedge/needs-evidence/pivot verdict."
+  - "Before approach approval, run the Project Postmortem Recall Gate: search `devflow/postmortems/INDEX.md`, `devflow/postmortems/principles.md`, and relevant `incidents/*.md` with generalized module, capability, failure-class, and model-risk terms; record matches or `no-project-postmortems-yet` in `planning/design.md`."
   - Before approach approval, decide whether external best-practice validation could materially change the plan; if yes, ask the user through the Decision Question Protocol before any web or external lookup.
   - When user judgment is required, ask with the fixed `cc-plan` Decision Question Protocol (`D<N>`, evidence, recommendation, lettered A/B/C options, impact, STOP) instead of free-form prose.
   - Assign a canonical change key before writing artifacts by running `cc-devflow next-change-key --prefix REQ|FIX --description "<short name>"`. Use the script output directly; do not manually scan directories or compute numbers.
@@ -64,6 +66,7 @@ exit_criteria:
   - The task breakdown preserves test-first execution; failing-test tasks precede implementation tasks, refactor checkpoints are visible, and any TDD exception is justified.
   - "Testability decisions make the public seam natural: small interface, deep implementation, injected boundary dependencies, returned results where practical, and boundary mocks only where the system genuinely leaves the repo."
   - AI Leverage Decision Lens is recorded in planning/design.md and task-manifest.json.planningMeta.aiLeverageDecisionLens before executable tasks are generated.
+  - Project Postmortem Recall Gate is recorded in planning/design.md before executable tasks are generated; relevant lessons have concrete task impacts or explicit no-op reasons.
   - Required user decisions were asked through numbered decision question IDs with lettered A/B/C options and recorded in `planning/design.md` / `task-manifest.json` instead of left in chat.
   - The source roadmap item has been synchronized to the frozen planning state, or `planning/design.md` and `change-meta.json` record why no roadmap update is valid.
   - 'Only one next step remains: enter cc-do.'
@@ -111,6 +114,7 @@ PRD 的好处要进入 `planning/design.md`，不要变成第 5 个文件。`cc-
 5. `assets/TASKS_TEMPLATE.md`
 6. `assets/TASK_MANIFEST_TEMPLATE.json`
 7. `references/planning-contract.md`
+8. `docs/guides/project-postmortem.md`
 
 ## Use This Skill When
 
@@ -141,6 +145,23 @@ PRD 的好处要进入 `planning/design.md`，不要变成第 5 个文件。`cc-
 - Forbidden actions: writing production code, splitting planning into new side documents, or emitting tasks before approval.
 - Required evidence: design choices, task boundaries, and verification commands must point back to repo facts or explicit user approval.
 - Reroute rule: if the problem expands to project strategy go back to `roadmap`; if the plan is already frozen move straight to `cc-do`.
+
+## Project Postmortem Recall Gate
+
+`cc-plan` 必须在冻结方案前检索项目级 AI 尸检报告。它不是问“有没有历史文档”，而是问“这个计划会不会重复模型或团队已经犯过的错误”。
+
+默认检索入口：
+
+```bash
+rg -n "<capability|module|error|failure-class|model-risk>" devflow/postmortems
+```
+
+执行规则：
+
+1. 如果 `devflow/postmortems/` 不存在，在 `planning/design.md` 记录 `no-project-postmortems-yet`，继续按 repo 证据规划。
+2. 先读 `devflow/postmortems/INDEX.md` 和 `principles.md`，只在标签、模块、失败类或模型风险匹配时打开具体 `incidents/*.md`。
+3. 相关尸检必须压成计划影响：scope 收缩、测试缝隙、验证命令、禁止触碰文件、review gate、或明确 no-op。
+4. 原则不能替代事实。原则必须能追溯到 incident 文件或 Git 证据；没有证据的原则只作为提醒，不作为阻塞合同。
 
 ## Change Key Contract
 

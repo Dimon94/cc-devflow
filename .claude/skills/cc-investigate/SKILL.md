@@ -1,6 +1,6 @@
 ---
 name: cc-investigate
-version: 1.4.0
+version: 1.4.1
 description: "Use when a bug, regression, broken task, or unexpected behavior needs root-cause investigation, reproducible evidence, and a frozen repair handoff before cc-do resumes coding."
 triggers:
   - "帮我查这个 bug"
@@ -14,6 +14,7 @@ reads:
   - "PLAYBOOK.md"
   - "CHANGELOG.md"
   - "references/investigation-contract.md"
+  - "docs/guides/project-postmortem.md"
   - "assets/ANALYSIS_TEMPLATE.md"
   - "assets/TASKS_TEMPLATE.md"
   - "assets/TASK_MANIFEST_TEMPLATE.json"
@@ -40,6 +41,7 @@ entry_gate:
   - "Build a runnable feedback loop, confirm it matches the reported symptom, then freeze the evidence chain before proposing repair tasks."
   - "Record persistent debug session state: active hypothesis, probes, cleanup status, and next evidence action."
   - "Search prior investigations, TODO/backlog signals, and recent fixes in the affected area before declaring the bug novel."
+  - "Search project postmortems before forming final hypotheses: check `devflow/postmortems/INDEX.md`, `principles.md`, and matching `incidents/*.md` for similar symptoms, modules, failure classes, Git patterns, and model-risk lessons."
   - "For multi-component, deep-stack, or flaky symptoms, record boundary probes, backward trace, or condition-wait evidence before declaring the root cause."
   - "Run the Root Cause Proof Ladder before generating repair tasks: symptom site, first bad state, violated contract, original trigger, counterfactual proof, and escape reason must all be explicit."
   - "For performance regressions, collect a baseline or profile signal before treating logs as evidence."
@@ -48,6 +50,7 @@ entry_gate:
 exit_criteria:
   - "planning/analysis.md records symptom, reproduction, evidence chain, boundary probes or backward trace when applicable, pattern analysis, tested hypotheses, confirmed root cause, and repair boundary."
   - "planning/analysis.md proves the first bad state and original trigger, not only the visible error site."
+  - "planning/analysis.md records the Project Postmortem Recall result, including matching incidents/principles or an explicit no-history verdict."
   - "diagnose-only outcomes clearly stop before implementation while preserving root cause, owner, and next action."
   - "workflow forensics classify artifact, git, state, or tool failures before repair tasks are generated."
   - "planning/tasks.md and planning/task-manifest.json are explicit enough that cc-do can repair the bug without chat memory."
@@ -109,6 +112,7 @@ tool_budget:
 4. `assets/ANALYSIS_TEMPLATE.md`
 5. `assets/TASKS_TEMPLATE.md`
 6. `assets/TASK_MANIFEST_TEMPLATE.json`
+7. `docs/guides/project-postmortem.md`
 
 ## Use This Skill When
 
@@ -184,6 +188,21 @@ NO REPAIR WITHOUT A FROZEN ROOT-CAUSE CONTRACT
 - Forbidden actions: writing production code, disguising guesses as root cause, or skipping directly from symptoms to repair.
 - Required evidence: every root-cause claim must point to reproduction evidence, code facts, recent history, or explicit user confirmation.
 - Reroute rule: product/scope changes go to `cc-plan`; strategy questions go to `roadmap`; only confirmed repair handoff goes to `cc-do`.
+
+## Project Postmortem Recall Gate
+
+`cc-investigate` 必须先查项目级 AI 尸检报告，再宣称 bug 是新问题。历史不是权威结论，但它能暴露模型容易重复的错判。
+
+```bash
+rg -n "<symptom|module|boundary|failure-class|model-risk>" devflow/postmortems
+```
+
+执行规则：
+
+1. `devflow/postmortems/` 不存在时，在 `planning/analysis.md` 记录 `no-project-postmortems-yet`。
+2. 有命中时，先读 `INDEX.md` / `principles.md`，再打开最相关的 1-2 个 incident。
+3. 相关 incident 必须进入假设表或反证表：同根因、相似症状不同根因、已知模型陷阱、或明确不相关。
+4. 如果本次确认是重复根因，`Root Cause` 的 `Prior history relationship` 必须标成 `recurring` 或 `same-root-cause`。
 
 ## Output Model
 

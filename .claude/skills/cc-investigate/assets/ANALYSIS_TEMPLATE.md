@@ -16,7 +16,7 @@
 ## Progressive Disclosure Index
 
 - Default read: Symptom, Feedback Loop Contract, Confirmed Root Cause, Repair Boundary.
-- Open for root-cause doubt: Evidence Chain, Root Cause Proof Ladder, Boundary Probe Matrix, Backward Trace Chain, Hypothesis Ledger.
+- Open for root-cause doubt: Project Postmortem Recall, Evidence Chain, Root Cause Proof Ladder, Boundary Probe Matrix, Backward Trace Chain, Hypothesis Ledger.
 - Open for workflow failures: Workflow Forensics, Debug Session, Cleanup Checklist.
 - Open for handoff/audit: Prevention Handoff, Roadmap Sync Gate, Review Notes.
 
@@ -64,6 +64,23 @@
 - Prior investigations:
 - TODO / backlog / report-card signals:
 - Native domain / decision context:
+
+## Project Postmortem Recall
+
+- Search status: `no-project-postmortems-yet` | `searched-no-match` | `matches-found`
+- Search command:
+- Search terms:
+- Sources opened:
+  - `devflow/postmortems/INDEX.md`
+  - `devflow/postmortems/principles.md`
+  - `devflow/postmortems/incidents/<date>-<change-key>.md`
+- Similar incidents:
+- Matching principles:
+- Relevant Git evidence:
+- Relationship to current bug: `new` | `recurring` | `same-root-cause` | `similar-symptom-different-root-cause` | `not-related`
+- Impact on hypotheses:
+- Impact on repair boundary:
+- No-op reason:
 
 ## Workflow Forensics
 
