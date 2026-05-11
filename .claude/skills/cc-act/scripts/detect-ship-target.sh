@@ -7,11 +7,24 @@ set -euo pipefail
 # ------------------------------------------------------------
 
 current_branch="$(git branch --show-current 2>/dev/null || true)"
+head_sha="$(git rev-parse --short HEAD 2>/dev/null || true)"
+inside_work_tree="$(git rev-parse --is-inside-work-tree 2>/dev/null || true)"
 remote_url="$(git remote get-url origin 2>/dev/null || true)"
 platform="unknown"
 base_branch=""
 pr_status="none"
 pr_url=""
+branch_state="unknown"
+branch_rescue="none"
+rescue_action=""
+
+if [[ -n "$current_branch" ]]; then
+  branch_state="branch"
+elif [[ "$inside_work_tree" == "true" && -n "$head_sha" ]]; then
+  branch_state="detached"
+else
+  branch_state="none"
+fi
 
 if [[ "$remote_url" == *github.com* ]]; then
   platform="github"
@@ -71,12 +84,26 @@ elif [[ -n "$remote_url" ]]; then
   decision_hint="create-pr"
 fi
 
+if [[ "$branch_state" == "detached" ]]; then
+  if [[ -n "$remote_url" ]]; then
+    branch_rescue="create-branch-before-pr"
+    rescue_action="Create a named branch at HEAD before commit/push/PR; do not stop only because CURRENT_BRANCH is empty."
+  else
+    branch_rescue="create-local-branch-or-handoff"
+    rescue_action="Create a named local branch at HEAD before local closeout, or write local-handoff if no branch should be created."
+  fi
+fi
+
 cat <<EOF
 CURRENT_BRANCH=$current_branch
+BRANCH_STATE=$branch_state
+HEAD_SHA=$head_sha
 BASE_BRANCH=$base_branch
 PLATFORM=$platform
 REMOTE_URL=$remote_url
 PR_STATUS=$pr_status
 PR_URL=$pr_url
 DECISION_HINT=$decision_hint
+BRANCH_RESCUE=$branch_rescue
+RESCUE_ACTION=$rescue_action
 EOF

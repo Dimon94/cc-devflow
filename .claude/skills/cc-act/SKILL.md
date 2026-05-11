@@ -1,6 +1,6 @@
 ---
 name: cc-act
-version: 1.8.2
+version: 1.8.3
 description: 'Use when verified work must be shipped or handed off with a clear landing path: run simplify and required tests, create or update a PR, prepare a local handoff, close out merged work, sync docs, write release notes, and fold follow-ups back into backlog or roadmap.'
 triggers:
   - 准备提 PR
@@ -19,6 +19,7 @@ reads:
   - assets/RELEASE_NOTE_TEMPLATE.md
   - ../cc-roadmap/scripts/locate-roadmap-item.sh
   - ../cc-roadmap/scripts/sync-roadmap-progress.sh
+  - scripts/ensure-ship-branch.sh
 writes:
   - path: devflow/changes/<change-key>/handoff/pr-brief.md
     durability: durable
@@ -112,6 +113,7 @@ tool_budget:
 | --- | --- |
 | 在 feature branch，远端可用，还没有 PR / MR | `create-pr` |
 | 在 feature branch，已经有打开的 PR / MR | `update-pr` |
+| 在 detached HEAD，用户要求继续 / 提交远程 PR，且远端可用 | 先 `ensure-ship-branch.sh`，再按 `create-pr` |
 | 在 feature branch，但现在不推远端或工具不可用 | `local-handoff` |
 | 已在 base branch，或 requirement 已合并完成 | `post-merge-closeout` |
 
@@ -130,6 +132,8 @@ tool_budget:
 2. 再读 `planning/design.md` 或 `planning/analysis.md`、`planning/tasks.md`、`planning/task-manifest.json`、`change-meta.json`、相关 capability spec；如果已有 `handoff/resume-index.md`，一并读取，确认这次到底完成了什么。
 3. 运行 `scripts/verify-act-gate.sh --dir <requirement-dir>`，确认 gate 真的闭合。
 4. 运行 `scripts/detect-ship-target.sh`，识别当前分支、base branch、PR 状态与推荐 ship 路径。
+   - 如果输出 `BRANCH_STATE=detached` 且 `BRANCH_RESCUE=create-branch-before-pr`，这不是阻塞；立即运行 `scripts/ensure-ship-branch.sh --dir <requirement-dir>`，然后重跑最终验证与 `detect-ship-target.sh`。
+   - 用户已经表达“继续 / 提交远程 PR / 推进”的场景下，detached HEAD 只能触发分支锚定，不能把 `create-pr` 降级成 `local-handoff`。
 5. 检查 `review.freshness`、`runtime.failureOwnership`、`qa.coverageAudit`、`qa.browserEvidence`，确认 readiness dashboard 没有 blocker。
 6. 检查 `qa.feedbackLoop`、`qa.behaviorEvidence`、`qa.architectureFollowUps` 和 follow-up brief，确认交付材料继承的是行为证据，不是聊天记忆或易腐烂 TODO。
 7. 定位 source RM：优先读 `change-meta.json` / `task-manifest.json` 的 `sourceRoadmap.itemId`，再用 `locate-roadmap-item.sh` 对照 `devflow/roadmap.json`、`devflow/ROADMAP.md` 和 optional `devflow/BACKLOG.md`；如果 roadmap 状态和 verified reality 冲突，先同步或 reroute，不能继续 ship。
@@ -141,6 +145,7 @@ tool_budget:
 
 1. `create-pr`
    - 当前在 feature branch
+   - 或当前在 detached HEAD 但可以通过 `ensure-ship-branch.sh` 在 HEAD 上创建命名分支
    - 远端存在
    - 当前没有 PR / MR
 2. `update-pr`
@@ -164,6 +169,7 @@ tool_budget:
 1. `create-pr`
    - 必须有 `handoff/pr-brief.md`
    - 必须完成需要同步的 doc updates
+   - 如果 `CURRENT_BRANCH` 为空但 `BRANCH_RESCUE=create-branch-before-pr`，必须先运行 `scripts/ensure-ship-branch.sh --dir <requirement-dir>`，再继续 commit / push / PR
    - 新增提交必须遵守 `references/git-commit-guidelines.md`
    - 远端可用时必须完成 commit、push、`gh pr create`
 2. `update-pr`
@@ -211,6 +217,7 @@ tool_budget:
 `cc-act` 的 ship 动作必须是幂等、可审计、可复跑的：
 
 1. Base and branch：识别 base branch、当前 branch、远端状态、已有 PR / MR，所有 diff/log/push 都基于同一个 base。
+   - detached HEAD 是可恢复的分支事实，不是交付模式；能创建分支时，先锚定命名分支再继续。
 2. Scope completion：PR 简报必须包含 `cc-check` 的 plan completion、scope drift、review finding、验证结果摘要。
 3. Version and changelog：如果项目有 `VERSION`、`package.json`、`CHANGELOG.md`，先判断是否已 bump / 是否漂移；不要重复 bump，也不要覆盖 changelog。
 4. Bisectable commits：提交按逻辑单元拆分，顺序保证每个 commit 独立可理解、尽量可验证；小于 50 行且少于 4 文件可单 commit。
@@ -312,6 +319,7 @@ readiness dashboard 有 blocker 时，不能创建或更新 PR，只能 reroute 
    - 再运行 `scripts/render-pr-brief.sh --dir <requirement-dir>`
 10. 执行分支集成动作：
    - `create-pr`：按 `references/git-commit-guidelines.md` 完成提交并推分支，再优先使用 `gh pr create` 创建 PR / MR
+     - detached HEAD 且远端可用时，先运行 `scripts/ensure-ship-branch.sh --dir <requirement-dir>`；创建分支成功后，不再停在 `local-handoff`
    - `update-pr`：如果有新提交，先按 `references/git-commit-guidelines.md` 完成 commit / push，再刷新 PR / MR body，不沿用陈旧内容
    - `local-handoff`：不假装已经发出，只生成可接手材料
    - `post-merge-closeout`：跳过 PR，完成发布与闭环回写
@@ -357,6 +365,7 @@ readiness dashboard 有 blocker 时，不能创建或更新 PR，只能 reroute 
 - 状态摘要：`scripts/generate-status-report.sh`
 - Gate 校验：`scripts/verify-act-gate.sh`
 - Ship 目标识别：`scripts/detect-ship-target.sh`
+- detached HEAD 分支锚定：`scripts/ensure-ship-branch.sh`
 - 文档同步：`scripts/sync-act-docs.sh`
 - PR 简报生成：`scripts/render-pr-brief.sh`
 - 变更归档：`scripts/archive-change.sh`
@@ -375,10 +384,11 @@ readiness dashboard 有 blocker 时，不能创建或更新 PR，只能 reroute 
 8. `devflow/roadmap.json` 只回写真正改变优先级或产生 follow-up 的事项，并用 `sync-roadmap-progress.sh` 重新生成 `devflow/ROADMAP.md` / `devflow/BACKLOG.md`，不写噪音。
 9. `local-handoff` 不是偷懒模式，它仍然必须让下一位接手者知道做什么、怎么验证、卡在哪。
 10. `create-pr` / `update-pr` 模式默认要求提交历史符合 `references/git-commit-guidelines.md`，并完成正确的 push、PR 创建或更新动作。
-11. CHANGELOG 只能基于当前 diff / commit history / release truth 更新，不允许覆盖既有历史条目。
-12. PR / MR body 每次都从当前事实重建，不沿用旧 body 或旧测试输出。
-13. Verification 每次执行 `cc-act` 都必须重新运行；只有已完成且可证明幂等的动作可以跳过。
-14. source RM 找不到时不能编造新 RM；写 no-op reason。如果 follow-up 改变阶段顺序或优先级，reroute 到 `cc-roadmap`。
+11. detached HEAD 不是小问题停下来的理由；当用户目标是继续或提交远程 PR，先创建命名分支并重跑验证，再推进 `create-pr`。
+12. CHANGELOG 只能基于当前 diff / commit history / release truth 更新，不允许覆盖既有历史条目。
+13. PR / MR body 每次都从当前事实重建，不沿用旧 body 或旧测试输出。
+14. Verification 每次执行 `cc-act` 都必须重新运行；只有已完成且可证明幂等的动作可以跳过。
+15. source RM 找不到时不能编造新 RM；写 no-op reason。如果 follow-up 改变阶段顺序或优先级，reroute 到 `cc-roadmap`。
 
 ## Exit Criteria
 

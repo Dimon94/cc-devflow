@@ -54,6 +54,9 @@ doc_sync_report="$(req_act_doc_sync_report_path "$CHANGE_DIR")"
 
 ship_context="$("$script_dir/detect-ship-target.sh" 2>/dev/null || true)"
 current_branch="$(req_act_ship_field "$ship_context" "CURRENT_BRANCH")"
+branch_state="$(req_act_ship_field "$ship_context" "BRANCH_STATE")"
+branch_rescue="$(req_act_ship_field "$ship_context" "BRANCH_RESCUE")"
+rescue_action="$(req_act_ship_field "$ship_context" "RESCUE_ACTION")"
 base_branch="$(req_act_ship_field "$ship_context" "BASE_BRANCH")"
 ship_mode="$(req_act_ship_field "$ship_context" "DECISION_HINT")"
 pr_status="$(req_act_ship_field "$ship_context" "PR_STATUS")"
@@ -206,7 +209,10 @@ roadmap_sync_summary="$(req_act_roadmap_sync_summary "$manifest" "$REPO_ROOT")"
   echo "## Branch Context"
   echo
   echo "- Current branch: ${current_branch:-unknown}"
+  [[ -n "$branch_state" ]] && echo "- Branch state: $branch_state"
   echo "- Base branch: ${base_branch:-unknown}"
+  [[ -n "$branch_rescue" && "$branch_rescue" != "none" ]] && echo "- Branch rescue: $branch_rescue"
+  [[ -n "$rescue_action" ]] && echo "- Rescue action: $rescue_action"
   if [[ -n "$pr_url" ]]; then
     echo "- PR / MR: $pr_url ($pr_status)"
   else

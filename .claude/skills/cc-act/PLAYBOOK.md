@@ -46,6 +46,7 @@ Roadmap 是执行链路的长期记忆，不是收尾时才想起的备忘录。
 
 - current branch
 - base branch
+- branch state / rescue action
 - platform / remote 能力
 - 是否已有 PR / MR
 - 推荐 ship 模式
@@ -56,6 +57,11 @@ Ship 必须属于这 4 种模式之一：
 - `update-pr`
 - `local-handoff`
 - `post-merge-closeout`
+
+如果 `BRANCH_STATE=detached` 且 `BRANCH_RESCUE=create-branch-before-pr`，立即运行
+`scripts/ensure-ship-branch.sh --dir <requirement-dir>`，然后重跑最终验证与
+`scripts/detect-ship-target.sh`。用户已经要求继续或提交远程 PR 时，detached HEAD
+不是停在 `local-handoff` 的理由。
 
 这里不要只报事实，必须给出一句明确结论：
 
@@ -93,6 +99,7 @@ Ship 必须属于这 4 种模式之一：
 3. 检查提交边界，按逻辑单元拆分，保证提交顺序不引用未来代码。
 4. 如果有 WIP commit，只能用非破坏性 rebase / fixup 处理，不允许盲目 soft reset。
 5. push 前比较 local / remote HEAD；PR 前检查是否已有打开 PR / MR。
+   - 如果当前是 detached HEAD 且目标是远程 PR，先用 `ensure-ship-branch.sh` 锚定命名分支，再做 push / PR。
 6. 生成 readiness dashboard：review freshness、review quality、QA coverage、browser QA、feedback loop、behavior evidence、failure ownership、documentation release、PR body accuracy。
 7. 生成 ship preflight：branch/base/remote/auth/clean tree/review freshness/ship mode。
 8. preflight 失败必须命名为 `ShipPreflightError`，并写明 rescue action 或切到 `local-handoff`。
@@ -156,6 +163,7 @@ Ship 必须属于这 4 种模式之一：
 ### `create-pr`
 
 - 按 `references/git-commit-guidelines.md` 完成提交
+- 如果当前是 detached HEAD，先运行 `scripts/ensure-ship-branch.sh --dir <requirement-dir>`
 - 推送当前分支
 - 用 `gh pr create` 创建 PR / MR
 - PR body 以 `pr-brief.md` 为真相源，并包含 Summary、Test Coverage、Pre-Landing Review、Readiness Dashboard、Scope Drift、Plan Completion、Verification Results、Documentation、Test plan
@@ -245,6 +253,7 @@ Ship 必须属于这 4 种模式之一：
 - `assets/RELEASE_NOTE_TEMPLATE.md` 负责对外发布骨架
 - `scripts/verify-act-gate.sh` 负责 gate 闭合校验
 - `scripts/detect-ship-target.sh` 负责分支与 PR 决策
+- `scripts/ensure-ship-branch.sh` 负责把可继续的 detached HEAD 锚定成可推送分支
 - `scripts/sync-act-docs.sh` 负责同步 requirement 级文档与 doc target 报告
 - `scripts/render-pr-brief.sh` 负责从 requirement 真相源渲染 `pr-brief.md`
 - `scripts/generate-status-report.sh` 负责汇总 requirement 与 ship 现状

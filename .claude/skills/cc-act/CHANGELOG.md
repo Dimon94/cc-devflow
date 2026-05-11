@@ -1,5 +1,11 @@
 # CC-Act Skill Changelog
 
+## v1.8.3 - 2026-05-11
+
+- add `ensure-ship-branch.sh` so detached HEAD closeouts can create a named branch and continue toward `create-pr`
+- surface `BRANCH_STATE`, `BRANCH_RESCUE`, and rescue action fields in ship detection, status, PR briefs, and resume indexes
+- clarify that user-directed continue / remote PR requests should not downgrade to `local-handoff` just because `CURRENT_BRANCH` is empty
+
 ## v1.8.2 - 2026-05-06
 
 - add an execution-time Roadmap Progress Check so act verifies source RM state before ship work continues
