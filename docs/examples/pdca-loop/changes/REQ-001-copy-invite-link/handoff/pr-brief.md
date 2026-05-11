@@ -1,5 +1,9 @@
 # PR Brief
 
+## Document Meta
+
+- Output language: en
+
 ## Decision
 
 - Recommended mode: `create-pr`
@@ -38,6 +42,66 @@
 - Failure ownership: no open failures recorded
 - Documentation release: README and CLAUDE unchanged for this scoped example
 - PR body accuracy: regenerate the PR body from this brief, current report-card, and current diff
+
+## Pull Request Body Contract
+
+- Language source: `Output language: en`
+- PR body language: English
+- Title rule: use English after the Conventional Commits `type(scope)` prefix; keep identifiers, paths, commands, and issue keys unchanged.
+- Body source: current `pr-brief.md`, current diff, current `review/report-card.json`, doc sync output, and roadmap/backlog writeback.
+- Required sections: summary, problem, changes, validation, review/gate evidence, risk/rollback, docs/writeback, and follow-ups.
+- Completeness gate: no empty headings, no stale inherited PR body, no generic "tests passed" without commands or evidence, and no `<placeholder>` text before `gh pr create`.
+
+## Pull Request Body Draft
+
+```markdown
+## Summary
+
+- removes a small but visible sharing friction in the beta flow
+- keeps the patch inside the approved `tiny-design` boundary
+- ships with fresh test, lint, and review proof
+
+## Problem
+
+- Requirement: `RM-001` / `REQ-001`
+- User-visible gap: users can see the invite URL but cannot copy it with one click from the share dialog.
+
+## Changes
+
+- adds a `Copy invite link` action beside the existing invite URL
+- reuses the current invite link source of truth
+- adds copied-state confirmation without redesigning the dialog
+
+## Validation
+
+- `report-card.json` verdict: `pass`
+- `npm test -- src/features/share/ShareDialog.test.tsx`
+- `npm run lint -- src/features/share/ShareDialog.tsx`
+
+## Review / Gate Evidence
+
+- Reviewed base SHA: `example-base`
+- Reviewed head SHA: `example-head`
+- Review packet: `planning/tasks.md#T001-T003`; `planning/design.md`
+- Finding triage: no findings
+- QA / claim evidence: `qa=pass`, `tests-pass=pass`, `requirements-met=pass`
+- Readiness: review freshness=`fresh`; QA coverage has no gaps; browser QA intentionally skipped for this fixture.
+
+## Risk And Rollback
+
+- Main risk: copied-state feedback may still be too subtle for some users.
+- Rollback boundary: revert the share-dialog change and targeted test in one commit; no data migration or external side effect is involved.
+
+## Docs And Writeback
+
+- `CLAUDE.md`: unchanged
+- `README.md`: unchanged
+- Roadmap progress: `RM-001` is ready for PR review after this create-pr handoff.
+
+## Follow-ups
+
+- If users still miss the feedback, lift `RM-002` into the next requirement.
+```
 
 ## Summary
 

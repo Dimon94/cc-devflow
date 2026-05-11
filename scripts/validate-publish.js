@@ -661,6 +661,45 @@ function validateCcActCommitGuidelines(errors) {
   }
 }
 
+function validateCcActPrBodyTemplateContracts(errors) {
+  const skill = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-act/SKILL.md'), 'utf8');
+  const playbook = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-act/PLAYBOOK.md'), 'utf8');
+  const template = fs.readFileSync(
+    path.join(ROOT, '.claude/skills/cc-act/assets/PR_BRIEF_TEMPLATE.md'),
+    'utf8'
+  );
+  const renderer = fs.readFileSync(
+    path.join(ROOT, '.claude/skills/cc-act/scripts/render-pr-brief.sh'),
+    'utf8'
+  );
+
+  const requiredSnippets = [
+    ['cc-act SKILL.md', skill, '## Pull Request Body Template Contract'],
+    ['cc-act SKILL.md', skill, '中文项目输出中文 PR 标题和正文'],
+    ['cc-act SKILL.md', skill, 'summary、problem、changes、validation、review/gate evidence、risk/rollback、docs/writeback、follow-ups'],
+    ['cc-act PLAYBOOK.md', playbook, 'Pull Request Body Draft'],
+    ['cc-act PR_BRIEF_TEMPLATE.md', template, '## Pull Request Body Contract'],
+    ['cc-act PR_BRIEF_TEMPLATE.md', template, '## Pull Request Body Draft'],
+    ['cc-act PR_BRIEF_TEMPLATE.md', template, 'Summary / 摘要'],
+    ['cc-act PR_BRIEF_TEMPLATE.md', template, 'Risk And Rollback / 风险与回滚'],
+    ['cc-act render-pr-brief.sh', renderer, 'pr_body_locale="zh"'],
+    ['cc-act render-pr-brief.sh', renderer, 'pr_language_label="中文"'],
+    ['cc-act render-pr-brief.sh', renderer, '## Pull Request Body Contract'],
+    ['cc-act render-pr-brief.sh', renderer, '## Pull Request Body Draft'],
+    ['cc-act render-pr-brief.sh', renderer, '## 摘要'],
+    ['cc-act render-pr-brief.sh', renderer, '## Problem'],
+    ['cc-act render-pr-brief.sh', renderer, '## Review / Gate Evidence'],
+    ['cc-act render-pr-brief.sh', renderer, 'gh pr create'],
+    ['cc-act render-pr-brief.sh', renderer, 'gh pr edit']
+  ];
+
+  for (const [label, content, snippet] of requiredSnippets) {
+    if (!content.includes(snippet)) {
+      errors.push(`${label} missing PR body template snippet: ${snippet}`);
+    }
+  }
+}
+
 function validatePublicSkillContracts(errors) {
   for (const skillName of PUBLIC_SKILLS) {
     const skillPath = path.join(ROOT, '.claude', 'skills', skillName, 'SKILL.md');
@@ -1014,6 +1053,7 @@ function main() {
   validateCcPlanPlanningContracts(errors);
   validateCcInvestigateContracts(errors);
   validateCcActCommitGuidelines(errors);
+  validateCcActPrBodyTemplateContracts(errors);
   validateArtifactOwnershipContracts(errors);
   validatePublicSkillContracts(errors);
   validateExampleBindings(errors);
@@ -1040,5 +1080,6 @@ module.exports = {
   collectSlimManifestErrors,
   validateArtifactOwnershipContracts,
   validateCcActCommitGuidelines,
+  validateCcActPrBodyTemplateContracts,
   ensureStringArray
 };
