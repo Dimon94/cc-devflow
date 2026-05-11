@@ -19,6 +19,13 @@
 - Date:
 - Owner:
 
+## Progressive Disclosure Index
+
+- Default read: Requirement Snapshot, Approved Direction, Validation Strategy, Roadmap Sync Gate.
+- Open for scope/design questions: Source Handoff, Options Considered, Design, Implementation Surface Map.
+- Open for trust/conflict questions: Source Trust Boundary, External Document Conflicts, Domain Language & Durable Decisions.
+- Open for audit/recovery: Review Gate, Bounded Review Loop, Decision Questions, Risks.
+
 ## Source Handoff
 
 - Source stage:

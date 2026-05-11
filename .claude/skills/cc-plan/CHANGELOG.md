@@ -1,5 +1,12 @@
 # CC-Plan Skill Changelog
 
+## v3.8.3 - 2026-05-11
+
+- slim `task-manifest.json` back to execution graph truth instead of duplicating `planning/design.md` and `planning/tasks.md`
+- retire manifest-only narrative/protocol/status mirrors: top-level `status`, `activePhase`, `sourceRoadmap`, `spec`, `executionProtocol`, `planningMeta.requirementBrief`, `planningMeta.ambiguityGate`, `planningMeta.reviewLoop`, `sourceEvidence[]`, `languageAndDecisions`, `executionDiscipline`, and task-level `completion`
+- keep roadmap/spec state in `change-meta.json` and `devflow/roadmap.json`, task completion commands in `planning/tasks.md`, and execution graph state in `task-manifest.json`
+- add progressive disclosure indexes to design and task templates so lower-frequency context is opened only when needed
+
 ## v3.8.2 - 2026-05-10
 
 - require `cc-plan` to generate executable tasks from the bundled task template instead of loose Markdown checklists

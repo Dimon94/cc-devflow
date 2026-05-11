@@ -1,57 +1,18 @@
 {
   "changeId": "REQ-XXX",
+  "goal": "Deliver planned requirement changes safely.",
+  "createdAt": "2026-05-11T00:00:00.000Z",
+  "updatedAt": "2026-05-11T00:00:00.000Z",
   "requirementId": "REQ-XXX",
   "requirementVersion": "REQ-XXX.v1",
   "outputPolicy": {
     "documentLanguage": ""
   },
-  "sourceRoadmap": {
-    "itemId": "RM-001",
-    "roadmapVersion": "1.0",
-    "roadmapSkillVersion": "5.2.0",
-    "syncStatus": "pending",
-    "syncCommand": ".claude/skills/cc-roadmap/scripts/sync-roadmap-progress.sh --rm RM-001 --status Planned --req REQ-XXX --progress 0%",
-    "updatedFiles": [
-      "devflow/roadmap.json",
-      "devflow/ROADMAP.md",
-      "devflow/BACKLOG.md"
-    ],
-    "noOpReason": "",
-    "sourceStage": "Stage 1",
-    "successSignal": "User can complete the new flow without manual workaround",
-    "killSignal": "Implementation requires reworking unrelated modules",
-    "dependencies": [
-      "Existing auth/session contract stays unchanged"
-    ],
-    "nonGoals": [
-      "No redesign of unrelated settings screens"
-    ]
-  },
   "planningMeta": {
-    "reqPlanSkillVersion": "3.8.2",
+    "reqPlanSkillVersion": "3.8.3",
     "designVersion": "design.v1",
     "approvedAt": "2026-04-15T12:00:00.000Z",
-    "approvedBy": "user",
     "basedOnOption": "Option A",
-    "requirementBrief": {
-      "problemStatement": "The user-perspective problem this requirement solves.",
-      "solutionSummary": "The user-perspective solution after the requirement lands.",
-      "actors": [],
-      "userStories": [
-        {
-          "id": "US-001",
-          "actor": "",
-          "want": "",
-          "benefit": "",
-          "acceptance": []
-        }
-      ],
-      "edgeOrRecoveryStories": [],
-      "implementationDecisions": [],
-      "testingDecisions": [],
-      "outOfScope": [],
-      "furtherNotes": []
-    },
     "aiLeverageDecisionLens": {
       "realUserOrOperator": "",
       "statusQuoWorkaround": "",
@@ -72,21 +33,6 @@
       "verdict": "sharp-wedge",
       "missingEvidenceOrPivotReason": "",
       "impactOnApprovedDirection": ""
-    },
-    "ambiguityGate": {
-      "whatScore": 0,
-      "whyScore": 0,
-      "blockingThreshold": 3,
-      "status": "pass",
-      "assumptionsPreview": [],
-      "blockedQuestions": []
-    },
-    "reviewLoop": {
-      "attempt": 1,
-      "maxAttempts": 3,
-      "repeatedConcernFingerprints": [],
-      "stallReason": "",
-      "rerouteIfStalled": "ask-user"
     },
     "externalBestPractice": {
       "needed": false,
@@ -131,187 +77,24 @@
       }
     ]
   },
-  "executionProtocol": {
-    "templateCompliance": {
-      "required": true,
-      "sourceTemplate": "assets/TASKS_TEMPLATE.md",
-      "taskBlockMustInclude": [
-        "Goal",
-        "TDD phase",
-        "Files",
-        "Read first",
-        "Verification",
-        "Evidence",
-        "Test seam",
-        "Public verification path",
-        "Allowed mocks",
-        "Completion"
-      ],
-      "titleOnlyTasks": "forbidden"
-    },
-    "selection": {
-      "sourceOfTruth": "planning/task-manifest.json.currentTaskId",
-      "commandTemplate": "SCRIPT_ROOT=\".claude/skills/cc-do/scripts\"; if [[ ! -d \"$SCRIPT_ROOT\" && -d \".codex/skills/cc-do/scripts\" ]]; then SCRIPT_ROOT=\".codex/skills/cc-do/scripts\"; fi; bash \"$SCRIPT_ROOT/select-ready-tasks.sh\" --manifest devflow/changes/<change-key>/planning/task-manifest.json"
-    },
-    "completion": {
-      "manualStatusEdit": "forbidden",
-      "commandTemplate": "SCRIPT_ROOT=\".claude/skills/cc-do/scripts\"; if [[ ! -d \"$SCRIPT_ROOT\" && -d \".codex/skills/cc-do/scripts\" ]]; then SCRIPT_ROOT=\".codex/skills/cc-do/scripts\"; fi; bash \"$SCRIPT_ROOT/mark-task-complete.sh\" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task <task-id>",
-      "failurePolicy": "Do not hand-edit status; fix missing checkpoint, review gate, or dependency evidence and rerun the script.",
-      "updates": [
-        "planning/task-manifest.json.tasks[].status",
-        "planning/task-manifest.json.currentTaskId",
-        "planning/task-manifest.json.status",
-        "planning/tasks.md checkbox"
-      ]
-    }
-  },
-  "sourceEvidence": [
-    {
-      "source": "planning/design.md",
-      "trust": "internal-contract",
-      "useAs": "contract",
-      "instructionRisk": "low",
-      "decision": "authoritative for this requirement"
-    }
-  ],
-  "languageAndDecisions": {
-    "languageSources": [],
-    "canonicalTerms": [],
-    "languageConflicts": [],
-    "decisionDocs": [],
-    "adrOrSpecConflicts": [],
-    "externalDocConflicts": {
-      "autoResolved": [],
-      "competing": [],
-      "unresolved": []
-    }
-  },
-  "executionDiscipline": {
-    "default": "red-green-refactor",
-    "taskShape": "vertical-tracer-bullets",
-    "testFirstRequired": true,
-    "testFrameworkSource": "",
-    "testQualityPolicy": {
-      "publicInterfaceRequired": true,
-      "behaviorAssertionRequired": true,
-      "specStyleTestNameRequired": true,
-      "oneLogicalBehaviorPerRed": true,
-      "publicVerificationPathRequired": true,
-      "mockBoundary": "system-boundaries-only",
-      "implementationDetailTests": "blocked",
-      "bulkRedTests": "blocked",
-      "boundaryAdapterShape": "specific-operations-preferred",
-      "feedbackLoopPreference": [
-        "automated-test",
-        "http-curl",
-        "cli-fixture",
-        "browser-script",
-        "trace-replay",
-        "throwaway-harness",
-        "property-fuzz",
-        "differential-loop",
-        "hitl-script"
-      ]
-    },
-    "regressionTestsRequired": [],
-    "tddExceptions": []
-  },
-  "status": "planned",
-  "designMode": "tiny-design",
-  "approvedOption": "Option A",
-  "designStatus": "approved",
-  "reviewStatus": "approved",
-  "spec": {
-    "primaryCapability": "cap-example",
-    "secondaryCapabilities": [],
-    "expectedDelta": [
-      "Tighten current truth for the capability"
-    ],
-    "affectedInvariants": [],
-    "gapsClosed": [],
-    "newGaps": [],
-    "specFiles": [
-      "devflow/specs/capabilities/cap-example.md"
-    ],
-    "syncStatus": "planned"
-  },
-  "tasteDecisions": [],
-  "userChallenges": [],
   "currentTaskId": "T001",
-  "activePhase": 1,
-  "frozenDecisions": [
-    "Keep the existing route and data contract",
-    "Prefer a minimal patch over a broader refactor"
-  ],
   "tasks": [
     {
       "id": "T001",
       "title": "[TEST] Add a failing test for the missing behavior",
+      "type": "TEST",
       "phase": 1,
-      "status": "pending",
-      "tddPhase": "red",
-      "verticalSlice": "Slice 1",
-      "testSeam": {
-        "entry": "public interface / caller flow / CLI / API / UI / trace replay / harness",
-        "behaviorAsserted": "The user or caller observable behavior that should exist",
-        "specStyleTestName": "caller can observe the required behavior",
-        "oneLogicalBehavior": true,
-        "publicVerificationPath": "Read back through the same public interface or user-visible path",
-        "implementationDetailRisk": "low"
-      },
-      "feedbackLoop": {
-        "type": "automated-test",
-        "determinism": "deterministic",
-        "expectedFailure": "Fails because the target behavior is missing"
-      },
-      "allowedMocks": [
-        "external API / time / randomness / filesystem / database boundary"
-      ],
-      "testQuality": {
-        "usesPublicInterface": true,
-        "describesBehavior": true,
-        "specStyleName": true,
-        "oneLogicalBehavior": true,
-        "verifiesThroughPublicPath": true,
-        "survivesInternalRefactor": true,
-        "mocksOnlySystemBoundaries": true,
-        "noBulkRed": true
-      },
-      "greenMinimality": {
-        "guard": "Implement only the code needed to pass this Red behavior",
-        "noSpeculativeBranches": true
-      },
-      "completion": {
-        "command": "SCRIPT_ROOT=\".claude/skills/cc-do/scripts\"; if [[ ! -d \"$SCRIPT_ROOT\" && -d \".codex/skills/cc-do/scripts\" ]]; then SCRIPT_ROOT=\".codex/skills/cc-do/scripts\"; fi; bash \"$SCRIPT_ROOT/mark-task-complete.sh\" --manifest devflow/changes/REQ-XXX-short-name/planning/task-manifest.json --tasks devflow/changes/REQ-XXX-short-name/planning/tasks.md --task T001",
-        "requiredBeforeCompletion": [
-          "verification evidence captured",
-          "checkpoint written",
-          "spec review gate recorded",
-          "code review gate recorded"
-        ],
-        "forbiddenShortcuts": [
-          "manual checkbox edit",
-          "manual manifest status edit",
-          "leaving currentTaskId stale"
-        ]
-      },
-      "refactorCandidates": [
-        "duplication",
-        "long method",
-        "shallow module",
-        "feature envy",
-        "primitive obsession",
-        "naming",
-        "more than three nested branches"
-      ],
-      "dependsOn": [],
       "parallel": false,
+      "dependsOn": [],
       "touches": [
         "tests",
         "requirement-behavior"
       ],
       "files": [
         "src/feature/feature.test.ts"
+      ],
+      "run": [
+        "npm test -- src/feature/feature.test.ts"
       ],
       "acceptance": [
         "The target behavior is reproduced as a failing test",
@@ -340,11 +123,31 @@
       "reviews": {
         "spec": "pending",
         "code": "pending"
-      }
+      },
+      "status": "pending",
+      "tddPhase": "red",
+      "verticalSlice": "Slice 1",
+      "testSeam": {
+        "entry": "public interface / caller flow / CLI / API / UI / trace replay / harness",
+        "behaviorAsserted": "The user or caller observable behavior that should exist",
+        "specStyleTestName": "caller can observe the required behavior",
+        "oneLogicalBehavior": true,
+        "publicVerificationPath": "Read back through the same public interface or user-visible path",
+        "implementationDetailRisk": "low"
+      },
+      "feedbackLoop": {
+        "type": "automated-test",
+        "determinism": "deterministic",
+        "expectedFailure": "Fails because the target behavior is missing"
+      },
+      "checks": [],
+      "attempts": 0,
+      "maxRetries": 1
     }
   ],
-  "openQuestions": [],
-  "deferredQuestions": [
-    "If the patch touches shared contracts, upgrade the design to full-design"
-  ]
+  "metadata": {
+    "source": "tasks.md",
+    "generatedBy": "skill:cc-plan",
+    "planVersion": 1
+  }
 }
