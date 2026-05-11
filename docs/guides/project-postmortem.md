@@ -47,6 +47,18 @@ Every incident file should include:
   class.
 - Search terms future agents should use before repeating similar work.
 
+## Redaction Guard
+
+Postmortems are durable repo artifacts, so they must never preserve secrets,
+tokens, private customer data, personal machine paths, or raw private logs unless
+the repository already treats that exact artifact as public source truth.
+
+- Record the command, file path, commit, or artifact pointer that proves the fact.
+- Quote only the minimal output needed to prove the incident.
+- Replace sensitive values with `<redacted>` and add a short redaction summary.
+- If the only available proof is sensitive, cite the owner artifact and describe
+  the observed shape instead of copying the raw value.
+
 ## Read Gates
 
 `cc-plan`, `cc-investigate`, and `cc-do` must run a quick local search before they

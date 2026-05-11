@@ -169,7 +169,8 @@ tool_budget:
 2. 再更新 `INDEX.md` 的短入口：日期、change、severity、tags、one-line lesson、incident 链接。
 3. 只有能从 incident 和 Git 证据提炼出可迁移规则时，才更新 `principles.md`；原则必须引用 incident 和 Git 证据。
 4. 报告使用渐进式披露：默认层只给检索和提醒，深层 incident 才放完整时间线、根因、逃逸原因和验证记录。
-5. 尸检报告不拥有 roadmap、task、review 或 spec 状态；只能引用对应 owner artifact 和 Git 证据。
+5. 写入前执行 Redaction Guard：不要复制 secret、token、客户数据、个人机器路径或私密原始日志；必要证据用 `<redacted>` 和 redaction summary 表达。
+6. 尸检报告不拥有 roadmap、task、review 或 spec 状态；只能引用对应 owner artifact 和 Git 证据。
 
 ## Entry Gate
 

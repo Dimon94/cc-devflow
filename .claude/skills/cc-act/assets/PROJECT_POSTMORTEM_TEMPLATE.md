@@ -47,6 +47,14 @@
   - `git log --oneline --decorate -n 12`
   - `git diff --stat <base>...HEAD`
 
+## Redaction Guard
+
+- Sensitive values copied: yes / no
+- Redacted values:
+  - `<redacted>`:
+- Private logs or customer data omitted:
+- Evidence shape preserved without raw sensitive value:
+
 ## Timeline
 
 | Time | Event | Evidence |

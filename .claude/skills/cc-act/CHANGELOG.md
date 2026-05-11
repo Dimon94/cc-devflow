@@ -5,6 +5,7 @@
 - add project-level AI postmortem writeback under `devflow/postmortems/` for FIX closeout and recurring AI/process/engineering failures
 - add index, principle, and incident templates with progressive disclosure, Git evidence, verification evidence, and prevention summaries
 - make `cc-act` the default postmortem writer because ship closeout has the verified review range, branch state, commits, PR/handoff, and follow-up truth
+- add a Redaction Guard so project postmortems preserve evidence without copying secrets, customer data, private logs, or personal machine paths
 - make post-merge archive a hard closeout gate instead of a soft next-action suggestion
 - require `cc-devflow archive-change <change-key>` plus archive-path proof for `post-merge-closeout`
 - allow skipping archive only with an explicit `ArchiveSkip` blocker and retry command in handoff material
