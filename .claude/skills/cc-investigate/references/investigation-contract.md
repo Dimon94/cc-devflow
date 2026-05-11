@@ -19,6 +19,7 @@
 - prior investigation signal
 - boundary probe matrix, when the failure crosses components
 - backward trace chain, when the error appears below the original trigger
+- root cause proof ladder: symptom site, first bad state, violated contract, original trigger, counterfactual proof, escape reason
 - reference comparison, when a similar working path exists
 - diagnostic instrumentation plan, when probes are needed
 - pattern analysis
@@ -53,6 +54,19 @@
 - `status`：`pending` / `confirmed` / `rejected` / `needs-more-evidence`
 
 只有 `confirmed` 假设可以进入 Root Cause。
+
+## Root Cause Proof Ladder
+
+confirmed root cause 必须证明：
+
+- `symptomSite`：用户实际看到的失败点
+- `firstBadState`：状态第一次变坏的位置和证据
+- `violatedContract`：被破坏的契约、invariant、schema、协议或时序条件
+- `originalTrigger`：制造 first bad state 的动作、事件、diff、配置或外部响应
+- `counterfactualProof`：恢复契约、替换输入、回滚 diff 或断言边界后的实际观察
+- `escapeReason`：为什么测试、类型、review、监控或 artifact gate 没挡住
+
+缺 `firstBadState`、`originalTrigger` 或 `counterfactualProof` 时，根因状态只能是 `needs-more-evidence`；不允许生成 repair task。
 
 ## Feedback Loop Contract
 

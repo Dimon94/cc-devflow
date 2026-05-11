@@ -41,6 +41,7 @@ entry_gate:
   - Read roadmap handoff, current requirement files, code, docs, and tests before drafting design.
   - Load cc-devflow native language and decision sources (`devflow/specs/`, roadmap/backlog handoff, current or prior `planning/design.md` / `planning/analysis.md`, and `change-meta.json`) before naming concepts, modules, tests, or tasks.
   - "Synthesize a PRD-grade requirement brief inside `planning/design.md`: user-perspective problem, solution, actors, user stories, durable implementation decisions, testing decisions, and out-of-scope boundaries."
+  - "Run the Deep Planning Funnel before the first design recommendation: requirement reality, system shape, interface/data contract, abstraction/encapsulation, execution architecture, task contract, and final approval. Record every round in `planning/design.md`."
   - Freeze problem, constraints, non-goals, and success criteria before proposing implementation tasks.
   - If the raw ask spans multiple independent subsystems, split it back into roadmap stages or separate REQ/FIX candidates before asking implementation details.
   - "For non-trivial designs, compare named option roles: minimal viable, ideal architecture, and optional hybrid. Do not default to smallest unless it best serves the goal."
@@ -56,6 +57,7 @@ entry_gate:
   - Before exit, locate the source RM in `devflow/roadmap.json`, `devflow/ROADMAP.md`, optional `devflow/BACKLOG.md`, or legacy `devflow/roadmap-tracking.json`; plan the progress sync instead of relying on chat memory.
 exit_criteria:
   - planning/design.md captures the approved solution, PRD-grade requirement brief, boundaries, review conclusions, and execution edge cases.
+  - planning/design.md preserves every confirmed planning-funnel answer that would otherwise force `cc-do` to invent architecture, abstractions, interfaces, methods, fields, categories, task grain, or test seams.
   - planning/tasks.md, planning/task-manifest.json, and change-meta.json are explicit enough that cc-do can continue without chat memory.
   - planning/tasks.md contains the task-template compliance section and script-based completion protocol, and every task block includes its completion command.
   - task-manifest.json omits retired narrative/protocol mirrors such as `executionProtocol`, `planningMeta.requirementBrief`, `planningMeta.ambiguityGate`, `planningMeta.reviewLoop`, and task-level `completion`; those details belong in `planning/design.md` or `planning/tasks.md`.
@@ -304,6 +306,28 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key
 
 一次只问一个关键未知点。能从代码、文档、测试、git 历史里确认的问题，不问用户。
 
+## Deep Planning Funnel
+
+`cc-plan` 不允许先产出一版表层计划再指望 `cc-do` 补脑。非 trivial、`clarify-first`、`full-design`，以及任何会新增接口 / 数据字段 / 状态流 / 多文件协作的 `tiny-design`，都必须先跑这个 funnel。每一轮只处理一个会改变设计或任务切分的未知点；能从 repo evidence 确认的就 auto-decide 并写证据，不能确认且会改变下游任务的就用 `Decision Question Protocol` 问用户并 STOP。
+
+固定轮次：
+
+1. Requirement Reality Round：确认真实用户 / operator、痛点、status quo workaround、最小成功信号、非目标。缺失任一项时，不能推荐实现方案。
+2. System Shape Round：确认现有代码链路、模块归属、状态 / 数据流、复用点、边界外系统、需要保留的不变量。
+3. Interface & Data Contract Round：确认 public interface、调用方、输入输出、关键字段、错误形态、权限 / 边界、向后兼容或迁移要求、字段分类和命名来源。
+4. Abstraction & Encapsulation Round：确认哪些复杂度藏进哪个模块，哪些抽象被拒绝，哪些方法 / 函数属于公共面，哪些必须保持私有，三层以上分支如何通过设计消掉。
+5. Execution Architecture Round：确认 foundation / core logic / integration / polish-tests 阶段的冻结决策、文件职责、耦合风险、失败恢复、分发 / discoverability 边界。
+6. Task Contract Round：确认每条 tracer bullet 的 user story / edge story、Red test name、public seam、Green minimality guard、refactor candidates、AFK/HITL、2-5 分钟任务粒度和 `mark-task-complete.sh` 完成方式。
+7. Final Approval Round：展示已冻结方案和任务合同摘要。用户批准前，不允许写 `planning/tasks.md`、`task-manifest.json` 或 `change-meta.json`。
+
+轮次通过标准：
+
+- 每轮都必须落到 `planning/design.md` 的 `Deep Planning Funnel` 表里，状态只能是 `confirmed`、`auto-decided`、`blocked` 或 `not-applicable`。
+- `blocked` 不得继续生成任务；只能问一个 blocking question、拆回 roadmap / 多个 REQ/FIX，或记录用户明确接受的 HITL 边界。
+- 如果用户给了“完整方案”，也不能跳过 funnel；改为逐轮审计已有方案，并把通过 / 缺口 / 修正写入 design。
+- 如果连续两轮都暴露新接口、字段、状态机或跨模块决策，自动升级 `full-design`；不要用 `tiny-design` 承载大需求。
+- 第一版设计推荐必须基于前四轮；执行任务必须基于前六轮。少一轮，就是表层计划。
+
 ## AI Leverage Decision Lens
 
 `cc-plan` 的目标不是把所有可能性都写成任务，也不是把 AI 绑成只会做小 MVP。它要把 requirement 压成真实、可验证、充分利用 AI 杠杆的交付路径。方案批准前必须过这个 lens。
@@ -415,20 +439,22 @@ STOP: wait for the user answer before continuing.
 ## Session Protocol
 
 1. 先探索上下文，再写结论。
-2. 澄清时一次只问一个关键问题，不做问题轰炸。
-3. 先写问题、目标、约束、非目标、成功标准，再写方案。
-4. 如果方向仍不稳，给 2-3 个方案，带 trade-off 和推荐，但这些内容都写进 `planning/design.md`。
+2. 先跑 Deep Planning Funnel；第一版设计推荐必须基于前四轮，任务合同必须基于前六轮。
+3. 澄清时一次只问一个关键问题，不做问题轰炸。
+4. 先写问题、目标、约束、非目标、成功标准，再写方案。
+5. 如果方向仍不稳，给 2-3 个方案，带 trade-off 和推荐，但这些内容都写进 `planning/design.md`。
    - `full-design` 的方案必须至少包含 `minimal viable` 和 `ideal architecture` 两个角色。
    - 两个角色权重相等；小方案不是默认答案，理想架构也不是默认过度设计。
    - 只有一个方案成立时，必须写清其它方案为何被排除。
    - 用户批准必须走 `Decision Question Protocol`，不能用自由问句代替。
-5. 推荐方案没有得到用户明确批准前，不允许生成 `planning/tasks.md`。
-6. 批准后先判断这次用 `tiny-design` 还是 `full-design`。
-7. 把批准后的唯一方案冻结进 `planning/design.md`。
-8. 在 `planning/design.md` 内完成 review loop 与 final gate，不再额外拆出 `PLAN_REVIEW.md`。
-9. 只有 design gate 真正通过，才能写 `planning/tasks.md`、`planning/task-manifest.json` 和 `change-meta.json`。
-10. 退出前执行 Roadmap Sync Gate：用 `locate-roadmap-item.sh` 定位 `RM-ID`，再用 `sync-roadmap-progress.sh` 回写 `status`、`req`、`progress`、capability 和 spec delta；没有源 RM 时必须在 `planning/design.md` 与 `change-meta.json.roadmapSync` 写明 `no-source-rm`。
-11. 计划完成后，下一步唯一答案是 `cc-do`。
+6. 推荐方案没有得到用户明确批准前，不允许生成 `planning/tasks.md`。
+7. 批准后先判断这次用 `tiny-design` 还是 `full-design`。
+8. 把批准后的唯一方案冻结进 `planning/design.md`。
+9. 在 `planning/design.md` 内完成 review loop 与 final gate，不再额外拆出 `PLAN_REVIEW.md`。
+10. 只有 design gate 真正通过，才能写 `planning/tasks.md`、`planning/task-manifest.json` 和 `change-meta.json`。
+11. 写任务前，把 Task Contract Round 的每条结论同步到 `planning/tasks.md`、`tasks[].contract` 和 `tasks[].testSeam`；完整 funnel 叙事留在 `planning/design.md`，没有落盘的对话结论不算计划事实。
+12. 退出前执行 Roadmap Sync Gate：用 `locate-roadmap-item.sh` 定位 `RM-ID`，再用 `sync-roadmap-progress.sh` 回写 `status`、`req`、`progress`、capability 和 spec delta；没有源 RM 时必须在 `planning/design.md` 与 `change-meta.json.roadmapSync` 写明 `no-source-rm`。
+13. 计划完成后，下一步唯一答案是 `cc-do`。
 
 ## Engineering Review Gate
 
@@ -550,14 +576,16 @@ STOP: wait for the user answer before continuing.
 ## Good Output
 
 - `planning/design.md` 一份就讲清：为什么做、做什么、不做什么、备选方案、批准方案、设计模式、风险、review gate、执行边界
+- `planning/design.md` 必须包含 Deep Planning Funnel：requirement reality、system shape、interface/data contract、abstraction/encapsulation、execution architecture、task contract、final approval；任何会影响 `cc-do` 的确认都必须落盘
 - `planning/design.md` 必须包含 PRD-grade requirement brief：用户视角的问题和方案、覆盖完整行为面的 user stories、durable implementation decisions、behavior-first testing decisions、out-of-scope 和 further notes
 - `planning/design.md` 必须使用项目 canonical language，记录相关 capability spec / roadmap decision 冲突，并说明新增接口如何保持小接口深模块
 - `planning/design.md` 必须说明接口为什么可测：依赖注入、可断言返回、系统边界 adapter 形状、以及为什么测试不需要 mock 内部协作者
 - `planning/design.md` 必须暴露 assumptions preview、ambiguity gate、source trust boundary、external best-practice validation、external conflict buckets 和 bounded review loop；这些是阻止模糊需求进入执行期的合同，不是可选美化项
 - `planning/tasks.md` 只保留能直接执行的任务和 handoff，不再承载重复背景介绍；行为变更默认拆成 tracer bullet 形式的 `[TEST] -> [IMPL] -> [REFACTOR]`，且 Red task 明确 spec-style test name、单一行为、公共 seam、行为断言、mock 边界和反馈循环
 - `planning/tasks.md` 必须把 `assets/TASKS_TEMPLATE.md` 的任务字段实例化到每个 task；不能只生成标题清单，也不能让 ClaudeCode / Codex 靠猜测补字段
+- `planning/tasks.md` 的每个 task 必须携带 task contract：source funnel rounds、user story / edge story、文件职责、方法或接口、关键字段、输入输出、失败路径、do-not-re-decide、artifact updates、验证命令、完成脚本；否则前面的追问等于没问
 - `planning/tasks.md` 必须写出任务完成脚本，要求执行者完成每个 task 后调用 `mark-task-complete.sh`，禁止手动勾选或漏标
-- `planning/task-manifest.json` 是 `cc-do` 的机器真相源，只写执行图和必要 gate：版本链、`currentTaskId`、`dependsOn`、`parallel`、触点、run/check/verification/evidence、review 状态、`tddPhase`、`verticalSlice`、test seam、feedback loop，以及会阻塞执行的 AI leverage / external-best-practice / decision-question 结果；roadmap/spec 状态归 `change-meta.json` 和 `devflow/roadmap.json`，PRD brief、ambiguity、review loop、source trust、completion 命令留在 `planning/design.md` 或 `planning/tasks.md`
+- `planning/task-manifest.json` 是 `cc-do` 的机器真相源，只写执行图和必要 gate：版本链、`currentTaskId`、`dependsOn`、`parallel`、触点、run/check/verification/evidence、review 状态、`tddPhase`、`verticalSlice`、task contract、test seam、feedback loop，以及会阻塞执行的 AI leverage / external-best-practice / decision-question 结果；roadmap/spec 状态归 `change-meta.json` 和 `devflow/roadmap.json`，PRD brief、deep planning funnel、ambiguity、review loop、source trust、completion 命令留在 `planning/design.md` 或 `planning/tasks.md`
 - `change-meta.json` 是 capability 真相源，要写清这次 change 准备如何改变长期 spec
 - roadmap sync 不是聊天提醒：如果 source RM 存在，必须更新 `devflow/roadmap.json` 并重新生成 `devflow/ROADMAP.md` / `devflow/BACKLOG.md`；如果不存在，必须记录 no-op reason
 - 看完第一屏，执行者就知道这次属于 `tiny-design` 还是 `full-design`，以及为什么

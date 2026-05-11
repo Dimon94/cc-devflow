@@ -62,6 +62,20 @@
 - Gate verdict: `pass` | `blocked`
 - Blocked question if any:
 
+## Deep Planning Funnel
+
+| Round | Decision focus | Confirmed answer | Evidence / user answer | Status | Artifact impact |
+|-------|----------------|------------------|------------------------|--------|-----------------|
+| Requirement Reality | user / operator, pain, status quo, success, non-goals |  |  | confirmed / auto-decided / blocked / not-applicable | Requirement Snapshot / PRD brief |
+| System Shape | current codepath, module ownership, state/data flow, invariants |  |  | confirmed / auto-decided / blocked / not-applicable | Design / File Plan |
+| Interface & Data Contract | callers, inputs, outputs, key fields, errors, permissions, categories |  |  | confirmed / auto-decided / blocked / not-applicable | Interface Contract / Validation Strategy |
+| Abstraction & Encapsulation | hidden complexity, rejected abstractions, public vs private methods, branch elimination |  |  | confirmed / auto-decided / blocked / not-applicable | Interface / Deep Module Check |
+| Execution Architecture | foundation/core/integration/polish decisions, failure recovery, distribution |  |  | confirmed / auto-decided / blocked / not-applicable | Implementation Decision Horizon |
+| Task Contract | tracer bullets, Red/Green/Refactor, AFK/HITL, 2-5 min grain, completion script |  |  | confirmed / auto-decided / blocked / not-applicable | planning/tasks.md / task-manifest.json |
+| Final Approval | approved direction and task contract summary |  |  | confirmed / blocked | Approval |
+
+> 如果某轮是 `blocked`，停止生成任务。先问一个 blocked question、拆分需求，或记录用户明确接受的 HITL 边界。
+
 ## External Document Conflicts
 
 | Source | Bucket | Conflict | Resolution / blocker |
@@ -238,6 +252,22 @@
 
 > 新增或改动公共接口时，优先小接口深模块。若有两个合理形态，写清为什么没有选择另一个。
 
+## Interface & Data Contract
+
+| Surface | Caller / owner | Method or operation | Input fields | Output fields | Error shape | Category / type source | Compatibility / migration |
+|---------|----------------|---------------------|--------------|---------------|-------------|------------------------|---------------------------|
+|  |  |  |  |  |  | repo term / new term / user term |  |
+
+> 关键字段、方法、分类和错误形态必须在这里冻结。没有进入这张表的接口细节，不能在 `cc-do` 阶段临场发明。
+
+## Abstraction & Encapsulation Contract
+
+| Decision | Keep public | Keep private | Complexity hidden in | Rejected abstraction | Branches eliminated |
+|----------|-------------|--------------|----------------------|----------------------|---------------------|
+|  |  |  |  |  |  |
+
+> 好计划不是把 if/else 分发给执行者，而是提前决定哪些特殊情况应被设计消除。
+
 ## Interface Testability Check
 
 | Surface | Dependency shape | Result shape | Boundary adapter shape | Test setup complexity | Decision |
@@ -307,6 +337,14 @@
 - Eval:
 - Manual:
 - Observability / evidence:
+
+## Task Contract Preview
+
+| Task | User / edge story | File responsibility | Method / interface | Key fields | Input / output | Failure path | Verification | AFK / HITL |
+|------|-------------------|---------------------|--------------------|------------|----------------|--------------|--------------|------------|
+| T001 |  |  |  |  |  |  |  | AFK / HITL |
+
+> 这里是 `planning/tasks.md` 和 `task-manifest.json.tasks[].contract` 的来源。前面问过但这里没落盘，就等于没问。
 
 ## Test Coverage Map
 

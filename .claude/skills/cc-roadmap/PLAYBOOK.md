@@ -20,6 +20,8 @@
 8. 先判断 planning posture 和 evidence maturity，再决定追问哪些问题；不要用同一套问题硬套 idea、已有用户、付费客户、infra 和 recovery 场景。
 9. developer-facing / operator-facing 路线必须写清 target user、time to first value、magic moment 和 adoption bottleneck。
 10. 先对齐 `devflow/specs/`、roadmap/backlog 和历史 design decision，再命名 stage、capability、RM 和 backlog；术语或决策冲突必须成为显式路线风险。
+11. Roadmap Funnel Protocol 必须固定推进：方向、真实需求、现状、具体人、wedge/lake、观察信号、future fit、premise challenge、alternatives、route approval。
+12. 每轮要么由证据回答，要么问用户一个 `D<N>` 决策题，要么写明 skipped reason；不能让关键轮次停在聊天记忆里。
 
 ## Local Kit
 
@@ -47,6 +49,31 @@
 9. developer / operator adoption 线索：目标人、first success path、TTHW / time to first value、debug / upgrade 卡点
 
 先把这些材料压成 `Context Snapshot`，再追问用户。
+
+## Roadmap Funnel Protocol
+
+固定轮次：
+
+1. `F0 Direction Mode`
+2. `F1 Demand / Operator Reality`
+3. `F2 Status Quo`
+4. `F3 Specific Human / Sponsor`
+5. `F4 Narrowest Wedge / Lake Boundary`
+6. `F5 Observation / Feedback Signal`
+7. `F6 Future Fit`
+8. `F7 Premise Challenge`
+9. `F8 Alternatives`
+10. `F9 Route Approval`
+
+执行规则：
+
+1. 一次只推进一轮；需要用户时只问一个 `D<N> - <decision title>`。
+2. 每个问题必须有推荐答案、证据来源、选项影响和 STOP。
+3. 用户回答后先更新 `roadmapFunnel.rounds[]`，再继续下一轮。
+4. 用户要求跳过时，最多再问 2 个最关键剩余问题，然后必须仍然跑 `F7` 和 `F8`。
+5. `F7` 把隐含前提写成可同意 / 反对的句子；反对时回到受影响轮次重算。
+6. `F8` 至少给最小路径和理想架构路径；非平凡项目给第三条 lateral / decomposition 路径。
+7. `F9` 才能冻结 route、stage、ready RM 和 `cc-plan` handoff。
 
 ## Force Reality First
 
@@ -119,10 +146,12 @@
 `devflow/roadmap.json`
 - single editable roadmap state
 - output policy, meta, context, evidence, route, stages, items, handoff, and architecture
+- `context.roadmapFunnel.rounds[]` stores every fixed round, answer source, evidence, skipped reason, and decision impact
 - flat `architecture.nodes` / `architecture.edges` used to generate Mermaid
 
 `devflow/ROADMAP.md`
 - version / skill version / context snapshot / evidence ledger
+- Roadmap Funnel Transcript with F0-F9 answers and skipped reasons
 - 1-3 个阶段
 - 独立子系统拆分判断
 - 每阶段目标
@@ -139,6 +168,7 @@
 - deprecated compatibility projection; edit `devflow/roadmap.json` instead
 - 只保留会真的进入下一轮 `cc-plan` 的事项
 - 每项注明来源阶段、优先级、证据、`Depends On`、`Parallel With`、当前未知点、下一决策、是否 ready
+- ready 项必须带 `Source funnel rounds`、`Frozen decisions`、`Do not re-decide` 和 `Remaining blocking question`
 - developer-facing / operator-facing 条目要带 target user、time to first value、magic moment 和 adoption bottleneck，方便 `cc-plan` 继续做 DX 设计
 - `Backlog Meta`、`Queue`、`Dependency Handoff`、`Ready For Req-Plan`、`Parked` 由 `devflow/roadmap.json` 回渲染，避免 roadmap truth 和 backlog handoff 分叉
 

@@ -84,6 +84,30 @@
       "title": "[TEST] Add a failing test for the missing behavior",
       "type": "TEST",
       "phase": 1,
+      "contract": {
+        "sourceFunnelRounds": [
+          "Requirement Reality",
+          "Interface & Data Contract",
+          "Task Contract"
+        ],
+        "userStory": "US-001",
+        "edgeOrRecoveryStory": "US-EDGE-001",
+        "fileResponsibility": "tests own behavior proof",
+        "methodOrInterface": "public interface / caller flow / CLI / API / UI / trace replay / harness",
+        "keyFields": [],
+        "inputOutput": "",
+        "failurePath": "The behavior is currently missing",
+        "afkOrHitl": "AFK",
+        "doNotRedecide": [
+          "target behavior",
+          "public seam",
+          "key fields",
+          "allowed mock boundary"
+        ],
+        "artifactUpdates": [
+          "src/feature/feature.test.ts"
+        ]
+      },
       "parallel": false,
       "dependsOn": [],
       "touches": [

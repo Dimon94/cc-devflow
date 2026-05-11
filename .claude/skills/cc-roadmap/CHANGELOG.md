@@ -1,5 +1,11 @@
 # Roadmap Skill Changelog
 
+## v5.3.0 - 2026-05-11
+
+- add the Roadmap Funnel Protocol with fixed F0-F9 rounds for direction mode, demand reality, status quo, specific human/sponsor, wedge/lake boundary, observation signal, future fit, premise challenge, alternatives, and route approval
+- persist the funnel transcript in `devflow/roadmap.json` and render it into `devflow/ROADMAP.md` so route decisions survive beyond chat
+- upgrade backlog handoff fields so ready RM items carry source funnel rounds, frozen decisions, do-not-re-decide constraints, and remaining blocking questions for downstream `cc-plan`
+
 ## v5.2.0 - 2026-05-09
 
 - add project-direction routing and brand-neutral founder guardrails

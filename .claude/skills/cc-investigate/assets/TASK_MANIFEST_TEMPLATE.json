@@ -6,7 +6,7 @@
     "documentLanguage": ""
   },
   "planningMeta": {
-    "ccInvestigateSkillVersion": "1.3.1",
+    "ccInvestigateSkillVersion": "1.4.0",
     "analysisVersion": "analysis.v1",
     "approvedAt": "2026-04-17T12:00:00.000Z",
     "basedOnRootCause": "Root cause sentence"
@@ -58,6 +58,22 @@
       "badValueOrigin": "where the invalid data/state first appears",
       "originalTrigger": "user action, command, event, config, or dependency response that starts the chain",
       "symptomSiteFixRejectedBecause": "Guarding only the failure site would leave the bad upstream contract intact"
+    },
+    "rootCauseProof": {
+      "symptomSite": "User-visible failure, command, UI state, log, or bad artifact",
+      "firstBadState": "First field, artifact, cache entry, queue message, config, response, or memory object that becomes invalid",
+      "firstBadStateEvidence": [
+        "Boundary probe or trace evidence from planning/analysis.md"
+      ],
+      "violatedContract": "Schema, invariant, API contract, state transition, trust boundary, or timing condition violated",
+      "originalTrigger": "User action, command, event, recent diff, config change, or external response that created the first bad state",
+      "counterfactualProof": {
+        "method": "Restore the contract, replace input, roll back diff, fix config, or assert the boundary",
+        "expectedObservation": "The first bad state no longer forms and the symptom disappears",
+        "actualObservation": "Observed evidence from the current repo"
+      },
+      "escapeReason": "Why tests, types, validators, monitoring, review, or artifact gates missed it",
+      "status": "confirmed"
     },
     "referenceComparison": {
       "similarWorkingExample": "path/to/working/example",
@@ -168,7 +184,8 @@
         "The target bug is reproduced as a stable failure",
         "The failing loop matches the user-reported symptom",
         "The regression test uses the correct seam for the real trigger chain",
-        "The failure output points to the confirmed root-cause path"
+        "The failure output points to the confirmed root-cause path",
+        "The reproduction preserves evidence for first bad state and original trigger"
       ],
       "verification": [
         "npm test -- src/feature/feature.test.ts"
@@ -187,6 +204,7 @@
         ],
         "notes": [
           "Prove the bug first",
+          "Do not repair the symptom site unless analysis proves it is the original trigger",
           "Do not change unrelated contracts in this task"
         ]
       },

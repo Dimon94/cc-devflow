@@ -1,5 +1,11 @@
 # CC-Investigate Skill Changelog
 
+## v1.4.0 - 2026-05-11
+
+- add the Root Cause Proof Ladder so investigations must prove symptom site, first bad state, violated contract, original trigger, counterfactual proof, and escape reason before repair tasks are generated
+- upgrade `planning/analysis.md`, `planning/tasks.md`, and `task-manifest.json` templates so downstream `cc-do` inherits the root-cause proof instead of re-deciding from chat
+- require investigations that cannot prove first bad state, original trigger, or counterfactual proof to stop at evidence request or reroute instead of producing symptom patches
+
 ## v1.3.1 - 2026-05-11
 
 - slim investigation task manifests so roadmap/spec status stays owned by `change-meta.json` and `devflow/roadmap.json`

@@ -16,7 +16,7 @@
 ## Progressive Disclosure Index
 
 - Default read: Symptom, Feedback Loop Contract, Confirmed Root Cause, Repair Boundary.
-- Open for root-cause doubt: Evidence Chain, Boundary Probe Matrix, Backward Trace Chain, Hypothesis Ledger.
+- Open for root-cause doubt: Evidence Chain, Root Cause Proof Ladder, Boundary Probe Matrix, Backward Trace Chain, Hypothesis Ledger.
 - Open for workflow failures: Workflow Forensics, Debug Session, Cleanup Checklist.
 - Open for handoff/audit: Prevention Handoff, Roadmap Sync Gate, Review Notes.
 
@@ -86,6 +86,25 @@
 - Original trigger:
 - Why symptom-site fix is rejected:
 
+## Root Cause Proof Ladder
+
+| Layer | Required proof | Evidence | Status |
+| --- | --- | --- | --- |
+| L1 Symptom Site | User-visible failure, command, UI state, log, or bad artifact | | pending |
+| L2 First Bad State | First field, artifact, cache entry, queue message, config, response, or memory object that becomes invalid | | pending |
+| L3 Violated Contract | Schema, capability invariant, API contract, state transition, trust boundary, or timing condition violated | | pending |
+| L4 Original Trigger | User action, command, event, recent diff, config change, or external response that created the first bad state | | pending |
+| L5 Counterfactual Proof | Actual observation after restoring the contract, replacing input, rolling back diff, fixing config, or asserting boundary | | pending |
+| L6 Escape Reason | Why existing tests, types, validators, monitoring, review, or artifact gates missed it | | pending |
+
+- First bad state:
+- First bad state evidence:
+- Original trigger:
+- Counterfactual command / probe:
+- Counterfactual expected observation:
+- Counterfactual actual observation:
+- Root cause proof status: `confirmed` | `needs-more-evidence` | `reroute-cc-plan` | `reroute-roadmap`
+
 ## Reference Comparison
 
 - Similar working example:
@@ -148,6 +167,10 @@
 ## Root Cause
 
 - Confirmed root cause:
+- Root cause proof ladder status: `confirmed` | `needs-more-evidence` | `reroute-cc-plan` | `reroute-roadmap`
+- First bad state:
+- Original trigger:
+- Counterfactual proof:
 - Root cause class: `code` | `config` | `environment` | `external` | `timing`
 - Broken contract:
 - Spec diagnosis: `implementation drift` | `missing spec truth` | `roadmap mismatch`
