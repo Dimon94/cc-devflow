@@ -35,19 +35,27 @@ assert_contains() {
 }
 
 ROADMAP_VERSION="$(skill_version cc-roadmap)"
+NEXT_VERSION="$(skill_version cc-next)"
+DEV_VERSION="$(skill_version cc-dev)"
 REQ_PLAN_VERSION="$(skill_version cc-plan)"
 INVESTIGATE_VERSION="$(skill_version cc-investigate)"
 REQ_DO_VERSION="$(skill_version cc-do)"
 REQ_REVIEW_VERSION="$(skill_version cc-review)"
+PR_REVIEW_VERSION="$(skill_version cc-pr-review)"
+PR_LAND_VERSION="$(skill_version cc-pr-land)"
 REQ_CHECK_VERSION="$(skill_version cc-check)"
 REQ_ACT_VERSION="$(skill_version cc-act)"
 
 for pair in \
   "cc-roadmap:$ROADMAP_VERSION" \
+  "cc-next:$NEXT_VERSION" \
+  "cc-dev:$DEV_VERSION" \
   "cc-plan:$REQ_PLAN_VERSION" \
   "cc-investigate:$INVESTIGATE_VERSION" \
   "cc-do:$REQ_DO_VERSION" \
   "cc-review:$REQ_REVIEW_VERSION" \
+  "cc-pr-review:$PR_REVIEW_VERSION" \
+  "cc-pr-land:$PR_LAND_VERSION" \
   "cc-check:$REQ_CHECK_VERSION" \
   "cc-act:$REQ_ACT_VERSION"
 do

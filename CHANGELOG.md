@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Updated `cc-review` with a risk-lane review swarm profile so broad implementation and PR-landing reviews separate intent/regression, security/privacy, performance/reliability, and contracts/coverage findings before main-thread triage.
+- Added the PR Harness skill lane: `cc-next` selects roadmap-aware next work, `cc-dev` drives current-worktree PDCA/IDCA goals to a remote PR, `cc-pr-review` reviews remote PRs in a separate session, and `cc-pr-land` lands reviewed PRs with rebase-first main parity proof.
 
 ## [4.5.7] - 2026-05-10
 
