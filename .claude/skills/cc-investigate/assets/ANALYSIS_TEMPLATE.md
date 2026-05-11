@@ -13,6 +13,13 @@
 - Primary capability:
 - Related capability specs:
 
+## Progressive Disclosure Index
+
+- Default read: Symptom, Feedback Loop Contract, Confirmed Root Cause, Repair Boundary.
+- Open for root-cause doubt: Evidence Chain, Boundary Probe Matrix, Backward Trace Chain, Hypothesis Ledger.
+- Open for workflow failures: Workflow Forensics, Debug Session, Cleanup Checklist.
+- Open for handoff/audit: Prevention Handoff, Roadmap Sync Gate, Review Notes.
+
 ## Symptom
 
 - What the user saw:

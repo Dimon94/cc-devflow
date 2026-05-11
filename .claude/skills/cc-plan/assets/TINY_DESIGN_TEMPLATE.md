@@ -16,6 +16,13 @@
 - Primary capability:
 - Secondary capabilities:
 
+## Progressive Disclosure Index
+
+- Default read: Frozen Design Card, Validation, Main Risk, Approval.
+- Open for scope questions: Source Handoff, Capability Handoff, Implementation Surface Map.
+- Open for trust/conflict questions: Source Trust Boundary, External Document Conflicts, Domain Language & Decisions.
+- Open for audit/recovery: Review Gate, Bounded Review Loop, Decision Questions.
+
 ## Source Handoff
 
 - Why now:

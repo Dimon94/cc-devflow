@@ -10,6 +10,13 @@
 - Roadmap sync status:
 - Change meta: `change-meta.json`
 
+## Progressive Disclosure Index
+
+- Default read: Investigation Meta, Execution Handoff, current task block.
+- Open for root-cause doubt: `planning/analysis.md` Feedback Loop, Evidence Chain, Boundary Probe Matrix.
+- Open for scheduling: `planning/task-manifest.json`, dependencies, touched files.
+- Open for audit/recovery: checkpoint files, report-card findings, Workflow Forensics.
+
 ## Execution Handoff
 
 - Canonical analysis: `planning/analysis.md`

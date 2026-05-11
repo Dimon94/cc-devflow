@@ -1,6 +1,6 @@
 ---
 name: cc-investigate
-version: 1.3.0
+version: 1.3.1
 description: "Use when a bug, regression, broken task, or unexpected behavior needs root-cause investigation, reproducible evidence, and a frozen repair handoff before cc-do resumes coding."
 triggers:
   - "帮我查这个 bug"

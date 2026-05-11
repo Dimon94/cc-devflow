@@ -5,33 +5,10 @@
   "outputPolicy": {
     "documentLanguage": ""
   },
-  "sourceRoadmap": {
-    "itemId": "RM-001",
-    "roadmapVersion": "1.0",
-    "roadmapSkillVersion": "2.1.0",
-    "syncStatus": "pending",
-    "syncCommand": ".claude/skills/cc-roadmap/scripts/sync-roadmap-progress.sh --rm RM-001 --status \"Repair planned\" --req FIX-XXX --progress 0%",
-    "updatedFiles": [
-      "devflow/roadmap.json",
-      "devflow/ROADMAP.md",
-      "devflow/BACKLOG.md"
-    ],
-    "noOpReason": "",
-    "sourceStage": "Stage 1",
-    "successSignal": "The broken behavior is reproducible and then fixed without widening scope",
-    "killSignal": "Repair requires reopening product scope or redesigning unrelated modules",
-    "dependencies": [
-      "The existing product contract still applies"
-    ],
-    "nonGoals": [
-      "No unrelated feature additions"
-    ]
-  },
   "planningMeta": {
-    "ccInvestigateSkillVersion": "1.2.2",
+    "ccInvestigateSkillVersion": "1.3.1",
     "analysisVersion": "analysis.v1",
     "approvedAt": "2026-04-17T12:00:00.000Z",
-    "approvedBy": "user",
     "basedOnRootCause": "Root cause sentence"
   },
   "investigationMeta": {
@@ -171,35 +148,7 @@
       "splitOrRerouteDecision": "single focused repair"
     }
   },
-  "status": "planned",
-  "designMode": "cc-investigate",
-  "approvedOption": "confirmed-root-cause",
-  "designStatus": "approved",
-  "reviewStatus": "approved",
-  "spec": {
-    "primaryCapability": "cap-example",
-    "secondaryCapabilities": [],
-    "expectedDelta": [
-      "Repair capability truth without widening scope"
-    ],
-    "affectedInvariants": [],
-    "gapsClosed": [],
-    "newGaps": [],
-    "specFiles": [
-      "devflow/specs/capabilities/cap-example.md"
-    ],
-    "syncStatus": "planned",
-    "diagnosis": "implementation drift"
-  },
-  "tasteDecisions": [],
-  "userChallenges": [],
   "currentTaskId": "T001",
-  "activePhase": 1,
-  "frozenDecisions": [
-    "Fix only the confirmed root cause",
-    "Use planning/analysis.md as the canonical root-cause contract",
-    "Do not widen scope without rerouting to cc-plan"
-  ],
   "tasks": [
     {
       "id": "T001",
@@ -244,11 +193,14 @@
       "reviews": {
         "spec": "pending",
         "code": "pending"
-      }
+      },
+      "type": "TEST",
+      "run": [
+        "npm test -- src/feature/feature.test.ts"
+      ],
+      "checks": [],
+      "attempts": 0,
+      "maxRetries": 1
     }
-  ],
-  "openQuestions": [],
-  "deferredQuestions": [
-    "If the fix expands beyond the frozen repair boundary, reroute to cc-plan"
   ]
 }

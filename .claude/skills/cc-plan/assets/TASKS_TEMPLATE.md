@@ -11,6 +11,13 @@
 - Roadmap sync status:
 - Change meta: `change-meta.json`
 
+## Progressive Disclosure Index
+
+- Default read: Plan Meta, Execution Handoff, Execution Protocol, current task block.
+- Open for scheduling: `planning/task-manifest.json`, ready-task selector output, dependencies, touched files.
+- Open for parallel or ownership questions: Implementation Surface Map, Tracer Bullet Map.
+- Open for audit/recovery: Task Quality Bar, checkpoint files, review/report-card.json.
+
 ## Execution Handoff
 
 - Canonical design: `planning/design.md`

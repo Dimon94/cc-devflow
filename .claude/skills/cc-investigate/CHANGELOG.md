@@ -1,5 +1,10 @@
 # CC-Investigate Skill Changelog
 
+## v1.3.1 - 2026-05-11
+
+- slim investigation task manifests so roadmap/spec status stays owned by `change-meta.json` and `devflow/roadmap.json`
+- remove duplicate design/review/status mirrors from the investigation manifest template while keeping root-cause evidence in `planning/analysis.md`
+
 ## v1.3.0 - 2026-05-09
 
 - FIX change key assignment now uses `cc-devflow next-change-key` instead of prose instructions
