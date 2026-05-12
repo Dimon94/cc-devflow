@@ -1091,7 +1091,7 @@ function validatePackRuntimeSmoke(tarballPath, errors) {
       env: installEnv
     });
 
-    if (!queryList.ok || !queryList.output.includes('ship-readiness')) {
+    if (!queryList.ok || !queryList.output.includes('ship-readiness') || !queryList.output.includes('workflow-context')) {
       errors.push(`pack runtime smoke query failed: ${queryList.error || queryList.output}`);
       return;
     }

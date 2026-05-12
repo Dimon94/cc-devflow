@@ -21,7 +21,8 @@ describe('cc-devflow query', () => {
       'full-state',
       'next-task',
       'progress',
-      'ship-readiness'
+      'ship-readiness',
+      'workflow-context'
     ]);
   });
 

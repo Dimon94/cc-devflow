@@ -111,6 +111,7 @@ Examples:
   cc-devflow config resolve --cwd /path/to/project --format policy
   cc-devflow query list
   cc-devflow query ship-readiness --cwd /path/to/project --change REQ-123
+  cc-devflow query workflow-context --cwd /path/to/project --change REQ-123 --change-key REQ-123-my-feature
   cc-devflow query progress --change REQ-123 --change-key REQ-123-my-feature
 `);
 }
