@@ -3,7 +3,7 @@
 set -euo pipefail
 
 # ------------------------------------------------------------
-# 组装当前任务的执行上下文，并记录 context_ready 事件
+# 组装当前任务的执行上下文，只输出到 stdout
 # ------------------------------------------------------------
 
 usage() {
@@ -51,11 +51,7 @@ if [[ -z "$task_json" ]]; then
 fi
 
 change_id="$(jq -r '.changeId // .requirementId // "REQ-UNKNOWN"' "$manifest")"
-runtime_task_dir="$(req_do_task_runtime_dir "$CHANGE_DIR" "$TASK_ID")"
-output_path="$runtime_task_dir/context.md"
 ready_json="$("$SCRIPT_DIR/select-ready-tasks.sh" --manifest "$manifest")"
-
-mkdir -p "$runtime_task_dir"
 
 list_or_none() {
   local value="$1"
@@ -168,21 +164,12 @@ sync_status="$(jq -r '.spec.syncStatus // "unknown"' "$spec_source" 2>/dev/null 
   echo
   echo "## Context Reset"
   echo
-  echo "- If chat context drifts, discard conversational memory and reload only the canonical files above plus the latest checkpoint."
-  echo "- Do not continue from memory if the current task, active phase, or latest checkpoint summary cannot be restated exactly."
+  echo "- If chat context drifts, discard conversational memory and reload only the canonical files above, current Git state, and CLI logs."
+  echo "- Do not continue from memory if the current task, active phase, or latest verification status cannot be restated exactly."
   echo
   if [[ -f "$resume_index" ]]; then
     echo "## Optional Resume Index"
     echo
     cat "$resume_index"
   fi
-} > "$output_path"
-
-"$SCRIPT_DIR/write-task-checkpoint.sh" \
-  --dir "$CHANGE_DIR" \
-  --task "$TASK_ID" \
-  --status pending \
-  --summary "Task context assembled" \
-  --next-action "Write the failing test for $TASK_ID" >/dev/null
-
-cat "$output_path"
+}

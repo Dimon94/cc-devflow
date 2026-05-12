@@ -68,17 +68,15 @@ if [[ -f "$report" ]]; then
   echo "- Latest check verdict: $verdict"
 fi
 
-if [[ -n "$change_id" ]]; then
-  runtime_dir="$(req_do_execution_dir "$CHANGE_DIR")/tasks"
+if [[ -f "$manifest" ]]; then
+  echo
+  echo "## Task Status"
+  jq -r '.tasks[]? | "- " + .id + ": " + (.status // "pending") + (if .lastError then " - " + .lastError else "" end)' "$manifest" 2>/dev/null || true
 fi
 
-if [[ -n "${runtime_dir:-}" && -d "$runtime_dir" ]]; then
-  echo "- Runtime dir: $runtime_dir"
-
-  while IFS= read -r checkpoint_path; do
-    task_id="$(jq -r '.taskId // "unknown"' "$checkpoint_path" 2>/dev/null || echo unknown)"
-    checkpoint_status="$(jq -r '.status // "unknown"' "$checkpoint_path" 2>/dev/null || echo unknown)"
-    checkpoint_summary="$(jq -r '.summary // ""' "$checkpoint_path" 2>/dev/null || echo "")"
-    echo "- Checkpoint $task_id: $checkpoint_status ${checkpoint_summary:+- $checkpoint_summary}"
-  done < <(find "$runtime_dir" -name checkpoint.json | sort)
+if git -C "$CHANGE_DIR" rev-parse --show-toplevel >/dev/null 2>&1; then
+  repo_root="$(git -C "$CHANGE_DIR" rev-parse --show-toplevel)"
+  echo
+  echo "## Git State"
+  git -C "$repo_root" status --short
 fi

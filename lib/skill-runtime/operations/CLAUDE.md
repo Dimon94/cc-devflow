@@ -4,10 +4,10 @@
 阶段分组
 初始化与快照: `init.js` 创建 runtime 骨架，`snapshot.js` 采集 discover 阶段需要的只读事实。
 计划与批准: `plan.js` 生成 `task-manifest.json`，`approve.js` 锁定批准版本与执行模式。
-执行主链: `dispatch.js` 推进当前任务前沿，`resume.js` 从稳定 checkpoint 恢复，`verify.js` 和 `release.js` 负责质量门与发布收口。
+执行主链: `dispatch.js` 推进当前任务前沿，`resume.js` 从 `task-manifest.json` 的稳定状态恢复，`verify.js` 和 `release.js` 负责质量门与发布收口。
 交接与工人: `prepare-pr.js` 生成唯一 PR brief，`worker.js`/`worker-run.js` 负责本地或 provider worker handoff 与回写。
 自动驾驶: `autopilot-shared.js`、`autopilot-core.js`、`autopilot-execution.js`、`autopilot.js` 拆开共享语义、阶段判定和执行循环，避免单文件失控。
-维护类: `janitor.js` 清理过期 runtime 工件，但不改变正在运行任务的真相源。
+维护类: `janitor.js` 清理过期 runtime 工件，但不改变 manifest / tasks 的真相源。
 
 更新规则
 这里只记录阶段入口和职责边界，不维护逐文件穷举说明。

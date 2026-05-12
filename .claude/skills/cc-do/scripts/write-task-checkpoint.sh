@@ -3,13 +3,13 @@
 set -euo pipefail
 
 # ------------------------------------------------------------
-# 写入 task checkpoint.json / events.jsonl
+# 兼容旧入口：只写必要的 CLI 事件，不再生成 checkpoint.json
 # ------------------------------------------------------------
 
 usage() {
   cat <<'EOF'
 Usage:
-  write-task-checkpoint.sh --dir path/to/change --task T001 --status pending|running|passed|failed|skipped --summary "..." [--event context_ready] [--attempt 0] [--session session-id] [--next-action "..."] [--tdd-json '{"red":...}']
+  write-task-checkpoint.sh --dir path/to/change --task T001 --status pending|running|passed|failed|skipped [--summary "..."] [--event context_ready] [--attempt 0] [--session session-id] [--next-action "..."] [--tdd-json '{"red":...}']
 EOF
 }
 
@@ -41,7 +41,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ -z "$REQ_DIR" || -z "$TASK_ID" || -z "$STATUS" || -z "$SUMMARY" ]]; then
+if [[ -z "$REQ_DIR" || -z "$TASK_ID" || -z "$STATUS" ]]; then
   usage
   exit 1
 fi
@@ -49,11 +49,8 @@ fi
 CHANGE_DIR="$(req_do_resolve_change_dir "$REQ_DIR")"
 manifest="$(req_do_manifest_path "$CHANGE_DIR")"
 change_id="$(jq -r '.changeId // .requirementId // "REQ-UNKNOWN"' "$manifest" 2>/dev/null || basename "$REQ_DIR")"
-plan_version="$(jq -r '.metadata.planVersion // 1' "$manifest" 2>/dev/null || echo 1)"
 timestamp="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 runtime_task_dir="$(req_do_task_runtime_dir "$CHANGE_DIR" "$TASK_ID")"
-
-mkdir -p "$runtime_task_dir"
 
 if [[ -z "$SESSION_ID" ]]; then
   SESSION_ID="${TASK_ID}-$(date -u +%s)"
@@ -68,28 +65,8 @@ if [[ -n "$TDD_JSON" ]]; then
   fi
 fi
 
-jq -nc \
-  --arg changeId "$change_id" \
-  --arg taskId "$TASK_ID" \
-  --arg sessionId "$SESSION_ID" \
-  --arg planVersion "$plan_version" \
-  --arg status "$STATUS" \
-  --arg summary "$SUMMARY" \
-  --arg timestamp "$timestamp" \
-  --arg attempt "$ATTEMPT" \
-  --argjson tdd "$tdd_payload" \
-  '{
-    changeId: $changeId,
-    taskId: $taskId,
-    sessionId: $sessionId,
-    planVersion: ($planVersion | tonumber),
-    status: $status,
-    summary: $summary,
-    timestamp: $timestamp,
-    attempt: ($attempt | tonumber)
-  } + (if $tdd == null then {} else {tdd: $tdd} end)' > "$runtime_task_dir/checkpoint.json"
-
 if [[ -n "$EVENT_TYPE" || "$STATUS" == "failed" ]]; then
+  mkdir -p "$runtime_task_dir"
   jq -nc \
     --arg type "${EVENT_TYPE:-status_$STATUS}" \
     --arg changeId "$change_id" \
@@ -99,6 +76,7 @@ if [[ -n "$EVENT_TYPE" || "$STATUS" == "failed" ]]; then
     --arg summary "$SUMMARY" \
     --arg nextAction "$NEXT_ACTION" \
     --arg timestamp "$timestamp" \
+    --argjson tdd "$tdd_payload" \
     '{
       type: $type,
       changeId: $changeId,
@@ -108,7 +86,7 @@ if [[ -n "$EVENT_TYPE" || "$STATUS" == "failed" ]]; then
       summary: $summary,
       nextAction: $nextAction,
       timestamp: $timestamp
-    }' >> "$runtime_task_dir/events.jsonl"
+    } + (if $tdd == null then {} else {tdd: $tdd} end)' >> "$runtime_task_dir/events.jsonl"
 fi
 
-echo "Wrote $runtime_task_dir/checkpoint.json"
+echo "No checkpoint written; task truth lives in planning/tasks.md and planning/task-manifest.json"

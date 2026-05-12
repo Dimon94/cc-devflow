@@ -3,7 +3,7 @@
 set -euo pipefail
 
 # ------------------------------------------------------------
-# 校验任务是否完成 Red / Green / Refactor / Review 闭环
+# 校验任务状态、依赖和可选 CLI 事件顺序
 # ------------------------------------------------------------
 
 usage() {
@@ -36,18 +36,20 @@ CHANGE_DIR="$(req_do_resolve_change_dir "$REQ_DIR")"
 manifest="$(req_do_manifest_path "$CHANGE_DIR")"
 runtime_task_dir="$(req_do_task_runtime_dir "$CHANGE_DIR" "$TASK_ID")"
 events_file="$runtime_task_dir/events.jsonl"
-checkpoint_file="$runtime_task_dir/checkpoint.json"
 
-if [[ ! -f "$checkpoint_file" ]]; then
-  echo "Missing $checkpoint_file" >&2
-  exit 1
-fi
-
-checkpoint_status="$(jq -r '.status // "unknown"' "$checkpoint_file" 2>/dev/null || echo unknown)"
-[[ "$checkpoint_status" == "passed" ]] || {
-  echo "Task $TASK_ID checkpoint status is not passed" >&2
+task_json="$(jq -c --arg task "$TASK_ID" '.tasks[] | select(.id == $task)' "$manifest" 2>/dev/null || true)"
+[[ -n "$task_json" ]] || {
+  echo "Task $TASK_ID not found in manifest" >&2
   exit 1
 }
+
+while IFS= read -r dependency; do
+  dep_status="$(jq -r --arg dep "$dependency" '.tasks[] | select(.id == $dep) | .status // "pending"' "$manifest" 2>/dev/null || echo pending)"
+  [[ "$dep_status" == "passed" || "$dep_status" == "completed" || "$dep_status" == "done" || "$dep_status" == "verified" ]] || {
+    echo "Task $TASK_ID dependency $dependency is not complete" >&2
+    exit 1
+  }
+done < <(jq -r '(.dependsOn // [])[]?' <<<"$task_json")
 
 spec_verdict="$(jq -r --arg task "$TASK_ID" '.tasks[] | select(.id == $task) | .reviews.spec // "pending"' "$manifest" 2>/dev/null || echo pending)"
 code_verdict="$(jq -r --arg task "$TASK_ID" '.tasks[] | select(.id == $task) | .reviews.code // "pending"' "$manifest" 2>/dev/null || echo pending)"

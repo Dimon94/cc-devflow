@@ -3,7 +3,7 @@
 set -euo pipefail
 
 # ------------------------------------------------------------
-# 记录 spec / code review 结论，并同步 runtime / manifest
+# 记录 spec / code review 结论，并同步 manifest；失败时保留 CLI 事件
 # ------------------------------------------------------------
 
 usage() {
@@ -46,11 +46,8 @@ fi
 CHANGE_DIR="$(req_do_resolve_change_dir "$REQ_DIR")"
 manifest="$(req_do_manifest_path "$CHANGE_DIR")"
 change_id="$(jq -r '.changeId // .requirementId // "REQ-UNKNOWN"' "$manifest" 2>/dev/null || basename "$CHANGE_DIR")"
-runtime_task_dir="$(req_do_task_runtime_dir "$CHANGE_DIR" "$TASK_ID")"
 timestamp="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 event_name="${GATE}_review_${VERDICT}"
-
-mkdir -p "$runtime_task_dir"
 
 if [[ -f "$manifest" ]]; then
   tmp_manifest="$(mktemp)"
@@ -66,7 +63,9 @@ if [[ -f "$manifest" ]]; then
   mv "$tmp_manifest" "$manifest"
 fi
 
-if [[ -f "$runtime_task_dir/events.jsonl" || "$VERDICT" != "pass" ]]; then
+if [[ "$VERDICT" != "pass" ]]; then
+  runtime_task_dir="$(req_do_task_runtime_dir "$CHANGE_DIR" "$TASK_ID")"
+  mkdir -p "$runtime_task_dir"
   jq -nc \
     --arg type "$event_name" \
     --arg changeId "$change_id" \
