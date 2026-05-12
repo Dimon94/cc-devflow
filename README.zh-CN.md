@@ -98,7 +98,7 @@ flowchart TD
 | `cc-dev` | 已选目标要在当前 worktree 内自动推进到远程 PR | PDCA/IDCA 产物加 PR 或 handoff |
 | `cc-plan` | 新功能或变更需要澄清范围、设计方案、冻结任务 | `planning/tasks.md#Contract Summary`、`task-manifest.json`、`change-meta.json` |
 | `cc-investigate` | Bug 需要症状、复现、根因和修复边界 | `planning/tasks.md#Root Cause Contract`、`task-manifest.json`、`change-meta.json` |
-| `cc-do` | 已计划或已调查的任务需要实现 | 代码、测试、checkpoint、scratch runtime |
+| `cc-do` | 已计划或已调查的任务需要实现 | 代码、测试、任务状态、scratch runtime |
 | `cc-review` | 复杂方案、调查根因或 diff 需要在实现前或验证前做可选深度多轮 Review | `review-ledger.jsonl`，可选 `review-findings.json`，可按需渲染 Markdown |
 | `cc-pr-review` | 远程 PR 需要单独会话做合并前 Review | PR review packet、findings 和 landing verdict |
 | `cc-pr-land` | 已 Review PR 需要 rebase-first 合并到 main 并证明 parity | 已集成 main 和本地 / 远程一致性证据 |
@@ -244,7 +244,7 @@ npx cc-devflow config doctor --cwd /path/to/your/project
 
 - `devflow/specs/` 保存 durable capability truth：`INDEX.md` 和 `capabilities/*.md`。
 - 新 change 目录使用 `REQ-<number>-<description>` 表示需求，使用 `FIX-<number>-<description>` 表示 Bug 修复。`REQ` 和 `FIX` 各自递增自己的编号，跨前缀同号允许共存。并行工作树也可能产生重复编号，必须用完整 change key 的描述区分业务内容。
-- `devflow/changes/<change>/` 保存 durable change truth：`change-meta.json`、`planning/tasks.md`、CLI 生成的 `task-manifest.json`、review ledger / findings 记录、任务级 `checkpoint.json`、`report-card.json` 和唯一最终 handoff 文件。
+- `devflow/changes/<change>/` 保存 durable change truth：`change-meta.json`、`planning/tasks.md`、CLI 生成的 `task-manifest.json`、review ledger / findings 记录、debug / failed 的可选 CLI 日志、`report-card.json` 和唯一最终 handoff 文件。任务级 `context.md`、`checkpoint.json`、review markdown 和 AI 手写过程文件不是默认 durable truth。
 - 新 change 默认只有一个人工编写的 Markdown artifact：`planning/tasks.md`。功能计划把冻结设计写进 `## Contract Summary`；Bug 调查把根因真相写进 `## Root Cause Contract`。历史 `planning/design.md`、`planning/analysis.md` 和 `cc-review-*.md` 只作为旧 change 的 fallback 输入，不再是新默认写入。
 - 用 `cc-devflow task-contract validate`、`npm run verify:artifacts` 和 `npm run benchmark:artifacts` 保持 workflow artifact 小而可测。
 - `devflow/workspaces/<change>/` 保存 ephemeral runtime scratch，例如 worker assignment、journal、prompt 和 session log。

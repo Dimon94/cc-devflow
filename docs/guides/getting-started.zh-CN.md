@@ -97,7 +97,7 @@ durable truth 分两层：
 
 - `devflow/specs/`：capability 真相，保留 `INDEX.md` 与 `capabilities/*.md`
 - 新 change 目录必须命名为 `REQ-<number>-<description>`（需求）或 `FIX-<number>-<description>`（修复）；`REQ` 和 `FIX` 分别维护自己的递增编号，跨前缀同号不是冲突；并行工作树造成重复编号时，完整 change key 的描述负责区分业务内容，旧小写目录只作为历史兼容读取。
-- `devflow/changes/<change>/`：变更真相，保留 `change-meta.json`、`planning/tasks.md`、CLI 生成的 `task-manifest.json`、review ledger / findings 记录、任务级 `checkpoint.json`、`report-card.json` 和唯一的最终 handoff 文件。
+- `devflow/changes/<change>/`：变更真相，保留 `change-meta.json`、`planning/tasks.md`、CLI 生成的 `task-manifest.json`、review ledger / findings 记录、debug / failed 的可选 CLI 日志、`report-card.json` 和唯一的最终 handoff 文件。不要生成任务级 `context.md`、`checkpoint.json` 或 AI 手写过程文件。
 - 历史 `planning/design.md`、`planning/analysis.md` 和 `cc-review-*.md` 是旧 change 的可读 fallback，不再是新默认写入。
 - worker prompt、journal、assignment、session log 统一放到 `devflow/workspaces/<change>/`，作为 ephemeral scratch。
 

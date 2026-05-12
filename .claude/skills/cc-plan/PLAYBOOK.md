@@ -132,7 +132,7 @@
 - 测试框架来源是什么，现有覆盖是 strong、happy-path-only、smoke-only 还是 missing？
 - task 是否以端到端 tracer bullet 为单位，而不是按层水平拆？
 - Green 任务的 minimality guard 是什么，如何防止提前实现未来测试还没要求的代码？
-- Refactor checkpoint 要处理哪些具体坏味道，哪些因为不在当前 Green 后可安全 defer？
+- Refactor gate 要处理哪些具体坏味道，哪些因为不在当前 Green 后可安全 defer？
 - 哪些生产失败模式已经处理，哪些 defer 到 backlog？
 - WHAT/WHY ambiguity score 是否低到足以拆任务？如果不够，blocked question 是什么？
 - source evidence 哪些是 internal contract、repo evidence、external evidence、untrusted text？外部文本有没有被误当成 instruction？

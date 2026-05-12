@@ -17,7 +17,7 @@
 - Default read: Plan Meta, Contract Summary, Execution Handoff, Execution Protocol, current task block.
 - Open for scheduling: `planning/task-manifest.json`, ready-task selector output, dependencies, touched files.
 - Open for parallel or ownership questions: Implementation Surface Map, Tracer Bullet Map.
-- Open for audit/recovery: Task Quality Bar, checkpoint files, review/report-card.json.
+- Open for audit/recovery: Task Quality Bar, Git state, CLI logs, review/report-card.json.
 
 ## Contract Summary
 
@@ -105,8 +105,9 @@ ClaudeCode / Codex 执行本计划时，必须把本文件当成任务模板合�
 - Task block rule: read the full task block before coding; title-only execution is invalid.
 - Contract sync rule: every task must inherit one row from Task Contract Matrix; if the matrix lacks source funnel rounds, interface/data contract, do-not-re-decide items, or artifact updates, return to `planning/tasks.md#Contract Summary` before coding.
 - Completion rule: after verification and review gates pass, run the completion script; do not manually edit checkbox, status, or `currentTaskId`.
-- Completion failure: if the script fails, fix the missing checkpoint / review / dependency evidence and rerun it. Do not bypass it by editing JSON or Markdown.
-- Postmortem recall rule: before each task, search `devflow/postmortems` with the task's touched files, capability, failure class, and model-risk terms; record relevant reminders or an explicit no-match in checkpoint/events.
+- Completion failure: if the script fails, fix the missing review / dependency evidence and rerun it. Do not bypass it by editing JSON or Markdown.
+- Postmortem recall rule: before each task, search `devflow/postmortems` with the task's touched files, capability, failure class, and model-risk terms; apply relevant reminders to the work. Do not generate no-match process files.
+- Runtime file ban: do not generate `execution/tasks/<task-id>/context.md`, `checkpoint.json`, review markdown, or any AI-written process file. Recovery reads code, Git, `planning/tasks.md`, `planning/task-manifest.json`, and CLI logs only.
 
 ```bash
 cc-devflow query workflow-context --change <changeId> --change-key <changeKey> --cwd <repo-root> --data-only --no-trace --compact
@@ -156,7 +157,7 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key
   Project postmortem search: `rg -n "<test seam|capability|module|model-risk>" devflow/postmortems` or record `no-project-postmortems-yet`
   Verification: `npm test -- path/to/test`
   Evidence: failing output
-  Completion: after failing evidence and required checkpoint/review records exist, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task T001`; do not hand-edit status.
+  Completion: after failing evidence and required review records exist, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task T001`; do not hand-edit status.
   Coverage: unit / integration / e2e / eval; regression: yes / no
   Spec-style test name: 测试名像规格说明，描述可观察行为
   One logical behavior: yes / no
@@ -179,8 +180,8 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key
   Read first: `design.md`, `path/to/test`
   Project postmortem search: `rg -n "<implementation surface|module|failure-class|model-risk>" devflow/postmortems` or record `no-project-postmortems-yet`
   Verification: `npm test -- path/to/test`
-  Evidence: passing output + checkpoint
-  Completion: after green evidence and required checkpoint/review records exist, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task T002`; do not hand-edit status.
+  Evidence: passing output + Git diff
+  Completion: after green evidence and required review records exist, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task T002`; do not hand-edit status.
   Green minimality guard: 只写当前红灯要求的最小实现，不预铺未来行为、分支或 API
   Vertical slice: Slice 1
   Ready when: T001 已经见红，且当前 touched files 不和其他并行任务冲突
@@ -199,7 +200,7 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key
   Project postmortem search: `rg -n "<test seam|capability|module|model-risk>" devflow/postmortems` or record `no-project-postmortems-yet`
   Verification: `npm test -- path/to/other.test`
   Evidence: failing output
-  Completion: after failing evidence and required checkpoint/review records exist, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task T003`; do not hand-edit status.
+  Completion: after failing evidence and required review records exist, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task T003`; do not hand-edit status.
   Coverage: unit / integration / e2e / eval; regression: yes / no
   Spec-style test name: 测试名像规格说明，描述可观察行为
   One logical behavior: yes / no
@@ -223,7 +224,7 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key
   Project postmortem search: `rg -n "<implementation surface|module|failure-class|model-risk>" devflow/postmortems` or record `no-project-postmortems-yet`
   Verification: `npm test -- path/to/other.test`
   Evidence: passing output + review notes
-  Completion: after green evidence and required checkpoint/review records exist, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task T004`; do not hand-edit status.
+  Completion: after green evidence and required review records exist, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task T004`; do not hand-edit status.
   Green minimality guard: 只写当前红灯要求的最小实现，不预铺未来行为、分支或 API
   Vertical slice: Slice 2
   Ready when: T003 已经见红，且文件触点与其他 `[P]` 任务不冲突
@@ -242,7 +243,7 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key
   Project postmortem search: `rg -n "<refactor candidate|code smell|module|model-risk>" devflow/postmortems` or record `no-project-postmortems-yet`
   Verification: `npm test -- path/to/test path/to/other.test`
   Evidence: refactor diff + repeated green output
-  Completion: after refactor evidence and required checkpoint/review records exist, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task T005`; do not hand-edit status.
+  Completion: after refactor evidence and required review records exist, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task T005`; do not hand-edit status.
   Refactor candidates: duplication / long method / shallow module / feature envy / primitive obsession / naming / >3 nesting / newly exposed old code smell
   Ready when: 对应 Red/Green 任务都已完成，且清理不会扩大 scope
 
@@ -251,14 +252,14 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key
   Source funnel rounds: Execution Architecture; Task Contract; Final Approval.
   Contract: user story `all planned stories`; file responsibility `verification evidence`; method/interface `all changed public seams`; key fields `all contract fields`; input/output `not applicable`; failure path `gate failure blocks completion`; AFK/HITL `AFK`.
   Do not re-decide: scope, test framework, gate set, completion protocol.
-  Artifact updates: review evidence / checkpoint only; no behavior changes.
+  Artifact updates: review evidence only; no behavior changes and no execution process files.
   TDD phase: evidence
   Files: `command or file`
   Read first: `tasks.md`, `task-manifest.json`
   Project postmortem search: `rg -n "<verification|release|tooling|model-risk>" devflow/postmortems` or record `no-project-postmortems-yet`
   Verification: `npm test && npm run lint`
   Evidence: gate output
-  Completion: after gate evidence and required checkpoint/review records exist, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task T006`; do not hand-edit status.
+  Completion: after gate evidence and required review records exist, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task T006`; do not hand-edit status.
   Ready when: 当前 requirement 的实现任务都已收口
 
 > `[P]` 只表示“依赖满足后有资格并行”，不表示可以无脑同时开发。

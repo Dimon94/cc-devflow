@@ -237,7 +237,7 @@
       ],
       "evidence": [
         "passing test output",
-        "checkpoint summary"
+        "CLI log summary"
       ],
       "context": {
         "readFiles": [

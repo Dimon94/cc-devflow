@@ -1,6 +1,6 @@
 ---
 name: cc-do
-version: 1.6.6
+version: 1.6.7
 description: Use when implementing planned tasks, resuming interrupted work, applying a frozen investigation handoff, or landing review feedback after cc-plan or cc-investigate.
 triggers:
   - 开始做 T003
@@ -17,9 +17,6 @@ reads:
   - references/parallel-dispatch.md
   - docs/guides/project-postmortem.md
 writes:
-  - path: devflow/changes/<change-key>/execution/tasks/<task-id>/checkpoint.json
-    durability: durable
-    required: true
   - path: devflow/changes/<change-key>/execution/tasks/<task-id>/events.jsonl
     durability: durable
     required: false
@@ -35,21 +32,20 @@ writes:
 effects:
   - code changes
   - test changes
-  - workspace scratch runtime updates
+  - task status updates in planning/tasks.md and planning/task-manifest.json
 entry_gate:
   - Run `cc-devflow query workflow-context --change <changeId> --change-key <changeKey> --data-only --no-trace --compact` first and follow its context-index `packetOnly`, `mustNotForget`, `sourceHashes`, `defaultOpen`, `currentTask`, `commandsToTrust`, and `openWhen.conditions` fields before opening deep artifacts.
-  - Read planning/design.md or planning/analysis.md, then planning/tasks.md, planning/task-manifest.json, change-meta.json, related capability specs, and the latest checkpoint only when the workflow context says the deep section is needed.
+  - Read planning/design.md or planning/analysis.md, then planning/tasks.md, planning/task-manifest.json, change-meta.json, related capability specs, current Git state, and CLI logs only when the workflow context says the deep section is needed.
   - Select only ready tasks whose dependencies, wave, touched paths, and file ownership are clear.
   - Reject parallel execution when touched paths overlap by exact path or parent/child path; submodule touches must be isolated unless the task explicitly owns that submodule.
   - If the current task cannot be restated from canonical artifacts, run a context reset before coding.
-  - Before each single-task execution, run a quick Project Postmortem search against `devflow/postmortems` using the task's touched files, capability, failure class, and model-risk terms; record applicable reminders or `no-project-postmortems-yet` in the checkpoint/events.
+  - Before each single-task execution, run a quick Project Postmortem search against `devflow/postmortems` using the task's touched files, capability, failure class, and model-risk terms; apply applicable reminders to the code path and mention only blocking/failure facts in CLI events.
   - "Validate the current task's TDD shape before coding: spec-style test name, one logical behavior, public verification path, allowed boundary mocks, Green minimality guard, and refactor candidates."
 exit_criteria:
-  - The current task has red/green evidence, public-seam test quality evidence, review evidence, and a resumable checkpoint trail.
+  - The current task has red/green evidence, public-seam test quality evidence, review evidence, and synchronized task status.
   - Red evidence proves one observable behavior through a public verification path; Green evidence shows only the minimal production change; Refactor evidence names the concrete smell removed or says why none was needed.
   - The completed task was closed through `scripts/mark-task-complete.sh`; manual checkbox/status edits are not valid completion evidence.
-  - Execution leaves the next verifier enough runtime truth to judge the task without chat memory.
-  - The task checkpoint or event log records the postmortem recall result for this task, including relevant principle/incident links or an explicit no-match verdict.
+  - Execution leaves the next verifier enough code, Git, task-status, verification-command, and CLI-log truth to judge the task without chat memory.
   - The honest next step is cc-check or an explicit reroute.
 reroutes:
   - when: Three failed repair attempts or new evidence show the investigation contract is wrong.
@@ -59,12 +55,12 @@ reroutes:
   - when: Implementation and reviews are complete for the current task set.
     target: cc-check
 recovery_modes:
-  - name: resume-from-checkpoint
+  - name: resume-from-task-state
     when: Work was interrupted but the current design contract is still valid.
-    action: Reload the latest checkpoint, rebuild task context, and continue from the last confirmed red/green/review milestone.
+    action: Reload workflow-context, planning/tasks.md, task-manifest.json, current Git state, and CLI logs; continue from the first pending or failed task.
   - name: context-reset
     when: The conversation history is noisy, stale, or cannot reproduce the exact task state.
-    action: Discard chat memory, reread planning/design.md or planning/analysis.md plus planning/tasks.md/planning/task-manifest.json and the latest checkpoint, then restate the next action before coding.
+    action: Discard chat memory, reread planning/design.md or planning/analysis.md plus planning/tasks.md/planning/task-manifest.json, current Git state, and CLI logs, then restate the next action before coding.
 tool_budget:
   read_files: 9
   search_steps: 6
@@ -87,7 +83,7 @@ tool_budget:
 
 写入任何 durable Markdown 或 JSON metadata 前，先运行 `cc-devflow config resolve --format policy`。
 
-- `Output language` 是机器约束，checkpoint、events、team-state 中新增的人类可读摘要必须记录并遵守它。
+- `Output language` 是机器约束；如果失败或 debug CLI 日志需要人类可读摘要，必须记录并遵守它。
 - `agent_preferences` 是用户偏好建议，只影响表达方式和结构选择，不覆盖本 Skill 的工作流边界。
 - 如果配置解析失败，先修配置或向用户说明阻塞，不要用默认语言继续生成正式文档。
 
@@ -125,13 +121,13 @@ tool_budget:
 | bug 还没搞清根因 | reroute 到 `cc-investigate` |
 | 收到 review comment，要在既定范围内修正 | `review-fix` |
 
-如果连“当前 task 是什么”都说不清，先别写代码，先跑 `cc-devflow query workflow-context`。只有它的 `openWhen` 指向 scheduling 或 recovery 时，才继续跑 `scripts/select-ready-tasks.sh` 和 `scripts/build-task-context.sh`。
+如果连“当前 task 是什么”都说不清，先别写代码，先跑 `cc-devflow query workflow-context`。只有它的 `openWhen` 指向 scheduling 或 recovery 时，才继续跑 `scripts/select-ready-tasks.sh`；`scripts/build-task-context.sh` 只能输出 stdout，不得生成 `context.md`。
 
 ## Harness Contract
 
-- Allowed actions: implement ready tasks, debug inside frozen scope, write runtime evidence, and apply review feedback that does not reopen design.
+- Allowed actions: implement ready tasks, debug inside frozen scope, update task status through the completion script, and apply review feedback that does not reopen design.
 - Forbidden actions: re-planning the requirement in place, blindly rerunning the whole requirement, or delegating tasks without full task context.
-- Required evidence: every task must leave red/green/review checkpoints plus objective failure notes when blocked.
+- Required evidence: every task must leave objective code/Git/test evidence; blocked or failed work may leave compact CLI events, but must not create AI-written process files.
 - Reroute rule: after repeated failed repairs or root-cause drift, stop patching and go back to `cc-investigate`; if scope or design truth breaks, go back to `cc-plan`; after task closure, hand off to `cc-check`.
 
 ## TDD Iron Law
@@ -145,13 +141,13 @@ NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
 1. Red：先写一个最小失败测试，运行并确认它因为目标行为缺失而失败。
 2. Green：只写让当前失败测试通过的最小生产代码。
 3. Refactor：只有 Green 之后才能清理命名、重复、结构和坏味道。
-4. Record：每一站都写入 `checkpoint.json`，必要时写入 `events.jsonl`。
+4. Record：任务状态只通过 `mark-task-complete.sh` 同步到 `planning/tasks.md` 与 `planning/task-manifest.json`；失败或 debug 时才写 `events.jsonl`。
 
 Red 不是形式上的红，而是公共 seam 上的行为缺失证明。测试必须通过公共接口、调用方流程、CLI/API/UI 路径或其它真实边界进入系统；只验证私有函数、内部调用次数、临时数据结构或 mock 自己控制的内部协作者，不算 TDD 证据。
 
 一个 Red 只证明一个逻辑行为。测试名要像规格说明，而不是实现步骤；结果要从同一类公共入口读回。直接查数据库、读内部状态、扫描临时文件或绕过 API 来证明行为，只在那个边界本身就是被测对象时成立。
 
-例外只能用于 throwaway prototype、纯生成文件、纯配置改动；例外必须写进 checkpoint 的 `tddException`，包含原因、风险和替代验证命令。测试第一次就绿，说明测试没有证明新行为，必须修测试而不是继续写生产代码。
+例外只能用于 throwaway prototype、纯生成文件、纯配置改动；例外必须写在当前 task block 或 manifest task context 中，包含原因、风险和替代验证命令。测试第一次就绿，说明测试没有证明新行为，必须修测试而不是继续写生产代码。
 
 禁止水平切片：不要先写一批测试，再写一批实现。每次只推进一个 tracer bullet：一个可观察行为的 Red -> 让它变绿的最小实现 -> 必要重构 -> 记录证据，然后再进入下一个行为。
 
@@ -169,9 +165,9 @@ Refactor 只能发生在 Green 之后。优先处理当前 slice 暴露出的重
 4. 只锁定当前 ready task，或一组经依赖、wave、精确触点与父子路径触点校验后可并行的 ready tasks。
 5. 如果这次来自 `cc-investigate`，必须把 `planning/analysis.md` 当成 canonical contract，而不是一边实现一边重新调查。
 6. 没有任务上下文，不准把任务扔给 subagent；先用 `workflow-context.currentTask`，不够时再用 `scripts/build-task-context.sh` 从 canonical artifacts 组装上下文。
-7. 如果 `task-manifest.json.metadata.lane == "quick"`，仍然必须有 current task、verification、checkpoint 和 handoff；quick 只缩短文档密度，不跳过证据。
+7. 如果 `task-manifest.json.metadata.lane == "quick"`，仍然必须有 current task、verification、task status 和唯一 next action；quick 只缩短文档密度，不跳过证据。
 8. 如果仓库含 `.gitmodules` 或 manifest 提供 `submodulePaths`，先用 `scripts/detect-file-conflicts.sh` 标出 `submoduleTouches`；只有触达该 submodule 的任务失去默认 worktree 隔离资格，未触达任务不能被无辜串行化。
-9. 每个单 task 开工前，用当前 task 的 touched files、capability、错误类型、模型风险词快速检索 `devflow/postmortems`；命中时把相关原则转成当前 task 的 guardrail，未命中也要在 checkpoint / events 里记录。
+9. 每个单 task 开工前，用当前 task 的 touched files、capability、错误类型、模型风险词快速检索 `devflow/postmortems`；命中时把相关原则转成当前 task 的 guardrail。不要为 no-match 生成过程文件。
 
 ## Loop
 
@@ -186,7 +182,7 @@ Refactor 只能发生在 Green 之后。优先处理当前 slice 暴露出的重
 9. 按 `Red -> Green -> Refactor` 推进，Green 只允许最小实现，不预铺未来测试尚未要求的分支、状态或 API。
 10. 如果当前 Red 需要新的 fixture 或 mock，先证明它仍从公共 seam 触发真实行为；fixture 缺字段、类型强转或内部 mock 都要写入 `tdd.testQuality.fixtureRisk` 或先修 seam。
 11. Refactor 后必须重跑相关测试，保持 Green；Red 状态下不重构。
-12. 每次推进都写 task runtime：`events.jsonl` + `checkpoint.json`，并记录 `postmortemRecall`、`tdd.testQuality`、`tdd.greenMinimality`、`tdd.refactorCandidates` 或 `tddException`。
+12. 每次推进都以代码 diff、Git 状态、验证命令输出和 task 状态为真相源；只有失败、阻塞或 debug 需要机器日志时才写 `events.jsonl`。
 13. 任务实现后，先过 `spec review`，再过 `code review`，两道门都过才算任务收口；这里只验证 spec delta，不回写长期 spec。
 14. 当前任务完成后，把可验证证据留给 `cc-check`。
 
@@ -194,8 +190,8 @@ Refactor 只能发生在 Green 之后。优先处理当前 slice 暴露出的重
 
 - 代码变更
 - 测试变更
-- `devflow/changes/<change-key>/execution/tasks/<task-id>/checkpoint.json`
-- `devflow/changes/<change-key>/execution/tasks/<task-id>/events.jsonl`（仅 debug / failed 默认保留）
+- `planning/tasks.md` 与 `planning/task-manifest.json` 的 task 状态
+- `devflow/changes/<change-key>/execution/tasks/<task-id>/events.jsonl`（仅 debug / failed 默认保留；CLI 自动日志，不写叙事 Markdown）
 - `planning/task-manifest.json` 里的 task review verdict
 
 ## Good Output
@@ -207,8 +203,8 @@ Refactor 只能发生在 Green 之后。优先处理当前 slice 暴露出的重
 - Green 证据说明 minimality guard：本轮只满足当前红灯，没有提前实现未来分支
 - Refactor 证据说明清掉了哪个具体坏味道，或者为什么当前 slice 不需要 refactor
 - 测试 fixture 说明真实 contract 字段和测试填充字段，没有用类型欺骗或内部 mock 制造假绿
-- runtime / checkpoint 足够让下一位接手者无损恢复
-- quick lane 也有 mini manifest、checkpoint、verification 和唯一 next action，不靠聊天记录继续
+- task status、Git diff、验证命令和必要 CLI 日志足够让下一位接手者恢复
+- quick lane 也有 mini manifest、verification 和唯一 next action，不靠聊天记录继续
 - reviewer 能顺着 review 记录和验证命令复盘这次实现
 
 ## Bundled Resources
@@ -219,8 +215,8 @@ Refactor 只能发生在 Green 之后。优先处理当前 slice 暴露出的重
 - 恢复分析：`scripts/recover-workflow.sh`
 - 任务状态：`scripts/check-task-status.sh`
 - ready 任务选择：`scripts/select-ready-tasks.sh`
-- 任务上下文组装：`scripts/build-task-context.sh`
-- checkpoint 记录：`scripts/write-task-checkpoint.sh`
+- 任务上下文组装：`scripts/build-task-context.sh`（stdout only，不落盘）
+- 旧 checkpoint 兼容入口：`scripts/write-task-checkpoint.sh`（不写 checkpoint，只在失败 / debug 时写事件）
 - review 记录：`scripts/record-review-decision.sh`
 - 任务闭环校验：`scripts/verify-task-gates.sh`
 - 任务勾选：`scripts/mark-task-complete.sh`
@@ -244,7 +240,7 @@ Refactor 只能发生在 Green 之后。优先处理当前 slice 暴露出的重
 14. 给 subagent 的输入必须包含：当前进度、当前任务全文、依赖状态、必读文件、验收标准、可信命令。
 15. 三次失败修补后必须先质疑调查合同或设计合同，而不是继续堆补丁。
 16. 完成任务后必须调用 `scripts/mark-task-complete.sh` 同步 `planning/task-manifest.json` 和 `planning/tasks.md`；禁止手工改 checkbox、status、currentTaskId 来冒充完成。
-17. 如果 `mark-task-complete.sh` 失败，说明 checkpoint、review gate 或任务依赖还没闭合；先修证据，再重跑脚本，不准绕过。
+17. 如果 `mark-task-complete.sh` 失败，说明 review gate 或任务依赖还没闭合；先修证据，再重跑脚本，不准绕过。
 
 ## Task Status Protocol
 
@@ -263,13 +259,13 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key
 ```
 
 4. 脚本会先跑任务 gate，再同步 manifest、checkbox、`currentTaskId` 和整体状态。不要手动改这些字段。
-5. 如果任务不能完成，写 checkpoint / event / blocker；不要把失败任务标成完成。
+5. 如果任务不能完成，只在失败 / debug 需要时写 CLI event；不要生成过程 Markdown，也不要把失败任务标成完成。
 
 ## Exit Criteria
 
 - 当前任务有 Red/Green 证据
 - 当前任务有 `spec review` / `code review` 两道门证据
-- 恢复点已更新到 `devflow/changes/<change-key>/execution/tasks/<task-id>/`
+- 恢复点可从 `planning/tasks.md`、`planning/task-manifest.json`、Git 状态和必要 CLI 日志判断
 - 阻塞原因已写清楚
 - 下一步应进入 `cc-check`，或明确退回 `cc-investigate` / `cc-plan`
 

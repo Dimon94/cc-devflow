@@ -140,7 +140,7 @@ That should already tell you:
 
 `devflow/changes/<change>/` should stay lean.
 
-- Durable truth only: `change-meta.json`, `planning/tasks.md`, CLI-generated `task-manifest.json`, review ledger/findings records, task `checkpoint.json`, `report-card.json`, and one final handoff file.
+- Durable truth only: `change-meta.json`, `planning/tasks.md`, CLI-generated `task-manifest.json`, review ledger/findings records, optional CLI logs for debug/failure, `report-card.json`, and one final handoff file. Do not generate task `context.md`, `checkpoint.json`, or AI-written process files.
 - Legacy `planning/design.md`, `planning/analysis.md`, and `cc-review-*.md` are readable fallback inputs for older examples, not new default writes.
 - Runtime scratch belongs in `devflow/workspaces/<change>/`, not beside the durable record.
 

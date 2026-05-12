@@ -48,7 +48,7 @@ entry_gate:
   - For broad implementation or mixed reviews, decide whether the risk-lane review swarm profile is required; record used, skipped, or unavailable lanes in `review-ledger.jsonl`.
   - Freeze the requested scope before finding smells; only report smells inside the requirement blast radius or clearly amplified by the current work.
 exit_criteria:
-  - review-ledger.jsonl records selected tools, review nodes, skipped nodes with reasons, checkpoint order, and final route through CLI events.
+  - review-ledger.jsonl records selected tools, review nodes, skipped nodes with reasons, review order, and final route through CLI events.
   - review-ledger.jsonl appends one record per reviewed node with status, evidence refs, findings, and follow-up route.
   - review-agent-results.jsonl records read-only reviewer outputs when subagents are used, or the review ledger records why agents were unavailable or unnecessary.
   - review-findings.json exists only when later agents need structured findings; human Markdown is rendered on demand with `cc-devflow review render`.

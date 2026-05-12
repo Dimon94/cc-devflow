@@ -5,6 +5,7 @@
 - collapse the default planning artifact surface to `planning/tasks.md` plus CLI-generated `task-manifest.json` and `change-meta.json`
 - move the human-authored design contract into `planning/tasks.md#Contract Summary` so `planning/design.md` is legacy fallback only
 - archive legacy design templates under `assets/legacy/` and keep new task handoffs rooted in `assets/TASKS_TEMPLATE.md`
+- ban generated execution process files from new task plans: no `context.md`, `checkpoint.json`, review markdown, or AI-written process notes under `execution/tasks`
 
 ## v3.8.7 - 2026-05-13
 

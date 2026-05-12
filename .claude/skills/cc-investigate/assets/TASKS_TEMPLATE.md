@@ -17,7 +17,7 @@
 - Runtime reset: run `cc-devflow query workflow-context --change <changeId> --change-key <changeKey> --cwd <repo-root> --data-only --no-trace --compact` before `cc-do`, `cc-check`, or `cc-act`; use `packetOnly` plus `mustNotForget` first, verify `sourceHashes`, open `defaultOpen` refs only when needed, and reserve `deepOpen` for matching `openWhen.conditions`.
 - Open for root-cause doubt: `planning/tasks.md#Root Cause Contract` Project Postmortem Recall, Feedback Loop, Evidence Chain, Boundary Probe Matrix.
 - Open for scheduling: `planning/task-manifest.json`, dependencies, touched files.
-- Open for audit/recovery: checkpoint files, report-card findings, Workflow Forensics.
+- Open for audit/recovery: Git state, CLI logs, report-card findings, Workflow Forensics.
 
 ## Root Cause Contract
 
@@ -111,7 +111,7 @@ Risk / Escalate If:
   Read first: `analysis.md`, `path/to/test`
   Project postmortem search: `rg -n "<root cause|module|failure-class|model-risk>" devflow/postmortems` or record `no-project-postmortems-yet`
   Verification: `npm test -- path/to/test`
-  Evidence: passing output + checkpoint
+  Evidence: passing output + Git diff
   Do not re-decide: root cause, first bad state, original trigger, allowed files, forbidden files
   Ready when: T001 已证明同一个用户症状存在，analysis 已证明根因源头和 counterfactual proof
 

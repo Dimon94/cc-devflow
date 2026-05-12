@@ -142,7 +142,8 @@
         ],
         "notes": [
           "Write the failing test first",
-          "Do not change unrelated contracts in this task"
+          "Do not change unrelated contracts in this task",
+          "Do not generate execution context.md, checkpoint.json, review markdown, or AI-written process files"
         ]
       },
       "reviews": {

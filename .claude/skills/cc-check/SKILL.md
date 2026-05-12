@@ -297,7 +297,7 @@ NO PASS WITHOUT FRESH EVIDENCE
 每条 failure ownership 还必须命名：
 
 - `errorName`：可搜索的错误名，例如 `MissingSpecReviewProof`
-- `artifactRefs`：指向 report、manifest、checkpoint、日志或命令输出
+- `artifactRefs`：指向 report、manifest、task state、日志或命令输出
 - `rescueAction`：下一步救援动作，不写空泛“检查一下”
 - `owner`：`branch` / `baseline` / `environment` / `external` / `unknown`
 

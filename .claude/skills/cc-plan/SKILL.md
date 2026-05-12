@@ -41,7 +41,7 @@ entry_gate:
   - Freeze problem, constraints, non-goals, and success criteria before proposing implementation tasks.
   - If the raw ask spans multiple independent subsystems, split it back into roadmap stages or separate REQ/FIX candidates before asking implementation details.
   - "For non-trivial designs, compare named option roles: minimal viable, ideal architecture, and optional hybrid. Do not default to smallest unless it best serves the goal."
-  - Plan executable work as Red/Green/Refactor by default; identify the first failing test before any production implementation task, or write an explicit TDD exception with replacement evidence.
+  - Plan executable work as Red/Green/Refactor by default; identify the first failing test before any production implementation task, or write an explicit TDD exception with replacement evidence in the task contract.
   - Generate `planning/tasks.md` from `assets/TASKS_TEMPLATE.md` semantics, including every required task field, the execution protocol, and the exact task completion command; do not free-form a loose checklist.
   - "Make progressive disclosure executable: `planning/tasks.md` must name `cc-devflow query workflow-context --change <changeId> --change-key <changeKey> --data-only --no-trace --compact` as the first context reset before `cc-do`, `cc-check`, or `cc-act` opens deep planning sections."
   - "Keep `planning/task-manifest.json` lean: it is the machine execution graph, not a mirror of the design narrative or task protocol prose."
@@ -62,7 +62,7 @@ exit_criteria:
   - "`cc-devflow query workflow-context` can derive the next skill, packet digests, default section refs, current task, trusted commands, and deep-open triggers from the frozen artifacts."
   - planning/tasks.md contains the task-template compliance section and script-based completion protocol, and every task block includes its completion command.
   - task-manifest.json omits retired narrative/protocol mirrors such as `executionProtocol`, `planningMeta.requirementBrief`, `planningMeta.ambiguityGate`, `planningMeta.reviewLoop`, and task-level `completion`; those details belong in `planning/tasks.md`.
-  - The task breakdown preserves test-first execution; failing-test tasks precede implementation tasks, refactor checkpoints are visible, and any TDD exception is justified.
+  - The task breakdown preserves test-first execution; failing-test tasks precede implementation tasks, refactor gates are visible, and any TDD exception is justified.
   - "Testability decisions make the public seam natural: small interface, deep implementation, injected boundary dependencies, returned results where practical, and boundary mocks only where the system genuinely leaves the repo."
   - AI Leverage Decision Lens is recorded in planning/tasks.md and task-manifest.json.planningMeta.aiLeverageDecisionLens before executable tasks are generated.
   - Project Postmortem Recall Gate is recorded in planning/tasks.md before executable tasks are generated; relevant lessons have concrete task impacts or explicit no-op reasons.
@@ -265,7 +265,7 @@ bash .claude/skills/cc-plan/scripts/next-change-key.sh --prefix REQ --descriptio
 2. 当前可做任务由 `planning/task-manifest.json.currentTaskId` 和 ready-task 脚本决定，不得凭聊天记忆挑任务。
 3. 每个 task 必须保留模板字段：Goal、TDD phase、Files、Read first、Verification、Evidence、test seam、mock boundary、green minimality 或 refactor candidates。
 4. 任务完成后必须调用 `mark-task-complete.sh` 同步 `planning/task-manifest.json` 和 `planning/tasks.md`；禁止手工把 checkbox 改成 `[x]`，禁止只改 manifest，禁止完成后不标记。
-5. 如果完成脚本失败，不能手改绕过；先修复缺失 gate、checkpoint 或 review evidence，再重跑脚本。
+5. 如果完成脚本失败，不能手改绕过；先修复缺失 gate、review evidence 或依赖状态，再重跑脚本。
 
 生成 `planning/task-manifest.json` 时必须保持瘦身边界：
 
@@ -539,7 +539,7 @@ STOP: wait for the user answer before continuing.
 3. 每个可观察行为变更默认拆成 `Red -> Green -> Refactor`：
    - Red：先写 `[TEST]` 任务，目标是用最小失败测试证明目标行为缺失。
    - Green：再写 `[IMPL]` 任务，只做让对应红灯转绿的最小生产实现，不预先铺未来测试还没要求的 API、状态或分支。
-   - Refactor：最后写 `[REFACTOR]` 或在实现任务中明确 refactor checkpoint，说明何时清理重复、长方法、浅模块、feature envy、primitive obsession、命名和三层以上分支。
+   - Refactor：最后写 `[REFACTOR]` 或在实现任务中明确 refactor gate，说明何时清理重复、长方法、浅模块、feature envy、primitive obsession、命名和三层以上分支。
 4. 禁止水平切片：不能先写一批测试、再写一批实现。计划必须按 tracer bullet 垂直切片排列：一个行为红灯 -> 最小实现转绿 -> 必要重构，然后再进入下一个行为。
 5. `planning/tasks.md` 不能把测试和实现塞进同一个 task。一个 task 同时写“实现并测试”就是计划失败。
 6. `planning/tasks.md` 的每个 `[TEST]` task 必须写清 test name、one logical behavior、test seam、public verification path、behavior asserted、allowed mocks、feedback loop type、implementation-detail risk。

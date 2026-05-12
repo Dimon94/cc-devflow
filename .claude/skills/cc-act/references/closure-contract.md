@@ -54,7 +54,7 @@ detached HEAD 是分支事实，不是第 5 种 ship 模式。若远端可用且
 - `handoff/resume-index.md`（需要 handoff 时）
 - `handoff/release-note.md`（需要发布时）
 
-如果下一位接手者还得去翻零散 checkpoint 才知道从哪接，说明 act 还没收口。
+如果下一位接手者还得去翻零散过程笔记才知道从哪接，说明 act 还没收口。
 
 ## After Closing
 

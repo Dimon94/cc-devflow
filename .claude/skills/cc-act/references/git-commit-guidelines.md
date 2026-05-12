@@ -306,7 +306,7 @@ Commit 2:
 2. 已有打开 PR / MR 时，更新现有 PR / MR，不重复创建第二个。
 3. rebase 之后如果必须强推，只允许 `git push --force-with-lease`，不要裸 `--force`。
 4. 不改写公共分支历史。
-5. 不把 WIP、checkpoint、debug probe、临时日志留在最终历史里；必要时 squash/fixup 到语义 commit。
+5. 不把 WIP、AI 过程笔记、debug probe、临时日志留在最终历史里；必要时 squash/fixup 到语义 commit。
 6. 使用 `fixup!` / `squash!` 时，最终 ship 前要 autosquash 成干净历史，除非团队明确接受。
 
 ## Footer Trailers

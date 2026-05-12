@@ -49,7 +49,7 @@ ClaudeCode / Codex 执行本计划时，必须把本文件当成任务模板合�
 - Task selection: read `planning/task-manifest.json.currentTaskId`; if empty, run the ready-task selector before choosing work.
 - Task block rule: read the full task block before coding; title-only execution is invalid.
 - Completion rule: after verification and review gates pass, run the completion script; do not manually edit checkbox, status, or `currentTaskId`.
-- Completion failure: if the script fails, fix the missing checkpoint / review / dependency evidence and rerun it. Do not bypass it by editing JSON or Markdown.
+- Completion failure: if the script fails, fix the missing review / dependency evidence and rerun it. Do not bypass it by editing JSON or Markdown.
 
 ```bash
 cc-devflow query workflow-context --change <changeId> --change-key <changeKey> --cwd <repo-root> --data-only --no-trace --compact
@@ -70,7 +70,7 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/pdca-loop/cha
   Read first: `design.md`, `src/features/share/ShareDialog.tsx`
   Verification: `npm test -- src/features/share/ShareDialog.test.tsx`
   Evidence: failing output that shows the missing button / action
-  Completion: after verification evidence and required checkpoint/review records exist, run `SCRIPT_ROOT=".claude/skills/cc-do/scripts"; if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then SCRIPT_ROOT=".codex/skills/cc-do/scripts"; fi; bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/pdca-loop/changes/REQ-001-copy-invite-link/planning/task-manifest.json --tasks docs/examples/pdca-loop/changes/REQ-001-copy-invite-link/planning/tasks.md --task T001`; do not hand-edit status.
+  Completion: after verification evidence and required review records exist, run `SCRIPT_ROOT=".claude/skills/cc-do/scripts"; if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then SCRIPT_ROOT=".codex/skills/cc-do/scripts"; fi; bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/pdca-loop/changes/REQ-001-copy-invite-link/planning/task-manifest.json --tasks docs/examples/pdca-loop/changes/REQ-001-copy-invite-link/planning/tasks.md --task T001`; do not hand-edit status.
   Test seam: share dialog UI behavior
   Public verification path: Run the share dialog test and observe the copy action through the rendered dialog
   Allowed mocks: clipboard boundary
@@ -82,8 +82,8 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/pdca-loop/cha
   Files: `src/features/share/ShareDialog.tsx`
   Read first: `design.md`, `src/features/share/ShareDialog.test.tsx`
   Verification: `npm test -- src/features/share/ShareDialog.test.tsx`
-  Evidence: passing output + checkpoint + review notes
-  Completion: after verification evidence and required checkpoint/review records exist, run `SCRIPT_ROOT=".claude/skills/cc-do/scripts"; if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then SCRIPT_ROOT=".codex/skills/cc-do/scripts"; fi; bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/pdca-loop/changes/REQ-001-copy-invite-link/planning/task-manifest.json --tasks docs/examples/pdca-loop/changes/REQ-001-copy-invite-link/planning/tasks.md --task T002`; do not hand-edit status.
+  Evidence: passing output + review notes
+  Completion: after verification evidence and required review records exist, run `SCRIPT_ROOT=".claude/skills/cc-do/scripts"; if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then SCRIPT_ROOT=".codex/skills/cc-do/scripts"; fi; bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/pdca-loop/changes/REQ-001-copy-invite-link/planning/task-manifest.json --tasks docs/examples/pdca-loop/changes/REQ-001-copy-invite-link/planning/tasks.md --task T002`; do not hand-edit status.
   Test seam: share dialog UI behavior
   Public verification path: Run the share dialog test and observe the copy action through the rendered dialog
   Allowed mocks: clipboard boundary
@@ -100,7 +100,7 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/pdca-loop/cha
   - `npm test -- src/features/share/ShareDialog.test.tsx`
   - `npm run lint -- src/features/share/ShareDialog.tsx`
   Evidence: passing test output + clean lint output
-  Completion: after verification evidence and required checkpoint/review records exist, run `SCRIPT_ROOT=".claude/skills/cc-do/scripts"; if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then SCRIPT_ROOT=".codex/skills/cc-do/scripts"; fi; bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/pdca-loop/changes/REQ-001-copy-invite-link/planning/task-manifest.json --tasks docs/examples/pdca-loop/changes/REQ-001-copy-invite-link/planning/tasks.md --task T003`; do not hand-edit status.
+  Completion: after verification evidence and required review records exist, run `SCRIPT_ROOT=".claude/skills/cc-do/scripts"; if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then SCRIPT_ROOT=".codex/skills/cc-do/scripts"; fi; bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/pdca-loop/changes/REQ-001-copy-invite-link/planning/task-manifest.json --tasks docs/examples/pdca-loop/changes/REQ-001-copy-invite-link/planning/tasks.md --task T003`; do not hand-edit status.
   Test seam: share dialog UI behavior
   Public verification path: Run the share dialog test and observe the copy action through the rendered dialog
   Allowed mocks: clipboard boundary

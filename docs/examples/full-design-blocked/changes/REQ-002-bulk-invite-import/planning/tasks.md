@@ -47,7 +47,7 @@ ClaudeCode / Codex 执行本计划时，必须把本文件当成任务模板合�
 - Task selection: read `planning/task-manifest.json.currentTaskId`; if empty, run the ready-task selector before choosing work.
 - Task block rule: read the full task block before coding; title-only execution is invalid.
 - Completion rule: after verification and review gates pass, run the completion script; do not manually edit checkbox, status, or `currentTaskId`.
-- Completion failure: if the script fails, fix the missing checkpoint / review / dependency evidence and rerun it. Do not bypass it by editing JSON or Markdown.
+- Completion failure: if the script fails, fix the missing review / dependency evidence and rerun it. Do not bypass it by editing JSON or Markdown.
 
 ```bash
 cc-devflow query workflow-context --change <changeId> --change-key <changeKey> --cwd <repo-root> --data-only --no-trace --compact
@@ -68,7 +68,7 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/full-design-b
   Read first: `design.md`, `src/invite/bulk-import.ts`
   Verification: `npm test -- src/invite/bulk-import.test.ts`
   Evidence: failing output
-  Completion: after verification evidence and required checkpoint/review records exist, run `SCRIPT_ROOT=".claude/skills/cc-do/scripts"; if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then SCRIPT_ROOT=".codex/skills/cc-do/scripts"; fi; bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/task-manifest.json --tasks docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/tasks.md --task T001`; do not hand-edit status.
+  Completion: after verification evidence and required review records exist, run `SCRIPT_ROOT=".claude/skills/cc-do/scripts"; if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then SCRIPT_ROOT=".codex/skills/cc-do/scripts"; fi; bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/task-manifest.json --tasks docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/tasks.md --task T001`; do not hand-edit status.
   Test seam: bulk invite rules and admin upload UI behavior
   Public verification path: Run the bulk invite rule and admin panel tests through their public flows
   Allowed mocks: file upload boundary / billing / seat limit boundary
@@ -80,8 +80,8 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/full-design-b
   Files: `src/invite/bulk-import.ts`
   Read first: `design.md`, `src/invite/bulk-import.test.ts`
   Verification: `npm test -- src/invite/bulk-import.test.ts`
-  Evidence: passing output + checkpoint
-  Completion: after verification evidence and required checkpoint/review records exist, run `SCRIPT_ROOT=".claude/skills/cc-do/scripts"; if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then SCRIPT_ROOT=".codex/skills/cc-do/scripts"; fi; bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/task-manifest.json --tasks docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/tasks.md --task T002`; do not hand-edit status.
+  Evidence: passing output + Git diff
+  Completion: after verification evidence and required review records exist, run `SCRIPT_ROOT=".claude/skills/cc-do/scripts"; if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then SCRIPT_ROOT=".codex/skills/cc-do/scripts"; fi; bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/task-manifest.json --tasks docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/tasks.md --task T002`; do not hand-edit status.
   Test seam: bulk invite rules and admin upload UI behavior
   Public verification path: Run the bulk invite rule and admin panel tests through their public flows
   Allowed mocks: file upload boundary / billing / seat limit boundary
@@ -96,7 +96,7 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/full-design-b
   Read first: `design.md`, `src/admin/BulkInvitePanel.tsx`
   Verification: `npm test -- src/admin/BulkInvitePanel.test.tsx`
   Evidence: failing output
-  Completion: after verification evidence and required checkpoint/review records exist, run `SCRIPT_ROOT=".claude/skills/cc-do/scripts"; if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then SCRIPT_ROOT=".codex/skills/cc-do/scripts"; fi; bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/task-manifest.json --tasks docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/tasks.md --task T003`; do not hand-edit status.
+  Completion: after verification evidence and required review records exist, run `SCRIPT_ROOT=".claude/skills/cc-do/scripts"; if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then SCRIPT_ROOT=".codex/skills/cc-do/scripts"; fi; bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/task-manifest.json --tasks docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/tasks.md --task T003`; do not hand-edit status.
   Test seam: bulk invite rules and admin upload UI behavior
   Public verification path: Run the bulk invite rule and admin panel tests through their public flows
   Allowed mocks: file upload boundary / billing / seat limit boundary
@@ -109,7 +109,7 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/full-design-b
   Read first: `design.md`, `src/admin/BulkInvitePanel.test.tsx`
   Verification: `npm test -- src/admin/BulkInvitePanel.test.tsx`
   Evidence: passing output + review notes
-  Completion: after verification evidence and required checkpoint/review records exist, run `SCRIPT_ROOT=".claude/skills/cc-do/scripts"; if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then SCRIPT_ROOT=".codex/skills/cc-do/scripts"; fi; bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/task-manifest.json --tasks docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/tasks.md --task T004`; do not hand-edit status.
+  Completion: after verification evidence and required review records exist, run `SCRIPT_ROOT=".claude/skills/cc-do/scripts"; if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then SCRIPT_ROOT=".codex/skills/cc-do/scripts"; fi; bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/task-manifest.json --tasks docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/tasks.md --task T004`; do not hand-edit status.
   Test seam: bulk invite rules and admin upload UI behavior
   Public verification path: Run the bulk invite rule and admin panel tests through their public flows
   Allowed mocks: file upload boundary / billing / seat limit boundary
@@ -126,7 +126,7 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/full-design-b
   - `npm test -- src/invite/bulk-import.test.ts`
   - `npm test -- src/admin/BulkInvitePanel.test.tsx`
   Evidence: passing output + review notes
-  Completion: after verification evidence and required checkpoint/review records exist, run `SCRIPT_ROOT=".claude/skills/cc-do/scripts"; if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then SCRIPT_ROOT=".codex/skills/cc-do/scripts"; fi; bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/task-manifest.json --tasks docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/tasks.md --task T005`; do not hand-edit status.
+  Completion: after verification evidence and required review records exist, run `SCRIPT_ROOT=".claude/skills/cc-do/scripts"; if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then SCRIPT_ROOT=".codex/skills/cc-do/scripts"; fi; bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/task-manifest.json --tasks docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/planning/tasks.md --task T005`; do not hand-edit status.
   Test seam: bulk invite rules and admin upload UI behavior
   Public verification path: Run the bulk invite rule and admin panel tests through their public flows
   Allowed mocks: file upload boundary / billing / seat limit boundary

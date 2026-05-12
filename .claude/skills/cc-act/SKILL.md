@@ -76,7 +76,7 @@ reroutes:
     target: cc-do
 recovery_modes:
   - name: memory-consolidation
-    when: Delivery evidence is scattered across checkpoints, reviews, and prior handoff notes.
+    when: Delivery evidence is scattered across task state, reviews, CLI logs, and prior handoff notes.
     action: Compress the current truth into handoff/pr-brief.md, handoff/resume-index.md, and handoff/release-note.md before any ship action continues.
   - name: local-handoff-refresh
     when: Remote push or PR tooling is unavailable but the requirement is otherwise ready to land.

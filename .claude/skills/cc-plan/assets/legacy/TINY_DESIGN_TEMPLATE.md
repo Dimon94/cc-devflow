@@ -194,7 +194,7 @@
 - Tracer bullet order:
 - Green implementation check:
 - Green minimality guard:
-- Refactor checkpoint:
+- Refactor gate:
 - Refactor candidates:
 - TDD exceptions:
 - Regression test required:

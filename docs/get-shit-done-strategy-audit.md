@@ -140,10 +140,10 @@ No separate GSD-style `.planning/` tree.
 | --- | --- | --- | --- |
 | Wave scheduling | `task-manifest.json.tasks[].phase/parallel/dependsOn/touches` | parallel only when dependencies and touches do not conflict | schema fixture: shared touches rejected |
 | Submodule-aware worktree gate | `task-manifest.json.tasks[].touches` + runtime submodule scan | only tasks touching submodule paths lose isolation | hostile fixture: repo with `.gitmodules` but unrelated touches still parallel |
-| Quick lane mini manifest | `task-manifest.json.metadata.lane=quick` | small work still has checkpoint, verification, handoff | fixture: quick lane without verification blocks |
-| Thread/pause/resume | `change-meta.json`, checkpoint state, and one final handoff file | resume query returns stable next action | integration: stale checkpoint restores to pending |
+| Quick lane mini manifest | `task-manifest.json.metadata.lane=quick` | small work still has task-state truth, verification, handoff | fixture: quick lane without verification blocks |
+| Thread/pause/resume | `change-meta.json`, manifest task state, optional CLI logs, and one final handoff file | resume query returns stable next action | integration: stale manifest state restores to pending |
 
-`cc-do` should not invent new task state outside `task-manifest.json` and checkpoints.
+`cc-do` should not invent new task state outside `task-manifest.json`.
 
 ### `cc-investigate`
 
@@ -211,7 +211,7 @@ default planning path.
 | Ambiguity and assumptions | `cc-plan` | `planning/tasks.md#Contract Summary` | `task-manifest.json.planningMeta` |
 | Imported doc trust classification | `cc-plan` | `planning/tasks.md#Contract Summary` | `planning/tasks.md` |
 | Task graph and waves | `cc-plan` / `cc-do` | `planning/tasks.md` | `task-manifest.json.tasks[]` |
-| Quick lane state | `cc-do` | checkpoint summary | `task-manifest.json.metadata`, `checkpoint.json` |
+| Quick lane state | `cc-do` | task-state summary | `task-manifest.json.metadata`, `planning/tasks.md` |
 | Debug hypotheses and probes | `cc-investigate` | `planning/tasks.md#Root Cause Contract` | optional `task-manifest.json.investigation` |
 | Verification/UAT/facets | `cc-check` | review summary | `report-card.json` |
 | Runtime failures | `cc-check` | review summary | `report-card.json.runtime.failureOwnership[]` |
@@ -243,7 +243,7 @@ owner skill, and next action.
 | --- | --- | --- | --- | --- | --- | --- |
 | external docs -> `cc-plan` | block with missing source | skip with reason | `TrustBoundaryError` | conflict bucket | mark stale source | partial import warning |
 | `tasks.md` -> `task-manifest.json` | block | block | schema error | dependency conflict | plan version mismatch | no manifest approval |
-| manifest -> wave scheduling | block | no runnable task | `InvalidTaskGraphError` | serialize or block | stale checkpoint rejected | reroute resume |
+| manifest -> wave scheduling | block | no runnable task | `InvalidTaskGraphError` | serialize or block | stale manifest state rejected | reroute resume |
 | debug session -> analysis | block freeze | require note | schema/narrative mismatch | competing hypotheses | stale symptom | diagnose-only |
 | query registry -> next action | `MissingArtifactError` | no next action with reason | named parse/schema error | blocked graph | stale state warning | degraded output |
 | inventory -> publish gate | missing inventory blocks | empty inventory blocks | schema error | drift blocks | stale hash blocks | publish blocked |
@@ -354,7 +354,7 @@ These rules protect cc-devflow's identity:
 | Existing cc-devflow asset | Reuse |
 | --- | --- |
 | `lib/skill-runtime/query.js` | current progress/next/full-state facade |
-| `lib/skill-runtime/schemas.js` | manifest/report/checkpoint schema boundary |
+| `lib/skill-runtime/schemas.js` | manifest/report/runtime schema boundary |
 | `lib/skill-runtime/config.js` | layered config and doctor pattern |
 | `lib/compiler/manifest.js` | hash and drift detection foundation |
 | `scripts/validate-publish.js` | publish validation orchestrator |
@@ -404,7 +404,7 @@ not the cc-devflow implementation order.
 | `ship` | structured ship preflight |
 | `next` | runtime query `route.next-action` |
 | `fast` | TDD exception / quick lane rule |
-| `quick` | mini manifest + checkpoint |
+| `quick` | mini manifest + task-state truth |
 | `ui-review` | conditional frontend `cc-check` facet |
 | `code-review` | finding schema |
 | `code-review-fix` | fix loop and return to `cc-check` |
@@ -433,7 +433,7 @@ not the cc-devflow implementation order.
 | `cleanup` | low priority cleanup |
 | `manager` | skip UI |
 | `workstreams` | active pointer only |
-| `autonomous` | smart-discuss/checkpoint guard only |
+| `autonomous` | smart-discuss/task-state guard only |
 | `undo` | rollback guard |
 
 ### Session And Navigation

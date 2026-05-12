@@ -1,5 +1,11 @@
 # CC-Do Skill Changelog
 
+## v1.6.7 - 2026-05-13
+
+- stop generating per-task `context.md` and `checkpoint.json` during execution; `build-task-context.sh` now prints stdout only
+- make task recovery read code, Git state, `planning/tasks.md`, `task-manifest.json`, review verdicts, and CLI logs instead of AI-written process files
+- keep `events.jsonl` as an optional CLI log for debug or failure paths, not a default narrative artifact
+
 ## v1.6.6 - 2026-05-12
 
 - make `cc-devflow query workflow-context` the first execution context reset so `cc-do` reads compact task truth before opening full planning artifacts

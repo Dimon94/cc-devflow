@@ -98,7 +98,7 @@ flowchart TD
 | `cc-dev` | A selected objective should be driven in the current worktree to a remote PR | PDCA/IDCA artifacts plus a PR or handoff |
 | `cc-plan` | A feature or change needs scope, design, and task freezing | `planning/tasks.md#Contract Summary`, `task-manifest.json`, `change-meta.json` |
 | `cc-investigate` | A bug needs symptom, reproduction, root cause, and repair boundary | `planning/tasks.md#Root Cause Contract`, `task-manifest.json`, `change-meta.json` |
-| `cc-do` | Planned or investigated work needs implementation | code, tests, checkpoints, scratch runtime |
+| `cc-do` | Planned or investigated work needs implementation | code, tests, task state, scratch runtime |
 | `cc-review` | Complex plans, investigations, or diffs need optional deep multi-round review before implementation or verification | `review-ledger.jsonl`, optional `review-findings.json`, optional rendered Markdown |
 | `cc-pr-review` | A remote PR needs an independent review session before landing | PR review packet, findings, and landing verdict |
 | `cc-pr-land` | Reviewed PRs need rebase-first landing into main with parity proof | integrated main plus local/remote parity evidence |
@@ -244,7 +244,7 @@ The currently distributed skill folders are:
 
 - `devflow/specs/` stores durable capability truth: `INDEX.md` plus `capabilities/*.md`.
 - New change directories use `REQ-<number>-<description>` for requirements or `FIX-<number>-<description>` for bug fixes. `REQ` and `FIX` numbers advance independently, so the same number may exist in both prefixes. Parallel worktrees may also create repeated numbers; the full change key must use a specific description to distinguish the work.
-- `devflow/changes/<change>/` stores durable change truth: `change-meta.json`, `planning/tasks.md`, CLI-generated `task-manifest.json`, review ledger/findings records, task `checkpoint.json`, `report-card.json`, and one final handoff file.
+- `devflow/changes/<change>/` stores durable change truth: `change-meta.json`, `planning/tasks.md`, CLI-generated `task-manifest.json`, review ledger/findings records, optional CLI logs for debug/failure, `report-card.json`, and one final handoff file. Task `context.md`, `checkpoint.json`, review markdown, and AI-written process files are not default durable truth.
 - New changes default to one human-authored Markdown artifact: `planning/tasks.md`. Feature plans put the frozen design in `## Contract Summary`; bug investigations put root-cause truth in `## Root Cause Contract`. Legacy `planning/design.md`, `planning/analysis.md`, and `cc-review-*.md` remain fallback inputs, not new default writes.
 - Use `cc-devflow task-contract validate`, `npm run verify:artifacts`, and `npm run benchmark:artifacts` to keep workflow artifacts small and measurable.
 - `devflow/workspaces/<change>/` stores ephemeral runtime scratch such as worker assignment, journals, prompts, and session logs.

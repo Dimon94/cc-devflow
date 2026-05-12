@@ -171,7 +171,7 @@
 ## Consolidated Memory
 
 - `handoff path`: 
-- latest checkpoint / review summary:
+- latest task-state / review summary:
 - handoff entry for the next maintainer:
 
 ## Minimum Landing Pack

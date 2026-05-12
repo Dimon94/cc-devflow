@@ -20,7 +20,7 @@ If a field has no clear opener and no downstream consumer, remove it.
 | Capability/spec sync state | `devflow/changes/<change-key>/change-meta.json` | `planning/tasks.md`, `review/report-card.json`, handoff summaries |
 | Execution task status | `planning/task-manifest.json.tasks[].status` | `planning/tasks.md` checkboxes, recovery summaries |
 | Ready task / phase | derived from `tasks[].status`, `tasks[].phase`, and `tasks[].dependsOn` | `currentTaskId` cache, ready-task selector output |
-| Runtime checkpoint state | `execution/tasks/<task-id>/checkpoint.json` | `events.jsonl`, recovery summaries |
+| Runtime event log | `execution/tasks/<task-id>/events.jsonl` only for debug/failed runs | recovery summaries |
 | Review verdict | `review/report-card.json.verdict` | PR brief, release note, act gate |
 | PR / remote queue truth | live GitHub API / `gh` output | local review notes and handoff summaries |
 | Project postmortem facts and principles | `devflow/postmortems/` | planning recall, investigation hypotheses, task guardrails |
