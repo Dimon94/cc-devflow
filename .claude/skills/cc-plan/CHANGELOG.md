@@ -1,5 +1,11 @@
 # CC-Plan Skill Changelog
 
+## v3.8.7 - 2026-05-13
+
+- add the Worktree Branch Contract so new `REQ` / `FIX` planning anchors detached worktrees to `REQ/<task>` or `FIX/<task>` before artifacts are written
+- treat planning on `main` / the default branch as a setup blocker instead of allowing the main checkout to accumulate feature state
+- require design, tasks, and change metadata to record the canonical work branch for downstream `cc-do`
+
 ## v3.8.6 - 2026-05-12
 
 - require generated execution handoffs to start from `cc-devflow query workflow-context` so progressive disclosure is runtime-derived, not chat memory

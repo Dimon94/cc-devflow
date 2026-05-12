@@ -6,8 +6,9 @@
   "requirementId": "REQ-002",
   "requirementVersion": "REQ-002.v2",
   "planningMeta": {
-    "reqPlanSkillVersion": "3.8.6",
+    "reqPlanSkillVersion": "3.8.7",
     "designVersion": "design.v2",
+    "workBranch": "REQ/002-bulk-invite-import",
     "approvedAt": null,
     "basedOnOption": "Option B",
     "aiLeverageDecisionLens": {

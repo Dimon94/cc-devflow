@@ -4,7 +4,7 @@
 
 - Example version: `1.0.0`
 - Last reviewed: `2026-04-17`
-- Bound skills: `cc-roadmap@5.3.0`, `cc-plan@3.8.6`, `cc-do@1.6.6`, `cc-check@1.10.2`
+- Bound skills: `cc-roadmap@5.3.0`, `cc-plan@3.8.7`, `cc-do@1.6.6`, `cc-check@1.10.2`
 
 This example shows a requirement that **looked executable**, but `cc-check` correctly stopped it and sent it back to `cc-plan`.
 

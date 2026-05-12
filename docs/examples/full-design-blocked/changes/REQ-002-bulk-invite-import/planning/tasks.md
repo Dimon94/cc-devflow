@@ -4,7 +4,8 @@
 
 - Requirement version: `REQ-002.v2`
 - Design version: `design.v2`
-- CC-Plan skill version: `3.8.6`
+- CC-Plan skill version: `3.8.7`
+- Work branch: `REQ/002-bulk-invite-import`
 - Source roadmap item: `RM-010`
 - Source roadmap version: `roadmap.v2`
 

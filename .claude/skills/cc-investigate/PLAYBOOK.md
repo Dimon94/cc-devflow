@@ -24,6 +24,7 @@
 11. workflow forensics 先分类 artifact / git / state / tool / permission / process failure，再决定是否进入修复。
 12. 退出前必须跑 Roadmap Sync Gate：`implementation drift`、`missing spec truth`、`roadmap mismatch` 三种结论都要让 source RM 的状态和 next action 跟上。
 13. Root Cause Proof Ladder 必须证明 symptom site、first bad state、violated contract、original trigger、counterfactual proof 和 escape reason。
+14. 分配 `FIX-*` change key 后立刻执行 Worktree Branch Contract：detached worktree 先挂到 `FIX/<task>`；当前在 `main` / default branch 时停止，不写 investigation artifacts。
 
 ## Iron Law
 

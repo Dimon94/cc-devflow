@@ -4,7 +4,8 @@
 
 - Requirement version: `REQ-003.v1`
 - Design version: `design.v1`
-- CC-Plan skill version: `3.8.6`
+- CC-Plan skill version: `3.8.7`
+- Work branch: `REQ/003-audit-log-export`
 - Requirement ID: `REQ-003`
 - Design mode: `tiny-design`
 - Why this stays `tiny-design`: the patch adds one export action inside the existing admin audit UI without changing data contracts

@@ -20,21 +20,22 @@
 7. 同 blast radius 内的完整边界优先做完，跨系统或无证据扩张才 defer。
 8. 具体执行计划默认测试先行；没有 Red/Green/Refactor 链、spec-style test name、公共测试 seam、行为断言、mock 边界或 TDD exception，不准交给 `cc-do`。
 9. 新 change 目录必须通过 `cc-devflow next-change-key --prefix REQ|FIX --description "..."` 生成，不要手动扫描或心算编号；`REQ` 和 `FIX` 各自递增；并行工作树造成同前缀同号时，完整 change key 靠描述区分；旧小写目录只读兼容，不再作为新输出。
-10. 原始需求跨多个独立子系统时，先拆回 roadmap / 多个 REQ/FIX；不要把一个大杂烩压成单个计划。
-11. `tiny-design` 仍然必须被批准，它只是短设计，不是跳过设计。
-12. 非 trivial 方案必须至少比较 `minimal viable` 和 `ideal architecture` 两种角色，小方案没有天然优先权。
-13. `full-design` 必须冻结 implementation decision horizon 和 error/rescue map，避免 `cc-do` 临场补设计。
-14. 测试框架来源、覆盖质量、测试 seam、mock 边界和回归测试必须在计划阶段写清，不准靠执行阶段猜。
-15. UI 和 developer/operator-facing 范围只在适用时触发对应 gate，不把每个计划都塞成大审查清单。
-16. 先对齐项目语言和持久决策，再命名 capability、模块、接口、测试和任务；术语冲突必须显式暴露。
-17. 行为变更按 tracer bullet 垂直切片推进，不能把任务水平切成“先测试层、再服务层、最后 UI 层”。
-18. WHAT/WHY ambiguity、外部文档冲突、source trust boundary 和 review loop 上限必须在设计 gate 内闭合；模糊需求不能靠 `cc-do` 临场解释。
-19. 退出前必须跑 Roadmap Sync Gate：`devflow/roadmap.json` 是真相源，`devflow/ROADMAP.md` 和 `devflow/BACKLOG.md` 只是投影；source RM 存在就回写，找不到才记录 no-op。
-20. PRD 的结构要吸收进 `planning/design.md`：用户视角的问题和方案、完整 user stories、实现决策、测试决策、out-of-scope 和 further notes；不要默认创建独立 `PRD.md`。
-21. 接口可测性必须在计划阶段解决：依赖尽量注入，结果尽量可返回和断言，系统边界 adapter 拆成具体操作，避免让测试用条件分支 mock 一个万能 fetcher。
-22. 需要用户判断时必须走固定 `D<N>` Decision Question：证据、推荐、2-3 个互斥的 `A/B/C` 字母选项、影响和 STOP 都要出现，答案写回 design / manifest；选项禁止用 `1/2/3`。
-23. 内部证据扫完后，判断是否需要外部最佳实践验证；需要时先问用户是否允许用泛化关键词搜索，结果只作为 `external-evidence`，不能覆盖 repo truth。
-24. 第一版设计推荐前必须跑 Deep Planning Funnel 的前四轮；任务生成前必须跑完前六轮。对话里确认过的架构、接口、字段、方法、分类和任务粒度必须进入模板产物。
+10. 分配 change key 后立刻执行 Worktree Branch Contract：detached worktree 先挂到 `REQ/<task>` 或 `FIX/<task>`；当前在 `main` / default branch 时停止，不写 planning artifacts。
+11. 原始需求跨多个独立子系统时，先拆回 roadmap / 多个 REQ/FIX；不要把一个大杂烩压成单个计划。
+12. `tiny-design` 仍然必须被批准，它只是短设计，不是跳过设计。
+13. 非 trivial 方案必须至少比较 `minimal viable` 和 `ideal architecture` 两种角色，小方案没有天然优先权。
+14. `full-design` 必须冻结 implementation decision horizon 和 error/rescue map，避免 `cc-do` 临场补设计。
+15. 测试框架来源、覆盖质量、测试 seam、mock 边界和回归测试必须在计划阶段写清，不准靠执行阶段猜。
+16. UI 和 developer/operator-facing 范围只在适用时触发对应 gate，不把每个计划都塞成大审查清单。
+17. 先对齐项目语言和持久决策，再命名 capability、模块、接口、测试和任务；术语冲突必须显式暴露。
+18. 行为变更按 tracer bullet 垂直切片推进，不能把任务水平切成“先测试层、再服务层、最后 UI 层”。
+19. WHAT/WHY ambiguity、外部文档冲突、source trust boundary 和 review loop 上限必须在设计 gate 内闭合；模糊需求不能靠 `cc-do` 临场解释。
+20. 退出前必须跑 Roadmap Sync Gate：`devflow/roadmap.json` 是真相源，`devflow/ROADMAP.md` 和 `devflow/BACKLOG.md` 只是投影；source RM 存在就回写，找不到才记录 no-op。
+21. PRD 的结构要吸收进 `planning/design.md`：用户视角的问题和方案、完整 user stories、实现决策、测试决策、out-of-scope 和 further notes；不要默认创建独立 `PRD.md`。
+22. 接口可测性必须在计划阶段解决：依赖尽量注入，结果尽量可返回和断言，系统边界 adapter 拆成具体操作，避免让测试用条件分支 mock 一个万能 fetcher。
+23. 需要用户判断时必须走固定 `D<N>` Decision Question：证据、推荐、2-3 个互斥的 `A/B/C` 字母选项、影响和 STOP 都要出现，答案写回 design / manifest；选项禁止用 `1/2/3`。
+24. 内部证据扫完后，判断是否需要外部最佳实践验证；需要时先问用户是否允许用泛化关键词搜索，结果只作为 `external-evidence`，不能覆盖 repo truth。
+25. 第一版设计推荐前必须跑 Deep Planning Funnel 的前四轮；任务生成前必须跑完前六轮。对话里确认过的架构、接口、字段、方法、分类和任务粒度必须进入模板产物。
 
 ## Required Outputs
 
@@ -57,9 +58,10 @@
 2. 一份 `planning/tasks.md` 讲清执行任务和 handoff。
 3. `planning/task-manifest.json` 只做机器真相源，不再重复人类叙事。
 4. 先运行 `cc-devflow next-change-key --prefix REQ|FIX --description "..."` 获取 canonical change key；不要手动扫描目录或心算编号。并行 PR 产生同号时不强制重排，完整 key 的描述承担身份区分。
-5. 推荐方案获批前，不得生成 `planning/tasks.md`。
-6. `planning/tasks.md` 之前，`planning/design.md` 内的 review gate 必须闭合。
-7. 每个任务都要写清：
+5. 立刻检查并锚定 work branch：detached worktree 创建 / 切换到 `REQ/<task>` 或 `FIX/<task>`；`main` / default branch 是 setup blocker。
+6. 推荐方案获批前，不得生成 `planning/tasks.md`。
+7. `planning/tasks.md` 之前，`planning/design.md` 内的 review gate 必须闭合。
+8. 每个任务都要写清：
    - 目标
    - TDD phase：`red` / `green` / `refactor` / `exception`
    - dependsOn / 是否允许并行
@@ -67,30 +69,30 @@
    - 必读上下文
    - 验证方式
    - 完成证据
-8. `planning/tasks.md` 顶部必须写清 frozen decisions、commands to trust、do-not-re-decide。
-9. `planning/task-manifest.json` 必须是 `cc-do` 的真相源，而不是装饰文件。
-10. `change-meta.json` 必须记录 `roadmapSync`：status、updatedFiles、command、no-op reason 或阻塞原因。
-11. `planning/design.md` 必须包含 `Existing Leverage`、`NOT in scope`、`Failure Modes`、`Test Diagram`，除非明确说明为什么不适用。
-12. `planning/design.md` 或 `planning/tasks.md` 必须包含 implementation surface map：文件、职责、归属理由、耦合风险。
-13. `full-design` 必须包含 implementation decision horizon 和 error/rescue map；不适用时写清 N/A 理由。
-14. `planning/design.md` 必须包含 assumptions preview、ambiguity gate、source trust boundary、external best-practice validation、external conflict buckets 和 bounded review loop。
-15. `planning/design.md` 必须包含 Deep Planning Funnel：requirement reality、system shape、interface/data contract、abstraction/encapsulation、execution architecture、task contract、final approval。
-16. `planning/design.md` 必须包含 PRD-grade brief：Problem Statement、Solution、actors / user stories、Implementation Decisions、Testing Decisions、Out of Scope 和 Further Notes。
-17. `planning/design.md` 必须包含 Decision Questions：哪些问题问过、推荐项、用户选择、影响、是否已写入任务。
-18. `planning/design.md` 必须包含 External Best-Practice Validation：是否需要、是否获用户允许、泛化搜索词、来源、conventional wisdom、repo-fit verdict、设计影响和跳过原因。
-19. 新 artifact、CLI、包、容器、文档入口必须在计划阶段写清分发和 discoverability，不准到 `cc-act` 才发现没人能用。
-20. 行为变更任务必须拆成 `[TEST] -> [IMPL] -> [REFACTOR]` 或写明 TDD exception；不能用“实现并测试”混成一个任务。
-21. 行为变更任务必须按一个 observable behavior 一条 tracer bullet 链组织，不能先批量写红灯再批量实现。
-22. 每个任务必须有 task contract：对应 user story / edge story、文件职责、方法或接口、关键字段、输入输出、失败路径、验证和完成脚本。
-23. 回归测试不能 defer。修改既有行为且缺少覆盖时，必须先计划 regression test。
-24. Red 任务必须验证公共接口上的行为，不验证私有函数、内部调用次数或临时数据结构。
-25. Mock 只能放在系统边界；如果测试必须 mock 自己控制的模块，说明 seam 或接口设计还没压平。
-26. 找不到正确 seam 时，先计划 exploratory spike 或设计修正，不能用假红灯冒充 TDD。
-27. Red 任务必须说明 public verification path：从同一公共接口或用户可见路径读回结果。直接查 DB / 内部状态只在该边界本身就是被测对象时允许。
-28. Green 任务必须写 minimality guard：只做当前红灯要求的最少实现，不预铺未来测试尚未要求的分支、状态或 API。
-29. Refactor 任务必须列候选坏味道：重复、长方法、浅模块、feature envy、primitive obsession、命名、三层以上分支，以及新代码暴露出的旧代码问题。
-30. UI scope 要写 design completeness score 和 loading / empty / error / success / partial 状态。
-31. developer/operator-facing scope 要写 target persona、time to first value、magic moment 和 install / run / debug / upgrade 风险。
+9. `planning/tasks.md` 顶部必须写清 frozen decisions、commands to trust、do-not-re-decide。
+10. `planning/task-manifest.json` 必须是 `cc-do` 的真相源，而不是装饰文件。
+11. `change-meta.json` 必须记录 `roadmapSync`：status、updatedFiles、command、no-op reason 或阻塞原因。
+12. `planning/design.md` 必须包含 `Existing Leverage`、`NOT in scope`、`Failure Modes`、`Test Diagram`，除非明确说明为什么不适用。
+13. `planning/design.md` 或 `planning/tasks.md` 必须包含 implementation surface map：文件、职责、归属理由、耦合风险。
+14. `full-design` 必须包含 implementation decision horizon 和 error/rescue map；不适用时写清 N/A 理由。
+15. `planning/design.md` 必须包含 assumptions preview、ambiguity gate、source trust boundary、external best-practice validation、external conflict buckets 和 bounded review loop。
+16. `planning/design.md` 必须包含 Deep Planning Funnel：requirement reality、system shape、interface/data contract、abstraction/encapsulation、execution architecture、task contract、final approval。
+17. `planning/design.md` 必须包含 PRD-grade brief：Problem Statement、Solution、actors / user stories、Implementation Decisions、Testing Decisions、Out of Scope 和 Further Notes。
+18. `planning/design.md` 必须包含 Decision Questions：哪些问题问过、推荐项、用户选择、影响、是否已写入任务。
+19. `planning/design.md` 必须包含 External Best-Practice Validation：是否需要、是否获用户允许、泛化搜索词、来源、conventional wisdom、repo-fit verdict、设计影响和跳过原因。
+20. 新 artifact、CLI、包、容器、文档入口必须在计划阶段写清分发和 discoverability，不准到 `cc-act` 才发现没人能用。
+21. 行为变更任务必须拆成 `[TEST] -> [IMPL] -> [REFACTOR]` 或写明 TDD exception；不能用“实现并测试”混成一个任务。
+22. 行为变更任务必须按一个 observable behavior 一条 tracer bullet 链组织，不能先批量写红灯再批量实现。
+23. 每个任务必须有 task contract：对应 user story / edge story、文件职责、方法或接口、关键字段、输入输出、失败路径、验证和完成脚本。
+24. 回归测试不能 defer。修改既有行为且缺少覆盖时，必须先计划 regression test。
+25. Red 任务必须验证公共接口上的行为，不验证私有函数、内部调用次数或临时数据结构。
+26. Mock 只能放在系统边界；如果测试必须 mock 自己控制的模块，说明 seam 或接口设计还没压平。
+27. 找不到正确 seam 时，先计划 exploratory spike 或设计修正，不能用假红灯冒充 TDD。
+28. Red 任务必须说明 public verification path：从同一公共接口或用户可见路径读回结果。直接查 DB / 内部状态只在该边界本身就是被测对象时允许。
+29. Green 任务必须写 minimality guard：只做当前红灯要求的最少实现，不预铺未来测试尚未要求的分支、状态或 API。
+30. Refactor 任务必须列候选坏味道：重复、长方法、浅模块、feature envy、primitive obsession、命名、三层以上分支，以及新代码暴露出的旧代码问题。
+31. UI scope 要写 design completeness score 和 loading / empty / error / success / partial 状态。
+32. developer/operator-facing scope 要写 target persona、time to first value、magic moment 和 install / run / debug / upgrade 风险。
 32. Review gate 只拦会导致实现错误、执行卡住、范围越界、验证缺失的问题；文字偏好和 nice-to-have 只能作为 advisory。
 
 ## Approval Flow

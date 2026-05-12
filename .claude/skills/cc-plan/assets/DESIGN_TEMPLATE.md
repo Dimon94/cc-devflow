@@ -5,6 +5,7 @@
 - Requirement version:
 - Design version:
 - CC-Plan skill version:
+- Work branch:
 - Output language:
 - Requirement ID:
 - Design mode: `full-design`

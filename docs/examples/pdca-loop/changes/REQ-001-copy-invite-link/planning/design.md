@@ -4,7 +4,8 @@
 
 - Requirement version: `REQ-001.v1`
 - Design version: `design.v1`
-- CC-Plan skill version: `3.8.6`
+- CC-Plan skill version: `3.8.7`
+- Work branch: `REQ/001-copy-invite-link`
 - Requirement ID: `REQ-001`
 - Design mode: `tiny-design`
 - Why this stays `tiny-design`: the patch is limited to an existing dialog and test file, with no API or data model changes

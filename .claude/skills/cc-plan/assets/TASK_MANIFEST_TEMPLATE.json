@@ -9,8 +9,9 @@
     "documentLanguage": ""
   },
   "planningMeta": {
-    "reqPlanSkillVersion": "3.8.6",
+    "reqPlanSkillVersion": "3.8.7",
     "designVersion": "design.v1",
+    "workBranch": "REQ/XXX-short-feature-name",
     "approvedAt": "2026-04-15T12:00:00.000Z",
     "basedOnOption": "Option A",
     "aiLeverageDecisionLens": {

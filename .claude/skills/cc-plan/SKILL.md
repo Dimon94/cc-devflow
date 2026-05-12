@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.8.6
+version: 3.8.7
 description: Use when a requirement, roadmap item, or bug needs scope clarification, design decisions, and executable task breakdown before coding starts.
 triggers:
   - 帮我规划这个需求
@@ -56,12 +56,14 @@ entry_gate:
   - Before approach approval, decide whether external best-practice validation could materially change the plan; if yes, ask the user through the Decision Question Protocol before any web or external lookup.
   - When user judgment is required, ask with the fixed `cc-plan` Decision Question Protocol (`D<N>`, evidence, recommendation, lettered A/B/C options, impact, STOP) instead of free-form prose.
   - Assign a canonical change key before writing artifacts by running `cc-devflow next-change-key --prefix REQ|FIX --description "<short name>"`. Use the script output directly; do not manually scan directories or compute numbers.
+  - "Immediately after assigning the change key and before writing durable artifacts, enforce the Worktree Branch Contract: if the current worktree is detached, create or switch to the canonical `REQ/<task>` or `FIX/<task>` branch derived from the change key; if the current branch is the default branch (`main` / `master` / origin HEAD), stop with a setup blocker instead of planning on main."
   - Do not generate planning/tasks.md, planning/task-manifest.json, or change-meta.json until the recommended design is approved.
   - Before exit, locate the source RM in `devflow/roadmap.json`, `devflow/ROADMAP.md`, optional `devflow/BACKLOG.md`, or legacy `devflow/roadmap-tracking.json`; plan the progress sync instead of relying on chat memory.
 exit_criteria:
   - planning/design.md captures the approved solution, PRD-grade requirement brief, boundaries, review conclusions, and execution edge cases.
   - planning/design.md preserves every confirmed planning-funnel answer that would otherwise force `cc-do` to invent architecture, abstractions, interfaces, methods, fields, categories, task grain, or test seams.
   - planning/tasks.md, planning/task-manifest.json, and change-meta.json are explicit enough that cc-do can continue without chat memory.
+  - planning/design.md, planning/tasks.md, and change-meta.json record the canonical work branch or the explicit reason no branch mutation was valid.
   - "`cc-devflow query workflow-context` can derive the next skill, packet digests, default section refs, current task, trusted commands, and deep-open triggers from the frozen artifacts."
   - planning/tasks.md contains the task-template compliance section and script-based completion protocol, and every task block includes its completion command.
   - task-manifest.json omits retired narrative/protocol mirrors such as `executionProtocol`, `planningMeta.requirementBrief`, `planningMeta.ambiguityGate`, `planningMeta.reviewLoop`, and task-level `completion`; those details belong in `planning/design.md` or `planning/tasks.md`.
@@ -190,6 +192,23 @@ bash .claude/skills/cc-plan/scripts/next-change-key.sh --prefix REQ --descriptio
 
 描述部分使用 kebab-case，可以保留中文词组，但不允许丢掉大写 `REQ` / `FIX` 前缀。不要再创建 `req-123-...`、`bug-123-...`、纯描述目录或没有编号的目录。旧的小写目录只能作为历史兼容读取目标，不作为新 planning 输出。
 
+## Worktree Branch Contract
+
+每个新的 `REQ` / `FIX` 默认拥有一个同名工作分支。主项目 checkout 的 `main` 只服务同步、审查和 parity proof，不承载日常 planning 或 implementation。
+
+分支锚定顺序固定：
+
+1. 先运行 `cc-devflow next-change-key --prefix REQ|FIX --description "<short name>"`，得到 `changeId` 和完整 `changeKey`。
+2. 计算 canonical work branch：`REQ/<task>` 或 `FIX/<task>`，其中 `<task>` 是去掉 `REQ-` / `FIX-` 前缀后的 change key 尾部。例如 `REQ-003-copy-link` -> `REQ/003-copy-link`。
+3. 立即检查 `git branch --show-current`：
+   - 为空：当前是 detached worktree，立刻 `git switch -c <canonical-work-branch>`；如果分支已存在且指向当前 HEAD，可以 `git switch <canonical-work-branch>`。
+   - 等于 default branch（`main` / `master` / `origin/HEAD` 指向的分支）：停止并报告 setup blocker；不要在主分支写 planning artifacts。
+   - 等于 canonical work branch：继续。
+   - 其它分支：只有它已经明确绑定同一个 `changeKey` 时才继续；否则停止并让用户确认是否切换或新开 worktree。
+4. 在 `planning/design.md`、`planning/tasks.md` 和 `change-meta.json` 记录 work branch。没有记录 work branch 的计划不能进入 `cc-do`。
+
+这不是发布前补救动作。`cc-act` 的 detached HEAD rescue 只处理历史遗留；新的 `cc-plan` 必须在入口阶段就把 worktree 绑定到 `REQ/<task>` 或 `FIX/<task>`。
+
 ## Autoplan Principles
 
 这些规则属于 `cc-plan` 的原生决策口径，不允许拆成额外文档：
@@ -281,11 +300,12 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key
 
 1. 先确认当前对象是一个 requirement，而不是整个项目路线图。
 2. 如果来源于 `roadmap`，必须先定位对应的 `RM-ID`，读清 `devflow/ROADMAP.md` / `devflow/BACKLOG.md` 的版本、证据、约束、success signal、next decision、primary capability、expected spec delta。
-3. 如果原始需求包含多个可独立交付的子系统，先拆成独立 `RM` 或 `REQ/FIX` 候选；不要在一个 `cc-plan` 里继续追问实现细节。
-4. 先读当前 change 目录现状。旧目录里如果还有 `BRAINSTORM.md` / `PLAN_REVIEW.md` / `context-package.md`，把有效信息吸收进新的 `planning/design.md`，不要继续增殖。
-5. 先看代码、文档、测试和最近提交，再谈拆任务。
-6. 先读 cc-devflow 原生项目语言和决策上下文：`devflow/specs/INDEX.md`、相关 capability specs、roadmap/backlog handoff、当前或历史 `planning/design.md` / `planning/analysis.md`、`change-meta.json`；不存在时静默跳过，但发现术语冲突必须写成 blocked question 或 user challenge。
-7. 先写不做什么，再写做什么。
+3. 先分配 canonical `REQ-*` / `FIX-*` change key，并执行 Worktree Branch Contract；detached worktree 必须先挂到 `REQ/<task>` 或 `FIX/<task>`，主分支必须停止。
+4. 如果原始需求包含多个可独立交付的子系统，先拆成独立 `RM` 或 `REQ/FIX` 候选；不要在一个 `cc-plan` 里继续追问实现细节。
+5. 先读当前 change 目录现状。旧目录里如果还有 `BRAINSTORM.md` / `PLAN_REVIEW.md` / `context-package.md`，把有效信息吸收进新的 `planning/design.md`，不要继续增殖。
+6. 先看代码、文档、测试和最近提交，再谈拆任务。
+7. 先读 cc-devflow 原生项目语言和决策上下文：`devflow/specs/INDEX.md`、相关 capability specs、roadmap/backlog handoff、当前或历史 `planning/design.md` / `planning/analysis.md`、`change-meta.json`；不存在时静默跳过，但发现术语冲突必须写成 blocked question 或 user challenge。
+8. 先写不做什么，再写做什么。
 
 ## Context Sweep
 
@@ -644,6 +664,7 @@ STOP: wait for the user answer before continuing.
 11. 三层以上判断说明设计还没压平，应回到 `planning/design.md` 继续简化。
 12. `tiny-design` 不得被当成“免审批”；只要要写任务，就必须先有已批准的设计卡片。
 13. Roadmap 相关文件以 `devflow/roadmap.json` 为真相源，`devflow/ROADMAP.md` / `devflow/BACKLOG.md` 只是投影；不要再写旧式 `devflow/roadmap/*` 路径。
+14. 一个 `REQ` / `FIX` 对应一个 canonical work branch；新 planning 不在 `main` 上落盘，不把 detached worktree 留到 `cc-act` 才补救。
 
 ## Exit Criteria
 

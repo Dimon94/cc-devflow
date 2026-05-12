@@ -1,5 +1,11 @@
 # CC-Investigate Skill Changelog
 
+## v1.4.3 - 2026-05-13
+
+- add the Worktree Branch Contract so new `FIX` investigations anchor detached worktrees to `FIX/<task>` before artifacts are written
+- treat investigations on `main` / the default branch as a setup blocker instead of allowing the main checkout to accumulate repair state
+- require analysis, tasks, and change metadata to record the canonical work branch for downstream `cc-do`
+
 ## v1.4.2 - 2026-05-12
 
 - require IDCA repair handoffs to be consumable by `cc-devflow query workflow-context`
