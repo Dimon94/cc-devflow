@@ -55,7 +55,7 @@ writes:
 effects:
   - roadmap progress and backlog follow-up updates when needed
 entry_gate:
-  - Run `cc-devflow query workflow-context --change <changeId> --change-key <changeKey>` first; continue only when it reports `nextAction.skill == "cc-act"`.
+  - Run `cc-devflow query workflow-context --change <changeId> --change-key <changeKey> --data-only --no-trace --compact` first; continue only when it reports `nextAction.skill == "cc-act"`.
   - Accept only a passing review/report-card.json with reroute=none and specSyncReady=true.
   - Freeze current branch, PR, ship-mode, auth, clean-tree, and rollback facts before writing delivery materials.
   - If simplify, tests, or act changes code or verification scope, return to cc-check immediately.
@@ -175,9 +175,9 @@ tool_budget:
 
 ## Entry Gate
 
-1. 先运行 `cc-devflow query workflow-context --change <changeId> --change-key <changeKey>`，确认 compact packet 的 `nextAction.skill == "cc-act"`。
+1. 先运行 `cc-devflow query workflow-context --change <changeId> --change-key <changeKey> --data-only --no-trace --compact`，确认 context index 的 `nextAction.skill == "cc-act"`。
 2. 再读 `review/report-card.json`，只接受已通过且有证据的现实。
-3. 默认只读 workflow context 的 `progressiveDisclosure.defaultRead`；只有 ship mode、roadmap sync、rollback 或 postmortem 触发时，再读 `planning/design.md` / `planning/analysis.md`、`planning/tasks.md`、完整 manifest、change-meta、相关 capability spec 或 `handoff/resume-index.md`。
+3. 默认只使用 workflow context 的 `packetOnly`、`mustNotForget` 和 `sourceHashes`；必要时打开 `progressiveDisclosure.defaultOpen` 的 section / JSON refs；只有 ship mode、roadmap sync、rollback、hash mismatch 或 postmortem 触发时，再读 `deepOpen` 里的完整 `planning/design.md` / `planning/analysis.md`、`planning/tasks.md`、完整 manifest、change-meta、相关 capability spec 或 `handoff/resume-index.md`。
 4. 运行 `scripts/verify-act-gate.sh --dir <requirement-dir>`，确认 gate 真的闭合。
 5. 运行 `scripts/detect-ship-target.sh`，识别当前分支、base branch、PR 状态与推荐 ship 路径。
    - 如果输出 `BRANCH_STATE=detached` 且 `BRANCH_RESCUE=create-branch-before-pr`，这不是阻塞；立即运行 `scripts/ensure-ship-branch.sh --dir <requirement-dir>`，然后重跑最终验证与 `detect-ship-target.sh`。

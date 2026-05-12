@@ -114,6 +114,7 @@ while IFS= read -r encoded; do
 
   assert_contains "$planning_dir/tasks.md" "## Execution Protocol"
   assert_contains "$planning_dir/tasks.md" "cc-devflow query workflow-context"
+  assert_contains "$planning_dir/tasks.md" "--data-only --no-trace --compact"
   assert_contains "$planning_dir/tasks.md" "mark-task-complete.sh"
   assert_contains "$planning_dir/tasks.md" "TDD phase:"
   assert_contains "$planning_dir/tasks.md" "Completion:"
