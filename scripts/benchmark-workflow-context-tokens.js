@@ -18,21 +18,21 @@ const EXAMPLE_CASES = [
     changeId: 'REQ-001',
     changeKey: 'REQ-001-copy-invite-link',
     tokenBaseline: true,
-    expected: { sourceHashes: true }
+    expected: { sourceHashes: true, verificationCommands: true }
   },
   {
     caseName: 'full-design-blocked',
     changeId: 'REQ-002',
     changeKey: 'REQ-002-bulk-invite-import',
     tokenBaseline: true,
-    expected: { sourceHashes: true }
+    expected: { sourceHashes: true, verificationCommands: true }
   },
   {
     caseName: 'local-handoff',
     changeId: 'REQ-003',
     changeKey: 'REQ-003-audit-log-export',
     tokenBaseline: true,
-    expected: { sourceHashes: true }
+    expected: { sourceHashes: true, verificationCommands: true }
   }
 ];
 
@@ -330,7 +330,7 @@ function syntheticCases() {
       repoRoot: createSyntheticCase('complete-no-report', 'REQ-904', {
         tasks: [task('T001', 'passed')]
       }),
-      expected: { selectedSkill: 'cc-check', action: 'build-fresh-verdict' }
+      expected: { selectedSkill: 'cc-check', action: 'build-fresh-verdict', verificationCommands: true }
     },
     {
       caseName: 'complete-ship-blocked',
@@ -344,7 +344,7 @@ function syntheticCases() {
         specSyncReady: false,
         blockingFindings: []
       }),
-      expected: { selectedSkill: 'cc-check', action: 'build-fresh-verdict' }
+      expected: { selectedSkill: 'cc-check', action: 'build-fresh-verdict', verificationCommands: true }
     },
     {
       caseName: 'missing-verification',
@@ -465,6 +465,12 @@ async function main() {
   console.log('| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | ---: | ---: | ---: | --- |');
   for (const row of rows) {
     console.log(`| ${row.case} | ${row.stage} | ${row.actual_cli_data_only_tokens} | ${row.routing_packet_tokens} | ${row.default_open_tokens} | ${row.deep_open_tokens} | ${row.total_actual_tokens} | ${row.total_routing_mode_tokens} | ${row.savings_actual_vs_baseline} | ${row.savings_routing_vs_baseline} | ${row.selected_task} | ${row.selected_skill} | ${row.required_files_opened} | ${row.verification_commands} | ${row.missing_section_refs} | ${row.correctness_pass} |`);
+  }
+
+  const failures = rows.filter((row) => row.correctness_pass !== 'yes');
+  if (failures.length > 0) {
+    console.error(`Workflow context benchmark correctness failed: ${failures.map((row) => row.case).join(', ')}`);
+    process.exit(1);
   }
 }
 
