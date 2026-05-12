@@ -6,7 +6,7 @@
   "requirementId": "REQ-003",
   "requirementVersion": "REQ-003.v1",
   "planningMeta": {
-    "reqPlanSkillVersion": "3.8.5",
+    "reqPlanSkillVersion": "3.8.6",
     "designVersion": "design.v1",
     "approvedAt": "2026-04-16T13:10:00.000Z",
     "basedOnOption": "Tiny design card",

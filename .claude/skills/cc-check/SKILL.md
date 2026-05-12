@@ -1,6 +1,6 @@
 ---
 name: cc-check
-version: 1.10.1
+version: 1.10.2
 description: Use when a planned or investigated change needs fresh verification evidence, layered gate proof, review truth, and an honest pass fail blocked verdict before entering cc-act.
 triggers:
   - 验收这个需求
@@ -21,7 +21,8 @@ writes:
     durability: durable
     required: true
 entry_gate:
-  - Read planning/design.md or planning/analysis.md, then planning/tasks.md, planning/task-manifest.json, and the latest runtime evidence before selecting a verdict.
+  - Run `cc-devflow query workflow-context --change <changeId> --change-key <changeKey>` first; enter verification only when `nextAction.skill` is `cc-check`, or record the reroute it reports.
+  - Read only the workflow context `defaultRead` set before expanding planning/design.md or planning/analysis.md, planning/tasks.md, planning/task-manifest.json, and latest runtime evidence.
   - Re-run fresh commands instead of inheriting cc-do narration.
   - If evidence is stale or missing, reset context and rebuild the verdict from canonical artifacts.
 exit_criteria:
@@ -109,8 +110,9 @@ NO PASS WITHOUT FRESH EVIDENCE
 你必须按阶段推进，不能跳着给结论：
 
 1. **Reset Contract**
-   - 读 `planning/design.md` 或 `planning/analysis.md`
-   - 读 `planning/tasks.md`、`planning/task-manifest.json`
+   - 先读 `cc-devflow query workflow-context` 的 compact packet
+   - 默认只读 `progressiveDisclosure.defaultRead`
+   - 只有 `openWhen` 触发时再读 `planning/design.md` / `planning/analysis.md` 深层区块、`planning/tasks.md` 或完整 `planning/task-manifest.json`
    - 明确本轮要验证的 capability / task / spec delta
 2. **Re-run Reality**
    - 重新执行 gate，不继承 `cc-do` 叙述

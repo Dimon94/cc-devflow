@@ -1,5 +1,11 @@
 # CC-Act Skill Changelog
 
+## v1.8.8 - 2026-05-12
+
+- require `cc-devflow query workflow-context` before ship work so `cc-act` confirms the compact next action before opening delivery artifacts
+- make deep closeout reads conditional on ship-mode, rollback, roadmap-sync, or postmortem triggers
+- keep `ship-readiness` as the hard readiness query while using workflow context for the end-to-end PDCA/IDCA handoff
+
 ## v1.8.7 - 2026-05-11
 
 - add project-level AI postmortem writeback under `devflow/postmortems/` for FIX closeout and recurring AI/process/engineering failures

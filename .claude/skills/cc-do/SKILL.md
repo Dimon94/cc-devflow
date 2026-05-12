@@ -1,6 +1,6 @@
 ---
 name: cc-do
-version: 1.6.5
+version: 1.6.6
 description: Use when implementing planned tasks, resuming interrupted work, applying a frozen investigation handoff, or landing review feedback after cc-plan or cc-investigate.
 triggers:
   - 开始做 T003
@@ -37,7 +37,8 @@ effects:
   - test changes
   - workspace scratch runtime updates
 entry_gate:
-  - Read planning/design.md or planning/analysis.md, then planning/tasks.md, planning/task-manifest.json, change-meta.json, related capability specs, and the latest checkpoint before changing code.
+  - Run `cc-devflow query workflow-context --change <changeId> --change-key <changeKey>` first and follow its compact `defaultRead`, `currentTask`, `commandsToTrust`, and `openWhen` fields before opening deep artifacts.
+  - Read planning/design.md or planning/analysis.md, then planning/tasks.md, planning/task-manifest.json, change-meta.json, related capability specs, and the latest checkpoint only when the workflow context says the deep section is needed.
   - Select only ready tasks whose dependencies, wave, touched paths, and file ownership are clear.
   - Reject parallel execution when touched paths overlap by exact path or parent/child path; submodule touches must be isolated unless the task explicitly owns that submodule.
   - If the current task cannot be restated from canonical artifacts, run a context reset before coding.
@@ -124,7 +125,7 @@ tool_budget:
 | bug 还没搞清根因 | reroute 到 `cc-investigate` |
 | 收到 review comment，要在既定范围内修正 | `review-fix` |
 
-如果连“当前 task 是什么”都说不清，先别写代码，先跑 `scripts/select-ready-tasks.sh` 和 `scripts/build-task-context.sh`。
+如果连“当前 task 是什么”都说不清，先别写代码，先跑 `cc-devflow query workflow-context`。只有它的 `openWhen` 指向 scheduling 或 recovery 时，才继续跑 `scripts/select-ready-tasks.sh` 和 `scripts/build-task-context.sh`。
 
 ## Harness Contract
 
@@ -162,14 +163,15 @@ Refactor 只能发生在 Green 之后。优先处理当前 slice 暴露出的重
 
 ## Entry Gate
 
-1. 先读 `planning/design.md` 或 `planning/analysis.md`，再读 `planning/tasks.md`、`planning/task-manifest.json`；如果是恢复执行，再补读最近 checkpoint 或已有 `handoff/resume-index.md`。
-2. 先用 `scripts/select-ready-tasks.sh` 判断现在到底哪几个任务真的 ready。
-3. 只锁定当前 ready task，或一组经依赖、wave、精确触点与父子路径触点校验后可并行的 ready tasks。
-4. 如果这次来自 `cc-investigate`，必须把 `planning/analysis.md` 当成 canonical contract，而不是一边实现一边重新调查。
-5. 没有任务上下文，不准把任务扔给 subagent；先用 `scripts/build-task-context.sh` 从 `planning/design.md` 或 `planning/analysis.md`、`planning/tasks.md`、`planning/task-manifest.json`、`change-meta.json` 与相关 capability spec 组装上下文。
-6. 如果 `task-manifest.json.metadata.lane == "quick"`，仍然必须有 current task、verification、checkpoint 和 handoff；quick 只缩短文档密度，不跳过证据。
-7. 如果仓库含 `.gitmodules` 或 manifest 提供 `submodulePaths`，先用 `scripts/detect-file-conflicts.sh` 标出 `submoduleTouches`；只有触达该 submodule 的任务失去默认 worktree 隔离资格，未触达任务不能被无辜串行化。
-8. 每个单 task 开工前，用当前 task 的 touched files、capability、错误类型、模型风险词快速检索 `devflow/postmortems`；命中时把相关原则转成当前 task 的 guardrail，未命中也要在 checkpoint / events 里记录。
+1. 先运行 `cc-devflow query workflow-context --change <changeId> --change-key <changeKey>`，把 `nextAction.skill == "cc-do"` 和 `currentTask.id` 作为执行入口。
+2. 只读 `workflow-context.progressiveDisclosure.defaultRead` 里的默认文件；只有触发 `openWhen` 时再打开 `planning/tasks.md` 深层区块、checkpoint 或 report-card。
+3. 先用 `workflow-context.queues.readyTasks` 判断现在到底哪几个任务真的 ready；需要 shell 复核时再跑 `scripts/select-ready-tasks.sh`。
+4. 只锁定当前 ready task，或一组经依赖、wave、精确触点与父子路径触点校验后可并行的 ready tasks。
+5. 如果这次来自 `cc-investigate`，必须把 `planning/analysis.md` 当成 canonical contract，而不是一边实现一边重新调查。
+6. 没有任务上下文，不准把任务扔给 subagent；先用 `workflow-context.currentTask`，不够时再用 `scripts/build-task-context.sh` 从 canonical artifacts 组装上下文。
+7. 如果 `task-manifest.json.metadata.lane == "quick"`，仍然必须有 current task、verification、checkpoint 和 handoff；quick 只缩短文档密度，不跳过证据。
+8. 如果仓库含 `.gitmodules` 或 manifest 提供 `submodulePaths`，先用 `scripts/detect-file-conflicts.sh` 标出 `submoduleTouches`；只有触达该 submodule 的任务失去默认 worktree 隔离资格，未触达任务不能被无辜串行化。
+9. 每个单 task 开工前，用当前 task 的 touched files、capability、错误类型、模型风险词快速检索 `devflow/postmortems`；命中时把相关原则转成当前 task 的 guardrail，未命中也要在 checkpoint / events 里记录。
 
 ## Loop
 

@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-003.v1`
 - Design version: `design.v1`
-- CC-Plan skill version: `3.8.5`
+- CC-Plan skill version: `3.8.6`
 - Source roadmap item: `RM-020`
 - Source roadmap version: `roadmap.v3`
 
@@ -41,12 +41,14 @@
 ClaudeCode / Codex 执行本计划时，必须把本文件当成任务模板合同，而不是普通 TODO 列表。
 
 - Template source: `assets/TASKS_TEMPLATE.md`
+- Compact context first: run `cc-devflow query workflow-context --change <changeId> --change-key <changeKey> --cwd <repo-root>` before opening deep sections; follow its `defaultRead`, `commandsToTrust`, `nextAction`, and `openWhen` fields.
 - Task selection: read `planning/task-manifest.json.currentTaskId`; if empty, run the ready-task selector before choosing work.
 - Task block rule: read the full task block before coding; title-only execution is invalid.
 - Completion rule: after verification and review gates pass, run the completion script; do not manually edit checkbox, status, or `currentTaskId`.
 - Completion failure: if the script fails, fix the missing checkpoint / review / dependency evidence and rerun it. Do not bypass it by editing JSON or Markdown.
 
 ```bash
+cc-devflow query workflow-context --change <changeId> --change-key <changeKey> --cwd <repo-root>
 SCRIPT_ROOT=".claude/skills/cc-do/scripts"
 if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then
   SCRIPT_ROOT=".codex/skills/cc-do/scripts"

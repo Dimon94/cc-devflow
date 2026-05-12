@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.8.5
+version: 3.8.6
 description: Use when a requirement, roadmap item, or bug needs scope clarification, design decisions, and executable task breakdown before coding starts.
 triggers:
   - 帮我规划这个需求
@@ -48,6 +48,7 @@ entry_gate:
   - "For non-trivial designs, compare named option roles: minimal viable, ideal architecture, and optional hybrid. Do not default to smallest unless it best serves the goal."
   - Plan executable work as Red/Green/Refactor by default; identify the first failing test before any production implementation task, or write an explicit TDD exception with replacement evidence.
   - Generate `planning/tasks.md` from `assets/TASKS_TEMPLATE.md` semantics, including every required task field, the execution protocol, and the exact task completion command; do not free-form a loose checklist.
+  - "Make progressive disclosure executable: `planning/tasks.md` must name `cc-devflow query workflow-context --change <changeId> --change-key <changeKey>` as the first context reset before `cc-do`, `cc-check`, or `cc-act` opens deep planning sections."
   - "Keep `planning/task-manifest.json` lean: it is the machine execution graph, not a mirror of the design narrative or task protocol prose."
   - For behavior changes, freeze the spec-style test name, one logical behavior, public verification path, and interface-testability decision before task split.
   - "Before approach approval, run the AI Leverage Decision Lens: real user/operator, status quo workaround, human-vs-agent effort, complete-lake boundary, ocean boundary, scope recommendation, and boil-lake/sharp-wedge/needs-evidence/pivot verdict."
@@ -61,6 +62,7 @@ exit_criteria:
   - planning/design.md captures the approved solution, PRD-grade requirement brief, boundaries, review conclusions, and execution edge cases.
   - planning/design.md preserves every confirmed planning-funnel answer that would otherwise force `cc-do` to invent architecture, abstractions, interfaces, methods, fields, categories, task grain, or test seams.
   - planning/tasks.md, planning/task-manifest.json, and change-meta.json are explicit enough that cc-do can continue without chat memory.
+  - "`cc-devflow query workflow-context` can derive the next skill, default read set, current task, trusted commands, and deep-open triggers from the frozen artifacts."
   - planning/tasks.md contains the task-template compliance section and script-based completion protocol, and every task block includes its completion command.
   - task-manifest.json omits retired narrative/protocol mirrors such as `executionProtocol`, `planningMeta.requirementBrief`, `planningMeta.ambiguityGate`, `planningMeta.reviewLoop`, and task-level `completion`; those details belong in `planning/design.md` or `planning/tasks.md`.
   - The task breakdown preserves test-first execution; failing-test tasks precede implementation tasks, refactor checkpoints are visible, and any TDD exception is justified.
@@ -234,6 +236,7 @@ bash .claude/skills/cc-plan/scripts/next-change-key.sh --prefix REQ --descriptio
 
 精简不等于把仍有价值的信息全部删掉。`cc-plan` 的输出必须按“默认必读 -> 条件展开 -> 深层审查”分层，让执行者按需加载上下文。
 
+- 渐进式披露必须能被执行到闭环末端。`planning/tasks.md` 的第一条恢复命令是 `cc-devflow query workflow-context --change <changeId> --change-key <changeKey>`；`cc-do`、`cc-check`、`cc-act` 都先读这个 compact packet，再按 `openWhen` 条件展开深层文档。
 - 第一屏必须能回答：这次做什么、不做什么、为什么现在做、当前批准状态、下一步读哪个 task。
 - `planning/design.md` 顶部必须有 progressive disclosure index：默认读 Requirement Snapshot / Approved Direction / Validation / Roadmap Sync；只有遇到范围、信任、外部资料、UI/DX、风险或复盘问题时才展开对应深层区块。
 - `planning/tasks.md` 顶部必须有 progressive disclosure index：默认读 Plan Meta、Execution Handoff、Execution Protocol、当前 task block；只有并行冲突、切片争议或质量审查时才展开 surface map、tracer map 和 Task Quality Bar。

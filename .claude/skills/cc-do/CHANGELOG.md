@@ -1,5 +1,11 @@
 # CC-Do Skill Changelog
 
+## v1.6.6 - 2026-05-12
+
+- make `cc-devflow query workflow-context` the first execution context reset so `cc-do` reads compact task truth before opening full planning artifacts
+- route ready-task, trusted-command, and deep-open decisions through the runtime packet instead of chat memory
+- keep `select-ready-tasks.sh` and `build-task-context.sh` as deeper recovery tools rather than the default context load
+
 ## v1.6.5 - 2026-05-11
 
 - require a per-task Project Postmortem quick search before execution touches code

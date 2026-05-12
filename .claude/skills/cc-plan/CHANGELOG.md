@@ -1,5 +1,11 @@
 # CC-Plan Skill Changelog
 
+## v3.8.6 - 2026-05-12
+
+- require generated execution handoffs to start from `cc-devflow query workflow-context` so progressive disclosure is runtime-derived, not chat memory
+- make the compact context packet the default bridge from planning into `cc-do`, `cc-check`, and `cc-act`
+- keep deep planning sections available only behind explicit open conditions such as scope drift, scheduling conflict, recovery, or delivery
+
 ## v3.8.5 - 2026-05-11
 
 - add the Project Postmortem Recall Gate so plans search `devflow/postmortems` before freezing direction

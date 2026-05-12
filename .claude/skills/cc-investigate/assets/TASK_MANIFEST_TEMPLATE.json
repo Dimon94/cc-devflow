@@ -6,7 +6,7 @@
     "documentLanguage": ""
   },
   "planningMeta": {
-    "ccInvestigateSkillVersion": "1.4.1",
+    "ccInvestigateSkillVersion": "1.4.2",
     "analysisVersion": "analysis.v1",
     "approvedAt": "2026-04-17T12:00:00.000Z",
     "basedOnRootCause": "Root cause sentence"

@@ -1,6 +1,6 @@
 ---
 name: cc-act
-version: 1.8.7
+version: 1.8.8
 description: 'Use when verified work must be shipped or handed off with a clear landing path: run simplify and required tests, create or update a PR, prepare a local handoff, close out merged work, sync docs, write release notes, and fold follow-ups back into backlog or roadmap.'
 triggers:
   - 准备提 PR
@@ -55,6 +55,7 @@ writes:
 effects:
   - roadmap progress and backlog follow-up updates when needed
 entry_gate:
+  - Run `cc-devflow query workflow-context --change <changeId> --change-key <changeKey>` first; continue only when it reports `nextAction.skill == "cc-act"`.
   - Accept only a passing review/report-card.json with reroute=none and specSyncReady=true.
   - Freeze current branch, PR, ship-mode, auth, clean-tree, and rollback facts before writing delivery materials.
   - If simplify, tests, or act changes code or verification scope, return to cc-check immediately.
@@ -174,16 +175,17 @@ tool_budget:
 
 ## Entry Gate
 
-1. 先读 `review/report-card.json`，只接受已通过且有证据的现实。
-2. 再读 `planning/design.md` 或 `planning/analysis.md`、`planning/tasks.md`、`planning/task-manifest.json`、`change-meta.json`、相关 capability spec；如果已有 `handoff/resume-index.md`，一并读取，确认这次到底完成了什么。
-3. 运行 `scripts/verify-act-gate.sh --dir <requirement-dir>`，确认 gate 真的闭合。
-4. 运行 `scripts/detect-ship-target.sh`，识别当前分支、base branch、PR 状态与推荐 ship 路径。
+1. 先运行 `cc-devflow query workflow-context --change <changeId> --change-key <changeKey>`，确认 compact packet 的 `nextAction.skill == "cc-act"`。
+2. 再读 `review/report-card.json`，只接受已通过且有证据的现实。
+3. 默认只读 workflow context 的 `progressiveDisclosure.defaultRead`；只有 ship mode、roadmap sync、rollback 或 postmortem 触发时，再读 `planning/design.md` / `planning/analysis.md`、`planning/tasks.md`、完整 manifest、change-meta、相关 capability spec 或 `handoff/resume-index.md`。
+4. 运行 `scripts/verify-act-gate.sh --dir <requirement-dir>`，确认 gate 真的闭合。
+5. 运行 `scripts/detect-ship-target.sh`，识别当前分支、base branch、PR 状态与推荐 ship 路径。
    - 如果输出 `BRANCH_STATE=detached` 且 `BRANCH_RESCUE=create-branch-before-pr`，这不是阻塞；立即运行 `scripts/ensure-ship-branch.sh --dir <requirement-dir>`，然后重跑最终验证与 `detect-ship-target.sh`。
    - 用户已经表达“继续 / 提交远程 PR / 推进”的场景下，detached HEAD 只能触发分支锚定，不能把 `create-pr` 降级成 `local-handoff`。
-5. 检查 `review.freshness`、`runtime.failureOwnership`、`qa.coverageAudit`、`qa.browserEvidence`，确认 readiness dashboard 没有 blocker。
-6. 检查 `qa.feedbackLoop`、`qa.behaviorEvidence`、`qa.architectureFollowUps` 和 follow-up brief，确认交付材料继承的是行为证据，不是聊天记忆或易腐烂 TODO。
-7. 定位 source RM：优先读 `change-meta.json` / `task-manifest.json` 的 `sourceRoadmap.itemId`，再用 `locate-roadmap-item.sh` 对照 `devflow/roadmap.json`、`devflow/ROADMAP.md` 和 optional `devflow/BACKLOG.md`；如果 roadmap 状态和 verified reality 冲突，先同步或 reroute，不能继续 ship。
-8. 如果在 `cc-act` 期间因为 `cc-simplify`、单测、e2e、review 修复而改了代码，必须回 `cc-check`，不能带着旧证明继续 ship。
+6. 检查 `review.freshness`、`runtime.failureOwnership`、`qa.coverageAudit`、`qa.browserEvidence`，确认 readiness dashboard 没有 blocker。
+7. 检查 `qa.feedbackLoop`、`qa.behaviorEvidence`、`qa.architectureFollowUps` 和 follow-up brief，确认交付材料继承的是行为证据，不是聊天记忆或易腐烂 TODO。
+8. 定位 source RM：优先读 `change-meta.json` / `task-manifest.json` 的 `sourceRoadmap.itemId`，再用 `locate-roadmap-item.sh` 对照 `devflow/roadmap.json`、`devflow/ROADMAP.md` 和 optional `devflow/BACKLOG.md`；如果 roadmap 状态和 verified reality 冲突，先同步或 reroute，不能继续 ship。
+9. 如果在 `cc-act` 期间因为 `cc-simplify`、单测、e2e、review 修复而改了代码，必须回 `cc-check`，不能带着旧证明继续 ship。
 
 ## Ship Modes
 

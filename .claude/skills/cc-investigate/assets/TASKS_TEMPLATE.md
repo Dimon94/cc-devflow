@@ -13,6 +13,7 @@
 ## Progressive Disclosure Index
 
 - Default read: Investigation Meta, Execution Handoff, current task block.
+- Runtime reset: run `cc-devflow query workflow-context --change <changeId> --change-key <changeKey> --cwd <repo-root>` before `cc-do`, `cc-check`, or `cc-act`; follow its `defaultRead`, `commandsToTrust`, `nextAction`, and `openWhen` fields.
 - Open for root-cause doubt: `planning/analysis.md` Project Postmortem Recall, Feedback Loop, Evidence Chain, Boundary Probe Matrix.
 - Open for scheduling: `planning/task-manifest.json`, dependencies, touched files.
 - Open for audit/recovery: checkpoint files, report-card findings, Workflow Forensics.

@@ -1,5 +1,11 @@
 # CC-Check Skill Changelog
 
+## v1.10.2 - 2026-05-12
+
+- add a compact `workflow-context` reset before verification so `cc-check` starts from current next-action truth instead of full artifact reload
+- make deep verification reads conditional on the workflow context `openWhen` triggers
+- preserve fresh-evidence requirements while reducing default context needed to choose `cc-check` vs reroute
+
 ## v1.10.1 - 2026-04-29
 
 - add named runtime failure fields with artifact references, owners, and rescue actions

@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added the `workflow-context` typed runtime query, a compact progressive-disclosure packet that reports the next PDCA/IDCA skill, current task, default read set, trusted commands, and deep-open triggers.
+
+### Changed
+
+- Updated `cc-plan`, `cc-investigate`, `cc-do`, `cc-check`, `cc-act`, and `cc-dev` so stage transitions start from `cc-devflow query workflow-context` instead of reloading the full loop history by default.
+
 ## [4.5.9] - 2026-05-11
 
 ### Added

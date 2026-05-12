@@ -1,6 +1,6 @@
 ---
 name: cc-investigate
-version: 1.4.1
+version: 1.4.2
 description: "Use when a bug, regression, broken task, or unexpected behavior needs root-cause investigation, reproducible evidence, and a frozen repair handoff before cc-do resumes coding."
 triggers:
   - "帮我查这个 bug"
@@ -54,6 +54,7 @@ exit_criteria:
   - "diagnose-only outcomes clearly stop before implementation while preserving root cause, owner, and next action."
   - "workflow forensics classify artifact, git, state, or tool failures before repair tasks are generated."
   - "planning/tasks.md and planning/task-manifest.json are explicit enough that cc-do can repair the bug without chat memory."
+  - "`cc-devflow query workflow-context` can derive the IDCA next action, compact read set, repair task, trusted commands, and deep-open triggers from the frozen investigation artifacts."
   - "The source roadmap item has been synchronized with the investigation outcome, or `planning/analysis.md` and `change-meta.json` record why no roadmap update is valid."
   - "The honest next step is cc-do, cc-plan, or roadmap."
 reroutes:

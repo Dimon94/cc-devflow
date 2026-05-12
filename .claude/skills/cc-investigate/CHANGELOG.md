@@ -1,5 +1,10 @@
 # CC-Investigate Skill Changelog
 
+## v1.4.2 - 2026-05-12
+
+- require IDCA repair handoffs to be consumable by `cc-devflow query workflow-context`
+- add the compact runtime reset to investigation task templates so `cc-do`, `cc-check`, and `cc-act` continue from the frozen root-cause packet instead of chat history
+
 ## v1.4.1 - 2026-05-11
 
 - add the Project Postmortem Recall Gate so investigations search `devflow/postmortems` before final hypotheses are frozen
