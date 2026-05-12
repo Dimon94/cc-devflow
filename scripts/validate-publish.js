@@ -1143,12 +1143,17 @@ function validateWorkflowContextBenchmark(errors) {
   }
 
   for (const expected of [
-    'packet_tokens',
-    'default_read_tokens',
-    'open_when_tokens',
-    'savings_vs_baseline',
+    'actual_cli_data_only_tokens',
+    'routing_packet_tokens',
+    'default_open_tokens',
+    'deep_open_tokens',
+    'total_actual_tokens',
+    'total_routing_mode_tokens',
+    'savings_actual_vs_baseline',
+    'savings_routing_vs_baseline',
     'selected_task',
     'selected_skill',
+    'missing_section_refs',
     'verification_commands',
     'correctness_pass'
   ]) {

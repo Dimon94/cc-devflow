@@ -61,16 +61,76 @@ function normalizeRef(refOrEntry) {
   return typeof refOrEntry === 'string' ? refOrEntry : refOrEntry?.ref;
 }
 
+function effectiveRef(refOrEntry) {
+  if (typeof refOrEntry === 'string') {
+    return refOrEntry;
+  }
+
+  if (refOrEntry?.exists === false && refOrEntry?.fallbackRef) {
+    return refOrEntry.fallbackRef;
+  }
+
+  return refOrEntry?.ref;
+}
+
 function defaultOpenRefs(context) {
   return (context.progressiveDisclosure.defaultOpen || [])
-    .map(normalizeRef)
+    .map(effectiveRef)
     .filter(Boolean);
 }
 
 function deepOpenRefs(context) {
   return (context.progressiveDisclosure.deepOpen || [])
-    .flatMap((group) => (group.refs || []).map(normalizeRef))
+    .flatMap((group) => (group.refs || []).map(effectiveRef))
     .filter(Boolean);
+}
+
+function countMissingSectionRefs(context) {
+  const defaultOpenMissing = (context.progressiveDisclosure.defaultOpen || [])
+    .filter((entry) => entry && typeof entry === 'object' && entry.exists === false)
+    .length;
+  const deepOpenMissing = (context.progressiveDisclosure.deepOpen || [])
+    .flatMap((group) => group.refs || [])
+    .filter((entry) => entry && typeof entry === 'object' && entry.exists === false)
+    .length;
+  return defaultOpenMissing + deepOpenMissing;
+}
+
+function resolveMarkdownHeading(markdown, fragment) {
+  const slug = String(fragment || '')
+    .trim()
+    .toLowerCase()
+    .replace(/`/g, '')
+    .replace(/[^\p{L}\p{N}\s-]/gu, '')
+    .replace(/\s+/g, '-');
+  const lines = String(markdown || '').split('\n');
+  const start = lines.findIndex((line) => {
+    const match = line.match(/^#+\s+(.+?)\s*$/);
+    if (!match) {
+      return false;
+    }
+
+    const headingSlug = match[1]
+      .trim()
+      .toLowerCase()
+      .replace(/`/g, '')
+      .replace(/[^\p{L}\p{N}\s-]/gu, '')
+      .replace(/\s+/g, '-');
+
+    return headingSlug === slug;
+  });
+
+  if (start === -1) {
+    return null;
+  }
+
+  const level = (lines[start].match(/^#+/) || [''])[0].length;
+  const end = lines.findIndex((line, index) => (
+    index > start
+    && /^#+\s/.test(line)
+    && (line.match(/^#+/) || [''])[0].length <= level
+  ));
+  return lines.slice(start, end === -1 ? lines.length : end).join('\n');
 }
 
 function extractHeadingSection(markdown, headingPattern) {
@@ -126,7 +186,14 @@ function resolveRefText(repoRoot, ref) {
 
   if (filePath.endsWith('change-meta.json')) {
     const meta = readJson(absolutePath);
-    return JSON.stringify(['spec', '/spec'].includes(fragment) ? meta?.spec || {} : meta || {});
+    if (fragment.startsWith('/')) {
+      const segments = fragment.split('/').filter(Boolean);
+      const resolved = segments.reduce((value, segment) => (
+        value == null ? undefined : value[segment.replace(/~1/g, '/').replace(/~0/g, '~')]
+      ), meta);
+      return JSON.stringify(resolved === undefined ? meta || {} : resolved);
+    }
+    return JSON.stringify(meta || {});
   }
 
   if (filePath.endsWith('report-card.json')) {
@@ -142,8 +209,11 @@ function resolveRefText(repoRoot, ref) {
   }
 
   const text = readText(absolutePath);
-  if (fragment === 'progressive-disclosure-index') {
-    return extractHeadingSection(text, /^##\s+Progressive Disclosure/i);
+  if (fragment) {
+    const section = resolveMarkdownHeading(text, fragment);
+    if (section) {
+      return section;
+    }
   }
 
   return ref;
@@ -179,8 +249,16 @@ function writeJson(filePath, value) {
   fs.writeFileSync(filePath, `${JSON.stringify(value, null, 2)}\n`);
 }
 
-function createSyntheticCase(caseName, changeId, manifest, report = null) {
+function createSyntheticCase(caseName, changeId, manifest, report = null, files = {}) {
   const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), `cc-devflow-token-bench-${caseName}-`));
+  if (files.designMd) {
+    fs.mkdirSync(path.join(repoRoot, 'devflow', 'changes', changeId, 'planning'), { recursive: true });
+    fs.writeFileSync(path.join(repoRoot, 'devflow', 'changes', changeId, 'planning', 'design.md'), `${files.designMd}\n`);
+  }
+  if (files.tasksMd) {
+    fs.mkdirSync(path.join(repoRoot, 'devflow', 'changes', changeId, 'planning'), { recursive: true });
+    fs.writeFileSync(path.join(repoRoot, 'devflow', 'changes', changeId, 'planning', 'tasks.md'), `${files.tasksMd}\n`);
+  }
   writeJson(getTaskManifestPath(repoRoot, changeId), {
     changeId,
     goal: `Benchmark ${caseName}`,
@@ -281,6 +359,24 @@ function syntheticCases() {
         ]
       }),
       expected: { selectedSkill: 'cc-plan', action: 'repair-task-verification', verificationCommands: false }
+    },
+    {
+      caseName: 'missing-section-ref',
+      changeId: 'REQ-907',
+      repoRoot: createSyntheticCase('missing-section-ref', 'REQ-907', {
+        tasks: [task('T001')]
+      }, null, {
+        designMd: [
+          '# Design',
+          '',
+          '## Frozen Design Card',
+          '- Keep the current dialog surface.',
+          '',
+          '## Validation',
+          '- Targeted tests stay green.'
+        ].join('\n')
+      }),
+      expected: { selectedSkill: 'cc-do', selectedTask: 'T001', missingSectionRefs: 1, sectionRefFallback: true }
     }
   ];
 }
@@ -292,7 +388,13 @@ function passesCorrectness(context, expected = {}) {
     expected.selectedTask ? context.currentTask?.id === expected.selectedTask : true,
     expected.verificationCommands === true ? context.progressiveDisclosure.commandsToTrust.length > 0 : true,
     expected.verificationCommands === false ? context.progressiveDisclosure.commandsToTrust.length === 0 : true,
-    expected.sourceHashes ? Object.keys(context.progressiveDisclosure.sourceHashes || {}).length > 0 : true
+    expected.sourceHashes ? Object.keys(context.progressiveDisclosure.sourceHashes || {}).length > 0 : true,
+    typeof expected.missingSectionRefs === 'number'
+      ? countMissingSectionRefs(context) >= expected.missingSectionRefs
+      : true,
+    expected.sectionRefFallback
+      ? (context.progressiveDisclosure.defaultOpen || []).some((entry) => entry.exists === false && entry.fallbackRef)
+      : true
   ];
 
   return checks.every(Boolean);
@@ -301,7 +403,8 @@ function passesCorrectness(context, expected = {}) {
 async function benchmarkCase(example) {
   const repoRoot = example.repoRoot || copyExampleToDevflowRoot(example.caseName);
   const context = await getWorkflowContext(repoRoot, example.changeId, { changeKey: example.changeKey });
-  const packetPayload = {
+  const actualCliDataOnlyTokens = estimateTokens(JSON.stringify(context));
+  const routingPacketPayload = {
     schemaVersion: context.schemaVersion,
     changeId: context.changeId,
     changeKey: context.changeKey,
@@ -318,29 +421,35 @@ async function benchmarkCase(example) {
     failClosed: context.progressiveDisclosure.failClosed,
     planningMeta: context.planningMeta
   };
-  const packetTokens = estimateTokens(JSON.stringify(packetPayload));
+  const routingPacketTokens = estimateTokens(JSON.stringify(routingPacketPayload));
   const defaultOpenTokens = defaultOpenRefs(context)
     .reduce((total, ref) => total + estimateTokens(resolveRefText(repoRoot, ref)), 0);
-  const openWhenTokens = deepOpenRefs(context)
+  const deepOpenTokens = deepOpenRefs(context)
     .reduce((total, ref) => total + estimateTokens(resolveRefText(repoRoot, ref)), 0);
-  const totalTokens = packetTokens + defaultOpenTokens;
+  const totalActualTokens = actualCliDataOnlyTokens + defaultOpenTokens;
+  const totalRoutingModeTokens = routingPacketTokens + defaultOpenTokens;
   const baseline = example.tokenBaseline
     ? baselineTokens(repoRoot, example.changeKey)
     : 0;
-  const savings = baseline > 0 ? `${(((baseline - totalTokens) / baseline) * 100).toFixed(1)}%` : 'n/a';
+  const actualSavings = baseline > 0 ? `${(((baseline - totalActualTokens) / baseline) * 100).toFixed(1)}%` : 'n/a';
+  const routingSavings = baseline > 0 ? `${(((baseline - totalRoutingModeTokens) / baseline) * 100).toFixed(1)}%` : 'n/a';
 
   return {
     case: example.caseName,
     stage: `${context.nextAction.skill}:${context.nextAction.action}`,
-    packet_tokens: packetTokens,
-    default_read_tokens: defaultOpenTokens,
-    open_when_tokens: openWhenTokens,
-    total_tokens: totalTokens,
-    savings_vs_baseline: savings,
+    actual_cli_data_only_tokens: actualCliDataOnlyTokens,
+    routing_packet_tokens: routingPacketTokens,
+    default_open_tokens: defaultOpenTokens,
+    deep_open_tokens: deepOpenTokens,
+    total_actual_tokens: totalActualTokens,
+    total_routing_mode_tokens: totalRoutingModeTokens,
+    savings_actual_vs_baseline: actualSavings,
+    savings_routing_vs_baseline: routingSavings,
     selected_task: context.currentTask?.id || '-',
     selected_skill: context.nextAction.skill,
     required_files_opened: defaultOpenRefs(context).length,
     verification_commands: context.progressiveDisclosure.commandsToTrust.length,
+    missing_section_refs: countMissingSectionRefs(context),
     correctness_pass: passesCorrectness(context, example.expected) ? 'yes' : 'no'
   };
 }
@@ -351,11 +460,11 @@ async function main() {
     rows.push(await benchmarkCase(example));
   }
 
-  console.log('Note: total_tokens = packet_tokens + default_read_tokens. open_when_tokens is the additional worst-case deep-open cost if every deep trigger fires.');
-  console.log('| case | stage | packet_tokens | default_read_tokens | open_when_tokens | total_tokens | savings_vs_baseline | selected_task | selected_skill | required_files_opened | verification_commands | correctness_pass |');
-  console.log('| --- | --- | ---: | ---: | ---: | ---: | ---: | --- | --- | ---: | ---: | --- |');
+  console.log('Note: actual_cli_data_only_tokens measures the full CLI data-only output. routing_packet_tokens is the smaller routing subset. deep_open_tokens is the additional worst-case cost if deep triggers fire.');
+  console.log('| case | stage | actual_cli_data_only_tokens | routing_packet_tokens | default_open_tokens | deep_open_tokens | total_actual_tokens | total_routing_mode_tokens | savings_actual_vs_baseline | savings_routing_vs_baseline | selected_task | selected_skill | required_files_opened | verification_commands | missing_section_refs | correctness_pass |');
+  console.log('| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | ---: | ---: | ---: | --- |');
   for (const row of rows) {
-    console.log(`| ${row.case} | ${row.stage} | ${row.packet_tokens} | ${row.default_read_tokens} | ${row.open_when_tokens} | ${row.total_tokens} | ${row.savings_vs_baseline} | ${row.selected_task} | ${row.selected_skill} | ${row.required_files_opened} | ${row.verification_commands} | ${row.correctness_pass} |`);
+    console.log(`| ${row.case} | ${row.stage} | ${row.actual_cli_data_only_tokens} | ${row.routing_packet_tokens} | ${row.default_open_tokens} | ${row.deep_open_tokens} | ${row.total_actual_tokens} | ${row.total_routing_mode_tokens} | ${row.savings_actual_vs_baseline} | ${row.savings_routing_vs_baseline} | ${row.selected_task} | ${row.selected_skill} | ${row.required_files_opened} | ${row.verification_commands} | ${row.missing_section_refs} | ${row.correctness_pass} |`);
   }
 }
 
