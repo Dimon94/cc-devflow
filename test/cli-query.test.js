@@ -3,7 +3,8 @@ const os = require('os');
 const path = require('path');
 const { spawnSync } = require('child_process');
 const {
-  getReportCardPath
+  getReportCardPath,
+  getTaskManifestPath
 } = require('../lib/skill-runtime/store');
 
 const ROOT = path.resolve(__dirname, '..');
@@ -103,5 +104,60 @@ describe('cc-devflow query', () => {
         verdict: 'pass'
       }
     });
+  });
+
+  test('supports compact data-only query output without trace', () => {
+    const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-devflow-cli-query-compact-'));
+    fs.mkdirSync(path.dirname(getTaskManifestPath(repoRoot, 'REQ-125')), { recursive: true });
+    fs.writeFileSync(
+      getTaskManifestPath(repoRoot, 'REQ-125'),
+      `${JSON.stringify({
+        changeId: 'REQ-125',
+        tasks: [
+          {
+            id: 'T001',
+            status: 'pending',
+            verification: ['npm test -- src/feature.test.ts'],
+            context: {
+              commands: ['npm test -- src/feature.test.ts']
+            }
+          }
+        ]
+      }, null, 2)}\n`
+    );
+
+    const result = spawnSync(
+      process.execPath,
+      [
+        CLI,
+        'query',
+        'workflow-context',
+        '--cwd',
+        repoRoot,
+        '--change',
+        'REQ-125',
+        '--data-only',
+        '--no-trace',
+        '--compact'
+      ],
+      {
+        cwd: ROOT,
+        encoding: 'utf8'
+      }
+    );
+
+    const payload = JSON.parse(result.stdout);
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).not.toContain('\n  ');
+    expect(payload).toMatchObject({
+      changeId: 'REQ-125',
+      nextAction: {
+        skill: 'cc-do',
+        taskId: 'T001'
+      }
+    });
+    expect(payload.trace).toBeUndefined();
+    expect(payload.ok).toBeUndefined();
   });
 });

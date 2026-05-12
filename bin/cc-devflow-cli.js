@@ -94,6 +94,9 @@ Query options:
   --change <id>        Change id, for example REQ-123
   --change-id <id>     Alias for --change
   --change-key <key>   Full change key, for example REQ-123-my-feature
+  --data-only          Print only the query data payload when the query succeeds
+  --no-trace           Omit trace metadata from the JSON output
+  --compact            Print minified JSON instead of pretty JSON
 
 Next-change-key options:
   --prefix <REQ|FIX>   Change type prefix (required)
@@ -111,7 +114,7 @@ Examples:
   cc-devflow config resolve --cwd /path/to/project --format policy
   cc-devflow query list
   cc-devflow query ship-readiness --cwd /path/to/project --change REQ-123
-  cc-devflow query workflow-context --cwd /path/to/project --change REQ-123 --change-key REQ-123-my-feature
+  cc-devflow query workflow-context --cwd /path/to/project --change REQ-123 --change-key REQ-123-my-feature --data-only --no-trace --compact
   cc-devflow query progress --change REQ-123 --change-key REQ-123-my-feature
 `);
 }
@@ -462,6 +465,9 @@ function parseQueryArgs(args) {
     cwd: null,
     changeId: null,
     changeKey: null,
+    compact: false,
+    dataOnly: false,
+    noTrace: false,
     rest: []
   };
 
@@ -503,10 +509,40 @@ function parseQueryArgs(args) {
       continue;
     }
 
+    if (arg === '--compact') {
+      parsed.compact = true;
+      continue;
+    }
+
+    if (arg === '--data-only') {
+      parsed.dataOnly = true;
+      continue;
+    }
+
+    if (arg === '--no-trace') {
+      parsed.noTrace = true;
+      continue;
+    }
+
     parsed.rest.push(arg);
   }
 
   return parsed;
+}
+
+function formatQueryResult(result, options) {
+  let output = result;
+
+  if (options.dataOnly && result.ok) {
+    output = result.data;
+  } else if (options.noTrace && output && typeof output === 'object') {
+    const { trace, ...withoutTrace } = output;
+    output = withoutTrace;
+  }
+
+  return options.compact
+    ? JSON.stringify(output)
+    : JSON.stringify(output, null, 2);
 }
 
 async function runQueryCommand(args) {
@@ -534,7 +570,7 @@ async function runQueryCommand(args) {
     changeKey: options.changeKey
   });
 
-  process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  process.stdout.write(`${formatQueryResult(result, options)}\n`);
   return result.ok ? 0 : 2;
 }
 

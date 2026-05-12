@@ -89,6 +89,9 @@ function validatePackageJson(errors) {
   if (scripts['verify:publish'] !== 'node scripts/validate-publish.js') {
     errors.push('package.json scripts.verify:publish must be "node scripts/validate-publish.js"');
   }
+  if (scripts['benchmark:workflow-context'] !== 'node scripts/benchmark-workflow-context-tokens.js') {
+    errors.push('package.json scripts.benchmark:workflow-context must run the workflow context token benchmark');
+  }
   if (typeof scripts.verify !== 'string' || !scripts.verify.includes('npm run verify:examples')) {
     errors.push('package.json scripts.verify must include "npm run verify:examples"');
   }
@@ -1126,6 +1129,35 @@ function validateExampleBindings(errors) {
   }
 }
 
+function validateWorkflowContextBenchmark(errors) {
+  ensurePath('scripts/benchmark-workflow-context-tokens.js', 'file', errors);
+
+  const result = runCommand(process.execPath, ['scripts/benchmark-workflow-context-tokens.js'], {
+    cwd: ROOT,
+    env: process.env
+  });
+
+  if (!result.ok) {
+    errors.push(`workflow context token benchmark failed: ${result.error}`);
+    return;
+  }
+
+  for (const expected of [
+    'packet_tokens',
+    'default_read_tokens',
+    'open_when_tokens',
+    'savings_vs_baseline',
+    'selected_task',
+    'selected_skill',
+    'verification_commands',
+    'correctness_pass'
+  ]) {
+    if (!result.output.includes(expected)) {
+      errors.push(`workflow context token benchmark output missing ${expected}`);
+    }
+  }
+}
+
 function main() {
   const errors = [];
 
@@ -1151,6 +1183,7 @@ function main() {
   validateCcNextCandidateContracts(errors);
   validatePublicSkillContracts(errors);
   validateExampleBindings(errors);
+  validateWorkflowContextBenchmark(errors);
   validatePackTarball(errors);
 
   if (errors.length > 0) {
