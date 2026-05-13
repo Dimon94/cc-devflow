@@ -11,10 +11,10 @@ CC-DevFlow 现在有两条入口：
 - `cc-devflow init`：把整包 `.claude` 安装到你的项目里
 - `cc-devflow adapt`：生成 Codex、Cursor、Qwen、Antigravity 等平台产物
 
-核心工作流由 6 个可见 Skill 组成，复杂工作可选 `cc-review` 做深度 Review：
+核心工作流可以手动走 PDCA/IDCA Skill，也可以通过 PR harness Skill 自动推进：
 
 ```text
-cc-roadmap
+cc-roadmap -> cc-next -> cc-dev
 
 PDCA: cc-plan -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
 IDCA: cc-investigate -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
@@ -36,7 +36,7 @@ IDCA: cc-investigate -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-ac
 npx cc-devflow init --dir /path/to/your/project
 ```
 
-整包安装会带上 6 个核心 workflow skill、可选 `cc-review`，以及维护用的 `cc-spec-init` 和 `cc-simplify`。
+整包安装会带上 roadmap、next-work selection、autonomous dev、手动 PDCA/IDCA、可选 `cc-review`、PR review/landing，以及维护用的 `cc-spec-init` 和 `cc-simplify`。
 
 ### 单个 Skill 安装
 
@@ -87,9 +87,9 @@ find .codex/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort
 
 - `cc-roadmap` 产出可编辑真相 `devflow/roadmap.json`，再生成 `devflow/ROADMAP.md` 和 deprecated `devflow/BACKLOG.md`
 - `cc-spec-init` 产出 `devflow/specs/INDEX.md`、capability spec 和 `change-meta.json`
-- `cc-plan` 产出 `planning/design.md`、`planning/tasks.md`、`task-manifest.json` 和 `change-meta.json`
-- `cc-investigate` 产出 `planning/analysis.md`、`planning/tasks.md`、`task-manifest.json` 和 `change-meta.json`
-- `cc-review` 产出 `cc-review-plan.md`、`cc-review-ledger.jsonl`、`cc-review-report.md`、可选 `cc-review-agent-results.jsonl`，以及可选的结构化深度 Review findings
+- `cc-plan` 产出 `planning/tasks.md#Contract Summary`、CLI 生成的 `task-manifest.json` 和 `change-meta.json`
+- `cc-investigate` 产出 `planning/tasks.md#Root Cause Contract`、CLI 生成的 `task-manifest.json` 和 `change-meta.json`
+- `cc-review` 产出 `review-ledger.jsonl`、可选 `review-findings.json`，Markdown 报告只在需要时按需渲染
 - `cc-check` 产出 `report-card.json`
 - `cc-act` 只产出一个最终 handoff 文件：`handoff/pr-brief.md`、`handoff/resume-index.md` 或 `handoff/release-note.md`
 
@@ -97,7 +97,8 @@ durable truth 分两层：
 
 - `devflow/specs/`：capability 真相，保留 `INDEX.md` 与 `capabilities/*.md`
 - 新 change 目录必须命名为 `REQ-<number>-<description>`（需求）或 `FIX-<number>-<description>`（修复）；`REQ` 和 `FIX` 分别维护自己的递增编号，跨前缀同号不是冲突；并行工作树造成重复编号时，完整 change key 的描述负责区分业务内容，旧小写目录只作为历史兼容读取。
-- `devflow/changes/<change>/`：变更真相，保留 `change-state.json`、`change-meta.json`、planning 文档、`task-manifest.json`、可选 `team-state.json`、任务级 `checkpoint.json`、`report-card.json` 和唯一的最终 handoff 文件。
+- `devflow/changes/<change>/`：变更真相，保留 `change-meta.json`、`planning/tasks.md`、CLI 生成的 `task-manifest.json`、review ledger / findings 记录、任务级 `checkpoint.json`、`report-card.json` 和唯一的最终 handoff 文件。
+- 历史 `planning/design.md`、`planning/analysis.md` 和 `cc-review-*.md` 是旧 change 的可读 fallback，不再是新默认写入。
 - worker prompt、journal、assignment、session log 统一放到 `devflow/workspaces/<change>/`，作为 ephemeral scratch。
 
 进入实现前，planning handoff 应该先把证据写实：
@@ -153,7 +154,7 @@ npx cc-devflow adapt --cwd /path/to/your/project --platform codex
 
 如果你的项目没有可选的 `.claude/commands/` 输入目录，这也是正常的；编译器仍然会生成 skills registry，并为 Codex 镜像正式分发 skill 集合。
 
-Codex 现在会把正式分发的 skill 从 `.claude/skills/<skill>/` 镜像到 `.codex/skills/<skill>/`。这套集合包含 6 个核心 workflow skill、可选 `cc-review` 和维护类 skill `cc-spec-init`、`cc-simplify`，并且镜像是纯增量的：项目里已有的自定义 Codex skill 不会被删除。
+Codex 现在会把正式分发的 skill 从 `.claude/skills/<skill>/` 镜像到 `.codex/skills/<skill>/`。这套集合包含公开 workflow skill 和维护类 skill `cc-spec-init`、`cc-simplify`，并且镜像是纯增量的：项目里已有的自定义 Codex skill 不会被删除。
 
 ### 保持 skill 和样例同步
 
@@ -172,6 +173,7 @@ npm run verify:publish
 - [CLI 与 Skill](../commands/README.zh-CN.md)
 - [工作流详解](./workflow-guide.md)
 - [最佳实践](./best-practices.md)
+- [最小 Artifact 合同](./minimize-artifacts.md)
 - [样例入口页](../examples/START-HERE.md)
 - [简版样例列表](../examples/README.md)
 - [项目 README](../../README.zh-CN.md)

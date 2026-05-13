@@ -64,7 +64,7 @@ When Codex plugins are part of the expected path:
 
 ## Report Format
 
-Add an E2E section to `cc-review-report.md`:
+Record E2E evidence in `review-ledger.jsonl` and render it into Markdown on demand:
 
 ```markdown
 ## E2E / Plugin Evidence

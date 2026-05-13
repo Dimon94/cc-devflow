@@ -4,7 +4,7 @@ Use this reference for every `cc-review` run. It defines the shared method libra
 
 ## Method Selection
 
-Select every method needed by the current risk and write the selected methods into `cc-review-plan.md`. This table is a routing map, not a cap.
+Select every method needed by the current risk and write the selected methods into the `review-started` event in `review-ledger.jsonl`. This table is a routing map, not a cap.
 
 | Risk | Method |
 | --- | --- |
@@ -53,7 +53,7 @@ Assignment rules:
 
 - Assign independent reviewers by facet, not by random file chunks.
 - Keep each reviewer packet self-contained: scope, delta, node ids, required artifacts, reference to use, and output schema.
-- Do not ask one reviewer to wait for another reviewer result unless the dependency is explicit in `cc-review-plan.md`.
+- Do not ask one reviewer to wait for another reviewer result unless the dependency is explicit in `review-ledger.jsonl`.
 - Do not assign two reviewers to the same node unless a critical finding needs a second opinion.
 - Main thread validates reviewer evidence before final findings.
 
@@ -66,7 +66,7 @@ downgraded -> real note but not blocking or confidence too low
 rejected   -> out-of-scope, stale, speculative, or contradicted by evidence
 ```
 
-Record these states in `cc-review-report.md` and preserve raw reviewer output in `cc-review-agent-results.jsonl`.
+Record these states in `review-ledger.jsonl` or on-demand rendered Markdown and preserve raw reviewer output in `review-agent-results.jsonl`.
 
 ## Risk-Lane Review Swarm Profile
 
@@ -93,7 +93,7 @@ The main thread owns aggregation:
 
 Use git and prior records to avoid repeating stale work:
 
-1. Find the previous reviewed SHA from `cc-review-ledger.jsonl` or `cc-review-report.md`.
+1. Find the previous reviewed SHA from `review-ledger.jsonl`, falling back to legacy `cc-review-ledger.jsonl` or `cc-review-report.md`.
 2. Compare `git diff <previous-sha>...HEAD` when possible.
 3. If no previous SHA exists, compare against the base branch or reviewed artifact timestamps.
 4. Re-review changed nodes and dependent nodes.

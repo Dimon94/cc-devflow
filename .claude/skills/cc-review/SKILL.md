@@ -1,6 +1,6 @@
 ---
 name: cc-review
-version: 1.3.0
+version: 2.0.0
 description: Use when a complex requirement, bug fix, plan, or implementation diff needs optional deep multi-round review beyond cc-check. Builds a review plan from prior records and current git/artifact delta, dispatches independent read-only reviewer agents when available, applies a risk-lane review swarm profile for broad implementation diffs, records node results, identifies in-scope code smells, queues user decisions, and reroutes to cc-plan, cc-do, or cc-check.
 triggers:
   - 深度 review 这个方案
@@ -20,22 +20,17 @@ reads:
   - references/e2e-and-plugin-verification.md
   - scripts/collect-review-context.sh
 writes:
-  - path: devflow/changes/<change-key>/review/cc-review-plan.md
+  - path: devflow/changes/<change-key>/review/review-ledger.jsonl
     durability: durable
     required: true
-  - path: devflow/changes/<change-key>/review/cc-review-report.md
+  - path: devflow/changes/<change-key>/review/review-findings.json
     durability: durable
-    required: true
-  - path: devflow/changes/<change-key>/review/cc-review-ledger.jsonl
-    durability: durable
-    required: true
-  - path: devflow/changes/<change-key>/review/cc-review-agent-results.jsonl
+    required: false
+    when: actionable findings need machine consumption
+  - path: devflow/changes/<change-key>/review/review-agent-results.jsonl
     durability: durable
     required: false
     when: subagent reviewers are used
-  - path: devflow/changes/<change-key>/review/cc-review-findings.json
-    durability: durable
-    required: false
 effects:
   - optional deep review
   - read-only reviewer agent dispatch
@@ -45,18 +40,18 @@ effects:
 entry_gate:
   - Read planning/design.md or planning/analysis.md when the work is still plan-stage.
   - Read the current diff, task manifest, change metadata, and latest verification evidence when the work is execution-stage.
-  - Read prior cc-review-plan.md, cc-review-report.md, cc-review-ledger.jsonl, and cc-review-findings.json when present.
+  - Read prior `review-ledger.jsonl`, optional `review-findings.json`, optional `review-agent-results.jsonl`, and legacy `cc-review-*` files when present.
   - Use git diff or scripts/collect-review-context.sh to identify content changed since the last review before deciding what to re-review.
   - Classify the review branch as plan, implementation, or mixed before loading detailed references.
-  - Write or refresh cc-review-plan.md before producing findings.
-  - Decide whether nodes need independent reviewer agents before starting node execution; record the decision in cc-review-plan.md.
-  - For broad implementation or mixed reviews, decide whether the risk-lane review swarm profile is required; record used, skipped, or unavailable lanes in cc-review-plan.md.
+  - Start the durable review with `cc-devflow review start` before producing findings; encode selected nodes, skipped nodes, risk lanes, scope, base SHA, and head SHA in the first ledger event.
+  - Decide whether nodes need independent reviewer agents before starting node execution; record the decision in the `review-started` event and optional `review-agent-results.jsonl`.
+  - For broad implementation or mixed reviews, decide whether the risk-lane review swarm profile is required; record used, skipped, or unavailable lanes in `review-ledger.jsonl`.
   - Freeze the requested scope before finding smells; only report smells inside the requirement blast radius or clearly amplified by the current work.
 exit_criteria:
-  - cc-review-plan.md records selected tools, review nodes, skipped nodes with reasons, and checkpoint order.
-  - cc-review-ledger.jsonl appends one record per reviewed node with status, evidence, findings, and follow-up route.
-  - cc-review-agent-results.jsonl records read-only reviewer outputs when subagents are used, or cc-review-report.md records why agents were unavailable or unnecessary.
-  - cc-review-report.md records branch classification, scope, prior-review delta, methods used, node coverage, reviewer-lane coverage, findings triage, user decisions needed, quick fixes, and next route.
+  - review-ledger.jsonl records selected tools, review nodes, skipped nodes with reasons, checkpoint order, and final route through CLI events.
+  - review-ledger.jsonl appends one record per reviewed node with status, evidence refs, findings, and follow-up route.
+  - review-agent-results.jsonl records read-only reviewer outputs when subagents are used, or the review ledger records why agents were unavailable or unnecessary.
+  - review-findings.json exists only when later agents need structured findings; human Markdown is rendered on demand with `cc-devflow review render`.
   - Plan-stage reviews record every selected strategy/design/engineering/DX facet as checked, skipped, or blocked.
   - Implementation-stage reviews include diff evidence, code-smell evidence, test and E2E/plugin verification evidence for every selected changed surface.
   - Every in-scope code smell has a concrete recommendation or an explicit skip/defer rationale.
@@ -76,7 +71,7 @@ recovery_modes:
     action: Stop the current pass, restate the correct branch classification, load the matching reference, and restart from the scope freeze.
   - name: progressive-disclosure-reset
     when: The review is drowning in unrelated methods or external review templates.
-    action: Return to cc-review-plan.md, keep only review nodes that are in scope, and continue node-by-node instead of collapsing to a short finding list.
+    action: Return to the latest `review-started` event, keep only review nodes that are in scope, and continue node-by-node instead of collapsing to a short finding list.
 tool_budget:
   read_files: 24
   search_steps: 16
@@ -97,7 +92,7 @@ tool_budget:
 
 写入任何 durable Markdown 或 JSON metadata 前，先运行 `cc-devflow config resolve --format policy`。
 
-- `Output language` 是机器约束，`review/cc-review-report.md` 和 `review/cc-review-findings.json` 中新增的人类可读摘要必须记录并遵守它。
+- `Output language` 是机器约束，`review/review-ledger.jsonl`、`review/review-findings.json` 和 on-demand rendered Markdown 中新增的人类可读摘要必须记录并遵守它。
 - `agent_preferences` 是用户偏好建议，只影响表达方式和结构选择，不覆盖本 Skill 的 Review 边界。
 - 如果配置解析失败，先修配置或向用户说明阻塞，不要用默认语言继续生成正式文档。
 
@@ -223,10 +218,10 @@ Low-confidence notes below `5` stay out of final findings unless they point to c
 Every run follows this loop:
 
 1. Collect prior review state:
-   - previous `cc-review-plan.md`
-   - previous `cc-review-report.md`
-   - previous `cc-review-ledger.jsonl`
-   - previous `cc-review-findings.json`
+   - previous `review-ledger.jsonl`
+   - previous `review-findings.json`
+   - previous `review-agent-results.jsonl`
+   - legacy `cc-review-plan.md` / `cc-review-report.md` / `cc-review-ledger.jsonl` / `cc-review-findings.json` only as fallback
 2. Collect current delta:
    - `git diff <last-reviewed-sha>...HEAD` when a reviewed SHA exists
    - otherwise `git diff <base>...HEAD`
@@ -243,14 +238,12 @@ Every run follows this loop:
    - which nodes need independent subagent review
    - which nodes stay in main thread
    - why any eligible reviewer was skipped
-5. Write `cc-review-plan.md` before findings:
-   - node id
-   - target artifact or code surface
-   - tool/reference to load
-   - reason selected
-   - owner: `main` or reviewer name
-   - check command or evidence source
-   - status: `pending`
+5. Run `cc-devflow review start` before findings:
+   - selected node ids
+   - skipped nodes and reasons
+   - review mode and scope
+   - risk lanes
+   - base/head SHA
 6. Traverse nodes one by one:
    - review the node
    - run the smallest useful check for that node
@@ -268,40 +261,23 @@ When re-reviewing the same file or plan, do not restart from zero. Compare curre
 
 ## Output Contract
 
-Write `review/cc-review-plan.md` before the review pass with:
+Use CLI records as the default durable output:
 
-1. Branch classification and review scope.
-2. Prior review records found.
-3. Current git/artifact delta.
-4. Selected tools and skipped tools with reasons.
-5. Reviewer dispatch plan: agents used, unavailable, skipped, or unnecessary.
-6. Risk-lane coverage for implementation or mixed reviews.
-7. Ordered review nodes and per-node check plan.
+1. `cc-devflow review start --change <id> --change-key <key> --mode <plan|implementation|mixed> --scope <scope> --base-sha <sha> --head-sha <sha> --selected-node <node> --skipped-node <node:reason> --risk-lane <lane>`
+2. `cc-devflow review record-node --review-id <id> --node-id <node> --target <artifact> --status checked|skipped|blocked --evidence-ref <ref> --finding <id> --next <skill>`
+3. `cc-devflow review add-finding --review-id <id> --finding-id <id> --severity <level> --confidence <1-10> --display-tier <blocking|warning> --path <path> --evidence <evidence> --recommendation <text> --route <skill>`
+4. `cc-devflow review close --review-id <id> --status clean|findings|blocked --blocking-count <n> --warning-count <n> --next <skill>`
+5. `cc-devflow review render --review-id <id> --output <path>` only when a human Markdown report is explicitly needed.
 
-Write `review/cc-review-report.md` with:
-
-1. Review branch classification and scope.
-2. Source artifacts read and prior review records used.
-3. Current delta against previous review or base.
-4. Review methods used and methods intentionally skipped.
-5. Node coverage table.
-6. Reviewer dispatch summary, risk-lane coverage, and agent result paths.
-7. Raw finding triage: accepted, merged, downgraded, rejected.
-8. Findings by severity, each with evidence, smell category when relevant, recommendation, and route.
-9. Quick mechanical fixes that can be handled by `cc-do`.
-10. Decision questions still needing user input.
-11. E2E / Browser / Computer Use evidence when applicable.
-12. Final next action.
-
-Append one JSON line to `review/cc-review-ledger.jsonl` per reviewed node:
+Append one JSON line to `review/review-ledger.jsonl` per review event. A reviewed node event looks like:
 
 ```json
 {"nodeId":"R001","status":"checked","target":"planning/design.md","tool":"engineering","headSha":"...","evidence":["..."],"findings":["F001"],"next":"cc-plan"}
 ```
 
-Write `review/cc-review-findings.json` when findings need machine consumption by later agents.
+Write `review/review-findings.json` only when findings need machine consumption by later agents.
 
-Write `review/cc-review-agent-results.jsonl` when subagents are used. It contains raw reviewer findings plus reviewer identity. The report must say which raw findings were accepted, merged, downgraded, or rejected.
+Write `review/review-agent-results.jsonl` when subagents are used. It contains raw reviewer findings plus reviewer identity. The ledger or rendered report must say which raw findings were accepted, merged, downgraded, or rejected.
 
 ## Finding Rules
 

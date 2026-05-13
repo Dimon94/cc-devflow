@@ -13,15 +13,56 @@
 
 ## Progressive Disclosure Index
 
-- Default read: Investigation Meta, Execution Handoff, current task block.
+- Default read: Investigation Meta, Root Cause Contract, Execution Handoff, current task block.
 - Runtime reset: run `cc-devflow query workflow-context --change <changeId> --change-key <changeKey> --cwd <repo-root> --data-only --no-trace --compact` before `cc-do`, `cc-check`, or `cc-act`; use `packetOnly` plus `mustNotForget` first, verify `sourceHashes`, open `defaultOpen` refs only when needed, and reserve `deepOpen` for matching `openWhen.conditions`.
-- Open for root-cause doubt: `planning/analysis.md` Project Postmortem Recall, Feedback Loop, Evidence Chain, Boundary Probe Matrix.
+- Open for root-cause doubt: `planning/tasks.md#Root Cause Contract` Project Postmortem Recall, Feedback Loop, Evidence Chain, Boundary Probe Matrix.
 - Open for scheduling: `planning/task-manifest.json`, dependencies, touched files.
 - Open for audit/recovery: checkpoint files, report-card findings, Workflow Forensics.
 
+## Root Cause Contract
+
+Change:
+Mode: investigation
+Approval:
+
+Symptom:
+-
+
+Reproduction:
+-
+
+Feedback Loop:
+-
+
+Root Cause Proof Ladder:
+- Symptom site:
+- First bad state:
+- Violated contract:
+- Original trigger:
+- Counterfactual proof:
+- Escape reason:
+
+Confirmed Root Cause:
+-
+
+Frozen Repair Boundary:
+- Allowed files:
+- Forbidden files:
+- Blast radius:
+
+Verification:
+-
+
+Risk / Escalate If:
+-
+
+> This is the default human-authored investigation contract. Do not create
+> `planning/analysis.md` for new investigations unless the user explicitly
+> requests a legacy artifact or a migration requires preserving one.
+
 ## Execution Handoff
 
-- Canonical analysis: `planning/analysis.md`
+- Canonical contract: `planning/tasks.md#Root Cause Contract`
 - Canonical change meta: `change-meta.json`
 - Execution mode: `single-path` | `parallel-ready`
 - Confirmed root cause:

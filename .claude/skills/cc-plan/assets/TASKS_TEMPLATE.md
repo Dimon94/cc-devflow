@@ -14,14 +14,43 @@
 
 ## Progressive Disclosure Index
 
-- Default read: Plan Meta, Execution Handoff, Execution Protocol, current task block.
+- Default read: Plan Meta, Contract Summary, Execution Handoff, Execution Protocol, current task block.
 - Open for scheduling: `planning/task-manifest.json`, ready-task selector output, dependencies, touched files.
 - Open for parallel or ownership questions: Implementation Surface Map, Tracer Bullet Map.
 - Open for audit/recovery: Task Quality Bar, checkpoint files, review/report-card.json.
 
+## Contract Summary
+
+Change:
+Mode: plan
+Profile: tiny-design | full-design
+Approval:
+
+Goal:
+-
+
+Do Not Do:
+-
+
+Approved Direction:
+-
+
+Acceptance:
+-
+
+Verification:
+-
+
+Risk / Escalate If:
+-
+
+> This is the default human-authored planning contract. Do not create
+> `planning/design.md` for new changes unless the user explicitly requests a
+> legacy artifact or a migration requires preserving one.
+
 ## Execution Handoff
 
-- Canonical design: `planning/design.md`
+- Canonical contract: `planning/tasks.md#Contract Summary`
 - Canonical change meta: `change-meta.json`
 - Execution mode: `single-path` | `parallel-ready`
 - Frozen decisions:
@@ -74,7 +103,7 @@ ClaudeCode / Codex 执行本计划时，必须把本文件当成任务模板合�
 - Context index first: run `cc-devflow query workflow-context --change <changeId> --change-key <changeKey> --cwd <repo-root> --data-only --no-trace --compact` before opening deep sections; use `packetOnly` plus `mustNotForget` first, verify `sourceHashes`, open `defaultOpen` refs only when needed, and reserve `deepOpen` for matching `openWhen.conditions`.
 - Task selection: read `planning/task-manifest.json.currentTaskId`; if empty, run the ready-task selector before choosing work.
 - Task block rule: read the full task block before coding; title-only execution is invalid.
-- Contract sync rule: every task must inherit one row from Task Contract Matrix; if the matrix lacks source funnel rounds, interface/data contract, do-not-re-decide items, or artifact updates, return to `planning/design.md` before coding.
+- Contract sync rule: every task must inherit one row from Task Contract Matrix; if the matrix lacks source funnel rounds, interface/data contract, do-not-re-decide items, or artifact updates, return to `planning/tasks.md#Contract Summary` before coding.
 - Completion rule: after verification and review gates pass, run the completion script; do not manually edit checkbox, status, or `currentTaskId`.
 - Completion failure: if the script fails, fix the missing checkpoint / review / dependency evidence and rerun it. Do not bypass it by editing JSON or Markdown.
 - Postmortem recall rule: before each task, search `devflow/postmortems` with the task's touched files, capability, failure class, and model-risk terms; record relevant reminders or an explicit no-match in checkpoint/events.

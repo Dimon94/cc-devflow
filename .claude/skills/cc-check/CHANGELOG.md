@@ -1,5 +1,16 @@
 # CC-Check Skill Changelog
 
+## v1.11.1 - 2026-05-13
+
+- treat `passed`, `done`, `completed`, and `verified` task statuses as complete when rendering the `requirements-met` claim evidence
+- keep report-card task-gap detection aligned with `mark-task-complete.sh` and shared lifecycle status semantics
+
+## v1.11.0 - 2026-05-13
+
+- read requirement-level review truth from `review-findings.json` first, then `review-ledger.jsonl`, then legacy `cc-review-report.md`
+- block with `review-missing` when no machine review record or legacy report exists
+- document that legacy Markdown fallback has unknown freshness and cannot silently support a high-confidence pass
+
 ## v1.10.2 - 2026-05-12
 
 - add a `workflow-context` context-index reset before verification so `cc-check` starts from current next-action truth instead of full artifact reload

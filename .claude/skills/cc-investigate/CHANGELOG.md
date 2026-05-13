@@ -1,5 +1,11 @@
 # CC-Investigate Skill Changelog
 
+## v1.5.0 - 2026-05-13
+
+- collapse default investigation output to `planning/tasks.md` plus CLI-generated `task-manifest.json` and `change-meta.json`
+- move root-cause truth into `planning/tasks.md#Root Cause Contract` so `planning/analysis.md` is legacy fallback only
+- archive the legacy analysis template under `assets/legacy/` and keep repair handoffs rooted in `assets/TASKS_TEMPLATE.md`
+
 ## v1.4.3 - 2026-05-13
 
 - add the Worktree Branch Contract so new `FIX` investigations anchor detached worktrees to `FIX/<task>` before artifacts are written

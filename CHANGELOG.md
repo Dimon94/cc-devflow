@@ -13,10 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added the `workflow-context` typed runtime query as a context index that reports the next PDCA/IDCA skill, current task, source hashes, `mustNotForget` guardrails, default section/JSON refs, trusted commands, fail-closed rules, and machine-readable deep-open triggers.
 - Added `cc-devflow query --data-only --no-trace --compact` output controls and `npm run benchmark:workflow-context` for checked-in token estimates plus synthetic routing-correctness cases.
+- Added the minimized workflow artifact contract guide, `cc-devflow task-contract validate`, `npm run verify:artifacts`, and `npm run benchmark:artifacts` so change artifacts stay small and measurable.
 
 ### Changed
 
 - Updated `cc-plan`, `cc-investigate`, `cc-do`, `cc-check`, `cc-act`, and `cc-dev` so stage transitions start from `cc-devflow query workflow-context --data-only --no-trace --compact` instead of reloading the full loop history by default.
+- Updated `cc-plan` and `cc-investigate` so new changes default to `planning/tasks.md` as the only human-authored Markdown handoff: feature plans use `## Contract Summary`, bug investigations use `## Root Cause Contract`, and legacy `planning/design.md` / `planning/analysis.md` remain fallback inputs only.
+- Updated `cc-review` so `review/review-ledger.jsonl` is the default durable review record, with `review-findings.json` and rendered Markdown reports created only when needed.
+- Updated `cc-check` review truth loading to prefer structured findings and review ledger records before legacy `cc-review-*.md` reports.
+- Updated `npm run verify` to include `verify:artifacts` after tests and example binding checks.
 
 ## [4.5.9] - 2026-05-11
 

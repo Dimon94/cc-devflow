@@ -11,10 +11,10 @@ CC-DevFlow has two entry paths:
 - `cc-devflow init`: install the whole `.claude` pack into your project
 - `cc-devflow adapt`: generate platform outputs such as Codex rules
 
-The core workflow is driven by six visible skills, with `cc-review` available as an optional deep review pass:
+The core workflow can run manually through PDCA/IDCA skills or automatically through the PR harness skills:
 
 ```text
-cc-roadmap
+cc-roadmap -> cc-next -> cc-dev
 
 PDCA: cc-plan -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
 IDCA: cc-investigate -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
@@ -36,7 +36,7 @@ The public skills are the visible harness. Each distributed `SKILL.md` now carri
 npx cc-devflow init --dir /path/to/your/project
 ```
 
-The whole-pack install includes the six core workflow skills, optional `cc-review`, plus `cc-spec-init` and `cc-simplify` as maintenance helpers.
+The whole-pack install includes roadmap, next-work selection, autonomous dev, manual PDCA/IDCA, optional `cc-review`, PR review/landing, plus `cc-spec-init` and `cc-simplify` as maintenance helpers.
 
 ### Single Skill Install
 
@@ -87,9 +87,9 @@ Typical outputs:
 
 - `cc-roadmap` writes `devflow/roadmap.json` as the editable roadmap truth, then generates `devflow/ROADMAP.md` and deprecated `devflow/BACKLOG.md`
 - `cc-spec-init` writes `devflow/specs/INDEX.md`, capability specs, and `change-meta.json`
-- `cc-plan` writes `planning/design.md`, `planning/tasks.md`, `task-manifest.json`, and `change-meta.json`
-- `cc-investigate` writes `planning/analysis.md`, `planning/tasks.md`, `task-manifest.json`, and `change-meta.json`
-- `cc-review` writes `cc-review-plan.md`, `cc-review-ledger.jsonl`, `cc-review-report.md`, optional `cc-review-agent-results.jsonl`, and optional structured findings for deep plan or implementation review
+- `cc-plan` writes `planning/tasks.md#Contract Summary`, CLI-generated `task-manifest.json`, and `change-meta.json`
+- `cc-investigate` writes `planning/tasks.md#Root Cause Contract`, CLI-generated `task-manifest.json`, and `change-meta.json`
+- `cc-review` writes `review-ledger.jsonl`, optional `review-findings.json`, and Markdown reports only when rendered on demand
 - `cc-check` writes `report-card.json`
 - `cc-act` writes exactly one final handoff file: `handoff/pr-brief.md`, `handoff/resume-index.md`, or `handoff/release-note.md`
 
@@ -98,7 +98,8 @@ Change truth lives in `devflow/changes/<change>/`.
 
 - Keep `INDEX.md` plus capability markdown under `devflow/specs/`.
 - Name new change directories as `REQ-<number>-<description>` for requirements or `FIX-<number>-<description>` for bug fixes. `REQ` and `FIX` advance as separate local sequences, so cross-prefix duplicates are valid. Parallel worktrees may still repeat numbers; the full change key, especially the description, distinguishes the work. Old lowercase directories are compatibility reads only.
-- Keep `change-state.json`, `change-meta.json`, planning docs, `task-manifest.json`, optional `team-state.json`, task `checkpoint.json`, `report-card.json`, and one final handoff file under each `devflow/changes/<change>/`.
+- Keep `change-meta.json`, `planning/tasks.md`, CLI-generated `task-manifest.json`, review ledger/findings records, task `checkpoint.json`, `report-card.json`, and one final handoff file under each `devflow/changes/<change>/`.
+- Legacy `planning/design.md`, `planning/analysis.md`, and `cc-review-*.md` are readable fallback inputs for older changes, not new default writes.
 - Worker prompts, journals, assignments, and session logs belong under `devflow/workspaces/<change>/` as ephemeral scratch.
 
 Planning handoffs should be evidence-rich before implementation starts:
@@ -154,7 +155,7 @@ npx cc-devflow adapt --cwd /path/to/your/project --platform codex
 
 If your project has no optional `.claude/commands/` input, this is expected: the compiler will still generate the skills registry and mirror the distributed skill set for Codex.
 
-Codex mirrors the distributed skills from `.claude/skills/<skill>/` into `.codex/skills/<skill>/`. That set includes the six core workflow skills, optional `cc-review`, `cc-spec-init`, and `cc-simplify`, and the mirror is additive-only: existing project-owned Codex skills are preserved instead of being deleted.
+Codex mirrors the distributed skills from `.claude/skills/<skill>/` into `.codex/skills/<skill>/`. That set includes the public workflow skills plus maintenance skills `cc-spec-init` and `cc-simplify`, and the mirror is additive-only: existing project-owned Codex skills are preserved instead of being deleted.
 
 ### Keep skills and examples in sync
 
@@ -173,6 +174,7 @@ npm run verify:publish
 - [CLI And Skills](../commands/README.md)
 - [Workflow Guide](./workflow-guide.md)
 - [Best Practices](./best-practices.md)
+- [Minimized Artifact Contract](./minimize-artifacts.md)
 - [Example Entry Page](../examples/START-HERE.md)
 - [Compact Example List](../examples/README.md)
 - [Project README](../../README.md)

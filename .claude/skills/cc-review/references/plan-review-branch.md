@@ -137,7 +137,7 @@ Each planning smell must become a plan finding and route to `cc-plan`.
 
 ## Output Requirements
 
-Add to `cc-review-report.md`:
+Record in `review-ledger.jsonl` and render on-demand Markdown when a human report is needed:
 
 - plan review nodes checked, skipped, or blocked
 - plan reviewer agents used or fallback reason

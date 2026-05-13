@@ -1,5 +1,11 @@
 # CC-Plan Skill Changelog
 
+## v3.9.0 - 2026-05-13
+
+- collapse the default planning artifact surface to `planning/tasks.md` plus CLI-generated `task-manifest.json` and `change-meta.json`
+- move the human-authored design contract into `planning/tasks.md#Contract Summary` so `planning/design.md` is legacy fallback only
+- archive legacy design templates under `assets/legacy/` and keep new task handoffs rooted in `assets/TASKS_TEMPLATE.md`
+
 ## v3.8.7 - 2026-05-13
 
 - add the Worktree Branch Contract so new `REQ` / `FIX` planning anchors detached worktrees to `REQ/<task>` or `FIX/<task>` before artifacts are written

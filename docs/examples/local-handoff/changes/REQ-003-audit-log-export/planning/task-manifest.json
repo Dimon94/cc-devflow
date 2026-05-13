@@ -6,7 +6,7 @@
   "requirementId": "REQ-003",
   "requirementVersion": "REQ-003.v1",
   "planningMeta": {
-    "reqPlanSkillVersion": "3.8.7",
+    "reqPlanSkillVersion": "3.9.0",
     "designVersion": "design.v1",
     "workBranch": "REQ/003-audit-log-export",
     "approvedAt": "2026-04-16T13:10:00.000Z",

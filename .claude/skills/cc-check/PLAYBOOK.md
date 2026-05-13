@@ -32,6 +32,7 @@ NO PASS WITHOUT FRESH EVIDENCE
 1. **Reset Contract**
    - 重新读取 `planning/design.md` 或 `planning/analysis.md`
    - 重新读取 `planning/tasks.md`、`planning/task-manifest.json`
+   - 按 `review-findings.json` -> `review-ledger.jsonl` -> legacy `cc-review-report.md` 的顺序读取 review truth
    - 明确本轮验收对象和 spec delta
 2. **Re-run Reality**
    - 重新跑 gate

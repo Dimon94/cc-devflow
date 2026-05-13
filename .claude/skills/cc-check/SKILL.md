@@ -1,6 +1,6 @@
 ---
 name: cc-check
-version: 1.10.2
+version: 1.11.1
 description: Use when a planned or investigated change needs fresh verification evidence, layered gate proof, review truth, and an honest pass fail blocked verdict before entering cc-act.
 triggers:
   - 验收这个需求
@@ -23,6 +23,7 @@ writes:
 entry_gate:
   - Run `cc-devflow query workflow-context --change <changeId> --change-key <changeKey> --data-only --no-trace --compact` first; enter verification only when `nextAction.skill` is `cc-check`, or record the reroute it reports.
   - Use only the workflow context `packetOnly` and `mustNotForget` first, then `defaultOpen` section / JSON refs before expanding planning/design.md or planning/analysis.md, planning/tasks.md, planning/task-manifest.json, and latest runtime evidence.
+  - "Read requirement-level review truth in this order: `review/review-findings.json`, then `review/review-ledger.jsonl`, then legacy `review/cc-review-report.md` with `freshness=unknown`; if none exist, block with `review-missing`."
   - Re-run fresh commands instead of inheriting cc-do narration.
   - If evidence is stale or missing, reset context and rebuild the verdict from canonical artifacts.
 exit_criteria:

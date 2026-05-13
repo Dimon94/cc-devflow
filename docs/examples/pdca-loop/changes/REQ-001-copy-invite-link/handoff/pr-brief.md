@@ -28,7 +28,7 @@
 
 - Reviewed base SHA: `example-base`
 - Reviewed head SHA: `example-head`
-- Review packet: `planning/tasks.md#T001-T003`; `planning/design.md`
+- Review packet: `planning/tasks.md#Contract Summary`; `planning/tasks.md#T001-T003`
 - Finding triage: no findings
 - QA / claim evidence: `qa=pass`, `tests-pass=pass`, `requirements-met=pass`
 
@@ -82,7 +82,7 @@
 
 - Reviewed base SHA: `example-base`
 - Reviewed head SHA: `example-head`
-- Review packet: `planning/tasks.md#T001-T003`; `planning/design.md`
+- Review packet: `planning/tasks.md#Contract Summary`; `planning/tasks.md#T001-T003`
 - Finding triage: no findings
 - QA / claim evidence: `qa=pass`, `tests-pass=pass`, `requirements-met=pass`
 - Readiness: review freshness=`fresh`; QA coverage has no gaps; browser QA intentionally skipped for this fixture.

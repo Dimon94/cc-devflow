@@ -41,7 +41,7 @@ For broad or PR-landing diffs, prefer the risk-lane review swarm profile from `r
 3. Performance and reliability
 4. Contracts and coverage
 
-The lanes may map onto the passes below, but they should stay separate in `cc-review-plan.md` and raw reviewer output when separate reviewers are used.
+The lanes may map onto the passes below, but they should stay separate in `review-ledger.jsonl` and raw reviewer output when separate reviewers are used.
 
 ### 1. Contract Fidelity
 
@@ -57,7 +57,7 @@ Check whether implementation matches the frozen plan or investigation:
 
 Use `review-methods.md` smell taxonomy.
 
-If this pass finds duplication, over-complexity, awkward abstraction, branch forests, unclear ownership, or broad architecture cleanup risk, load `cc-simplify` and record it as a selected tool in `cc-review-plan.md`.
+If this pass finds duplication, over-complexity, awkward abstraction, branch forests, unclear ownership, or broad architecture cleanup risk, load `cc-simplify` and record it as a selected tool in `review-ledger.jsonl`.
 
 Look for:
 
@@ -110,7 +110,7 @@ If changed behavior affects README, guides, CLI help, package install, public AP
 Use git and prior review records:
 
 1. Find changed files with `git diff <base>...HEAD --name-only`.
-2. If prior `cc-review-ledger.jsonl` records a reviewed SHA, narrow to `git diff <reviewedSha>...HEAD`.
+2. If prior `review-ledger.jsonl` records a reviewed SHA, narrow to `git diff <reviewedSha>...HEAD`; fall back to legacy `cc-review-ledger.jsonl` only when needed.
 3. Group changed files by behavior surface, not just extension.
 4. Add dependent nodes for direct importers/callers when a shared helper, enum, state shape, API contract, or skill contract changes.
 5. Preserve prior clean nodes only when the target file and dependent contract did not change.
@@ -136,7 +136,7 @@ If the user explicitly asks to fix findings in the same turn, switch to `cc-do` 
 
 ## Output Requirements
 
-Add to `cc-review-report.md`:
+Record in `review-ledger.jsonl` and render on-demand Markdown when a human report is needed:
 
 - base branch and diff summary
 - scope check
@@ -149,4 +149,4 @@ Add to `cc-review-report.md`:
 - docs/DX notes
 - final route
 
-Write `cc-review-findings.json` when there are actionable findings.
+Write `review-findings.json` when there are actionable findings that later agents need to consume.

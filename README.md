@@ -96,10 +96,10 @@ flowchart TD
 | `cc-roadmap` | You need product direction, staged scope, or backlog order | `devflow/roadmap.json`, `devflow/ROADMAP.md`, deprecated `devflow/BACKLOG.md` |
 | `cc-next` | You need to pick the next roadmap-aware ready target from roadmap, unarchived local changes, and issue truth | one Goal Packet for `cc-dev` |
 | `cc-dev` | A selected objective should be driven in the current worktree to a remote PR | PDCA/IDCA artifacts plus a PR or handoff |
-| `cc-plan` | A feature or change needs scope, design, and task freezing | `planning/design.md`, `planning/tasks.md`, `task-manifest.json` |
-| `cc-investigate` | A bug needs symptom, reproduction, root cause, and repair boundary | `planning/analysis.md`, `planning/tasks.md`, `task-manifest.json` |
+| `cc-plan` | A feature or change needs scope, design, and task freezing | `planning/tasks.md#Contract Summary`, `task-manifest.json`, `change-meta.json` |
+| `cc-investigate` | A bug needs symptom, reproduction, root cause, and repair boundary | `planning/tasks.md#Root Cause Contract`, `task-manifest.json`, `change-meta.json` |
 | `cc-do` | Planned or investigated work needs implementation | code, tests, checkpoints, scratch runtime |
-| `cc-review` | Complex plans, investigations, or diffs need optional deep multi-round review before implementation or verification | `cc-review-report.md`, optional `cc-review-findings.json` |
+| `cc-review` | Complex plans, investigations, or diffs need optional deep multi-round review before implementation or verification | `review-ledger.jsonl`, optional `review-findings.json`, optional rendered Markdown |
 | `cc-pr-review` | A remote PR needs an independent review session before landing | PR review packet, findings, and landing verdict |
 | `cc-pr-land` | Reviewed PRs need rebase-first landing into main with parity proof | integrated main plus local/remote parity evidence |
 | `cc-check` | Work needs fresh verification evidence | `report-card.json` |
@@ -114,13 +114,13 @@ Maintenance skills are shipped with the pack:
 
 `cc-roadmap` now records planning posture, evidence maturity, canonical project language, and durable decision context before recommending a route. That keeps idea-stage, active-user, paying-customer, infrastructure, and recovery work from being forced through the same questions, and prevents roadmap items from inventing a second vocabulary. Developer-facing or operator-facing roadmap items also carry target user, time to first value, magic moment, adoption bottleneck, and domain handoff into `cc-plan`.
 
-Canonical language and durable decisions stay inside cc-devflow-native sources: `devflow/specs/`, `devflow/roadmap.json`, `devflow/ROADMAP.md`, `planning/design.md`, `planning/analysis.md`, and `change-meta.json`.
+Canonical language and durable decisions stay inside cc-devflow-native sources: `devflow/specs/`, `devflow/roadmap.json`, `devflow/ROADMAP.md`, `planning/tasks.md`, and `change-meta.json`. Legacy `planning/design.md` and `planning/analysis.md` remain readable fallback inputs for older changes.
 
 `cc-plan` freezes more implementation decisions before `cc-do` starts. Non-trivial plans compare minimal viable and ideal architecture options, full designs include decision horizon plus error/rescue mapping, and test-first plans record test framework evidence, public test seams, spec-style test names, public verification paths, behavior assertions, mock boundaries, coverage quality, mandatory regression tests, interface depth, Green minimality guards, refactor candidates, and vertical tracer-bullet slices when existing behavior changes. Before handoff, `cc-plan` and `cc-investigate` also reconcile the source roadmap item so RM status, REQ/FIX binding, progress, and spec diagnosis do not drift from the frozen change artifacts.
 
 Every post-planning stage can start from `cc-devflow query workflow-context --change <id> --change-key <key> --data-only --no-trace --compact`. Treat the result as a context index, not semantic compression: it routes the next stage, names the current task, carries source hashes, `mustNotForget` constraints, default section/JSON refs, trusted commands, fail-closed rules, and machine-readable deep-open conditions. Source artifacts still decide disputed facts. This primarily reduces stage-routing and context-reset reads; end-to-end PDCA/IDCA savings depend on how often agents open `defaultOpen` and `deepOpen` refs. Use `npm run benchmark:workflow-context` to inspect token estimates plus routing correctness over the checked-in and synthetic examples.
 
-`cc-review` is optional and deeper than `cc-check`. It can run immediately after `cc-plan` / `cc-investigate` to review the frozen plan or root-cause contract, or after `cc-do` to review the implementation. It first reads prior review records and current git/artifact delta, writes a review plan, then checks review nodes one by one with ledger entries. When the host supports subagents, selected nodes can be dispatched to independent read-only reviewers so strategy, engineering, design, DX, smell, test, and runtime checks do not share one contaminated context. Broad implementation reviews can use separate risk lanes for intent/regression, security/privacy, performance/reliability, and contracts/coverage before the main thread triages raw findings. Plan reviews borrow strategy/design/engineering/DX methods through progressive references, while implementation reviews inspect diff scope, code smells, tests, UI/runtime behavior, Browser/Computer Use evidence, and logs when applicable. Findings route back to `cc-plan` or `cc-do`; clean implementation reviews continue to `cc-check`.
+`cc-review` is optional and deeper than `cc-check`. It can run immediately after `cc-plan` / `cc-investigate` to review the frozen plan or root-cause contract, or after `cc-do` to review the implementation. It reads prior review records and current git/artifact delta, then records review lifecycle events through `cc-devflow review start`, `record-node`, `add-finding`, and `close` into `review-ledger.jsonl`. Human Markdown reports are rendered on demand with `cc-devflow review render`. When the host supports subagents, selected nodes can be dispatched to independent read-only reviewers so strategy, engineering, design, DX, smell, test, and runtime checks do not share one contaminated context. Broad implementation reviews can use separate risk lanes for intent/regression, security/privacy, performance/reliability, and contracts/coverage before the main thread triages raw findings. Plan reviews borrow strategy/design/engineering/DX methods through progressive references, while implementation reviews inspect diff scope, code smells, tests, UI/runtime behavior, Browser/Computer Use evidence, and logs when applicable. Findings route back to `cc-plan` or `cc-do`; clean implementation reviews continue to `cc-check`.
 
 ## Verification And Ship Gates
 
@@ -244,11 +244,21 @@ The currently distributed skill folders are:
 
 - `devflow/specs/` stores durable capability truth: `INDEX.md` plus `capabilities/*.md`.
 - New change directories use `REQ-<number>-<description>` for requirements or `FIX-<number>-<description>` for bug fixes. `REQ` and `FIX` numbers advance independently, so the same number may exist in both prefixes. Parallel worktrees may also create repeated numbers; the full change key must use a specific description to distinguish the work.
-- `devflow/changes/<change>/` stores durable change truth: `change-state.json`, `change-meta.json`, planning docs, `task-manifest.json`, `team-state.json`, task `checkpoint.json`, `report-card.json`, and one final handoff file.
+- `devflow/changes/<change>/` stores durable change truth: `change-meta.json`, `planning/tasks.md`, CLI-generated `task-manifest.json`, review ledger/findings records, task `checkpoint.json`, `report-card.json`, and one final handoff file.
+- New changes default to one human-authored Markdown artifact: `planning/tasks.md`. Feature plans put the frozen design in `## Contract Summary`; bug investigations put root-cause truth in `## Root Cause Contract`. Legacy `planning/design.md`, `planning/analysis.md`, and `cc-review-*.md` remain fallback inputs, not new default writes.
+- Use `cc-devflow task-contract validate`, `npm run verify:artifacts`, and `npm run benchmark:artifacts` to keep workflow artifacts small and measurable.
 - `devflow/workspaces/<change>/` stores ephemeral runtime scratch such as worker assignment, journals, prompts, and session logs.
 - Regenerable files should not be persisted under `devflow/changes/`.
 
-For complete artifact examples, start with [`docs/examples/START-HERE.md`](./docs/examples/START-HERE.md). Example version bindings live in [`docs/examples/example-bindings.json`](./docs/examples/example-bindings.json).
+Artifact contract quick checks:
+
+```bash
+npx cc-devflow task-contract validate --change REQ-001 --change-key REQ-001-copy-invite-link
+npm run verify:artifacts
+npm run benchmark:artifacts
+```
+
+For complete artifact examples, start with [`docs/examples/START-HERE.md`](./docs/examples/START-HERE.md). Example version bindings live in [`docs/examples/example-bindings.json`](./docs/examples/example-bindings.json). Migration and authoring guidance for the minimized artifact contract lives in [`docs/guides/minimize-artifacts.md`](./docs/guides/minimize-artifacts.md).
 
 ## Development
 

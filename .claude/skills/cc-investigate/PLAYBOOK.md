@@ -5,7 +5,7 @@
 `cc-investigate -> cc-do -> cc-check`
 
 - Enter from: a bug, regression, or broken requirement whose root cause is still unclear.
-- Stay in: `cc-investigate` until `planning/analysis.md` and the repair handoff are both frozen.
+- Stay in: `cc-investigate` until `planning/tasks.md#Root Cause Contract` and the repair handoff are both frozen.
 - Exit to: `cc-do` only after root cause, repair boundary, and source roadmap progress are explicit in canonical artifacts.
 - Reroute to: `cc-plan` for scope/design truth changes, or `roadmap` for project-level priority decisions.
 
@@ -16,7 +16,7 @@
 3. 先确认 loop 复现的是用户报告的同一个失败。
 4. 先看最近变化，再决定是不是 regression。
 5. 先证伪假设，再冻结根因。
-6. `planning/analysis.md` 和 `planning/tasks.md` 必须足够让 `cc-do` 脱离当前会话继续工作。
+6. `planning/tasks.md` 必须足够让 `cc-do` 脱离当前会话继续工作。
 7. 调查失败三次后先重建入口，不准继续乱补。
 8. 没有 frozen root-cause contract，不准进入 repair task。
 9. 多组件、深层调用、flaky 问题必须先补边界探针、反向追踪或条件等待证据。
@@ -49,7 +49,6 @@ root-cause contract 至少包含：稳定复现或缩小后的可验证症状、
 
 ## Required Outputs
 
-- `planning/analysis.md`
 - `planning/tasks.md`
 - `planning/task-manifest.json`
 - `change-meta.json`
@@ -174,14 +173,15 @@ root-cause contract 至少包含：稳定复现或缩小后的可验证症状、
 
 ## Local Kit
 
-- 模板在 `assets/`
+- 默认模板在 `assets/TASKS_TEMPLATE.md` 和 `assets/TASK_MANIFEST_TEMPLATE.json`
+- 旧分析模板在 `assets/legacy/`，只用于 legacy fallback / migration
 - 调查契约在 `references/investigation-contract.md`
 - 需要分析骨架时用 `scripts/bootstrap-analysis.sh`
 - Roadmap 回写使用 `../cc-roadmap/scripts/locate-roadmap-item.sh` 和 `../cc-roadmap/scripts/sync-roadmap-progress.sh`
 
 ## Exit Rule
 
-只有当下一位执行者读完 `planning/analysis.md`、`planning/tasks.md`、`planning/task-manifest.json` 就知道：
+只有当下一位执行者读完 `planning/tasks.md`、`planning/task-manifest.json` 就知道：
 
 - 为什么坏
 - 该修什么

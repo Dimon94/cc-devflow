@@ -2,23 +2,23 @@
 
 ## Hard Rules
 
-1. `cc-plan` 默认只产出 4 个文件：`planning/design.md`、`planning/tasks.md`、`planning/task-manifest.json`、`change-meta.json`。
-2. clarification / brainstorm / review 结论必须并入 `planning/design.md`，不能再默认拆独立文档。
+1. `cc-plan` 默认只产出 3 个文件：`planning/tasks.md`、`planning/task-manifest.json`、`change-meta.json`。
+2. clarification / brainstorm / review 结论必须并入 `planning/tasks.md#Contract Summary`，不能再默认拆 `planning/design.md` 或独立文档。
 3. 执行 handoff 必须写进 `planning/tasks.md` 顶部，不能依赖单独的 `context-package.md`。
 4. `planning/task-manifest.json` 必须和 `planning/tasks.md` 同步，且能告诉 `cc-do` 当前任务是谁。
-5. `planning/design.md`、`planning/tasks.md`、`planning/task-manifest.json` 必须记录来源版本链。
+5. `planning/tasks.md`、`planning/task-manifest.json` 必须记录来源版本链。
 6. 所有 SKILL 输出必须遵守 `docs/guides/artifact-contract.md`：状态只能有一个 owner，其它文件只能引用、投影或派生。
 7. 计划里出现 placeholder 词，就说明还没想清楚。
 8. 一次只推进一个澄清问题，不允许问题轰炸。
 9. 推荐方案没获批前，不允许继续拆执行任务。
-10. `planning/design.md` 通过 review gate 前，不允许宣称计划完成。
+10. `planning/tasks.md#Contract Summary` 通过 review gate 前，不允许宣称计划完成。
 11. 如果来自 `roadmap`，planning 不得悄悄丢掉 source constraints / non-goals / success signal。
 12. 每个计划必须先找 existing leverage，再决定新增实现；重复已有能力属于 planning 失败。
 13. 同 blast radius 内的完整边界默认纳入，defer 必须写入 `NOT in scope` 和原因。
 14. 如果推荐方案挑战用户原始方向，必须标成 `user challenge`，不能自动改写用户意图。
 15. 行为变更的具体任务默认采用测试先行；没有 Red/Green/Refactor 链、spec-style test name、公共测试 seam、行为断言、mock 边界或 TDD exception，不允许交给 `cc-do`。
 16. 新 change 目录必须通过 `cc-devflow next-change-key` 生成（不能手动心算编号），格式是 `REQ-<number>-<description>` 或 `FIX-<number>-<description>`；`REQ` 和 `FIX` 各自递增，跨前缀同号不是冲突；并行工作树造成同前缀同号时，完整 change key 靠描述区分业务内容。
-17. 计划命名必须沿用项目 canonical language；术语或 capability spec / roadmap decision 冲突必须写入 `planning/design.md`，不能在任务里发明第二套语言。
+17. 计划命名必须沿用项目 canonical language；术语或 capability spec / roadmap decision 冲突必须写入 `planning/tasks.md#Contract Summary`，不能在任务里发明第二套语言。
 18. 行为变更任务必须按 tracer bullet 垂直切片组织：一个可观察行为对应一组 Red/Green/Refactor 任务。
 19. Red 任务必须通过公共接口、调用方流程、CLI/API/UI 路径或其它真实 seam 证明行为缺失。
 20. Mock 只能发生在系统边界；mock 内部协作者、私有方法或调用次数属于测试设计失败。
@@ -31,9 +31,9 @@
 27. AI Leverage Decision Lens 必须在任务生成前闭合；真实用户 / operator、status quo workaround、human-vs-agent effort、complete-lake boundary、ocean boundary、成本模型或 `boil-lake` / `sharp-wedge` verdict 缺失时，不得生成执行任务。`boil-lake` verdict 下不得退缩成 happy-path MVP。
 28. review loop 必须有 attempt 上限和 stall reroute；不能靠无限 review 掩盖需求仍不清楚。
 29. Roadmap Sync Gate 必须在退出前闭合：source RM 存在就回写 `devflow/roadmap.json` 并重新生成 `devflow/ROADMAP.md` / `devflow/BACKLOG.md`；不存在就记录 no-op reason。
-30. PRD-grade requirement brief 必须并入 `planning/design.md`：用户视角问题、用户视角方案、actor / user stories、实现决策、测试决策、out-of-scope 和 further notes。默认不得额外产出 `PRD.md`。
+30. PRD-grade requirement brief 必须并入 `planning/tasks.md#Contract Summary`：用户视角问题、用户视角方案、actor / user stories、实现决策、测试决策、out-of-scope 和 further notes。默认不得额外产出 `PRD.md`。
 31. 需要用户判断时必须使用固定 Decision Question：`D<N>`、证据、推荐、2-3 个互斥的 `A/B/C` 字母选项、影响和 STOP 都必须出现；禁止用自由问句或 `1/2/3` 数字选项代替审批 gate。
-32. 所有用户决策必须写入 `planning/design.md` 的 `Decision Questions`，并同步到 `task-manifest.json.planningMeta.decisionQuestions`，不能只留在聊天里。
+32. 所有用户决策必须写入 `planning/tasks.md#Contract Summary` 的 `Decision Questions`，并同步到 `task-manifest.json.planningMeta.decisionQuestions`，不能只留在聊天里。
 33. Deep Planning Funnel 必须在任务生成前闭合：requirement reality、system shape、interface/data contract、abstraction/encapsulation、execution architecture、task contract、final approval 都要记录状态、证据和 artifact impact。
 34. 每个任务必须继承 funnel 结论形成 task contract：user story / edge story、文件职责、方法或接口、关键字段、输入输出、失败路径、验证方式和 AFK/HITL。没有 task contract 的任务不允许交给 `cc-do`。
 
@@ -120,7 +120,7 @@
 
 ## Review Gate
 
-`planning/design.md` 至少完成：
+`planning/tasks.md#Contract Summary` 至少完成：
 
 1. Placeholder scan
 2. Consistency scan

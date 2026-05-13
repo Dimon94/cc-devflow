@@ -6,7 +6,7 @@
     "documentLanguage": ""
   },
   "planningMeta": {
-    "ccInvestigateSkillVersion": "1.4.3",
+    "ccInvestigateSkillVersion": "1.5.0",
     "analysisVersion": "analysis.v1",
     "workBranch": "FIX/XXX-short-bug-name",
     "approvedAt": "2026-04-17T12:00:00.000Z",
@@ -36,7 +36,7 @@
         "configuration drift",
         "timing guess / flaky wait"
       ],
-      "notes": "Pattern evidence belongs in planning/analysis.md"
+      "notes": "Pattern evidence belongs in planning/tasks.md#Root Cause Contract"
     },
     "boundaryProbes": [
       {
@@ -64,7 +64,7 @@
       "symptomSite": "User-visible failure, command, UI state, log, or bad artifact",
       "firstBadState": "First field, artifact, cache entry, queue message, config, response, or memory object that becomes invalid",
       "firstBadStateEvidence": [
-        "Boundary probe or trace evidence from planning/analysis.md"
+        "Boundary probe or trace evidence from planning/tasks.md#Root Cause Contract"
       ],
       "violatedContract": "Schema, invariant, API contract, state transition, trust boundary, or timing condition violated",
       "originalTrigger": "User action, command, event, recent diff, config change, or external response that created the first bad state",

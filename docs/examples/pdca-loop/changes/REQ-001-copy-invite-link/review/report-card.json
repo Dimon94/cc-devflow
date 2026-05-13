@@ -120,7 +120,7 @@
       "reviewPacket": {
         "baseSha": "example-base",
         "headSha": "example-head",
-        "requirements": "planning/design.md",
+        "requirements": "planning/tasks.md#Contract Summary",
         "implemented": "copy invite link workflow",
         "reviewerContext": "requirement diff, plan completion, scope drift, docs staleness"
       },

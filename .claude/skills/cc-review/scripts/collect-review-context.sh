@@ -15,10 +15,12 @@ if [[ -z "$change_dir" ]]; then
 fi
 
 review_dir="$change_dir/review"
-ledger="$review_dir/cc-review-ledger.jsonl"
+ledger="$review_dir/review-ledger.jsonl"
+legacy_ledger="$review_dir/cc-review-ledger.jsonl"
 report="$review_dir/cc-review-report.md"
 plan="$review_dir/cc-review-plan.md"
-findings="$review_dir/cc-review-findings.json"
+findings="$review_dir/review-findings.json"
+legacy_findings="$review_dir/cc-review-findings.json"
 
 head_sha="$(git rev-parse HEAD)"
 base_sha=""
@@ -27,9 +29,14 @@ if git rev-parse --verify "$base_ref" >/dev/null 2>&1; then
 fi
 
 reviewed_sha=""
-if [[ -f "$ledger" ]]; then
+ledger_for_read="$ledger"
+if [[ ! -f "$ledger_for_read" && -f "$legacy_ledger" ]]; then
+  ledger_for_read="$legacy_ledger"
+fi
+
+if [[ -f "$ledger_for_read" ]]; then
   reviewed_sha="$(
-    sed -n 's/.*"headSha"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$ledger" |
+    sed -n 's/.*"headSha"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$ledger_for_read" |
       tail -n 1
   )"
 fi
@@ -57,7 +64,7 @@ echo "diff_base=${diff_base:-unknown}"
 
 echo
 echo "PRIOR_REVIEW_FILES"
-for file in "$plan" "$report" "$ledger" "$findings"; do
+for file in "$ledger" "$findings" "$plan" "$report" "$legacy_ledger" "$legacy_findings"; do
   if [[ -f "$file" ]]; then
     printf 'present %s\n' "$file"
   else
@@ -73,8 +80,8 @@ else
   git diff --name-status HEAD
 fi
 
-if [[ -f "$ledger" ]]; then
+if [[ -f "$ledger_for_read" ]]; then
   echo
   echo "RECENT_LEDGER"
-  tail -n 20 "$ledger"
+  tail -n 20 "$ledger_for_read"
 fi

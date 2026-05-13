@@ -35,8 +35,8 @@
 
 ## Output Shape
 
-- `planning/analysis.md` 是人类真相源
-- `planning/tasks.md` 是修复 handoff
+- `planning/tasks.md#Root Cause Contract` 是人类真相源
+- `planning/tasks.md` 的 task blocks 是修复 handoff
 - `planning/task-manifest.json` 是执行真相源
 - `change-meta.json` 必须记录 roadmap sync status、spec diagnosis 和 no-op reason / updated files
 

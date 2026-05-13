@@ -3,7 +3,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-TEMPLATE="$ROOT_DIR/assets/ANALYSIS_TEMPLATE.md"
+TEMPLATE="$ROOT_DIR/assets/legacy/ANALYSIS_TEMPLATE.md"
 REQ_DIR=""
 
 usage() {

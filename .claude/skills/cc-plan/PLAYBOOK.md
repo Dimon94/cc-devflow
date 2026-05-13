@@ -5,8 +5,8 @@
 `roadmap -> cc-plan -> cc-do`
 
 - Enter from: an approved roadmap item, requirement, or bug that still needs design.
-- Stay in: `cc-plan` until the approved design and executable task breakdown are both frozen.
-- Exit to: `cc-do` only after `planning/design.md` is approved, `planning/tasks.md` plus `planning/task-manifest.json` are generated, and the source roadmap progress is synchronized or explicitly marked no-op.
+- Stay in: `cc-plan` until `planning/tasks.md#Contract Summary` and executable task blocks are both frozen.
+- Exit to: `cc-do` only after `planning/tasks.md` plus CLI-generated `planning/task-manifest.json` are ready, and the source roadmap progress is synchronized or explicitly marked no-op.
 - Reroute to: `roadmap` if the conversation expands back into project strategy.
 
 ## Core Rules
@@ -14,7 +14,7 @@
 1. 先读上游 handoff，再写 planning 结论。
 2. 没有证据时写 assumption，不准冒充事实。
 3. 一次只推进一个关键未知点。
-4. `planning/design.md` 和 `planning/tasks.md` 必须足够让执行者脱离当前会话继续工作。
+4. `planning/tasks.md` 必须足够让执行者脱离当前会话继续工作。
 5. 版本、来源、冻结决策必须可追踪。
 6. 机械决策自动落盘；taste decision 和 user challenge 必须显式交给用户拍板。
 7. 同 blast radius 内的完整边界优先做完，跨系统或无证据扩张才 defer。
@@ -31,7 +31,7 @@
 18. 行为变更按 tracer bullet 垂直切片推进，不能把任务水平切成“先测试层、再服务层、最后 UI 层”。
 19. WHAT/WHY ambiguity、外部文档冲突、source trust boundary 和 review loop 上限必须在设计 gate 内闭合；模糊需求不能靠 `cc-do` 临场解释。
 20. 退出前必须跑 Roadmap Sync Gate：`devflow/roadmap.json` 是真相源，`devflow/ROADMAP.md` 和 `devflow/BACKLOG.md` 只是投影；source RM 存在就回写，找不到才记录 no-op。
-21. PRD 的结构要吸收进 `planning/design.md`：用户视角的问题和方案、完整 user stories、实现决策、测试决策、out-of-scope 和 further notes；不要默认创建独立 `PRD.md`。
+21. PRD 的结构要吸收进 `planning/tasks.md#Contract Summary`：用户视角的问题和方案、完整 user stories、实现决策、测试决策、out-of-scope 和 further notes；不要默认创建独立 `PRD.md`。
 22. 接口可测性必须在计划阶段解决：依赖尽量注入，结果尽量可返回和断言，系统边界 adapter 拆成具体操作，避免让测试用条件分支 mock 一个万能 fetcher。
 23. 需要用户判断时必须走固定 `D<N>` Decision Question：证据、推荐、2-3 个互斥的 `A/B/C` 字母选项、影响和 STOP 都要出现，答案写回 design / manifest；选项禁止用 `1/2/3`。
 24. 内部证据扫完后，判断是否需要外部最佳实践验证；需要时先问用户是否允许用泛化关键词搜索，结果只作为 `external-evidence`，不能覆盖 repo truth。
@@ -39,14 +39,14 @@
 
 ## Required Outputs
 
-- `planning/design.md`
 - `planning/tasks.md`
 - `planning/task-manifest.json`
 - `change-meta.json`
 
 ## Local Kit
 
-- 模板全部在 `assets/`
+- 默认模板在 `assets/TASKS_TEMPLATE.md` 和 `assets/TASK_MANIFEST_TEMPLATE.json`
+- 旧设计模板在 `assets/legacy/`，只用于 legacy fallback / migration
 - 任务结构解析在 `scripts/parse-task-dependencies.js`
 - 计划边界和 placeholder 红线见 `references/planning-contract.md`
 - 变更版本时同步 `CHANGELOG.md`，必要时用 `scripts/bump-skill-version.sh`
@@ -54,13 +54,13 @@
 
 ## Planning Standard
 
-1. 一份 `planning/design.md` 讲清 clarification、方案、review 和 final gate。
-2. 一份 `planning/tasks.md` 讲清执行任务和 handoff。
+1. 一份 `planning/tasks.md#Contract Summary` 讲清 clarification、方案、review 和 final gate。
+2. 同一份 `planning/tasks.md` 讲清执行任务和 handoff。
 3. `planning/task-manifest.json` 只做机器真相源，不再重复人类叙事。
 4. 先运行 `cc-devflow next-change-key --prefix REQ|FIX --description "..."` 获取 canonical change key；不要手动扫描目录或心算编号。并行 PR 产生同号时不强制重排，完整 key 的描述承担身份区分。
 5. 立刻检查并锚定 work branch：detached worktree 创建 / 切换到 `REQ/<task>` 或 `FIX/<task>`；`main` / default branch 是 setup blocker。
-6. 推荐方案获批前，不得生成 `planning/tasks.md`。
-7. `planning/tasks.md` 之前，`planning/design.md` 内的 review gate 必须闭合。
+6. 推荐方案获批前，不得生成执行 task blocks。
+7. 进入任务拆分前，`planning/tasks.md#Contract Summary` 内的 review gate 必须闭合。
 8. 每个任务都要写清：
    - 目标
    - TDD phase：`red` / `green` / `refactor` / `exception`
@@ -72,14 +72,14 @@
 9. `planning/tasks.md` 顶部必须写清 frozen decisions、commands to trust、do-not-re-decide。
 10. `planning/task-manifest.json` 必须是 `cc-do` 的真相源，而不是装饰文件。
 11. `change-meta.json` 必须记录 `roadmapSync`：status、updatedFiles、command、no-op reason 或阻塞原因。
-12. `planning/design.md` 必须包含 `Existing Leverage`、`NOT in scope`、`Failure Modes`、`Test Diagram`，除非明确说明为什么不适用。
-13. `planning/design.md` 或 `planning/tasks.md` 必须包含 implementation surface map：文件、职责、归属理由、耦合风险。
+12. `planning/tasks.md#Contract Summary` 必须包含 `Existing Leverage`、`NOT in scope`、`Failure Modes`、`Test Diagram`，除非明确说明为什么不适用。
+13. `planning/tasks.md` 必须包含 implementation surface map：文件、职责、归属理由、耦合风险。
 14. `full-design` 必须包含 implementation decision horizon 和 error/rescue map；不适用时写清 N/A 理由。
-15. `planning/design.md` 必须包含 assumptions preview、ambiguity gate、source trust boundary、external best-practice validation、external conflict buckets 和 bounded review loop。
-16. `planning/design.md` 必须包含 Deep Planning Funnel：requirement reality、system shape、interface/data contract、abstraction/encapsulation、execution architecture、task contract、final approval。
-17. `planning/design.md` 必须包含 PRD-grade brief：Problem Statement、Solution、actors / user stories、Implementation Decisions、Testing Decisions、Out of Scope 和 Further Notes。
-18. `planning/design.md` 必须包含 Decision Questions：哪些问题问过、推荐项、用户选择、影响、是否已写入任务。
-19. `planning/design.md` 必须包含 External Best-Practice Validation：是否需要、是否获用户允许、泛化搜索词、来源、conventional wisdom、repo-fit verdict、设计影响和跳过原因。
+15. `planning/tasks.md#Contract Summary` 必须包含 assumptions preview、ambiguity gate、source trust boundary、external best-practice validation、external conflict buckets 和 bounded review loop。
+16. `planning/tasks.md#Contract Summary` 必须包含 Deep Planning Funnel：requirement reality、system shape、interface/data contract、abstraction/encapsulation、execution architecture、task contract、final approval。
+17. `planning/tasks.md#Contract Summary` 必须包含 PRD-grade brief：Problem Statement、Solution、actors / user stories、Implementation Decisions、Testing Decisions、Out of Scope 和 Further Notes。
+18. `planning/tasks.md#Contract Summary` 必须包含 Decision Questions：哪些问题问过、推荐项、用户选择、影响、是否已写入任务。
+19. `planning/tasks.md#Contract Summary` 必须包含 External Best-Practice Validation：是否需要、是否获用户允许、泛化搜索词、来源、conventional wisdom、repo-fit verdict、设计影响和跳过原因。
 20. 新 artifact、CLI、包、容器、文档入口必须在计划阶段写清分发和 discoverability，不准到 `cc-act` 才发现没人能用。
 21. 行为变更任务必须拆成 `[TEST] -> [IMPL] -> [REFACTOR]` 或写明 TDD exception；不能用“实现并测试”混成一个任务。
 22. 行为变更任务必须按一个 observable behavior 一条 tracer bullet 链组织，不能先批量写红灯再批量实现。
@@ -99,10 +99,10 @@
 
 1. 先写 `Source Handoff` 和 requirement framing。
 2. 跑 Deep Planning Funnel 前四轮，缺口以 blocked question 或 auto-decided evidence 处理。
-3. 在 `planning/design.md` 里记录备选方案和推荐。
+3. 在 `planning/tasks.md#Contract Summary` 里记录备选方案和推荐。
 4. 用户批准推荐方案后，再冻结正式设计；批准必须来自固定 Decision Question 或明确用户指令。
 5. 跑 Task Contract Round，把每条垂直切片的任务合同写进 design。
-6. 在 `planning/design.md` 里完成 review loop 与 final gate。
+6. 在 `planning/tasks.md#Contract Summary` 里完成 review loop 与 final gate。
 7. gate 通过后，再拆 `planning/tasks.md` 与 `planning/task-manifest.json`。
 
 ## Review Shape
@@ -167,7 +167,7 @@
 ## Exit Rule
 
 只有当 `cc-do` 不需要临场补脑也能直接执行时，计划才算合格。
-如果执行者还得自己猜“这次到底碰哪些文件、为什么这么改”，说明 `planning/design.md` 仍然不够。
+如果执行者还得自己猜“这次到底碰哪些文件、为什么这么改”，说明 `planning/tasks.md#Contract Summary` 仍然不够。
 如果执行者还看不出哪些决策已经冻结，说明 `planning/tasks.md` 仍然不够。
 如果执行者还要自己决定先写什么失败测试，说明 `planning/tasks.md` 仍然不够。
 如果 roadmap 仍然停在旧 status、旧 progress 或旧 REQ 绑定，说明本次 `cc-plan` 没有真正退出。

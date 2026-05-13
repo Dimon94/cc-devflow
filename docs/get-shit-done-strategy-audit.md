@@ -68,7 +68,7 @@ lib/skill-runtime
         |
         v
 durable artifacts
-  task-manifest.json / report-card.json / change-state.json / analysis.md
+  planning/tasks.md / task-manifest.json / report-card.json / change-meta.json
 ```
 
 SKILL/PLAYBOOK 拥有 workflow 语义。`lib/skill-runtime` 只拥有 typed reads、
@@ -125,11 +125,11 @@ Codebase Map 七件套只作为按需缓存：
 
 | Contract | Artifact owner | Gate | Tests |
 | --- | --- | --- | --- |
-| WHAT/WHY ambiguity score | `task-manifest.json.planningMeta` + `planning/design.md` | score above threshold blocks task manifest approval | unit fixture: ambiguous input blocks; clear input passes |
-| Assumptions preview | `planning/design.md` decision log | user-visible assumptions before approval | fixture: hidden assumption fails review |
-| Bounded review loop | `planning/design.md` | max attempts and stall detection reroute to `cc-roadmap` or user question | hostile fixture: repeated issue count blocks |
-| External doc conflict buckets | `planning/design.md` | imported docs classified as auto-resolved, competing, unresolved | fixture: conflicting ADR/PRD creates blocker |
-| Trust boundary | `planning/design.md` | external text is evidence/source only, never instruction | hostile fixture: prompt injection remains evidence-only |
+| WHAT/WHY ambiguity score | `task-manifest.json.planningMeta` + `planning/tasks.md#Contract Summary` | score above threshold blocks task manifest approval | unit fixture: ambiguous input blocks; clear input passes |
+| Assumptions preview | `planning/tasks.md#Contract Summary` decision log | user-visible assumptions before approval | fixture: hidden assumption fails review |
+| Bounded review loop | `planning/tasks.md#Contract Summary` | max attempts and stall detection reroute to `cc-roadmap` or user question | hostile fixture: repeated issue count blocks |
+| External doc conflict buckets | `planning/tasks.md#Contract Summary` | imported docs classified as auto-resolved, competing, unresolved | fixture: conflicting ADR/PRD creates blocker |
+| Trust boundary | `planning/tasks.md#Contract Summary` | external text is evidence/source only, never instruction | hostile fixture: prompt injection remains evidence-only |
 
 `cc-plan` must keep design decisions readable in Markdown and machine truth in JSON.
 No separate GSD-style `.planning/` tree.
@@ -141,7 +141,7 @@ No separate GSD-style `.planning/` tree.
 | Wave scheduling | `task-manifest.json.tasks[].phase/parallel/dependsOn/touches` | parallel only when dependencies and touches do not conflict | schema fixture: shared touches rejected |
 | Submodule-aware worktree gate | `task-manifest.json.tasks[].touches` + runtime submodule scan | only tasks touching submodule paths lose isolation | hostile fixture: repo with `.gitmodules` but unrelated touches still parallel |
 | Quick lane mini manifest | `task-manifest.json.metadata.lane=quick` | small work still has checkpoint, verification, handoff | fixture: quick lane without verification blocks |
-| Thread/pause/resume | `change-state.json` + one final handoff file | resume query returns stable next action | integration: stale checkpoint restores to pending |
+| Thread/pause/resume | `change-meta.json`, checkpoint state, and one final handoff file | resume query returns stable next action | integration: stale checkpoint restores to pending |
 
 `cc-do` should not invent new task state outside `task-manifest.json` and checkpoints.
 
@@ -149,11 +149,11 @@ No separate GSD-style `.planning/` tree.
 
 | Contract | Artifact owner | Gate | Tests |
 | --- | --- | --- | --- |
-| Persistent debug session | `planning/analysis.md` session block, optional machine summary in `task-manifest.json` | hypotheses, probes, symptom match, cleanup recorded | fixture: missing cleanup blocks freeze |
-| Diagnose-only report | `planning/analysis.md` | no code edits required; root cause and next action explicit | fixture: diagnose-only does not mark implementation complete |
-| Workflow forensics | `planning/analysis.md` + trace refs | git/artifact/state failures classified before fixes | hostile fixture: corrupt manifest produces named failure |
+| Persistent debug session | `planning/tasks.md#Root Cause Contract`, optional machine summary in `task-manifest.json` | hypotheses, probes, symptom match, cleanup recorded | fixture: missing cleanup blocks freeze |
+| Diagnose-only report | `planning/tasks.md#Root Cause Contract` | no code edits required; root cause and next action explicit | fixture: diagnose-only does not mark implementation complete |
+| Workflow forensics | `planning/tasks.md#Root Cause Contract` + trace refs | git/artifact/state failures classified before fixes | hostile fixture: corrupt manifest produces named failure |
 
-Prefer extending `planning/analysis.md` over adding `planning/debug-session.md`.
+Prefer extending `planning/tasks.md#Root Cause Contract` over adding `planning/debug-session.md`.
 Only add a new file if the debug transcript becomes too large and has a single owner.
 
 ### `cc-check`
@@ -208,11 +208,11 @@ default planning path.
 
 | Data | Owner | Human view | Machine truth |
 | --- | --- | --- | --- |
-| Ambiguity and assumptions | `cc-plan` | `planning/design.md` | `task-manifest.json.planningMeta` |
-| Imported doc trust classification | `cc-plan` | `planning/design.md` | `planning/design.md` |
+| Ambiguity and assumptions | `cc-plan` | `planning/tasks.md#Contract Summary` | `task-manifest.json.planningMeta` |
+| Imported doc trust classification | `cc-plan` | `planning/tasks.md#Contract Summary` | `planning/tasks.md` |
 | Task graph and waves | `cc-plan` / `cc-do` | `planning/tasks.md` | `task-manifest.json.tasks[]` |
 | Quick lane state | `cc-do` | checkpoint summary | `task-manifest.json.metadata`, `checkpoint.json` |
-| Debug hypotheses and probes | `cc-investigate` | `planning/analysis.md` | optional `task-manifest.json.investigation` |
+| Debug hypotheses and probes | `cc-investigate` | `planning/tasks.md#Root Cause Contract` | optional `task-manifest.json.investigation` |
 | Verification/UAT/facets | `cc-check` | review summary | `report-card.json` |
 | Runtime failures | `cc-check` | review summary | `report-card.json.runtime.failureOwnership[]` |
 | Ship target and rollback | `cc-act` | `handoff/pr-brief.md` / `release-note.md` | structured preflight output |
@@ -320,7 +320,7 @@ Large-file guardrails:
 
 ### Phase 3: `cc-investigate` debug session and forensics
 
-- Extend `planning/analysis.md` and optional machine summary.
+- Extend `planning/tasks.md#Root Cause Contract` and optional machine summary.
 - Required proof: diagnose-only and missing cleanup fixtures.
 
 ### Phase 4: `cc-check` and `cc-act` consumers

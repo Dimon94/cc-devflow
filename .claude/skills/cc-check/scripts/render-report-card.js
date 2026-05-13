@@ -175,6 +175,11 @@ function claimFromGate(gate) {
   return `gate-${gate.name || 'unknown'}`;
 }
 
+function isTaskComplete(task) {
+  const status = String(task?.status || (task?.completed ? 'completed' : 'pending')).toLowerCase();
+  return ['passed', 'done', 'completed', 'verified'].includes(status);
+}
+
 function buildClaimEvidence({ manifest, quickGates, strictGates, review }) {
   const gateClaims = [...quickGates, ...strictGates].map((gate) => ({
     claim: claimFromGate(gate),
@@ -185,7 +190,7 @@ function buildClaimEvidence({ manifest, quickGates, strictGates, review }) {
     status: gate.status || 'blocked'
   }));
 
-  const openTasks = (manifest.tasks || []).filter((task) => task.status !== 'done' && task.status !== 'completed');
+  const openTasks = (manifest.tasks || []).filter((task) => !isTaskComplete(task));
   gateClaims.push({
     claim: 'requirements-met',
     requiredProof: 'line-by-line planning/tasks.md and task-manifest.json checklist',

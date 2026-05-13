@@ -6,6 +6,13 @@
 
 它至少校验两层审查现实：
 
+Requirement-level review truth is loaded in a strict fallback chain:
+
+1. `review/review-findings.json`
+2. `review/review-ledger.jsonl`
+3. legacy `review/cc-review-report.md` with `freshness=unknown`
+4. no record => `review-missing` and `blocked`
+
 1. **Task Review Layer**
    - 每个已完成任务都必须有 `spec review`
    - 每个已完成任务都必须有 `code review`

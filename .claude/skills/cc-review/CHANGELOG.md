@@ -1,5 +1,11 @@
 # CC-Review Changelog
 
+## 2.0.0 - 2026-05-13
+
+- break default review output away from Markdown plan/report files and make `review-ledger.jsonl` the required durable record
+- add CLI-first lifecycle guidance for `review start`, `record-node`, `add-finding`, `close`, and on-demand `render`
+- rename optional machine outputs to `review-findings.json` and `review-agent-results.jsonl`, with legacy `cc-review-*` files retained only as fallback inputs
+
 ## 1.3.0
 
 - Added a risk-lane review swarm profile for broad implementation and PR-landing reviews.

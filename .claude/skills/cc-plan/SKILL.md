@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.8.7
+version: 3.9.0
 description: Use when a requirement, roadmap item, or bug needs scope clarification, design decisions, and executable task breakdown before coding starts.
 triggers:
   - 帮我规划这个需求
@@ -13,8 +13,6 @@ triggers:
 reads:
   - PLAYBOOK.md
   - CHANGELOG.md
-  - assets/DESIGN_TEMPLATE.md
-  - assets/TINY_DESIGN_TEMPLATE.md
   - assets/TASKS_TEMPLATE.md
   - assets/TASK_MANIFEST_TEMPLATE.json
   - docs/guides/project-postmortem.md
@@ -24,9 +22,6 @@ reads:
   - ../cc-roadmap/scripts/locate-roadmap-item.sh
   - ../cc-roadmap/scripts/sync-roadmap-progress.sh
 writes:
-  - path: devflow/changes/<change-key>/planning/design.md
-    durability: durable
-    required: true
   - path: devflow/changes/<change-key>/planning/tasks.md
     durability: durable
     required: true
@@ -39,10 +34,10 @@ writes:
 effects:
   - source roadmap progress sync when planning freezes, splits, or reroutes
 entry_gate:
-  - Read roadmap handoff, current requirement files, code, docs, and tests before drafting design.
-  - Load cc-devflow native language and decision sources (`devflow/specs/`, roadmap/backlog handoff, current or prior `planning/design.md` / `planning/analysis.md`, and `change-meta.json`) before naming concepts, modules, tests, or tasks.
-  - "Synthesize a PRD-grade requirement brief inside `planning/design.md`: user-perspective problem, solution, actors, user stories, durable implementation decisions, testing decisions, and out-of-scope boundaries."
-  - "Run the Deep Planning Funnel before the first design recommendation: requirement reality, system shape, interface/data contract, abstraction/encapsulation, execution architecture, task contract, and final approval. Record every round in `planning/design.md`."
+  - Read roadmap handoff, current requirement files, code, docs, and tests before drafting the task contract.
+  - Load cc-devflow native language and decision sources (`devflow/specs/`, roadmap/backlog handoff, current or prior `planning/tasks.md`, legacy `planning/design.md` / `planning/analysis.md`, and `change-meta.json`) before naming concepts, modules, tests, or tasks.
+  - "Synthesize a PRD-grade requirement brief inside `planning/tasks.md#Contract Summary`: user-perspective problem, solution, actors, user stories, durable implementation decisions, testing decisions, and out-of-scope boundaries."
+  - "Run the Deep Planning Funnel before the first design recommendation: requirement reality, system shape, interface/data contract, abstraction/encapsulation, execution architecture, task contract, and final approval. Record every round in `planning/tasks.md#Contract Summary`."
   - Freeze problem, constraints, non-goals, and success criteria before proposing implementation tasks.
   - If the raw ask spans multiple independent subsystems, split it back into roadmap stages or separate REQ/FIX candidates before asking implementation details.
   - "For non-trivial designs, compare named option roles: minimal viable, ideal architecture, and optional hybrid. Do not default to smallest unless it best serves the goal."
@@ -52,7 +47,7 @@ entry_gate:
   - "Keep `planning/task-manifest.json` lean: it is the machine execution graph, not a mirror of the design narrative or task protocol prose."
   - For behavior changes, freeze the spec-style test name, one logical behavior, public verification path, and interface-testability decision before task split.
   - "Before approach approval, run the AI Leverage Decision Lens: real user/operator, status quo workaround, human-vs-agent effort, complete-lake boundary, ocean boundary, scope recommendation, and boil-lake/sharp-wedge/needs-evidence/pivot verdict."
-  - "Before approach approval, run the Project Postmortem Recall Gate: search `devflow/postmortems/INDEX.md`, `devflow/postmortems/principles.md`, and relevant `incidents/*.md` with generalized module, capability, failure-class, and model-risk terms; record matches or `no-project-postmortems-yet` in `planning/design.md`."
+  - "Before approach approval, run the Project Postmortem Recall Gate: search `devflow/postmortems/INDEX.md`, `devflow/postmortems/principles.md`, and relevant `incidents/*.md` with generalized module, capability, failure-class, and model-risk terms; record matches or `no-project-postmortems-yet` in `planning/tasks.md#Contract Summary`."
   - Before approach approval, decide whether external best-practice validation could materially change the plan; if yes, ask the user through the Decision Question Protocol before any web or external lookup.
   - When user judgment is required, ask with the fixed `cc-plan` Decision Question Protocol (`D<N>`, evidence, recommendation, lettered A/B/C options, impact, STOP) instead of free-form prose.
   - Assign a canonical change key before writing artifacts by running `cc-devflow next-change-key --prefix REQ|FIX --description "<short name>"`. Use the script output directly; do not manually scan directories or compute numbers.
@@ -60,19 +55,19 @@ entry_gate:
   - Do not generate planning/tasks.md, planning/task-manifest.json, or change-meta.json until the recommended design is approved.
   - Before exit, locate the source RM in `devflow/roadmap.json`, `devflow/ROADMAP.md`, optional `devflow/BACKLOG.md`, or legacy `devflow/roadmap-tracking.json`; plan the progress sync instead of relying on chat memory.
 exit_criteria:
-  - planning/design.md captures the approved solution, PRD-grade requirement brief, boundaries, review conclusions, and execution edge cases.
-  - planning/design.md preserves every confirmed planning-funnel answer that would otherwise force `cc-do` to invent architecture, abstractions, interfaces, methods, fields, categories, task grain, or test seams.
+  - planning/tasks.md contains `## Contract Summary` with the approved solution, PRD-grade requirement brief, boundaries, review conclusions, and execution edge cases.
+  - planning/tasks.md preserves every confirmed planning-funnel answer that would otherwise force `cc-do` to invent architecture, abstractions, interfaces, methods, fields, categories, task grain, or test seams.
   - planning/tasks.md, planning/task-manifest.json, and change-meta.json are explicit enough that cc-do can continue without chat memory.
-  - planning/design.md, planning/tasks.md, and change-meta.json record the canonical work branch or the explicit reason no branch mutation was valid.
+  - planning/tasks.md and change-meta.json record the canonical work branch or the explicit reason no branch mutation was valid.
   - "`cc-devflow query workflow-context` can derive the next skill, packet digests, default section refs, current task, trusted commands, and deep-open triggers from the frozen artifacts."
   - planning/tasks.md contains the task-template compliance section and script-based completion protocol, and every task block includes its completion command.
-  - task-manifest.json omits retired narrative/protocol mirrors such as `executionProtocol`, `planningMeta.requirementBrief`, `planningMeta.ambiguityGate`, `planningMeta.reviewLoop`, and task-level `completion`; those details belong in `planning/design.md` or `planning/tasks.md`.
+  - task-manifest.json omits retired narrative/protocol mirrors such as `executionProtocol`, `planningMeta.requirementBrief`, `planningMeta.ambiguityGate`, `planningMeta.reviewLoop`, and task-level `completion`; those details belong in `planning/tasks.md`.
   - The task breakdown preserves test-first execution; failing-test tasks precede implementation tasks, refactor checkpoints are visible, and any TDD exception is justified.
   - "Testability decisions make the public seam natural: small interface, deep implementation, injected boundary dependencies, returned results where practical, and boundary mocks only where the system genuinely leaves the repo."
-  - AI Leverage Decision Lens is recorded in planning/design.md and task-manifest.json.planningMeta.aiLeverageDecisionLens before executable tasks are generated.
-  - Project Postmortem Recall Gate is recorded in planning/design.md before executable tasks are generated; relevant lessons have concrete task impacts or explicit no-op reasons.
-  - Required user decisions were asked through numbered decision question IDs with lettered A/B/C options and recorded in `planning/design.md` / `task-manifest.json` instead of left in chat.
-  - The source roadmap item has been synchronized to the frozen planning state, or `planning/design.md` and `change-meta.json` record why no roadmap update is valid.
+  - AI Leverage Decision Lens is recorded in planning/tasks.md and task-manifest.json.planningMeta.aiLeverageDecisionLens before executable tasks are generated.
+  - Project Postmortem Recall Gate is recorded in planning/tasks.md before executable tasks are generated; relevant lessons have concrete task impacts or explicit no-op reasons.
+  - Required user decisions were asked through numbered decision question IDs with lettered A/B/C options and recorded in `planning/tasks.md` / `task-manifest.json` instead of left in chat.
+  - The source roadmap item has been synchronized to the frozen planning state, or `planning/tasks.md` and `change-meta.json` record why no roadmap update is valid.
   - 'Only one next step remains: enter cc-do.'
 reroutes:
   - when: The discussion is still about project direction or stage order instead of one requirement.
@@ -82,7 +77,7 @@ reroutes:
 recovery_modes:
   - name: re-open-design
     when: Execution feedback, review findings, or user correction invalidates the current design contract.
-    action: Return to planning/design.md, reopen the approved decision explicitly, and regenerate tasks only after the design is stable again.
+    action: Return to planning/tasks.md#Contract Summary, reopen the approved decision explicitly, and regenerate machine records only after the contract is stable again.
 tool_budget:
   read_files: 11
   search_steps: 6
@@ -99,13 +94,13 @@ tool_budget:
 
 它的目标不是制造一串 planning 文档，而是把 requirement 压成最少但足够强的交付物，让 `cc-do` 不需要临场补脑。
 
-PRD 的好处要进入 `planning/design.md`，不要变成第 5 个文件。`cc-plan` 必须用用户视角讲清问题和方案，用完整 user stories 覆盖行为面，再把实现决策、测试决策和 out-of-scope 变成 durable handoff。
+PRD 的好处要进入 `planning/tasks.md#Contract Summary`，不要变成第 5 个文件。`cc-plan` 必须用用户视角讲清问题和方案，用完整 user stories 覆盖行为面，再把实现决策、测试决策和 out-of-scope 变成 durable handoff。
 
 ## Runtime Output Policy
 
 写入任何 durable Markdown 或 JSON metadata 前，先运行 `cc-devflow config resolve --format policy`。
 
-- `Output language` 是机器约束，`planning/design.md`、`planning/tasks.md` 和 `change-meta.json` 必须记录并遵守它。
+- `Output language` 是机器约束，`planning/tasks.md` 和 `change-meta.json` 必须记录并遵守它。
 - `agent_preferences` 是用户偏好建议，只影响表达方式和结构选择，不覆盖本 Skill 的工作流边界。
 - 如果配置解析失败，先修配置或向用户说明阻塞，不要用默认语言继续生成正式文档。
 
@@ -113,12 +108,10 @@ PRD 的好处要进入 `planning/design.md`，不要变成第 5 个文件。`cc-
 
 1. `PLAYBOOK.md`
 2. `CHANGELOG.md`
-3. `assets/DESIGN_TEMPLATE.md`
-4. `assets/TINY_DESIGN_TEMPLATE.md`
-5. `assets/TASKS_TEMPLATE.md`
-6. `assets/TASK_MANIFEST_TEMPLATE.json`
-7. `references/planning-contract.md`
-8. `docs/guides/project-postmortem.md`
+3. `assets/TASKS_TEMPLATE.md`
+4. `assets/TASK_MANIFEST_TEMPLATE.json`
+5. `references/planning-contract.md`
+6. `docs/guides/project-postmortem.md`
 
 ## Use This Skill When
 
@@ -135,17 +128,17 @@ PRD 的好处要进入 `planning/design.md`，不要变成第 5 个文件。`cc-
 
 | 现实状态 | 先走什么路径 |
 | --- | --- |
-| 需求还模糊，边界和成功标准都不稳 | `clarify-first`，先补 `planning/design.md` 的问题定义与约束 |
+| 需求还模糊，边界和成功标准都不稳 | `clarify-first`，先补 `planning/tasks.md#Contract Summary` 的问题定义与约束 |
 | 变更很小，但仍需要冻结做法和任务 | `tiny-design` |
 | 跨模块、高风险、会逼执行者二次设计 | `full-design` |
 
 先给出默认 planning 形态，再解释为什么不是另外两种。`cc-plan` 的第一件事不是产出文档，而是压平 planning 密度。
 
-`tiny-design` 只是短设计，不是免设计。再小的变更也必须在 `planning/design.md` 里写清边界、验证和用户批准状态，不能用“太简单”跳过设计 gate。
+`tiny-design` 只是短合同，不是免设计。再小的变更也必须在 `planning/tasks.md#Contract Summary` 里写清边界、验证和用户批准状态，不能用“太简单”跳过设计 gate。
 
 ## Harness Contract
 
-- Allowed actions: clarify scope, compare designs, split over-broad asks into separate planning candidates, freeze decisions, write `planning/design.md`, `planning/tasks.md`, `planning/task-manifest.json`, and `change-meta.json`, then run the final roadmap progress sync for the source RM.
+- Allowed actions: clarify scope, compare designs, split over-broad asks into separate planning candidates, freeze decisions, write `planning/tasks.md`, generate `planning/task-manifest.json` / `change-meta.json`, then run the final roadmap progress sync for the source RM.
 - Forbidden actions: writing production code, splitting planning into new side documents, or emitting tasks before approval.
 - Required evidence: design choices, task boundaries, and verification commands must point back to repo facts or explicit user approval.
 - Reroute rule: if the problem expands to project strategy go back to `roadmap`; if the plan is already frozen move straight to `cc-do`.
@@ -162,7 +155,7 @@ rg -n "<capability|module|error|failure-class|model-risk>" devflow/postmortems
 
 执行规则：
 
-1. 如果 `devflow/postmortems/` 不存在，在 `planning/design.md` 记录 `no-project-postmortems-yet`，继续按 repo 证据规划。
+1. 如果 `devflow/postmortems/` 不存在，在 `planning/tasks.md#Contract Summary` 记录 `no-project-postmortems-yet`，继续按 repo 证据规划。
 2. 先读 `devflow/postmortems/INDEX.md` 和 `principles.md`，只在标签、模块、失败类或模型风险匹配时打开具体 `incidents/*.md`。
 3. 相关尸检必须压成计划影响：scope 收缩、测试缝隙、验证命令、禁止触碰文件、review gate、或明确 no-op。
 4. 原则不能替代事实。原则必须能追溯到 incident 文件或 Git 证据；没有证据的原则只作为提醒，不作为阻塞合同。
@@ -205,7 +198,7 @@ bash .claude/skills/cc-plan/scripts/next-change-key.sh --prefix REQ --descriptio
    - 等于 default branch（`main` / `master` / `origin/HEAD` 指向的分支）：停止并报告 setup blocker；不要在主分支写 planning artifacts。
    - 等于 canonical work branch：继续。
    - 其它分支：只有它已经明确绑定同一个 `changeKey` 时才继续；否则停止并让用户确认是否切换或新开 worktree。
-4. 在 `planning/design.md`、`planning/tasks.md` 和 `change-meta.json` 记录 work branch。没有记录 work branch 的计划不能进入 `cc-do`。
+4. 在 `planning/tasks.md` 和 `change-meta.json` 记录 work branch。没有记录 work branch 的计划不能进入 `cc-do`。
 
 这不是发布前补救动作。`cc-act` 的 detached HEAD rescue 只处理历史遗留；新的 `cc-plan` 必须在入口阶段就把 worktree 绑定到 `REQ/<task>` 或 `FIX/<task>`。
 
@@ -220,36 +213,36 @@ bash .claude/skills/cc-plan/scripts/next-change-key.sh --prefix REQ --descriptio
 5. Explicit over clever：十行人人看懂的实现路径胜过二百行抽象。
 6. Bias toward action：把不确定性压成明确 gate、风险和后续入口，不让计划停在空泛讨论。
 
-自动决策也要留痕：机械选择写进 `planning/design.md` 的 decision log；taste decision 或用户原始方向被挑战时，必须明确标成 `taste decision` / `user challenge`，由用户最后拍板。
+自动决策也要留痕：机械选择写进 `planning/tasks.md#Contract Summary` 的 decision log；taste decision 或用户原始方向被挑战时，必须明确标成 `taste decision` / `user challenge`，由用户最后拍板。
 
 ## Output Model
 
-`cc-plan` 只允许产出 4 个主文件，默认采用“少文档、强文档”的输出模型：
+`cc-plan` 默认只允许产出 3 个主文件，采用“一个强 Markdown + CLI 机器记录”的输出模型：
 
-1. `planning/design.md`
-   - 吸收原来的 clarification / brainstorm / review 结论
-   - 记录 source handoff、PRD-grade requirement brief、问题定义、备选方案、批准方案、设计决策、review gate、执行边界
-2. `planning/tasks.md`
-   - 只保留可执行任务和执行 handoff
+1. `planning/tasks.md`
+   - 唯一默认 human-authored Markdown
+   - `## Contract Summary` 吸收原来的 design / clarification / brainstorm / review 结论
+   - 后续区块只保留可执行任务和 execution handoff
    - 顶部写清 frozen decisions、read first、commands to trust、TDD plan、并行边界、任务模板遵循规则、任务完成脚本
-3. `planning/task-manifest.json`
+2. `planning/task-manifest.json`
    - 从 `planning/tasks.md` 编译出的机器真相源
    - 只服务执行与调度，不再承担人类阅读的叙事职责
    - 只保留版本链、当前任务、任务依赖、触点、验证命令、证据、review 状态和必要 planning gate 结果
-   - 不再镜像 `design.md` 的 PRD brief / ambiguity / review loop，也不再镜像 `tasks.md` 的执行协议或 completion shell 命令
-4. `change-meta.json`
+   - 不再镜像 `tasks.md` 的 Contract Summary、执行协议或 completion shell 命令
+3. `change-meta.json`
    - 绑定 roadmap item、primary capability、secondary capabilities、expected spec delta、spec sync status
    - 作为 `cc-do`、`cc-check`、`cc-act` 的 capability 机器真相源
 
 以下文件不再是 `cc-plan` 的默认交付物：
 
+- `planning/design.md`
 - `CLARIFICATION_REPORT.md`
 - `BRAINSTORM.md`
 - `PLAN_REVIEW.md`
 - `context-package.md`
 - `handoff/resume-index.md`
 
-这些信息如果仍然需要，必须并入 `planning/design.md` 或 `planning/tasks.md`，而不是再拆新文件。
+这些信息如果仍然需要，必须并入 `planning/tasks.md#Contract Summary` 或 task blocks，而不是再拆新文件。历史 `planning/design.md` 只能作为 legacy fallback 或显式迁移输入。
 
 ## Progressive Disclosure
 
@@ -257,8 +250,7 @@ bash .claude/skills/cc-plan/scripts/next-change-key.sh --prefix REQ --descriptio
 
 - 渐进式披露必须能被执行到闭环末端。`planning/tasks.md` 的第一条恢复命令是 `cc-devflow query workflow-context --change <changeId> --change-key <changeKey> --data-only --no-trace --compact`；`cc-do`、`cc-check`、`cc-act` 都把结果当成 context index：先读 `packetOnly`、`mustNotForget` 和 `sourceHashes`，必要时打开 `defaultOpen` refs，再按 `openWhen.conditions` 展开 `deepOpen` 文档。短包负责导航，原文负责裁决。
 - 第一屏必须能回答：这次做什么、不做什么、为什么现在做、当前批准状态、下一步读哪个 task。
-- `planning/design.md` 顶部必须有 progressive disclosure index：默认读 Requirement Snapshot / Approved Direction / Validation / Roadmap Sync；只有遇到范围、信任、外部资料、UI/DX、风险或复盘问题时才展开对应深层区块。
-- `planning/tasks.md` 顶部必须有 progressive disclosure index：默认读 Plan Meta、Execution Handoff、Execution Protocol、当前 task block；只有并行冲突、切片争议或质量审查时才展开 surface map、tracer map 和 Task Quality Bar。
+- `planning/tasks.md` 顶部必须有 progressive disclosure index：默认读 Plan Meta、Contract Summary、Execution Handoff、Execution Protocol、当前 task block；只有并行冲突、切片争议或质量审查时才展开 surface map、tracer map 和 Task Quality Bar。
 - `planning/task-manifest.json` 只做机器索引和执行图，不复制深层说明。它可以告诉执行者当前任务、依赖、触点、命令和证据，但不能把 PRD、review gate、completion protocol 重新展开一遍。
 - 深层信息必须有明确打开条件；如果一段内容没有打开条件，也没有下游消费方，就删掉。
 - 所有 SKILL 都遵守 `docs/guides/artifact-contract.md`：一个状态只能有一个 owner；其它 artifact 只能引用、投影或派生。
@@ -280,7 +272,7 @@ bash .claude/skills/cc-plan/scripts/next-change-key.sh --prefix REQ --descriptio
 - 保留 `currentTaskId`、`tasks[].dependsOn`、`tasks[].parallel`、`tasks[].touches`、`tasks[].run`、`tasks[].checks`、`tasks[].verification`、`tasks[].evidence`、`tasks[].reviews`。
 - 保留 `planningMeta.aiLeverageDecisionLens`、`planningMeta.externalBestPractice`、`planningMeta.decisionQuestions`，因为它们会影响任务能否进入执行。
 - 禁止写入顶层 `status`、`activePhase`、`sourceRoadmap`、`spec`、`executionProtocol`、`planningMeta.requirementBrief`、`planningMeta.ambiguityGate`、`planningMeta.reviewLoop`、`sourceEvidence[]`、`languageAndDecisions`、`executionDiscipline` 和每个 task 的 `completion` 字段。
-- PRD brief、ambiguity gate、bounded review loop、source trust boundary、语言/冲突分类保留在 `planning/design.md`。
+- PRD brief、ambiguity gate、bounded review loop、source trust boundary、语言/冲突分类保留在 `planning/tasks.md#Contract Summary`。
 - ready-task 选择和 completion shell 命令保留在 `planning/tasks.md` 的 `Execution Protocol` 和每个 task block。
 - Roadmap progress 和 capability/spec sync 状态由 `change-meta.json` / `devflow/roadmap.json` 持有，`task-manifest.json` 不复制。
 
@@ -302,9 +294,9 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key
 2. 如果来源于 `roadmap`，必须先定位对应的 `RM-ID`，读清 `devflow/ROADMAP.md` / `devflow/BACKLOG.md` 的版本、证据、约束、success signal、next decision、primary capability、expected spec delta。
 3. 先分配 canonical `REQ-*` / `FIX-*` change key，并执行 Worktree Branch Contract；detached worktree 必须先挂到 `REQ/<task>` 或 `FIX/<task>`，主分支必须停止。
 4. 如果原始需求包含多个可独立交付的子系统，先拆成独立 `RM` 或 `REQ/FIX` 候选；不要在一个 `cc-plan` 里继续追问实现细节。
-5. 先读当前 change 目录现状。旧目录里如果还有 `BRAINSTORM.md` / `PLAN_REVIEW.md` / `context-package.md`，把有效信息吸收进新的 `planning/design.md`，不要继续增殖。
+5. 先读当前 change 目录现状。旧目录里如果还有 `BRAINSTORM.md` / `PLAN_REVIEW.md` / `context-package.md` / `planning/design.md`，把有效信息吸收进新的 `planning/tasks.md#Contract Summary`，不要继续增殖。
 6. 先看代码、文档、测试和最近提交，再谈拆任务。
-7. 先读 cc-devflow 原生项目语言和决策上下文：`devflow/specs/INDEX.md`、相关 capability specs、roadmap/backlog handoff、当前或历史 `planning/design.md` / `planning/analysis.md`、`change-meta.json`；不存在时静默跳过，但发现术语冲突必须写成 blocked question 或 user challenge。
+7. 先读 cc-devflow 原生项目语言和决策上下文：`devflow/specs/INDEX.md`、相关 capability specs、roadmap/backlog handoff、当前或历史 `planning/tasks.md`、legacy `planning/design.md` / `planning/analysis.md`、`change-meta.json`；不存在时静默跳过，但发现术语冲突必须写成 blocked question 或 user challenge。
 8. 先写不做什么，再写做什么。
 
 ## Context Sweep
@@ -314,8 +306,8 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key
 1. 当前对象对应的 `RM-ID`、roadmap version、roadmap skill version
 2. `devflow/ROADMAP.md` / `devflow/BACKLOG.md` 中该事项的阶段来源、证据、dependencies、success signal、kill signal、next decision、capability links
 3. `devflow/specs/INDEX.md` 与相关 capability specs
-4. 项目语言 / 决策上下文：`devflow/specs/INDEX.md`、相关 capability specs、roadmap/backlog handoff、当前或历史 `planning/design.md` / `planning/analysis.md`、`change-meta.json`
-5. 当前 change 目录已有的 `planning/design.md`、`planning/tasks.md`、`planning/task-manifest.json`、`change-meta.json` 与历史 planning 文档
+4. 项目语言 / 决策上下文：`devflow/specs/INDEX.md`、相关 capability specs、roadmap/backlog handoff、当前或历史 `planning/tasks.md`、legacy `planning/design.md` / `planning/analysis.md`、`change-meta.json`
+5. 当前 change 目录已有的 `planning/tasks.md`、`planning/task-manifest.json`、`change-meta.json` 与历史 planning 文档 / legacy `planning/design.md`
 6. `CLAUDE.md`、README、相关 docs / specs / 最近提交
 7. 当前代码、测试、发布、迁移、依赖的现实边界
 8. 测试框架真相源：优先读 `CLAUDE.md` / project docs 的测试约定，再用配置文件和目录结构补证。
@@ -328,7 +320,7 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key
 15. AI Leverage Decision Lens：方案批准前必须判断真实用户 / operator、当前 workaround、human-vs-agent effort、complete-lake boundary、ocean boundary、scope recommendation，以及 verdict：`boil-lake` / `sharp-wedge` / `needs-evidence` / `pivot`。如果 verdict 是 `boil-lake`，不要把计划缩成 timid MVP；如果 verdict 不是 `boil-lake` 或 `sharp-wedge`，不能生成执行任务。
 16. 外部最佳实践验证 gate：内部证据扫完后，判断外部资料是否可能改变方案、测试策略、分发方式、安全边界或 UX/DX 取舍。可能改变时，先用 `Decision Question Protocol` 询问用户是否允许用泛化关键词外部查找；禁止静默搜索，禁止发送项目名、私有需求、客户名、密钥、日志或专有概念。
 17. 如果用户批准外部查找，只搜索泛化类别词，例如 `<problem space> best practices`、`<artifact type> distribution best practices`、`<testing seam> common mistakes`；优先官方文档、标准、成熟项目文档和可信事故复盘。结果只能作为 `external-evidence`，必须写出 conventional wisdom、repo fit、设计影响和 skipped/confirmed/adjusted/contradicted verdict。
-18. 如果用户拒绝或外部查找没有价值，在 `planning/design.md` 和 `task-manifest.json.planningMeta.externalBestPractice` 记录 `declined` 或 `not-needed`，不要把缺失搜索伪装成已验证。
+18. 如果用户拒绝或外部查找没有价值，在 `planning/tasks.md#Contract Summary` 和 `task-manifest.json.planningMeta.externalBestPractice` 记录 `declined` 或 `not-needed`，不要把缺失搜索伪装成已验证。
 19. 生成 PRD-grade requirement brief：`Problem Statement` 和 `Solution` 必须从用户视角写；user stories 要覆盖主要 actor、happy path、错误/恢复、权限/边界、operator/DX 路径；implementation / testing decisions 只写 durable 模块责任、接口契约、行为验收和先例，不写容易腐烂的行号或短期代码片段。
 20. 建模接口可测性：新增或改动 seam 时，判断依赖是注入还是内部创建、结果是返回还是副作用、公共操作是否过多、参数是否过宽、边界 adapter 是否是具体 SDK-style 操作而不是一个需要条件分支 mock 的 generic fetcher。
 21. 行为列表按优先级排成 tracer bullets：每次只让一个可观察行为先红再绿。禁止把一批想象中的测试一次性写完，因为 bulk Red 会把计划绑定到还没学到的实现形状。
@@ -366,7 +358,7 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key
 
 轮次通过标准：
 
-- 每轮都必须落到 `planning/design.md` 的 `Deep Planning Funnel` 表里，状态只能是 `confirmed`、`auto-decided`、`blocked` 或 `not-applicable`。
+- 每轮都必须落到 `planning/tasks.md#Contract Summary` 的 `Deep Planning Funnel` 表里，状态只能是 `confirmed`、`auto-decided`、`blocked` 或 `not-applicable`。
 - `blocked` 不得继续生成任务；只能问一个 blocking question、拆回 roadmap / 多个 REQ/FIX，或记录用户明确接受的 HITL 边界。
 - 如果用户给了“完整方案”，也不能跳过 funnel；改为逐轮审计已有方案，并把通过 / 缺口 / 修正写入 design。
 - 如果连续两轮都暴露新接口、字段、状态机或跨模块决策，自动升级 `full-design`；不要用 `tiny-design` 承载大需求。
@@ -420,7 +412,7 @@ Verdict 规则：
 3. `approach-approval`：需要用户批准 `minimal viable` / `ideal architecture` / `hybrid` 中的推荐方案。
 4. `external-best-practice`：外部最佳实践可能改变设计、验证、分发或风险判断，且不能从 repo evidence 自行闭合。
 5. `taste-or-user-challenge`：推荐方案挑战用户原始方向，或属于品味 / 取舍判断。
-6. `final-design-approval`：`planning/design.md` 已闭合 review gate，准备生成执行任务。
+6. `final-design-approval`：`planning/tasks.md#Contract Summary` 已闭合 review gate，准备生成执行任务。
 
 固定格式：
 
@@ -451,7 +443,7 @@ STOP: wait for the user answer before continuing.
 2. 必须有推荐项，且推荐项标注 `(recommended)`；机械选择可以 auto-decide，但必须写进 decision log。
 3. 如果选项不是覆盖度差异，而是方向差异，`Completeness` 写 `different-kind` 并说明为什么不能打分。
 4. 每个选项都要说清 `Good` 与 `Cost/Risk`。没有代价的确认不是选择，应改为执行说明或 final approval。
-5. 用户回答后，把结果写入 `planning/design.md` 的 `Decision Questions`，并同步到 `task-manifest.json.planningMeta.decisionQuestions`。聊天不是真相源。
+5. 用户回答后，把结果写入 `planning/tasks.md#Contract Summary` 的 `Decision Questions`，并同步到 `task-manifest.json.planningMeta.decisionQuestions`。聊天不是真相源。
 6. 如果连续两个问题都被用户纠正为“你应该能自己判断”，停止追问，回到 evidence sweep，修正问题选择标准。
 
 ## External Best-Practice Validation
@@ -486,23 +478,23 @@ STOP: wait for the user answer before continuing.
 2. 先跑 Deep Planning Funnel；第一版设计推荐必须基于前四轮，任务合同必须基于前六轮。
 3. 澄清时一次只问一个关键问题，不做问题轰炸。
 4. 先写问题、目标、约束、非目标、成功标准，再写方案。
-5. 如果方向仍不稳，给 2-3 个方案，带 trade-off 和推荐，但这些内容都写进 `planning/design.md`。
+5. 如果方向仍不稳，给 2-3 个方案，带 trade-off 和推荐，但这些内容都写进 `planning/tasks.md#Contract Summary`。
    - `full-design` 的方案必须至少包含 `minimal viable` 和 `ideal architecture` 两个角色。
    - 两个角色权重相等；小方案不是默认答案，理想架构也不是默认过度设计。
    - 只有一个方案成立时，必须写清其它方案为何被排除。
    - 用户批准必须走 `Decision Question Protocol`，不能用自由问句代替。
 6. 推荐方案没有得到用户明确批准前，不允许生成 `planning/tasks.md`。
 7. 批准后先判断这次用 `tiny-design` 还是 `full-design`。
-8. 把批准后的唯一方案冻结进 `planning/design.md`。
-9. 在 `planning/design.md` 内完成 review loop 与 final gate，不再额外拆出 `PLAN_REVIEW.md`。
+8. 把批准后的唯一方案冻结进 `planning/tasks.md#Contract Summary`。
+9. 在 `planning/tasks.md#Contract Summary` 内完成 review loop 与 final gate，不再额外拆出 `PLAN_REVIEW.md`。
 10. 只有 design gate 真正通过，才能写 `planning/tasks.md`、`planning/task-manifest.json` 和 `change-meta.json`。
-11. 写任务前，把 Task Contract Round 的每条结论同步到 `planning/tasks.md`、`tasks[].contract` 和 `tasks[].testSeam`；完整 funnel 叙事留在 `planning/design.md`，没有落盘的对话结论不算计划事实。
-12. 退出前执行 Roadmap Sync Gate：用 `locate-roadmap-item.sh` 定位 `RM-ID`，再用 `sync-roadmap-progress.sh` 回写 `status`、`req`、`progress`、capability 和 spec delta；没有源 RM 时必须在 `planning/design.md` 与 `change-meta.json.roadmapSync` 写明 `no-source-rm`。
+11. 写任务前，把 Task Contract Round 的每条结论同步到 `planning/tasks.md`、`tasks[].contract` 和 `tasks[].testSeam`；完整 funnel 叙事留在 `planning/tasks.md#Contract Summary`，没有落盘的对话结论不算计划事实。
+12. 退出前执行 Roadmap Sync Gate：用 `locate-roadmap-item.sh` 定位 `RM-ID`，再用 `sync-roadmap-progress.sh` 回写 `status`、`req`、`progress`、capability 和 spec delta；没有源 RM 时必须在 `planning/tasks.md#Contract Summary` 与 `change-meta.json.roadmapSync` 写明 `no-source-rm`。
 13. 计划完成后，下一步唯一答案是 `cc-do`。
 
 ## Engineering Review Gate
 
-冻结设计前，必须在 `planning/design.md` 内完成一次轻量工程审查：
+冻结设计前，必须在 `planning/tasks.md#Contract Summary` 内完成一次轻量工程审查：
 
 1. Existing leverage map：每个子问题先映射到现有代码、脚本、spec、模板或测试，避免重复造轮子。
 2. Scope challenge：超过 8 个文件、2 个新 service/class、或跨模块连锁时，必须解释为什么不是过度设计。
@@ -554,7 +546,7 @@ STOP: wait for the user answer before continuing.
 7. `planning/task-manifest.json` 必须让 `cc-do` 看出每个任务的 `tddPhase`、依赖、测试质量边界和证据：`red` 任务产出 failing output，`green` 任务产出 passing output 和 minimality guard，`refactor` 任务产出候选坏味道与重跑后的 green evidence。
 8. Test diagram 要同时覆盖 code paths 和 user flows。每条路径标注 `unit` / `integration` / `e2e` / `eval`，并给现有测试质量分级：`strong`、`happy-path-only`、`smoke-only`、`missing`。
 9. 回归测试是硬门槛。只要计划修改既有行为且现有测试没有覆盖，就必须把 regression test 写进 `planning/tasks.md`，不能 defer，不能问用户要不要跳过。
-10. 只有纯文档、纯配置、纯生成文件、throwaway prototype 可以例外。例外必须写进 `planning/design.md` 和 `planning/tasks.md` 的 `TDD exceptions`，包含原因、风险、替代验证命令和后续补证入口。
+10. 只有纯文档、纯配置、纯生成文件、throwaway prototype 可以例外。例外必须写进 `planning/tasks.md` 的 `TDD exceptions`，包含原因、风险、替代验证命令和后续补证入口。
 11. 并行只允许发生在已经满足上游 Red/Green 依赖之后。两个 `[P]` 任务如果共享同一个红灯或同一组 touched files，就不能并行。
 12. 如果当前需求找不到第一条失败测试，先把它写成 blocked question 或 exploratory spike，不准伪装成可执行实现任务。
 13. 每条垂直切片必须标注 `AFK` 或 `HITL`：`AFK` 代表执行者可在现有合同下独立完成并验证；`HITL` 代表仍需要用户判断、外部权限、设计取舍或人工验收。默认拆到可 `AFK`，只有证据证明必须人工参与时才保留 `HITL`。
@@ -562,7 +554,7 @@ STOP: wait for the user answer before continuing.
 
 ## Design Modes
 
-`cc-plan` 永远保留 `planning/design.md`，但允许两种密度：
+`cc-plan` 永远保留 `planning/tasks.md#Contract Summary`，但允许两种密度：
 
 - `tiny-design`：超小需求的冻结设计卡片
 - `full-design`：需要完整架构说明的正式设计
@@ -585,7 +577,7 @@ STOP: wait for the user answer before continuing.
 
 ## Review Loop
 
-`planning/design.md` 内至少完成这些 review 结论：
+`planning/tasks.md#Contract Summary` 内至少完成这些 review 结论：
 
 1. Placeholder scan：不能留下 TBD / TODO / 之后再补
 2. Consistency scan：目标、方案、任务、验证口径不能互相打架
@@ -614,22 +606,22 @@ STOP: wait for the user answer before continuing.
 25. Roadmap sync scan：`change-meta.json.sourceRoadmap`、`devflow/roadmap.json`、`devflow/ROADMAP.md` 和 optional `devflow/BACKLOG.md` 是否同一套 RM / REQ / progress 现实。
 26. Final gate：明确 auto-decided items、taste decisions、user challenges 和最终 recommendation
 
-如果有 UI / interaction 明显范围，在 `planning/design.md` 里补 design completeness score 和状态覆盖表。
-如果有 API / CLI / developer-facing / operator-facing scope，在 `planning/design.md` 里补 target persona、time to first value、magic moment 和 DX / operator review 结论。
+如果有 UI / interaction 明显范围，在 `planning/tasks.md#Contract Summary` 里补 design completeness score 和状态覆盖表。
+如果有 API / CLI / developer-facing / operator-facing scope，在 `planning/tasks.md#Contract Summary` 里补 target persona、time to first value、magic moment 和 DX / operator review 结论。
 
 ## Good Output
 
-- `planning/design.md` 一份就讲清：为什么做、做什么、不做什么、备选方案、批准方案、设计模式、风险、review gate、执行边界
-- `planning/design.md` 必须包含 Deep Planning Funnel：requirement reality、system shape、interface/data contract、abstraction/encapsulation、execution architecture、task contract、final approval；任何会影响 `cc-do` 的确认都必须落盘
-- `planning/design.md` 必须包含 PRD-grade requirement brief：用户视角的问题和方案、覆盖完整行为面的 user stories、durable implementation decisions、behavior-first testing decisions、out-of-scope 和 further notes
-- `planning/design.md` 必须使用项目 canonical language，记录相关 capability spec / roadmap decision 冲突，并说明新增接口如何保持小接口深模块
-- `planning/design.md` 必须说明接口为什么可测：依赖注入、可断言返回、系统边界 adapter 形状、以及为什么测试不需要 mock 内部协作者
-- `planning/design.md` 必须暴露 assumptions preview、ambiguity gate、source trust boundary、external best-practice validation、external conflict buckets 和 bounded review loop；这些是阻止模糊需求进入执行期的合同，不是可选美化项
+- `planning/tasks.md#Contract Summary` 一份就讲清：为什么做、做什么、不做什么、备选方案、批准方案、设计模式、风险、review gate、执行边界
+- `planning/tasks.md#Contract Summary` 必须包含 Deep Planning Funnel：requirement reality、system shape、interface/data contract、abstraction/encapsulation、execution architecture、task contract、final approval；任何会影响 `cc-do` 的确认都必须落盘
+- `planning/tasks.md#Contract Summary` 必须包含 PRD-grade requirement brief：用户视角的问题和方案、覆盖完整行为面的 user stories、durable implementation decisions、behavior-first testing decisions、out-of-scope 和 further notes
+- `planning/tasks.md#Contract Summary` 必须使用项目 canonical language，记录相关 capability spec / roadmap decision 冲突，并说明新增接口如何保持小接口深模块
+- `planning/tasks.md#Contract Summary` 必须说明接口为什么可测：依赖注入、可断言返回、系统边界 adapter 形状、以及为什么测试不需要 mock 内部协作者
+- `planning/tasks.md#Contract Summary` 必须暴露 assumptions preview、ambiguity gate、source trust boundary、external best-practice validation、external conflict buckets 和 bounded review loop；这些是阻止模糊需求进入执行期的合同，不是可选美化项
 - `planning/tasks.md` 只保留能直接执行的任务和 handoff，不再承载重复背景介绍；行为变更默认拆成 tracer bullet 形式的 `[TEST] -> [IMPL] -> [REFACTOR]`，且 Red task 明确 spec-style test name、单一行为、公共 seam、行为断言、mock 边界和反馈循环
 - `planning/tasks.md` 必须把 `assets/TASKS_TEMPLATE.md` 的任务字段实例化到每个 task；不能只生成标题清单，也不能让 ClaudeCode / Codex 靠猜测补字段
 - `planning/tasks.md` 的每个 task 必须携带 task contract：source funnel rounds、user story / edge story、文件职责、方法或接口、关键字段、输入输出、失败路径、do-not-re-decide、artifact updates、验证命令、完成脚本；否则前面的追问等于没问
 - `planning/tasks.md` 必须写出任务完成脚本，要求执行者完成每个 task 后调用 `mark-task-complete.sh`，禁止手动勾选或漏标
-- `planning/task-manifest.json` 是 `cc-do` 的机器真相源，只写执行图和必要 gate：版本链、`currentTaskId`、`dependsOn`、`parallel`、触点、run/check/verification/evidence、review 状态、`tddPhase`、`verticalSlice`、task contract、test seam、feedback loop，以及会阻塞执行的 AI leverage / external-best-practice / decision-question 结果；roadmap/spec 状态归 `change-meta.json` 和 `devflow/roadmap.json`，PRD brief、deep planning funnel、ambiguity、review loop、source trust、completion 命令留在 `planning/design.md` 或 `planning/tasks.md`
+- `planning/task-manifest.json` 是 `cc-do` 的机器真相源，只写执行图和必要 gate：版本链、`currentTaskId`、`dependsOn`、`parallel`、触点、run/check/verification/evidence、review 状态、`tddPhase`、`verticalSlice`、task contract、test seam、feedback loop，以及会阻塞执行的 AI leverage / external-best-practice / decision-question 结果；roadmap/spec 状态归 `change-meta.json` 和 `devflow/roadmap.json`，PRD brief、deep planning funnel、ambiguity、review loop、source trust、completion 命令留在 `planning/tasks.md`
 - `change-meta.json` 是 capability 真相源，要写清这次 change 准备如何改变长期 spec
 - roadmap sync 不是聊天提醒：如果 source RM 存在，必须更新 `devflow/roadmap.json` 并重新生成 `devflow/ROADMAP.md` / `devflow/BACKLOG.md`；如果不存在，必须记录 no-op reason
 - 看完第一屏，执行者就知道这次属于 `tiny-design` 还是 `full-design`，以及为什么
@@ -637,10 +629,10 @@ STOP: wait for the user answer before continuing.
 ## Bundled Resources
 
 - 变更记录：`CHANGELOG.md`
-- 模板：`assets/DESIGN_TEMPLATE.md`
-- 模板：`assets/TINY_DESIGN_TEMPLATE.md`
 - 模板：`assets/TASKS_TEMPLATE.md`
 - 模板：`assets/TASK_MANIFEST_TEMPLATE.json`
+- legacy 模板：`assets/legacy/DESIGN_TEMPLATE.md`
+- legacy 模板：`assets/legacy/TINY_DESIGN_TEMPLATE.md`
 - 任务解析：`scripts/parse-task-dependencies.js`
 - 范围检查：`scripts/validate-scope.sh`
 - 下一编号分配：`scripts/next-change-key.sh`
@@ -654,14 +646,14 @@ STOP: wait for the user answer before continuing.
 1. 没有证据时写 assumption，不准冒充事实。
 2. 一次只推进一个关键未知点。
 3. 旧文档里的有效信息要吸收，不要复制粘贴出新文件。
-4. PRD 思路必须吸收进 `planning/design.md`，不要产出独立 `PRD.md`；除非用户明确要求发布到外部 issue tracker。
-5. `planning/design.md` 和 `planning/tasks.md` 必须足够让 `cc-do` 在不继承当前会话的前提下继续工作。
+4. PRD 思路必须吸收进 `planning/tasks.md#Contract Summary`，不要产出独立 `PRD.md`；除非用户明确要求发布到外部 issue tracker。
+5. `planning/tasks.md` 必须足够让 `cc-do` 在不继承当前会话的前提下继续工作。
 6. 版本、来源、冻结决策必须可追踪。
 7. 任务少而硬，胜过任务多而虚。
 8. 具体计划默认测试先行；没有 Red/Green/Refactor 或 TDD exception，就不能进入 `cc-do`。
 9. 任务必须是端到端可验证的垂直切片；除非是纯重构，否则不要按“先改模型、再改服务、最后改 UI”的水平层次拆。
 10. 任务一旦超过 2-5 分钟粒度就继续拆，直到可以稳定交给执行者。
-11. 三层以上判断说明设计还没压平，应回到 `planning/design.md` 继续简化。
+11. 三层以上判断说明设计还没压平，应回到 `planning/tasks.md#Contract Summary` 继续简化。
 12. `tiny-design` 不得被当成“免审批”；只要要写任务，就必须先有已批准的设计卡片。
 13. Roadmap 相关文件以 `devflow/roadmap.json` 为真相源，`devflow/ROADMAP.md` / `devflow/BACKLOG.md` 只是投影；不要再写旧式 `devflow/roadmap/*` 路径。
 14. 一个 `REQ` / `FIX` 对应一个 canonical work branch；新 planning 不在 `main` 上落盘，不把 detached worktree 留到 `cc-act` 才补救。
@@ -669,11 +661,11 @@ STOP: wait for the user answer before continuing.
 ## Exit Criteria
 
 - 范围边界清楚
-- 上游 roadmap handoff 已被显式装进 `planning/design.md`
+- 上游 roadmap handoff 已被显式装进 `planning/tasks.md#Contract Summary`
 - Roadmap Sync Gate 已闭合：source RM 已回写为当前 `REQ/FIX` 的 planning-ready 状态，或 no-op reason 已落盘
 - 成功标准可验证
 - 推荐方案已被批准
-- review gate 已在 `planning/design.md` 里闭合
+- review gate 已在 `planning/tasks.md#Contract Summary` 里闭合
 - 任务顺序没有歧义
 - 测试先行顺序没有歧义，TDD exception 已显式写清
 - `cc-do` 不需要再靠会话记忆恢复背景

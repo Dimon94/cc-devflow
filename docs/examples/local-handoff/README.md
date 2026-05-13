@@ -4,7 +4,7 @@
 
 - Example version: `1.0.0`
 - Last reviewed: `2026-04-17`
-- Bound skills: `cc-roadmap@5.3.0`, `cc-plan@3.8.7`, `cc-do@1.6.6`, `cc-check@1.10.2`, `cc-act@1.8.8`
+- Bound skills: `cc-roadmap@5.3.0`, `cc-plan@3.9.0`, `cc-do@1.6.6`, `cc-check@1.11.1`, `cc-act@1.8.8`
 
 This example shows verified work that is **ready to move forward**, but `cc-act` still chooses `local-handoff`.
 
@@ -39,8 +39,8 @@ But the current environment is local-only:
 - `roadmap.json` (editable roadmap truth)
 - `ROADMAP.md` (generated view)
 - `BACKLOG.md` (deprecated projection)
-- `changes/REQ-003-audit-log-export/planning/design.md`
 - `changes/REQ-003-audit-log-export/planning/tasks.md`
+- `changes/REQ-003-audit-log-export/planning/design.md` (legacy fallback sample)
 - `changes/REQ-003-audit-log-export/planning/task-manifest.json`
 - `changes/REQ-003-audit-log-export/review/report-card.json`
 - `changes/REQ-003-audit-log-export/handoff/resume-index.md`

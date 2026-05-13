@@ -31,7 +31,7 @@
     {
       "claim": "requirements-met",
       "requiredProof": "line-by-line planning/tasks.md and task-manifest.json checklist",
-      "commandOrArtifact": "planning/design.md + planning/task-manifest.json",
+      "commandOrArtifact": "planning/tasks.md#Contract Summary + planning/task-manifest.json",
       "exitStatus": null,
       "keyObservation": "duplicate-email and seat-limit semantics are still underspecified",
       "status": "blocked"
@@ -129,7 +129,7 @@
       "reviewPacket": {
         "baseSha": "example-base",
         "headSha": "example-head",
-        "requirements": "planning/design.md",
+        "requirements": "planning/tasks.md#Contract Summary",
         "implemented": "bulk invite import implementation",
         "reviewerContext": "requirement diff, plan completion, scope drift, docs staleness"
       },
@@ -140,7 +140,7 @@
           "confidence": "high",
           "source": "diff-review",
           "summary": "duplicate-email behavior is still underspecified",
-          "evidence": "planning/design.md does not freeze row-level duplicate semantics",
+          "evidence": "planning/tasks.md#Contract Summary does not freeze row-level duplicate semantics",
           "action": "reroute-cc-plan",
           "triageStatus": "clarification-needed",
           "confidenceScore": 9,
@@ -153,7 +153,7 @@
           "confidence": "high",
           "source": "diff-review",
           "summary": "seat-limit partial-failure semantics are not frozen in design.md",
-          "evidence": "planning/design.md lacks accepted row-outcome matrix",
+          "evidence": "planning/tasks.md#Contract Summary lacks accepted row-outcome matrix",
           "action": "reroute-cc-plan",
           "triageStatus": "clarification-needed",
           "confidenceScore": 9,
