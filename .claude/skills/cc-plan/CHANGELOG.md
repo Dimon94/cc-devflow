@@ -1,5 +1,11 @@
 # CC-Plan Skill Changelog
 
+## v3.10.2 - 2026-05-14
+
+- restore the planning flow that was over-pruned during artifact minimization: requirement reality, system shape, interface/data contract, abstraction boundary, execution architecture, task contract, and final approval
+- keep decision questions, option comparison, PRD/user-story thinking, and engineering review inside `task.md#Contract Summary` instead of reviving separate process files
+- update the task template and planning contract so `cc-plan` remains artifact-light but still guides multi-round planning
+
 ## v3.10.1 - 2026-05-13
 
 - simplify the planning artifact contract to `task.md` plus Git history

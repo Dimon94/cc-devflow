@@ -20,8 +20,56 @@ Goal:
 Do Not Do:
 -
 
+Source Handoff:
+- Roadmap / issue / user source:
+- Repo evidence read:
+- Existing leverage:
+- Canonical language:
+
+Requirement Reality:
+- User / operator:
+- Status quo workaround:
+- Most painful failure:
+- Smallest success signal:
+- Non-goals:
+
+Decision Questions:
+| ID | Decision | Evidence | Choice | Impact |
+|----|----------|----------|--------|--------|
+| D1 |  |  |  |  |
+
+Planning Flow:
+| Round | Status | Evidence / decision | Opens task? |
+|-------|--------|---------------------|-------------|
+| Requirement Reality | confirmed |  |  |
+| System Shape | confirmed |  |  |
+| Interface / Data Contract | confirmed |  |  |
+| Abstraction Boundary | confirmed |  |  |
+| Execution Architecture | confirmed |  |  |
+| Task Contract | confirmed |  |  |
+| Final Approval | confirmed |  | yes |
+
+Options:
+- Minimal viable:
+- Ideal architecture:
+- Recommended:
+- Why not the other option:
+
 Approved Direction:
 -
+
+User Stories:
+| ID | Actor | Story | Acceptance | Edge / recovery |
+|----|-------|-------|------------|-----------------|
+| US-001 |  |  |  |  |
+
+Engineering Review Gate:
+- Existing leverage map:
+- Scope challenge:
+- Interface depth:
+- Test seam:
+- Mock boundary:
+- Feedback loop:
 
 Acceptance:
 -

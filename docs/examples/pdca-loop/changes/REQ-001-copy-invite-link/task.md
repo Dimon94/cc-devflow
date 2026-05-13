@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-001.v1`
 - Design version: `design.v1`
-- CC-Plan skill version: `3.10.1`
+- CC-Plan skill version: `3.10.2`
 - Work branch: `REQ/001-copy-invite-link`
 - Source roadmap item: `RM-001`
 - Source roadmap version: `roadmap.v1`
