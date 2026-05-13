@@ -139,8 +139,8 @@ That should already tell you:
 
 `devflow/changes/<change>/` should stay lean.
 
-- Durable truth only: `task.md`, optional `handoff/pr-brief.md`, and incident postmortem files when a real recurring failure needs one. Do not generate task `context.md`, `checkpoint.json`, review ledgers, status/resume files, release notes, principle files, or AI-written process files.
-- Workflow state is Git-owned: keep `task.md`, commit each completed stage, and do not create process JSON.
+- Durable truth only: `task.md`, optional `handoff/pr-brief.md`, and incident postmortem files when a real recurring failure needs one. Do not generate process files.
+- Workflow state is Git-owned: keep `task.md` current and commit each completed stage.
 - Legacy `planning/design.md`, `planning/analysis.md`, and `cc-review-*.md` are readable fallback inputs for older examples, not new default writes.
 - Runtime scratch belongs in `devflow/workspaces/<change>/`, not beside the durable record.
 

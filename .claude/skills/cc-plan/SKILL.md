@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.10.0
+version: 3.10.1
 description: Use when a requirement, roadmap item, or bug needs scope clarification, design decisions, and executable task breakdown before coding starts.
 triggers:
   - 帮我规划这个需求
@@ -33,7 +33,7 @@ entry_gate:
 exit_criteria:
   - "`task.md#Contract Summary` states the approved solution, non-goals, frozen decisions, work branch, verification expectations, and open assumptions."
   - "`task.md` contains executable task blocks generated from `assets/TASKS_TEMPLATE.md`."
-  - "No process JSON, design side-doc, review ledger, status file, resume file, or principles file is created."
+  - "No process file is created beyond `task.md`."
   - "Source roadmap progress is synced or explicitly skipped in the final response."
   - "Plan-stage changes are committed to Git before handing off to `cc-do`."
 reroutes:
@@ -53,7 +53,7 @@ tool_budget:
 
 - `devflow/changes/<change-key>/task.md`
 
-不要生成 `process JSON`、`planning/design.md`、review 文件、status 文件、resume 文件或原则文件。Git commit 是阶段历史，`task.md` 是任务真相。
+不要生成额外过程文件或 JSON 文档。Git commit 是阶段历史，`task.md` 是任务真相。
 
 ## Operating Contract
 

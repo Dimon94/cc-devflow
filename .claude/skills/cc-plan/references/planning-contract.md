@@ -5,7 +5,7 @@
 1. `cc-plan` writes only `task.md`.
 2. Git commit records Plan completion.
 3. Clarification, approval, review notes, and execution protocol live inside `task.md`.
-4. No process JSON, design side-doc, status file, resume file, review file, or principles file.
+4. No process file beyond `task.md`.
 5. New change keys come from `cc-devflow next-change-key`.
 6. Branch binds to the full change key before durable output.
 7. User decisions that affect scope, design, or verification are written into `task.md#Contract Summary`.

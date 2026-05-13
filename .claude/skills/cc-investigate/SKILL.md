@@ -1,6 +1,6 @@
 ---
 name: cc-investigate
-version: 1.6.0
+version: 1.6.1
 description: Use when a bug, regression, broken task, or unexpected behavior needs root-cause investigation before coding resumes.
 triggers:
   - 帮我查这个 bug
@@ -33,7 +33,7 @@ entry_gate:
 exit_criteria:
   - "`task.md#Root Cause Contract` proves symptom site, first bad state, violated contract, original trigger, counterfactual proof, and escape reason."
   - "`task.md` contains the repair tasks needed by `cc-do`."
-  - "No process JSON, analysis side-doc, review ledger, status file, resume file, or principles file is created."
+  - "No process file is created beyond `task.md`."
   - "Source roadmap progress is synced or explicitly skipped in the final response."
   - "Investigate-stage changes are committed to Git before handing off to `cc-do`."
 reroutes:
@@ -57,7 +57,7 @@ tool_budget:
 
 - `devflow/changes/<change-key>/task.md`
 
-不要生成 `process JSON`、`planning/analysis.md`、review 文件、status 文件、resume 文件或原则文件。Git commit 是阶段历史，`task.md` 是根因合同。
+不要生成额外过程文件或 JSON 文档。Git commit 是阶段历史，`task.md` 是根因合同。
 
 ## Iron Law
 

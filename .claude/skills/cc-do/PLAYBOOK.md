@@ -26,7 +26,7 @@ Recover from Git and `task.md`:
 - completed checkboxes
 - next unchecked task
 
-Do not recover from JSON state, event logs, checkpoints, or resume files.
+Do not recover from process files. Only `task.md`, Git, and current repo truth count.
 
 ## Commit Rule
 

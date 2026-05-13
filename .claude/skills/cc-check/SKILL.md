@@ -1,6 +1,6 @@
 ---
 name: cc-check
-version: 1.12.0
+version: 1.12.1
 description: Use when a planned or investigated change needs fresh verification evidence and an honest pass/fail/blocked verdict before cc-act.
 triggers:
   - 验收这个需求
@@ -28,7 +28,7 @@ entry_gate:
   - Resolve the CLI with `../cc-dev/scripts/resolve-cc-devflow.sh require query workflow-context` when workflow query is needed; unsupported CLIs are blockers.
   - Read `task.md`, current Git diff, relevant code/tests, PR text when present, and fresh command output.
   - Re-run fresh commands instead of inheriting cc-do narration.
-  - Do not create report cards, review ledgers, findings JSON, or any other process file.
+  - Do not create process files.
 exit_criteria:
   - Verdict is exactly pass, fail, or blocked.
   - Every passing statement cites fresh command output, exit status, and what claim it proves.
@@ -60,7 +60,7 @@ tool_budget:
 
 `cc-check` 是 PDCA / IDCA 的验证节点。它把“应该好了”变成“证据表明它好了”。
 
-它不写 report card，不维护流程 JSON。验证事实进入当前回复、PR 文件和 Git commit。
+它不写过程文件。验证事实进入当前回复、PR 文件和 Git commit。
 
 ## Iron Law
 
@@ -82,11 +82,9 @@ NO PASS WITHOUT FRESH EVIDENCE
 
 ## Output
 
-Report:
+只输出短结论，不写过程文件：
 
-- verdict
-- commands run and exit status
-- key observations
-- requirement coverage
-- residual risk
-- next route
+- Verdict: `pass` / `fail` / `blocked`
+- Evidence: command, exit status, and the claim it proves
+- Review: clean, findings remain, or not reviewed
+- Route: `cc-act` / `cc-do` / `cc-investigate` / `cc-plan` / `stop`

@@ -1,5 +1,10 @@
 # CC-Plan Skill Changelog
 
+## v3.10.1 - 2026-05-13
+
+- simplify the planning artifact contract to `task.md` plus Git history
+- remove old process-file filename lists from entry gates, playbook rules, and task templates
+
 ## v3.9.4 - 2026-05-13
 
 - require task blocks to be written directly from `assets/TASKS_TEMPLATE.md`; shorthand TODO tasks are invalid and rejected before machine JSON generation

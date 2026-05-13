@@ -1,5 +1,10 @@
 # CC-Act Skill Changelog
 
+## v1.9.1 - 2026-05-13
+
+- simplify closeout rules so `cc-act` names only the allowed durable outputs and bans extra process files as a class
+- remove old release/status/resume/report/ledger filename lists from the default ship contract
+
 ## v1.8.11 - 2026-05-13
 
 - collapse `cc-act` delivery material into a single default `handoff/pr-brief.md` file

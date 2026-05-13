@@ -13,7 +13,7 @@
 1. Reproduce before guessing.
 2. Prove first bad state before naming root cause.
 3. Write only `task.md`; Git records the stage.
-4. No JSON state, debug diary, status file, resume file, review ledger, or principles file.
+4. No process file beyond `task.md`.
 5. Reroute instead of mixing feature planning into bug investigation.
 
 ## Investigation Modes

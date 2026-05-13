@@ -1,5 +1,10 @@
 # CC-Investigate Skill Changelog
 
+## v1.6.1 - 2026-05-13
+
+- simplify the investigation artifact contract to `task.md` plus Git history
+- remove legacy process-file filename lists from the root-cause handoff rules
+
 ## v1.5.3 - 2026-05-13
 
 - require repair task blocks to be written directly from `assets/TASKS_TEMPLATE.md`; shorthand TODO tasks are invalid and rejected before machine JSON generation

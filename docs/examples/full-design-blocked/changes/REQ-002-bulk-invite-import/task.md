@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-002.v2`
 - Design version: `design.v2`
-- CC-Plan skill version: `3.10.0`
+- CC-Plan skill version: `3.10.1`
 - Work branch: `REQ/002-bulk-invite-import`
 - Source roadmap item: `RM-010`
 - Source roadmap version: `roadmap.v2`
@@ -48,7 +48,7 @@ ClaudeCode / Codex 执行本计划时，必须把本文件当成任务模板合�
 - Task selection: use `scripts/select-ready-tasks.sh --tasks devflow/changes/<change-key>/task.md`.
 - Task block rule: read the full task block before coding; title-only execution is invalid.
 - Completion rule: after verification and review gates pass, run `scripts/mark-task-complete.sh --tasks devflow/changes/<change-key>/task.md --task <task-id>`.
-- Runtime file ban: do not generate process files. No manifest, change metadata, review ledger, report card, status file, checkpoint, or context package.
+- Runtime file ban: do not generate process files beyond this `task.md`.
 
 ```bash
 DEVFLOW=".claude/skills/cc-dev/scripts/resolve-cc-devflow.sh"

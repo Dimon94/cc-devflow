@@ -1,6 +1,6 @@
 # Review Contract
 
-`cc-check` verifies fresh reality. It does not read or write review process files.
+`cc-check` verifies fresh reality. It does not read or write process files.
 
 ## Minimum Review Facts
 
@@ -18,4 +18,4 @@ Use current evidence:
 - Unfixed important findings route to `cc-do`.
 - Missing behavior evidence is `blocked`, not `pass`.
 - Stale command output is ignored.
-- Review facts belong in the response, PR brief, or Git commits, not in JSON/JSONL/Markdown process files.
+- Review facts belong in the response, PR brief, or Git commits, not in process files.

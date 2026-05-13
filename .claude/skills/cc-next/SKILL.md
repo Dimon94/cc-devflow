@@ -1,6 +1,6 @@
 ---
 name: cc-next
-version: 1.1.0
+version: 1.1.1
 description: Use when you need to pick the next ready work item from roadmap truth, active changes, and remote issues, then produce one Goal Packet for cc-dev.
 triggers:
   - 选下一个需求
@@ -59,7 +59,7 @@ tool_budget:
 - `handoff/pr-brief.md` if PR/handoff already exists
 - GitHub issue truth when issues are in scope
 
-不要读取或依赖 process JSON、verification report、review ledger、status、resume、release note 或 principles。
+不要读取或依赖过程文件；只用 roadmap、`task.md`、Git、PR/handoff 现实和 issue 真相。
 
 ## Active Change Classes
 

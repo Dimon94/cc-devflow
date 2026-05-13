@@ -4,7 +4,7 @@
 
 - Example version: `1.0.0`
 - Last reviewed: `2026-04-17`
-- Bound skills: `cc-roadmap@5.3.0`, `cc-plan@3.10.0`, `cc-do@1.7.0`, `cc-check@1.12.0`, `cc-act@1.9.0`
+- Bound skills: `cc-roadmap@5.3.0`, `cc-plan@3.10.1`, `cc-do@1.7.1`, `cc-check@1.12.1`, `cc-act@1.9.1`
 
 This example shows verified work that is **ready to move forward**, but `cc-act` still chooses `local-handoff`.
 
@@ -50,4 +50,4 @@ That mode still needs one durable PR/handoff file:
 
 - `handoff/pr-brief.md`
 
-It does **not** require status, resume, release-note, ledger, or JSON process files.
+It does **not** require process files.

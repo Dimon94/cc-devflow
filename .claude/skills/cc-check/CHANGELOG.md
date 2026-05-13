@@ -1,5 +1,11 @@
 # CC-Check Skill Changelog
 
+## v1.12.1 - 2026-05-13
+
+- compress the visible output contract to `Verdict / Evidence / Review / Route`
+- explicitly forbid `review/report-card.json`, JSON, Markdown reports, and other process files
+- keep review and reroute conclusions in the current response instead of durable process documents
+
 ## v1.11.4 - 2026-05-13
 
 - require the shared `resolve-cc-devflow.sh` CLI resolver before reading workflow context or review truth

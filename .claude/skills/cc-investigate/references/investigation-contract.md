@@ -26,7 +26,7 @@
 - `task.md#Root Cause Contract` is the human truth.
 - `task.md` task blocks are the repair handoff.
 - Git commit records Investigate completion.
-- No process JSON or side-docs.
+- No process file beyond `task.md`.
 
 ## Reroute
 

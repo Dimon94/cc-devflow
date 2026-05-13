@@ -1,6 +1,6 @@
 ---
 name: cc-simplify
-version: 1.4.1
+version: 1.4.2
 description: "Use when changed code needs an automatic subagent-backed simplification pass for scope drift, reuse, code quality, efficiency, test quality, and confidence-gated smell fixes before cc-check or cc-act."
 reads:
   - devflow/changes/<change-key>/task.md
@@ -60,7 +60,7 @@ ONLY FIX CONFIRMED SMELLS. DO NOT BEAUTIFY BY GUESS.
 - 不依赖 repo-local `.codex/agents/*.toml` 自定义 agent 名称来完成核心流程。自定义 agent 可以作为增强，但主流程必须能依赖 Codex 内置 `explorer` / `default` 或宿主内置 subAgent 机制。
 - 只把只读评审交给智能体；主线程负责最终判断和实际编辑。
 - 每个智能体拿到同一份完整 diff、相关任务/设计/spec 路径、当前 repo 根目录。
-- 智能体不能改文件，只输出结构化 findings。
+- 智能体不能改文件，只输出短 findings；不要写报告文件。
 - 如果当前运行时没有子智能体工具，或工具调用被上层策略禁止，主线程按同样清单顺序执行，并在报告里写 `Agents used: no (subagent tool unavailable)`；不要伪造子智能体结果。
 - 小 diff 也要尝试启动子智能体；如果资源或宿主限制不适合三路并行，至少启动一个合并维度的只读 reviewer。
 - 条件 specialist 只在对应 scope 出现时启用；不要为了“完整”启动无关评审。
@@ -76,22 +76,17 @@ ONLY FIX CONFIRMED SMELLS. DO NOT BEAUTIFY BY GUESS.
 ```text
 你是 cc-simplify 的只读评审智能体。不要编辑文件。
 输入：repo root、完整 diff、相关任务/spec 路径、你的评审维度。
-输出：每行一个 JSON finding；没有发现时只输出 NO FINDINGS。
+输出：每行一个 finding；没有发现时只输出 NO FINDINGS。
 没有证据的猜测不要输出为 finding。
 ```
 
-Finding JSONL schema：
+Finding line shape:
 
-```json
-{"severity":"critical|important|minor","confidence":8,"path":"file","line":12,"category":"reuse|scope|quality|efficiency|testing|security|api-contract|release","summary":"...","evidence":"...","fix":"...","fingerprint":"file:12:category","specialist":"name","test_stub":"optional"}
+```text
+severity | confidence | file:line | category | evidence | fix | route
 ```
 
-字段要求：
-
-- 必填：`severity`、`confidence`、`path`、`category`、`summary`、`evidence`、`fix`、`specialist`
-- 可选：`line`、`fingerprint`、`test_stub`
-- `confidence` 用 1-10；低于 5 的 finding 不能进入自动修复列表。
-- `test_stub` 只给能用一个小测试抓住的问题；架构判断不要伪造测试。
+字段要求：`severity`、`confidence`、`file:line`、`category`、`evidence`、`fix`、`route`。`confidence` 用 1-10；低于 5 的 finding 不能进入自动修复列表。
 
 ### 推荐三个智能体
 
@@ -136,7 +131,7 @@ Finding JSONL schema：
 2. 热路径膨胀：启动、请求、渲染、轮询、事件处理里新增阻塞工作。
 3. 重复 IO / 网络 / API 调用、N+1、整文件读取但只需要局部数据。
 4. missed concurrency：互不依赖的读文件、搜索、请求、验证命令被串行执行。
-5. recurring no-op update：轮询或 reducer 明明没有变化却通知下游。
+5. redundant update：轮询或 reducer 明明没有变化却通知下游。
 6. TOCTOU：先检查文件存在再操作；应直接操作并处理错误。
 7. 内存和生命周期：无界数组/map/cache、listener 未清理、timer 未释放。
 8. 测试坏味道：
@@ -162,13 +157,13 @@ Finding JSONL schema：
 
 ## Phase 3: 汇总和去重 findings
 
-先解析 JSONL；非 JSON 行丢弃，`NO FINDINGS` 表示该 source 没有发现。
+先解析 finding lines；`NO FINDINGS` 表示该 source 没有发现。无法定位文件、证据或修复路径的行丢弃。
 
 Fingerprint 规则：
 
-1. 优先使用 finding 自带 `fingerprint`。
-2. 否则用 `{path}:{line}:{category}`。
-3. 没有 `line` 时用 `{path}:{category}:{summary}`。
+1. 优先用 `{file}:{line}:{category}`。
+2. 没有 `line` 时用 `{file}:{category}:{evidence}`。
+3. 证据相同、修复相同的 finding 合并。
 
 同一 fingerprint 的 finding 合并：
 
@@ -293,7 +288,7 @@ Decision：
 - Verification run:
 - Next step: `cc-check` / `cc-act` / `cc-plan` / `cc-investigate`
 
-如果 `cc-simplify` 修改了代码或验证口径，下一步必须回 `cc-check`，不能带旧 verification report 继续 `cc-act`。
+如果 `cc-simplify` 修改了代码或验证口径，下一步必须回 `cc-check`，不能带旧验证结论继续 `cc-act`。
 
 ## Do Not
 

@@ -1,5 +1,10 @@
 # CC-Do Skill Changelog
 
+## v1.7.1 - 2026-05-13
+
+- simplify execution recovery so state comes from `task.md`, Git, and current repo truth
+- remove old event/status/checkpoint filename lists from the default execution contract
+
 ## v1.6.9 - 2026-05-13
 
 - require the shared `resolve-cc-devflow.sh` CLI resolver before loading workflow context or review state

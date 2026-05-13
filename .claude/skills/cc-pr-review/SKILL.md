@@ -1,7 +1,7 @@
 ---
 name: cc-pr-review
-version: 1.1.0
-description: Use in a separate session to review one remote GitHub PR before landing. It reports findings from PR truth and current diff without writing review process files.
+version: 1.1.1
+description: Use in a separate session to review one remote GitHub PR before landing. It reports findings from PR truth and current diff without writing process files.
 triggers:
   - review 这个 PR
   - 单独会话 review PR
@@ -25,12 +25,12 @@ effects:
 entry_gate:
   - Freeze PR title, body, commits, head branch, base branch, checks, linked issues, and current diff from GitHub.
   - Read local `task.md` and `pr-brief.md` when the PR links to a change key.
-  - Do not merge, push main, or write local review artifacts.
+  - Do not merge, push main, or write local process files.
 exit_criteria:
   - Review result is approved-for-landing, changes-requested, needs-clarification, or blocked.
   - Findings cite concrete PR diff, command output, checks, local task facts, or missing evidence.
   - Required fixes route back to cc-dev or cc-do; clean PRs route to cc-pr-land.
-  - No local review ledger, findings JSON, report, or process file is created.
+  - No local process file is created.
 reroutes:
   - when: Required fixes are inside the PR implementation scope.
     target: cc-dev
@@ -56,4 +56,4 @@ Build the review from:
 - PR diff
 - `task.md` and `handoff/pr-brief.md` when available
 
-Output findings in the response or GitHub review only. Do not write local review process files.
+Output findings in the response or GitHub review only. Do not write local process files.

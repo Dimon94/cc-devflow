@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.1
+
+- simplify the autopilot state contract around `task.md`, Git, and PR/handoff reality
+- remove old process-file filename lists from cc-dev recovery wording
+
 ## 1.0.3
 
 - add the shared `resolve-cc-devflow.sh` CLI resolver for PDCA/IDCA stage transitions

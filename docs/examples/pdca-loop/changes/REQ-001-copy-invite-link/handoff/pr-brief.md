@@ -127,7 +127,7 @@
 
 - `CLAUDE.md`: unchanged
 - `README.md`: unchanged
-- process files: intentionally omitted for this mode
+- process files: intentionally omitted
 
 ## Minimum Landing Pack
 
@@ -135,7 +135,7 @@
   - `pr-brief.md`
   - fresh verification response
 - Intentionally omitted:
-  - status, resume, release-note, ledger, report-card, and JSON process files
+  - process files
 
 ## How To Verify
 

@@ -1,5 +1,12 @@
 # CC-Simplify Skill Changelog
 
+## v1.4.2 - 2026-05-13
+
+- replace reviewer-agent JSONL findings with short response-only finding lines
+- keep dedupe and confidence rules without requiring JSON schemas or process files
+- clarify that simplify output is a compact report in the response, not a durable JSON document
+- remove old no-op and verification-report wording from simplify output rules
+
 ## v1.4.1 - 2026-05-10
 
 - make `cc-simplify` itself the explicit trigger for automatic read-only subagent review in ClaudeCode and Codex environments

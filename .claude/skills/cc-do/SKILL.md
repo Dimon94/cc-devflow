@@ -1,6 +1,6 @@
 ---
 name: cc-do
-version: 1.7.0
+version: 1.7.1
 description: Use when implementing frozen tasks, resuming interrupted work, applying an investigation handoff, or fixing review feedback inside the approved scope.
 triggers:
   - 开始做 T003
@@ -34,7 +34,7 @@ exit_criteria:
   - Verification commands have been run or explicitly blocked.
   - Task status is updated through `scripts/mark-task-complete.sh`.
   - The completed task/environment is committed to Git.
-  - No process JSON, event log, team-state, checkpoint, status, resume, or review record file is created.
+  - No process file is created beyond `task.md` updates and Git commits.
 reroutes:
   - when: New evidence disproves root cause.
     target: cc-investigate
@@ -58,7 +58,7 @@ tool_budget:
 - `devflow/changes/<change-key>/task.md` 中的任务状态
 - Git commit
 
-不要生成 `event log`、`team state file`、`change state file`、checkpoint、context Markdown、review JSON 或其它过程文件。失败和阻塞写在对用户的响应里；需要长期保留的失败教训交给 `cc-act` 写 incident postmortem。
+不要生成额外过程文件或 JSON 文档。失败和阻塞写在对用户的响应里；需要长期保留的失败教训交给 `cc-act` 写 incident postmortem。
 
 ## TDD Iron Law
 

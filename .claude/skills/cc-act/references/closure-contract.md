@@ -11,7 +11,7 @@
 1. Git commits are the process record.
 2. PR text is rebuilt from current commits, diff, `task.md`, and fresh validation.
 3. Incident postmortems are factual and evidence-backed.
-4. No release note, status file, resume file, principles file, report card, review ledger, or process JSON.
+4. No process file beyond the allowed durable outputs.
 5. If verification changes during Act, return to `cc-check`.
 
 ## Exit

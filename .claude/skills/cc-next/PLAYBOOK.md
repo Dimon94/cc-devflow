@@ -33,22 +33,26 @@ find devflow/changes -maxdepth 1 -type d \
 
 分类规则：
 
-- `resume-planning`: planning / analysis 还没冻结。
-- `resume-execution`: manifest 还有 pending ready task。
-- `resume-check`: tasks 完成但没有 passing verification report。
-- `resume-act`: verification report pass，但交付材料、roadmap/spec sync 或 PR/handoff 未闭合。
+- `resume-planning`: `task.md` 还没冻结。
+- `resume-execution`: `task.md` 还有未完成任务。
+- `resume-check`: tasks 完成但缺少当前新鲜验证结论。
+- `resume-act`: 当前验证已过，但 PR / handoff / closeout 未闭合。
 - `archive-closeout`: 已 merged/done，但仍在 active changes 根目录。
 - `archive-blocked`: handoff 写了 `ArchiveSkip`、archive target 冲突或用户要求暂不归档。
 
 同一 roadmap 优先级下，优先继续已有 active change，再选择新的 issue。已经在 `devflow/changes/archive/YYYY-MM/` 下的目录不进入普通候选。
 
-## Required Outputs
+## Required Output
+
+Short response only:
 
 - Queue truth
-- Selected goal or no-ready-goal
-- Selection reason
+- Selected goal or `no-ready-goal`
+- Reason
 - Goal Packet when selected
-- Next gate
+- Route: `cc-dev` / `cc-roadmap` / `stop`
+
+Do not create process files.
 
 ## No-Ready Reasons
 

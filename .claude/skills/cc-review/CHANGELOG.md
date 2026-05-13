@@ -1,5 +1,16 @@
 # CC-Review Changelog
 
+## 2.1.2 - 2026-05-13
+
+- remove `no-op` routing from review output and use `stop` for clean/no-action endings
+- simplify review persistence language to a single no-process-files rule
+
+## 2.1.1 - 2026-05-13
+
+- compress default output to findings, blocking questions, residual risk, and route
+- explicitly keep review output in the response or GitHub review only
+- forbid JSON/JSONL/Markdown review process files in the output contract
+
 ## 2.0.1 - 2026-05-13
 
 - require the shared `resolve-cc-devflow.sh` CLI resolver before writing review lifecycle events

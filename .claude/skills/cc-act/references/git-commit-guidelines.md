@@ -156,7 +156,7 @@
 - <影响范围和回滚路径>
 
 关联:
-- <FIX/issue/analysis/verification report>
+- <FIX/issue/root-cause/verification evidence>
 ```
 
 ### `refactor`

@@ -1,6 +1,6 @@
 ---
 name: cc-act
-version: 1.9.0
+version: 1.9.1
 description: Use when verified work must be committed, handed off, pushed, or turned into a PR with the smallest durable delivery surface.
 triggers:
   - 准备提 PR
@@ -45,7 +45,7 @@ exit_criteria:
   - "All completed work is committed with coherent Conventional Commit messages."
   - "PR mode writes or refreshes only `handoff/pr-brief.md`."
   - "FIX or recurring failure closeout writes incident postmortem only when needed."
-  - "No release note, status file, resume file, principles file, verification report, review ledger, or process JSON is created."
+  - "No process file is created beyond the allowed durable outputs."
   - "Push, PR, or local handoff status is explicit."
 reroutes:
   - when: Verification is stale, incomplete, or changed during Act.
@@ -68,7 +68,7 @@ tool_budget:
 - `devflow/postmortems/INDEX.md`
 - `devflow/postmortems/incidents/<date>-<change-key>.md`
 
-其余状态和历史交给 Git。不要写 release note、resume index、status report、principles、verification report、review ledger 或任何过程 JSON。
+其余状态和历史交给 Git。不要写额外过程文件或 JSON 文档。
 
 ## Ship Modes
 
@@ -89,7 +89,7 @@ tool_budget:
 2. 暴露重复 AI、流程、测试、release、Git 或架构错误。
 3. 用户明确要求记录教训。
 
-尸检报告必须基于 Git 证据和验证命令。不要再提炼单独 `principles file`。
+尸检报告必须基于 Git 证据和验证命令。不要把教训拆成额外原则文件。
 
 ## Commit Rule
 

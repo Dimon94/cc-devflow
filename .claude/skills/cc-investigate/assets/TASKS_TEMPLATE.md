@@ -48,7 +48,7 @@ Risk / Escalate If:
 Codex / ClaudeCode must treat this `task.md` as the only repair contract.
 
 - CLI resolver: all workflow commands must run through `.claude/skills/cc-dev/scripts/resolve-cc-devflow.sh` or `.codex/skills/cc-dev/scripts/resolve-cc-devflow.sh`; if it cannot prove `query workflow-context` and `next-change-key`, stop blocked.
-- Do not generate process files. No manifest, change metadata, review ledger, report card, status file, checkpoint, or context package.
+- Do not generate process files beyond this `task.md`.
 - Complete tasks with `scripts/mark-task-complete.sh --tasks devflow/changes/<change-key>/task.md --task <task-id>`.
 - Stage commit rule: when PDCA or IDCA finishes in the current environment, commit the completed stage to Git.
 

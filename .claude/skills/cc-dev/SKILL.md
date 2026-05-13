@@ -1,6 +1,6 @@
 ---
 name: cc-dev
-version: 1.1.0
+version: 1.1.1
 description: Use when a selected objective should be driven autonomously in the current session and worktree through PDCA or IDCA until a PR, local handoff, clarification, or blocker.
 triggers:
   - 自动驾驶开发这个需求
@@ -46,7 +46,7 @@ exit_criteria:
   - For code work, cc-check produced fresh evidence before cc-act shipped or handed off.
   - Every completed stage or execution environment has a Git commit.
   - The final audit maps objective requirements to files, commands, tests, commits, PR, or handoff evidence.
-  - No process JSON, review ledger, report card, status, resume, release-note, or principles file is created.
+  - No process file is created outside the allowed durable outputs.
 reroutes:
   - when: The objective is a feature or requirement change.
     target: cc-plan
@@ -77,7 +77,7 @@ IDCA: cc-investigate -> cc-do -> cc-check -> cc-act
 - Git history / Git status
 - PR / handoff reality
 
-不要用过程 JSON、review ledger、verification report、status、resume 或 release note 来恢复状态。
+不要用过程文件恢复状态；没有写进 `task.md`、Git 或 PR/handoff 现实的内容不算 workflow truth。
 
 ## Route Classifier
 

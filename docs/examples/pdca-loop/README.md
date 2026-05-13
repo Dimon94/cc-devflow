@@ -4,7 +4,7 @@
 
 - Example version: `1.0.0`
 - Last reviewed: `2026-04-17`
-- Bound skills: `cc-roadmap@5.3.0`, `cc-plan@3.10.0`, `cc-do@1.7.0`, `cc-check@1.12.0`, `cc-act@1.9.0`
+- Bound skills: `cc-roadmap@5.3.0`, `cc-plan@3.10.1`, `cc-do@1.7.1`, `cc-check@1.12.1`, `cc-act@1.9.1`
 
 This folder shows one minimal but complete `cc-roadmap -> cc-plan -> cc-do -> cc-check -> cc-act` loop.
 
@@ -13,7 +13,7 @@ The example is intentionally small:
 - product context is fake
 - requirement scope is real enough to feel concrete
 - the chosen ship mode is `create-pr`
-- process artifacts such as release notes, status files, ledgers, and JSON state are intentionally omitted
+- process files are intentionally omitted
 
 ## Scenario
 
@@ -42,7 +42,7 @@ That mode needs:
 - `pr-brief.md`
 - synced docs if behavior changed
 
-It does **not** need release notes, status files, ledgers, report cards, or JSON state, so the example intentionally stops there.
+It does **not** need process files, so the example intentionally stops there.
 
 ## What To Look For
 
