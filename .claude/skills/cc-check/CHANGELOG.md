@@ -1,5 +1,11 @@
 # CC-Check Skill Changelog
 
+## v1.11.2 - 2026-05-13
+
+- internalize verification operating rules so conflicting proof sources must be resolved explicitly instead of averaged
+- block `pass` when gates are skipped, evidence is stale, ownership is ambiguous, or tests prove implementation shape instead of user intent
+- retarget investigated bug verification to `planning/tasks.md#Root Cause Contract`
+
 ## v1.11.1 - 2026-05-13
 
 - treat `passed`, `done`, `completed`, and `verified` task statuses as complete when rendering the `requirements-met` claim evidence

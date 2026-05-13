@@ -1,5 +1,11 @@
 # CC-Do Skill Changelog
 
+## v1.6.8 - 2026-05-13
+
+- internalize execution operating rules so `cc-do` reads callers/exports/helpers before editing, keeps diffs surgical, matches repo conventions, and fails loudly on blockers
+- require deterministic task-state updates through scripts while keeping tests focused on behavior intent through public seams
+- retarget execution recovery to `planning/tasks.md` plus generated machine artifacts, with legacy design/analysis as fallback only
+
 ## v1.6.7 - 2026-05-13
 
 - stop generating per-task `context.md` and `checkpoint.json` during execution; `build-task-context.sh` now prints stdout only

@@ -37,8 +37,9 @@
 
 - `planning/tasks.md#Root Cause Contract` 是人类真相源
 - `planning/tasks.md` 的 task blocks 是修复 handoff
-- `planning/task-manifest.json` 是执行真相源
-- `change-meta.json` 必须记录 roadmap sync status、spec diagnosis 和 no-op reason / updated files
+- `planning/task-manifest.json` 是 CLI 生成的执行真相源，不手写
+- `change-meta.json` 必须由 CLI / 模板更新，记录 roadmap sync status、spec diagnosis 和 no-op reason / updated files
+- 修改机器态结构时改 `cc-devflow task-contract` / 模板 / validator，再重新生成；不要在 change 目录里补 JSON
 
 ## Root-Cause Hypothesis
 

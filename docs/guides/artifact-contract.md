@@ -1,6 +1,9 @@
 # Artifact Contract
 
 cc-devflow artifacts follow two rules: progressive disclosure and one state owner.
+Machine JSON has a third rule: it is CLI-owned. Agents write the human contract
+in `planning/tasks.md`, then run `cc-devflow task-contract compile` / `validate`;
+they must not handwrite `task-manifest.json` or `change-meta.json`.
 
 ## Progressive Disclosure
 
@@ -32,6 +35,7 @@ If a field has no clear opener and no downstream consumer, remove it.
 - Derived fields must be described as derived/cache and must be recomputable.
 - A skill must not create a new status field unless it also names the owner, lifecycle, projection readers, and validation gate.
 - Task manifests must not duplicate PRD narrative, review-loop prose, source-trust details, completion shell commands, roadmap progress, or spec sync status.
+- Task manifests and change metadata must be generated or refreshed by CLI/template tooling, not manually edited as process notes.
 - Project postmortems must cite stronger owner artifacts and Git evidence; they do not own roadmap progress, task status, review verdicts, or spec sync state.
 
 ## Required Check

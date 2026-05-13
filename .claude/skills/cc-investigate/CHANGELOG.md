@@ -1,5 +1,12 @@
 # CC-Investigate Skill Changelog
 
+## v1.5.1 - 2026-05-13
+
+- slim the public `SKILL.md` entrypoint into a thin root-cause contract with conditional escalation packs
+- make CLI-owned machine artifacts a hard rule: AI writes `planning/tasks.md#Root Cause Contract`, then runs `cc-devflow task-contract compile` / `validate` for `task-manifest.json` and `change-meta.json`
+- add CLI compile support for Root Cause Contract handoffs so investigations do not require hand-authored JSON
+- internalize investigation operating rules: assumptions first, evidence over guesses, explicit conflict choice, reroute spec/roadmap ambiguity, and loud Evidence Requests
+
 ## v1.5.0 - 2026-05-13
 
 - collapse default investigation output to `planning/tasks.md` plus CLI-generated `task-manifest.json` and `change-meta.json`

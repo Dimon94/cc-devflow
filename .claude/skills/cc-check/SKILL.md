@@ -1,6 +1,6 @@
 ---
 name: cc-check
-version: 1.11.1
+version: 1.11.2
 description: Use when a planned or investigated change needs fresh verification evidence, layered gate proof, review truth, and an honest pass fail blocked verdict before entering cc-act.
 triggers:
   - 验收这个需求
@@ -22,9 +22,10 @@ writes:
     required: true
 entry_gate:
   - Run `cc-devflow query workflow-context --change <changeId> --change-key <changeKey> --data-only --no-trace --compact` first; enter verification only when `nextAction.skill` is `cc-check`, or record the reroute it reports.
-  - Use only the workflow context `packetOnly` and `mustNotForget` first, then `defaultOpen` section / JSON refs before expanding planning/design.md or planning/analysis.md, planning/tasks.md, planning/task-manifest.json, and latest runtime evidence.
+  - Use only the workflow context `packetOnly` and `mustNotForget` first, then `defaultOpen` section / JSON refs before expanding `planning/tasks.md`, `planning/task-manifest.json`, `change-meta.json`, and latest runtime evidence; legacy design/analysis files are fallback inputs only.
   - "Read requirement-level review truth in this order: `review/review-findings.json`, then `review/review-ledger.jsonl`, then legacy `review/cc-review-report.md` with `freshness=unknown`; if none exist, block with `review-missing`."
   - Re-run fresh commands instead of inheriting cc-do narration.
+  - Separate missing evidence from real failure; conflicts choose the newer or stronger proof source and record the rejected source.
   - If evidence is stale or missing, reset context and rebuild the verdict from canonical artifacts.
 exit_criteria:
   - review/report-card.json records pass, fail, or blocked using fresh evidence, review freshness, claim evidence, QA coverage and browser evidence, human UAT when applicable, named failure ownership, plus spec alignment and sync readiness.
@@ -90,7 +91,7 @@ NO PASS WITHOUT FRESH EVIDENCE
 - 需要跑测试、lint、类型检查、质量门
 - 需要判断 requirement 是否真的完成
 - 需要确认是否可以进入交付动作
-- 需要判断一个 investigated bug fix 是否真的兑现了 `planning/analysis.md`
+- 需要判断一个 investigated bug fix 是否真的兑现了 `planning/tasks.md#Root Cause Contract`
 
 如果代码还在继续变、任务还没收口，停下并回 `cc-do`。
 
@@ -114,7 +115,7 @@ NO PASS WITHOUT FRESH EVIDENCE
    - 先读 `cc-devflow query workflow-context --data-only --no-trace --compact` 的 context index
    - 默认只用 `progressiveDisclosure.packetOnly` 和 `mustNotForget`
    - 先检查 `sourceHashes`；不匹配就重跑 query
-   - 只有 `openWhen.conditions` 触发时再读 `deepOpen` 里的 `planning/design.md` / `planning/analysis.md` 深层区块、`planning/tasks.md` 或完整 `planning/task-manifest.json`
+   - 只有 `openWhen.conditions` 触发时再读 `deepOpen` 里的 `planning/tasks.md`、完整 `planning/task-manifest.json`、`change-meta.json` 或 legacy fallback
    - 明确本轮要验证的 capability / task / spec delta
 2. **Re-run Reality**
    - 重新执行 gate，不继承 `cc-do` 叙述
@@ -140,6 +141,7 @@ NO PASS WITHOUT FRESH EVIDENCE
 - Forbidden actions: continuing development, inheriting old execution claims without fresh proof, or masking blocked work as pass.
 - Required evidence: every passing statement must cite fresh command output, exit status, key observation, and the claim it proves.
 - Reroute rule: code and review fixes return to `cc-do`; root-cause drift returns to `cc-investigate`; scope or design invalidation returns to `cc-plan`.
+- Verification discipline: a skipped gate, stale review, ambiguous owner, or test that proves implementation shape instead of user intent blocks `pass`; fail loudly with the next owner.
 
 ## Verification Layers
 
@@ -303,7 +305,7 @@ NO PASS WITHOUT FRESH EVIDENCE
 
 ## Entry Gate
 
-1. 先读 `planning/design.md` 或 `planning/analysis.md`，再读 `planning/tasks.md`、`planning/task-manifest.json`。
+1. 先读 `planning/tasks.md#Contract Summary` 或 `planning/tasks.md#Root Cause Contract`，再读 `planning/task-manifest.json` 和 `change-meta.json`。
 2. 明确本次要验证哪些事实，不做含糊验收。
 3. 所有通过结论都必须来自本次新鲜命令输出。
 4. 已完成任务必须能拿出 `spec/code` review 证据，并能说明 expected spec delta 是否已被验证。
@@ -320,8 +322,8 @@ NO PASS WITHOUT FRESH EVIDENCE
    - 识别 failure 还是 blocked
    - 记录 failure ownership，而不是把所有红灯混成一个失败摘要
 3. **Compare against the contract**
-   - 对照 `planning/design.md` 或 `planning/analysis.md`
-   - 对照 `planning/tasks.md`、`planning/task-manifest.json`
+   - 对照 `planning/tasks.md` 的 canonical contract
+   - 对照 `planning/task-manifest.json` 和 `change-meta.json`
    - 对照 review truth 和 spec delta
 4. **Freeze verdict**
    - `pass` 只在所有必要层都通过时成立

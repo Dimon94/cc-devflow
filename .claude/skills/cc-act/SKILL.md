@@ -1,6 +1,6 @@
 ---
 name: cc-act
-version: 1.8.8
+version: 1.8.9
 description: 'Use when verified work must be shipped or handed off with a clear landing path: run simplify and required tests, create or update a PR, prepare a local handoff, close out merged work, sync docs, write release notes, and fold follow-ups back into backlog or roadmap.'
 triggers:
   - 准备提 PR
@@ -58,6 +58,7 @@ entry_gate:
   - Run `cc-devflow query workflow-context --change <changeId> --change-key <changeKey> --data-only --no-trace --compact` first; continue only when it reports `nextAction.skill == "cc-act"`.
   - Accept only a passing review/report-card.json with reroute=none and specSyncReady=true.
   - Freeze current branch, PR, ship-mode, auth, clean-tree, and rollback facts before writing delivery materials.
+  - Choose exactly one ship mode from current facts; if facts conflict, prefer the newer verified source and record the rejected path as a blocker or follow-up.
   - If simplify, tests, or act changes code or verification scope, return to cc-check immediately.
   - Read source roadmap progress from `devflow/roadmap.json`, `devflow/ROADMAP.md`, optional `devflow/BACKLOG.md`, or legacy `devflow/roadmap-tracking.json`; act must not ship against stale RM state.
   - For FIX closeout or recurring AI/process/engineering failures, update the project postmortem under `devflow/postmortems/` before final ship/handoff material is declared complete.
@@ -148,6 +149,12 @@ tool_budget:
 - Required evidence: PR briefs, status reports, release notes, resume indexes, and test evidence must summarize already-proven facts only.
 - Reroute rule: changed verification goes back to `cc-check`; unfinished implementation or new fixes go back to `cc-do`.
 
+## Closure Discipline
+
+- Ship materials summarize verified facts only; do not use `cc-act` to finish implementation or reinterpret scope.
+- Every handoff records done, verified, remaining/blocker, and next entry.
+- Skipped tests, skipped archive, unavailable auth, stale PR state, or release uncertainty must be explicit blockers or explicit skip records.
+
 ## Project Postmortem Writeback
 
 `cc-act` 是项目级 AI 尸检报告的唯一默认写入者，因为它能看到 verified reality、Git 状态、review range、ship mode 和 follow-up。
@@ -177,7 +184,7 @@ tool_budget:
 
 1. 先运行 `cc-devflow query workflow-context --change <changeId> --change-key <changeKey> --data-only --no-trace --compact`，确认 context index 的 `nextAction.skill == "cc-act"`。
 2. 再读 `review/report-card.json`，只接受已通过且有证据的现实。
-3. 默认只使用 workflow context 的 `packetOnly`、`mustNotForget` 和 `sourceHashes`；必要时打开 `progressiveDisclosure.defaultOpen` 的 section / JSON refs；只有 ship mode、roadmap sync、rollback、hash mismatch 或 postmortem 触发时，再读 `deepOpen` 里的完整 `planning/design.md` / `planning/analysis.md`、`planning/tasks.md`、完整 manifest、change-meta、相关 capability spec 或 `handoff/resume-index.md`。
+3. 默认只使用 workflow context 的 `packetOnly`、`mustNotForget` 和 `sourceHashes`；必要时打开 `progressiveDisclosure.defaultOpen` 的 section / JSON refs；只有 ship mode、roadmap sync、rollback、hash mismatch 或 postmortem 触发时，再读 `deepOpen` 里的完整 `planning/tasks.md`、manifest、change-meta、相关 capability spec、handoff 或 legacy fallback。
 4. 运行 `scripts/verify-act-gate.sh --dir <requirement-dir>`，确认 gate 真的闭合。
 5. 运行 `scripts/detect-ship-target.sh`，识别当前分支、base branch、PR 状态与推荐 ship 路径。
    - 如果输出 `BRANCH_STATE=detached` 且 `BRANCH_RESCUE=create-branch-before-pr`，这不是阻塞；立即运行 `scripts/ensure-ship-branch.sh --dir <requirement-dir>`，然后重跑最终验证与 `detect-ship-target.sh`。

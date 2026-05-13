@@ -6,7 +6,7 @@
     "documentLanguage": ""
   },
   "planningMeta": {
-    "ccInvestigateSkillVersion": "1.5.0",
+    "ccInvestigateSkillVersion": "1.5.1",
     "analysisVersion": "analysis.v1",
     "workBranch": "FIX/XXX-short-bug-name",
     "approvedAt": "2026-04-17T12:00:00.000Z",
@@ -43,7 +43,7 @@
         "componentBoundary": "api -> service",
         "inputObserved": "Request payload matches the reproduced failure",
         "outputObserved": "Service receives invalid state",
-        "configEnvObserved": "Relevant env/config values recorded in analysis.md",
+        "configEnvObserved": "Relevant env/config values recorded in planning/tasks.md#Root Cause Contract",
         "stateObserved": "State snapshot or log pointer",
         "verdict": "fail"
       }
@@ -196,7 +196,6 @@
       ],
       "context": {
         "readFiles": [
-          "analysis.md",
           "tasks.md",
           "change-meta.json"
         ],
@@ -205,7 +204,7 @@
         ],
         "notes": [
           "Prove the bug first",
-          "Do not repair the symptom site unless analysis proves it is the original trigger",
+          "Do not repair the symptom site unless Root Cause Contract proves it is the original trigger",
           "Do not change unrelated contracts in this task"
         ]
       },

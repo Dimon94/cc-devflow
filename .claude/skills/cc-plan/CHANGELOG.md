@@ -1,5 +1,18 @@
 # CC-Plan Skill Changelog
 
+## v3.9.2 - 2026-05-13
+
+- make CLI-owned machine artifacts a hard rule: AI writes `planning/tasks.md`, then runs `cc-devflow task-contract compile` / `validate` for `task-manifest.json` and `change-meta.json`
+- forbid hand-authored process JSON and require CLI / template / validator fixes when machine-state structure changes
+- internalize planning operating rules: assumptions first, smallest reversible scope, explicit conflict choice, intent-focused verification, and CLI-owned deterministic state
+- keep the thin entrypoint budget under the existing `cc-plan` limit while preserving the planning contract
+
+## v3.9.1 - 2026-05-13
+
+- slim the public `SKILL.md` entrypoint into a thin harness contract focused on branch safety, artifact ownership, density switching, and completion gates
+- move low-frequency deep planning, review, postmortem, and external-best-practice details behind conditional `PLAYBOOK.md` / `references/*` escalation instead of default context
+- keep `planning/tasks.md`, lean `task-manifest.json`, `change-meta.json`, and `workflow-context --compact` as the durable execution contract
+
 ## v3.9.0 - 2026-05-13
 
 - collapse the default planning artifact surface to `planning/tasks.md` plus CLI-generated `task-manifest.json` and `change-meta.json`

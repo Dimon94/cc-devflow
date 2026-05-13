@@ -1,5 +1,10 @@
 # CC-Act Skill Changelog
 
+## v1.8.9 - 2026-05-13
+
+- internalize closure operating rules so `cc-act` chooses one ship mode from verified facts, records rejected paths, and keeps handoff materials mode-specific
+- require handoffs to state done, verified, remaining/blocker, and next entry while exposing skipped tests, archive, auth, PR, or release uncertainty loudly
+
 ## v1.8.8 - 2026-05-12
 
 - require `cc-devflow query workflow-context` before ship work so `cc-act` confirms the context-index next action before opening delivery artifacts

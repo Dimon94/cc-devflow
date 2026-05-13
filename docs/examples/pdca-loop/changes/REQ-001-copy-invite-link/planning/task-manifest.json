@@ -6,7 +6,7 @@
   "requirementId": "REQ-001",
   "requirementVersion": "REQ-001.v1",
   "planningMeta": {
-    "reqPlanSkillVersion": "3.9.0",
+    "reqPlanSkillVersion": "3.9.2",
     "designVersion": "design.v1",
     "workBranch": "REQ/001-copy-invite-link",
     "approvedAt": "2026-04-15T10:05:00.000Z",

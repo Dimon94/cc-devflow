@@ -6,7 +6,7 @@
   "requirementId": "REQ-002",
   "requirementVersion": "REQ-002.v2",
   "planningMeta": {
-    "reqPlanSkillVersion": "3.9.0",
+    "reqPlanSkillVersion": "3.9.2",
     "designVersion": "design.v2",
     "workBranch": "REQ/002-bulk-invite-import",
     "approvedAt": null,

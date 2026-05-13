@@ -45,7 +45,7 @@ root-cause contract 至少包含：稳定复现或缩小后的可验证症状、
 5. `L5 Counterfactual Proof`：恢复 contract 或替换输入后，症状变化的实际观察。
 6. `L6 Escape Reason`：为什么测试、类型、review、监控或 artifact gate 没挡住。
 
-缺 `L2`、`L4` 或 `L5` 时，`analysis.md` 只能写 `needs-more-evidence`、`Evidence Request` 或 reroute，不能生成 `cc-do` repair task。
+缺 `L2`、`L4` 或 `L5` 时，`planning/tasks.md#Root Cause Contract` 只能写 `needs-more-evidence`、`Evidence Request` 或 reroute，不能生成 `cc-do` repair task。
 
 ## Required Outputs
 
@@ -76,7 +76,7 @@ root-cause contract 至少包含：稳定复现或缩小后的可验证症状、
 | `backward-trace` | 错误出现在深层堆栈或坏值来源不明 | 从 immediate failure site 反追 original trigger |
 | `reference-compare` | 同仓库有相似可用路径 | 列出 working / broken 差异并逐项接受或排除 |
 | `condition-wait` | flaky、sleep、timeout、重试后消失 | 找真实等待条件，不先加大延时 |
-| `history-trace` | 同一区域反复坏 | 查历史 `analysis.md`、TODO、report-card finding |
+| `history-trace` | 同一区域反复坏 | 查历史 `planning/analysis.md`、TODO、report-card finding |
 | `pattern-research` | 陌生框架 / 依赖 / 平台错误 | 脱敏后查通用错误类型 |
 | `contract-check` | 修复边界可能扩大 | 判定 implementation drift / missing spec truth / roadmap mismatch |
 | `diagnose-only` | 用户只要问题解释或现在不能修 | 冻结 root cause、owner、risk、next action，不生成实现完成态 |
@@ -101,7 +101,7 @@ root-cause contract 至少包含：稳定复现或缩小后的可验证症状、
 
 ## Boundary And Trace Evidence
 
-复杂链路必须在 `analysis.md` 写清：
+复杂链路必须在 `planning/tasks.md#Root Cause Contract` 写清：
 
 - Boundary Probe Matrix：component boundary、input observed、output observed、config/env observed、state observed、verdict
 - Backward Trace Chain：immediate failure site、caller chain、bad value origin、original trigger、why symptom-site fix is rejected
@@ -125,7 +125,7 @@ root-cause contract 至少包含：稳定复现或缩小后的可验证症状、
 3. `TODOS.md`、backlog、roadmap 中的相关项
 4. 既有 `planning/analysis.md` 和 `review/report-card.json`
 
-命中历史时，写入 `analysis.md` 的 `Prior Investigations`，说明这次是复发、同类结构味道，还是无关历史。
+命中历史时，写入 `planning/tasks.md#Root Cause Contract` 的 `Prior Investigations`，说明这次是复发、同类结构味道，还是无关历史。
 
 ## Domain And Decision Context
 

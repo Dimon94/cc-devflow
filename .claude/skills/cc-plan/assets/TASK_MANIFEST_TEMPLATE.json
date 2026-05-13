@@ -9,7 +9,7 @@
     "documentLanguage": ""
   },
   "planningMeta": {
-    "reqPlanSkillVersion": "3.9.0",
+    "reqPlanSkillVersion": "3.9.2",
     "designVersion": "design.v1",
     "workBranch": "REQ/XXX-short-feature-name",
     "approvedAt": "2026-04-15T12:00:00.000Z",
@@ -133,7 +133,6 @@
       ],
       "context": {
         "readFiles": [
-          "design.md",
           "tasks.md",
           "change-meta.json"
         ],
@@ -173,7 +172,7 @@
   ],
   "metadata": {
     "source": "tasks.md",
-    "generatedBy": "skill:cc-plan",
+    "generatedBy": "cc-devflow task-contract",
     "planVersion": 1
   }
 }

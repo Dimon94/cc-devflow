@@ -11,7 +11,7 @@ Default human-authored Markdown:
 
 - `planning/tasks.md`
 
-Default machine-owned records:
+Default CLI-owned machine records:
 
 - `change-meta.json`
 - `planning/task-manifest.json`
@@ -34,8 +34,8 @@ Feature and scope changes use:
 
 `Contract Summary` owns the frozen human-readable plan: user story, non-negotiable
 constraints, decisions that must not be reopened, task slices, and verification
-expectations. The task manifest is generated or validated by CLI tooling and owns
-machine-readable task status.
+expectations. `task-manifest.json` and `change-meta.json` must be generated or
+updated by `cc-devflow task-contract compile`; agents must not handwrite them.
 
 ## Bug Investigations
 
@@ -48,6 +48,8 @@ Bug, regression, and unexpected-behavior work uses:
 `Root Cause Contract` owns the symptom, reproduction evidence, confirmed cause,
 rejected near-causes, repair boundary, and task handoff. `cc-do` should implement
 from that frozen contract instead of reopening investigation during execution.
+`task-manifest.json` and `change-meta.json` must be generated or updated by
+`cc-devflow task-contract compile`; agents must not handwrite them.
 
 ## Review Records
 
@@ -90,6 +92,7 @@ them by default. When migrating old work, fold feature-plan truth into
 Validate one change:
 
 ```bash
+npx cc-devflow task-contract compile --change REQ-001 --change-key REQ-001-copy-invite-link
 npx cc-devflow task-contract validate --change REQ-001 --change-key REQ-001-copy-invite-link
 ```
 
@@ -111,6 +114,16 @@ The package-level verification command also includes artifact validation:
 npm run verify
 ```
 
+Skill entrypoints have a separate context budget:
+
+```bash
+npm run benchmark:skills
+```
+
+Keep `SKILL.md` files as thin entry contracts. Move low-frequency planning,
+review, and recovery details behind `PLAYBOOK.md` or `references/*` so agents
+open them only when the matching escalation condition appears.
+
 ## Authoring Rule
 
 Before adding a durable file under `devflow/changes/<change-key>/`, answer:
@@ -119,5 +132,6 @@ Before adding a durable file under `devflow/changes/<change-key>/`, answer:
 2. Which state does it own that no existing artifact owns?
 3. Which command fails if it drifts?
 
-If those answers are unclear, keep the information in `planning/tasks.md`, a
-machine record, or ephemeral workspace scratch instead.
+If those answers are unclear, keep the information in `planning/tasks.md` or
+ephemeral workspace scratch. Machine JSON belongs to the CLI/compiler path, not
+manual agent authoring.

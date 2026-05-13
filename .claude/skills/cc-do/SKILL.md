@@ -1,6 +1,6 @@
 ---
 name: cc-do
-version: 1.6.7
+version: 1.6.8
 description: Use when implementing planned tasks, resuming interrupted work, applying a frozen investigation handoff, or landing review feedback after cc-plan or cc-investigate.
 triggers:
   - 开始做 T003
@@ -35,7 +35,8 @@ effects:
   - task status updates in planning/tasks.md and planning/task-manifest.json
 entry_gate:
   - Run `cc-devflow query workflow-context --change <changeId> --change-key <changeKey> --data-only --no-trace --compact` first and follow its context-index `packetOnly`, `mustNotForget`, `sourceHashes`, `defaultOpen`, `currentTask`, `commandsToTrust`, and `openWhen.conditions` fields before opening deep artifacts.
-  - Read planning/design.md or planning/analysis.md, then planning/tasks.md, planning/task-manifest.json, change-meta.json, related capability specs, current Git state, and CLI logs only when the workflow context says the deep section is needed.
+  - Before editing, read the direct caller, exported surface, shared helper, and local convention for the touched path.
+  - Read `planning/tasks.md`, `planning/task-manifest.json`, `change-meta.json`, related specs, Git state, and CLI logs only when workflow-context says the deep section is needed; legacy `planning/design.md` / `planning/analysis.md` are fallback inputs only.
   - Select only ready tasks whose dependencies, wave, touched paths, and file ownership are clear.
   - Reject parallel execution when touched paths overlap by exact path or parent/child path; submodule touches must be isolated unless the task explicitly owns that submodule.
   - If the current task cannot be restated from canonical artifacts, run a context reset before coding.
@@ -60,7 +61,7 @@ recovery_modes:
     action: Reload workflow-context, planning/tasks.md, task-manifest.json, current Git state, and CLI logs; continue from the first pending or failed task.
   - name: context-reset
     when: The conversation history is noisy, stale, or cannot reproduce the exact task state.
-    action: Discard chat memory, reread planning/design.md or planning/analysis.md plus planning/tasks.md/planning/task-manifest.json, current Git state, and CLI logs, then restate the next action before coding.
+    action: Discard chat memory, reread planning/tasks.md, planning/task-manifest.json, change-meta.json, current Git state, and CLI logs; use legacy design/analysis only as fallback.
 tool_budget:
   read_files: 9
   search_steps: 6
@@ -87,10 +88,10 @@ tool_budget:
 - `agent_preferences` 是用户偏好建议，只影响表达方式和结构选择，不覆盖本 Skill 的工作流边界。
 - 如果配置解析失败，先修配置或向用户说明阻塞，不要用默认语言继续生成正式文档。
 
-上游冻结合同可以来自两条路：
+上游冻结合同来自 `planning/tasks.md`：
 
-- `cc-plan` 产出的 `planning/design.md`
-- `cc-investigate` 产出的 `planning/analysis.md`
+- `cc-plan` 产出的 `planning/tasks.md#Contract Summary`
+- `cc-investigate` 产出的 `planning/tasks.md#Root Cause Contract`
 
 ## Read First
 
@@ -130,6 +131,14 @@ tool_budget:
 - Required evidence: every task must leave objective code/Git/test evidence; blocked or failed work may leave compact CLI events, but must not create AI-written process files.
 - Reroute rule: after repeated failed repairs or root-cause drift, stop patching and go back to `cc-investigate`; if scope or design truth breaks, go back to `cc-plan`; after task closure, hand off to `cc-check`.
 
+## Execution Discipline
+
+- Make the smallest task-scoped diff; do not add features, abstractions, or adjacent cleanup outside the frozen task. Clean only traces introduced by this task.
+- Match existing style and conventions even when another pattern looks nicer; harmful conventions require reroute/discussion, not private divergence.
+- Deterministic state changes use scripts (`mark-task-complete.sh`, ready-task selectors); the model does not hand-edit status JSON.
+- Tests must prove the behavior's intent through a public seam; tests that would pass after the wrong business behavior changes are invalid.
+- Blockers, skipped tests, stale context, or unclear ownership are reported loudly before continuing.
+
 ## TDD Iron Law
 
 ```text
@@ -163,7 +172,7 @@ Refactor 只能发生在 Green 之后。优先处理当前 slice 暴露出的重
 2. 先只用 `workflow-context.progressiveDisclosure.packetOnly` 和 `mustNotForget` 做导航与护栏，必要时打开 `defaultOpen` 的 section / JSON refs；如果 `sourceHashes` 不匹配、命令缺失、scope/依赖/触点不确定，必须按 `openWhen.conditions` 打开 `deepOpen`，不能靠猜。
 3. 先用 `workflow-context.queues.readyTasks` 判断现在到底哪几个任务真的 ready；需要 shell 复核时再跑 `scripts/select-ready-tasks.sh`。
 4. 只锁定当前 ready task，或一组经依赖、wave、精确触点与父子路径触点校验后可并行的 ready tasks。
-5. 如果这次来自 `cc-investigate`，必须把 `planning/analysis.md` 当成 canonical contract，而不是一边实现一边重新调查。
+5. 如果这次来自 `cc-investigate`，必须把 `planning/tasks.md#Root Cause Contract` 当成 canonical contract，而不是一边实现一边重新调查。
 6. 没有任务上下文，不准把任务扔给 subagent；先用 `workflow-context.currentTask`，不够时再用 `scripts/build-task-context.sh` 从 canonical artifacts 组装上下文。
 7. 如果 `task-manifest.json.metadata.lane == "quick"`，仍然必须有 current task、verification、task status 和唯一 next action；quick 只缩短文档密度，不跳过证据。
 8. 如果仓库含 `.gitmodules` 或 manifest 提供 `submodulePaths`，先用 `scripts/detect-file-conflicts.sh` 标出 `submoduleTouches`；只有触达该 submodule 的任务失去默认 worktree 隔离资格，未触达任务不能被无辜串行化。

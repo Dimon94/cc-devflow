@@ -2,11 +2,12 @@
 
 ## Hard Rules
 
-1. `cc-plan` 默认只产出 3 个文件：`planning/tasks.md`、`planning/task-manifest.json`、`change-meta.json`。
+1. `cc-plan` 默认只产出 3 个文件：`planning/tasks.md`、CLI 生成的 `planning/task-manifest.json`、CLI 生成的 `change-meta.json`。
 2. clarification / brainstorm / review 结论必须并入 `planning/tasks.md#Contract Summary`，不能再默认拆 `planning/design.md` 或独立文档。
 3. 执行 handoff 必须写进 `planning/tasks.md` 顶部，不能依赖单独的 `context-package.md`。
 4. `planning/task-manifest.json` 必须和 `planning/tasks.md` 同步，且能告诉 `cc-do` 当前任务是谁。
 5. `planning/tasks.md`、`planning/task-manifest.json` 必须记录来源版本链。
+6. 机器态 JSON 必须由 `cc-devflow task-contract compile` / 模板 / validator 生成或更新；AI 不手写 `task-manifest.json` 或 `change-meta.json`。
 6. 所有 SKILL 输出必须遵守 `docs/guides/artifact-contract.md`：状态只能有一个 owner，其它文件只能引用、投影或派生。
 7. 计划里出现 placeholder 词，就说明还没想清楚。
 8. 一次只推进一个澄清问题，不允许问题轰炸。
