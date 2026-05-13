@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.13] - 2026-05-13
+
+### Changed
+
+- Updated `cc-review` so plan and investigation reviews write findings directly into `task.md`.
+- Updated implementation reviews to return repair options and wait for the user's selected fix before editing code.
+- Removed all other local `cc-review` output surfaces.
+
 ## [4.5.12] - 2026-05-13
 
 ### Changed
