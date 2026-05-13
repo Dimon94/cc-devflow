@@ -544,6 +544,59 @@ function validateArtifactOwnershipContracts(errors) {
   }
 }
 
+function validateCliResolverContracts(errors) {
+  const resolverPath = '.claude/skills/cc-dev/scripts/resolve-cc-devflow.sh';
+  ensurePath(resolverPath, 'file', errors);
+
+  const resolver = fs.readFileSync(path.join(ROOT, resolverPath), 'utf8');
+  const nextChangeKey = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-plan/scripts/next-change-key.sh'), 'utf8');
+  const plan = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-plan/SKILL.md'), 'utf8');
+  const investigate = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-investigate/SKILL.md'), 'utf8');
+  const dev = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-dev/SKILL.md'), 'utf8');
+  const doSkill = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-do/SKILL.md'), 'utf8');
+  const review = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-review/SKILL.md'), 'utf8');
+  const check = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-check/SKILL.md'), 'utf8');
+  const act = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-act/SKILL.md'), 'utf8');
+  const planTasks = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-plan/assets/TASKS_TEMPLATE.md'), 'utf8');
+  const investigateTasks = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-investigate/assets/TASKS_TEMPLATE.md'), 'utf8');
+
+  const requiredSnippets = [
+    ['cc-dev resolver', resolver, 'No supported cc-devflow CLI found.'],
+    ['cc-dev resolver', resolver, 'Do not use simulated adapter output.'],
+    ['cc-dev resolver', resolver, 'workflow-context'],
+    ['cc-dev resolver', resolver, 'task-contract'],
+    ['cc-dev resolver', resolver, 'next-change-key'],
+    ['cc-dev resolver', resolver, 'review'],
+    ['cc-dev resolver', resolver, 'CC_DEVFLOW_CLI'],
+    ['cc-plan next-change-key.sh', nextChangeKey, 'resolve-cc-devflow.sh'],
+    ['cc-plan SKILL.md', plan, 'resolve-cc-devflow.sh require query workflow-context task-contract next-change-key review'],
+    ['cc-investigate SKILL.md', investigate, 'resolve-cc-devflow.sh require query workflow-context task-contract next-change-key review'],
+    ['cc-dev SKILL.md', dev, 'resolve-cc-devflow.sh require query workflow-context task-contract next-change-key review'],
+    ['cc-do SKILL.md', doSkill, 'resolve-cc-devflow.sh require query workflow-context task-contract review'],
+    ['cc-review SKILL.md', review, 'resolve-cc-devflow.sh require review'],
+    ['cc-check SKILL.md', check, 'resolve-cc-devflow.sh require query workflow-context review'],
+    ['cc-act SKILL.md', act, 'resolve-cc-devflow.sh require query workflow-context review'],
+    ['cc-plan TASKS_TEMPLATE.md', planTasks, 'CLI resolver: all workflow commands must run through'],
+    ['cc-plan TASKS_TEMPLATE.md', planTasks, 'bash "$DEVFLOW" require query workflow-context task-contract next-change-key review'],
+    ['cc-plan TASKS_TEMPLATE.md', planTasks, 'bash "$DEVFLOW" task-contract compile'],
+    ['cc-investigate TASKS_TEMPLATE.md', investigateTasks, 'CLI resolver: all workflow commands must run through'],
+    ['cc-investigate TASKS_TEMPLATE.md', investigateTasks, 'bash "$DEVFLOW" require query workflow-context task-contract next-change-key review'],
+    ['cc-investigate TASKS_TEMPLATE.md', investigateTasks, 'bash "$DEVFLOW" task-contract compile']
+  ];
+
+  for (const [label, content, snippet] of requiredSnippets) {
+    if (!content.includes(snippet)) {
+      errors.push(`${label} missing CLI resolver snippet: ${snippet}`);
+    }
+  }
+
+  for (const forbidden of ['command -v cc-devflow', '纯 bash 兜底', 'MAX_NUM=0']) {
+    if (nextChangeKey.includes(forbidden)) {
+      errors.push(`cc-plan next-change-key.sh must not use manual or naked PATH fallback: ${forbidden}`);
+    }
+  }
+}
+
 function validateProjectPostmortemContracts(errors) {
   ensurePath('docs/guides/project-postmortem.md', 'file', errors);
 
@@ -599,12 +652,12 @@ function validateCcActArchiveContracts(errors) {
   const syncDocs = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-act/scripts/sync-act-docs.sh'), 'utf8');
 
   const requiredSnippets = [
-    ['cc-act SKILL.md', skill, 'For `post-merge-closeout`, freeze the archive target and run `cc-devflow archive-change <change-key>`'],
+    ['cc-act SKILL.md', skill, 'For `post-merge-closeout`, freeze the archive target and run resolved CLI `archive-change <change-key>`'],
     ['cc-act SKILL.md', skill, '`post-merge-closeout` has archived the closed change under `devflow/changes/archive/YYYY-MM/`'],
     ['cc-act SKILL.md', skill, 'ArchiveSkip'],
     ['cc-act PLAYBOOK.md', playbook, '归档是 exit gate'],
     ['cc-act closure-contract.md', closure, '`post-merge-closeout` 的归档必须真实执行'],
-    ['cc-act sync-act-docs.sh', syncDocs, 'cc-devflow archive-change $requirement_id']
+    ['cc-act sync-act-docs.sh', syncDocs, 'resolved CLI archive-change $requirement_id']
   ];
 
   for (const [label, content, snippet] of requiredSnippets) {
@@ -1143,6 +1196,18 @@ function validatePackRuntimeSmoke(tarballPath, errors) {
       return;
     }
 
+    const help = runCommand(process.execPath, [cliPath, '--help'], {
+      cwd: installDir,
+      env: installEnv
+    });
+
+    for (const command of ['query', 'task-contract', 'review', 'next-change-key']) {
+      if (!help.ok || !help.output.includes(command)) {
+        errors.push(`pack runtime smoke CLI missing ${command}: ${help.error || help.output}`);
+        return;
+      }
+    }
+
     const configResolve = runCommand(process.execPath, [cliPath, 'config', 'resolve', '--format', 'policy'], {
       cwd: installDir,
       env: installEnv
@@ -1228,6 +1293,7 @@ function main() {
   validateCcActCommitGuidelines(errors);
   validateCcActPrBodyTemplateContracts(errors);
   validateArtifactOwnershipContracts(errors);
+  validateCliResolverContracts(errors);
   validateProjectPostmortemContracts(errors);
   validateCcActArchiveContracts(errors);
   validateCcNextCandidateContracts(errors);

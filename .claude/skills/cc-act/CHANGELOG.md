@@ -1,5 +1,11 @@
 # CC-Act Skill Changelog
 
+## v1.8.10 - 2026-05-13
+
+- require the shared `resolve-cc-devflow.sh` CLI resolver before delivery context reset or post-merge archive commands
+- make old global CLIs a ship blocker instead of allowing stale workflow context or archive claims
+- update closeout language to call resolved CLI commands for archive proof
+
 ## v1.8.9 - 2026-05-13
 
 - internalize closure operating rules so `cc-act` chooses one ship mode from verified facts, records rejected paths, and keeps handoff materials mode-specific

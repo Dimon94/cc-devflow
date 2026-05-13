@@ -3,15 +3,15 @@
   "skills": {
     "cc-roadmap": "5.3.0",
     "cc-next": "1.0.1",
-    "cc-dev": "1.0.2",
-    "cc-plan": "3.9.2",
-    "cc-investigate": "1.5.1",
-    "cc-do": "1.6.8",
-    "cc-review": "2.0.0",
+    "cc-dev": "1.0.3",
+    "cc-plan": "3.9.3",
+    "cc-investigate": "1.5.2",
+    "cc-do": "1.6.9",
+    "cc-review": "2.0.1",
     "cc-pr-review": "1.0.0",
     "cc-pr-land": "1.0.0",
-    "cc-check": "1.11.3",
-    "cc-act": "1.8.9",
+    "cc-check": "1.11.4",
+    "cc-act": "1.8.10",
     "cc-spec-init": "1.1.0"
   },
   "examples": [

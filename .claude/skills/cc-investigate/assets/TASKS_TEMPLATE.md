@@ -14,11 +14,12 @@
 ## Progressive Disclosure Index
 
 - Default read: Investigation Meta, Root Cause Contract, Execution Handoff, current task block.
-- Runtime reset: run `cc-devflow query workflow-context --change <changeId> --change-key <changeKey> --cwd <repo-root> --data-only --no-trace --compact` before `cc-do`, `cc-check`, or `cc-act`; use `packetOnly` plus `mustNotForget` first, verify `sourceHashes`, open `defaultOpen` refs only when needed, and reserve `deepOpen` for matching `openWhen.conditions`.
+- CLI resolver: all workflow commands must run through `.claude/skills/cc-dev/scripts/resolve-cc-devflow.sh` or `.codex/skills/cc-dev/scripts/resolve-cc-devflow.sh`; if it cannot prove `query workflow-context`, `task-contract`, `next-change-key`, and `review`, stop blocked.
+- Runtime reset: run resolved CLI `query workflow-context --change <changeId> --change-key <changeKey> --cwd <repo-root> --data-only --no-trace --compact` before `cc-do`, `cc-check`, or `cc-act`; use `packetOnly` plus `mustNotForget` first, verify `sourceHashes`, open `defaultOpen` refs only when needed, and reserve `deepOpen` for matching `openWhen.conditions`.
 - Open for root-cause doubt: `planning/tasks.md#Root Cause Contract` Project Postmortem Recall, Feedback Loop, Evidence Chain, Boundary Probe Matrix.
 - Open for scheduling: `planning/task-manifest.json`, dependencies, touched files.
 - Open for audit/recovery: Git state, CLI logs, report-card findings, Workflow Forensics.
-- Machine JSON rule: after editing this file, run `cc-devflow task-contract compile --change <changeId> --change-key <changeKey>` and `cc-devflow task-contract validate --change <changeId> --change-key <changeKey>`; do not handwrite `task-manifest.json` or `change-meta.json`.
+- Machine JSON rule: after editing this file, run resolved CLI `task-contract compile --change <changeId> --change-key <changeKey>` and `task-contract validate --change <changeId> --change-key <changeKey>`; do not handwrite `task-manifest.json` or `change-meta.json`.
 
 ## Root Cause Contract
 
@@ -92,6 +93,21 @@ Risk / Escalate If:
 - Correct test seam:
 - Evidence request if blocked:
 - Do not repair symptom site unless Root Cause Contract proves it is the original trigger:
+
+## Execution Protocol
+
+ClaudeCode / Codex 执行本调查合同时，必须先解析真实 CLI，再读取上下文和生成机器态产物。
+
+```bash
+DEVFLOW=".claude/skills/cc-dev/scripts/resolve-cc-devflow.sh"
+if [[ ! -f "$DEVFLOW" && -f ".codex/skills/cc-dev/scripts/resolve-cc-devflow.sh" ]]; then
+  DEVFLOW=".codex/skills/cc-dev/scripts/resolve-cc-devflow.sh"
+fi
+bash "$DEVFLOW" require query workflow-context task-contract next-change-key review
+bash "$DEVFLOW" query workflow-context --change <changeId> --change-key <changeKey> --cwd <repo-root> --data-only --no-trace --compact
+bash "$DEVFLOW" task-contract compile --change <changeId> --change-key <changeKey> --cwd <repo-root>
+bash "$DEVFLOW" task-contract validate --change <changeId> --change-key <changeKey> --cwd <repo-root>
+```
 
 ## Phase 1: Reproduce And Probe Guard
 

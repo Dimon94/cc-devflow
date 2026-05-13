@@ -1,6 +1,6 @@
 ---
 name: cc-review
-version: 2.0.0
+version: 2.0.1
 description: Use when a complex requirement, bug fix, plan, or implementation diff needs optional deep multi-round review beyond cc-check. Builds a review plan from prior records and current git/artifact delta, dispatches independent read-only reviewer agents when available, applies a risk-lane review swarm profile for broad implementation diffs, records node results, identifies in-scope code smells, queues user decisions, and reroutes to cc-plan, cc-do, or cc-check.
 triggers:
   - 深度 review 这个方案
@@ -18,6 +18,7 @@ reads:
   - references/plan-review-branch.md
   - references/implementation-review-branch.md
   - references/e2e-and-plugin-verification.md
+  - ../cc-dev/scripts/resolve-cc-devflow.sh
   - scripts/collect-review-context.sh
 writes:
   - path: devflow/changes/<change-key>/review/review-ledger.jsonl
@@ -43,7 +44,8 @@ entry_gate:
   - Read prior `review-ledger.jsonl`, optional `review-findings.json`, optional `review-agent-results.jsonl`, and legacy `cc-review-*` files when present.
   - Use git diff or scripts/collect-review-context.sh to identify content changed since the last review before deciding what to re-review.
   - Classify the review branch as plan, implementation, or mixed before loading detailed references.
-  - Start the durable review with `cc-devflow review start` before producing findings; encode selected nodes, skipped nodes, risk lanes, scope, base SHA, and head SHA in the first ledger event.
+  - Resolve the CLI with `../cc-dev/scripts/resolve-cc-devflow.sh require review` before recording review lifecycle events; unsupported or old CLIs are blockers.
+  - Start the durable review with the resolved CLI's `review start` before producing findings; encode selected nodes, skipped nodes, risk lanes, scope, base SHA, and head SHA in the first ledger event.
   - Decide whether nodes need independent reviewer agents before starting node execution; record the decision in the `review-started` event and optional `review-agent-results.jsonl`.
   - For broad implementation or mixed reviews, decide whether the risk-lane review swarm profile is required; record used, skipped, or unavailable lanes in `review-ledger.jsonl`.
   - Freeze the requested scope before finding smells; only report smells inside the requirement blast radius or clearly amplified by the current work.
@@ -51,7 +53,7 @@ exit_criteria:
   - review-ledger.jsonl records selected tools, review nodes, skipped nodes with reasons, review order, and final route through CLI events.
   - review-ledger.jsonl appends one record per reviewed node with status, evidence refs, findings, and follow-up route.
   - review-agent-results.jsonl records read-only reviewer outputs when subagents are used, or the review ledger records why agents were unavailable or unnecessary.
-  - review-findings.json exists only when later agents need structured findings; human Markdown is rendered on demand with `cc-devflow review render`.
+  - review-findings.json exists only when later agents need structured findings; human Markdown is rendered on demand with resolved CLI `review render`.
   - Plan-stage reviews record every selected strategy/design/engineering/DX facet as checked, skipped, or blocked.
   - Implementation-stage reviews include diff evidence, code-smell evidence, test and E2E/plugin verification evidence for every selected changed surface.
   - Every in-scope code smell has a concrete recommendation or an explicit skip/defer rationale.
@@ -238,7 +240,7 @@ Every run follows this loop:
    - which nodes need independent subagent review
    - which nodes stay in main thread
    - why any eligible reviewer was skipped
-5. Run `cc-devflow review start` before findings:
+5. Run resolved CLI `review start` before findings:
    - selected node ids
    - skipped nodes and reasons
    - review mode and scope
@@ -263,11 +265,11 @@ When re-reviewing the same file or plan, do not restart from zero. Compare curre
 
 Use CLI records as the default durable output:
 
-1. `cc-devflow review start --change <id> --change-key <key> --mode <plan|implementation|mixed> --scope <scope> --base-sha <sha> --head-sha <sha> --selected-node <node> --skipped-node <node:reason> --risk-lane <lane>`
-2. `cc-devflow review record-node --review-id <id> --node-id <node> --target <artifact> --status checked|skipped|blocked --evidence-ref <ref> --finding <id> --next <skill>`
-3. `cc-devflow review add-finding --review-id <id> --finding-id <id> --severity <level> --confidence <1-10> --display-tier <blocking|warning> --path <path> --evidence <evidence> --recommendation <text> --route <skill>`
-4. `cc-devflow review close --review-id <id> --status clean|findings|blocked --blocking-count <n> --warning-count <n> --next <skill>`
-5. `cc-devflow review render --review-id <id> --output <path>` only when a human Markdown report is explicitly needed.
+1. `bash "$DEVFLOW" review start --change <id> --change-key <key> --mode <plan|implementation|mixed> --scope <scope> --base-sha <sha> --head-sha <sha> --selected-node <node> --skipped-node <node:reason> --risk-lane <lane>`
+2. `bash "$DEVFLOW" review record-node --review-id <id> --node-id <node> --target <artifact> --status checked|skipped|blocked --evidence-ref <ref> --finding <id> --next <skill>`
+3. `bash "$DEVFLOW" review add-finding --review-id <id> --finding-id <id> --severity <level> --confidence <1-10> --display-tier <blocking|warning> --path <path> --evidence <evidence> --recommendation <text> --route <skill>`
+4. `bash "$DEVFLOW" review close --review-id <id> --status clean|findings|blocked --blocking-count <n> --warning-count <n> --next <skill>`
+5. `bash "$DEVFLOW" review render --review-id <id> --output <path>` only when a human Markdown report is explicitly needed.
 
 Append one JSON line to `review/review-ledger.jsonl` per review event. A reviewed node event looks like:
 

@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-002.v2`
 - Design version: `design.v2`
-- CC-Plan skill version: `3.9.2`
+- CC-Plan skill version: `3.9.3`
 - Work branch: `REQ/002-bulk-invite-import`
 - Source roadmap item: `RM-010`
 - Source roadmap version: `roadmap.v2`
@@ -43,14 +43,22 @@
 ClaudeCode / Codex 执行本计划时，必须把本文件当成任务模板合同，而不是普通 TODO 列表。
 
 - Template source: `assets/TASKS_TEMPLATE.md`
-- Context index first: run `cc-devflow query workflow-context --change <changeId> --change-key <changeKey> --cwd <repo-root> --data-only --no-trace --compact` before opening deep sections; use `packetOnly` plus `mustNotForget` first, verify `sourceHashes`, open `defaultOpen` refs only when needed, and reserve `deepOpen` for matching `openWhen.conditions`.
+- CLI resolver: all workflow commands must run through `.claude/skills/cc-dev/scripts/resolve-cc-devflow.sh` or `.codex/skills/cc-dev/scripts/resolve-cc-devflow.sh`; if it cannot prove `query workflow-context`, `task-contract`, `next-change-key`, and `review`, stop blocked.
+- Context index first: run resolved CLI `query workflow-context --change <changeId> --change-key <changeKey> --cwd <repo-root> --data-only --no-trace --compact` before opening deep sections; use `packetOnly` plus `mustNotForget` first, verify `sourceHashes`, open `defaultOpen` refs only when needed, and reserve `deepOpen` for matching `openWhen.conditions`.
 - Task selection: read `planning/task-manifest.json.currentTaskId`; if empty, run the ready-task selector before choosing work.
 - Task block rule: read the full task block before coding; title-only execution is invalid.
 - Completion rule: after verification and review gates pass, run the completion script; do not manually edit checkbox, status, or `currentTaskId`.
 - Completion failure: if the script fails, fix the missing review / dependency evidence and rerun it. Do not bypass it by editing JSON or Markdown.
 
 ```bash
-cc-devflow query workflow-context --change <changeId> --change-key <changeKey> --cwd <repo-root> --data-only --no-trace --compact
+DEVFLOW=".claude/skills/cc-dev/scripts/resolve-cc-devflow.sh"
+if [[ ! -f "$DEVFLOW" && -f ".codex/skills/cc-dev/scripts/resolve-cc-devflow.sh" ]]; then
+  DEVFLOW=".codex/skills/cc-dev/scripts/resolve-cc-devflow.sh"
+fi
+bash "$DEVFLOW" require query workflow-context task-contract next-change-key review
+bash "$DEVFLOW" query workflow-context --change <changeId> --change-key <changeKey> --cwd <repo-root> --data-only --no-trace --compact
+bash "$DEVFLOW" task-contract compile --change <changeId> --change-key <changeKey> --cwd <repo-root>
+bash "$DEVFLOW" task-contract validate --change <changeId> --change-key <changeKey> --cwd <repo-root>
 SCRIPT_ROOT=".claude/skills/cc-do/scripts"
 if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then
   SCRIPT_ROOT=".codex/skills/cc-do/scripts"

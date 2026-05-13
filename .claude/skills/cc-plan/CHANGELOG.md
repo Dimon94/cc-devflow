@@ -1,5 +1,11 @@
 # CC-Plan Skill Changelog
 
+## v3.9.3 - 2026-05-13
+
+- route all deterministic workflow commands through the shared `resolve-cc-devflow.sh` CLI resolver before writing durable artifacts
+- block old global CLIs and adapter-only entrypoints when `query workflow-context`, `task-contract`, `next-change-key`, or `review` are unavailable
+- update generated task templates so `task-manifest.json` and `change-meta.json` are compiled by a capability-checked CLI instead of PATH luck
+
 ## v3.9.2 - 2026-05-13
 
 - make CLI-owned machine artifacts a hard rule: AI writes `planning/tasks.md`, then runs `cc-devflow task-contract compile` / `validate` for `task-manifest.json` and `change-meta.json`

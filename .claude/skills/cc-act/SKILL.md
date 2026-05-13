@@ -1,6 +1,6 @@
 ---
 name: cc-act
-version: 1.8.9
+version: 1.8.10
 description: 'Use when verified work must be shipped or handed off with a clear landing path: run simplify and required tests, create or update a PR, prepare a local handoff, close out merged work, sync docs, write release notes, and fold follow-ups back into backlog or roadmap.'
 triggers:
   - 准备提 PR
@@ -21,6 +21,7 @@ reads:
   - assets/PROJECT_POSTMORTEM_INDEX_TEMPLATE.md
   - assets/PROJECT_POSTMORTEM_PRINCIPLES_TEMPLATE.md
   - docs/guides/project-postmortem.md
+  - ../cc-dev/scripts/resolve-cc-devflow.sh
   - ../cc-roadmap/scripts/locate-roadmap-item.sh
   - ../cc-roadmap/scripts/sync-roadmap-progress.sh
   - scripts/ensure-ship-branch.sh
@@ -55,14 +56,15 @@ writes:
 effects:
   - roadmap progress and backlog follow-up updates when needed
 entry_gate:
-  - Run `cc-devflow query workflow-context --change <changeId> --change-key <changeKey> --data-only --no-trace --compact` first; continue only when it reports `nextAction.skill == "cc-act"`.
+  - Resolve the CLI with `../cc-dev/scripts/resolve-cc-devflow.sh require query workflow-context review` first; unsupported or old CLIs are blockers.
+  - Run the resolved CLI's `query workflow-context --change <changeId> --change-key <changeKey> --data-only --no-trace --compact` first; continue only when it reports `nextAction.skill == "cc-act"`.
   - Accept only a passing review/report-card.json with reroute=none and specSyncReady=true.
   - Freeze current branch, PR, ship-mode, auth, clean-tree, and rollback facts before writing delivery materials.
   - Choose exactly one ship mode from current facts; if facts conflict, prefer the newer verified source and record the rejected path as a blocker or follow-up.
   - If simplify, tests, or act changes code or verification scope, return to cc-check immediately.
   - Read source roadmap progress from `devflow/roadmap.json`, `devflow/ROADMAP.md`, optional `devflow/BACKLOG.md`, or legacy `devflow/roadmap-tracking.json`; act must not ship against stale RM state.
   - For FIX closeout or recurring AI/process/engineering failures, update the project postmortem under `devflow/postmortems/` before final ship/handoff material is declared complete.
-  - 'For `post-merge-closeout`, freeze the archive target and run `cc-devflow archive-change <change-key>` after release note and roadmap writeback; only skip with an explicit `ArchiveSkip` blocker in the handoff.'
+  - 'For `post-merge-closeout`, freeze the archive target and run resolved CLI `archive-change <change-key>` after release note and roadmap writeback; only skip with an explicit `ArchiveSkip` blocker in the handoff.'
 exit_criteria:
   - The ship mode is explicit, delivery materials match that mode, and the next maintainer has one clear entry point.
   - Docs, PR text, release notes, handoff artifacts, review range, readiness dashboard, PR body accuracy check, and test evidence reflect the same proven facts.
@@ -102,7 +104,7 @@ tool_budget:
 
 ## Runtime Output Policy
 
-写入任何 durable Markdown 或 JSON metadata 前，先运行 `cc-devflow config resolve --format policy`。
+写入任何 durable Markdown 或 JSON metadata 前，先用 `../cc-dev/scripts/resolve-cc-devflow.sh` 校验 CLI，再运行 `config resolve --format policy`。
 
 - `Output language` 是机器约束，PR brief、resume index、release note 和 status handoff 必须记录并遵守它。
 - `agent_preferences` 是用户偏好建议，只影响表达方式和结构选择，不覆盖本 Skill 的工作流边界。
@@ -182,7 +184,7 @@ tool_budget:
 
 ## Entry Gate
 
-1. 先运行 `cc-devflow query workflow-context --change <changeId> --change-key <changeKey> --data-only --no-trace --compact`，确认 context index 的 `nextAction.skill == "cc-act"`。
+1. 先运行 resolved CLI 的 `query workflow-context --change <changeId> --change-key <changeKey> --data-only --no-trace --compact`，确认 context index 的 `nextAction.skill == "cc-act"`。
 2. 再读 `review/report-card.json`，只接受已通过且有证据的现实。
 3. 默认只使用 workflow context 的 `packetOnly`、`mustNotForget` 和 `sourceHashes`；必要时打开 `progressiveDisclosure.defaultOpen` 的 section / JSON refs；只有 ship mode、roadmap sync、rollback、hash mismatch 或 postmortem 触发时，再读 `deepOpen` 里的完整 `planning/tasks.md`、manifest、change-meta、相关 capability spec、handoff 或 legacy fallback。
 4. 运行 `scripts/verify-act-gate.sh --dir <requirement-dir>`，确认 gate 真的闭合。
@@ -240,7 +242,7 @@ tool_budget:
    - 必须完成 doc sync
    - 需要对外说明时生成 `handoff/release-note.md`
    - 必须把 follow-up 回写到 `devflow/roadmap.json`，并重新生成 `devflow/ROADMAP.md` / `devflow/BACKLOG.md`
-   - 必须运行 `cc-devflow archive-change <change-key>` 归档已闭环 change；除非存在明确安全阻塞并写入 `ArchiveSkip`
+   - 必须运行 resolved CLI `archive-change <change-key>` 归档已闭环 change；除非存在明确安全阻塞并写入 `ArchiveSkip`
 
 不是每次都要把所有文件生成一遍。材料必须服务于当前 ship 模式，而不是为了流程好看。
 
@@ -396,7 +398,7 @@ PR body 不是聊天摘要，而是 reviewer 的第一份执行材料。`create-
    - 被推迟但必须保留的事项
    - 因本次结果而改变优先级的事项
 14. 用 `sync-roadmap-progress.sh` 更新 source RM 的 status、REQ/FIX 绑定和 progress：`create-pr` / `update-pr` 通常写 `In review` + `100%`，`local-handoff` 写 `Ready for handoff`，`post-merge-closeout` 写 `Done`；如果无 source RM，必须在 handoff 写 no-op reason。
-15. 如果 ship mode 是 `post-merge-closeout`，归档不是建议而是 exit gate：运行 `cc-devflow archive-change <change-key>` 将已完成变更移入 `devflow/changes/archive/YYYY-MM/`，然后用 `cc-devflow list-archived` 或文件路径确认归档成功。
+15. 如果 ship mode 是 `post-merge-closeout`，归档不是建议而是 exit gate：运行 resolved CLI `archive-change <change-key>` 将已完成变更移入 `devflow/changes/archive/YYYY-MM/`，然后用 resolved CLI `list-archived` 或文件路径确认归档成功。
 16. 只有在归档会丢失未合并证据、用户明确要求保留 active change、或 archive target 已冲突时，才允许跳过；跳过必须在 handoff 写 `ArchiveSkip`、原因、受影响路径、以及精确 retry command。
 
 ## Output

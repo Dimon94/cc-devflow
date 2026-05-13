@@ -209,7 +209,7 @@ case "$ship_mode" in
   create-pr) next_action="Push current branch and create PR / MR from pr-brief.md." ;;
   update-pr) next_action="Refresh the open PR / MR body and resolve outstanding review feedback." ;;
   local-handoff) next_action="Hand off with pr-brief.md and this resume index." ;;
-  post-merge-closeout) next_action="Run release note/backlog writeback, then run cc-devflow archive-change $requirement_id and verify the archive path." ;;
+  post-merge-closeout) next_action="Run release note/backlog writeback, then run resolved CLI archive-change $requirement_id and verify the archive path." ;;
 esac
 if [[ "$branch_rescue" == "create-branch-before-pr" ]]; then
   next_action="Run ensure-ship-branch.sh, rerun final verification, then push the named branch and create PR / MR from pr-brief.md."

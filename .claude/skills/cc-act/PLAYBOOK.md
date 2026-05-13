@@ -189,7 +189,7 @@ Ship 必须属于这 4 种模式之一：
 - 不做 feature branch PR 动作
 - 在 merged result 上重跑必要 gate，并记录命令、exit status、关键观察
 - 完成 release note、文档同步、backlog/roadmap 回写、归档
-- 归档是 exit gate：运行 `cc-devflow archive-change <change-key>`，再用 archive path 或 `cc-devflow list-archived` 证明 active change 已离开 `devflow/changes/<change-key>`
+- 归档是 exit gate：运行 resolved CLI `archive-change <change-key>`，再用 archive path 或 resolved CLI `list-archived` 证明 active change 已离开 `devflow/changes/<change-key>`
 
 ### destructive cleanup
 
@@ -239,7 +239,7 @@ Ship 必须属于这 4 种模式之一：
 8. ship preflight failure 是否有 `ShipPreflightError`、artifact ref 和 rescue action？
 9. rollback guard 是否足够让下一位维护者不靠聊天记录回退？
 10. source RM 的 status、REQ/FIX、progress 是否已经和 ship 现实一致？
-11. `post-merge-closeout` 是否已经跑过 `cc-devflow archive-change <change-key>`，并留下 archive path？如果没有，是否有明确 `ArchiveSkip` blocker 和 retry command？
+11. `post-merge-closeout` 是否已经跑过 resolved CLI `archive-change <change-key>`，并留下 archive path？如果没有，是否有明确 `ArchiveSkip` blocker 和 retry command？
 
 如果第 1 或第 3 题答案不是“能”，说明 `cc-act` 仍然太重或太糊。
 

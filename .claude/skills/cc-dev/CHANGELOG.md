@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.3
+
+- add the shared `resolve-cc-devflow.sh` CLI resolver for PDCA/IDCA stage transitions
+- require capability-checked `query workflow-context`, `task-contract`, `next-change-key`, and `review` support before trusting workflow commands
+- make old global CLIs and adapter-only entrypoints blockers instead of letting agents compensate with handwritten machine artifacts
+
 ## 1.0.2
 
 - internalize operating discipline at the PDCA/IDCA loop level: state assumptions, route interpretation, success criteria, stop conditions, and token checkpoint risk before lower-level action

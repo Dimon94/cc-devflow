@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-001.v1`
 - Design version: `design.v1`
-- CC-Plan skill version: `3.9.2`
+- CC-Plan skill version: `3.9.3`
 - Work branch: `REQ/001-copy-invite-link`
 - Requirement ID: `REQ-001`
 - Design mode: `tiny-design`

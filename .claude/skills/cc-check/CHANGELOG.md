@@ -1,5 +1,11 @@
 # CC-Check Skill Changelog
 
+## v1.11.4 - 2026-05-13
+
+- require the shared `resolve-cc-devflow.sh` CLI resolver before reading workflow context or review truth
+- block verification when the available CLI cannot prove `query workflow-context` and `review` support
+- forbid replacing missing review truth or report-card generation with simulated adapter output or handwritten artifacts
+
 ## v1.11.3 - 2026-05-13
 
 - make `review/report-card.json` script-owned: agents must regenerate it through `scripts/render-report-card.js` and validate it with `scripts/verify-gate.sh`

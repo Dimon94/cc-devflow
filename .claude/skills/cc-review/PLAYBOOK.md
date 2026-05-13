@@ -15,7 +15,7 @@
 
 1. 先判断 review 对象是计划、实现，还是混合。
 2. 先读上一次 `cc-review` 的 `review-ledger.jsonl` / `review-findings.json` / `review-agent-results.jsonl`，再看当前 git 或 artifact delta；旧 `cc-review-*` 文件只作 fallback。
-3. 先用 `cc-devflow review start` 写入 `review-started` 事件，列出 Review 工具、节点、跳过理由和风险 lane。
+3. 先用 resolved CLI `review start` 写入 `review-started` 事件，列出 Review 工具、节点、跳过理由和风险 lane。
 4. 对适合独立审查的节点，优先派发只读 reviewer subAgent；没有工具时如实降级。
 5. 复杂实现 diff 优先使用 intent/regression、security/privacy、performance/reliability、contracts/coverage 四类风险 lane；小 diff 可以合并但必须说明。
 6. 按节点逐个 Review：review 一个、check 一个、ledger 记录一个。
@@ -30,7 +30,7 @@
 15. 不允许固定只列 3 个问题；finding 数量由节点遍历和证据决定。
 16. 输出前必须聚合 raw findings：合并重复，降级弱证据，拒收 speculative / out-of-scope / stale findings。
 17. 发现计划合同错误，回 `cc-plan`；发现代码错误，回 `cc-do`；只差验收，进 `cc-check`。
-18. 输出必须落到 `review/review-ledger.jsonl`，必要时补 `review/review-findings.json` / `review/review-agent-results.jsonl`；Markdown 报告只通过 `cc-devflow review render` 按需生成。
+18. 输出必须落到 `review/review-ledger.jsonl`，必要时补 `review/review-findings.json` / `review/review-agent-results.jsonl`；Markdown 报告只通过 resolved CLI `review render` 按需生成。
 
 ## Required Outputs
 
@@ -59,7 +59,7 @@
 - risk lanes：implementation / mixed review 是否覆盖 intent-regression、security-privacy、performance-reliability、contracts-coverage
 - node list：`R001`、`R002` ...，每个节点有 target、method、owner、evidence source、status
 
-Review 过程中每完成一个节点，就用 `cc-devflow review record-node` 追加一条 ledger；不要等最后一次性补记。
+Review 过程中每完成一个节点，就用 resolved CLI `review record-node` 追加一条 ledger；不要等最后一次性补记。
 
 ## SubAgent Review
 

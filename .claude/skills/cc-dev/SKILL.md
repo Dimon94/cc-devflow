@@ -1,6 +1,6 @@
 ---
 name: cc-dev
-version: 1.0.2
+version: 1.0.3
 description: "Use when a selected objective should be driven autonomously in the current session and current worktree through the cc-devflow PDCA or IDCA chain until a remote PR is opened or updated. It is goal-like autopilot for development: it may call cc-plan or cc-investigate, cc-do, cc-check, and cc-act, but it must not create a new worktree or merge PRs."
 triggers:
   - 自动驾驶开发这个需求
@@ -15,6 +15,7 @@ reads:
   - ../cc-do/SKILL.md
   - ../cc-check/SKILL.md
   - ../cc-act/SKILL.md
+  - scripts/resolve-cc-devflow.sh
   - devflow/changes/<change-key>/change-meta.json
 writes:
   - path: devflow/changes/<change-key>/**
@@ -35,7 +36,8 @@ entry_gate:
   - Confirm the current session already owns the intended worktree and branch; do not create another worktree inside cc-dev.
   - Classify the route as PDCA for features/changes or IDCA for bugs/regressions before invoking lower-level skills.
   - State assumptions, route interpretation, success criteria, stop conditions, and token checkpoint risk before the first lower-level action.
-  - After a change key exists, run `cc-devflow query workflow-context --change <changeId> --change-key <changeKey> --data-only --no-trace --compact` before every stage transition and follow its context-index `nextAction` instead of reloading the whole PDCA/IDCA history.
+  - Resolve the CLI with `scripts/resolve-cc-devflow.sh require query workflow-context task-contract next-change-key review` before workflow commands; old global CLIs and adapter-only entrypoints are blockers.
+  - After a change key exists, run the resolved CLI's `query workflow-context --change <changeId> --change-key <changeKey> --data-only --no-trace --compact` before every stage transition and follow its context-index `nextAction` instead of reloading the whole PDCA/IDCA history.
 exit_criteria:
   - "The selected route reached exactly one terminal state: remote-pr-opened, remote-pr-updated, local-handoff, needs-clarification, or blocked."
   - For code work, cc-check produced fresh evidence before cc-act shipped or handed off.
@@ -161,7 +163,12 @@ Stopping is not success. Budget pressure is not success.
 creates a change key, every stage transition starts from:
 
 ```bash
-cc-devflow query workflow-context --change <changeId> --change-key <changeKey> --cwd <repo-root> --data-only --no-trace --compact
+DEVFLOW=".claude/skills/cc-dev/scripts/resolve-cc-devflow.sh"
+if [[ ! -f "$DEVFLOW" && -f ".codex/skills/cc-dev/scripts/resolve-cc-devflow.sh" ]]; then
+  DEVFLOW=".codex/skills/cc-dev/scripts/resolve-cc-devflow.sh"
+fi
+bash "$DEVFLOW" require query workflow-context task-contract next-change-key review
+bash "$DEVFLOW" query workflow-context --change <changeId> --change-key <changeKey> --cwd <repo-root> --data-only --no-trace --compact
 ```
 
 The query result is the default context index. It routes; source artifacts decide disputed facts:
@@ -178,6 +185,10 @@ The query result is the default context index. It routes; source artifacts decid
 If the query cannot decide the next action, fix the named artifact error or
 reroute to the artifact owner skill. Do not compensate by reading every file and
 guessing from chat history.
+
+If the resolver cannot find a CLI with `query workflow-context`,
+`task-contract`, `next-change-key`, and `review`, stop as `blocked`. Do not use
+simulated adapter output and do not handwrite machine artifacts to keep moving.
 
 ## Terminal States
 

@@ -1,5 +1,11 @@
 # CC-Review Changelog
 
+## 2.0.1 - 2026-05-13
+
+- require the shared `resolve-cc-devflow.sh` CLI resolver before writing review lifecycle events
+- make missing `review` CLI capability a blocker instead of allowing manual ledger or report-card substitutes
+- update review command examples to call `bash "$DEVFLOW" review ...`
+
 ## 2.0.0 - 2026-05-13
 
 - break default review output away from Markdown plan/report files and make `review-ledger.jsonl` the required durable record

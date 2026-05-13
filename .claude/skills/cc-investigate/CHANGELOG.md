@@ -1,5 +1,11 @@
 # CC-Investigate Skill Changelog
 
+## v1.5.2 - 2026-05-13
+
+- route investigation workflow commands through the shared `resolve-cc-devflow.sh` CLI resolver before freezing machine artifacts
+- fail closed when the available CLI lacks `query workflow-context`, `task-contract`, `next-change-key`, or `review`
+- update root-cause task templates so machine JSON generation cannot fall back to simulated adapter output
+
 ## v1.5.1 - 2026-05-13
 
 - slim the public `SKILL.md` entrypoint into a thin root-cause contract with conditional escalation packs

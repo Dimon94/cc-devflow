@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-003.v1`
 - Design version: `design.v1`
-- CC-Plan skill version: `3.9.2`
+- CC-Plan skill version: `3.9.3`
 - Work branch: `REQ/003-audit-log-export`
 - Requirement ID: `REQ-003`
 - Design mode: `tiny-design`

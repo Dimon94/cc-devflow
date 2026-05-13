@@ -1,6 +1,6 @@
 ---
 name: cc-do
-version: 1.6.8
+version: 1.6.9
 description: Use when implementing planned tasks, resuming interrupted work, applying a frozen investigation handoff, or landing review feedback after cc-plan or cc-investigate.
 triggers:
   - 开始做 T003
@@ -16,6 +16,7 @@ reads:
   - references/execution-recovery.md
   - references/parallel-dispatch.md
   - docs/guides/project-postmortem.md
+  - ../cc-dev/scripts/resolve-cc-devflow.sh
 writes:
   - path: devflow/changes/<change-key>/execution/tasks/<task-id>/events.jsonl
     durability: durable
@@ -34,7 +35,8 @@ effects:
   - test changes
   - task status updates in planning/tasks.md and planning/task-manifest.json
 entry_gate:
-  - Run `cc-devflow query workflow-context --change <changeId> --change-key <changeKey> --data-only --no-trace --compact` first and follow its context-index `packetOnly`, `mustNotForget`, `sourceHashes`, `defaultOpen`, `currentTask`, `commandsToTrust`, and `openWhen.conditions` fields before opening deep artifacts.
+  - Resolve the CLI with `../cc-dev/scripts/resolve-cc-devflow.sh require query workflow-context task-contract review` first; unsupported or old CLIs are blockers.
+  - Run the resolved CLI's `query workflow-context --change <changeId> --change-key <changeKey> --data-only --no-trace --compact` and follow its context-index `packetOnly`, `mustNotForget`, `sourceHashes`, `defaultOpen`, `currentTask`, `commandsToTrust`, and `openWhen.conditions` fields before opening deep artifacts.
   - Before editing, read the direct caller, exported surface, shared helper, and local convention for the touched path.
   - Read `planning/tasks.md`, `planning/task-manifest.json`, `change-meta.json`, related specs, Git state, and CLI logs only when workflow-context says the deep section is needed; legacy `planning/design.md` / `planning/analysis.md` are fallback inputs only.
   - Select only ready tasks whose dependencies, wave, touched paths, and file ownership are clear.
@@ -82,7 +84,7 @@ tool_budget:
 
 ## Runtime Output Policy
 
-写入任何 durable Markdown 或 JSON metadata 前，先运行 `cc-devflow config resolve --format policy`。
+写入任何 durable Markdown 或 JSON metadata 前，先用 `../cc-dev/scripts/resolve-cc-devflow.sh` 校验 CLI，再运行 `config resolve --format policy`。
 
 - `Output language` 是机器约束；如果失败或 debug CLI 日志需要人类可读摘要，必须记录并遵守它。
 - `agent_preferences` 是用户偏好建议，只影响表达方式和结构选择，不覆盖本 Skill 的工作流边界。
@@ -122,7 +124,7 @@ tool_budget:
 | bug 还没搞清根因 | reroute 到 `cc-investigate` |
 | 收到 review comment，要在既定范围内修正 | `review-fix` |
 
-如果连“当前 task 是什么”都说不清，先别写代码，先跑 `cc-devflow query workflow-context`。只有它的 `openWhen` 指向 scheduling 或 recovery 时，才继续跑 `scripts/select-ready-tasks.sh`；`scripts/build-task-context.sh` 只能输出 stdout，不得生成 `context.md`。
+如果连“当前 task 是什么”都说不清，先别写代码，先用 resolver 跑 `query workflow-context`。只有它的 `openWhen` 指向 scheduling 或 recovery 时，才继续跑 `scripts/select-ready-tasks.sh`；`scripts/build-task-context.sh` 只能输出 stdout，不得生成 `context.md`。
 
 ## Harness Contract
 
@@ -168,7 +170,7 @@ Refactor 只能发生在 Green 之后。优先处理当前 slice 暴露出的重
 
 ## Entry Gate
 
-1. 先运行 `cc-devflow query workflow-context --change <changeId> --change-key <changeKey> --data-only --no-trace --compact`，把 `nextAction.skill == "cc-do"` 和 `currentTask.id` 作为执行入口。
+1. 先运行 resolved CLI 的 `query workflow-context --change <changeId> --change-key <changeKey> --data-only --no-trace --compact`，把 `nextAction.skill == "cc-do"` 和 `currentTask.id` 作为执行入口。
 2. 先只用 `workflow-context.progressiveDisclosure.packetOnly` 和 `mustNotForget` 做导航与护栏，必要时打开 `defaultOpen` 的 section / JSON refs；如果 `sourceHashes` 不匹配、命令缺失、scope/依赖/触点不确定，必须按 `openWhen.conditions` 打开 `deepOpen`，不能靠猜。
 3. 先用 `workflow-context.queues.readyTasks` 判断现在到底哪几个任务真的 ready；需要 shell 复核时再跑 `scripts/select-ready-tasks.sh`。
 4. 只锁定当前 ready task，或一组经依赖、wave、精确触点与父子路径触点校验后可并行的 ready tasks。
@@ -177,6 +179,8 @@ Refactor 只能发生在 Green 之后。优先处理当前 slice 暴露出的重
 7. 如果 `task-manifest.json.metadata.lane == "quick"`，仍然必须有 current task、verification、task status 和唯一 next action；quick 只缩短文档密度，不跳过证据。
 8. 如果仓库含 `.gitmodules` 或 manifest 提供 `submodulePaths`，先用 `scripts/detect-file-conflicts.sh` 标出 `submoduleTouches`；只有触达该 submodule 的任务失去默认 worktree 隔离资格，未触达任务不能被无辜串行化。
 9. 每个单 task 开工前，用当前 task 的 touched files、capability、错误类型、模型风险词快速检索 `devflow/postmortems`；命中时把相关原则转成当前 task 的 guardrail。不要为 no-match 生成过程文件。
+
+CLI resolver 失败时不得继续执行当前 task。缺 `query workflow-context`、`task-contract` 或 `review` 说明本轮没有可信任务上下文或 review 状态，必须 blocked，而不是读取旧 adapter 日志、补写 JSON 或手改 checkbox。
 
 ## Loop
 

@@ -44,7 +44,7 @@ detached HEAD 是分支事实，不是第 5 种 ship 模式。若远端可用且
 11. PR body accuracy 必须对照当前 report-card、当前 diff、当前 commits；旧 body 不能作为证据源
 12. follow-up 回写必须用行为契约表达，包含 current behavior、desired behavior、key interfaces、acceptance criteria、out of scope；不能只写文件路径或聊天 TODO
 13. roadmap 回写只更新 `devflow/roadmap.json`，并通过 `sync-roadmap-progress.sh` 重新生成 `devflow/ROADMAP.md` / `devflow/BACKLOG.md`
-14. `post-merge-closeout` 的归档必须真实执行：`cc-devflow archive-change <change-key>`，不能只把“可归档”写进 next action
+14. `post-merge-closeout` 的归档必须真实执行：resolved CLI `archive-change <change-key>`，不能只把“可归档”写进 next action
 
 ## Memory Consolidation
 

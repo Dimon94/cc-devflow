@@ -1,5 +1,11 @@
 # CC-Do Skill Changelog
 
+## v1.6.9 - 2026-05-13
+
+- require the shared `resolve-cc-devflow.sh` CLI resolver before loading workflow context or review state
+- block execution when the available CLI lacks `query workflow-context`, `task-contract`, or `review`
+- make old adapter logs and handwritten task-status JSON invalid substitutes for current machine artifact truth
+
 ## v1.6.8 - 2026-05-13
 
 - internalize execution operating rules so `cc-do` reads callers/exports/helpers before editing, keeps diffs surgical, matches repo conventions, and fails loudly on blockers

@@ -1,6 +1,6 @@
 ---
 name: cc-check
-version: 1.11.3
+version: 1.11.4
 description: Use when a planned or investigated change needs fresh verification evidence, layered gate proof, review truth, and an honest pass fail blocked verdict before entering cc-act.
 triggers:
   - 验收这个需求
@@ -16,13 +16,15 @@ reads:
   - references/gate-contract.md
   - references/review-contract.md
   - assets/REPORT_CARD_TEMPLATE.json
+  - ../cc-dev/scripts/resolve-cc-devflow.sh
 writes:
   - path: devflow/changes/<change-key>/review/report-card.json
     durability: durable
     required: true
     owner: scripts/render-report-card.js
 entry_gate:
-  - Run `cc-devflow query workflow-context --change <changeId> --change-key <changeKey> --data-only --no-trace --compact` first; enter verification only when `nextAction.skill` is `cc-check`, or record the reroute it reports.
+  - Resolve the CLI with `../cc-dev/scripts/resolve-cc-devflow.sh require query workflow-context review`; unsupported or old CLIs are blockers.
+  - Run the resolved CLI's `query workflow-context --change <changeId> --change-key <changeKey> --data-only --no-trace --compact` first; enter verification only when `nextAction.skill` is `cc-check`, or record the reroute it reports.
   - Use only the workflow context `packetOnly` and `mustNotForget` first, then `defaultOpen` section / JSON refs before expanding `planning/tasks.md`, `planning/task-manifest.json`, `change-meta.json`, and latest runtime evidence; legacy design/analysis files are fallback inputs only.
   - "Read requirement-level review truth in this order: `review/review-findings.json`, then `review/review-ledger.jsonl`, then legacy `review/cc-review-report.md` with `freshness=unknown`; if none exist, block with `review-missing`."
   - Re-run fresh commands instead of inheriting cc-do narration.
@@ -64,7 +66,7 @@ tool_budget:
 
 ## Runtime Output Policy
 
-写入任何 durable Markdown 或 JSON metadata 前，先运行 `cc-devflow config resolve --format policy`。
+写入任何 durable Markdown 或 JSON metadata 前，先用 `../cc-dev/scripts/resolve-cc-devflow.sh` 校验 CLI，再运行 `config resolve --format policy`。
 
 - `Output language` 是机器约束，`review/report-card.json` 中新增的人类可读 verdict 和报告摘要必须记录并遵守它。
 - `agent_preferences` 是用户偏好建议，只影响表达方式和结构选择，不覆盖本 Skill 的工作流边界。
@@ -123,7 +125,7 @@ NO PASS WITHOUT FRESH EVIDENCE
 你必须按阶段推进，不能跳着给结论：
 
 1. **Reset Contract**
-   - 先读 `cc-devflow query workflow-context --data-only --no-trace --compact` 的 context index
+   - 先读 resolved CLI 的 `query workflow-context --data-only --no-trace --compact` context index
    - 默认只用 `progressiveDisclosure.packetOnly` 和 `mustNotForget`
    - 先检查 `sourceHashes`；不匹配就重跑 query
    - 只有 `openWhen.conditions` 触发时再读 `deepOpen` 里的 `planning/tasks.md`、完整 `planning/task-manifest.json`、`change-meta.json` 或 legacy fallback
@@ -146,6 +148,8 @@ NO PASS WITHOUT FRESH EVIDENCE
    - 用 `scripts/verify-gate.sh --report review/report-card.json` 校验；失败时修输入或 renderer，不手改 JSON
 
 任何阶段发现“证据过期、边界矛盾、结论无法诚实成立”，都必须停下重建，而不是硬凑 `pass`。
+
+如果 resolver 不能证明 CLI 支持 `query workflow-context` 和 `review`，本轮结论只能是 `blocked`，并记录缺失能力。禁止用 simulated adapter 输出替代 review truth，也禁止手写 `review-findings.json`、`review-ledger.jsonl`、`cc-review-report.md` 或 `report-card.json` 来伪造放行证据。
 
 ## Harness Contract
 
