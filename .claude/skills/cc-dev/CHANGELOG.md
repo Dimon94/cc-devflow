@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.2
+
+- make the resolver live-probe `workflow-context` so stale CLIs that still ask for manifest or planning process files are rejected
+
 ## 1.1.1
 
 - simplify the autopilot state contract around `task.md`, Git, and PR/handoff reality

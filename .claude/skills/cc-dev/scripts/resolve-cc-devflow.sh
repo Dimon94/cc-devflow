@@ -66,6 +66,8 @@ candidate_supports() {
   shift
   local help_output
   local query_output
+  local probe_dir
+  local probe_output
 
   help_output="$("$@" --help 2>&1)" || return 1
 
@@ -74,6 +76,16 @@ candidate_supports() {
       workflow-context)
         query_output="$("$@" query list 2>&1)" || return 1
         grep -Fq 'workflow-context' <<<"$query_output" || return 1
+        probe_dir="$(mktemp -d 2>/dev/null || mktemp -d -t cc-devflow-probe)"
+        if probe_output="$("$@" query workflow-context --cwd "$probe_dir" --change REQ-000 --no-trace --compact 2>&1)"; then
+          rm -rf "$probe_dir"
+          return 1
+        fi
+        rm -rf "$probe_dir"
+        grep -Fq 'task.md' <<<"$probe_output" || return 1
+        if grep -Eq 'task-manifest|change-meta|planning/' <<<"$probe_output"; then
+          return 1
+        fi
         ;;
       query|next-change-key|config|init|adapt)
         contains_word "$help_output" "$capability" || return 1

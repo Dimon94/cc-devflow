@@ -54,7 +54,7 @@ DEVFLOW=".claude/skills/cc-dev/scripts/resolve-cc-devflow.sh"
 if [[ ! -f "$DEVFLOW" && -f ".codex/skills/cc-dev/scripts/resolve-cc-devflow.sh" ]]; then
   DEVFLOW=".codex/skills/cc-dev/scripts/resolve-cc-devflow.sh"
 fi
-bash "$DEVFLOW" require query workflow-context next-change-key review
+bash "$DEVFLOW" require query workflow-context next-change-key
 bash "$DEVFLOW" query workflow-context --change <changeId> --change-key <changeKey> --cwd <repo-root> --data-only --no-trace --compactSCRIPT_ROOT=".claude/skills/cc-do/scripts"
 if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then
   SCRIPT_ROOT=".codex/skills/cc-do/scripts"

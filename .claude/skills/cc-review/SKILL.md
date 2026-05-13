@@ -13,7 +13,6 @@ triggers:
   - run cc-review
 reads:
   - PLAYBOOK.md
-  - CHANGELOG.md
   - references/review-methods.md
   - references/plan-review-branch.md
   - references/implementation-review-branch.md

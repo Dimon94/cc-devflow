@@ -12,7 +12,6 @@ triggers:
   - 是不是可以进 cc-act
 reads:
   - PLAYBOOK.md
-  - CHANGELOG.md
   - references/gate-contract.md
   - references/review-contract.md
   - ../cc-dev/scripts/resolve-cc-devflow.sh

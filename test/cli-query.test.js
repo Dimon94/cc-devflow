@@ -44,6 +44,9 @@ describe('cc-devflow query', () => {
       }
     });
     expect(payload.error.message).toContain('task.md');
+    expect(result.stdout).not.toContain('task-manifest');
+    expect(result.stdout).not.toContain('change-meta');
+    expect(result.stdout).not.toContain('planning/');
   });
 
   test('supports compact data-only workflow context from task.md and Git', () => {
@@ -106,5 +109,52 @@ describe('cc-devflow query', () => {
     expect(payload.files.prBrief).toContain('pr-brief.md');
     expect(payload.trace).toBeUndefined();
     expect(payload.ok).toBeUndefined();
+  });
+
+  test('workflow context trace never asks for retired process artifacts', () => {
+    const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-devflow-cli-query-trace-'));
+    const changeKey = 'REQ-125-trace-plan';
+    const changeDir = path.join(repoRoot, 'devflow', 'changes', changeKey);
+    fs.mkdirSync(path.join(changeDir, 'handoff'), { recursive: true });
+    fs.writeFileSync(
+      path.join(changeDir, 'task.md'),
+      [
+        '# REQ-125 Trace Plan',
+        '',
+        '- [x] T001 Finished task'
+      ].join('\n')
+    );
+    spawnSync('git', ['init'], { cwd: repoRoot, encoding: 'utf8' });
+
+    const result = spawnSync(
+      process.execPath,
+      [
+        CLI,
+        'query',
+        'workflow-context',
+        '--cwd',
+        repoRoot,
+        '--change',
+        'REQ-125',
+        '--change-key',
+        changeKey
+      ],
+      {
+        cwd: ROOT,
+        encoding: 'utf8'
+      }
+    );
+
+    const payload = JSON.parse(result.stdout);
+    const serialized = JSON.stringify(payload);
+
+    expect(result.status).toBe(0);
+    expect(payload.trace.artifactRefs).toEqual([
+      path.join(changeDir, 'task.md'),
+      path.join(changeDir, 'handoff', 'pr-brief.md')
+    ]);
+    expect(serialized).not.toContain('task-manifest');
+    expect(serialized).not.toContain('change-meta');
+    expect(serialized).not.toContain('planning/');
   });
 });

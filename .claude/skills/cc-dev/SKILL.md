@@ -1,6 +1,6 @@
 ---
 name: cc-dev
-version: 1.1.1
+version: 1.1.2
 description: Use when a selected objective should be driven autonomously in the current session and worktree through PDCA or IDCA until a PR, local handoff, clarification, or blocker.
 triggers:
   - 自动驾驶开发这个需求
