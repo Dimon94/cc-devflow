@@ -9,4 +9,4 @@ Read:
 
 Review behavior, regression risk, security, reliability, test quality, and code smells inside the current blast radius.
 
-Findings stay in the response or PR text. Do not write process files.
+Findings stay in the response. Ask which repair option to apply before editing code. Do not write process files.

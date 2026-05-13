@@ -1,5 +1,11 @@
 # CC-Review Changelog
 
+## 2.2.0 - 2026-05-13
+
+- split review exits by branch: plan and investigation reviews write findings directly into `task.md`
+- make implementation reviews return findings plus repair options and wait for the user's chosen fix before editing code
+- remove all other local review outputs; PR reviews are response/GitHub-only
+
 ## 2.1.2 - 2026-05-13
 
 - remove `no-op` routing from review output and use `stop` for clean/no-action endings
