@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.12] - 2026-05-13
+
+### Changed
+
+- Changed `cc-devflow task-contract` so task document budgets are advisory warnings instead of blocking validation failures.
+- Changed `npm run benchmark:skills` so skill entrypoint budgets report advisory failures without failing `npm run verify`.
+- Updated `cc-plan` and `cc-investigate` to preserve required task-template fields instead of trimming contract truth to fit token estimates.
+
+### Fixed
+
+- Fixed `task-contract compile` so shorthand task checklists fail before `task-manifest.json` or `change-meta.json` can be generated.
+- Added task-template validation to reject incomplete task blocks with `C11` instead of letting default manifest enrichment hide missing contract fields.
+
 ## [4.5.11] - 2026-05-13
 
 ### Added

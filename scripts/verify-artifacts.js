@@ -2,7 +2,7 @@
 
 /**
  * [INPUT]: 接收 repo root，扫描 devflow/changes 下的 change artifact 目录。
- * [OUTPUT]: 输出 C1-C10 artifact gate JSON 报告，并以首个违规规则的 exit code 退出。
+ * [OUTPUT]: 输出 artifact gate JSON 报告；C10 是 advisory warning，违规以首个硬规则 exit code 退出。
  * [POS]: REQ-003 verify:artifacts 仓库级入口，复用 task-contract validate 的规则真相。
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
@@ -22,7 +22,7 @@ const CHECKS = [
   ['C7', 4],
   ['C8', 5],
   ['C9', 5],
-  ['C10', 6]
+  ['C11', 3]
 ].map(([ruleId, exitCode]) => ({ ruleId, exitCode }));
 
 function readJsonSafe(filePath) {
@@ -84,6 +84,7 @@ function violationChecks(violations) {
 async function runVerifyArtifacts(rootDir = process.cwd()) {
   const repoRoot = path.resolve(rootDir);
   const violations = [];
+  const warnings = [];
   const checkedChanges = [];
   const skippedLegacy = [];
 
@@ -103,6 +104,10 @@ async function runVerifyArtifacts(rootDir = process.cwd()) {
       changeKey
     });
     checkedChanges.push(changeKey);
+    warnings.push(...(result.warnings || []).map((warning) => ({
+      ...warning,
+      changeKey
+    })));
     violations.push(...(result.violations || []).map((violation) => ({
       ...violation,
       changeKey
@@ -116,6 +121,7 @@ async function runVerifyArtifacts(rootDir = process.cwd()) {
     checks: violationChecks(violations),
     checkedChanges,
     skippedLegacy,
+    warnings,
     violations
   };
 }
@@ -135,6 +141,7 @@ if (require.main === module) {
       checks: CHECKS.map((check) => ({ ...check, status: 'blocked' })),
       checkedChanges: [],
       skippedLegacy: [],
+      warnings: [],
       violations: [{
         ruleId: 'runtime',
         exitCode: 1,

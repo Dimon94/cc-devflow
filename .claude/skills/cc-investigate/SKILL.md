@@ -1,6 +1,6 @@
 ---
 name: cc-investigate
-version: 1.5.2
+version: 1.5.3
 description: "Use when a bug, regression, broken task, or unexpected behavior needs root-cause investigation, reproducible evidence, and a frozen repair handoff before cc-do resumes coding."
 triggers:
   - "帮我查这个 bug"
@@ -39,6 +39,8 @@ entry_gate:
   - "Assign the change key through the resolved CLI with `next-change-key --prefix FIX --description \"<short bug name>\"`; first output line is `changeId`, second is full `changeKey`."
   - "Enforce the Worktree Branch Contract immediately: detached worktrees bind to `FIX/<task>`, default branches stop as setup blockers, unrelated branches need explicit same-change proof."
   - "Write root-cause truth in `planning/tasks.md#Root Cause Contract`; machine JSON must be generated or refreshed by `cc-devflow task-contract compile`, not handwritten by the AI."
+  - "Write repair task blocks directly from `assets/TASKS_TEMPLATE.md`; shorthand TODO tasks are invalid and must not be compiled into machine JSON."
+  - "Treat task document budget as advisory only; never delete root cause, evidence chain, repair boundary, verification, or required task-template fields just to fit a token target."
   - "Build a runnable feedback loop that matches the reported symptom before freezing root cause."
   - "Search prior investigations, recent fixes, TODO/backlog signals, and project postmortems before declaring the bug novel."
   - "Run the Root Cause Proof Ladder: symptom site, first bad state, violated contract, original trigger, counterfactual proof, escape reason."
@@ -49,7 +51,7 @@ exit_criteria:
   - "`planning/tasks.md#Root Cause Contract` proves the first bad state and original trigger, not only the visible error site."
   - "`planning/tasks.md#Root Cause Contract` records reproduction, feedback loop, evidence chain, tested hypotheses, confirmed root cause, and repair boundary."
   - "`planning/tasks.md#Root Cause Contract` records the Project Postmortem Recall result or `no-project-postmortems-yet`."
-  - "`planning/task-manifest.json` and `change-meta.json` were generated or refreshed by the resolved `cc-devflow task-contract compile`, then validated."
+  - "`planning/task-manifest.json` and `change-meta.json` were generated or refreshed by the resolved `cc-devflow task-contract compile`, then validated; budget warnings do not block handoff."
   - "`planning/tasks.md` and machine artifacts are explicit enough that cc-do can repair without chat memory."
   - "`planning/tasks.md` and `change-meta.json` record the canonical work branch or why branch mutation was invalid."
   - "The resolved `cc-devflow query workflow-context --compact` can derive the IDCA next action, packet digest, current task, trusted commands, and deep-open triggers."

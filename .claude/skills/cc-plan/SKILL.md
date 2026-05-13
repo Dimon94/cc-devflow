@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.9.3
+version: 3.9.4
 description: Use when a requirement, roadmap item, or bug needs scope clarification, design decisions, and executable task breakdown before coding starts.
 triggers:
   - 帮我规划这个需求
@@ -43,12 +43,14 @@ entry_gate:
   - Ask at most one blocking decision at a time, using the fixed D<N> Decision Question Protocol when the answer changes design or task boundaries.
   - Compare minimal viable and ideal architecture for non-trivial plans, but do not force that comparison for obvious tiny-design patches.
   - "Keep machine records CLI-owned: `task-manifest.json` and `change-meta.json` must be generated or refreshed by `cc-devflow task-contract compile`, not handwritten by the AI."
+  - "Write task blocks directly from `assets/TASKS_TEMPLATE.md`; shorthand TODO tasks are invalid and must not be compiled into machine JSON."
+  - "Treat task document budget as advisory only; never delete root cause, scope boundary, verification, or required task-template fields just to fit a token target."
   - Generate durable artifacts only after the recommended design is approved.
   - Before exit, sync or explicitly no-op the source roadmap item.
 exit_criteria:
   - "`planning/tasks.md#Contract Summary` states the approved solution, boundaries, frozen decisions, verification expectations, and any open assumptions."
   - "`planning/tasks.md` contains executable task blocks generated from `assets/TASKS_TEMPLATE.md`, including the script-based completion protocol."
-  - "`planning/task-manifest.json` and `change-meta.json` were generated or refreshed by the resolved `cc-devflow task-contract compile`, then validated."
+  - "`planning/task-manifest.json` and `change-meta.json` were generated or refreshed by the resolved `cc-devflow task-contract compile`, then validated; budget warnings do not block handoff."
   - "The resolved `cc-devflow query workflow-context --compact` can route the next stage and name the next task."
   - "The only normal next step is `cc-do`; unresolved WHAT/WHY ambiguity reroutes or blocks instead of leaking into execution."
 reroutes:

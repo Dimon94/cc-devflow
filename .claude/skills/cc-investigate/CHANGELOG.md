@@ -1,5 +1,10 @@
 # CC-Investigate Skill Changelog
 
+## v1.5.3 - 2026-05-13
+
+- require repair task blocks to be written directly from `assets/TASKS_TEMPLATE.md`; shorthand TODO tasks are invalid and rejected before machine JSON generation
+- clarify that task document budgets are advisory only and must not cause deletion of root-cause proof, evidence chain, repair boundary, verification, completion, or required task fields
+
 ## v1.5.2 - 2026-05-13
 
 - route investigation workflow commands through the shared `resolve-cc-devflow.sh` CLI resolver before freezing machine artifacts

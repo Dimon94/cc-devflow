@@ -20,6 +20,7 @@
 - Open for scheduling: `planning/task-manifest.json`, dependencies, touched files.
 - Open for audit/recovery: Git state, CLI logs, report-card findings, Workflow Forensics.
 - Machine JSON rule: after editing this file, run resolved CLI `task-contract compile --change <changeId> --change-key <changeKey>` and `task-contract validate --change <changeId> --change-key <changeKey>`; do not handwrite `task-manifest.json` or `change-meta.json`.
+- Budget rule: task document budget is advisory. Do not remove root cause proof, evidence chain, repair boundary, verification, completion protocol, or required task fields to satisfy a token estimate.
 
 ## Root Cause Contract
 
@@ -107,41 +108,60 @@ bash "$DEVFLOW" require query workflow-context task-contract next-change-key rev
 bash "$DEVFLOW" query workflow-context --change <changeId> --change-key <changeKey> --cwd <repo-root> --data-only --no-trace --compact
 bash "$DEVFLOW" task-contract compile --change <changeId> --change-key <changeKey> --cwd <repo-root>
 bash "$DEVFLOW" task-contract validate --change <changeId> --change-key <changeKey> --cwd <repo-root>
+SCRIPT_ROOT=".claude/skills/cc-do/scripts"
+if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then
+  SCRIPT_ROOT=".codex/skills/cc-do/scripts"
+fi
 ```
+
+- Template compliance rule: every repair task block must keep the required template fields (`Goal`, `Root cause proof`, `Do not re-decide`, `Artifact updates`, `TDD phase`, `Files`, `Read first`, `Project postmortem search`, `Verification`, `Evidence`, `Completion`, `Ready when`). `task-contract compile` rejects shorthand TODO tasks before writing machine JSON.
+- Budget handling: `task-contract validate` may return a C10 warning, but it must not block handoff; preserve root-cause truth and trim only duplicated prose.
 
 ## Phase 1: Reproduce And Probe Guard
 
 - [ ] T001 [TEST] Capture the failing behavior as a stable reproduction (dependsOn:none) `path/to/test`
   Goal: 让 bug 先变成一个快、准、可复跑且匹配用户症状的失败事实。
+  Root cause proof: must expose or preserve evidence for first bad state and original trigger
+  Do not re-decide: reported symptom, public reproduction seam, required root-cause proof ladder fields
+  Artifact updates: `path/to/test`; no production files in reproduction task
+  TDD phase: red
   Files: `path/to/test`
   Read first: `tasks.md`
   Project postmortem search: `rg -n "<symptom|test seam|module|model-risk>" devflow/postmortems` or record `no-project-postmortems-yet`
   Verification: `npm test -- path/to/test`
   Evidence: failing output or reproducible log + symptom match evidence
+  Completion: after failing evidence and required review records exist, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task T001`; do not hand-edit status.
   Correct seam: test must exercise the real trigger chain through a public interface
-  Root cause proof: must expose or preserve evidence for first bad state and original trigger
   Ready when: feedback loop 已稳定，Root Cause Contract 已记录必要的 boundary / trace / comparison / root-cause-ladder evidence
 
 ## Phase 2: Repair
 
 - [ ] T002 [IMPL] Apply the minimal root-cause fix (dependsOn:T001) `path/to/file`
   Goal: 只修已确认根因，不扩成重写。
+  Root cause proof: patch changes the original trigger and shows the first bad state no longer forms
+  Do not re-decide: root cause, first bad state, original trigger, allowed files, forbidden files
+  Artifact updates: `path/to/file`; update tests only if the approved public seam changes
+  TDD phase: green
   Files: `path/to/file`
   Read first: `tasks.md`, `path/to/test`
   Project postmortem search: `rg -n "<root cause|module|failure-class|model-risk>" devflow/postmortems` or record `no-project-postmortems-yet`
   Verification: `npm test -- path/to/test`
   Evidence: passing output + Git diff
-  Do not re-decide: root cause, first bad state, original trigger, allowed files, forbidden files
+  Completion: after green evidence and required review records exist, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task T002`; do not hand-edit status.
   Ready when: T001 已证明同一个用户症状存在，Root Cause Contract 已证明根因源头和 counterfactual proof
 
 ## Phase 3: Verify
 
 - [ ] T003 Run checks and collect fresh evidence (dependsOn:T002) `command or file`
   Goal: 为 `cc-check` 准备新鲜证据。
+  Root cause proof: verification must prove the first bad state no longer forms, not only that the symptom disappeared
+  Do not re-decide: repair boundary, verification commands, review/report-card gate
+  Artifact updates: review evidence only; no behavior changes and no execution process files
+  TDD phase: evidence
   Files: `command or file`
   Read first: `tasks.md`, `task-manifest.json`
   Project postmortem search: `rg -n "<verification|release|tooling|model-risk>" devflow/postmortems` or record `no-project-postmortems-yet`
   Verification: `npm test && npm run lint`
   Evidence: gate output
-  Root cause proof: verification must prove the first bad state no longer forms, not only that the symptom disappeared
+  Completion: after gate evidence and required review records exist, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest devflow/changes/<change-key>/planning/task-manifest.json --tasks devflow/changes/<change-key>/planning/tasks.md --task T003`; do not hand-edit status.
   Ready when: repair task 已收口

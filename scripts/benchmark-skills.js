@@ -2,7 +2,7 @@
 
 /**
  * [INPUT]: 接收 repo root，读取 .claude/skills 下每个 SKILL.md。
- * [OUTPUT]: 输出每个 skill 入口的 token/byte/line 预算检查结果；超预算时 exit 1。
+ * [OUTPUT]: 输出每个 skill 入口的 token/byte/line 预算检查结果；预算超限只做 advisory。
  * [POS]: skill 入口瘦身基准，防止 Harness 规则重新膨胀成默认上下文负担。
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
@@ -85,7 +85,7 @@ function benchmarkRows(rootDir) {
 function runBenchmarkSkills(rootDir = process.cwd()) {
   const rows = benchmarkRows(path.resolve(rootDir));
   return {
-    code: rows.some((row) => row.correctness_pass === false) ? 1 : 0,
+    code: 0,
     rows
   };
 }

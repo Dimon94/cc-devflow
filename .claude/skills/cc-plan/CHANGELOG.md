@@ -1,5 +1,10 @@
 # CC-Plan Skill Changelog
 
+## v3.9.4 - 2026-05-13
+
+- require task blocks to be written directly from `assets/TASKS_TEMPLATE.md`; shorthand TODO tasks are invalid and rejected before machine JSON generation
+- clarify that task document budgets are advisory only and must not cause deletion of root-cause, boundary, verification, evidence, completion, or required task fields
+
 ## v3.9.3 - 2026-05-13
 
 - route all deterministic workflow commands through the shared `resolve-cc-devflow.sh` CLI resolver before writing durable artifacts
