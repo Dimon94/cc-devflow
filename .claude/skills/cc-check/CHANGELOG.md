@@ -1,5 +1,11 @@
 # CC-Check Skill Changelog
 
+## v1.12.2 - 2026-05-14
+
+- restore the verification flow that was over-pruned during artifact minimization: reset contract, rerun reality, boundary checks, claim evidence, QA/test-quality review, diff/scope audit, and failure ownership
+- keep check output in the response and Git commit instead of reviving local verification process files
+- expand the short verdict shape with QA and diff sections so `pass` still requires fresh, mapped evidence
+
 ## v1.12.1 - 2026-05-13
 
 - compress the visible output contract to `Verdict / Evidence / Review / Route`

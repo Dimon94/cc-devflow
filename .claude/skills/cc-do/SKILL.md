@@ -1,6 +1,6 @@
 ---
 name: cc-do
-version: 1.7.1
+version: 1.7.2
 description: Use when implementing frozen tasks, resuming interrupted work, applying an investigation handoff, or fixing review feedback inside the approved scope.
 triggers:
   - 开始做 T003
@@ -29,8 +29,11 @@ entry_gate:
   - Run `query workflow-context --change <changeId> --change-key <changeKey> --data-only --no-trace --compact`.
   - Read `task.md`, current Git status, and only the code/tests needed by the current task.
   - Reject execution if the task cannot be restated from `task.md` and repo evidence.
+  - Validate the task's execution shape before coding: Red test name, one observable behavior, public verification path, allowed boundary mocks, Green minimality guard, and refactor candidates.
 exit_criteria:
   - Current task has Red/Green evidence or a recorded TDD exception in `task.md`.
+  - Red evidence proves the target behavior through a public seam; Green evidence is minimal and does not pre-build future behavior.
+  - Refactor evidence names the smell removed or states why no refactor was needed.
   - Verification commands have been run or explicitly blocked.
   - Task status is updated through `scripts/mark-task-complete.sh`.
   - The completed task/environment is committed to Git.
@@ -78,6 +81,20 @@ NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
 6. Review：自查 scope、公共 seam、mock 边界、错误路径和文档影响。
 7. Complete：运行 `scripts/mark-task-complete.sh --tasks devflow/changes/<change-key>/task.md --task <task-id>`。
 8. Commit：每个任务或执行环境完成后提交 Git commit。
+
+## Execution Discipline
+
+执行质量写进 `task.md` 的当前 task block、完成证据、最终回复和 Git commit，不写额外过程文件。
+
+1. 每次只推进一个 tracer bullet：一个用户可观察行为的 Red -> Green -> Refactor。
+2. Red 必须从公共接口、调用方流程、CLI/API/UI 路径或真实边界进入系统；私有函数、内部调用次数、临时结构断言不算 Red 证据。
+3. 一个 Red 只证明一个逻辑行为；bulk Red、实现步骤式测试名、直接查内部状态都要先修测试设计。
+4. Mock 只能放在系统边界：外部 API、时间、随机性、文件系统、网络或必要数据库边界；mock 自家模块默认说明 seam 有问题。
+5. Fixture 必须诚实：partial fixture、cast、generated stub、缺字段 payload 都要说明真实 contract 字段和测试填充字段。
+6. Green 只写当前红灯要求的最小实现；新增接口优先小而深，依赖从调用方传入，边界 adapter 用具体操作而不是 generic catch-all。
+7. Refactor 只能在 Green 后做，只清理当前 slice 暴露出的重复、命名、浅模块、长方法、feature envy、primitive obsession、错误处理或三层以上分支。
+8. 三次修补仍失败时，先质疑 `Root Cause Contract` 或 `Contract Summary`，reroute 到 `cc-investigate` / `cc-plan`，不要继续堆补丁。
+9. 完成脚本失败时，修缺失证据、依赖或 task block，不手改 checkbox 绕过。
 
 ## Parallel Rule
 

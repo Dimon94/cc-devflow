@@ -1,5 +1,11 @@
 # CC-Do Skill Changelog
 
+## v1.7.2 - 2026-05-14
+
+- restore the execution discipline that was over-pruned during artifact minimization: tracer-bullet TDD, public seam Red evidence, mock/fixture honesty, Green minimality, refactor-after-green, and repeated-failure reroutes
+- keep execution proof in `task.md`, command output, final response, and Git commits instead of reviving per-task process files
+- strengthen recovery rules so stale chat memory and manual checkbox edits cannot substitute for task evidence
+
 ## v1.7.1 - 2026-05-13
 
 - simplify execution recovery so state comes from `task.md`, Git, and current repo truth

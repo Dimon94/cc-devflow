@@ -1,6 +1,6 @@
 ---
 name: cc-check
-version: 1.12.1
+version: 1.12.2
 description: Use when a planned or investigated change needs fresh verification evidence and an honest pass/fail/blocked verdict before cc-act.
 triggers:
   - 验收这个需求
@@ -27,10 +27,15 @@ entry_gate:
   - Resolve the CLI with `../cc-dev/scripts/resolve-cc-devflow.sh require query workflow-context` when workflow query is needed; unsupported CLIs are blockers.
   - Read `task.md`, current Git diff, relevant code/tests, PR text when present, and fresh command output.
   - Re-run fresh commands instead of inheriting cc-do narration.
+  - Classify the current reality as pass-candidate, fail-candidate, or blocked-candidate before writing a verdict.
+  - Map every completion claim to command output, exit status, and key observation.
   - Do not create process files.
 exit_criteria:
   - Verdict is exactly pass, fail, or blocked.
   - Every passing statement cites fresh command output, exit status, and what claim it proves.
+  - Behavior changes and bugfixes include feedback-loop and test-quality review.
+  - Current diff is checked against `task.md` for missing scope, scope creep, and unintended file touch.
+  - Failures are classified as branch, baseline, environment, external, or unknown.
   - Missing evidence is separated from real failure.
   - After pass/fail/blocked, commit the stage state when repository policy allows it.
   - The next step is unambiguous: cc-act, cc-do, cc-investigate, cc-plan, or stop.
@@ -79,11 +84,63 @@ NO PASS WITHOUT FRESH EVIDENCE
    - `blocked`: required environment, auth, input, or evidence is missing.
 6. Commit the stage when this PDCA/IDCA environment completes.
 
+## Verification Phases
+
+1. Reset Contract：读取 `task.md`、当前 diff、相关代码 / 测试、PR 文本（如果存在），明确本轮验证对象。
+2. Re-run Reality：重新运行可信 gate，不继承 `cc-do` 叙述；记录命令、退出码、关键输出、skip / blocked 原因。
+3. Check Boundaries：检查 runtime、task completion、requirement diff、claim evidence、QA/test quality、review freshness、docs / UI / DX 影响。
+4. Freeze Verdict：只输出 `pass` / `fail` / `blocked`，并给出 route。
+
+任一阶段发现证据过期、边界矛盾、结论无法诚实成立，都先 reset 或 reroute，不硬凑 `pass`。
+
+## Evidence Layers
+
+`cc-check` 不是只看测试绿不绿。按风险选择必要层，至少说明未覆盖层的 skip reason：
+
+1. Runtime：test、lint、typecheck、build、脚本 gate。
+2. Task Completion：`task.md` 的任务是否真的完成，完成证据是否对应当前 diff。
+3. Requirement Diff：当前改动是否兑现需求，是否有 scope creep、missing requirement、意外文件触点。
+4. Claim Evidence：每个通过声明都有命令、退出码、观察和证明的 claim。
+5. QA Test Quality：red/green、public seam、mock boundary、fixture honesty、test-only API smell。
+6. Behavior Evidence：用户可见 expected / actual / reproduction steps 是否被当前反馈环覆盖。
+7. Review Freshness：本轮 review 是否覆盖当前 HEAD；未 review 要说清风险。
+8. Failure Ownership：失败归属 branch、baseline、environment、external 或 unknown。
+9. Docs / Browser / Operator：UI、CLI、docs、operator workflow 受影响时有证据或 skip reason。
+
+## Claim Evidence Matrix
+
+不要把所有绿色写成“测试过了”：
+
+| Claim | Required proof | Not enough |
+| --- | --- | --- |
+| Tests pass | current command, exit 0, failures 0 | old output |
+| Lint clean | current lint command, no errors | formatter only |
+| Build succeeds | build command exit 0 | tests only |
+| Bug fixed | original symptom or regression loop passes | code changed |
+| Regression test works | red -> green evidence | green only |
+| Requirements met | each task/acceptance mapped to proof | self-report |
+
+缺关键 claim 证据时，结论至少是 `blocked`。
+
+## Failure Ownership
+
+失败不能只写“红了”：
+
+- `branch`：本分支引入或当前改动相关。
+- `baseline`：有 base branch 或历史证据证明预先存在。
+- `environment`：缺依赖、权限、服务、密钥或平台条件。
+- `external`：外部系统或第三方服务失败。
+- `unknown`：归属不明；不能支撑 `pass`。
+
+每个失败写清 error name、证据、owner、rescue action。
+
 ## Output
 
 只输出短结论，不写过程文件：
 
 - Verdict: `pass` / `fail` / `blocked`
 - Evidence: command, exit status, and the claim it proves
-- Review: clean, findings remain, or not reviewed
+- Review: clean, findings remain, not reviewed, or skipped with reason
+- QA: feedback loop, test quality, and behavior evidence when applicable
+- Diff: scope match, missing scope, or scope drift
 - Route: `cc-act` / `cc-do` / `cc-investigate` / `cc-plan` / `stop`
