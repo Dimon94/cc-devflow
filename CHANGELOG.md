@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.10] - 2026-05-13
+
 ### Added
 
 - Added the `workflow-context` typed runtime query as a context index that reports the next PDCA/IDCA skill, current task, source hashes, `mustNotForget` guardrails, default section/JSON refs, trusted commands, fail-closed rules, and machine-readable deep-open triggers.
