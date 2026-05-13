@@ -44,11 +44,12 @@
     "scripts": {
         "prepublishOnly": "node scripts/validate-publish.js",
         "test": "jest",
-    "verify": "npm test && npm run verify:examples && npm run verify:artifacts",
+    "verify": "npm test && npm run verify:examples && npm run verify:artifacts && npm run benchmark:skills",
     "verify:examples": "bash docs/examples/scripts/check-example-bindings.sh",
     "verify:artifacts": "node scripts/verify-artifacts.js",
     "verify:publish": "node scripts/validate-publish.js",
     "benchmark:artifacts": "node scripts/benchmark-artifacts.js",
+    "benchmark:skills": "node scripts/benchmark-skills.js",
     "benchmark:workflow-context": "node scripts/benchmark-workflow-context-tokens.js",
         "start": "node bin/cc-devflow.js",
         "adapt": "node bin/adapt.js",

@@ -92,8 +92,14 @@ function validatePackageJson(errors) {
   if (scripts['benchmark:workflow-context'] !== 'node scripts/benchmark-workflow-context-tokens.js') {
     errors.push('package.json scripts.benchmark:workflow-context must run the workflow context token benchmark');
   }
+  if (scripts['benchmark:skills'] !== 'node scripts/benchmark-skills.js') {
+    errors.push('package.json scripts.benchmark:skills must run the skill entrypoint token benchmark');
+  }
   if (typeof scripts.verify !== 'string' || !scripts.verify.includes('npm run verify:examples')) {
     errors.push('package.json scripts.verify must include "npm run verify:examples"');
+  }
+  if (typeof scripts.verify !== 'string' || !scripts.verify.includes('npm run benchmark:skills')) {
+    errors.push('package.json scripts.verify must include "npm run benchmark:skills"');
   }
 
   ensureArrayIncludes(pkg.files, 'bin/', errors, 'package.json files');
@@ -391,19 +397,19 @@ function validateCcPlanPlanningContracts(errors) {
   );
 
   const requiredSnippets = [
-    ['cc-plan SKILL.md', skill, '## Decision Question Protocol'],
+    ['cc-plan SKILL.md', skill, '## Decision Questions'],
     ['cc-plan SKILL.md', skill, 'D<N> - <decision title>'],
     ['cc-plan SKILL.md', skill, 'A) <label> (recommended)'],
     ['cc-plan SKILL.md', skill, 'B) <label>'],
-    ['cc-plan SKILL.md', skill, '禁止输出 `1)` / `2)` / `3)`'],
+    ['cc-plan SKILL.md', skill, '不能用 `1/2/3`'],
     ['cc-plan SKILL.md', skill, 'STOP: wait for the user answer before continuing.'],
     ['cc-plan legacy DESIGN_TEMPLATE.md', fullDesign, '## Decision Questions'],
     ['cc-plan planning-contract.md', planningContract, 'options：只能使用 `A` / `B` / `C`']
   ];
 
   const aiLeverageSnippets = [
-    ['cc-plan SKILL.md', skill, '## AI Leverage Decision Lens'],
-    ['cc-plan SKILL.md', skill, '`boil-lake` / `sharp-wedge` / `needs-evidence` / `pivot`'],
+    ['cc-plan SKILL.md', skill, 'AI Leverage Lens'],
+    ['cc-plan SKILL.md', skill, '用户担心 AI 被流程绑住'],
     ['cc-plan legacy DESIGN_TEMPLATE.md', fullDesign, '## AI Leverage Decision Lens'],
     ['cc-plan legacy TINY_DESIGN_TEMPLATE.md', tinyDesign, '## AI Leverage Decision Lens'],
     ['cc-plan TASKS_TEMPLATE.md', tasks, 'AI Leverage Decision Lens: boil-lake | sharp-wedge | needs-evidence | pivot'],
@@ -411,8 +417,8 @@ function validateCcPlanPlanningContracts(errors) {
   ];
 
   const deepPlanningSnippets = [
-    ['cc-plan SKILL.md', skill, '## Deep Planning Funnel'],
-    ['cc-plan SKILL.md', skill, 'Requirement Reality Round'],
+    ['cc-plan SKILL.md', skill, 'Deep Planning Funnel'],
+    ['cc-plan SKILL.md', skill, '新接口、字段、状态流'],
     ['cc-plan legacy DESIGN_TEMPLATE.md', fullDesign, '## Deep Planning Funnel'],
     ['cc-plan legacy DESIGN_TEMPLATE.md', fullDesign, '## Task Contract Preview'],
     ['cc-plan legacy TINY_DESIGN_TEMPLATE.md', tinyDesign, '## Deep Planning Funnel'],
@@ -566,7 +572,7 @@ function validateProjectPostmortemContracts(errors) {
     ['project-postmortem guide', contract, '## Required Incident Evidence'],
     ['project-postmortem guide', contract, '## Redaction Guard'],
     ['project-postmortem guide', contract, '<redacted>'],
-    ['cc-plan SKILL.md', plan, '## Project Postmortem Recall Gate'],
+    ['cc-plan SKILL.md', plan, 'Postmortem Recall'],
     ['cc-investigate SKILL.md', investigate, '## Project Postmortem Recall Gate'],
     ['cc-do SKILL.md', execute, 'Project Postmortem quick search'],
     ['cc-act SKILL.md', act, '## Project Postmortem Writeback'],
@@ -698,7 +704,7 @@ function validateCcInvestigateContracts(errors) {
     ['cc-investigate ANALYSIS_TEMPLATE.md', analysis, '## Root Cause Proof Ladder'],
     ['cc-investigate ANALYSIS_TEMPLATE.md', analysis, 'First bad state:'],
     ['cc-investigate TASKS_TEMPLATE.md', tasks, 'Root Cause Proof Ladder:'],
-    ['cc-investigate TASKS_TEMPLATE.md', tasks, 'Do not repair symptom site unless analysis proves it is the original trigger'],
+    ['cc-investigate TASKS_TEMPLATE.md', tasks, 'Do not repair symptom site unless Root Cause Contract proves it is the original trigger'],
     ['cc-investigate TASK_MANIFEST_TEMPLATE.json', manifestText, '"rootCauseProof"'],
     ['cc-investigate TASK_MANIFEST_TEMPLATE.json', manifestText, '"firstBadState"'],
     ['cc-investigate TASK_MANIFEST_TEMPLATE.json', manifestText, '"counterfactualProof"'],
@@ -720,6 +726,42 @@ function validateCcInvestigateContracts(errors) {
   }
   if (!manifest?.investigationMeta?.rootCauseProof) {
     errors.push('cc-investigate TASK_MANIFEST_TEMPLATE.json missing investigationMeta.rootCauseProof');
+  }
+}
+
+function validateOperatingPrinciplesContracts(errors) {
+  const skillNames = ['cc-dev', 'cc-plan', 'cc-investigate', 'cc-do', 'cc-check', 'cc-act'];
+  const skills = Object.fromEntries(skillNames.map((skillName) => [
+    skillName,
+    fs.readFileSync(path.join(ROOT, `.claude/skills/${skillName}/SKILL.md`), 'utf8')
+  ]));
+
+  for (const [skillName, content] of Object.entries(skills)) {
+    if (content.includes('pdca-idca-operating-rules.md')) {
+      errors.push(`${skillName} must internalize operating principles instead of linking pdca-idca-operating-rules.md`);
+    }
+  }
+
+  const requiredSnippets = [
+    ['cc-dev SKILL.md', skills['cc-dev'], 'Single task target: 4,000 tokens'],
+    ['cc-dev SKILL.md', skills['cc-dev'], 'budget pressure are blockers'],
+    ['cc-plan SKILL.md', skills['cc-plan'], '## Planning Discipline'],
+    ['cc-plan SKILL.md', skills['cc-plan'], 'smallest reversible scope'],
+    ['cc-investigate SKILL.md', skills['cc-investigate'], '## Investigation Discipline'],
+    ['cc-investigate SKILL.md', skills['cc-investigate'], 'Prefer evidence over speed'],
+    ['cc-do SKILL.md', skills['cc-do'], '## Execution Discipline'],
+    ['cc-do SKILL.md', skills['cc-do'], 'Before editing, read the direct caller'],
+    ['cc-do SKILL.md', skills['cc-do'], 'Clean only traces introduced by this task'],
+    ['cc-check SKILL.md', skills['cc-check'], 'Verification discipline'],
+    ['cc-check SKILL.md', skills['cc-check'], 'skipped gate'],
+    ['cc-act SKILL.md', skills['cc-act'], '## Closure Discipline'],
+    ['cc-act SKILL.md', skills['cc-act'], 'done, verified, remaining/blocker']
+  ];
+
+  for (const [label, content, snippet] of requiredSnippets) {
+    if (!content.includes(snippet)) {
+      errors.push(`${label} missing operating-principle snippet: ${snippet}`);
+    }
   }
 }
 
@@ -1180,6 +1222,7 @@ function main() {
   validateCcRoadmapContracts(errors);
   validateCcPlanPlanningContracts(errors);
   validateCcInvestigateContracts(errors);
+  validateOperatingPrinciplesContracts(errors);
   validateCcActCommitGuidelines(errors);
   validateCcActPrBodyTemplateContracts(errors);
   validateArtifactOwnershipContracts(errors);
@@ -1213,5 +1256,6 @@ module.exports = {
   validateArtifactOwnershipContracts,
   validateCcActCommitGuidelines,
   validateCcActPrBodyTemplateContracts,
+  validateOperatingPrinciplesContracts,
   ensureStringArray
 };

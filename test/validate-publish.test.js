@@ -77,7 +77,7 @@ describe('validate-publish', () => {
     expect(errors[0]).toContain('Quote YAML list items that contain ": "');
   });
 
-  test('cc-plan carries the fixed decision question contract', () => {
+  test('cc-plan keeps the fixed decision question contract in the thin entrypoint', () => {
     const skill = fs.readFileSync(
       path.join(ROOT, '.claude/skills/cc-plan/SKILL.md'),
       'utf8'
@@ -95,11 +95,11 @@ describe('validate-publish', () => {
       'utf8'
     );
 
-    expect(skill).toContain('## Decision Question Protocol');
+    expect(skill).toContain('## Decision Questions');
     expect(skill).toContain('D<N> - <decision title>');
     expect(skill).toContain('A) <label> (recommended)');
     expect(skill).toContain('B) <label>');
-    expect(skill).toContain('禁止输出 `1)` / `2)` / `3)`');
+    expect(skill).toContain('不能用 `1/2/3`');
     expect(skill).toContain('STOP: wait for the user answer before continuing.');
     expect(fullDesign).toContain('## Decision Questions');
     expect(manifest).toContain('"decisionQuestions"');
@@ -131,7 +131,7 @@ describe('validate-publish', () => {
     ]));
   });
 
-  test('cc-plan carries the opt-in external best-practice validation contract', () => {
+  test('cc-plan routes external best-practice validation through escalation packs', () => {
     const skill = fs.readFileSync(
       path.join(ROOT, '.claude/skills/cc-plan/SKILL.md'),
       'utf8'
@@ -157,9 +157,9 @@ describe('validate-publish', () => {
       'utf8'
     );
 
-    expect(skill).toContain('## External Best-Practice Validation');
+    expect(skill).toContain('External Best Practice');
     expect(skill).toContain('external-best-practice');
-    expect(skill).toContain('generalized');
+    expect(skill).toContain('外部资料可能改变设计或验证');
     expect(playbook).toContain('external best-practice validation');
     expect(fullDesign).toContain('## External Best-Practice Validation');
     expect(tinyDesign).toContain('## External Best-Practice Validation');
@@ -167,7 +167,7 @@ describe('validate-publish', () => {
     expect(manifest).toContain('"externalBestPractice"');
   });
 
-  test('cc-plan carries the AI leverage decision lens contract', () => {
+  test('cc-plan keeps AI leverage and execution compliance behind the thin harness contract', () => {
     const skill = fs.readFileSync(
       path.join(ROOT, '.claude/skills/cc-plan/SKILL.md'),
       'utf8'
@@ -194,8 +194,8 @@ describe('validate-publish', () => {
       'utf8'
     );
 
-    expect(skill).toContain('## AI Leverage Decision Lens');
-    expect(skill).toContain('`boil-lake` / `sharp-wedge` / `needs-evidence` / `pivot`');
+    expect(skill).toContain('Thin Harness Rule');
+    expect(skill).toContain('AI Leverage Lens');
     expect(fullDesign).toContain('## AI Leverage Decision Lens');
     expect(tinyDesign).toContain('## AI Leverage Decision Lens');
     expect(tasks).toContain('AI Leverage Decision Lens: boil-lake | sharp-wedge | needs-evidence | pivot');
@@ -208,7 +208,7 @@ describe('validate-publish', () => {
     expect(parsedManifest.status).toBeUndefined();
     expect(parsedManifest.activePhase).toBeUndefined();
     expect(planningContract).toContain('AI Leverage Decision Lens 必须在任务生成前闭合');
-    expect(skill).toContain('## ClaudeCode / Codex Execution Compliance');
+    expect(skill).toContain('## Task Contract');
     expect(tasks).toContain('## Execution Protocol');
     expect(tasks).toContain('mark-task-complete.sh');
     expect(parsedManifest.executionProtocol).toBeUndefined();
