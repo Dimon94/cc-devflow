@@ -9,6 +9,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { spawnSync } = require('child_process');
 
 const { runValidate } = require('../lib/skill-runtime/operations/task-contract');
 
@@ -38,6 +39,11 @@ function fileExists(filePath) {
 }
 
 function listChangeKeys(rootDir) {
+  const tracked = listTrackedChangeKeys(rootDir);
+  if (tracked.length > 0) {
+    return tracked;
+  }
+
   const changesDir = path.join(rootDir, 'devflow', 'changes');
   if (!fs.existsSync(changesDir)) {
     return [];
@@ -48,6 +54,26 @@ function listChangeKeys(rootDir) {
     .map((entry) => entry.name)
     .filter((name) => /^(REQ|FIX)-\d+/.test(name))
     .sort();
+}
+
+function listTrackedChangeKeys(rootDir) {
+  const result = spawnSync('git', ['ls-files', 'devflow/changes'], {
+    cwd: rootDir,
+    encoding: 'utf8'
+  });
+
+  if (result.status !== 0) {
+    return [];
+  }
+
+  return [...new Set(
+    result.stdout
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line) => line.split('/')[2])
+      .filter((name) => /^(REQ|FIX)-\d+/.test(name))
+  )].sort();
 }
 
 function changeIdFromKey(changeKey) {
