@@ -7,19 +7,51 @@
 
 ## Minimum Evidence
 
+- investigation mode
 - symptom
 - reproduction path
 - expected vs actual
+- feedback loop contract
 - code path
 - recent change signal
 - prior postmortem signal
+- evidence chain
+- tested hypotheses and falsification results
 - first bad state
 - violated contract
 - original trigger
 - counterfactual proof
 - escape reason
+- boundary probe, backward trace, or reference comparison when applicable
 - repair boundary
+- correct test seam
 - verification command
+
+## Investigation Modes
+
+- `reproduce-first`: stabilize the reported failure before naming root cause.
+- `feedback-loop`: sharpen a slow, broad, or flaky signal before proof.
+- `diff-trace`: inspect recent changes and behavioral breakpoints.
+- `boundary-probe`: inspect every component boundary before localizing repair.
+- `backward-trace`: trace from symptom site to bad value origin and original trigger.
+- `reference-compare`: compare working and broken paths before guessing.
+- `condition-wait`: replace sleeps/timeouts with real completion conditions.
+- `workflow-forensics`: classify artifact, Git, state, tool, permission, or process failure.
+- `performance`: collect baseline/profile/query/bisect evidence.
+- `diagnose-only`: produce evidence handoff, monitoring, human action, or reroute; do not invent repair tasks.
+
+## Root Cause Proof
+
+The contract must climb the ladder:
+
+1. Symptom Site
+2. First Bad State
+3. Violated Contract
+4. Original Trigger
+5. Counterfactual Proof
+6. Escape Reason
+
+Missing first bad state, original trigger, or counterfactual proof means no confirmed repair task. Return an Evidence Request, diagnose-only handoff, or reroute.
 
 ## Output Shape
 

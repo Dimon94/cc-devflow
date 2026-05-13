@@ -13,6 +13,9 @@ Mode: investigation
 Profile: tiny | standard | deep
 Diagnosis:
 
+Investigation Mode:
+-
+
 Symptom:
 -
 
@@ -31,14 +34,78 @@ Root Cause:
 Evidence Chain:
 -
 
+Feedback Loop Contract:
+- Type:
+- Command / driver:
+- Expected failing signal:
+- Actual failing signal:
+- Symptom match:
+- Runtime / determinism / failure rate:
+- Sharpening plan:
+
+Root Cause Proof Ladder:
+| Level | Evidence | Verdict |
+|-------|----------|---------|
+| L1 Symptom Site |  |  |
+| L2 First Bad State |  |  |
+| L3 Violated Contract |  |  |
+| L4 Original Trigger |  |  |
+| L5 Counterfactual Proof |  |  |
+| L6 Escape Reason |  |  |
+
+Hypothesis Table:
+| Hypothesis | Support | Counter-evidence | Falsification method | Observation | Status |
+|------------|---------|------------------|----------------------|-------------|--------|
+| H1 |  |  |  |  | active |
+
+Boundary Probe Matrix:
+| Boundary | Input | Output | Config / env | State | Verdict |
+|----------|-------|--------|--------------|-------|---------|
+| N/A |  |  |  |  | not-applicable |
+
+Backward Trace Chain:
+- Immediate failure site:
+- Direct caller:
+- Caller chain:
+- Bad value origin:
+- Original trigger:
+- Why symptom-site fix is rejected:
+
+Reference Comparison:
+- Similar working example:
+- Broken path:
+- Differences found:
+- Accepted hypothesis:
+- Ruled-out differences:
+
+Diagnostic Instrumentation:
+- Probe tag:
+- Location:
+- Question answered:
+- Command:
+- Expected signal:
+- Actual signal:
+- Cleanup requirement:
+
 Repair Boundary:
 -
+
+Correct Test Seam:
+- Public seam:
+- Real trigger chain covered:
+- Mock boundary:
+- Private implementation assertions avoided:
 
 Verification:
 -
 
 Prevention:
 -
+
+Diagnose-Only / Reroute:
+- Applies: yes | no
+- Next action:
+- Why no repair task:
 
 Risk / Escalate If:
 -

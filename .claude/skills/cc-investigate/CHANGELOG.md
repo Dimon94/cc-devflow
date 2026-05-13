@@ -1,5 +1,11 @@
 # CC-Investigate Skill Changelog
 
+## v1.6.2 - 2026-05-14
+
+- restore the investigation flow that was over-pruned during artifact minimization: mode classification, feedback loop contract, evidence chain, hypothesis falsification, boundary/backward/reference evidence, diagnostic instrumentation, and correct test seam
+- keep root-cause proof and diagnose-only/reroute boundaries inside `task.md#Root Cause Contract` instead of reviving analysis, manifest, or report process files
+- update the task template and investigation contract so `cc-investigate` stays artifact-light without becoming a shallow bug checklist
+
 ## v1.6.1 - 2026-05-13
 
 - simplify the investigation artifact contract to `task.md` plus Git history
