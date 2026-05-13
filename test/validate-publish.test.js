@@ -83,7 +83,7 @@ describe('validate-publish', () => {
       'utf8'
     );
     const fullDesign = fs.readFileSync(
-      path.join(ROOT, '.claude/skills/cc-plan/assets/DESIGN_TEMPLATE.md'),
+      path.join(ROOT, '.claude/skills/cc-plan/assets/legacy/DESIGN_TEMPLATE.md'),
       'utf8'
     );
     const manifest = fs.readFileSync(
@@ -141,11 +141,11 @@ describe('validate-publish', () => {
       'utf8'
     );
     const fullDesign = fs.readFileSync(
-      path.join(ROOT, '.claude/skills/cc-plan/assets/DESIGN_TEMPLATE.md'),
+      path.join(ROOT, '.claude/skills/cc-plan/assets/legacy/DESIGN_TEMPLATE.md'),
       'utf8'
     );
     const tinyDesign = fs.readFileSync(
-      path.join(ROOT, '.claude/skills/cc-plan/assets/TINY_DESIGN_TEMPLATE.md'),
+      path.join(ROOT, '.claude/skills/cc-plan/assets/legacy/TINY_DESIGN_TEMPLATE.md'),
       'utf8'
     );
     const tasks = fs.readFileSync(
@@ -173,11 +173,11 @@ describe('validate-publish', () => {
       'utf8'
     );
     const fullDesign = fs.readFileSync(
-      path.join(ROOT, '.claude/skills/cc-plan/assets/DESIGN_TEMPLATE.md'),
+      path.join(ROOT, '.claude/skills/cc-plan/assets/legacy/DESIGN_TEMPLATE.md'),
       'utf8'
     );
     const tinyDesign = fs.readFileSync(
-      path.join(ROOT, '.claude/skills/cc-plan/assets/TINY_DESIGN_TEMPLATE.md'),
+      path.join(ROOT, '.claude/skills/cc-plan/assets/legacy/TINY_DESIGN_TEMPLATE.md'),
       'utf8'
     );
     const tasks = fs.readFileSync(
