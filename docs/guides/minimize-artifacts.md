@@ -10,13 +10,7 @@ The workflow is intentionally Git-first.
 
 ## Do Not Keep
 
-- process JSON
-- review ledgers or finding files
-- report cards
-- status or resume files
-- release notes
-- principles files
-- task context or checkpoint files
+Do not generate process files beyond the durable files above.
 
 ## Commit Rule
 

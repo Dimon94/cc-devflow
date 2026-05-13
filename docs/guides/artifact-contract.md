@@ -15,4 +15,4 @@ Git records process history. Commit after each completed PDCA or IDCA environmen
 
 ## Retired Surface
 
-Do not create process JSON, review ledgers, report cards, status files, resume files, release notes, or principle files.
+Do not create process files beyond the durable files above.

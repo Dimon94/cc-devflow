@@ -58,7 +58,7 @@ tool_budget:
 - `devflow/changes/<change-key>/task.md` 中的任务状态
 - Git commit
 
-不要生成额外过程文件或 JSON 文档。失败和阻塞写在对用户的响应里；需要长期保留的失败教训交给 `cc-act` 写 incident postmortem。
+不要生成额外过程文件。失败和阻塞写在对用户的响应里；需要长期保留的失败教训交给 `cc-act` 写 incident postmortem。
 
 ## TDD Iron Law
 

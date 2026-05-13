@@ -95,15 +95,15 @@ flowchart TD
 | --- | --- | --- |
 | `cc-roadmap` | 需要产品方向、阶段范围或 backlog 顺序 | `devflow/roadmap.json`、`devflow/ROADMAP.md`、deprecated `devflow/BACKLOG.md` |
 | `cc-next` | 需要从 roadmap、未归档本地 change 和 issue truth 里选下一个 ready 目标 | 交给 `cc-dev` 的 Goal Packet |
-| `cc-dev` | 已选目标要在当前 worktree 内自动推进到远程 PR | PDCA/IDCA 产物加 PR 或 handoff |
-| `cc-plan` | 新功能或变更需要澄清范围、设计方案、冻结任务 | `planning/tasks.md#Contract Summary`、`task-manifest.json`、`change-meta.json` |
-| `cc-investigate` | Bug 需要症状、复现、根因和修复边界 | `planning/tasks.md#Root Cause Contract`、`task-manifest.json`、`change-meta.json` |
-| `cc-do` | 已计划或已调查的任务需要实现 | 代码、测试、任务状态、scratch runtime |
-| `cc-review` | 复杂方案、调查根因或 diff 需要在实现前或验证前做可选深度多轮 Review | `review-ledger.jsonl`，可选 `review-findings.json`，可按需渲染 Markdown |
+| `cc-dev` | 已选目标要在当前 worktree 内自动推进到远程 PR | `task.md`、Git commit、PR 或 handoff |
+| `cc-plan` | 新功能或变更需要澄清范围、设计方案、冻结任务 | `task.md#Contract Summary` |
+| `cc-investigate` | Bug 需要症状、复现、根因和修复边界 | `task.md#Root Cause Contract` |
+| `cc-do` | 已计划或已调查的任务需要实现 | 代码、测试、`task.md` 状态、Git commit |
+| `cc-review` | 复杂方案、调查根因或 diff 需要在实现前或验证前做可选深度 Review | 计划 finding 写入 `task.md`；执行 finding 和修复选项回到对话 |
 | `cc-pr-review` | 远程 PR 需要单独会话做合并前 Review | PR review packet、findings 和 landing verdict |
 | `cc-pr-land` | 已 Review PR 需要 rebase-first 合并到 main 并证明 parity | 已集成 main 和本地 / 远程一致性证据 |
-| `cc-check` | 工作需要新鲜验证证据 | `report-card.json` |
-| `cc-act` | 已验证工作需要 PR、本地 handoff、release note 或 closeout | 唯一最终 handoff 文件 |
+| `cc-check` | 工作需要新鲜验证证据 | pass/fail/blocked 回复和 Git commit |
+| `cc-act` | 已验证工作需要 PR、本地 handoff 或 closeout | 可选 `handoff/pr-brief.md`、Git/PR 真相或 incident postmortem |
 
 整包还包含两个维护类 Skill：
 
@@ -114,13 +114,13 @@ flowchart TD
 
 `cc-roadmap` 现在会先记录 planning posture、evidence maturity、项目 canonical language 和持久决策上下文，再推荐路线。idea、已有用户、付费客户、infra、recovery 场景不会被套进同一组问题，也不会让 roadmap item 发明第二套词汇。面向开发者或操作者的 roadmap item 还会把目标用户、time to first value、magic moment、adoption bottleneck 和 domain handoff 交给 `cc-plan`。
 
-Canonical language 和 durable decisions 只收敛到 cc-devflow 原生真相源：`devflow/specs/`、`devflow/roadmap.json`、`devflow/ROADMAP.md`、`planning/tasks.md` 和 `change-meta.json`。历史 `planning/design.md` / `planning/analysis.md` 只作为旧 change 的可读 fallback。
+Canonical language 和 durable decisions 只收敛到 cc-devflow 原生真相源：`devflow/specs/`、`devflow/roadmap.json`、`devflow/ROADMAP.md`、`task.md`、Git history 和 PR truth。历史 planning artifacts 只作为可读 fallback 输入。
 
 `cc-plan` 会在 `cc-do` 开始前冻结更多实现决策。非 trivial 计划需要比较 minimal viable 和 ideal architecture，full-design 需要包含 implementation decision horizon 和 error/rescue map；测试计划要记录测试框架证据、public test seam、spec-style test name、public verification path、behavior assertion、mock boundary、覆盖质量、强制 regression test、interface depth、Green minimality guard、refactor candidates 和 vertical tracer-bullet slices。交接前，`cc-plan` 和 `cc-investigate` 还会校准 source roadmap item，让 RM 状态、REQ/FIX 绑定、progress 和 spec diagnosis 不再漂移。
 
-planning 之后的每个阶段都可以先运行 `cc-devflow query workflow-context --change <id> --change-key <key> --data-only --no-trace --compact`。把结果当成 context index，而不是语义压缩：它负责路由下一阶段、标记当前 task、携带 source hash、`mustNotForget` 约束、默认 section/JSON refs、可信命令、fail-closed 规则和机器可读 deep-open 条件；有争议的事实仍由源 artifact 裁决。它主要降低 stage-routing 和 context-reset 的读取成本；端到端 PDCA/IDCA 节省取决于 agent 实际打开多少 `defaultOpen` 和 `deepOpen` refs。可用 `npm run benchmark:workflow-context` 查看仓库示例和合成用例上的 token 估算与路由正确性。用 `npm run benchmark:skills` 保持 public skill 入口足够薄；深层规划规则应该放在条件 reference 后面，而不是默认上下文里。
+planning 之后的每个阶段都可以先运行 `cc-devflow query workflow-context --change <id> --change-key <key> --data-only --no-trace --compact`。把结果当成 context index，而不是语义压缩：它从 `task.md`、Git history 和 PR/handoff truth 路由下一阶段；有争议的事实仍由源 artifact 裁决。用 `npm run benchmark:skills` 保持 public skill 入口足够薄；深层规划规则应该放在条件 reference 后面，而不是默认上下文里。
 
-`cc-review` 是可选的深度 Review，不替代 `cc-check`。它可以接在 `cc-plan` / `cc-investigate` 后审冻结的计划或根因合同，也可以接在 `cc-do` 后审实现。它先读取上次 Review 记录和当前 git/artifact delta，再通过 `cc-devflow review start`、`record-node`、`add-finding`、`close` 把生命周期事件写进 `review-ledger.jsonl`。需要人类 Markdown 报告时，再用 `cc-devflow review render` 按需渲染。宿主支持 subAgent 时，选中的节点可以派给独立只读 reviewer，让 strategy、engineering、design、DX、坏味道、测试和运行时审查不共享同一个被污染的上下文。复杂实现 Review 可以把 intent/regression、security/privacy、performance/reliability、contracts/coverage 拆成独立风险 lane，再由主线程聚合和筛掉弱 findings。计划 Review 通过渐进式 references 借鉴 strategy / design / engineering / DX 方法；实现 Review 检查 diff 范围、代码坏味道、测试、UI/runtime 行为、Browser/Computer Use 证据和日志。Finding 回到 `cc-plan` 或 `cc-do`；实现 Review 干净后再进入 `cc-check`。
+`cc-review` 是可选的深度 Review，不替代 `cc-check`。它可以接在 `cc-plan` / `cc-investigate` 后审冻结的计划或根因合同，也可以接在 `cc-do` 后审实现。计划 / 调查 Review 的 finding 直接写进 `task.md`。执行 Review 的 finding 在当前回复里组织成修复选项，用户选择后才改代码。PR Review 只留在对话或 GitHub review 中。不写本地 review report、ledger、findings JSON 或其它 Review 产物文件。
 
 ## 验证与交付门禁
 
@@ -244,19 +244,18 @@ npx cc-devflow config doctor --cwd /path/to/your/project
 
 - `devflow/specs/` 保存 durable capability truth：`INDEX.md` 和 `capabilities/*.md`。
 - 新 change 目录使用 `REQ-<number>-<description>` 表示需求，使用 `FIX-<number>-<description>` 表示 Bug 修复。`REQ` 和 `FIX` 各自递增自己的编号，跨前缀同号允许共存。并行工作树也可能产生重复编号，必须用完整 change key 的描述区分业务内容。
-- `devflow/changes/<change>/` 保存 durable change truth：CLI 生成的 `change-meta.json`、`planning/tasks.md`、CLI 生成的 `task-manifest.json`、review ledger / findings 记录、debug / failed 的可选 CLI 日志、`report-card.json` 和唯一最终 handoff 文件。任务级 `context.md`、`checkpoint.json`、review markdown 和 AI 手写过程文件不是默认 durable truth。
-- 新 change 默认只有一个人工编写的 Markdown artifact：`planning/tasks.md`。功能计划把冻结设计写进 `## Contract Summary`；Bug 调查把根因真相写进 `## Root Cause Contract`。历史 `planning/design.md`、`planning/analysis.md` 和 `cc-review-*.md` 只作为旧 change 的 fallback 输入，不再是新默认写入。
-- 机器态 JSON 归 CLI 所有：先把人类合同写进 `planning/tasks.md`，再运行 `cc-devflow task-contract compile` / `validate`；不要手写 `task-manifest.json` 或 `change-meta.json`。
-- 用 `cc-devflow task-contract validate`、`npm run verify:artifacts`、`npm run benchmark:artifacts` 和 `npm run benchmark:skills` 保持 workflow artifact 与 skill 入口小而可测。
+- `devflow/changes/<change>/` 的 durable change truth 只保留 `task.md`、可选 `handoff/pr-brief.md` 和 Git commits。真实复发故障可以在 `devflow/postmortems/` 写 incident postmortem。
+- 新 change 默认只有一个人工编写的 Markdown artifact：`task.md`。功能计划把冻结设计写进 `## Contract Summary`；Bug 调查把根因真相写进 `## Root Cause Contract`。历史 planning / review artifacts 只作为可读 fallback 输入。
+- 流程状态归 Git：保持 `task.md` 当前，每个完成阶段 / 执行环境提交 commit，不创建额外过程文件。
+- 用 `cc-devflow query workflow-context`、`npm run verify:examples` 和 `npm run benchmark:skills` 保持 workflow truth 与 skill 入口小而可测。
 - `devflow/workspaces/<change>/` 保存 ephemeral runtime scratch，例如 worker assignment、journal、prompt 和 session log。
 - 能从 durable truth 再生成的文件，不应该持久化到 `devflow/changes/`。
 
 Artifact contract 快速检查：
 
 ```bash
-npx cc-devflow task-contract validate --change REQ-001 --change-key REQ-001-copy-invite-link
-npm run verify:artifacts
-npm run benchmark:artifacts
+npx cc-devflow query workflow-context --change REQ-001 --change-key REQ-001-copy-invite-link --data-only --no-trace --compact
+npm run verify:examples
 npm run benchmark:skills
 ```
 

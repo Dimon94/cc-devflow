@@ -28,7 +28,7 @@ Allowed outputs:
 - `devflow/specs/INDEX.md`
 - `devflow/specs/capabilities/<capability>.md`
 
-Do not create change-scoped JSON. Changes link to specs through `task.md`, roadmap text, PR text, and Git commits.
+Changes link to specs through `task.md`, roadmap text, PR text, and Git commits.
 
 ## Use This Skill When
 

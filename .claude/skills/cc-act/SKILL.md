@@ -68,7 +68,7 @@ tool_budget:
 - `devflow/postmortems/INDEX.md`
 - `devflow/postmortems/incidents/<date>-<change-key>.md`
 
-其余状态和历史交给 Git。不要写额外过程文件或 JSON 文档。
+其余状态和历史交给 Git。不要写额外过程文件。
 
 ## Ship Modes
 

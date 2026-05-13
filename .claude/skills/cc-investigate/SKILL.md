@@ -57,7 +57,7 @@ tool_budget:
 
 - `devflow/changes/<change-key>/task.md`
 
-不要生成额外过程文件或 JSON 文档。Git commit 是阶段历史，`task.md` 是根因合同。
+不要生成额外过程文件。Git commit 是阶段历史，`task.md` 是根因合同。
 
 ## Iron Law
 

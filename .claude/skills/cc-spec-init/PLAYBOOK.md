@@ -14,6 +14,6 @@ Specs record current capability truth. Roadmap records future work. Git records 
 
 ## Do Not
 
-- Do not create change-scoped JSON.
+- Do not create extra change-scoped files.
 - Do not store workflow state in specs.
 - Do not turn one requirement's implementation detail into capability truth.
