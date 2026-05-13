@@ -60,6 +60,8 @@ Commands:
   config doctor       Validate config and local ignore safety
   query list          List typed runtime query ids
   query <id>          Run a typed runtime query as JSON
+  task-contract       Compile task contract artifacts
+  review              Record durable review ledger events
   next-change-key     Compute the next REQ/FIX change key
   archive-change      Archive a completed change to devflow/changes/archive/YYYY-MM/
   restore-change      Restore an archived change back to devflow/changes/
@@ -116,6 +118,8 @@ Examples:
   cc-devflow query ship-readiness --cwd /path/to/project --change REQ-123
   cc-devflow query workflow-context --cwd /path/to/project --change REQ-123 --change-key REQ-123-my-feature --data-only --no-trace --compact
   cc-devflow query progress --change REQ-123 --change-key REQ-123-my-feature
+  cc-devflow task-contract compile --cwd /path/to/project --change REQ-123 --change-key REQ-123-my-feature
+  cc-devflow review start --cwd /path/to/project --change REQ-123 --change-key REQ-123-my-feature --base-sha abc --head-sha def
 `);
 }
 
@@ -460,7 +464,8 @@ function runConfig(args) {
   return 0;
 }
 
-function parseQueryArgs(args) {
+function parseChangeScopedArgs(args, options = {}) {
+  const { allowQueryFlags = false } = options;
   const parsed = {
     cwd: null,
     changeId: null,
@@ -474,55 +479,16 @@ function parseQueryArgs(args) {
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
 
-    if (arg === '--cwd') {
-      parsed.cwd = args[++i];
-      continue;
-    }
-
-    if (arg.startsWith('--cwd=')) {
-      parsed.cwd = arg.slice('--cwd='.length);
-      continue;
-    }
-
-    if (arg === '--change' || arg === '--change-id') {
-      parsed.changeId = args[++i];
-      continue;
-    }
-
-    if (arg.startsWith('--change=')) {
-      parsed.changeId = arg.slice('--change='.length);
-      continue;
-    }
-
-    if (arg.startsWith('--change-id=')) {
-      parsed.changeId = arg.slice('--change-id='.length);
-      continue;
-    }
-
-    if (arg === '--change-key') {
-      parsed.changeKey = args[++i];
-      continue;
-    }
-
-    if (arg.startsWith('--change-key=')) {
-      parsed.changeKey = arg.slice('--change-key='.length);
-      continue;
-    }
-
-    if (arg === '--compact') {
-      parsed.compact = true;
-      continue;
-    }
-
-    if (arg === '--data-only') {
-      parsed.dataOnly = true;
-      continue;
-    }
-
-    if (arg === '--no-trace') {
-      parsed.noTrace = true;
-      continue;
-    }
+    if (arg === '--cwd') { parsed.cwd = args[++i]; continue; }
+    if (arg.startsWith('--cwd=')) { parsed.cwd = arg.slice('--cwd='.length); continue; }
+    if (arg === '--change' || arg === '--change-id') { parsed.changeId = args[++i]; continue; }
+    if (arg.startsWith('--change=')) { parsed.changeId = arg.slice('--change='.length); continue; }
+    if (arg.startsWith('--change-id=')) { parsed.changeId = arg.slice('--change-id='.length); continue; }
+    if (arg === '--change-key') { parsed.changeKey = args[++i]; continue; }
+    if (arg.startsWith('--change-key=')) { parsed.changeKey = arg.slice('--change-key='.length); continue; }
+    if (allowQueryFlags && arg === '--compact') { parsed.compact = true; continue; }
+    if (allowQueryFlags && arg === '--data-only') { parsed.dataOnly = true; continue; }
+    if (allowQueryFlags && arg === '--no-trace') { parsed.noTrace = true; continue; }
 
     parsed.rest.push(arg);
   }
@@ -558,7 +524,7 @@ async function runQueryCommand(args) {
     return 0;
   }
 
-  const options = parseQueryArgs(rest);
+  const options = parseChangeScopedArgs(rest, { allowQueryFlags: true });
   if (!options.changeId) {
     console.error('Query --change is required.');
     return 3;
@@ -572,6 +538,252 @@ async function runQueryCommand(args) {
 
   process.stdout.write(`${formatQueryResult(result, options)}\n`);
   return result.ok ? 0 : 2;
+}
+
+async function runTaskContractCommand(args) {
+  const [subcommand, ...rest] = args;
+
+  if (!subcommand || subcommand === '--help' || subcommand === '-h') {
+    console.error('Use: cc-devflow task-contract <compile|validate|migrate> --change <changeId> [--change-key <key>] [--cwd <path>] [--fold-design] [--fold-analysis]');
+    return 3;
+  }
+
+  const options = parseChangeScopedArgs(rest);
+  if (!options.changeId) {
+    console.error('task-contract --change is required.');
+    return 3;
+  }
+
+  if (subcommand === 'compile' || subcommand === 'validate' || subcommand === 'migrate') {
+    const {
+      runCompile,
+      runValidate,
+      runMigrate
+    } = require(path.join(PACKAGE_ROOT, 'lib/skill-runtime/operations/task-contract.js'));
+    const runners = {
+      compile: runCompile,
+      validate: runValidate,
+      migrate: runMigrate
+    };
+    const runner = runners[subcommand];
+    const result = await runner({
+      repoRoot: path.resolve(options.cwd || process.cwd()),
+      changeId: options.changeId,
+      changeKey: options.changeKey,
+      foldDesign: options.rest.includes('--fold-design'),
+      foldAnalysis: options.rest.includes('--fold-analysis')
+    });
+    if (result.code !== 0) {
+      console.error(result.stderr || result.error || `task-contract ${subcommand} failed`);
+      return result.code;
+    }
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+    return result.code;
+  }
+
+  console.error(`Unknown task-contract command: ${subcommand}`);
+  return 3;
+}
+
+function parseReviewStartArgs(args) {
+  const scoped = parseChangeScopedArgs(args);
+  const parsed = {
+    ...scoped,
+    mode: 'implementation',
+    scope: 'current-diff',
+    baseSha: 'unknown',
+    headSha: 'unknown',
+    selectedNodes: [],
+    skippedNodes: [],
+    riskLanes: []
+  };
+
+  for (let i = 0; i < scoped.rest.length; i++) {
+    const arg = scoped.rest[i];
+    if (arg === '--mode') { parsed.mode = scoped.rest[++i]; continue; }
+    if (arg.startsWith('--mode=')) { parsed.mode = arg.slice('--mode='.length); continue; }
+    if (arg === '--scope') { parsed.scope = scoped.rest[++i]; continue; }
+    if (arg.startsWith('--scope=')) { parsed.scope = arg.slice('--scope='.length); continue; }
+    if (arg === '--base-sha') { parsed.baseSha = scoped.rest[++i]; continue; }
+    if (arg.startsWith('--base-sha=')) { parsed.baseSha = arg.slice('--base-sha='.length); continue; }
+    if (arg === '--head-sha') { parsed.headSha = scoped.rest[++i]; continue; }
+    if (arg.startsWith('--head-sha=')) { parsed.headSha = arg.slice('--head-sha='.length); continue; }
+    if (arg === '--selected-node') { parsed.selectedNodes.push(scoped.rest[++i]); continue; }
+    if (arg.startsWith('--selected-node=')) { parsed.selectedNodes.push(arg.slice('--selected-node='.length)); continue; }
+    if (arg === '--skipped-node') { parsed.skippedNodes.push(scoped.rest[++i]); continue; }
+    if (arg.startsWith('--skipped-node=')) { parsed.skippedNodes.push(arg.slice('--skipped-node='.length)); continue; }
+    if (arg === '--risk-lane') { parsed.riskLanes.push(scoped.rest[++i]); continue; }
+    if (arg.startsWith('--risk-lane=')) { parsed.riskLanes.push(arg.slice('--risk-lane='.length)); continue; }
+  }
+
+  return parsed;
+}
+
+function parseReviewEventArgs(args) {
+  const scoped = parseChangeScopedArgs(args);
+  const parsed = {
+    ...scoped,
+    reviewId: null,
+    nodeId: null,
+    mode: 'implementation',
+    target: null,
+    status: null,
+    coverage: [],
+    evidenceRefs: [],
+    findings: [],
+    next: null,
+    findingId: null,
+    severity: null,
+    confidence: null,
+    displayTier: null,
+    fingerprint: null,
+    scope: null,
+    path: null,
+    evidence: null,
+    recommendation: null,
+    route: null,
+    blockingCount: null,
+    warningCount: null,
+    output: null
+  };
+
+  for (let i = 0; i < scoped.rest.length; i++) {
+    const arg = scoped.rest[i];
+    if (arg === '--review-id') { parsed.reviewId = scoped.rest[++i]; continue; }
+    if (arg.startsWith('--review-id=')) { parsed.reviewId = arg.slice('--review-id='.length); continue; }
+    if (arg === '--node-id') { parsed.nodeId = scoped.rest[++i]; continue; }
+    if (arg.startsWith('--node-id=')) { parsed.nodeId = arg.slice('--node-id='.length); continue; }
+    if (arg === '--mode') { parsed.mode = scoped.rest[++i]; continue; }
+    if (arg.startsWith('--mode=')) { parsed.mode = arg.slice('--mode='.length); continue; }
+    if (arg === '--target') { parsed.target = scoped.rest[++i]; continue; }
+    if (arg.startsWith('--target=')) { parsed.target = arg.slice('--target='.length); continue; }
+    if (arg === '--status') { parsed.status = scoped.rest[++i]; continue; }
+    if (arg.startsWith('--status=')) { parsed.status = arg.slice('--status='.length); continue; }
+    if (arg === '--coverage') { parsed.coverage.push(scoped.rest[++i]); continue; }
+    if (arg.startsWith('--coverage=')) { parsed.coverage.push(arg.slice('--coverage='.length)); continue; }
+    if (arg === '--evidence-ref') { parsed.evidenceRefs.push(scoped.rest[++i]); continue; }
+    if (arg.startsWith('--evidence-ref=')) { parsed.evidenceRefs.push(arg.slice('--evidence-ref='.length)); continue; }
+    if (arg === '--finding') { parsed.findings.push(scoped.rest[++i]); continue; }
+    if (arg.startsWith('--finding=')) { parsed.findings.push(arg.slice('--finding='.length)); continue; }
+    if (arg === '--next') { parsed.next = scoped.rest[++i]; continue; }
+    if (arg.startsWith('--next=')) { parsed.next = arg.slice('--next='.length); continue; }
+    if (arg === '--finding-id') { parsed.findingId = scoped.rest[++i]; continue; }
+    if (arg.startsWith('--finding-id=')) { parsed.findingId = arg.slice('--finding-id='.length); continue; }
+    if (arg === '--severity') { parsed.severity = scoped.rest[++i]; continue; }
+    if (arg.startsWith('--severity=')) { parsed.severity = arg.slice('--severity='.length); continue; }
+    if (arg === '--confidence') { parsed.confidence = scoped.rest[++i]; continue; }
+    if (arg.startsWith('--confidence=')) { parsed.confidence = arg.slice('--confidence='.length); continue; }
+    if (arg === '--display-tier') { parsed.displayTier = scoped.rest[++i]; continue; }
+    if (arg.startsWith('--display-tier=')) { parsed.displayTier = arg.slice('--display-tier='.length); continue; }
+    if (arg === '--fingerprint') { parsed.fingerprint = scoped.rest[++i]; continue; }
+    if (arg.startsWith('--fingerprint=')) { parsed.fingerprint = arg.slice('--fingerprint='.length); continue; }
+    if (arg === '--scope') { parsed.scope = scoped.rest[++i]; continue; }
+    if (arg.startsWith('--scope=')) { parsed.scope = arg.slice('--scope='.length); continue; }
+    if (arg === '--path') { parsed.path = scoped.rest[++i]; continue; }
+    if (arg.startsWith('--path=')) { parsed.path = arg.slice('--path='.length); continue; }
+    if (arg === '--evidence') { parsed.evidence = scoped.rest[++i]; continue; }
+    if (arg.startsWith('--evidence=')) { parsed.evidence = arg.slice('--evidence='.length); continue; }
+    if (arg === '--recommendation') { parsed.recommendation = scoped.rest[++i]; continue; }
+    if (arg.startsWith('--recommendation=')) { parsed.recommendation = arg.slice('--recommendation='.length); continue; }
+    if (arg === '--route') { parsed.route = scoped.rest[++i]; continue; }
+    if (arg.startsWith('--route=')) { parsed.route = arg.slice('--route='.length); continue; }
+    if (arg === '--blocking-count') { parsed.blockingCount = scoped.rest[++i]; continue; }
+    if (arg.startsWith('--blocking-count=')) { parsed.blockingCount = arg.slice('--blocking-count='.length); continue; }
+    if (arg === '--warning-count') { parsed.warningCount = scoped.rest[++i]; continue; }
+    if (arg.startsWith('--warning-count=')) { parsed.warningCount = arg.slice('--warning-count='.length); continue; }
+    if (arg === '--output') { parsed.output = scoped.rest[++i]; continue; }
+    if (arg.startsWith('--output=')) { parsed.output = arg.slice('--output='.length); continue; }
+  }
+
+  return parsed;
+}
+
+async function runReviewCommand(args) {
+  const [subcommand, ...rest] = args;
+
+  if (!subcommand || subcommand === '--help' || subcommand === '-h') {
+    console.error('Use: cc-devflow review start --change <changeId> [--change-key <key>] [--cwd <path>]');
+    return 3;
+  }
+
+  const reviewRunners = {
+    start: null,
+    'record-node': 'runReviewRecordNode',
+    'add-finding': 'runReviewAddFinding',
+    close: 'runReviewClose',
+    render: 'runReviewRender'
+  };
+
+  if (subcommand === 'start') {
+    const options = parseReviewStartArgs(rest);
+    if (!options.changeId) {
+      console.error('review start --change is required.');
+      return 3;
+    }
+
+    const { runReviewStart } = require(path.join(PACKAGE_ROOT, 'lib/skill-runtime/operations/review-records.js'));
+    const result = await runReviewStart({
+      repoRoot: path.resolve(options.cwd || process.cwd()),
+      changeId: options.changeId,
+      changeKey: options.changeKey,
+      mode: options.mode,
+      scope: options.scope,
+      baseSha: options.baseSha,
+      headSha: options.headSha,
+      selectedNodes: options.selectedNodes,
+      skippedNodes: options.skippedNodes,
+      riskLanes: options.riskLanes
+    });
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+    return result.code;
+  }
+
+  if (reviewRunners[subcommand]) {
+    const options = parseReviewEventArgs(rest);
+    if (!options.changeId) {
+      console.error(`review ${subcommand} --change is required.`);
+      return 3;
+    }
+
+    const runnerName = reviewRunners[subcommand];
+    const runners = require(path.join(PACKAGE_ROOT, 'lib/skill-runtime/operations/review-records.js'));
+    const result = await runners[runnerName]({
+      repoRoot: path.resolve(options.cwd || process.cwd()),
+      changeId: options.changeId,
+      changeKey: options.changeKey,
+      reviewId: options.reviewId,
+      nodeId: options.nodeId,
+      mode: options.mode,
+      target: options.target,
+      status: options.status,
+      coverage: options.coverage,
+      evidenceRefs: options.evidenceRefs,
+      findings: options.findings,
+      next: options.next,
+      findingId: options.findingId,
+      severity: options.severity,
+      confidence: options.confidence,
+      displayTier: options.displayTier,
+      fingerprint: options.fingerprint,
+      scope: options.scope,
+      path: options.path,
+      evidence: options.evidence,
+      recommendation: options.recommendation,
+      route: options.route,
+      blockingCount: options.blockingCount,
+      warningCount: options.warningCount,
+      output: options.output
+    });
+    if (result.code !== 0) {
+      console.error(result.stderr || result.error || `review ${subcommand} failed`);
+      return result.code;
+    }
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+    return result.code;
+  }
+
+  console.error(`Unknown review command: ${subcommand}`);
+  return 3;
 }
 
 function runNextChangeKey(args) {
@@ -734,6 +946,14 @@ async function main() {
 
   if (command === 'query') {
     return runQueryCommand(rest);
+  }
+
+  if (command === 'task-contract') {
+    return runTaskContractCommand(rest);
+  }
+
+  if (command === 'review') {
+    return runReviewCommand(rest);
   }
 
   if (command === 'next-change-key') {

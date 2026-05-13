@@ -381,8 +381,8 @@ function collectSlimManifestErrors(manifest, label, errors) {
 
 function validateCcPlanPlanningContracts(errors) {
   const skill = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-plan/SKILL.md'), 'utf8');
-  const fullDesign = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-plan/assets/DESIGN_TEMPLATE.md'), 'utf8');
-  const tinyDesign = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-plan/assets/TINY_DESIGN_TEMPLATE.md'), 'utf8');
+  const fullDesign = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-plan/assets/legacy/DESIGN_TEMPLATE.md'), 'utf8');
+  const tinyDesign = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-plan/assets/legacy/TINY_DESIGN_TEMPLATE.md'), 'utf8');
   const tasks = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-plan/assets/TASKS_TEMPLATE.md'), 'utf8');
   const manifestPath = path.join(ROOT, '.claude/skills/cc-plan/assets/TASK_MANIFEST_TEMPLATE.json');
   const planningContract = fs.readFileSync(
@@ -397,15 +397,15 @@ function validateCcPlanPlanningContracts(errors) {
     ['cc-plan SKILL.md', skill, 'B) <label>'],
     ['cc-plan SKILL.md', skill, '禁止输出 `1)` / `2)` / `3)`'],
     ['cc-plan SKILL.md', skill, 'STOP: wait for the user answer before continuing.'],
-    ['cc-plan DESIGN_TEMPLATE.md', fullDesign, '## Decision Questions'],
+    ['cc-plan legacy DESIGN_TEMPLATE.md', fullDesign, '## Decision Questions'],
     ['cc-plan planning-contract.md', planningContract, 'options：只能使用 `A` / `B` / `C`']
   ];
 
   const aiLeverageSnippets = [
     ['cc-plan SKILL.md', skill, '## AI Leverage Decision Lens'],
     ['cc-plan SKILL.md', skill, '`boil-lake` / `sharp-wedge` / `needs-evidence` / `pivot`'],
-    ['cc-plan DESIGN_TEMPLATE.md', fullDesign, '## AI Leverage Decision Lens'],
-    ['cc-plan TINY_DESIGN_TEMPLATE.md', tinyDesign, '## AI Leverage Decision Lens'],
+    ['cc-plan legacy DESIGN_TEMPLATE.md', fullDesign, '## AI Leverage Decision Lens'],
+    ['cc-plan legacy TINY_DESIGN_TEMPLATE.md', tinyDesign, '## AI Leverage Decision Lens'],
     ['cc-plan TASKS_TEMPLATE.md', tasks, 'AI Leverage Decision Lens: boil-lake | sharp-wedge | needs-evidence | pivot'],
     ['cc-plan planning-contract.md', planningContract, 'AI Leverage Decision Lens 必须在任务生成前闭合']
   ];
@@ -413,10 +413,10 @@ function validateCcPlanPlanningContracts(errors) {
   const deepPlanningSnippets = [
     ['cc-plan SKILL.md', skill, '## Deep Planning Funnel'],
     ['cc-plan SKILL.md', skill, 'Requirement Reality Round'],
-    ['cc-plan DESIGN_TEMPLATE.md', fullDesign, '## Deep Planning Funnel'],
-    ['cc-plan DESIGN_TEMPLATE.md', fullDesign, '## Task Contract Preview'],
-    ['cc-plan TINY_DESIGN_TEMPLATE.md', tinyDesign, '## Deep Planning Funnel'],
-    ['cc-plan TINY_DESIGN_TEMPLATE.md', tinyDesign, '## Task Contract Preview'],
+    ['cc-plan legacy DESIGN_TEMPLATE.md', fullDesign, '## Deep Planning Funnel'],
+    ['cc-plan legacy DESIGN_TEMPLATE.md', fullDesign, '## Task Contract Preview'],
+    ['cc-plan legacy TINY_DESIGN_TEMPLATE.md', tinyDesign, '## Deep Planning Funnel'],
+    ['cc-plan legacy TINY_DESIGN_TEMPLATE.md', tinyDesign, '## Task Contract Preview'],
     ['cc-plan TASKS_TEMPLATE.md', tasks, 'Deep Planning Funnel:'],
     ['cc-plan TASKS_TEMPLATE.md', tasks, '## Task Contract Matrix'],
     ['cc-plan TASKS_TEMPLATE.md', tasks, 'Contract: user story'],
@@ -546,10 +546,10 @@ function validateProjectPostmortemContracts(errors) {
   const investigate = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-investigate/SKILL.md'), 'utf8');
   const execute = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-do/SKILL.md'), 'utf8');
   const act = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-act/SKILL.md'), 'utf8');
-  const design = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-plan/assets/DESIGN_TEMPLATE.md'), 'utf8');
-  const tinyDesign = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-plan/assets/TINY_DESIGN_TEMPLATE.md'), 'utf8');
+  const design = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-plan/assets/legacy/DESIGN_TEMPLATE.md'), 'utf8');
+  const tinyDesign = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-plan/assets/legacy/TINY_DESIGN_TEMPLATE.md'), 'utf8');
   const planTasks = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-plan/assets/TASKS_TEMPLATE.md'), 'utf8');
-  const analysis = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-investigate/assets/ANALYSIS_TEMPLATE.md'), 'utf8');
+  const analysis = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-investigate/assets/legacy/ANALYSIS_TEMPLATE.md'), 'utf8');
   const investigateTasks = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-investigate/assets/TASKS_TEMPLATE.md'), 'utf8');
 
   for (const relPath of [
@@ -681,7 +681,7 @@ function validateCcRoadmapContracts(errors) {
 function validateCcInvestigateContracts(errors) {
   const skill = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-investigate/SKILL.md'), 'utf8');
   const playbook = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-investigate/PLAYBOOK.md'), 'utf8');
-  const analysis = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-investigate/assets/ANALYSIS_TEMPLATE.md'), 'utf8');
+  const analysis = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-investigate/assets/legacy/ANALYSIS_TEMPLATE.md'), 'utf8');
   const tasks = fs.readFileSync(path.join(ROOT, '.claude/skills/cc-investigate/assets/TASKS_TEMPLATE.md'), 'utf8');
   const manifestPath = path.join(ROOT, '.claude/skills/cc-investigate/assets/TASK_MANIFEST_TEMPLATE.json');
   const manifestText = fs.readFileSync(manifestPath, 'utf8');

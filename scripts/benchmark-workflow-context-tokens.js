@@ -96,6 +96,15 @@ function countMissingSectionRefs(context) {
   return defaultOpenMissing + deepOpenMissing;
 }
 
+function hasSectionRefFallback(context) {
+  const defaultOpenRefs = context.progressiveDisclosure.defaultOpen || [];
+  const deepRefs = (context.progressiveDisclosure.deepOpen || [])
+    .flatMap((group) => group.refs || []);
+
+  return [...defaultOpenRefs, ...deepRefs]
+    .some((entry) => entry && typeof entry === 'object' && entry.exists === false && entry.fallbackRef);
+}
+
 function resolveMarkdownHeading(markdown, fragment) {
   const slug = String(fragment || '')
     .trim()
@@ -393,7 +402,7 @@ function passesCorrectness(context, expected = {}) {
       ? countMissingSectionRefs(context) >= expected.missingSectionRefs
       : true,
     expected.sectionRefFallback
-      ? (context.progressiveDisclosure.defaultOpen || []).some((entry) => entry.exists === false && entry.fallbackRef)
+      ? hasSectionRefFallback(context)
       : true
   ];
 
