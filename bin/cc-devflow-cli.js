@@ -183,6 +183,9 @@ function copyManagedDirectory(src, dest, options = {}) {
   const stats = fs.statSync(src);
   if (stats.isDirectory()) {
     fs.mkdirSync(dest, { recursive: true });
+    if (force) {
+      pruneManagedDirectory(src, dest);
+    }
     const entries = fs.readdirSync(src);
     for (const entry of entries) {
       copyManagedDirectory(path.join(src, entry), path.join(dest, entry), options);
@@ -209,6 +212,23 @@ function copyManagedDirectory(src, dest, options = {}) {
     console.log(`[UPDATE] ${path.relative(process.cwd(), dest)}`);
   } catch (err) {
     console.warn(`[WARN] Could not compare ${path.relative(process.cwd(), dest)}: ${err.message}`);
+  }
+}
+
+function pruneManagedDirectory(src, dest) {
+  if (!fs.existsSync(dest) || !fs.statSync(dest).isDirectory()) {
+    return;
+  }
+
+  const sourceEntries = new Set(fs.readdirSync(src));
+  for (const entry of fs.readdirSync(dest)) {
+    if (sourceEntries.has(entry)) {
+      continue;
+    }
+
+    const targetPath = path.join(dest, entry);
+    fs.rmSync(targetPath, { recursive: true, force: true });
+    console.log(`[DELETE] ${path.relative(process.cwd(), targetPath)}`);
   }
 }
 
