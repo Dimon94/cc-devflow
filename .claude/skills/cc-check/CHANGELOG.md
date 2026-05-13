@@ -1,5 +1,11 @@
 # CC-Check Skill Changelog
 
+## v1.11.3 - 2026-05-13
+
+- make `review/report-card.json` script-owned: agents must regenerate it through `scripts/render-report-card.js` and validate it with `scripts/verify-gate.sh`
+- forbid direct manual edits to report-card fields such as timestamp, summary, QA/browser evidence, UAT, claim evidence, or reroute
+- route unsupported evidence shapes back into renderer/schema changes instead of allowing one-off JSON patching
+
 ## v1.11.2 - 2026-05-13
 
 - internalize verification operating rules so conflicting proof sources must be resolved explicitly instead of averaged

@@ -51,6 +51,8 @@ NO PASS WITHOUT FRESH EVIDENCE
 4. **Freeze Verdict**
    - 只允许 `pass` / `fail` / `blocked`
    - 只允许诚实 reroute
+   - 只允许通过 `scripts/render-report-card.js` 生成 `review/report-card.json`
+   - 只允许通过 `scripts/verify-gate.sh --report ...` 证明结构有效
 
 ## Gate Function
 
@@ -59,13 +61,22 @@ NO PASS WITHOUT FRESH EVIDENCE
 1. 找到证明这个结论的命令
 2. 重新运行完整命令
 3. 读取真实输出和退出码
-4. 把证据写进 `report-card.json`
+4. 把证据写进 renderer 输入，再由 `render-report-card.js` 生成 `report-card.json`
 5. 把任务级 review 与需求级 diff review 分开写清楚
 6. 把每个成功声明映射到 `claimEvidence[]`
 7. 行为变更必须补 `qa` 证据或例外理由
 8. 失败输出必须写入 `runtime.failureOwnership[]`
 9. failure ownership 必须包含 named error、artifact refs 和 rescue action
 10. human UAT 必须 pass、fail、blocked 或带 skip reason；失败不能被测试绿灯覆盖
+
+## Report Card Ownership
+
+`review/report-card.json` 是 cc-check 的机器投影。它只能从当前 gate / review / manifest 输入重新生成。
+
+- 不要手动编辑 `review/report-card.json`，哪怕只是 timestamp、summary、browserEvidence 或下一步。
+- 需要新增证据时，先更新真实输入：gate 输出、review ledger / findings、manifest、截图路径、命令日志或临时 review JSON。
+- 然后运行 `scripts/render-report-card.js` 生成 report，再运行 `scripts/verify-gate.sh --report <report>`。
+- 如果 renderer 不支持某类证据，正确修复是扩展 renderer 和校验脚本，不是手写目标 JSON。
 
 ## Verification Layers
 
@@ -268,7 +279,7 @@ review 还要带 `freshness`：`status`、`reviewedCommit`、`currentCommit`、`
 
 - `assets/REPORT_CARD_TEMPLATE.json` 提供最小输出形状
 - `scripts/run-quality-gates.sh` 跑真实命令
-- `scripts/render-report-card.js` 根据 gate 结果、review 结果和 manifest 生成 `report-card.json`
+- `scripts/render-report-card.js` 根据 gate 结果、review 结果和 manifest 生成 `report-card.json`；这是唯一有效写入入口
 - `scripts/verify-gate.sh` 检查证据和文件是否齐全
 - `references/review-contract.md` 说明任务级 / 需求级审查责任边界
 

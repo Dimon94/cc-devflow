@@ -754,6 +754,8 @@ function validateOperatingPrinciplesContracts(errors) {
     ['cc-do SKILL.md', skills['cc-do'], 'Clean only traces introduced by this task'],
     ['cc-check SKILL.md', skills['cc-check'], 'Verification discipline'],
     ['cc-check SKILL.md', skills['cc-check'], 'skipped gate'],
+    ['cc-check SKILL.md', skills['cc-check'], 'Report Card Ownership'],
+    ['cc-check SKILL.md', skills['cc-check'], 'direct manual JSON edits are invalid cc-check evidence'],
     ['cc-act SKILL.md', skills['cc-act'], '## Closure Discipline'],
     ['cc-act SKILL.md', skills['cc-act'], 'done, verified, remaining/blocker']
   ];
