@@ -22,7 +22,7 @@
 
 - Reviewed base SHA: d0d974b6a65e4a967b201e26cb5ae4dc892c568e
 - Reviewed head SHA: ac2c98e97965cecd7b7da4685a39a96b4fe1da8a+wtree:755f4478f59f71fe60132be4f0276965776bea7fd5ea634861dce0761e4227ed
-- Review packet: devflow/changes/REQ-002-unified-roadmap-truth/planning/design.md + change-meta.json; devflow/changes/REQ-002-unified-roadmap-truth/planning/tasks.md + planning/task-manifest.json
+- Review packet: devflow/changes/REQ-002-unified-roadmap-truth/task.md
 - Finding triage: no findings
 - QA / claim evidence: qa=pass, claims=tests-pass:pass, roadmap-state-contract-met:pass, distributed-contract-met:pass, examples-and-docs-current:pass, publish-validation-clean:pass, requirements-met:pass
 
@@ -37,7 +37,7 @@
 - Behavior evidence: status=pass, boundary=cc-roadmap operator and downstream agent workflow, expected=roadmap.json is the editable roadmap state; ROADMAP.md and deprecated BACKLOG.md are generated projections; helper commands prefer roadmap.json while preserving legacy migration fallback., actual=Fresh tests and validation gates verify v3 state rendering, legacy upgrade, generated Mermaid architecture, deprecated BACKLOG notice, helper lookup/sync priority, public metadata, and examples., steps=4
 - Failure ownership: no open failures recorded
 - Documentation release: CLAUDE=see doc-sync-report.md; README=see doc-sync-report.md
-- PR body accuracy: body must be regenerated from this pr-brief, current report-card, and current diff before PR create/update
+- PR body accuracy: body must be regenerated from this pr-brief, current validation evidence, and current diff before PR create/update
 
 ## Summary
 
@@ -56,11 +56,11 @@
 - T009 [TEST] Add failing example validation expectations for roadmap.json (dependsOn:T008) `docs/examples/scripts/check-example-bindings.sh`
 - T010 [IMPL] Update examples, docs, and generated Codex mirror (dependsOn:T009) `docs/examples/pdca-loop/roadmap.json`
 - T011 [REFACTOR] Simplify roadmap state renderer after green behavior (dependsOn:T002,T004,T006) `.claude/skills/cc-roadmap/scripts/lib/roadmap-tracking/store.js`
-- T012 [VERIFY] Run full planning gates for cc-check handoff (dependsOn:T010,T011) `devflow/changes/REQ-002-unified-roadmap-truth/review/report-card.json`
+- T012 [VERIFY] Run full planning gates for cc-check handoff (dependsOn:T010,T011) `devflow/changes/REQ-002-unified-roadmap-truth/`
 
 ## Verification Evidence
 
-- `report-card.json` verdict: pass
+- `` verdict: pass
 - Act verification on `main`: refreshed on the current working tree before closeout; all commands below exited 0.
 - npm test -- --runInBand exited 0; 41 test suites and 275 tests passed.
 - npm run adapt:check exited 0; No drift detected.
@@ -73,7 +73,7 @@
 - - distributed-contract-met: pass via npm test -- --runInBand && npm run adapt:check - cc-roadmap public metadata now exposes required devflow/roadmap.json and optional deprecated devflow/BACKLOG.md, and Codex mirror has no drift.
 - - examples-and-docs-current: pass via npm run verify:examples - Example bindings are in sync with current skill versions and examples require roadmap.json.
 - - publish-validation-clean: pass via npm run verify:publish - Pack runtime smoke passed and publish validation passed.
-- - requirements-met: pass via devflow/changes/REQ-002-unified-roadmap-truth/planning/tasks.md + planning/task-manifest.json - T001 through T012 are checked off, manifest status is implemented, currentTaskId is null, and every task has spec/code review pass.
+- - requirements-met: pass via devflow/changes/REQ-002-unified-roadmap-truth/task.md +  - T001 through T012 are checked off, manifest status is implemented, currentTaskId is null, and every task has spec/code review pass.
 - - qa.coverage: pass, gaps=1
 - - qa.browser: skipped, mode=not-applicable
 - - qa.feedbackLoop: pass, mode=automated-test-and-shell-validation, signal=Failures point to roadmap state contract, helper priority, public metadata, example drift, publish package validity, or diff hygiene.
@@ -98,8 +98,8 @@
 
 - `CLAUDE.md`: see doc-sync-report.md
 - `README.md`: see doc-sync-report.md
-- `release-note.md`: refreshed
-- `resume-index.md`: refreshed
+- `pr-brief.md`: refreshed
+- ``: refreshed
 
 ## How To Verify
 

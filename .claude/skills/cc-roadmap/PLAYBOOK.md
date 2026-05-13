@@ -40,7 +40,7 @@
 
 1. 现有 `devflow/roadmap.json` / `devflow/ROADMAP.md` / `devflow/BACKLOG.md`
 2. `CLAUDE.md`、`README*`、`TODOS.md`
-3. 项目语言和持久决策：`devflow/specs/INDEX.md`、相关 capability specs、当前 roadmap/backlog、历史 `planning/design.md` / `planning/analysis.md`、`change-meta.json`、长期 design decision
+3. 项目语言和持久决策：`devflow/specs/INDEX.md`、相关 capability specs、当前 roadmap/backlog
 4. 最近相关 docs / specs / plans
 5. 最近相关提交、当前工作树状态、正在推进的 requirement
 6. 现实 forcing functions：deadline、distribution、资源、依赖、当前卡点

@@ -4,7 +4,7 @@
 
 - Example version: `1.0.0`
 - Last reviewed: `2026-04-17`
-- Bound skills: `cc-roadmap@5.3.0`, `cc-plan@3.9.4`, `cc-do@1.6.9`, `cc-check@1.11.4`, `cc-act@1.8.11`
+- Bound skills: `cc-roadmap@5.3.0`, `cc-plan@3.10.0`, `cc-do@1.7.0`, `cc-check@1.12.0`, `cc-act@1.9.0`
 
 This example shows verified work that is **ready to move forward**, but `cc-act` still chooses `local-handoff`.
 
@@ -32,25 +32,22 @@ But the current environment is local-only:
 
 1. Why `cc-check` is `pass`
 2. Why `cc-act` still does not choose `create-pr`
-3. How `pr-brief.md#Resume Entry` becomes the local handoff entry inside the only final handoff file
+3. How `handoff/pr-brief.md` becomes the only final handoff file
 
 ## Artifact Map
 
 - `roadmap.json` (editable roadmap truth)
 - `ROADMAP.md` (generated view)
 - `BACKLOG.md` (deprecated projection)
-- `changes/REQ-003-audit-log-export/planning/tasks.md`
-- `changes/REQ-003-audit-log-export/planning/design.md` (legacy fallback sample)
-- `changes/REQ-003-audit-log-export/planning/task-manifest.json`
-- `changes/REQ-003-audit-log-export/review/report-card.json`
+- `changes/REQ-003-audit-log-export/task.md`
 - `changes/REQ-003-audit-log-export/handoff/pr-brief.md`
 
-## Why There Is No `resume-index.md`
+## Why There Is A Local `pr-brief.md`
 
 This sample intentionally chooses `local-handoff`.
 
-That mode needs:
+That mode still needs one durable PR/handoff file:
 
-- `pr-brief.md#Resume Entry`
+- `handoff/pr-brief.md`
 
-It does **not** generate a parallel resume index.
+It does **not** require status, resume, release-note, ledger, or JSON process files.

@@ -12,8 +12,6 @@ const CLI_COMMANDS = new Set([
     'adapt',
     'config',
     'query',
-    'task-contract',
-    'review',
     'next-change-key',
     'archive-change',
     'restore-change',

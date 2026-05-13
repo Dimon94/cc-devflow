@@ -28,7 +28,7 @@
 
 - Reviewed base SHA: `example-base`
 - Reviewed head SHA: `example-head`
-- Review packet: `planning/tasks.md#Contract Summary`; `planning/tasks.md#T001-T003`
+- Review packet: `task.md#Contract Summary`; `task.md#T001-T003`
 - Finding triage: no findings
 - QA / claim evidence: `qa=pass`, `tests-pass=pass`, `requirements-met=pass`
 
@@ -41,14 +41,14 @@
 - Browser QA: `skipped`, example fixture uses targeted component evidence instead of a live browser
 - Failure ownership: no open failures recorded
 - Documentation release: README and CLAUDE unchanged for this scoped example
-- PR body accuracy: regenerate the PR body from this brief, current report-card, and current diff
+- PR body accuracy: regenerate the PR body from this brief, current validation evidence, and current diff
 
 ## Pull Request Body Contract
 
 - Language source: `Output language: en`
 - PR body language: English
 - Title rule: use English after the Conventional Commits `type(scope)` prefix; keep identifiers, paths, commands, and issue keys unchanged.
-- Body source: current `pr-brief.md`, current diff, current `review/report-card.json`, doc sync output, and roadmap/backlog writeback.
+- Body source: current `pr-brief.md`, current diff, current verification response, and roadmap/backlog writeback.
 - Required sections: summary, problem, changes, validation, review/gate evidence, risk/rollback, docs/writeback, and follow-ups.
 - Completeness gate: no empty headings, no stale inherited PR body, no generic "tests passed" without commands or evidence, and no `<placeholder>` text before `gh pr create`.
 
@@ -74,7 +74,7 @@
 
 ## Validation
 
-- `report-card.json` verdict: `pass`
+- Verification verdict: `pass`
 - `npm test -- src/features/share/ShareDialog.test.tsx`
 - `npm run lint -- src/features/share/ShareDialog.tsx`
 
@@ -82,7 +82,7 @@
 
 - Reviewed base SHA: `example-base`
 - Reviewed head SHA: `example-head`
-- Review packet: `planning/tasks.md#Contract Summary`; `planning/tasks.md#T001-T003`
+- Review packet: `task.md#Contract Summary`; `task.md#T001-T003`
 - Finding triage: no findings
 - QA / claim evidence: `qa=pass`, `tests-pass=pass`, `requirements-met=pass`
 - Readiness: review freshness=`fresh`; QA coverage has no gaps; browser QA intentionally skipped for this fixture.
@@ -117,7 +117,7 @@
 
 ## Verification Evidence
 
-- `report-card.json` verdict: `pass`
+- Verification verdict: `pass`
 - Merged-result verification: not applicable before merge
 - Fresh evidence:
   - `npm test -- src/features/share/ShareDialog.test.tsx`
@@ -127,15 +127,15 @@
 
 - `CLAUDE.md`: unchanged
 - `README.md`: unchanged
-- Handoff file: `pr-brief.md` is the single handoff file
-- Release notes and resume entry: folded into this file
+- process files: intentionally omitted for this mode
 
 ## Minimum Landing Pack
 
 - Required for this mode:
   - `pr-brief.md`
-  - fresh `report-card.json`
-- Intentionally omitted: split `release-note.md` and `resume-index.md`
+  - fresh verification response
+- Intentionally omitted:
+  - status, resume, release-note, ledger, report-card, and JSON process files
 
 ## How To Verify
 

@@ -4,7 +4,7 @@
 
 - Example version: `1.0.0`
 - Last reviewed: `2026-04-17`
-- Bound skills: `cc-roadmap@5.3.0`, `cc-plan@3.9.4`, `cc-do@1.6.9`, `cc-check@1.11.4`, `cc-act@1.8.11`
+- Bound skills: `cc-roadmap@5.3.0`, `cc-plan@3.10.0`, `cc-do@1.7.0`, `cc-check@1.12.0`, `cc-act@1.9.0`
 
 This folder shows one minimal but complete `cc-roadmap -> cc-plan -> cc-do -> cc-check -> cc-act` loop.
 
@@ -13,7 +13,7 @@ The example is intentionally small:
 - product context is fake
 - requirement scope is real enough to feel concrete
 - the chosen ship mode is `create-pr`
-- release notes and resume entry are sections inside `pr-brief.md`, not parallel handoff files
+- process artifacts such as release notes, status files, ledgers, and JSON state are intentionally omitted
 
 ## Scenario
 
@@ -30,13 +30,10 @@ The sample requirement is:
 - `roadmap.json`: editable roadmap truth that renders the generated views
 - `ROADMAP.md`: generated view of what `cc-roadmap` decided and why this item is first
 - `BACKLOG.md`: deprecated capability-aware projection that makes `RM-001` ready for `cc-plan`
-- `changes/REQ-001-copy-invite-link/planning/tasks.md`: executable task handoff
-- `changes/REQ-001-copy-invite-link/planning/design.md`: legacy fallback sample for the approved tiny design
-- `changes/REQ-001-copy-invite-link/planning/task-manifest.json`: machine-readable execution truth
-- `changes/REQ-001-copy-invite-link/review/report-card.json`: `cc-check` proof and verdict
+- `changes/REQ-001-copy-invite-link/task.md`: executable task handoff
 - `changes/REQ-001-copy-invite-link/handoff/pr-brief.md`: ship-ready PR handoff
 
-## Why There Are No Split Handoff Files
+## Why There Are No Process Files
 
 This sample chooses `create-pr`.
 
@@ -45,7 +42,7 @@ That mode needs:
 - `pr-brief.md`
 - synced docs if behavior changed
 
-It does **not** generate separate `release-note.md` or `resume-index.md`; those facts belong in `pr-brief.md`.
+It does **not** need release notes, status files, ledgers, report cards, or JSON state, so the example intentionally stops there.
 
 ## What To Look For
 
@@ -55,4 +52,4 @@ When reading the sample, check whether you can answer these in under a minute:
 2. Why does the requirement stay `tiny-design` instead of `full-design`?
 3. Which task proved the missing behavior first?
 4. What fresh evidence let `cc-check` say `pass`?
-5. Why does `cc-act` choose `create-pr` and keep all handoff facts in `pr-brief.md`?
+5. Why does `cc-act` choose `create-pr` and omit process files?

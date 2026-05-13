@@ -21,7 +21,6 @@
 - Modules:
 - Failure class:
 - Model-risk tags:
-- Related principles:
 
 ## Prevention Summary
 
@@ -93,11 +92,4 @@
 
 | Type | Action | Owner | Target |
 | --- | --- | --- | --- |
-| root-cause-fix / detection / docs / backlog / principle |  |  |  |
-
-## Principle Extraction
-
-- Promote to `principles.md`: yes / no
-- Principle title:
-- Search terms:
-- Incident file linked from `INDEX.md`: yes / no
+| root-cause-fix / detection / docs / backlog |  |  |  |

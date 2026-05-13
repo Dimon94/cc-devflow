@@ -1,127 +1,33 @@
 # CC-Do Playbook
 
-## Visible State Machine
+## State Machine
 
 `cc-plan | cc-investigate -> cc-do -> cc-check`
 
-- Enter from: an approved `planning/design.md` or `planning/analysis.md` with frozen tasks.
-- Stay in: `cc-do` while there are ready tasks, current task state is clear, and the design contract still holds.
-- Exit to: `cc-check` once the current task set has red/green/review evidence and no hidden execution gaps remain.
-- Reroute to: `cc-investigate` if repeated failures prove the root-cause contract is wrong, or `cc-plan` if the requirement design itself is wrong.
-
-## Quick Triage
-
-开始前先把当前执行局面归到 4 类之一：
-
-- `implement`: 已有 ready task，可直接进入 TDD
-- `resume`: task 状态或 Git 工作区显示中断，需要续做
-- `repair-from-investigation`: `planning/analysis.md` 已冻结，可直接修
-- `reroute-cc-investigate`: bug 根因未明，回调查入口
-- `review-fix`: scope 不变，只修 review 指向的问题
-
-如果这一步归不清，说明当前上下文还没组装好，不准开始实现。
-
-## Execution Loop
-
-1. 读取 `task-manifest.json`，先用 `scripts/select-ready-tasks.sh` 找出当前 ready tasks 和当前 wave。
-2. 如果有多于一个 ready task，要先跑 `scripts/detect-file-conflicts.sh`；有共享触点、父子路径触点或依赖关系就退回串行。
-3. 对每个要执行的 task，先用 `workflow-context` 和完整 task block 组装上下文；只有恢复卡住时才运行 `scripts/build-task-context.sh`，且它只输出 stdout。
-4. 如果当前任务来自 `cc-investigate`，把 `planning/analysis.md` 当成上游合同，不准一边做一边重开调查。
-5. 进入 TDD 闭环：先红，再绿，再重构。
-6. 每个关键节点都留下客观证据：代码 diff、Git 状态、验证命令输出、review verdict；失败或 debug 才写 CLI event。
-7. 任务实现后，先过 `spec review`，再过 `code review`，review 不通过就回到实现。
-8. 两道 review 门都通过后，才能把任务标成完成，并把结果留给 `cc-check`。
-9. quick lane 只允许减少叙事，不允许减少 current task、verification、handoff 和 review gates。
-
-## Local Kit
-
-- 恢复时看 `references/execution-recovery.md`
-- 并行分配时看 `references/parallel-dispatch.md`
-- 需要判断当前任务时用 `scripts/check-task-status.sh`
-- 需要找 ready task 时用 `scripts/select-ready-tasks.sh`
-- 需要组装任务上下文时用 `scripts/build-task-context.sh`
-- 不要写 checkpoint；`scripts/write-task-checkpoint.sh` 只是旧兼容入口，默认不生成 checkpoint 文件
-- 需要写 review 门结果时用 `scripts/record-review-decision.sh`
-- 需要校验任务闭环时用 `scripts/verify-task-gates.sh`
-- 需要勾选任务时用 `scripts/mark-task-complete.sh`
-- 需要确认并行安全时用 `scripts/detect-file-conflicts.sh`
-- bug 根因没冻结时，退出当前执行并回 `cc-investigate`
-
-## TDD Standard
-
-1. 先写失败测试，再运行到红。
-2. 确认红灯是预期失败，不是测试写错、fixture 缺失或环境没接上。
-3. 确认红灯通过公共 seam 证明行为缺失，而不是测私有函数、内部调用次数或临时结构。
-4. 确认 mock 只发生在系统边界；内部协作者不 mock。
-5. 确认测试名像规格说明，一个 Red 只证明一个逻辑行为，结果从公共验证路径读回。
-6. 只写让当前测试转绿的最小实现，不提前实现未来测试尚未要求的分支、状态或 API。
-7. 绿后才允许重构。
-8. 重构后必须保持绿，并说明处理了重复、长方法、浅模块、feature envy、primitive obsession、命名、三层以上分支或其它具体坏味道。
-9. 测试没先红过，或红灯不是公共 seam 上的行为失败，就不能宣称这次变更受 TDD 保护。
-
-## TDD Exception Rule
-
-只有这些场景允许跳过 fail-first：
-
-- throwaway prototype
-- 纯生成文件
-- 纯配置变更
-- 上游明确禁止写测试的探索步骤
-
-每个例外都要写入当前 task block 或 manifest task context：
-
-- `tddException.reason`
-- `tddException.risk`
-- `tddException.alternativeEvidence`
-
-没有例外记录，就按违规处理，回到 Red。
+`cc-do` edits code. It does not create process files.
 
 ## Task Gates
 
-任务只有在下面顺序全部成立后，才算完成：
+1. Task selected from `task.md`
+2. Red observed or TDD exception recorded
+3. Green observed
+4. Refactor complete or unnecessary
+5. Verification run
+6. `mark-task-complete.sh` updates `task.md`
+7. Git commit created
 
-1. `red_failed`: 已观察到预期失败
-2. `red_reason_verified`: 红灯原因与目标行为缺失一致
-3. `red_seam_verified`: 红灯通过公共接口、调用方流程、CLI/API/UI 或真实边界进入系统
-4. `red_behavior_verified`: 测试断言用户或调用方可观察行为，不断言内部实现细节
-5. `mock_boundary_verified`: mock 只在系统边界，内部协作者没有被 mock
-6. `green_passed`: 当前任务实现转绿，且实现只覆盖当前红灯要求的最小行为
-7. `refactor_done` 或 `refactor_not_needed`
-8. `refactor_green`: 重构后相关测试仍绿，且没有在 Red 状态做结构清理
-9. `spec_review_pass`
-10. `code_review_pass`
+## Recovery
 
-任何一门失败，都回到实现，不准直接跨过去。
+Recover from Git and `task.md`:
 
-## Parallel Dispatch Rule
+- current branch
+- latest commits
+- dirty files
+- completed checkboxes
+- next unchecked task
 
-只有满足全部条件，才能并行：
+Do not recover from JSON state, event logs, checkpoints, or resume files.
 
-1. 任务处于当前 active phase
-2. `dependsOn` 已全部满足
-3. 任务显式允许并行，例如 `[P]`
-4. `touches` / `files` 不冲突，且父路径 / 子路径也不重叠
-5. submodule touches 已被标出；触达 submodule 的任务不能默认拿普通 worktree 隔离
-6. 每个 subagent 都拿到了自己的 task context
+## Commit Rule
 
-少一条，都按顺序执行。
-
-## Root Cause Protocol
-
-- 先复现，再猜原因
-- 先读 `planning/analysis.md`，再改代码
-- 先守住修复边界，再做最小实现
-- 两次失败后回看证据
-- 三次失败后先回 `cc-investigate`，再决定是否需要 `cc-plan`
-
-## Recovery Standard
-
-至少留下这些恢复信息：
-
-- 当前任务 ID
-- 当前 active phase / ready tasks
-- 已完成什么
-- 卡在哪里
-- 下一步唯一动作
-- 相关文件 / 命令 / 观察
-- 最近一次 Red/Green/Review 到了哪一站
+Every completed task or execution environment gets its own commit. Split by behavior or layer when needed, but do not leave completed work uncommitted between stages.

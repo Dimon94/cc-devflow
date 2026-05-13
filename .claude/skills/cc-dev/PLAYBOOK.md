@@ -44,7 +44,7 @@ The audit must map objective text to evidence:
 - commands
 - tests
 - gate scripts
-- report-card verdict
+- verification report verdict
 - handoff or PR brief
 - GitHub PR state
 

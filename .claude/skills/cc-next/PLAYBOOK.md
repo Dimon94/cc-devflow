@@ -35,8 +35,8 @@ find devflow/changes -maxdepth 1 -type d \
 
 - `resume-planning`: planning / analysis 还没冻结。
 - `resume-execution`: manifest 还有 pending ready task。
-- `resume-check`: tasks 完成但没有 passing report-card。
-- `resume-act`: report-card pass，但交付材料、roadmap/spec sync 或 PR/handoff 未闭合。
+- `resume-check`: tasks 完成但没有 passing verification report。
+- `resume-act`: verification report pass，但交付材料、roadmap/spec sync 或 PR/handoff 未闭合。
 - `archive-closeout`: 已 merged/done，但仍在 active changes 根目录。
 - `archive-blocked`: handoff 写了 `ArchiveSkip`、archive target 冲突或用户要求暂不归档。
 

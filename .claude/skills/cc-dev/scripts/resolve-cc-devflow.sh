@@ -5,7 +5,7 @@ set -euo pipefail
 # cc-devflow CLI resolver
 # ------------------------------------------------------------
 # 只接受能证明自身支持当前 workflow 命令的 CLI。
-# 旧全局包、adapter 模拟输出、缺少 task-contract/review/query 的入口必须 fail closed。
+# 旧全局包、adapter 模拟输出、缺少 query / next-change-key 的入口必须 fail closed。
 
 usage() {
   cat >&2 <<'USAGE'
@@ -14,7 +14,7 @@ Usage:
   resolve-cc-devflow.sh <cc-devflow-command> [args...]
 
 Capabilities:
-  query workflow-context task-contract review next-change-key config init adapt
+  query workflow-context next-change-key config init adapt
 USAGE
 }
 
@@ -46,7 +46,7 @@ else
         REQUIRED+=("workflow-context")
       fi
       ;;
-    task-contract|review|next-change-key|config|init|adapt)
+    next-change-key|config|init|adapt)
       REQUIRED=("${COMMAND_ARGS[0]}")
       ;;
     *)
@@ -75,7 +75,7 @@ candidate_supports() {
         query_output="$("$@" query list 2>&1)" || return 1
         grep -Fq 'workflow-context' <<<"$query_output" || return 1
         ;;
-      query|task-contract|review|next-change-key|config|init|adapt)
+      query|next-change-key|config|init|adapt)
         contains_word "$help_output" "$capability" || return 1
         ;;
       *)
@@ -164,6 +164,6 @@ try_npx_candidate
   printf 'No supported cc-devflow CLI found.\n'
   printf 'Required capabilities: %s\n' "${REQUIRED[*]}"
   printf 'Install or update cc-devflow, or set CC_DEVFLOW_CLI to a compatible cc-devflow-cli.js.\n'
-  printf 'Do not use simulated adapter output. Do not handwrite task-manifest.json, change-meta.json, review-ledger.jsonl, review-findings.json, or report-card.json.\n'
+  printf 'Do not use simulated adapter output. Use task.md, PR text, incident postmortems, and Git commits instead of process files.\n'
 } >&2
 exit 1

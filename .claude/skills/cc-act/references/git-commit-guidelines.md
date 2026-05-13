@@ -9,7 +9,7 @@
 1. `git log --oneline` 能看懂变更类型和范围。
 2. `git show` 能解释问题、取舍、验证和风险。
 3. 每个 commit 边界足够小，后续可以独立 review、cherry-pick 或 revert。
-4. PR body、release notes section、handoff 和 commit history 讲同一套事实。
+4. PR body、handoff 和 commit history 讲同一套事实。
 5. 后续维护者不需要聊天记录，也能知道为什么这么改。
 
 ## Research Baseline
@@ -65,8 +65,8 @@
 2. 改变用户可见行为、公共 API、CLI、schema、prompt、skill contract、验证脚本或发布流程。
 3. 修 bug、回归、flaky、性能、安全、权限、数据一致性或 trust boundary。
 4. 引入或改变测试策略、mock 边界、fixture、golden artifact。
-5. 触碰 roadmap / planning / task manifest / report-card / handoff 等 durable artifact。
-6. 有兼容性、迁移、回滚、release notes 或 follow-up 风险。
+5. 触碰 roadmap / task.md / PR brief / handoff 等 durable artifact。
+6. 有兼容性、迁移、回滚或 follow-up 风险。
 
 单行 commit 仅适合：
 
@@ -156,7 +156,7 @@
 - <影响范围和回滚路径>
 
 关联:
-- <FIX/issue/analysis/report-card>
+- <FIX/issue/analysis/verification report>
 ```
 
 ### `refactor`
@@ -263,22 +263,6 @@
 ## Commit Boundary Rules
 
 `cc-act` 生成 commit 前必须先写 commit plan。不要先 `git add .` 再想 message。
-
-提交前先运行 `scripts/inspect-git-index.sh`，把 Git 真相固定下来：
-
-```bash
-bash .claude/skills/cc-act/scripts/inspect-git-index.sh
-git diff --cached --name-only
-git diff --name-only
-git ls-files --others --exclude-standard
-```
-
-硬规则：
-
-1. `HEAD_STATE=unborn` 时不得提交；先切回已有 exact-case 分支，或从真实 base 创建分支。
-2. `CASE_COLLISION_BRANCH` 非空时不得提交；先解决大小写不同但语义相同的分支引用。
-3. `git status` 只能作为摘要，不是 staging 真相；以 `git diff --cached --name-only` 决定本次 commit bucket。
-4. 如果出现“全仓文件 staged”，先停止并查 index；不得为了赶流程直接 `git commit`。
 
 Commit plan 模板：
 
@@ -392,14 +376,13 @@ fix(auth): 拒绝过期 refresh token
 
 `cc-act` 在 `create-pr` / `update-pr` 模式下至少要检查：
 
-1. 是否先运行 `scripts/inspect-git-index.sh`，确认 `HEAD_STATE`、`SYMBOLIC_REF`、`CASE_COLLISION_BRANCH` 和 staged 文件真相。
-2. 是否先列出 commit plan，再 staging。
-3. staged files 是否只属于当前 commit bucket，且不是 unborn branch 造成的全仓 staged 假象。
-4. commit title 是否符合 Conventional Commits 或仓库更严格规范。
-5. 非平凡 commit 是否有 `问题`、`变更`、`原因`、`验证`、`风险`。
-6. `fix` commit 是否写了 `根因`，且不是只描述 symptom。
-7. `验证` 是否是实际命令 / artifact / explicit skip reason，而不是 “tested locally”。
-8. footer 是否使用 trailer 风格，issue closing keyword 是否符合目标平台语义。
-9. push、PR body、release notes、handoff 是否与最终 commit history 表达同一套事实。
+1. 是否先列出 commit plan，再 staging。
+2. staged files 是否只属于当前 commit bucket。
+3. commit title 是否符合 Conventional Commits 或仓库更严格规范。
+4. 非平凡 commit 是否有 `问题`、`变更`、`原因`、`验证`、`风险`。
+5. `fix` commit 是否写了 `根因`，且不是只描述 symptom。
+6. `验证` 是否是实际命令 / artifact / explicit skip reason，而不是 “tested locally”。
+7. footer 是否使用 trailer 风格，issue closing keyword 是否符合目标平台语义。
+8. push、PR body、handoff 是否与最终 commit history 表达同一套事实。
 
 如果无法满足这些条件，停在 `local-handoff` 或 reroute，不要制造粗糙历史。

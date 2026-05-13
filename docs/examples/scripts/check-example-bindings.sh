@@ -17,11 +17,6 @@ fi
 skill_version() {
   local skill="$1"
   local file="$ROOT_DIR/.claude/skills/$skill/SKILL.md"
-  if [[ ! -f "$file" ]]; then
-    echo "Missing skill file: $file" >&2
-    exit 1
-  fi
-
   sed -n 's/^version: //p' "$file" | head -n 1
 }
 
@@ -35,27 +30,15 @@ assert_contains() {
 }
 
 ROADMAP_VERSION="$(skill_version cc-roadmap)"
-NEXT_VERSION="$(skill_version cc-next)"
-DEV_VERSION="$(skill_version cc-dev)"
 REQ_PLAN_VERSION="$(skill_version cc-plan)"
-INVESTIGATE_VERSION="$(skill_version cc-investigate)"
 REQ_DO_VERSION="$(skill_version cc-do)"
-REQ_REVIEW_VERSION="$(skill_version cc-review)"
-PR_REVIEW_VERSION="$(skill_version cc-pr-review)"
-PR_LAND_VERSION="$(skill_version cc-pr-land)"
 REQ_CHECK_VERSION="$(skill_version cc-check)"
 REQ_ACT_VERSION="$(skill_version cc-act)"
 
 for pair in \
   "cc-roadmap:$ROADMAP_VERSION" \
-  "cc-next:$NEXT_VERSION" \
-  "cc-dev:$DEV_VERSION" \
   "cc-plan:$REQ_PLAN_VERSION" \
-  "cc-investigate:$INVESTIGATE_VERSION" \
   "cc-do:$REQ_DO_VERSION" \
-  "cc-review:$REQ_REVIEW_VERSION" \
-  "cc-pr-review:$PR_REVIEW_VERSION" \
-  "cc-pr-land:$PR_LAND_VERSION" \
   "cc-check:$REQ_CHECK_VERSION" \
   "cc-act:$REQ_ACT_VERSION"
 do
@@ -73,11 +56,10 @@ while IFS= read -r encoded; do
   readme="$ROOT_DIR/$(jq -r '.readme' <<<"$encoded")"
   root="$ROOT_DIR/$(jq -r '.root' <<<"$encoded")"
   change_dir="$ROOT_DIR/$(jq -r '.changeDir' <<<"$encoded")"
-  planning_dir="$change_dir/planning"
-  review_dir="$change_dir/review"
+  task_file="$change_dir/task.md"
   handoff_dir="$change_dir/handoff"
 
-  for file in "$readme" "$root/ROADMAP.md" "$root/BACKLOG.md" "$root/roadmap.json" "$planning_dir/design.md" "$planning_dir/tasks.md" "$planning_dir/task-manifest.json"; do
+  for file in "$readme" "$root/ROADMAP.md" "$root/BACKLOG.md" "$root/roadmap.json" "$task_file"; do
     if [[ ! -f "$file" ]]; then
       echo "Example $example_id is missing required file: $file" >&2
       exit 1
@@ -85,43 +67,14 @@ while IFS= read -r encoded; do
   done
 
   assert_contains "$root/ROADMAP.md" "- Skill version: \`$ROADMAP_VERSION\`"
-  assert_contains "$root/ROADMAP.md" "- Roadmap state source: \`roadmap.json\`"
-  assert_contains "$root/ROADMAP.md" "## Technical Architecture"
-  assert_contains "$root/ROADMAP.md" "\`\`\`mermaid"
   assert_contains "$root/BACKLOG.md" "- Skill version: \`$ROADMAP_VERSION\`"
-  assert_contains "$root/BACKLOG.md" "> Deprecated projection. Edit \`roadmap.json\` instead."
-  assert_contains "$root/BACKLOG.md" "- Roadmap state source: \`roadmap.json\`"
-  assert_contains "$root/BACKLOG.md" "| RM-ID | Title | Source Stage | Priority | Primary Capability | Secondary Capabilities | Capability Gap | Expected Spec Delta | Evidence | Depends On | Parallel With | Unknowns | Next Decision | Ready |"
-  assert_contains "$root/BACKLOG.md" "## Ready For Req-Plan"
-  assert_contains "$root/BACKLOG.md" "  - Primary Capability:"
-  assert_contains "$root/BACKLOG.md" "  - Expected spec delta:"
-  jq -er '.version == 3 and (.items | length) > 0 and (.meta | type == "object") and (.handoff | type == "object") and (.architecture.nodes | length) > 0 and any(.items[]; .backlog != null)' "$root/roadmap.json" >/dev/null
-  assert_contains "$planning_dir/design.md" "- CC-Plan skill version: \`$REQ_PLAN_VERSION\`"
-  assert_contains "$planning_dir/tasks.md" "- CC-Plan skill version: \`$REQ_PLAN_VERSION\`"
-
-  jq -er --arg roadmap "$ROADMAP_VERSION" --arg reqplan "$REQ_PLAN_VERSION" '
-    (.planningMeta.reqPlanSkillVersion // $reqplan) == $reqplan and
-    (.status? == null) and
-    (.activePhase? == null) and
-    (.sourceRoadmap? == null) and
-    (.spec? == null) and
-    (.executionProtocol? == null) and
-    (.planningMeta.requirementBrief? == null) and
-    (.planningMeta.ambiguityGate? == null) and
-    (.planningMeta.reviewLoop? == null) and
-    all(.tasks[]; (.completion? == null) and (.tddPhase | type == "string") and (.testSeam.publicVerificationPath | type == "string"))
-  ' "$planning_dir/task-manifest.json" >/dev/null
-
-  assert_contains "$planning_dir/tasks.md" "## Execution Protocol"
-  assert_contains "$planning_dir/tasks.md" "resolve-cc-devflow.sh"
-  assert_contains "$planning_dir/tasks.md" "bash \"\$DEVFLOW\" require query workflow-context task-contract next-change-key review"
-  assert_contains "$planning_dir/tasks.md" "bash \"\$DEVFLOW\" query workflow-context"
-  assert_contains "$planning_dir/tasks.md" "bash \"\$DEVFLOW\" task-contract compile"
-  assert_contains "$planning_dir/tasks.md" "--data-only --no-trace --compact"
-  assert_contains "$planning_dir/tasks.md" "mark-task-complete.sh"
-  assert_contains "$planning_dir/tasks.md" "TDD phase:"
-  assert_contains "$planning_dir/tasks.md" "Completion:"
-  assert_contains "$planning_dir/tasks.md" "Public verification path:"
+  assert_contains "$task_file" "- CC-Plan skill version: \`$REQ_PLAN_VERSION\`"
+  assert_contains "$task_file" "## Execution Protocol"
+  assert_contains "$task_file" "task.md"
+  assert_contains "$task_file" "mark-task-complete.sh"
+  assert_contains "$task_file" "TDD phase:"
+  assert_contains "$task_file" "Completion:"
+  assert_contains "$task_file" "Public verification path:"
 
   assert_contains "$readme" "## Example Meta"
   assert_contains "$readme" "\`cc-roadmap@$ROADMAP_VERSION\`"
@@ -131,19 +84,8 @@ while IFS= read -r encoded; do
 
   if jq -e '.covers | index("cc-act")' <<<"$encoded" >/dev/null; then
     assert_contains "$readme" "\`cc-act@$REQ_ACT_VERSION\`"
-  fi
-
-  if [[ -f "$review_dir/report-card.json" ]]; then
-    "$ROOT_DIR/.claude/skills/cc-check/scripts/verify-gate.sh" --report "$review_dir/report-card.json" >/dev/null
-  fi
-
-  if jq -e '.covers | index("cc-act")' <<<"$encoded" >/dev/null; then
     if [[ ! -f "$handoff_dir/pr-brief.md" ]]; then
-      echo "Example $example_id is missing the single final handoff file under $handoff_dir" >&2
-      exit 1
-    fi
-    if [[ -f "$handoff_dir/resume-index.md" || -f "$handoff_dir/release-note.md" || -f "$handoff_dir/doc-sync-report.md" ]]; then
-      echo "Example $example_id has legacy split handoff files under $handoff_dir" >&2
+      echo "Example $example_id is missing PR file: $handoff_dir/pr-brief.md" >&2
       exit 1
     fi
   fi

@@ -2,6 +2,16 @@
 name: cc-simplify
 version: 1.4.1
 description: "Use when changed code needs an automatic subagent-backed simplification pass for scope drift, reuse, code quality, efficiency, test quality, and confidence-gated smell fixes before cc-check or cc-act."
+reads:
+  - devflow/changes/<change-key>/task.md
+  - current Git diff
+writes:
+  - path: code changes
+    durability: working-tree
+    required: false
+  - path: test changes
+    durability: working-tree
+    required: false
 ---
 
 # CC-Simplify
@@ -30,7 +40,7 @@ ONLY FIX CONFIRMED SMELLS. DO NOT BEAUTIFY BY GUESS.
    - stack signals: `package.json` / `pyproject.toml` / `go.mod` / `Cargo.toml` / etc.
    - test framework signals: `jest` / `vitest` / `pytest` / `go test` / etc.
    - scope flags: API / auth / backend / frontend / migration / docs / release
-   - related `planning/tasks.md` / `change-meta.json` / capability specs
+   - related `task.md` / capability specs
    - already-run verification, if any
 3. 如果变更跨多个互不相关模块，先按模块分组；不要让一个 cleanup pass 变成大扫除。
 4. 只审当前 diff 新增或本次改动扩大后的坏味道。历史债只在它阻挡当前交付或被本次 diff 放大时进入清理范围。
@@ -93,7 +103,7 @@ Finding JSONL schema：
 
 1. 是否遗漏了任务要求。
 2. 是否多做了未要求功能。
-3. 是否改变行为、边界或 invariant，却没有同步 `change-meta.json` 或 capability spec。
+3. 是否改变行为、边界或 invariant，却没有同步 `task.md` 或 capability spec。
 4. 是否把 bug 修复伪装成新需求，或把新需求伪装成 cleanup。
 5. 是否应该 reroute：
    - 设计范围变了 -> `cc-plan`
@@ -221,7 +231,7 @@ Decision：
 
 1. **代码事实**：打开对应文件和相邻实现，确认问题真实存在。
 2. **使用事实**：用 `rg` 查调用方，确认不是 reviewer 缺上下文。
-3. **需求事实**：对照 `planning/tasks.md`、`change-meta.json`、capability spec，确认没有误删必要行为。
+3. **需求事实**：对照 `task.md`、capability spec，确认没有误删必要行为。
 4. **验证事实**：明确修复后用什么命令或检查证明没有回归。
 
 架构类 finding 还必须过删除测试：想象删除这个模块、helper、wrapper 或 seam。
@@ -283,7 +293,7 @@ Decision：
 - Verification run:
 - Next step: `cc-check` / `cc-act` / `cc-plan` / `cc-investigate`
 
-如果 `cc-simplify` 修改了代码或验证口径，下一步必须回 `cc-check`，不能带旧 report-card 继续 `cc-act`。
+如果 `cc-simplify` 修改了代码或验证口径，下一步必须回 `cc-check`，不能带旧 verification report 继续 `cc-act`。
 
 ## Do Not
 

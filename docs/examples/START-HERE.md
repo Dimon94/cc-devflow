@@ -30,7 +30,7 @@ npm run verify:publish
 
 ## Fast Route
 
-### 1. Do you already have a `report-card.json` verdict?
+### 1. Do you already have a verification verdict?
 
 - If **no**, start with [the happy path example](./pdca-loop/README.md) to understand the full loop once.
 - If **yes**, continue below.
@@ -67,13 +67,13 @@ Use this when the only thing you know is the file in front of you.
 | `roadmap.json` | `cc-roadmap` editable machine truth source | [pdca-loop/roadmap.json](./pdca-loop/roadmap.json) |
 | `ROADMAP.md` | `cc-roadmap` generated human view | [pdca-loop/ROADMAP.md](./pdca-loop/ROADMAP.md) |
 | `BACKLOG.md` | deprecated `cc-roadmap` -> `cc-plan` projection | [pdca-loop/BACKLOG.md](./pdca-loop/BACKLOG.md) |
-| `tasks.md` | `cc-plan`, `cc-investigate`, or `cc-do` | [pdca-loop/tasks.md](./pdca-loop/changes/REQ-001-copy-invite-link/planning/tasks.md) |
-| `design.md` | legacy `cc-plan` fallback | [pdca-loop/design.md](./pdca-loop/changes/REQ-001-copy-invite-link/planning/design.md) or [full-design-blocked/design.md](./full-design-blocked/changes/REQ-002-bulk-invite-import/planning/design.md) |
-| `task-manifest.json` | `cc-do` | [pdca-loop/task-manifest.json](./pdca-loop/changes/REQ-001-copy-invite-link/planning/task-manifest.json) |
-| `report-card.json` | `cc-check` | [pdca-loop/report-card.json](./pdca-loop/changes/REQ-001-copy-invite-link/review/report-card.json), [full-design-blocked/report-card.json](./full-design-blocked/changes/REQ-002-bulk-invite-import/review/report-card.json), or [local-handoff/report-card.json](./local-handoff/changes/REQ-003-audit-log-export/review/report-card.json) |
-| `pr-brief.md` | `cc-act` | [pdca-loop/pr-brief.md](./pdca-loop/changes/REQ-001-copy-invite-link/handoff/pr-brief.md) or [local-handoff/pr-brief.md](./local-handoff/changes/REQ-003-audit-log-export/handoff/pr-brief.md) |
+| `task.md` | `cc-plan`, `cc-investigate`, or `cc-do` | [pdca-loop/task.md](./pdca-loop/changes/REQ-001-copy-invite-link/task.md) |
+| Git diff / commit | `cc-do` or `cc-check` | current branch history and working tree |
+| current response verdict | `cc-check` | the verification summary from the latest run |
+| `pr-brief.md` | `cc-act` | [pdca-loop/pr-brief.md](./pdca-loop/changes/REQ-001-copy-invite-link/handoff/pr-brief.md) |
+| local `pr-brief.md` | `cc-act` with `local-handoff` | [local-handoff/pr-brief.md](./local-handoff/changes/REQ-003-audit-log-export/handoff/pr-brief.md) |
 
-### Read `report-card.json` Like This
+### Read The Verification Verdict Like This
 
 | Verdict | Reroute | Meaning |
 | --- | --- | --- |
@@ -82,7 +82,7 @@ Use this when the only thing you know is the file in front of you.
 | `blocked` | `cc-do` | proof or execution prerequisites are missing |
 | `blocked` | `cc-plan` | design or scope truth is broken; do not keep coding blindly |
 
-### Read `pr-brief.md#Resume Entry` Like This
+### Read Local Handoff Like This
 
 Ask only:
 
@@ -117,17 +117,17 @@ If both are true, you are usually in `cc-act` local handoff territory, not back 
 
 ## Wrong Turns To Avoid
 
-- Do not jump from `tasks.md` straight to `cc-act`
-- Do not treat green tests as stronger than a `report-card.json` reroute
-- Do not treat `pr-brief.md#Resume Entry` as proof that planning failed; it may simply mean local handoff
+- Do not jump from `task.md` straight to `cc-act`
+- Do not treat green tests as stronger than a `cc-check` reroute
+- Do not treat `local-handoff` as proof that planning failed; it may simply mean remote actions are intentionally unavailable
 
 ## One-Minute Rule
 
 If you only have one minute, open these files in order:
 
 1. example `README.md`
-2. change `planning/tasks.md`
-3. `report-card.json` or the single final handoff file
+2. change `task.md`
+3. `handoff/pr-brief.md` when present; otherwise the latest Git commit and current verification response
 
 That should already tell you:
 
@@ -139,8 +139,8 @@ That should already tell you:
 
 `devflow/changes/<change>/` should stay lean.
 
-- Durable truth only: CLI-generated `change-meta.json`, `planning/tasks.md`, CLI-generated `task-manifest.json`, review ledger/findings records, optional CLI logs for debug/failure, `report-card.json`, and one final handoff file. Do not generate task `context.md`, `checkpoint.json`, or AI-written process files.
-- Machine JSON is CLI-owned: run `cc-devflow task-contract compile` / `validate`; do not handwrite `task-manifest.json` or `change-meta.json`.
+- Durable truth only: `task.md`, optional `handoff/pr-brief.md`, and incident postmortem files when a real recurring failure needs one. Do not generate task `context.md`, `checkpoint.json`, review ledgers, status/resume files, release notes, principle files, or AI-written process files.
+- Workflow state is Git-owned: keep `task.md`, commit each completed stage, and do not create process JSON.
 - Legacy `planning/design.md`, `planning/analysis.md`, and `cc-review-*.md` are readable fallback inputs for older examples, not new default writes.
 - Runtime scratch belongs in `devflow/workspaces/<change>/`, not beside the durable record.
 

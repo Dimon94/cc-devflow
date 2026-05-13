@@ -8,12 +8,12 @@
 - Output language: en
 - Source roadmap item: `RM-ROADMAP-UNIFY`
 - Source roadmap version: `office-hours-design-20260501-000317`
-- Change meta: `change-meta.json`
+- Change meta: ``
 
 ## Execution Handoff
 
 - Canonical design: `planning/design.md`
-- Canonical change meta: `change-meta.json`
+- Canonical change meta: ``
 - Execution mode: `single-path`
 - Frozen decisions:
   - `devflow/roadmap.json` is the only editable roadmap machine truth.
@@ -23,7 +23,7 @@
   - `cc-roadmap` target version is `5.0.0`.
   - Mermaid architecture diagrams are generated from flat `architecture.nodes` and `architecture.edges`.
 - Capability specs:
-  - `devflow/changes/REQ-002-unified-roadmap-truth/change-meta.json`
+  - `devflow/changes/REQ-002-unified-roadmap-truth/`
   - `.claude/skills/cc-roadmap/SKILL.md`
   - `.claude/skills/cc-roadmap/PLAYBOOK.md`
   - `.claude/skills/cc-roadmap/assets/*`
@@ -41,7 +41,7 @@
 - Review loop: attempt 1 of 3; no stall.
 - Read first:
   - `planning/design.md`
-  - `change-meta.json`
+  - ``
   - `/Users/dimon/.gstack/projects/Dimon94-cc-devflow/dimon-main-design-20260501-000317.md`
   - `.claude/skills/cc-roadmap/SKILL.md`
   - `.claude/skills/cc-roadmap/PLAYBOOK.md`
@@ -248,11 +248,11 @@
   Evidence: simplified diff plus repeated green roadmap helper tests
   Ready when: all implementation tasks for slices 1-3 are green
 
-- [x] T012 [VERIFY] Run full planning gates for cc-check handoff (dependsOn:T010,T011) `devflow/changes/REQ-002-unified-roadmap-truth/review/report-card.json`
+- [x] T012 [VERIFY] Run full planning gates for cc-check handoff (dependsOn:T010,T011) `devflow/changes/REQ-002-unified-roadmap-truth/`
   Goal: Collect fresh evidence for the unified roadmap truth implementation.
   TDD phase: evidence
-  Files: `devflow/changes/REQ-002-unified-roadmap-truth/review/report-card.json`
-  Read first: `planning/design.md`, `planning/tasks.md`, `planning/task-manifest.json`, `change-meta.json`
+  Files: `devflow/changes/REQ-002-unified-roadmap-truth/`
+  Read first: `planning/design.md`, `task.md`, ``, ``
   Verification: `npm test -- --runInBand && npm run adapt:check && npm run verify:examples && npm run verify:publish && git diff --check`
   Evidence: full Jest pass, adapter parity, example validation, publish validation, and diff hygiene output
   Ready when: all planned implementation, generated, docs, and refactor tasks are complete

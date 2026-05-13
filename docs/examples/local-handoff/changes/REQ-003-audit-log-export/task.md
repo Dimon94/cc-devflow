@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-003.v1`
 - Design version: `design.v1`
-- CC-Plan skill version: `3.9.4`
+- CC-Plan skill version: `3.10.0`
 - Work branch: `REQ/003-audit-log-export`
 - Source roadmap item: `RM-020`
 - Source roadmap version: `roadmap.v3`
@@ -42,28 +42,25 @@
 ClaudeCode / Codex 执行本计划时，必须把本文件当成任务模板合同，而不是普通 TODO 列表。
 
 - Template source: `assets/TASKS_TEMPLATE.md`
-- CLI resolver: all workflow commands must run through `.claude/skills/cc-dev/scripts/resolve-cc-devflow.sh` or `.codex/skills/cc-dev/scripts/resolve-cc-devflow.sh`; if it cannot prove `query workflow-context`, `task-contract`, `next-change-key`, and `review`, stop blocked.
-- Context index first: run resolved CLI `query workflow-context --change <changeId> --change-key <changeKey> --cwd <repo-root> --data-only --no-trace --compact` before opening deep sections; use `packetOnly` plus `mustNotForget` first, verify `sourceHashes`, open `defaultOpen` refs only when needed, and reserve `deepOpen` for matching `openWhen.conditions`.
-- Task selection: read `planning/task-manifest.json.currentTaskId`; if empty, run the ready-task selector before choosing work.
+- CLI resolver: all workflow commands must run through `.claude/skills/cc-dev/scripts/resolve-cc-devflow.sh` or `.codex/skills/cc-dev/scripts/resolve-cc-devflow.sh`; if it cannot prove `query workflow-context` and `next-change-key`, stop blocked.
+- Context first: run resolved CLI `query workflow-context --change <changeId> --change-key <changeKey> --cwd <repo-root> --data-only --no-trace --compact` before opening deep sections.
+- Task selection: use `scripts/select-ready-tasks.sh --tasks devflow/changes/<change-key>/task.md`.
 - Task block rule: read the full task block before coding; title-only execution is invalid.
-- Completion rule: after verification and review gates pass, run the completion script; do not manually edit checkbox, status, or `currentTaskId`.
-- Completion failure: if the script fails, fix the missing review / dependency evidence and rerun it. Do not bypass it by editing JSON or Markdown.
+- Completion rule: after verification and review gates pass, run `scripts/mark-task-complete.sh --tasks devflow/changes/<change-key>/task.md --task <task-id>`.
+- Runtime file ban: do not generate process files. No manifest, change metadata, review ledger, report card, status file, checkpoint, or context package.
 
 ```bash
 DEVFLOW=".claude/skills/cc-dev/scripts/resolve-cc-devflow.sh"
 if [[ ! -f "$DEVFLOW" && -f ".codex/skills/cc-dev/scripts/resolve-cc-devflow.sh" ]]; then
   DEVFLOW=".codex/skills/cc-dev/scripts/resolve-cc-devflow.sh"
 fi
-bash "$DEVFLOW" require query workflow-context task-contract next-change-key review
-bash "$DEVFLOW" query workflow-context --change <changeId> --change-key <changeKey> --cwd <repo-root> --data-only --no-trace --compact
-bash "$DEVFLOW" task-contract compile --change <changeId> --change-key <changeKey> --cwd <repo-root>
-bash "$DEVFLOW" task-contract validate --change <changeId> --change-key <changeKey> --cwd <repo-root>
-SCRIPT_ROOT=".claude/skills/cc-do/scripts"
+bash "$DEVFLOW" require query workflow-context next-change-key review
+bash "$DEVFLOW" query workflow-context --change <changeId> --change-key <changeKey> --cwd <repo-root> --data-only --no-trace --compactSCRIPT_ROOT=".claude/skills/cc-do/scripts"
 if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then
   SCRIPT_ROOT=".codex/skills/cc-do/scripts"
 fi
-bash "$SCRIPT_ROOT/select-ready-tasks.sh" --manifest docs/examples/local-handoff/changes/REQ-003-audit-log-export/planning/task-manifest.json
-bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/local-handoff/changes/REQ-003-audit-log-export/planning/task-manifest.json --tasks docs/examples/local-handoff/changes/REQ-003-audit-log-export/planning/tasks.md --task <task-id>
+bash "$SCRIPT_ROOT/select-ready-tasks.sh" --manifest docs/examples/local-handoff/changes/REQ-003-audit-log-export/
+bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/local-handoff/changes/REQ-003-audit-log-export/ --tasks docs/examples/local-handoff/changes/REQ-003-audit-log-export/task.md --task <task-id>
 ```
 
 ## Phase 1: Foundation
@@ -75,7 +72,7 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/local-handoff
   Read first: `design.md`, `src/admin/AuditSummaryPanel.tsx`
   Verification: `npm test -- src/admin/AuditSummaryPanel.test.tsx`
   Evidence: failing output
-  Completion: after verification evidence and required review records exist, run `SCRIPT_ROOT=".claude/skills/cc-do/scripts"; if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then SCRIPT_ROOT=".codex/skills/cc-do/scripts"; fi; bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/local-handoff/changes/REQ-003-audit-log-export/planning/task-manifest.json --tasks docs/examples/local-handoff/changes/REQ-003-audit-log-export/planning/tasks.md --task T001`; do not hand-edit status.
+  Completion: after verification evidence and required review records exist, run `SCRIPT_ROOT=".claude/skills/cc-do/scripts"; if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then SCRIPT_ROOT=".codex/skills/cc-do/scripts"; fi; bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/local-handoff/changes/REQ-003-audit-log-export/ --tasks docs/examples/local-handoff/changes/REQ-003-audit-log-export/task.md --task T001`; do not hand-edit status.
   Test seam: admin audit panel UI behavior
   Public verification path: Run the audit summary panel test and observe CSV export through visible rows
   Allowed mocks: download / blob boundary
@@ -88,7 +85,7 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/local-handoff
   Read first: `design.md`, `src/admin/AuditSummaryPanel.test.tsx`
   Verification: `npm test -- src/admin/AuditSummaryPanel.test.tsx`
   Evidence: passing output + Git diff
-  Completion: after verification evidence and required review records exist, run `SCRIPT_ROOT=".claude/skills/cc-do/scripts"; if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then SCRIPT_ROOT=".codex/skills/cc-do/scripts"; fi; bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/local-handoff/changes/REQ-003-audit-log-export/planning/task-manifest.json --tasks docs/examples/local-handoff/changes/REQ-003-audit-log-export/planning/tasks.md --task T002`; do not hand-edit status.
+  Completion: after verification evidence and required review records exist, run `SCRIPT_ROOT=".claude/skills/cc-do/scripts"; if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then SCRIPT_ROOT=".codex/skills/cc-do/scripts"; fi; bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/local-handoff/changes/REQ-003-audit-log-export/ --tasks docs/examples/local-handoff/changes/REQ-003-audit-log-export/task.md --task T002`; do not hand-edit status.
   Test seam: admin audit panel UI behavior
   Public verification path: Run the audit summary panel test and observe CSV export through visible rows
   Allowed mocks: download / blob boundary
@@ -100,12 +97,12 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/local-handoff
   Goal: 为 `cc-check` 和 `cc-act` 留下这次导出改动的真实证据。
   TDD phase: evidence
   Files: `src/admin/AuditSummaryPanel.tsx`, `src/admin/AuditSummaryPanel.test.tsx`
-  Read first: `tasks.md`, `task-manifest.json`
+  Read first: `task.md`
   Verification:
   - `npm test -- src/admin/AuditSummaryPanel.test.tsx`
   - `npm run lint -- src/admin/AuditSummaryPanel.tsx`
   Evidence: passing output + clean lint output
-  Completion: after verification evidence and required review records exist, run `SCRIPT_ROOT=".claude/skills/cc-do/scripts"; if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then SCRIPT_ROOT=".codex/skills/cc-do/scripts"; fi; bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/local-handoff/changes/REQ-003-audit-log-export/planning/task-manifest.json --tasks docs/examples/local-handoff/changes/REQ-003-audit-log-export/planning/tasks.md --task T003`; do not hand-edit status.
+  Completion: after verification evidence and required review records exist, run `SCRIPT_ROOT=".claude/skills/cc-do/scripts"; if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then SCRIPT_ROOT=".codex/skills/cc-do/scripts"; fi; bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/local-handoff/changes/REQ-003-audit-log-export/ --tasks docs/examples/local-handoff/changes/REQ-003-audit-log-export/task.md --task T003`; do not hand-edit status.
   Test seam: admin audit panel UI behavior
   Public verification path: Run the audit summary panel test and observe CSV export through visible rows
   Allowed mocks: download / blob boundary

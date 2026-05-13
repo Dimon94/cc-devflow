@@ -2,36 +2,26 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { spawnSync } = require('child_process');
-const {
-  getReportCardPath,
-  getTaskManifestPath
-} = require('../lib/skill-runtime/store');
 
 const ROOT = path.resolve(__dirname, '..');
 const CLI = path.join(ROOT, 'bin', 'cc-devflow-cli.js');
 
 describe('cc-devflow query', () => {
-  test('lists supported typed query ids', () => {
+  test('lists only Git-first workflow context', () => {
     const result = spawnSync(process.execPath, [CLI, 'query', 'list'], {
       cwd: ROOT,
       encoding: 'utf8'
     });
 
     expect(result.status).toBe(0);
-    expect(result.stdout.trim().split('\n')).toEqual([
-      'full-state',
-      'next-task',
-      'progress',
-      'ship-readiness',
-      'workflow-context'
-    ]);
+    expect(result.stdout.trim().split('\n')).toEqual(['workflow-context']);
   });
 
-  test('prints named query errors as json and exits non-zero', () => {
+  test('prints named query errors when task.md is missing', () => {
     const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-devflow-cli-query-'));
     const result = spawnSync(
       process.execPath,
-      [CLI, 'query', 'ship-readiness', '--cwd', repoRoot, '--change', 'REQ-123'],
+      [CLI, 'query', 'workflow-context', '--cwd', repoRoot, '--change', 'REQ-123'],
       {
         cwd: ROOT,
         encoding: 'utf8'
@@ -43,88 +33,35 @@ describe('cc-devflow query', () => {
     expect(result.status).toBe(2);
     expect(payload).toMatchObject({
       ok: false,
-      queryId: 'ship-readiness',
+      queryId: 'workflow-context',
       error: {
-        name: 'MissingReportCardError',
-        rescueAction: 'run cc-check and create review/report-card.json before cc-act'
+        name: 'MissingQueryArtifactError',
+        rescueAction: 'create task.md before running this query'
       },
       trace: {
-        event: 'query.ship-readiness.failed',
+        event: 'query.workflow-context.failed',
         changeId: 'REQ-123'
       }
     });
+    expect(payload.error.message).toContain('task.md');
   });
 
-  test('passes full change keys through to typed queries', () => {
+  test('supports compact data-only workflow context from task.md and Git', () => {
     const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-devflow-cli-query-key-'));
-    const firstKey = 'REQ-124-first-plan';
-    const secondKey = 'REQ-124-second-plan';
-    fs.mkdirSync(path.join(repoRoot, 'devflow', 'changes', firstKey), { recursive: true });
-    fs.mkdirSync(path.dirname(getReportCardPath(repoRoot, 'REQ-124', { changeKey: secondKey })), { recursive: true });
+    const changeKey = 'REQ-124-first-plan';
+    const changeDir = path.join(repoRoot, 'devflow', 'changes', changeKey);
+    fs.mkdirSync(path.join(changeDir, 'handoff'), { recursive: true });
     fs.writeFileSync(
-      getReportCardPath(repoRoot, 'REQ-124', { changeKey: secondKey }),
-      `${JSON.stringify({
-        changeId: 'REQ-124',
-        verdict: 'pass',
-        overall: 'pass',
-        reroute: 'none',
-        specSyncReady: true,
-        blockingFindings: [],
-        timestamp: '2026-05-08T01:11:00.000Z'
-      }, null, 2)}\n`
-    );
-
-    const result = spawnSync(
-      process.execPath,
+      path.join(changeDir, 'task.md'),
       [
-        CLI,
-        'query',
-        'ship-readiness',
-        '--cwd',
-        repoRoot,
-        '--change',
-        'REQ-124',
-        '--change-key',
-        secondKey
-      ],
-      {
-        cwd: ROOT,
-        encoding: 'utf8'
-      }
+        '# REQ-124 First Plan',
+        '',
+        '- [x] T001 Finished task',
+        '- [ ] T002 Pending task'
+      ].join('\n')
     );
-
-    const payload = JSON.parse(result.stdout);
-
-    expect(result.status).toBe(0);
-    expect(payload).toMatchObject({
-      ok: true,
-      queryId: 'ship-readiness',
-      data: {
-        ready: true,
-        verdict: 'pass'
-      }
-    });
-  });
-
-  test('supports compact data-only query output without trace', () => {
-    const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-devflow-cli-query-compact-'));
-    fs.mkdirSync(path.dirname(getTaskManifestPath(repoRoot, 'REQ-125')), { recursive: true });
-    fs.writeFileSync(
-      getTaskManifestPath(repoRoot, 'REQ-125'),
-      `${JSON.stringify({
-        changeId: 'REQ-125',
-        tasks: [
-          {
-            id: 'T001',
-            status: 'pending',
-            verification: ['npm test -- src/feature.test.ts'],
-            context: {
-              commands: ['npm test -- src/feature.test.ts']
-            }
-          }
-        ]
-      }, null, 2)}\n`
-    );
+    fs.writeFileSync(path.join(changeDir, 'handoff', 'pr-brief.md'), '# PR Brief\n');
+    spawnSync('git', ['init'], { cwd: repoRoot, encoding: 'utf8' });
 
     const result = spawnSync(
       process.execPath,
@@ -135,7 +72,9 @@ describe('cc-devflow query', () => {
         '--cwd',
         repoRoot,
         '--change',
-        'REQ-125',
+        'REQ-124',
+        '--change-key',
+        changeKey,
         '--data-only',
         '--no-trace',
         '--compact'
@@ -151,12 +90,20 @@ describe('cc-devflow query', () => {
     expect(result.status).toBe(0);
     expect(result.stdout).not.toContain('\n  ');
     expect(payload).toMatchObject({
-      changeId: 'REQ-125',
+      changeId: 'REQ-124',
+      changeKey,
       nextAction: {
         skill: 'cc-do',
-        taskId: 'T001'
+        taskId: 'T002'
+      },
+      taskSummary: {
+        total: 2,
+        completed: 1,
+        pending: 1
       }
     });
+    expect(payload.files.task).toContain('task.md');
+    expect(payload.files.prBrief).toContain('pr-brief.md');
     expect(payload.trace).toBeUndefined();
     expect(payload.ok).toBeUndefined();
   });

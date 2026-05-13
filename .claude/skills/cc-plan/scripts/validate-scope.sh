@@ -61,7 +61,7 @@ for file in "${sources[@]}"; do
     echo "[FAIL] $file contains an empty field bullet"
     fail=1
   fi
-  if [[ "$file" != *"TASK_MANIFEST_TEMPLATE.json" ]]; then
+  if [[ "$file" != *"task template" ]]; then
     for marker in "${required_markers[@]}"; do
       if ! rg -n --fixed-strings "$marker" "$file" >/dev/null 2>&1; then
         echo "[FAIL] $file is missing marker: $marker"

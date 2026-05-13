@@ -33,6 +33,6 @@ If you need to verify that examples still match the current skill contracts, use
 - Shows:
   - work that is truly verified
   - a case where remote / PR actions are intentionally skipped
-  - `cc-act` leaving exactly one final `pr-brief.md`, with `Resume Entry` carrying the local handoff
+  - `cc-act` leaving exactly one final `handoff/pr-brief.md` file for local handoff
 
 If you need symptom routing or artifact-based lookup, go back to [START-HERE.md](./START-HERE.md).

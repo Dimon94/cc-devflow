@@ -2,17 +2,17 @@
   "updatedAt": "2026-05-13",
   "skills": {
     "cc-roadmap": "5.3.0",
-    "cc-next": "1.0.1",
-    "cc-dev": "1.0.3",
-    "cc-plan": "3.9.4",
-    "cc-investigate": "1.5.3",
-    "cc-do": "1.6.9",
-    "cc-review": "2.0.1",
-    "cc-pr-review": "1.0.0",
-    "cc-pr-land": "1.0.0",
-    "cc-check": "1.11.4",
-    "cc-act": "1.8.11",
-    "cc-spec-init": "1.1.0"
+    "cc-next": "1.1.0",
+    "cc-dev": "1.1.0",
+    "cc-plan": "3.10.0",
+    "cc-investigate": "1.6.0",
+    "cc-do": "1.7.0",
+    "cc-review": "2.1.0",
+    "cc-pr-review": "1.1.0",
+    "cc-pr-land": "1.1.0",
+    "cc-check": "1.12.0",
+    "cc-act": "1.9.0",
+    "cc-spec-init": "1.2.0"
   },
   "examples": [
     {

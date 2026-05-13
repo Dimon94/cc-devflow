@@ -3,13 +3,13 @@
 set -euo pipefail
 
 # ------------------------------------------------------------
-# 把任务标记为完成，并同步 manifest / TASKS
+# 把 task.md 中的任务标记为完成
 # ------------------------------------------------------------
 
 usage() {
   cat <<'EOF'
 Usage:
-  mark-task-complete.sh --manifest task-manifest.json [--tasks tasks.md] --task T001
+  mark-task-complete.sh --tasks task.md --task T001
 EOF
 }
 
@@ -47,13 +47,11 @@ mark_first_task_complete() {
 }
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-MANIFEST=""
 TASKS=""
 TASK_ID=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --manifest) MANIFEST="$2"; shift 2 ;;
     --tasks) TASKS="$2"; shift 2 ;;
     --task) TASK_ID="$(echo "$2" | tr '[:lower:]' '[:upper:]')"; shift 2 ;;
     -h|--help) usage; exit 0 ;;
@@ -61,53 +59,18 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ -z "$TASK_ID" || (-z "$MANIFEST" && -z "$TASKS") ]]; then
+if [[ -z "$TASK_ID" || -z "$TASKS" ]]; then
   usage
   exit 1
 fi
 
-if [[ -n "$MANIFEST" ]]; then
-  if [[ ! -f "$MANIFEST" ]]; then
-    usage
-    exit 1
-  fi
-
-  req_dir="$(cd "$(dirname "$MANIFEST")" && pwd)"
-  "$SCRIPT_DIR/verify-task-gates.sh" --dir "$req_dir" --task "$TASK_ID" >/dev/null
-
-  tmp_manifest="$(mktemp)"
-  jq --arg task "$TASK_ID" '
-    .tasks |= map(
-      if .id == $task then
-        . + {
-          status: "passed",
-          reviews: ((.reviews // {}) + {spec: ((.reviews.spec // "pass") | tostring), code: ((.reviews.code // "pass") | tostring)})
-        }
-      else
-        .
-      end
-    )
-  ' "$MANIFEST" > "$tmp_manifest"
-  mv "$tmp_manifest" "$MANIFEST"
-
-  next_task="$("$SCRIPT_DIR/select-ready-tasks.sh" --manifest "$MANIFEST" | jq -r '.readyTasks[0].id // empty')"
-
-  tmp_manifest="$(mktemp)"
-  jq --arg next "$next_task" '
-    .currentTaskId = (if $next == "" then null else $next end)
-  ' "$MANIFEST" > "$tmp_manifest"
-  mv "$tmp_manifest" "$MANIFEST"
+if [[ ! -f "$TASKS" ]]; then
+  usage
+  exit 1
 fi
 
-if [[ -n "$TASKS" ]]; then
-  if [[ ! -f "$TASKS" ]]; then
-    usage
-    exit 1
-  fi
-
-  tmp_tasks="$(mktemp)"
-  mark_first_task_complete "$TASKS" "$TASK_ID" > "$tmp_tasks"
-  mv "$tmp_tasks" "$TASKS"
-fi
+tmp_tasks="$(mktemp)"
+mark_first_task_complete "$TASKS" "$TASK_ID" > "$tmp_tasks"
+mv "$tmp_tasks" "$TASKS"
 
 echo "Marked $TASK_ID complete"

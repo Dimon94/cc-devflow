@@ -64,7 +64,7 @@ When Codex plugins are part of the expected path:
 
 ## Report Format
 
-Record E2E evidence in `review-ledger.jsonl` and render it into Markdown on demand:
+Report E2E evidence in the review response:
 
 ```markdown
 ## E2E / Plugin Evidence
@@ -74,7 +74,7 @@ Record E2E evidence in `review-ledger.jsonl` and render it into Markdown on dema
 | ... | Browser / Computer Use / CLI | screenshot, log, command, artifact | pass / fail / blocked |
 ```
 
-Also append one ledger record per flow so a later review can skip unchanged flows or re-open only changed flows.
+Keep the evidence in the response or PR brief. Later reviews use Git diff, PR text, and current verification output instead of ledger files.
 
 If blocked, include:
 

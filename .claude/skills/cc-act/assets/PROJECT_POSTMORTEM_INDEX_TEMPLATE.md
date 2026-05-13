@@ -2,9 +2,6 @@
 
 ## How To Search
 
-Start here, then open only the incident files whose tags or failure class match
-the current work.
-
 ```bash
 rg -n "<capability|module|error|failure-class|model-risk>" devflow/postmortems
 ```
@@ -17,14 +14,6 @@ rg -n "<capability|module|error|failure-class|model-risk>" devflow/postmortems
 
 ## Recurring Patterns
 
-| Pattern | Count | Last seen | Principle |
+| Pattern | Count | Last seen | Incident |
 | --- | ---: | --- | --- |
-|  | 0 |  | `principles.md#` |
-
-## Deep-Dive Rules
-
-- Open `principles.md` when the current work involves architecture choices,
-  test-seam design, model judgment, reliability, release hygiene, or recurring
-  review findings.
-- Open a specific incident file when the current task touches the same module,
-  failure class, or Git/release workflow.
+|  | 0 |  | `incidents/<date>-<change-key>.md` |
