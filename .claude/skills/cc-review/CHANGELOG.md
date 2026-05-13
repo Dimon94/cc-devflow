@@ -1,5 +1,11 @@
 # CC-Review Changelog
 
+## 2.2.1 - 2026-05-14
+
+- restore deep review method flow without restoring review process files
+- add node-by-node review, risk-lane coverage, finding aggregation, decision question, plan facet, implementation diff, and test-quality guidance
+- keep plan review output in `task.md` and implementation review output in the response/user-choice loop
+
 ## 2.2.0 - 2026-05-13
 
 - split review exits by branch: plan and investigation reviews write findings directly into `task.md`
