@@ -48,11 +48,13 @@ detached HEAD 是分支事实，不是第 5 种 ship 模式。若远端可用且
 
 ## Memory Consolidation
 
-进入 ship 动作前，先把分散事实压缩进：
+进入 ship 动作前，先把分散事实压缩进唯一默认交付文件：
 
 - `handoff/pr-brief.md`
-- `handoff/resume-index.md`（需要 handoff 时）
-- `handoff/release-note.md`（需要发布时）
+
+local handoff 的接手入口写入 `pr-brief.md#Resume Entry`；release 说明写入
+`pr-brief.md#Release Notes`。不要并列生成 `resume-index.md`、`release-note.md`
+或 `doc-sync-report.md`。
 
 如果下一位接手者还得去翻零散过程笔记才知道从哪接，说明 act 还没收口。
 

@@ -6,6 +6,7 @@ const { spawnSync } = require('child_process');
 const ROOT = path.resolve(__dirname, '..');
 const DETECT_SHIP_TARGET = path.join(ROOT, '.claude', 'skills', 'cc-act', 'scripts', 'detect-ship-target.sh');
 const ENSURE_SHIP_BRANCH = path.join(ROOT, '.claude', 'skills', 'cc-act', 'scripts', 'ensure-ship-branch.sh');
+const INSPECT_GIT_INDEX = path.join(ROOT, '.claude', 'skills', 'cc-act', 'scripts', 'inspect-git-index.sh');
 
 function run(command, args, cwd) {
   const result = spawnSync(command, args, {
@@ -69,5 +70,36 @@ describe('cc-act detached HEAD ship rescue', () => {
 
     const branch = run('git', ['branch', '--show-current'], repoRoot).stdout.trim();
     expect(branch).toBe('codex/req-046-business-chain-field-lineage-breakpoints');
+  });
+
+  test('detects unborn branch before commit', () => {
+    const repoRoot = createDetachedRepo();
+
+    run('git', ['switch', 'main'], repoRoot);
+    run('git', ['switch', '--orphan', 'feature/unborn-ship-branch'], repoRoot);
+    fs.writeFileSync(path.join(repoRoot, 'new-file.txt'), 'fixture\n');
+    run('git', ['add', 'new-file.txt'], repoRoot);
+
+    const inspect = run('bash', [INSPECT_GIT_INDEX], repoRoot);
+    const target = run('bash', [DETECT_SHIP_TARGET], repoRoot);
+
+    expect(field(inspect.stdout, 'HEAD_STATE')).toBe('unborn');
+    expect(field(inspect.stdout, 'COMMIT_READY')).toBe('false');
+    expect(field(target.stdout, 'BRANCH_STATE')).toBe('unborn');
+    expect(field(target.stdout, 'BRANCH_RESCUE')).toBe('resolve-unborn-branch');
+  });
+
+  test('flags a case-variant branch ref before commit', () => {
+    const repoRoot = createDetachedRepo();
+
+    run('git', ['switch', 'main'], repoRoot);
+    run('git', ['switch', '-c', 'fix/055-owned-novel-scene-palette-override'], repoRoot);
+    run('git', ['symbolic-ref', 'HEAD', 'refs/heads/FIX/055-owned-novel-scene-palette-override'], repoRoot);
+
+    const inspect = run('bash', [INSPECT_GIT_INDEX], repoRoot);
+
+    expect(field(inspect.stdout, 'SYMBOLIC_REF')).toBe('FIX/055-owned-novel-scene-palette-override');
+    expect(field(inspect.stdout, 'COMMIT_READY')).toBe('false');
+    expect(field(inspect.stdout, 'CASE_COLLISION_BRANCH')).toBe('fix/055-owned-novel-scene-palette-override');
   });
 });

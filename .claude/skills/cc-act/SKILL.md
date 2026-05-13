@@ -1,7 +1,7 @@
 ---
 name: cc-act
-version: 1.8.10
-description: 'Use when verified work must be shipped or handed off with a clear landing path: run simplify and required tests, create or update a PR, prepare a local handoff, close out merged work, sync docs, write release notes, and fold follow-ups back into backlog or roadmap.'
+version: 1.8.11
+description: 'Use when verified work must be shipped or handed off with a clear landing path: run simplify and required tests, create or update a PR, prepare a local handoff, close out merged work, sync docs into one PR brief, and fold follow-ups back into backlog or roadmap.'
 triggers:
   - 准备提 PR
   - 帮我发版
@@ -16,7 +16,6 @@ reads:
   - references/closure-contract.md
   - references/git-commit-guidelines.md
   - assets/PR_BRIEF_TEMPLATE.md
-  - assets/RELEASE_NOTE_TEMPLATE.md
   - assets/PROJECT_POSTMORTEM_TEMPLATE.md
   - assets/PROJECT_POSTMORTEM_INDEX_TEMPLATE.md
   - assets/PROJECT_POSTMORTEM_PRINCIPLES_TEMPLATE.md
@@ -24,22 +23,13 @@ reads:
   - ../cc-dev/scripts/resolve-cc-devflow.sh
   - ../cc-roadmap/scripts/locate-roadmap-item.sh
   - ../cc-roadmap/scripts/sync-roadmap-progress.sh
+  - scripts/inspect-git-index.sh
   - scripts/ensure-ship-branch.sh
 writes:
   - path: devflow/changes/<change-key>/handoff/pr-brief.md
     durability: durable
     required: false
     when: handoff mode is create-pr or update-pr
-    exclusive_group: handoff
-  - path: devflow/changes/<change-key>/handoff/resume-index.md
-    durability: durable
-    required: false
-    when: handoff mode is local resume
-    exclusive_group: handoff
-  - path: devflow/changes/<change-key>/handoff/release-note.md
-    durability: durable
-    required: false
-    when: handoff mode is release
     exclusive_group: handoff
   - path: devflow/postmortems/INDEX.md
     durability: durable
@@ -64,10 +54,10 @@ entry_gate:
   - If simplify, tests, or act changes code or verification scope, return to cc-check immediately.
   - Read source roadmap progress from `devflow/roadmap.json`, `devflow/ROADMAP.md`, optional `devflow/BACKLOG.md`, or legacy `devflow/roadmap-tracking.json`; act must not ship against stale RM state.
   - For FIX closeout or recurring AI/process/engineering failures, update the project postmortem under `devflow/postmortems/` before final ship/handoff material is declared complete.
-  - 'For `post-merge-closeout`, freeze the archive target and run resolved CLI `archive-change <change-key>` after release note and roadmap writeback; only skip with an explicit `ArchiveSkip` blocker in the handoff.'
+  - 'For `post-merge-closeout`, freeze the archive target and run resolved CLI `archive-change <change-key>` after PR brief release notes and roadmap writeback; only skip with an explicit `ArchiveSkip` blocker in the handoff.'
 exit_criteria:
   - The ship mode is explicit, delivery materials match that mode, and the next maintainer has one clear entry point.
-  - Docs, PR text, release notes, handoff artifacts, review range, readiness dashboard, PR body accuracy check, and test evidence reflect the same proven facts.
+  - Docs, PR text, release notes, resume entry, review range, readiness dashboard, PR body accuracy check, and test evidence are consolidated in `handoff/pr-brief.md` and reflect the same proven facts.
   - Follow-up items are written back to roadmap/backlog instead of lingering in chat memory.
   - FIX closeout and recurring failures have a progressive project postmortem entry with factual Git evidence, prevention summary, and principle extraction decision.
   - '`post-merge-closeout` has archived the closed change under `devflow/changes/archive/YYYY-MM/`, or the handoff records an explicit `ArchiveSkip` blocker with the exact retry command.'
@@ -80,10 +70,10 @@ reroutes:
 recovery_modes:
   - name: memory-consolidation
     when: Delivery evidence is scattered across task state, reviews, CLI logs, and prior handoff notes.
-    action: Compress the current truth into handoff/pr-brief.md, handoff/resume-index.md, and handoff/release-note.md before any ship action continues.
+    action: Compress the current truth into the single `handoff/pr-brief.md` before any ship action continues; do not create separate resume or release-note files.
   - name: local-handoff-refresh
     when: Remote push or PR tooling is unavailable but the requirement is otherwise ready to land.
-    action: Switch to local-handoff mode, refresh handoff/resume-index.md, and leave a verified next entry for the maintainer.
+    action: Switch to local-handoff mode, refresh `handoff/pr-brief.md`, and leave a verified resume entry inside that file.
 tool_budget:
   read_files: 8
   search_steps: 5
@@ -106,9 +96,10 @@ tool_budget:
 
 写入任何 durable Markdown 或 JSON metadata 前，先用 `../cc-dev/scripts/resolve-cc-devflow.sh` 校验 CLI，再运行 `config resolve --format policy`。
 
-- `Output language` 是机器约束，PR brief、resume index、release note 和 status handoff 必须记录并遵守它。
+- `Output language` 是机器约束，`pr-brief.md` 内的 PR body、release notes、resume entry 和 status handoff 必须记录并遵守它。
 - `agent_preferences` 是用户偏好建议，只影响表达方式和结构选择，不覆盖本 Skill 的工作流边界。
 - 如果配置解析失败，先修配置或向用户说明阻塞，不要用默认语言继续生成正式文档。
+- 提交前必须先运行 `scripts/inspect-git-index.sh`；如果输出 `HEAD_STATE=unborn`、`COMMIT_READY=false` 或 `CASE_COLLISION_BRANCH` 非空，先修正分支/ref/index 真相，不得直接 `git commit`。
 
 ## Read First
 
@@ -123,7 +114,7 @@ tool_budget:
 - `cc-check` 已通过
 - 需要决定这次是 `create-pr`、`update-pr`、`local-handoff`，还是 `post-merge-closeout`
 - 需要在 ship 前再做一次 `cc-simplify`、单测、以及按协调器要求执行的 e2e
-- 需要同步最终文档、handoff、release note
+- 需要把最终文档、handoff、release note、resume entry 收敛进一个 `pr-brief.md`
 - 需要把遗留 follow-up / 优先级变化回写 `devflow/roadmap.json`，并重新生成 `devflow/ROADMAP.md` / `devflow/BACKLOG.md`
 - 需要把已验证的 spec delta 正式回写 capability spec 与 `devflow/specs/INDEX.md`
 - 需要让下一轮入口比现在更清楚
@@ -148,13 +139,14 @@ tool_budget:
 
 - Allowed actions: freeze ship facts, run simplify and required tests, sync docs, prepare landing materials, and execute the matching ship mode.
 - Forbidden actions: shipping with a stale report card, claiming readiness without simplify/test evidence or explicit skip evidence, inventing a fifth ambiguous mode, or continuing feature development inside act.
-- Required evidence: PR briefs, status reports, release notes, resume indexes, and test evidence must summarize already-proven facts only.
+- Required evidence: the PR brief, release notes section, resume entry section, and test evidence must summarize already-proven facts only.
 - Reroute rule: changed verification goes back to `cc-check`; unfinished implementation or new fixes go back to `cc-do`.
 
 ## Closure Discipline
 
 - Ship materials summarize verified facts only; do not use `cc-act` to finish implementation or reinterpret scope.
 - Every handoff records done, verified, remaining/blocker, and next entry.
+- `handoff/pr-brief.md` 是唯一默认交付文件；不要再并列生成 `release-note.md`、`resume-index.md` 或 `doc-sync-report.md`。
 - Skipped tests, skipped archive, unavailable auth, stale PR state, or release uncertainty must be explicit blockers or explicit skip records.
 
 ## Project Postmortem Writeback
@@ -188,8 +180,9 @@ tool_budget:
 2. 再读 `review/report-card.json`，只接受已通过且有证据的现实。
 3. 默认只使用 workflow context 的 `packetOnly`、`mustNotForget` 和 `sourceHashes`；必要时打开 `progressiveDisclosure.defaultOpen` 的 section / JSON refs；只有 ship mode、roadmap sync、rollback、hash mismatch 或 postmortem 触发时，再读 `deepOpen` 里的完整 `planning/tasks.md`、manifest、change-meta、相关 capability spec、handoff 或 legacy fallback。
 4. 运行 `scripts/verify-act-gate.sh --dir <requirement-dir>`，确认 gate 真的闭合。
-5. 运行 `scripts/detect-ship-target.sh`，识别当前分支、base branch、PR 状态与推荐 ship 路径。
+5. 运行 `scripts/inspect-git-index.sh` 与 `scripts/detect-ship-target.sh`，识别 HEAD、ref、index、当前分支、base branch、PR 状态与推荐 ship 路径。
    - 如果输出 `BRANCH_STATE=detached` 且 `BRANCH_RESCUE=create-branch-before-pr`，这不是阻塞；立即运行 `scripts/ensure-ship-branch.sh --dir <requirement-dir>`，然后重跑最终验证与 `detect-ship-target.sh`。
+   - 如果输出 `BRANCH_STATE=unborn` 或 `HEAD_STATE=unborn`，这是 Git 真相阻塞；切回已有 exact-case 分支或从真实 base 创建分支，再只 stage 本次 commit bucket。
    - 用户已经表达“继续 / 提交远程 PR / 推进”的场景下，detached HEAD 只能触发分支锚定，不能把 `create-pr` 降级成 `local-handoff`。
 6. 检查 `review.freshness`、`runtime.failureOwnership`、`qa.coverageAudit`、`qa.browserEvidence`，确认 readiness dashboard 没有 blocker。
 7. 检查 `qa.feedbackLoop`、`qa.behaviorEvidence`、`qa.architectureFollowUps` 和 follow-up brief，确认交付材料继承的是行为证据，不是聊天记忆或易腐烂 TODO。
@@ -212,10 +205,10 @@ tool_budget:
 3. `local-handoff`
    - 当前在 feature branch
    - 暂不推远端，或远端工具不可用
-   - 但要把 handoff 与下一步写清楚
+   - 但要在 `handoff/pr-brief.md#Resume Entry` 写清 handoff 与下一步
 4. `post-merge-closeout`
    - 当前已在 base branch，或 requirement 已完成合并
-   - 重点是 merged-result verification、release note、doc sync、backlog writeback、归档
+   - 重点是 merged-result verification、release notes section、doc sync、backlog writeback、归档
 
 不要发明第五种模糊模式。
 
@@ -236,11 +229,11 @@ tool_budget:
    - 新增提交必须遵守 `references/git-commit-guidelines.md`
    - 如果有新增提交，必须 push 并刷新 PR / MR 内容
 3. `local-handoff`
-   - 必须有更新后的 `handoff/resume-index.md`
-   - 必须写清接手入口、验证方式、当前阻塞
+   - 必须有更新后的 `handoff/pr-brief.md`
+   - 必须在 `Resume Entry` 写清接手入口、验证方式、当前阻塞
 4. `post-merge-closeout`
    - 必须完成 doc sync
-   - 需要对外说明时生成 `handoff/release-note.md`
+   - 需要对外说明时更新 `handoff/pr-brief.md#Release Notes`
    - 必须把 follow-up 回写到 `devflow/roadmap.json`，并重新生成 `devflow/ROADMAP.md` / `devflow/BACKLOG.md`
    - 必须运行 resolved CLI `archive-change <change-key>` 归档已闭环 change；除非存在明确安全阻塞并写入 `ArchiveSkip`
 
@@ -284,7 +277,7 @@ tool_budget:
 7. PR idempotency：已有打开的 PR / MR 只更新 body，不重复创建。
 8. Review range：PR brief / PR body 必须写清 `cc-check` 审过的 base/head SHA、review packet、finding triage 摘要。
 9. Post-integration verification：本地合并或 post-merge closeout 后，必须在 merged result 上跑必要 gate；不能只继承合并前绿色。
-10. Follow-up durability：PR brief / release note / backlog writeback 里的 follow-up 必须写成行为契约，包含 current behavior、desired behavior、key interfaces、acceptance criteria、out of scope；不要把当前文件路径或行号当成长期计划。
+10. Follow-up durability：PR brief / backlog writeback 里的 follow-up 必须写成行为契约，包含 current behavior、desired behavior、key interfaces、acceptance criteria、out of scope；不要把当前文件路径或行号当成长期计划。
 11. Remote state consistency：如果本次 closeout 触碰 GitHub issue / PR / tracker，必须记录当前 state、目标 state、允许转换、已保留事实和下一位 owner；`needs-info` 必须保留已确认事实和具体问题，`ready-for-agent` 必须有可执行 brief。
 12. Tooling smoke：如果本次改动影响 hook、pre-commit、lint、publish、adapt 或验证脚本，必须跑真实入口或最接近真实入口的 smoke；只读配置文件不等于工具链可用。
 
@@ -302,7 +295,7 @@ ship preflight 必须结构化记录：
 不能用“工具不可用”当作模糊失败；要明确切 `local-handoff`、补 auth、刷新 review，
 还是返回 `cc-check`。
 
-rollback guard 必须在 publish、merge、PR 更新或 release note 前写清：
+rollback guard 必须在 publish、merge、PR 更新或 PR brief release notes 前写清：
 
 - safe state
 - rollback command 或人工回退步骤
@@ -379,9 +372,9 @@ PR body 不是聊天摘要，而是 reviewer 的第一份执行材料。`create-
 6. 只使用 `cc-check` 已经证明过的事实写交付材料，不编故事，不补脑。
 7. 同步文档：
    - 结构变了，更新对应目录的 `CLAUDE.md`
-   - 用户可感知行为变了，更新 `README.md` / `handoff/release-note.md`
-   - handoff 变了，更新 `handoff/resume-index.md`
-8. 执行 documentation release audit：保护 changelog，检查 discoverability，记录 doc sync 结果。
+   - 用户可感知行为变了，更新 `README.md` 和 `handoff/pr-brief.md#Release Notes`
+   - handoff 变了，更新 `handoff/pr-brief.md#Resume Entry`
+8. 执行 documentation release audit：保护 changelog，检查 discoverability，把 doc sync 结果写入 `handoff/pr-brief.md`。
 9. 生成 `handoff/pr-brief.md`，把需求、变更、验证证据、风险、文档同步状态一次写清。
    - 优先运行 `scripts/sync-act-docs.sh --dir <requirement-dir>`
    - 再运行 `scripts/render-pr-brief.sh --dir <requirement-dir>`
@@ -404,8 +397,6 @@ PR body 不是聊天摘要，而是 reviewer 的第一份执行材料。`create-
 ## Output
 
 - `handoff/pr-brief.md`
-- `handoff/release-note.md`（需要对外发布时）
-- 更新后的 `handoff/resume-index.md`
 - 同步后的 `CLAUDE.md` / README / 架构文档
 - 必要时更新后的 `devflow/roadmap.json` / `devflow/ROADMAP.md` / `devflow/BACKLOG.md`
 - 单测 / e2e 的通过证据，或明确记录的 skip / blocker
@@ -420,8 +411,8 @@ PR body 不是聊天摘要，而是 reviewer 的第一份执行材料。`create-
 
 - 这次到底选了哪种 ship 模式，为什么不是另外三种
 - 哪些材料已经准备好，哪些刻意不需要
-- 现在谁都可以顺着 `handoff/pr-brief.md` 或 `handoff/resume-index.md` 继续往前走
-- 文档、PR 描述、release note 说的是同一套现实
+- 现在谁都可以顺着 `handoff/pr-brief.md` 继续往前走
+- 文档、PR 描述、release notes 和 resume entry 说的是同一套现实
 - `cc-simplify`、单测、e2e、commit/push 的结果都能被接手者追溯
 - source RM 的 status、REQ/FIX 绑定、progress 和 follow-up 已经和 ship 现实一致
 
@@ -430,11 +421,11 @@ PR body 不是聊天摘要，而是 reviewer 的第一份执行材料。`create-
 - 变更记录：`CHANGELOG.md`
 - 契约：`references/closure-contract.md`
 - 模板：`assets/PR_BRIEF_TEMPLATE.md`
-- 模板：`assets/RELEASE_NOTE_TEMPLATE.md`
 - 提交规范：`references/git-commit-guidelines.md`
 - 状态摘要：`scripts/generate-status-report.sh`
 - Gate 校验：`scripts/verify-act-gate.sh`
 - Ship 目标识别：`scripts/detect-ship-target.sh`
+- Git/index 真相核验：`scripts/inspect-git-index.sh`
 - detached HEAD 分支锚定：`scripts/ensure-ship-branch.sh`
 - 文档同步：`scripts/sync-act-docs.sh`
 - PR 简报生成：`scripts/render-pr-brief.sh`
@@ -452,7 +443,7 @@ PR body 不是聊天摘要，而是 reviewer 的第一份执行材料。`create-
 6. 已存在 PR / MR 时，优先更新，不重复创建。
 7. `cc-simplify`、单测、e2e 任何一步只要导致代码变化或验证口径变化，必须回 `cc-check`。
 8. `devflow/roadmap.json` 只回写真正改变优先级或产生 follow-up 的事项，并用 `sync-roadmap-progress.sh` 重新生成 `devflow/ROADMAP.md` / `devflow/BACKLOG.md`，不写噪音。
-9. `local-handoff` 不是偷懒模式，它仍然必须让下一位接手者知道做什么、怎么验证、卡在哪。
+9. `local-handoff` 不是偷懒模式，它仍然必须在 `pr-brief.md#Resume Entry` 让下一位接手者知道做什么、怎么验证、卡在哪。
 10. `create-pr` / `update-pr` 模式默认要求提交历史符合 `references/git-commit-guidelines.md`，并完成正确的 push、PR 创建或更新动作。
 11. detached HEAD 不是小问题停下来的理由；当用户目标是继续或提交远程 PR，先创建命名分支并重跑验证，再推进 `create-pr`。
 12. CHANGELOG 只能基于当前 diff / commit history / release truth 更新，不允许覆盖既有历史条目。

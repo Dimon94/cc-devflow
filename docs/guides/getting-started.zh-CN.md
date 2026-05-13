@@ -91,13 +91,13 @@ find .codex/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort
 - `cc-investigate` 产出 `planning/tasks.md#Root Cause Contract`，再由 CLI 生成 `task-manifest.json` 和 `change-meta.json`
 - `cc-review` 产出 `review-ledger.jsonl`、可选 `review-findings.json`，Markdown 报告只在需要时按需渲染
 - `cc-check` 产出 `report-card.json`
-- `cc-act` 只产出一个最终 handoff 文件：`handoff/pr-brief.md`、`handoff/resume-index.md` 或 `handoff/release-note.md`
+- `cc-act` 只产出一个最终 handoff 文件：`handoff/pr-brief.md`；release notes、resume entry 和 doc sync 状态都写入这个文件的章节
 
 durable truth 分两层：
 
 - `devflow/specs/`：capability 真相，保留 `INDEX.md` 与 `capabilities/*.md`
 - 新 change 目录必须命名为 `REQ-<number>-<description>`（需求）或 `FIX-<number>-<description>`（修复）；`REQ` 和 `FIX` 分别维护自己的递增编号，跨前缀同号不是冲突；并行工作树造成重复编号时，完整 change key 的描述负责区分业务内容，旧小写目录只作为历史兼容读取。
-- `devflow/changes/<change>/`：变更真相，保留 CLI 生成的 `change-meta.json`、`planning/tasks.md`、CLI 生成的 `task-manifest.json`、review ledger / findings 记录、debug / failed 的可选 CLI 日志、`report-card.json` 和唯一的最终 handoff 文件。不要生成任务级 `context.md`、`checkpoint.json` 或 AI 手写过程文件。
+- `devflow/changes/<change>/`：变更真相，保留 CLI 生成的 `change-meta.json`、`planning/tasks.md`、CLI 生成的 `task-manifest.json`、review ledger / findings 记录、debug / failed 的可选 CLI 日志、`report-card.json` 和唯一最终 handoff 文件 `handoff/pr-brief.md`。不要生成任务级 `context.md`、`checkpoint.json` 或 AI 手写过程文件。
 - 机器态 JSON 归 CLI 所有：运行 `cc-devflow task-contract compile` / `validate`；不要手写 `task-manifest.json` 或 `change-meta.json`。
 - 历史 `planning/design.md`、`planning/analysis.md` 和 `cc-review-*.md` 是旧 change 的可读 fallback，不再是新默认写入。
 - worker prompt、journal、assignment、session log 统一放到 `devflow/workspaces/<change>/`，作为 ephemeral scratch。

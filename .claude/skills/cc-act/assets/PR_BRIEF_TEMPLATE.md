@@ -71,7 +71,7 @@
 - Language source: `Output language: <value from report-card>`
 - PR body language: `中文` / `English`
 - Title rule: same language as the PR body after the Conventional Commits `type(scope)` prefix; keep identifiers, paths, commands, and issue keys unchanged.
-- Body source: current `pr-brief.md`, current diff, current `review/report-card.json`, doc sync output, and roadmap/backlog writeback.
+- Body source: current `pr-brief.md`, current diff, current `review/report-card.json`, doc sync status, and roadmap/backlog writeback.
 - Required sections: summary, problem, changes, validation, review/gate evidence, risk/rollback, docs/writeback, follow-ups.
 - Completeness gate: no empty headings, no stale inherited PR body, no generic "tests passed" without command or evidence, and no `<placeholder>` text before `gh pr create` or `gh pr edit`.
 
@@ -155,8 +155,8 @@
 
 - `CLAUDE.md`:
 - `README.md`:
-- `release-note.md`:
-- `resume-index.md`:
+- Handoff file: `pr-brief.md` is the single handoff file.
+- Release notes, resume entry, and doc sync status are folded into this file.
 
 ## Roadmap Progress Sync
 
@@ -168,16 +168,26 @@
 - Follow-up writeback:
 - No-op reason:
 
-## Consolidated Memory
+## Release Notes
 
-- `handoff path`: 
-- latest task-state / review summary:
-- handoff entry for the next maintainer:
+- Ship mode:
+- User impact:
+- Verification:
+- Roadmap progress:
+
+## Resume Entry
+
+- Requirement:
+- Current stage: `cc-act`
+- Current task:
+- Branch state:
+- Active PR / MR:
+- Next action:
 
 ## Minimum Landing Pack
 
-- Required for this mode:
-- Intentionally omitted:
+- Required for this mode: `handoff/pr-brief.md`
+- No split handoff files are generated.
 
 ## How To Verify
 

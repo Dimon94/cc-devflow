@@ -9,6 +9,7 @@ set -euo pipefail
 current_branch="$(git branch --show-current 2>/dev/null || true)"
 head_sha="$(git rev-parse --short HEAD 2>/dev/null || true)"
 inside_work_tree="$(git rev-parse --is-inside-work-tree 2>/dev/null || true)"
+symbolic_ref="$(git symbolic-ref -q --short HEAD 2>/dev/null || true)"
 remote_url="$(git remote get-url origin 2>/dev/null || true)"
 platform="unknown"
 base_branch=""
@@ -18,9 +19,13 @@ branch_state="unknown"
 branch_rescue="none"
 rescue_action=""
 
-if [[ -n "$current_branch" ]]; then
+if [[ "$inside_work_tree" != "true" ]]; then
+  branch_state="none"
+elif [[ -z "$head_sha" ]]; then
+  branch_state="unborn"
+elif [[ -n "$current_branch" ]]; then
   branch_state="branch"
-elif [[ "$inside_work_tree" == "true" && -n "$head_sha" ]]; then
+elif [[ -n "$head_sha" ]]; then
   branch_state="detached"
 else
   branch_state="none"
@@ -92,10 +97,14 @@ if [[ "$branch_state" == "detached" ]]; then
     branch_rescue="create-local-branch-or-handoff"
     rescue_action="Create a named local branch at HEAD before local closeout, or write local-handoff if no branch should be created."
   fi
+elif [[ "$branch_state" == "unborn" ]]; then
+  branch_rescue="resolve-unborn-branch"
+  rescue_action="HEAD has no commit. Run inspect-git-index.sh, switch to an existing exact-case branch or create a branch from a real base, then stage only the intended files."
 fi
 
 cat <<EOF
 CURRENT_BRANCH=$current_branch
+SYMBOLIC_REF=$symbolic_ref
 BRANCH_STATE=$branch_state
 HEAD_SHA=$head_sha
 BASE_BRANCH=$base_branch

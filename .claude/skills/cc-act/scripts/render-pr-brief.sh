@@ -121,18 +121,7 @@ req_act_collect_followups "$report_card" "$manifest" "$tmp_followups"
 
 claude_status="manual check required"
 readme_status="manual check required"
-if [[ -f "$doc_sync_report" ]]; then
-  if grep -q 'No scoped `CLAUDE.md` target detected' "$doc_sync_report"; then
-    claude_status="no scoped CLAUDE target detected"
-  else
-    claude_status="see doc-sync-report.md"
-  fi
-  if grep -q 'No README candidate found' "$doc_sync_report"; then
-    readme_status="no README candidate found"
-  else
-    readme_status="see doc-sync-report.md"
-  fi
-fi
+single_handoff_status="single handoff file: pr-brief.md; release, resume, and doc-sync notes are folded into this file"
 
 review_freshness_summary="$(jq -r '
   .review.freshness as $fresh |
@@ -201,6 +190,18 @@ failure_ownership_summary="$(jq -r '
 documentation_release_summary="CLAUDE=${claude_status}; README=${readme_status}"
 pr_body_accuracy_summary="body must be regenerated from this pr-brief, current report-card, and current diff before PR create/update"
 roadmap_sync_summary="$(req_act_roadmap_sync_summary "$manifest" "$REPO_ROOT")"
+next_action="Refresh handoff and close the requirement."
+case "$ship_mode" in
+  create-pr) next_action="Push current branch and create PR / MR from pr-brief.md." ;;
+  update-pr) next_action="Refresh the open PR / MR body from pr-brief.md and resolve outstanding review feedback." ;;
+  local-handoff) next_action="Hand off with pr-brief.md as the single resume entry." ;;
+  post-merge-closeout) next_action="Complete roadmap/backlog writeback, then run resolved CLI archive-change $requirement_id and verify the archive path." ;;
+esac
+if [[ "$branch_rescue" == "create-branch-before-pr" ]]; then
+  next_action="Run ensure-ship-branch.sh, rerun final verification, then push the named branch and create PR / MR from pr-brief.md."
+elif [[ "$branch_rescue" == "create-local-branch-or-handoff" ]]; then
+  next_action="Run ensure-ship-branch.sh before local closeout, or keep local-handoff only if no branch should be created."
+fi
 
 {
   echo "# PR Brief"
@@ -257,7 +258,7 @@ roadmap_sync_summary="$(req_act_roadmap_sync_summary "$manifest" "$REPO_ROOT")"
   echo "- Language source: \`Output language: $output_language\`"
   echo "- PR body language: $pr_language_label"
   echo "- Title rule: use the same language as the PR body after the Conventional Commits \`type(scope)\` prefix; keep identifiers, paths, commands, and issue keys unchanged."
-  echo "- Body source: rebuild from this \`pr-brief.md\`, current diff, current \`review/report-card.json\`, doc sync output, and roadmap/backlog writeback; do not reuse a stale PR body."
+  echo "- Body source: rebuild from this \`pr-brief.md\`, current diff, current \`review/report-card.json\`, doc sync status, and roadmap/backlog writeback; do not reuse a stale PR body."
   echo "- Required sections: summary, problem, changes, validation, review/gate evidence, risk/rollback, docs/writeback, and follow-ups."
   echo "- Completeness gate: no empty headings, no generic \"tests passed\" claim without commands or evidence, and no \`<placeholder>\` text may remain before \`gh pr create\` or \`gh pr edit\`."
   echo
@@ -321,9 +322,10 @@ roadmap_sync_summary="$(req_act_roadmap_sync_summary "$manifest" "$REPO_ROOT")"
     echo "- 回滚边界：按 \`Rollback Guard\` 的 safe state、side effects 和 owner 执行；如未补齐，不得合并。"
     echo
     echo "## 文档与回写"
-    echo "- \`CLAUDE.md\`: $claude_status"
-    echo "- \`README.md\`: $readme_status"
-    echo "- Roadmap progress: $roadmap_sync_summary"
+  echo "- \`CLAUDE.md\`: $claude_status"
+  echo "- \`README.md\`: $readme_status"
+  echo "- Handoff file: $single_handoff_status"
+  echo "- Roadmap progress: $roadmap_sync_summary"
     echo
     echo "## 后续事项"
     if [[ -s "$tmp_followups" ]]; then
@@ -390,9 +392,10 @@ roadmap_sync_summary="$(req_act_roadmap_sync_summary "$manifest" "$REPO_ROOT")"
     echo "- Rollback boundary: follow the \`Rollback Guard\` safe state, side effects, and owner; do not merge if this is incomplete."
     echo
     echo "## Docs And Writeback"
-    echo "- \`CLAUDE.md\`: $claude_status"
-    echo "- \`README.md\`: $readme_status"
-    echo "- Roadmap progress: $roadmap_sync_summary"
+  echo "- \`CLAUDE.md\`: $claude_status"
+  echo "- \`README.md\`: $readme_status"
+  echo "- Handoff file: $single_handoff_status"
+  echo "- Roadmap progress: $roadmap_sync_summary"
     echo
     echo "## Follow-ups"
     if [[ -s "$tmp_followups" ]]; then
@@ -459,20 +462,30 @@ roadmap_sync_summary="$(req_act_roadmap_sync_summary "$manifest" "$REPO_ROOT")"
   echo
   echo "- \`CLAUDE.md\`: $claude_status"
   echo "- \`README.md\`: $readme_status"
-  if [[ -f "$release_note" ]]; then
-    echo "- \`release-note.md\`: refreshed"
-  else
-    echo "- \`release-note.md\`: missing"
-  fi
-  if [[ -f "$resume_index" ]]; then
-    echo "- \`resume-index.md\`: refreshed"
-  else
-    echo "- \`resume-index.md\`: missing"
-  fi
+  echo "- Handoff file: $single_handoff_status"
+  echo "- Split handoff files: not generated"
   echo
   echo "## Roadmap Progress Sync"
   echo
   echo "- $roadmap_sync_summary"
+  echo
+  echo "## Release Notes"
+  echo
+  echo "- Ship mode: \`$ship_mode\`"
+  echo "- User impact: ${report_summary:-${design_goal:-not recorded}}"
+  echo "- Verification: \`review/report-card.json\` verdict is \`$report_verdict\`"
+  echo "- Roadmap progress: $roadmap_sync_summary"
+  echo
+  echo "## Resume Entry"
+  echo
+  echo "- Requirement: $requirement_id"
+  echo "- Current stage: cc-act"
+  echo "- Current task: ship:$ship_mode"
+  [[ -n "$branch_state" ]] && echo "- Branch state: $branch_state"
+  [[ -n "$branch_rescue" && "$branch_rescue" != "none" ]] && echo "- Branch rescue: $branch_rescue"
+  [[ -n "$rescue_action" ]] && echo "- Rescue action: $rescue_action"
+  [[ -n "$pr_url" ]] && echo "- Active PR / MR: $pr_url"
+  echo "- Next action: $next_action"
   echo
   echo "## How To Verify"
   echo

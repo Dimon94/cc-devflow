@@ -11,7 +11,7 @@
     "cc-pr-review": "1.0.0",
     "cc-pr-land": "1.0.0",
     "cc-check": "1.11.4",
-    "cc-act": "1.8.10",
+    "cc-act": "1.8.11",
     "cc-spec-init": "1.1.0"
   },
   "examples": [

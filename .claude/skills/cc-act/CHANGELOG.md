@@ -1,5 +1,12 @@
 # CC-Act Skill Changelog
 
+## v1.8.11 - 2026-05-13
+
+- collapse `cc-act` delivery material into a single default `handoff/pr-brief.md` file
+- fold release notes, local resume entry, and doc sync status into `pr-brief.md` sections instead of generating parallel `release-note.md`, `resume-index.md`, or `doc-sync-report.md`
+- update `sync-act-docs.sh` so it collects doc-sync inputs without writing extra handoff Markdown files
+- add `inspect-git-index.sh` and unborn-branch preflight rules so commit flow checks HEAD/ref/index truth before staging or committing
+
 ## v1.8.10 - 2026-05-13
 
 - require the shared `resolve-cc-devflow.sh` CLI resolver before delivery context reset or post-merge archive commands

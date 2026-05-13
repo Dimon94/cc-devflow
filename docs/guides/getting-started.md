@@ -91,14 +91,14 @@ Typical outputs:
 - `cc-investigate` writes `planning/tasks.md#Root Cause Contract`, then CLI-generates `task-manifest.json` and `change-meta.json`
 - `cc-review` writes `review-ledger.jsonl`, optional `review-findings.json`, and Markdown reports only when rendered on demand
 - `cc-check` writes `report-card.json`
-- `cc-act` writes exactly one final handoff file: `handoff/pr-brief.md`, `handoff/resume-index.md`, or `handoff/release-note.md`
+- `cc-act` writes exactly one final handoff file: `handoff/pr-brief.md`; release notes, resume entry, and doc sync status live as sections inside that file
 
 Capability truth lives in `devflow/specs/`.
 Change truth lives in `devflow/changes/<change>/`.
 
 - Keep `INDEX.md` plus capability markdown under `devflow/specs/`.
 - Name new change directories as `REQ-<number>-<description>` for requirements or `FIX-<number>-<description>` for bug fixes. `REQ` and `FIX` advance as separate local sequences, so cross-prefix duplicates are valid. Parallel worktrees may still repeat numbers; the full change key, especially the description, distinguishes the work. Old lowercase directories are compatibility reads only.
-- Keep CLI-generated `change-meta.json`, `planning/tasks.md`, CLI-generated `task-manifest.json`, review ledger/findings records, optional CLI logs for debug/failure, `report-card.json`, and one final handoff file under each `devflow/changes/<change>/`. Do not generate task `context.md`, `checkpoint.json`, or AI-written process files.
+- Keep CLI-generated `change-meta.json`, `planning/tasks.md`, CLI-generated `task-manifest.json`, review ledger/findings records, optional CLI logs for debug/failure, `report-card.json`, and `handoff/pr-brief.md` as the single final handoff file under each `devflow/changes/<change>/`. Do not generate task `context.md`, `checkpoint.json`, or AI-written process files.
 - Machine JSON is CLI-owned: run `cc-devflow task-contract compile` / `validate`; do not handwrite `task-manifest.json` or `change-meta.json`.
 - Legacy `planning/design.md`, `planning/analysis.md`, and `cc-review-*.md` are readable fallback inputs for older changes, not new default writes.
 - Worker prompts, journals, assignments, and session logs belong under `devflow/workspaces/<change>/` as ephemeral scratch.

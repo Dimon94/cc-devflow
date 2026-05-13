@@ -1,4 +1,4 @@
-# Resume Index
+# PR Brief
 
 ## Current Reality
 
@@ -16,11 +16,19 @@
 - targeted test and lint evidence collected
 - `report-card.json` confirms `pass`
 
-## Next Entry
+## Release Notes
 
-- when remote access is restored, rerun `detect-ship-target`
-- if the branch still has no PR, switch from `local-handoff` to `create-pr`
-- use `resume-index.md` and `report-card.json` as the truth sources for the next ship step
+- Not released yet; this is a local handoff entry.
+- User impact if later shipped: admins can export the currently visible audit summary rows as CSV.
+- Verification: `review/report-card.json` verdict is `pass`.
+
+## Resume Entry
+
+- Requirement: `REQ-003`
+- Current stage: `cc-act`
+- Current task: `ship:local-handoff`
+- Next action: when remote access is restored, rerun `detect-ship-target`; if the branch still has no PR, switch from `local-handoff` to `create-pr`.
+- Truth sources: use this `pr-brief.md` and `report-card.json` for the next ship step.
 
 ## Read First
 

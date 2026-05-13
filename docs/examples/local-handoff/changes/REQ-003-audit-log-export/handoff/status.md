@@ -26,4 +26,4 @@
 
 - README / release docs: unchanged; this is not a public release step
 - Backlog writeback: if admins request additional export formats, open a new roadmap item
-- Next entry point: use `resume-index.md` to pick up the branch when remote access becomes available
+- Next entry point: use `pr-brief.md#Resume Entry` to pick up the branch when remote access becomes available

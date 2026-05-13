@@ -42,8 +42,11 @@ Roadmap 是执行链路的长期记忆，不是收尾时才想起的备忘录。
 
 ## Phase 1: Freeze Ship Facts
 
-运行 `scripts/detect-ship-target.sh`，锁定这些事实：
+运行 `scripts/inspect-git-index.sh` 和 `scripts/detect-ship-target.sh`，锁定这些事实：
 
+- HEAD 是否真实存在，还是 unborn branch
+- 当前 symbolic ref 与 branch 名大小写是否一致
+- staged / unstaged / untracked 的真实数量
 - current branch
 - base branch
 - branch state / rescue action
@@ -62,6 +65,10 @@ Ship 必须属于这 4 种模式之一：
 `scripts/ensure-ship-branch.sh --dir <requirement-dir>`，然后重跑最终验证与
 `scripts/detect-ship-target.sh`。用户已经要求继续或提交远程 PR 时，detached HEAD
 不是停在 `local-handoff` 的理由。
+
+如果当前是 unborn branch，先停住提交动作。用 `inspect-git-index.sh` 对照 `HEAD_STATE`、
+`SYMBOLIC_REF`、`CASE_COLLISION_BRANCH`、`STAGED_COUNT`，切回已有 exact-case 分支或从真实
+base 创建分支后再重新 stage；不要把“全仓文件 staged”当成可提交状态。
 
 这里不要只报事实，必须给出一句明确结论：
 
@@ -98,30 +105,24 @@ Ship 必须属于这 4 种模式之一：
 2. 读取 changelog，不覆盖已有条目；新增或润色只能基于当前 diff 和 commit history。
 3. 检查提交边界，按逻辑单元拆分，保证提交顺序不引用未来代码。
 4. 如果有 WIP commit，只能用非破坏性 rebase / fixup 处理，不允许盲目 soft reset。
-5. push 前比较 local / remote HEAD；PR 前检查是否已有打开 PR / MR。
+5. commit 前先确认 `inspect-git-index.sh` 输出 `COMMIT_READY=true`，且 staged files 只属于当前 commit bucket。
+6. push 前比较 local / remote HEAD；PR 前检查是否已有打开 PR / MR。
    - 如果当前是 detached HEAD 且目标是远程 PR，先用 `ensure-ship-branch.sh` 锚定命名分支，再做 push / PR。
-6. 生成 readiness dashboard：review freshness、review quality、QA coverage、browser QA、feedback loop、behavior evidence、failure ownership、documentation release、PR body accuracy。
-7. 生成 ship preflight：branch/base/remote/auth/clean tree/review freshness/ship mode。
-8. preflight 失败必须命名为 `ShipPreflightError`，并写明 rescue action 或切到 `local-handoff`。
-9. 发布、合并、PR 更新或 release note 前必须写 rollback guard。
+7. 生成 readiness dashboard：review freshness、review quality、QA coverage、browser QA、feedback loop、behavior evidence、failure ownership、documentation release、PR body accuracy。
+8. 生成 ship preflight：branch/base/remote/auth/clean tree/review freshness/ship mode。
+9. preflight 失败必须命名为 `ShipPreflightError`，并写明 rescue action 或切到 `local-handoff`。
+10. 发布、合并、PR 更新或 `pr-brief.md#Release Notes` 前必须写 rollback guard。
 
 ## Phase 3: Build Delivery Pack
 
-先按模式整理最小材料：
+先按模式整理最小材料。所有模式默认只写一个最终 handoff 文件：
 
 - `create-pr`: `handoff/pr-brief.md`
 - `update-pr`: 更新后的 `handoff/pr-brief.md`
-- `local-handoff`: `handoff/resume-index.md`
-- `post-merge-closeout`: doc sync 结果 + `handoff/release-note.md`（需要发布时）
+- `local-handoff`: `handoff/pr-brief.md#Resume Entry`
+- `post-merge-closeout`: `handoff/pr-brief.md#Release Notes` + archive proof
 
-然后再补下面这些扩展材料：
-
-- `handoff/pr-brief.md`
-- `handoff/release-note.md`（需要发布时）
-- 更新后的 `handoff/resume-index.md`
-- `doc-sync-report.md`
-
-这些文件只允许写已经被证明过的事实，不准补编故事。
+不要并列生成 `release-note.md`、`resume-index.md` 或 `doc-sync-report.md`。这些内容进入 `pr-brief.md` 的对应章节，只允许写已经被证明过的事实，不准补编故事。
 
 建议顺序：
 
@@ -152,8 +153,8 @@ Ship 必须属于这 4 种模式之一：
 同步规则：
 
 1. 代码结构变了，就同步对应目录的 `CLAUDE.md`
-2. 用户可感知行为变了，就同步 `README.md` / `handoff/release-note.md`
-3. handoff 路径变了，就同步 `handoff/resume-index.md`
+2. 用户可感知行为变了，就同步 `README.md` 和 `handoff/pr-brief.md#Release Notes`
+3. handoff 路径变了，就同步 `handoff/pr-brief.md#Resume Entry`
 4. reviewer 如果看文档还得猜，就说明 sync 失败
 5. 新文档必须从 README、CLAUDE 或 handoff 入口可发现
 6. CHANGELOG 只允许保护性更新，不能重写历史
@@ -188,7 +189,7 @@ Ship 必须属于这 4 种模式之一：
 
 - 不做 feature branch PR 动作
 - 在 merged result 上重跑必要 gate，并记录命令、exit status、关键观察
-- 完成 release note、文档同步、backlog/roadmap 回写、归档
+- 完成 `pr-brief.md#Release Notes`、文档同步、backlog/roadmap 回写、归档
 - 归档是 exit gate：运行 resolved CLI `archive-change <change-key>`，再用 archive path 或 resolved CLI `list-archived` 证明 active change 已离开 `devflow/changes/<change-key>`
 
 ### destructive cleanup
@@ -223,7 +224,7 @@ Ship 必须属于这 4 种模式之一：
 `cc-act` 结束时必须留下一个明确入口：
 
 - requirement 真闭环：已经归档，下一轮入口在 backlog / roadmap
-- requirement 未完全闭环：`handoff/resume-index.md` 必须告诉下一位从哪里接、怎么验、当前卡点是什么
+- requirement 未完全闭环：`handoff/pr-brief.md#Resume Entry` 必须告诉下一位从哪里接、怎么验、当前卡点是什么
 
 ## Recommendation Test
 
@@ -233,7 +234,7 @@ Ship 必须属于这 4 种模式之一：
 2. 材料是不是只覆盖当前模式真正需要的内容？
 3. reviewer / 接手者 还需不需要追问“所以我现在该看哪个文件”？
 4. `cc-simplify`、单测、e2e、commit/push 的结果是不是都能追溯？
-5. PR body / release note / handoff / changelog 说的是不是同一套现实？
+5. PR body / release notes / resume entry / changelog 说的是不是同一套现实？
 6. readiness dashboard 有没有 blocker 或 stale warning？
 7. follow-up 是不是行为契约，而不是“改某文件某行”的易腐烂 TODO？
 8. ship preflight failure 是否有 `ShipPreflightError`、artifact ref 和 rescue action？
@@ -246,8 +247,6 @@ Ship 必须属于这 4 种模式之一：
 ## Required Outputs
 
 - `handoff/pr-brief.md`
-- `handoff/release-note.md`（需要发布时）
-- 更新后的 `handoff/resume-index.md`
 - 更新后的 `CLAUDE.md` / README / 架构文档（如果结构或行为变了）
 - 必要时更新后的 `devflow/roadmap.json` / `devflow/ROADMAP.md` / `devflow/BACKLOG.md`
 - `post-merge-closeout` 必须留下 archive path；未归档只能留下 `ArchiveSkip` blocker，不能宣称闭环完成
@@ -255,9 +254,9 @@ Ship 必须属于这 4 种模式之一：
 ## Local Kit
 
 - `assets/PR_BRIEF_TEMPLATE.md` 负责 reviewer / PR 交付骨架
-- `assets/RELEASE_NOTE_TEMPLATE.md` 负责对外发布骨架
 - `scripts/verify-act-gate.sh` 负责 gate 闭合校验
 - `scripts/detect-ship-target.sh` 负责分支与 PR 决策
+- `scripts/inspect-git-index.sh` 负责 HEAD / ref / index 真相核验
 - `scripts/ensure-ship-branch.sh` 负责把可继续的 detached HEAD 锚定成可推送分支
 - `scripts/sync-act-docs.sh` 负责同步 requirement 级文档与 doc target 报告
 - `scripts/render-pr-brief.sh` 负责从 requirement 真相源渲染 `pr-brief.md`
@@ -274,7 +273,7 @@ Ship 必须属于这 4 种模式之一：
 
 - “所以现在是提 PR 还是先 handoff？”
 - “你真的跑过 simplify、单测、e2e 吗？”
-- “为什么要写 release note？”
+- “为什么要写三个 handoff 文件？”
 - “下一位到底从哪里开始接？”
 
 那这次 `cc-act` 还没有把复杂度压平。

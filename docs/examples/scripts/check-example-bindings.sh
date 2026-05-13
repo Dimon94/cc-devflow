@@ -138,8 +138,12 @@ while IFS= read -r encoded; do
   fi
 
   if jq -e '.covers | index("cc-act")' <<<"$encoded" >/dev/null; then
-    if [[ ! -f "$handoff_dir/pr-brief.md" && ! -f "$handoff_dir/resume-index.md" && ! -f "$handoff_dir/release-note.md" && ! -f "$handoff_dir/status.md" ]]; then
-      echo "Example $example_id is missing a final handoff file under $handoff_dir" >&2
+    if [[ ! -f "$handoff_dir/pr-brief.md" ]]; then
+      echo "Example $example_id is missing the single final handoff file under $handoff_dir" >&2
+      exit 1
+    fi
+    if [[ -f "$handoff_dir/resume-index.md" || -f "$handoff_dir/release-note.md" || -f "$handoff_dir/doc-sync-report.md" ]]; then
+      echo "Example $example_id has legacy split handoff files under $handoff_dir" >&2
       exit 1
     fi
   fi

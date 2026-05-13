@@ -127,17 +127,15 @@
 
 - `CLAUDE.md`: unchanged
 - `README.md`: unchanged
-- `release-note.md`: intentionally omitted for this mode
-- `resume-index.md`: not needed because the change is ready for PR handoff
+- Handoff file: `pr-brief.md` is the single handoff file
+- Release notes and resume entry: folded into this file
 
 ## Minimum Landing Pack
 
 - Required for this mode:
   - `pr-brief.md`
   - fresh `report-card.json`
-- Intentionally omitted:
-  - `release-note.md`
-  - `resume-index.md`
+- Intentionally omitted: split `release-note.md` and `resume-index.md`
 
 ## How To Verify
 

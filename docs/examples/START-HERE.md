@@ -71,8 +71,7 @@ Use this when the only thing you know is the file in front of you.
 | `design.md` | legacy `cc-plan` fallback | [pdca-loop/design.md](./pdca-loop/changes/REQ-001-copy-invite-link/planning/design.md) or [full-design-blocked/design.md](./full-design-blocked/changes/REQ-002-bulk-invite-import/planning/design.md) |
 | `task-manifest.json` | `cc-do` | [pdca-loop/task-manifest.json](./pdca-loop/changes/REQ-001-copy-invite-link/planning/task-manifest.json) |
 | `report-card.json` | `cc-check` | [pdca-loop/report-card.json](./pdca-loop/changes/REQ-001-copy-invite-link/review/report-card.json), [full-design-blocked/report-card.json](./full-design-blocked/changes/REQ-002-bulk-invite-import/review/report-card.json), or [local-handoff/report-card.json](./local-handoff/changes/REQ-003-audit-log-export/review/report-card.json) |
-| `pr-brief.md` | `cc-act` | [pdca-loop/pr-brief.md](./pdca-loop/changes/REQ-001-copy-invite-link/handoff/pr-brief.md) |
-| `resume-index.md` | `cc-act` with `local-handoff` | [local-handoff/resume-index.md](./local-handoff/changes/REQ-003-audit-log-export/handoff/resume-index.md) |
+| `pr-brief.md` | `cc-act` | [pdca-loop/pr-brief.md](./pdca-loop/changes/REQ-001-copy-invite-link/handoff/pr-brief.md) or [local-handoff/pr-brief.md](./local-handoff/changes/REQ-003-audit-log-export/handoff/pr-brief.md) |
 
 ### Read `report-card.json` Like This
 
@@ -83,7 +82,7 @@ Use this when the only thing you know is the file in front of you.
 | `blocked` | `cc-do` | proof or execution prerequisites are missing |
 | `blocked` | `cc-plan` | design or scope truth is broken; do not keep coding blindly |
 
-### Read `resume-index.md` Like This
+### Read `pr-brief.md#Resume Entry` Like This
 
 Ask only:
 
@@ -120,7 +119,7 @@ If both are true, you are usually in `cc-act` local handoff territory, not back 
 
 - Do not jump from `tasks.md` straight to `cc-act`
 - Do not treat green tests as stronger than a `report-card.json` reroute
-- Do not treat `resume-index.md` as proof that planning failed; it may simply mean local handoff
+- Do not treat `pr-brief.md#Resume Entry` as proof that planning failed; it may simply mean local handoff
 
 ## One-Minute Rule
 

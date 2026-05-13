@@ -4,7 +4,7 @@
 
 - Example version: `1.0.0`
 - Last reviewed: `2026-04-17`
-- Bound skills: `cc-roadmap@5.3.0`, `cc-plan@3.9.4`, `cc-do@1.6.9`, `cc-check@1.11.4`, `cc-act@1.8.10`
+- Bound skills: `cc-roadmap@5.3.0`, `cc-plan@3.9.4`, `cc-do@1.6.9`, `cc-check@1.11.4`, `cc-act@1.8.11`
 
 This folder shows one minimal but complete `cc-roadmap -> cc-plan -> cc-do -> cc-check -> cc-act` loop.
 
@@ -13,7 +13,7 @@ The example is intentionally small:
 - product context is fake
 - requirement scope is real enough to feel concrete
 - the chosen ship mode is `create-pr`
-- optional artifacts such as `release-note.md` are intentionally omitted when the mode does not require them
+- release notes and resume entry are sections inside `pr-brief.md`, not parallel handoff files
 
 ## Scenario
 
@@ -36,7 +36,7 @@ The sample requirement is:
 - `changes/REQ-001-copy-invite-link/review/report-card.json`: `cc-check` proof and verdict
 - `changes/REQ-001-copy-invite-link/handoff/pr-brief.md`: ship-ready PR handoff
 
-## Why There Is No `release-note.md`
+## Why There Are No Split Handoff Files
 
 This sample chooses `create-pr`.
 
@@ -45,7 +45,7 @@ That mode needs:
 - `pr-brief.md`
 - synced docs if behavior changed
 
-It does **not** need a public release note yet, so the example intentionally stops there.
+It does **not** generate separate `release-note.md` or `resume-index.md`; those facts belong in `pr-brief.md`.
 
 ## What To Look For
 
@@ -55,4 +55,4 @@ When reading the sample, check whether you can answer these in under a minute:
 2. Why does the requirement stay `tiny-design` instead of `full-design`?
 3. Which task proved the missing behavior first?
 4. What fresh evidence let `cc-check` say `pass`?
-5. Why does `cc-act` choose `create-pr` and omit `release-note.md`?
+5. Why does `cc-act` choose `create-pr` and keep all handoff facts in `pr-brief.md`?
