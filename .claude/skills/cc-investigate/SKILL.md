@@ -15,6 +15,7 @@ reads:
   - docs/guides/project-postmortem.md
   - assets/TASKS_TEMPLATE.md
   - ../cc-dev/scripts/resolve-cc-devflow.sh
+  - ../cc-dev/scripts/ensure-work-branch.sh
   - ../cc-roadmap/scripts/locate-roadmap-item.sh
   - ../cc-roadmap/scripts/sync-roadmap-progress.sh
 writes:
@@ -74,12 +75,13 @@ NO REPAIR WITHOUT A FROZEN ROOT-CAUSE CONTRACT
 ## Investigation Loop
 
 1. Classify：复现优先、diff trace、boundary probe、flaky、performance、workflow forensics 或 diagnose-only。
-2. Reproduce：用测试、脚本、日志、浏览器路径或最小 harness 证明同一个症状。
-3. Trace：找到 first bad state，而不是只给 symptom guard。
-4. Hypothesize：列候选，写证伪方法，逐个打掉。
-5. Prove：完成 Root Cause Proof Ladder。
-6. Freeze：把根因、修复边界、测试 seam、allowed/forbidden files 写进 `task.md`。
-7. Commit：提交 Investigate 阶段，再交给 `cc-do`。
+2. Anchor：分配 FIX change key 后运行 `../cc-dev/scripts/ensure-work-branch.sh --change-key <FIX-...>`，必须得到 exact-case `FIX/...` 分支；大小写碰撞或 default branch 都是 setup blocker。
+3. Reproduce：用测试、脚本、日志、浏览器路径或最小 harness 证明同一个症状。
+4. Trace：找到 first bad state，而不是只给 symptom guard。
+5. Hypothesize：列候选，写证伪方法，逐个打掉。
+6. Prove：完成 Root Cause Proof Ladder。
+7. Freeze：把根因、修复边界、测试 seam、allowed/forbidden files 写进 `task.md`。
+8. Commit：提交 Investigate 阶段，再交给 `cc-do`。
 
 ## Investigation Modes
 

@@ -15,6 +15,7 @@ reads:
   - assets/TASKS_TEMPLATE.md
   - references/planning-contract.md
   - ../cc-dev/scripts/resolve-cc-devflow.sh
+  - ../cc-dev/scripts/ensure-work-branch.sh
   - ../cc-roadmap/scripts/locate-roadmap-item.sh
   - ../cc-roadmap/scripts/sync-roadmap-progress.sh
 writes:
@@ -63,7 +64,7 @@ tool_budget:
 
 1. 先用 resolver 找到当前仓库的 `cc-devflow`，并确认支持 `next-change-key`、`config`。
 2. 用 `next-change-key --prefix REQ|FIX --description "..."` 生成 `changeId` 和完整 `changeKey`，不要手动扫描编号。
-3. 分配 change key 后立刻锚定分支：`REQ-003-copy-link` 对应 `REQ/003-copy-link`，`FIX-014-auth-race` 对应 `FIX/014-auth-race`。当前在 default branch 时停止并报告 setup blocker。
+3. 分配 change key 后立刻运行 `../cc-dev/scripts/ensure-work-branch.sh --change-key <REQ/FIX-...>` 锚定 exact-case 分支：`REQ-003-copy-link` 对应 `REQ/003-copy-link`，`FIX-014-auth-race` 对应 `FIX/014-auth-race`。当前在 default branch 或存在 `REQ/...` / `req/...` 大小写碰撞时停止并报告 setup blocker。
 4. 写 task blocks 前先确认方案。tiny 计划仍要过 planning flow，只是更短。
 5. `task.md` 必须包含 `Contract Summary`、决策问题、planning flow、review gate、任务列表、验证命令、完成证据、禁止重决策事项和阶段 commit 要求。
 6. 完成 Plan 后提交 Git commit。下一阶段从 Git history 和 `task.md` 恢复，不靠过程文件。

@@ -16,6 +16,7 @@ reads:
   - ../cc-check/SKILL.md
   - ../cc-act/SKILL.md
   - scripts/resolve-cc-devflow.sh
+  - scripts/ensure-work-branch.sh
   - devflow/changes/<change-key>/task.md
 writes:
   - path: devflow/changes/<change-key>/task.md
@@ -93,7 +94,7 @@ If route or success criteria are ambiguous, ask one blocking question or stop.
 
 ## Stage Discipline
 
-1. Start a canonical `REQ/*` or `FIX/*` branch once the change key exists.
+1. Start a canonical exact-case `REQ/*` or `FIX/*` branch with `scripts/ensure-work-branch.sh --change-key <REQ/FIX-...>` once the change key exists; case-variant refs are setup blockers.
 2. Plan or Investigate writes `task.md`, then commits.
 3. Do completes each task/environment, updates `task.md`, then commits.
 4. Check reruns fresh evidence, then commits the stage when useful.
