@@ -14,10 +14,12 @@
 2. Git commits record Plan completion; do not create process files beyond `task.md`.
 3. Current branch must bind to the full change key before writing durable output.
 4. The task list must let `cc-do` continue without chat memory.
-5. Ask only decisions that change scope, design, task split, interface, or verification; otherwise choose from repo evidence.
-6. Preserve planning thought inside `task.md#Contract Summary`: requirement reality, system shape, interface/data contract, abstraction boundary, execution architecture, task contract, and final approval.
-7. Non-trivial plans compare `minimal viable` and `ideal architecture`; tiny plans still record why the short path is enough.
-8. User-facing decisions use `D<N>` questions with recommendation, options, impact, and STOP.
+5. Ask only decisions that change product value, product shape, scope, design, task split, interface, or verification; otherwise choose from repo evidence.
+6. Product/creative questions come before engineering questions when worth or shape is unclear.
+7. Preserve planning thought inside `task.md#Contract Summary`: product/creative discovery, requirement reality, system shape, interface/data contract, abstraction boundary, execution architecture, task contract, Second-Move Review, and final approval.
+8. Non-trivial plans complete Second-Move Review: first good move, simpler move, better architecture, selected move, and rejected tradeoff. Tiny plans still record why the short path is enough.
+9. Non-trivial plans use at least two confirmation rounds unless source evidence already answers one: product/creative confirmation, then engineering/task confirmation.
+10. User-facing decisions use `D<N>` questions with recommendation, options, impact, and STOP.
 
 ## Required Task Fields
 
@@ -37,10 +39,11 @@ Each task block includes:
 `task.md#Contract Summary` includes:
 
 - Source handoff and repo evidence
+- Product/creative discovery: worth doing, desired product shape, narrowest wedge, 10x/better version, do-nothing consequence
 - Requirement reality
 - Decision questions and answers
 - Planning flow table
-- Minimal viable / ideal architecture comparison when non-trivial
+- Second-Move Review when non-trivial
 - Approved direction and non-goals
 - User stories and edge stories
 - Engineering review gate

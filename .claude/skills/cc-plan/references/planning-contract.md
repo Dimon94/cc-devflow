@@ -13,24 +13,29 @@
 9. Placeholder tasks are invalid.
 10. Behavior work uses tracer bullets and TDD unless an exception is recorded.
 11. Roadmap sync, when needed, happens through roadmap files and Git commit, not change metadata.
+12. Non-trivial plans complete Second-Move Review before approval; the first workable plan is not frozen until a simpler move and a better-architecture move have both been considered.
+13. Non-trivial plans complete product/creative discovery before engineering design; if worth, shape, wedge, or 10x/better version is unclear, ask product questions before implementation questions.
+14. Product/creative confirmation and engineering confirmation are separate rounds unless roadmap/spec evidence already answers one of them and `task.md` records the skip reason.
 
 ## Planning Flow
 
 Every non-trivial plan confirms these rounds before task generation:
 
-1. Requirement Reality: real user/operator, workaround, painful failure, smallest success signal, non-goals.
-2. System Shape: existing code path, module owner, state/data flow, reuse point, boundary systems.
-3. Interface/Data Contract: public seam, caller, input/output, fields, error shape, permission/boundary.
-4. Abstraction Boundary: where complexity lives, rejected abstractions, public/private method split.
-5. Execution Architecture: foundation/core/integration/polish decisions, file responsibility, failure recovery.
-6. Task Contract: tracer bullets, Red test names, public seams, Green minimality, refactor candidates.
-7. Final Approval: approved option and task contract summary.
+1. Product/Creative Discovery: worth doing, desired product shape, narrowest wedge, 10x/better version, do-nothing consequence.
+2. Requirement Reality: real user/operator, workaround, painful failure, smallest success signal, non-goals.
+3. System Shape: existing code path, module owner, state/data flow, reuse point, boundary systems.
+4. Interface/Data Contract: public seam, caller, input/output, fields, error shape, permission/boundary.
+5. Abstraction Boundary: where complexity lives, rejected abstractions, public/private method split.
+6. Execution Architecture: foundation/core/integration/polish decisions, file responsibility, failure recovery.
+7. Task Contract: tracer bullets, Red test names, public seams, Green minimality, refactor candidates.
+8. Second-Move Review: first good move, simpler move, better architecture, selected move, and rejected tradeoff.
+9. Final Approval: approved option and task contract summary.
 
 Tiny plans may compress a round to one evidence-backed line. Full designs must preserve enough detail that `cc-do` does not invent architecture, fields, interfaces, or tests.
 
 ## Decision Questions
 
-Ask only when the answer changes scope, design, task split, interface, or verification. Use `D<N>` with known evidence, recommendation, 2-3 mutually exclusive options, impact, and a stop point. Record the answer in `task.md#Contract Summary`.
+Ask only when the answer changes product value, product shape, scope, design, task split, interface, or verification. Before asking, run Second-Move Review on the question itself: can repo evidence answer it, is it too implementation-shaped for the user, and would a better question freeze more downstream decisions? Product/creative questions come before engineering questions when worth or shape is unclear. Use `D<N>` with known evidence, recommendation, 2-3 mutually exclusive options, impact, and a stop point. Record the answer in `task.md#Contract Summary`.
 
 ## Required Task Fields
 
@@ -47,4 +52,4 @@ Ask only when the answer changes scope, design, task split, interface, or verifi
 
 ## Review Gate
 
-Before exit, check scope, existing leverage, option role, domain language, interface depth, test seam, mock boundary, feedback loop, and failure modes. If the plan is not executable from `task.md`, it is not done.
+Before exit, check product/creative discovery, scope, existing leverage, Second-Move Review, domain language, interface depth, test seam, mock boundary, feedback loop, and failure modes. If the plan is not executable from `task.md`, it is not done.

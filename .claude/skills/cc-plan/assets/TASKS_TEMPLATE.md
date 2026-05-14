@@ -26,6 +26,14 @@ Source Handoff:
 - Existing leverage:
 - Canonical language:
 
+Product / Creative Discovery:
+- Worth doing because:
+- Desired product shape:
+- Narrowest wedge:
+- 10x / better version:
+- Do-nothing consequence:
+- Product confirmation rounds:
+
 Requirement Reality:
 - User / operator:
 - Status quo workaround:
@@ -41,19 +49,22 @@ Decision Questions:
 Planning Flow:
 | Round | Status | Evidence / decision | Opens task? |
 |-------|--------|---------------------|-------------|
+| Product / Creative Discovery | confirmed |  |  |
 | Requirement Reality | confirmed |  |  |
 | System Shape | confirmed |  |  |
 | Interface / Data Contract | confirmed |  |  |
 | Abstraction Boundary | confirmed |  |  |
 | Execution Architecture | confirmed |  |  |
 | Task Contract | confirmed |  |  |
+| Second-Move Review | confirmed |  |  |
 | Final Approval | confirmed |  | yes |
 
-Options:
-- Minimal viable:
-- Ideal architecture:
-- Recommended:
-- Why not the other option:
+Second-Move Review:
+- First good move:
+- Simpler move:
+- Better architecture:
+- Selected move:
+- Rejected tradeoff:
 
 Approved Direction:
 -

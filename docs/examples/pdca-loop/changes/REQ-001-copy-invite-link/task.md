@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-001.v1`
 - Design version: `design.v1`
-- CC-Plan skill version: `3.10.2`
+- CC-Plan skill version: `3.10.4`
 - Work branch: `REQ/001-copy-invite-link`
 - Source roadmap item: `RM-001`
 - Source roadmap version: `roadmap.v1`
@@ -25,6 +25,18 @@
   - Testing decisions: test through share dialog behavior
   - Out of scope: invite generation, role controls, analytics, clipboard fallback redesign
 - AI Leverage Decision Lens: boil-lake; complete the bounded same-dialog copy lake instead of stopping at a happy-path button
+- Product / Creative Discovery:
+  - Worth doing: users already have an invite URL but must manually select and copy it.
+  - Desired product shape: one click in the existing dialog, then visible copied confirmation.
+  - Narrowest wedge: copy the currently visible invite URL only.
+  - 10x / better version: richer share workflow with fallback feedback and analytics, deferred outside this requirement.
+  - Do-nothing consequence: users keep making copy mistakes in the most common sharing path.
+- Second-Move Review:
+  - First good move: add a copy button beside the invite URL.
+  - Simpler move: expose only a browser copy action and keep all share-service contracts unchanged.
+  - Better architecture: centralize all share actions behind a richer share command model later.
+  - Selected move: same-dialog copy action with minimal copied-state confirmation.
+  - Rejected tradeoff: no broader share-service redesign in this bounded requirement.
 - Read first:
   - `design.md`
   - `src/features/share/ShareDialog.tsx`

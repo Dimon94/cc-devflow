@@ -1,5 +1,13 @@
 # CC-Plan Skill Changelog
 
+## v3.10.4 - 2026-05-14
+
+- require product discovery before engineering planning
+
+## v3.10.3 - 2026-05-14
+
+- add Second-Move Review before plan approval
+
 ## v3.10.2 - 2026-05-14
 
 - restore the planning flow that was over-pruned during artifact minimization: requirement reality, system shape, interface/data contract, abstraction boundary, execution architecture, task contract, and final approval

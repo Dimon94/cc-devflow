@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-003.v1`
 - Design version: `design.v1`
-- CC-Plan skill version: `3.10.2`
+- CC-Plan skill version: `3.10.4`
 - Work branch: `REQ/003-audit-log-export`
 - Source roadmap item: `RM-020`
 - Source roadmap version: `roadmap.v3`
@@ -24,6 +24,18 @@
   - Testing decisions: test through admin panel action and visible row data
   - Out of scope: JSON export, scheduled reporting, shared reporting backend
 - AI Leverage Decision Lens: boil-lake; complete visible-row CSV export while keeping reporting-platform work outside the lake
+- Product / Creative Discovery:
+  - Worth doing: admins already copy audit summaries into weekly reports by hand.
+  - Desired product shape: download the same visible rows they are reviewing, without a reporting setup flow.
+  - Narrowest wedge: CSV export for currently visible summary rows.
+  - 10x / better version: scheduled reporting and shared report history, deferred outside this requirement.
+  - Do-nothing consequence: weekly reporting stays manual and easy to miscopy.
+- Second-Move Review:
+  - First good move: add a download action to the audit summary panel.
+  - Simpler move: export only visible rows in CSV and avoid backend report storage.
+  - Better architecture: later introduce a reporting backend for scheduled exports.
+  - Selected move: visible-row CSV download from the existing panel.
+  - Rejected tradeoff: no JSON export, scheduling, or shared reporting backend here.
 - Read first:
   - `design.md`
   - `src/admin/AuditSummaryPanel.tsx`

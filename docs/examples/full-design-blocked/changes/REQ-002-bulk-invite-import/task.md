@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-002.v2`
 - Design version: `design.v2`
-- CC-Plan skill version: `3.10.2`
+- CC-Plan skill version: `3.10.4`
 - Work branch: `REQ/002-bulk-invite-import`
 - Source roadmap item: `RM-010`
 - Source roadmap version: `roadmap.v2`
@@ -24,6 +24,18 @@
   - Testing decisions: test bulk-import rules, admin upload flow, and audit mapping
   - Out of scope: SCIM provisioning, background jobs, rollback wizard
 - AI Leverage Decision Lens: sharp-wedge; AI can implement this bounded import path fast, but cc-check may still block final proof if row semantics drift
+- Product / Creative Discovery:
+  - Worth doing: admins cannot trust bulk invite outcomes when duplicates, invalid rows, and seat limits mix together.
+  - Desired product shape: every uploaded row gets a predictable visible result before downstream audit behavior matters.
+  - Narrowest wedge: deterministic row classification for the known CSV invite path.
+  - 10x / better version: full provisioning workflow with retry, rollback, and background processing, deferred outside this requirement.
+  - Do-nothing consequence: admins keep reconciling failed imports manually and audit logs remain hard to trust.
+- Second-Move Review:
+  - First good move: implement mixed CSV result rendering directly in the admin panel.
+  - Simpler move: freeze the row-outcome matrix first and reuse the existing invite engine.
+  - Better architecture: later move bulk provisioning into a job-backed import workflow.
+  - Selected move: row classification first, then admin surface and audit mapping.
+  - Rejected tradeoff: no SCIM, background jobs, or rollback wizard in this requirement.
 - Read first:
   - `design.md`
   - `src/admin/BulkInvitePanel.tsx`

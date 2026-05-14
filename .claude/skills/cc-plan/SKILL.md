@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.10.2
+version: 3.10.4
 description: Use when a requirement, roadmap item, or bug needs scope clarification, design decisions, and executable task breakdown before coding starts.
 triggers:
   - 帮我规划这个需求
@@ -29,12 +29,13 @@ entry_gate:
   - Assign a canonical REQ/FIX change key through `next-change-key` before writing `task.md`.
   - Enforce the Worktree Branch Contract immediately after the change key exists.
   - Read repo evidence before asking the user: roadmap handoff, specs, relevant code/tests/docs, recent commits, and existing task truth when present.
-  - Run the planning flow before task generation: requirement reality, system shape, interface/data contract, abstraction boundary, execution architecture, task contract, and final approval.
+  - Run the planning flow before task generation: product/creative discovery, requirement reality, system shape, interface/data contract, abstraction boundary, execution architecture, task contract, Second-Move Review, and final approval.
   - Ask with the Decision Question Protocol when the answer changes scope, design, implementation boundary, or verification.
 exit_criteria:
   - "`task.md#Contract Summary` states the approved solution, non-goals, frozen decisions, work branch, user stories, decision questions, planning-flow results, review gate, verification expectations, and open assumptions."
   - "`task.md` contains executable task blocks generated from `assets/TASKS_TEMPLATE.md`."
-  - "Non-trivial plans compare `minimal viable` and `ideal architecture` before approval."
+  - "Non-trivial plans complete product/creative discovery before engineering design: worth doing, desired product shape, narrowest wedge, 10x/better version, and do-nothing consequence."
+  - "Non-trivial plans complete Second-Move Review before approval: first good move, simpler move, better architecture, selected move, and rejected tradeoff."
   - "User decisions that changed the plan were asked as D<N> questions and recorded in `task.md`."
   - "No process file is created beyond `task.md`."
   - "Source roadmap progress is synced or explicitly skipped in the final response."
@@ -76,7 +77,9 @@ bash "$DEVFLOW" config resolve --format policy
 
 - 用最小可逆方案解决真实需求，不扩张到假想未来。
 - 缺证据就写 assumption，不伪装成事实。
-- 非 trivial 方案比较 `minimal viable` 和 `ideal architecture`，但推荐必须落到当前仓库可执行边界。
+- 工程计划前先做产品/创意确认：这个问题值不值得做，用户想得到什么体验，最窄可交付楔子是什么，10x / better version 是什么，不做会损失什么。
+- 非 trivial 计划至少经过两轮用户确认：先确认产品价值和形态，再确认工程方案和任务合同；只有 roadmap / spec 已经给出等价证据时才能记录 skip reason。
+- 第一手好方案不能直接冻结；非 trivial 计划必须过 Second-Move Review：先写 first good move，再找 simpler move 和 better architecture，最后选择一个当前可执行的 move。
 - 计划先做上下文和设计判断，再拆 task；不能把架构、接口、字段、测试缝隙留给 `cc-do` 猜。
 - 用户视角必须清楚：真实用户 / operator、status quo、最痛失败场景、最小成功信号和非目标。
 - 行为变更任务按 tracer bullet 写：`[TEST] -> [IMPL] -> [REFACTOR]`，不要水平切层。
@@ -87,19 +90,23 @@ bash "$DEVFLOW" config resolve --format policy
 
 先把调查和引导结果写进 `task.md#Contract Summary`，再生成任务。不要把这些内容拆成其它过程文件。
 
-1. Requirement Reality：确认真实用户 / operator、当前 workaround、最痛失败场景、最小成功信号、非目标。
-2. System Shape：确认现有代码链路、模块归属、状态 / 数据流、复用点、边界外系统和必须保留的不变量。
-3. Interface / Data Contract：确认 public interface、调用方、输入输出、关键字段、错误形态、权限 / 边界和命名来源。
-4. Abstraction Boundary：确认复杂度藏在哪个模块，哪些抽象被拒绝，哪些公共方法必须保持小而深。
-5. Execution Architecture：确认 foundation、core logic、integration、polish/tests 阶段的冻结决策、文件职责、耦合风险和失败恢复。
-6. Task Contract：确认每条 tracer bullet 的 user / edge story、Red test name、public seam、Green minimality guard、refactor candidates 和 2-5 分钟任务粒度。
-7. Final Approval：展示冻结方案和任务合同摘要；用户批准前不生成执行 task blocks。
+1. Product / Creative Discovery：确认这个问题值不值得做、目标体验、最窄楔子、10x / better version、do-nothing consequence；证据不足时先问用户，不先谈实现。
+2. Requirement Reality：确认真实用户 / operator、当前 workaround、最痛失败场景、最小成功信号、非目标。
+3. System Shape：确认现有代码链路、模块归属、状态 / 数据流、复用点、边界外系统和必须保留的不变量。
+4. Interface / Data Contract：确认 public interface、调用方、输入输出、关键字段、错误形态、权限 / 边界和命名来源。
+5. Abstraction Boundary：确认复杂度藏在哪个模块，哪些抽象被拒绝，哪些公共方法必须保持小而深。
+6. Execution Architecture：确认 foundation、core logic、integration、polish/tests 阶段的冻结决策、文件职责、耦合风险和失败恢复。
+7. Task Contract：确认每条 tracer bullet 的 user / edge story、Red test name、public seam、Green minimality guard、refactor candidates 和 2-5 分钟任务粒度。
+8. Second-Move Review：记录 first good move、simpler move、better architecture、selected move 和 rejected tradeoff；tiny 计划可压成一句，非 trivial 计划必须说明为什么没有选择另一个好走法。
+9. Final Approval：展示冻结方案和任务合同摘要；用户批准前不生成执行 task blocks。
 
-`tiny-design` 可以把每轮压成一句话；`full-design` 必须保留足够证据让执行者不二次设计。任一轮 `blocked` 时，只能问一个 blocking question、拆回 roadmap / 多个 REQ/FIX，或记录用户明确接受的人工边界。
+`tiny-design` 可以把每轮压成一句话；`full-design` 必须保留足够证据让执行者不二次设计。任一轮 `blocked` 时，只能问一个 blocking question、拆回 roadmap / 多个 REQ/FIX，或记录用户明确接受的人工边界。非 trivial 计划的产品/创意确认和工程方案确认必须分成至少两次确认，不能一次性把所有问题塞给用户。
 
 ## Decision Question Protocol
 
 只在答案会改变范围、方案、接口、任务切分或验证口径时提问。能从 repo evidence、roadmap、spec、测试或 git history 确认的，不问用户。
+提问前先做一次 Second-Move Review：这个问题是否能由 repo evidence 回答，是否把用户拉进实现细节，是否有更高质量的问题能一次冻结更多下游决策。
+产品/创意问题优先于工程问题。若“值不值得做”或“做成什么样”仍不清楚，只问产品/创意层 D<N>；不要提前问文件、接口、字段、测试实现。
 
 固定格式：
 
@@ -131,7 +138,7 @@ STOP: wait for the user answer before continuing.
 
 1. Existing leverage map：每个子问题先映射到现有代码、脚本、spec、模板或测试。
 2. Scope challenge：超过 8 个文件、2 个新 service/class、或跨模块连锁时，说明为什么不是过度设计。
-3. Option role check：非 trivial 方案比较 `minimal viable`、`ideal architecture`，必要时加 `hybrid`。
+3. Second-Move Review：非 trivial 方案必须比较 first good move、simpler move、better architecture，并说明 selected move 与 rejected tradeoff。
 4. Domain language check：核心名词、文件名、测试名、任务标题对齐项目真相；没有来源就写 assumption。
 5. Interface depth check：公共面小而深，复杂度藏进模块内部，边界 adapter 是具体操作而不是 generic catch-all。
 6. Test seam check：Red 任务从公共接口、调用方流程或用户可见路径证明行为；不要测私有实现细节。
