@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.15] - 2026-05-14
+
+### Added
+
+- Added Product / Creative Discovery and Second-Move Review gates to `cc-plan` so non-trivial plans confirm product value and shape before engineering details.
+- Updated `cc-plan` task templates, planning contract, playbook, and examples with durable slots for product shape, narrowest wedge, better-version thinking, and question-quality review.
+
 ### Removed
 
 - Removed the `cc-devflow query` runtime surface and the `workflow-context` query.
