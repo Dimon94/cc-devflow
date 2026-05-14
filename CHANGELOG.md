@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.14] - 2026-05-14
+
+### Changed
+
+- Removed legacy process JSON and report-card assumptions from the public workflow contracts.
+- Restored the artifact-light `cc-plan` planning dialogue flow inside `task.md` contracts.
+- Restored `cc-investigate` root-cause proof, hypothesis, reroute, and feedback-loop guidance without bringing back separate analysis artifacts.
+- Restored `cc-do` TDD execution discipline and `cc-check` fresh-evidence verification flow while keeping durable truth limited to `task.md`, Git, PR briefs, and postmortems.
+- Restored `cc-review` node-by-node review, risk lanes, finding aggregation, and decision-question flow while routing plan findings into `task.md` and implementation findings through user-selected repair options.
+
 ## [4.5.13] - 2026-05-13
 
 ### Changed
