@@ -25,7 +25,7 @@ effects:
   - roadmap progress sync when a source item exists
   - Git commit after the Plan stage is complete
 entry_gate:
-  - Resolve the CLI with `../cc-dev/scripts/resolve-cc-devflow.sh require query workflow-context next-change-key config` before workflow commands.
+  - Resolve the CLI with `../cc-dev/scripts/resolve-cc-devflow.sh require next-change-key config` before workflow commands.
   - Assign a canonical REQ/FIX change key through `next-change-key` before writing `task.md`.
   - Enforce the Worktree Branch Contract immediately after the change key exists.
   - Read repo evidence before asking the user: roadmap handoff, specs, relevant code/tests/docs, recent commits, and existing task truth when present.
@@ -60,7 +60,7 @@ tool_budget:
 
 ## Operating Contract
 
-1. 先用 resolver 找到当前仓库的 `cc-devflow`，并确认支持 `query workflow-context`、`next-change-key`、`config`。
+1. 先用 resolver 找到当前仓库的 `cc-devflow`，并确认支持 `next-change-key`、`config`。
 2. 用 `next-change-key --prefix REQ|FIX --description "..."` 生成 `changeId` 和完整 `changeKey`，不要手动扫描编号。
 3. 分配 change key 后立刻锚定分支：`REQ-003-copy-link` 对应 `REQ/003-copy-link`，`FIX-014-auth-race` 对应 `FIX/014-auth-race`。当前在 default branch 时停止并报告 setup blocker。
 4. 写 task blocks 前先确认方案。tiny 计划仍要过 planning flow，只是更短。

@@ -24,13 +24,35 @@ describe('validate-publish', () => {
     expect(pkg.scripts).not.toHaveProperty(['benchmark', 'workflow-context'].join(':'));
   });
 
-  test('CLI only exposes workflow-context as a runtime query', () => {
-    const result = spawnSync(process.execPath, ['bin/cc-devflow-cli.js', 'query', 'list'], {
+  test('CLI no longer exposes runtime queries', () => {
+    const result = spawnSync(process.execPath, ['bin/cc-devflow-cli.js', '--help'], {
       cwd: ROOT,
       encoding: 'utf8'
     });
 
     expect(result.status).toBe(0);
-    expect(result.stdout.trim()).toBe('workflow-context');
+    expect(result.stdout).not.toContain('query ');
+  });
+
+  test('retired query command fails closed instead of using adapter fallback', () => {
+    const result = spawnSync(process.execPath, ['bin/cc-devflow-cli.js', 'query', 'list'], {
+      cwd: ROOT,
+      encoding: 'utf8'
+    });
+
+    expect(result.status).toBe(3);
+    expect(result.stderr).toContain('cc-devflow query has been removed');
+    expect(result.stderr).not.toContain('Codex executed');
+  });
+
+  test('top-level options fail closed instead of using adapter fallback', () => {
+    const result = spawnSync(process.execPath, ['bin/cc-devflow-cli.js', '--cwd', ROOT], {
+      cwd: ROOT,
+      encoding: 'utf8'
+    });
+
+    expect(result.status).toBe(3);
+    expect(result.stderr).toContain('Unknown top-level option: --cwd');
+    expect(result.stderr).not.toContain('Codex executed');
   });
 });

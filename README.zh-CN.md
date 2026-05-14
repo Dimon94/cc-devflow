@@ -118,7 +118,7 @@ Canonical language 和 durable decisions 只收敛到 cc-devflow 原生真相源
 
 `cc-plan` 会在 `cc-do` 开始前冻结更多实现决策。非 trivial 计划需要比较 minimal viable 和 ideal architecture，full-design 需要包含 implementation decision horizon 和 error/rescue map；测试计划要记录测试框架证据、public test seam、spec-style test name、public verification path、behavior assertion、mock boundary、覆盖质量、强制 regression test、interface depth、Green minimality guard、refactor candidates 和 vertical tracer-bullet slices。交接前，`cc-plan` 和 `cc-investigate` 还会校准 source roadmap item，让 RM 状态、REQ/FIX 绑定、progress 和 spec diagnosis 不再漂移。
 
-planning 之后的每个阶段都可以先运行 `cc-devflow query workflow-context --change <id> --change-key <key> --data-only --no-trace --compact`。把结果当成 context index，而不是语义压缩：它从 `task.md`、Git history 和 PR/handoff truth 路由下一阶段；有争议的事实仍由源 artifact 裁决。用 `npm run benchmark:skills` 保持 public skill 入口足够薄；深层规划规则应该放在条件 reference 后面，而不是默认上下文里。
+planning 之后的每个阶段都从 `task.md`、当前 Git history/status，以及存在时的 PR 或 handoff truth 开始。系统不再提供 runtime context query 层；有争议的事实必须回到源 artifact 重新读取。用 `npm run benchmark:skills` 保持 public skill 入口足够薄；深层规划规则应该放在条件 reference 后面，而不是默认上下文里。
 
 `cc-review` 是可选的深度 Review，不替代 `cc-check`。它可以接在 `cc-plan` / `cc-investigate` 后审冻结的计划或根因合同，也可以接在 `cc-do` 后审实现。计划 / 调查 Review 的 finding 直接写进 `task.md`。执行 Review 的 finding 在当前回复里组织成修复选项，用户选择后才改代码。PR Review 只留在对话或 GitHub review 中。不写本地 review report、ledger、findings JSON 或其它 Review 产物文件。
 
@@ -247,14 +247,13 @@ npx cc-devflow config doctor --cwd /path/to/your/project
 - `devflow/changes/<change>/` 的 durable change truth 只保留 `task.md`、可选 `handoff/pr-brief.md` 和 Git commits。真实复发故障可以在 `devflow/postmortems/` 写 incident postmortem。
 - 新 change 默认只有一个人工编写的 Markdown artifact：`task.md`。功能计划把冻结设计写进 `## Contract Summary`；Bug 调查把根因真相写进 `## Root Cause Contract`。历史 planning / review artifacts 只作为可读 fallback 输入。
 - 流程状态归 Git：保持 `task.md` 当前，每个完成阶段 / 执行环境提交 commit，不创建额外过程文件。
-- 用 `cc-devflow query workflow-context`、`npm run verify:examples` 和 `npm run benchmark:skills` 保持 workflow truth 与 skill 入口小而可测。
+- 用 `npm run verify:examples` 和 `npm run benchmark:skills` 保持 workflow truth 与 skill 入口小而可测。
 - `devflow/workspaces/<change>/` 保存 ephemeral runtime scratch，例如 worker assignment、journal、prompt 和 session log。
 - 能从 durable truth 再生成的文件，不应该持久化到 `devflow/changes/`。
 
 Artifact contract 快速检查：
 
 ```bash
-npx cc-devflow query workflow-context --change REQ-001 --change-key REQ-001-copy-invite-link --data-only --no-trace --compact
 npm run verify:examples
 npm run benchmark:skills
 ```

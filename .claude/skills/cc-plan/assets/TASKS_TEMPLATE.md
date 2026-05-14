@@ -84,7 +84,7 @@ Risk / Escalate If:
 
 ClaudeCode / Codex 执行本计划时，必须把 `task.md` 当成唯一任务合同。
 
-- CLI resolver: all workflow commands must run through `.claude/skills/cc-dev/scripts/resolve-cc-devflow.sh` or `.codex/skills/cc-dev/scripts/resolve-cc-devflow.sh`; if it cannot prove `query workflow-context` and `next-change-key`, stop blocked.
+- CLI resolver: all workflow commands must run through `.claude/skills/cc-dev/scripts/resolve-cc-devflow.sh` or `.codex/skills/cc-dev/scripts/resolve-cc-devflow.sh`; if it cannot prove `next-change-key`, stop blocked.
 - Task selection: use `scripts/select-ready-tasks.sh --tasks devflow/changes/<change-key>/task.md`.
 - Completion: after Red/Green/Refactor evidence and review pass, run `scripts/mark-task-complete.sh --tasks devflow/changes/<change-key>/task.md --task <task-id>`.
 - Stage commit rule: when PDCA or IDCA finishes in the current environment, commit the completed stage to Git.
@@ -95,8 +95,7 @@ DEVFLOW=".claude/skills/cc-dev/scripts/resolve-cc-devflow.sh"
 if [[ ! -f "$DEVFLOW" && -f ".codex/skills/cc-dev/scripts/resolve-cc-devflow.sh" ]]; then
   DEVFLOW=".codex/skills/cc-dev/scripts/resolve-cc-devflow.sh"
 fi
-bash "$DEVFLOW" require query workflow-context next-change-key
-bash "$DEVFLOW" query workflow-context --change <changeId> --change-key <changeKey> --cwd <repo-root> --data-only --no-trace --compact
+bash "$DEVFLOW" require next-change-key
 SCRIPT_ROOT=".claude/skills/cc-do/scripts"
 if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then
   SCRIPT_ROOT=".codex/skills/cc-do/scripts"

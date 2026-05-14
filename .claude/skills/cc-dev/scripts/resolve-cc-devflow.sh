@@ -5,7 +5,7 @@ set -euo pipefail
 # cc-devflow CLI resolver
 # ------------------------------------------------------------
 # 只接受能证明自身支持当前 workflow 命令的 CLI。
-# 旧全局包、adapter 模拟输出、缺少 query / next-change-key 的入口必须 fail closed。
+# 旧全局包、adapter 模拟输出、缺少 next-change-key 的入口必须 fail closed。
 
 usage() {
   cat >&2 <<'USAGE'
@@ -14,7 +14,7 @@ Usage:
   resolve-cc-devflow.sh <cc-devflow-command> [args...]
 
 Capabilities:
-  query workflow-context next-change-key config init adapt
+  next-change-key config init adapt
 USAGE
 }
 
@@ -39,13 +39,12 @@ if [[ "${1:-}" == "require" ]]; then
   fi
 else
   COMMAND_ARGS=("$@")
+  if [[ "${COMMAND_ARGS[0]}" == -* ]]; then
+    printf 'Invalid cc-devflow command: %s\n' "${COMMAND_ARGS[0]}" >&2
+    printf 'Use an explicit command such as config, next-change-key, init, or adapt.\n' >&2
+    exit 2
+  fi
   case "${COMMAND_ARGS[0]}" in
-    query)
-      REQUIRED=("query")
-      if [[ "${COMMAND_ARGS[1]:-}" == "workflow-context" ]]; then
-        REQUIRED+=("workflow-context")
-      fi
-      ;;
     next-change-key|config|init|adapt)
       REQUIRED=("${COMMAND_ARGS[0]}")
       ;;
@@ -65,29 +64,12 @@ candidate_supports() {
   local label="$1"
   shift
   local help_output
-  local query_output
-  local probe_dir
-  local probe_output
 
   help_output="$("$@" --help 2>&1)" || return 1
 
   for capability in "${REQUIRED[@]}"; do
     case "$capability" in
-      workflow-context)
-        query_output="$("$@" query list 2>&1)" || return 1
-        grep -Fq 'workflow-context' <<<"$query_output" || return 1
-        probe_dir="$(mktemp -d 2>/dev/null || mktemp -d -t cc-devflow-probe)"
-        if probe_output="$("$@" query workflow-context --cwd "$probe_dir" --change REQ-000 --no-trace --compact 2>&1)"; then
-          rm -rf "$probe_dir"
-          return 1
-        fi
-        rm -rf "$probe_dir"
-        grep -Fq 'task.md' <<<"$probe_output" || return 1
-        if grep -Eq 'task-manifest|change-meta|planning/' <<<"$probe_output"; then
-          return 1
-        fi
-        ;;
-      query|next-change-key|config|init|adapt)
+      next-change-key|config|init|adapt)
         contains_word "$help_output" "$capability" || return 1
         ;;
       *)

@@ -37,7 +37,7 @@ effects:
   - optional push or PR creation
   - archive completed change after merge when requested
 entry_gate:
-  - "Resolve the CLI with `../cc-dev/scripts/resolve-cc-devflow.sh require query workflow-context config`."
+  - "Resolve the CLI with `../cc-dev/scripts/resolve-cc-devflow.sh require config`."
   - "Read `task.md`, Git status, latest commits, validation evidence, and current PR state when relevant."
   - "If verification changed during Act, return to `cc-check`."
   - "Pick one mode: `create-pr`, `update-pr`, `local-handoff`, or `post-merge-closeout`."

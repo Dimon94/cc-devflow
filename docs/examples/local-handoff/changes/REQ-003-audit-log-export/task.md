@@ -42,8 +42,8 @@
 ClaudeCode / Codex 执行本计划时，必须把本文件当成任务模板合同，而不是普通 TODO 列表。
 
 - Template source: `assets/TASKS_TEMPLATE.md`
-- CLI resolver: all workflow commands must run through `.claude/skills/cc-dev/scripts/resolve-cc-devflow.sh` or `.codex/skills/cc-dev/scripts/resolve-cc-devflow.sh`; if it cannot prove `query workflow-context` and `next-change-key`, stop blocked.
-- Context first: run resolved CLI `query workflow-context --change <changeId> --change-key <changeKey> --cwd <repo-root> --data-only --no-trace --compact` before opening deep sections.
+- CLI resolver: all workflow commands must run through `.claude/skills/cc-dev/scripts/resolve-cc-devflow.sh` or `.codex/skills/cc-dev/scripts/resolve-cc-devflow.sh`; if it cannot prove `next-change-key`, stop blocked.
+- Context first: read this `task.md`, current Git status/history, and PR or handoff truth when present before opening deep sections.
 - Task selection: use `scripts/select-ready-tasks.sh --tasks devflow/changes/<change-key>/task.md`.
 - Task block rule: read the full task block before coding; title-only execution is invalid.
 - Completion rule: after verification and review gates pass, run `scripts/mark-task-complete.sh --tasks devflow/changes/<change-key>/task.md --task <task-id>`.
@@ -54,8 +54,8 @@ DEVFLOW=".claude/skills/cc-dev/scripts/resolve-cc-devflow.sh"
 if [[ ! -f "$DEVFLOW" && -f ".codex/skills/cc-dev/scripts/resolve-cc-devflow.sh" ]]; then
   DEVFLOW=".codex/skills/cc-dev/scripts/resolve-cc-devflow.sh"
 fi
-bash "$DEVFLOW" require query workflow-context next-change-key
-bash "$DEVFLOW" query workflow-context --change <changeId> --change-key <changeKey> --cwd <repo-root> --data-only --no-trace --compactSCRIPT_ROOT=".claude/skills/cc-do/scripts"
+bash "$DEVFLOW" require next-change-key
+SCRIPT_ROOT=".claude/skills/cc-do/scripts"
 if [[ ! -d "$SCRIPT_ROOT" && -d ".codex/skills/cc-do/scripts" ]]; then
   SCRIPT_ROOT=".codex/skills/cc-do/scripts"
 fi

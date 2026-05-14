@@ -25,7 +25,7 @@ effects:
   - roadmap progress sync when a source item exists
   - Git commit after the Investigate stage is complete
 entry_gate:
-  - Resolve the CLI with `../cc-dev/scripts/resolve-cc-devflow.sh require query workflow-context next-change-key config`.
+  - Resolve the CLI with `../cc-dev/scripts/resolve-cc-devflow.sh require next-change-key config`.
   - Assign a FIX change key through `next-change-key --prefix FIX --description "<short bug name>"`.
   - Enforce the Worktree Branch Contract before writing `task.md`.
   - Reproduce or build the closest honest feedback loop before naming root cause.

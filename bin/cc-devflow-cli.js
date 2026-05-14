@@ -14,10 +14,6 @@ const {
   setConfigValue,
   writeConfigTemplate
 } = require(path.join(PACKAGE_ROOT, 'lib/skill-runtime/config.js'));
-const {
-  listQueryIds,
-  runQuery
-} = require(path.join(PACKAGE_ROOT, 'lib/skill-runtime/query.js'));
 const ADAPT_BIN = path.join(PACKAGE_ROOT, 'bin', 'adapt.js');
 const ADAPTER_BIN = path.join(PACKAGE_ROOT, 'bin', 'cc-devflow.js');
 const TEMPLATE_IGNORES = new Set(['.DS_Store', 'tsc-cache']);
@@ -58,8 +54,6 @@ Commands:
   config set          Set one project/user/local config value
   config resolve      Print resolved YAML config with key-level trace
   config doctor       Validate config and local ignore safety
-  query list          List typed runtime query ids
-  query <id>          Run a typed runtime query as JSON
   next-change-key     Compute the next REQ/FIX change key
   archive-change      Archive a completed change to devflow/changes/archive/YYYY-MM/
   restore-change      Restore an archived change back to devflow/changes/
@@ -89,15 +83,6 @@ Config options:
   --trace              Include key-level source trace with policy output
   --force              Overwrite an existing config template
 
-Query options:
-  --cwd <path>         Project path used for devflow artifact lookup
-  --change <id>        Change id, for example REQ-123
-  --change-id <id>     Alias for --change
-  --change-key <key>   Full change key, for example REQ-123-my-feature
-  --data-only          Print only the query data payload when the query succeeds
-  --no-trace           Omit trace metadata from the JSON output
-  --compact            Print minified JSON instead of pretty JSON
-
 Next-change-key options:
   --prefix <REQ|FIX>   Change type prefix (required)
   --description <text> Short description, will be slugified (required)
@@ -112,8 +97,6 @@ Examples:
   cc-devflow config set output.document_language zh-CN --cwd /path/to/project --project
   cc-devflow config set output.document_language zh-CN --user
   cc-devflow config resolve --cwd /path/to/project --format policy
-  cc-devflow query list
-  cc-devflow query workflow-context --cwd /path/to/project --change REQ-123 --change-key REQ-123-my-feature --data-only --no-trace --compact
 `);
 }
 
@@ -478,82 +461,6 @@ function runConfig(args) {
   return 0;
 }
 
-function parseChangeScopedArgs(args, options = {}) {
-  const { allowQueryFlags = false } = options;
-  const parsed = {
-    cwd: null,
-    changeId: null,
-    changeKey: null,
-    compact: false,
-    dataOnly: false,
-    noTrace: false,
-    rest: []
-  };
-
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-
-    if (arg === '--cwd') { parsed.cwd = args[++i]; continue; }
-    if (arg.startsWith('--cwd=')) { parsed.cwd = arg.slice('--cwd='.length); continue; }
-    if (arg === '--change' || arg === '--change-id') { parsed.changeId = args[++i]; continue; }
-    if (arg.startsWith('--change=')) { parsed.changeId = arg.slice('--change='.length); continue; }
-    if (arg.startsWith('--change-id=')) { parsed.changeId = arg.slice('--change-id='.length); continue; }
-    if (arg === '--change-key') { parsed.changeKey = args[++i]; continue; }
-    if (arg.startsWith('--change-key=')) { parsed.changeKey = arg.slice('--change-key='.length); continue; }
-    if (allowQueryFlags && arg === '--compact') { parsed.compact = true; continue; }
-    if (allowQueryFlags && arg === '--data-only') { parsed.dataOnly = true; continue; }
-    if (allowQueryFlags && arg === '--no-trace') { parsed.noTrace = true; continue; }
-
-    parsed.rest.push(arg);
-  }
-
-  return parsed;
-}
-
-function formatQueryResult(result, options) {
-  let output = result;
-
-  if (options.dataOnly && result.ok) {
-    output = result.data;
-  } else if (options.noTrace && output && typeof output === 'object') {
-    const { trace, ...withoutTrace } = output;
-    output = withoutTrace;
-  }
-
-  return options.compact
-    ? JSON.stringify(output)
-    : JSON.stringify(output, null, 2);
-}
-
-async function runQueryCommand(args) {
-  const [subcommand, ...rest] = args;
-
-  if (!subcommand || subcommand === '--help' || subcommand === '-h') {
-    console.error('Use: cc-devflow query list OR cc-devflow query <id> --change <changeId> [--change-key <key>] [--cwd <path>]');
-    return 3;
-  }
-
-  if (subcommand === 'list') {
-    process.stdout.write(`${listQueryIds().join('\n')}\n`);
-    return 0;
-  }
-
-  const options = parseChangeScopedArgs(rest, { allowQueryFlags: true });
-  if (!options.changeId) {
-    console.error('Query --change is required.');
-    return 3;
-  }
-
-  const result = await runQuery(subcommand, {
-    repoRoot: path.resolve(options.cwd || process.cwd()),
-    changeId: options.changeId,
-    changeKey: options.changeKey
-  });
-
-  process.stdout.write(`${formatQueryResult(result, options)}\n`);
-  return result.ok ? 0 : 2;
-}
-
 function runNextChangeKey(args) {
   const parsed = { prefix: null, description: null, cwd: null };
 
@@ -700,6 +607,12 @@ async function main() {
     return 0;
   }
 
+  if (command.startsWith('-')) {
+    console.error(`Unknown top-level option: ${command}`);
+    console.error('Use: cc-devflow <command> [options]');
+    return 3;
+  }
+
   if (command === 'init') {
     return runInit(rest);
   }
@@ -713,7 +626,8 @@ async function main() {
   }
 
   if (command === 'query') {
-    return runQueryCommand(rest);
+    console.error('cc-devflow query has been removed. Read task.md, Git history/status, and PR or handoff truth directly.');
+    return 3;
   }
 
   if (command === 'next-change-key') {

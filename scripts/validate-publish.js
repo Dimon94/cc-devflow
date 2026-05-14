@@ -198,14 +198,24 @@ function validateCliSurface(errors) {
     }
   }
 
-  const queryList = spawnSync(process.execPath, ['bin/cc-devflow-cli.js', 'query', 'list'], {
+  if (help.stdout.includes('query ')) {
+    errors.push('CLI help exposes retired query command');
+  }
+
+  const query = spawnSync(process.execPath, ['bin/cc-devflow-cli.js', 'query', 'list'], {
     cwd: ROOT,
     encoding: 'utf8'
   });
-  if (queryList.status !== 0) {
-    errors.push(`cc-devflow query list failed: ${queryList.stderr || queryList.stdout}`);
-  } else if (queryList.stdout.trim() !== 'workflow-context') {
-    errors.push(`query list must only expose workflow-context, got: ${queryList.stdout.trim()}`);
+  if (query.status !== 3 || !query.stderr.includes('cc-devflow query has been removed')) {
+    errors.push(`cc-devflow query must fail closed, got status ${query.status}: ${query.stderr || query.stdout}`);
+  }
+
+  const topLevelOption = spawnSync(process.execPath, ['bin/cc-devflow-cli.js', '--cwd', ROOT], {
+    cwd: ROOT,
+    encoding: 'utf8'
+  });
+  if (topLevelOption.status !== 3 || !topLevelOption.stderr.includes('Unknown top-level option: --cwd')) {
+    errors.push(`top-level options must fail closed, got status ${topLevelOption.status}: ${topLevelOption.stderr || topLevelOption.stdout}`);
   }
 }
 

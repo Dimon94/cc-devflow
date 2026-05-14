@@ -25,8 +25,7 @@ effects:
   - test changes
   - Git commit after each completed execution environment or task slice
 entry_gate:
-  - Resolve the CLI with `../cc-dev/scripts/resolve-cc-devflow.sh require query workflow-context config`.
-  - Run `query workflow-context --change <changeId> --change-key <changeKey> --data-only --no-trace --compact`.
+  - Resolve the CLI with `../cc-dev/scripts/resolve-cc-devflow.sh require config`.
   - Read `task.md`, current Git status, and only the code/tests needed by the current task.
   - Reject execution if the task cannot be restated from `task.md` and repo evidence.
   - Validate the task's execution shape before coding: Red test name, one observable behavior, public verification path, allowed boundary mocks, Green minimality guard, and refactor candidates.

@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- Removed the `cc-devflow query` runtime surface and the `workflow-context` query.
+- Removed workflow-context stage-transition requirements from distributed skills; stages now start from `task.md`, Git, and PR or handoff reality.
+
 ## [4.5.14] - 2026-05-14
 
 ### Changed

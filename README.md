@@ -118,7 +118,7 @@ Canonical language and durable decisions stay inside cc-devflow-native sources: 
 
 `cc-plan` freezes more implementation decisions before `cc-do` starts. Non-trivial plans compare minimal viable and ideal architecture options, full designs include decision horizon plus error/rescue mapping, and test-first plans record test framework evidence, public test seams, spec-style test names, public verification paths, behavior assertions, mock boundaries, coverage quality, mandatory regression tests, interface depth, Green minimality guards, refactor candidates, and vertical tracer-bullet slices when existing behavior changes. Before handoff, `cc-plan` and `cc-investigate` also reconcile the source roadmap item so RM status, REQ/FIX binding, progress, and spec diagnosis do not drift from the frozen change artifacts.
 
-Every post-planning stage can start from `cc-devflow query workflow-context --change <id> --change-key <key> --data-only --no-trace --compact`. Treat the result as a context index, not semantic compression: it routes the next stage from `task.md`, Git history, and PR/handoff truth. Source artifacts still decide disputed facts. Use `npm run benchmark:skills` to keep public skill entrypoints thin; deeper planning rules should live behind conditional references instead of default context.
+Every post-planning stage starts from `task.md`, current Git history/status, and PR or handoff truth when present. There is no runtime context query layer; disputed facts must be re-read from source artifacts. Use `npm run benchmark:skills` to keep public skill entrypoints thin; deeper planning rules should live behind conditional references instead of default context.
 
 `cc-review` is optional and deeper than `cc-check`. It can run immediately after `cc-plan` / `cc-investigate` to review the frozen plan or root-cause contract, or after `cc-do` to review the implementation. Plan and investigation review findings are written directly into `task.md`. Implementation review findings are returned in the response with repair options; the user chooses the repair path before code is edited. PR reviews stay in the response or GitHub review. No local review report, ledger, findings JSON, or other review output file is written.
 
@@ -247,14 +247,13 @@ The currently distributed skill folders are:
 - `devflow/changes/<change>/` stores durable change truth in `task.md`, optional `handoff/pr-brief.md`, and Git commits. Real recurring failures may also write incident postmortems under `devflow/postmortems/`.
 - New changes default to one human-authored Markdown artifact: `task.md`. Feature plans put the frozen design in `## Contract Summary`; bug investigations put root-cause truth in `## Root Cause Contract`. Legacy planning and review artifacts are readable fallback inputs only.
 - Workflow state is Git-owned: keep `task.md` current, commit each completed stage/environment, and do not create extra process files.
-- Use `cc-devflow query workflow-context`, `npm run verify:examples`, and `npm run benchmark:skills` to keep workflow truth and skill entrypoints small and measurable.
+- Use `npm run verify:examples` and `npm run benchmark:skills` to keep workflow truth and skill entrypoints small and measurable.
 - `devflow/workspaces/<change>/` stores ephemeral runtime scratch such as worker assignment, journals, prompts, and session logs.
 - Regenerable files should not be persisted under `devflow/changes/`.
 
 Artifact contract quick checks:
 
 ```bash
-npx cc-devflow query workflow-context --change REQ-001 --change-key REQ-001-copy-invite-link --data-only --no-trace --compact
 npm run verify:examples
 npm run benchmark:skills
 ```

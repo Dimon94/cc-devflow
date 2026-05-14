@@ -24,7 +24,6 @@ writes:
     required: true
     when: verification completes a PDCA or IDCA environment stage
 entry_gate:
-  - Resolve the CLI with `../cc-dev/scripts/resolve-cc-devflow.sh require query workflow-context` when workflow query is needed; unsupported CLIs are blockers.
   - Read `task.md`, current Git diff, relevant code/tests, PR text when present, and fresh command output.
   - Re-run fresh commands instead of inheriting cc-do narration.
   - Classify the current reality as pass-candidate, fail-candidate, or blocked-candidate before writing a verdict.
