@@ -12,6 +12,16 @@ Usage: prepare-change-worktree.sh --change-key REQ-123-short-name [--base main] 
 EOF
 }
 
+physical_path() {
+  local path_value="$1"
+
+  if [[ -e "$path_value" ]]; then
+    (cd "$path_value" && pwd -P)
+  else
+    printf '%s\n' "$path_value"
+  fi
+}
+
 CHANGE_KEY=""
 BASE_BRANCH=""
 WORKTREES_ROOT=""
@@ -88,7 +98,12 @@ while IFS= read -r line; do
   esac
 done < <(git worktree list --porcelain 2>/dev/null || true)
 
-if [[ -n "$branch_worktree_path" && "$branch_worktree_path" != "$worktree_path" ]]; then
+if [[ -n "$branch_worktree_path" ]]; then
+  branch_worktree_real="$(physical_path "$branch_worktree_path")"
+  expected_worktree_real="$(physical_path "$worktree_path")"
+fi
+
+if [[ -n "$branch_worktree_path" && "$branch_worktree_real" != "$expected_worktree_real" ]]; then
   echo "WorktreePrepareError: branch $target_branch is already used by worktree: $branch_worktree_path" >&2
   echo "Expected worktree path: $worktree_path" >&2
   exit 1
