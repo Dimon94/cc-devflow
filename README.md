@@ -181,7 +181,7 @@ CC-DevFlow reads layered YAML config before durable workflow documents are writt
 <repo>/.cc-devflow/config.local.yml
 ```
 
-Precedence is deterministic: defaults < user < project < local < environment < CLI. `output.document_language` is machine-enforced and currently supports `en` and `zh-CN`. Non-standard preferences belong under `agent_preferences`; they guide style but do not override workflow contracts.
+Precedence is deterministic: defaults < user < project < local < environment < CLI. `output.document_language` is machine-enforced and currently supports `en` and `zh-CN`. It controls durable planning, review, and handoff Markdown headings, prose, placeholders, evidence summaries, and PR/body drafts; code, commands, paths, schema keys, API names, and commit type/scope literals stay unchanged. Non-standard preferences belong under `agent_preferences`; they guide style but do not override workflow contracts.
 
 ```yaml
 version: 1

@@ -181,7 +181,7 @@ CC-DevFlow 会在写入 durable workflow 文档前读取分层 YAML 配置：
 <repo>/.cc-devflow/config.local.yml
 ```
 
-优先级固定为：默认值 < 用户 < 项目 < 本地 < 环境变量 < CLI 参数。`output.document_language` 是机器约束，目前支持 `en` 和 `zh-CN`。非标偏好放在 `agent_preferences` 下，只影响表达风格，不覆盖 workflow 契约。
+优先级固定为：默认值 < 用户 < 项目 < 本地 < 环境变量 < CLI 参数。`output.document_language` 是机器约束，目前支持 `en` 和 `zh-CN`。它约束 durable planning、review、handoff Markdown 的标题、正文、占位符、证据说明和 PR/body 草稿；代码、命令、路径、schema key、API 名、commit type/scope 等机器字面量保持原文。非标偏好放在 `agent_preferences` 下，只影响表达风格，不覆盖 workflow 契约。
 
 ```yaml
 version: 1
