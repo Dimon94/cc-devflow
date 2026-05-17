@@ -12,6 +12,14 @@ const ENSURE_WORK_BRANCH = path.join(
   'scripts',
   'ensure-work-branch.sh'
 );
+const PREPARE_CHANGE_WORKTREE = path.join(
+  ROOT,
+  '.claude',
+  'skills',
+  'cc-dev',
+  'scripts',
+  'prepare-change-worktree.sh'
+);
 
 function run(command, args, cwd) {
   const result = spawnSync(command, args, {
@@ -54,6 +62,34 @@ function createRepo() {
 }
 
 describe('cc-dev work branch anchor', () => {
+  test('creates a change worktree without moving the main checkout', () => {
+    const repoRoot = createRepo();
+    const worktreesRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-dev-worktrees-'));
+
+    const result = run('bash', [
+      PREPARE_CHANGE_WORKTREE,
+      '--change-key',
+      'REQ-003-isolate-main-checkout-with-worktrees',
+      '--worktrees-root',
+      worktreesRoot
+    ], repoRoot);
+
+    const worktreePath = field(result.stdout, 'WORKTREE_PATH');
+
+    expect(field(result.stdout, 'WORK_BRANCH')).toBe(
+      'REQ/003-isolate-main-checkout-with-worktrees'
+    );
+    expect(worktreePath).toBe(path.join(
+      worktreesRoot,
+      'REQ-003-isolate-main-checkout-with-worktrees',
+      path.basename(repoRoot)
+    ));
+    expect(run('git', ['branch', '--show-current'], repoRoot).stdout.trim()).toBe('main');
+    expect(run('git', ['branch', '--show-current'], worktreePath).stdout.trim()).toBe(
+      'REQ/003-isolate-main-checkout-with-worktrees'
+    );
+  });
+
   test('creates an exact-case REQ branch from detached HEAD', () => {
     const repoRoot = createRepo();
     run('git', ['switch', '--detach', 'HEAD'], repoRoot);

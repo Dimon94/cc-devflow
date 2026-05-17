@@ -176,7 +176,7 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --tasks devflow/changes/REQ-003-isolat
 
 ## Phase 1: Worktree Preparation Behavior
 
-- [ ] T001 [TEST] Add failing isolated worktree preparation coverage (dependsOn:none) `test/cc-dev-work-branch.test.js`
+- [x] T001 [TEST] Add failing isolated worktree preparation coverage (dependsOn:none) `test/cc-dev-work-branch.test.js`
   Goal: Prove that starting from `main` creates a sibling worktree on the canonical `REQ/<id>` branch and leaves the original checkout on `main`.
   Contract: user story `US-001`; method/interface `.claude/skills/cc-dev/scripts/prepare-change-worktree.sh --change-key REQ-003-isolate-main-checkout-with-worktrees --worktrees-root <tmpdir>`.
   Do not re-decide: trunk checkout must stay on `main`; branch must be exact-case; output must include `WORKTREE_PATH` and `WORK_BRANCH`.
