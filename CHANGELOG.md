@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _No unreleased changes._
 
+## [4.5.18] - 2026-05-17
+
+### Changed
+
+- Published the mainline release metadata after `4.5.17` was already present on npm, keeping package manifests, changelog, and the release tag aligned to `main`.
+
 ## [4.5.17] - 2026-05-17
 
 ### Added
