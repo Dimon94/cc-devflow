@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+_No unreleased changes._
+
+## [4.5.16] - 2026-05-17
+
 ### Changed
 
 - Updated `cc-plan`, `cc-investigate`, `cc-review`, and `cc-pr-review` to require ASCII branch-chain analysis in their task or review outputs.
