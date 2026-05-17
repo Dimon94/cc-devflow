@@ -1,6 +1,6 @@
 ---
 name: cc-act
-version: 1.9.2
+version: 1.9.3
 description: Use when verified work must be committed, handed off, pushed, or turned into a PR with the smallest durable delivery surface.
 triggers:
   - 准备提 PR
@@ -19,6 +19,7 @@ reads:
   - docs/guides/project-postmortem.md
   - ../cc-dev/scripts/resolve-cc-devflow.sh
   - scripts/ensure-ship-branch.sh
+  - scripts/evaluate-postmortem-trigger.sh
 writes:
   - path: devflow/changes/<change-key>/handoff/pr-brief.md
     durability: durable
@@ -39,12 +40,13 @@ effects:
 entry_gate:
   - "Resolve the CLI with `../cc-dev/scripts/resolve-cc-devflow.sh require config`."
   - "Read `task.md`, Git status, latest commits, validation evidence, and current PR state when relevant."
+  - "Run `scripts/evaluate-postmortem-trigger.sh --dir <change-dir>` before deciding no incident postmortem is needed."
   - "If verification changed during Act, return to `cc-check`."
   - "Pick one mode: `create-pr`, `update-pr`, `local-handoff`, or `post-merge-closeout`."
 exit_criteria:
   - "All completed work is committed with coherent Conventional Commit messages."
   - "PR mode writes or refreshes only `handoff/pr-brief.md`."
-  - "FIX or recurring failure closeout writes incident postmortem only when needed."
+  - "Postmortem trigger gate is explicit: either `POSTMORTEM_REQUIRED=no` is reported, or the incident postmortem path is written."
   - "No process file is created beyond the allowed durable outputs."
   - "Push, PR, or local handoff status is explicit."
 reroutes:
@@ -83,11 +85,19 @@ tool_budget:
 
 ## Postmortem
 
+先运行：
+
+```bash
+scripts/evaluate-postmortem-trigger.sh --dir devflow/changes/<change-key>
+```
+
 只在这些情况写 incident postmortem：
 
 1. change key 是 `FIX-*`。
 2. 暴露重复 AI、流程、测试、release、Git 或架构错误。
 3. 用户明确要求记录教训。
+
+如果本轮会话出现了返工、reroute、三次修补仍失败、发布/Git/验证工具异常，但这些信号还没有进入 `task.md` 或 Git history，调用脚本时用 `--trigger <short-label>` 把会话证据纳入本次 gate。没有触发时，最终响应也必须写明 `POSTMORTEM_REQUIRED=no`。
 
 尸检报告必须基于 Git 证据和验证命令。不要把教训拆成额外原则文件。
 

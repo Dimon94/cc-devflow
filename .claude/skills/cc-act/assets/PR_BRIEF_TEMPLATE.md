@@ -21,6 +21,12 @@
 
 - <diff summary>
 
+## Postmortem Trigger
+
+- Postmortem required: yes / no
+- Triggers:
+- Incident path:
+
 ## Validation
 
 - Command:

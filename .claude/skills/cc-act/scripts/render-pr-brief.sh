@@ -49,6 +49,16 @@ head_sha="$(git -C "$REPO_ROOT" rev-parse --short HEAD 2>/dev/null || true)"
 status="$(git -C "$REPO_ROOT" status --short 2>/dev/null || true)"
 commits="$(git -C "$REPO_ROOT" log --oneline -10 2>/dev/null || true)"
 changed="$(git -C "$REPO_ROOT" diff --stat HEAD 2>/dev/null || true)"
+postmortem_context="$("$script_dir/evaluate-postmortem-trigger.sh" --dir "$change_dir" --repo-root "$REPO_ROOT")"
+
+postmortem_field() {
+  local key="$1"
+  printf '%s\n' "$postmortem_context" | awk -F= -v key="$key" '$1 == key { sub("^[^=]*=", ""); print; exit }'
+}
+
+postmortem_required="$(postmortem_field POSTMORTEM_REQUIRED)"
+postmortem_triggers="$(postmortem_field TRIGGERS)"
+postmortem_incident="$(postmortem_field INCIDENT_PATH)"
 
 trim() {
   sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'
@@ -99,6 +109,10 @@ if [[ "$output_language" == "zh-CN" ]]; then
   no_diff="没有未提交差异"
   status_heading="工作树状态"
   clean_status="干净"
+  postmortem_heading="尸检触发"
+  postmortem_required_label="是否需要尸检"
+  postmortem_triggers_label="触发原因"
+  postmortem_incident_label="尸检路径"
   body_heading="PR 正文草稿"
   summary_label="摘要"
   summary_placeholder="<根据 task.md 和提交记录总结用户可见变化>"
@@ -121,6 +135,10 @@ else
   no_diff="No uncommitted diff"
   status_heading="Worktree Status"
   clean_status="Clean"
+  postmortem_heading="Postmortem Trigger"
+  postmortem_required_label="Postmortem required"
+  postmortem_triggers_label="Triggers"
+  postmortem_incident_label="Incident path"
   body_heading="PR Body Draft"
   summary_label="Summary"
   summary_placeholder="<summarize user-visible change from task.md and commits>"
@@ -170,6 +188,14 @@ render_prefixed_lines() {
   echo "## $status_heading"
   echo
   render_prefixed_lines "$status" "$clean_status"
+  echo
+  echo "## $postmortem_heading"
+  echo
+  echo "- $postmortem_required_label: ${postmortem_required:-unknown}"
+  echo "- $postmortem_triggers_label: ${postmortem_triggers:-none}"
+  if [[ "${postmortem_required:-no}" == "yes" ]]; then
+    echo "- $postmortem_incident_label: ${postmortem_incident:-unknown}"
+  fi
   echo
   echo "## $body_heading"
   echo

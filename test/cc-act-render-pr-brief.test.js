@@ -8,6 +8,10 @@ const RENDER_PR_BRIEF = path.join(
   REPO_ROOT,
   '.claude/skills/cc-act/scripts/render-pr-brief.sh'
 );
+const EVALUATE_POSTMORTEM_TRIGGER = path.join(
+  REPO_ROOT,
+  '.claude/skills/cc-act/scripts/evaluate-postmortem-trigger.sh'
+);
 
 function run(command, args, cwd) {
   const result = spawnSync(command, args, {
@@ -70,7 +74,85 @@ describe('cc-act PR brief renderer', () => {
       expect(rendered).toContain('## 任务摘要');
       expect(rendered).toContain('- 已完成: T001 Finish demo task');
       expect(rendered).toContain('## PR 正文草稿');
+      expect(rendered).toContain('## 尸检触发');
+      expect(rendered).toContain('- 是否需要尸检: no');
       expect(rendered).toContain('- <根据 task.md 和提交记录总结用户可见变化>');
+    } finally {
+      fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('cc-act postmortem trigger evaluator', () => {
+  function createRepo(changeKey, taskLines = []) {
+    const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-act-postmortem-'));
+    const changeDir = path.join(repoRoot, 'devflow/changes', changeKey);
+
+    fs.mkdirSync(changeDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(changeDir, 'task.md'),
+      [
+        '# task.md',
+        '',
+        '## Tasks',
+        '',
+        '- [x] T001 Finish task',
+        ...taskLines,
+        ''
+      ].join('\n')
+    );
+
+    run('git', ['init'], repoRoot);
+    run('git', ['config', 'user.name', 'Test User'], repoRoot);
+    run('git', ['config', 'user.email', 'test@example.com'], repoRoot);
+    run('git', ['add', '.'], repoRoot);
+    run('git', ['commit', '-m', 'test: seed task'], repoRoot);
+
+    return { repoRoot, changeDir };
+  }
+
+  test('requires a postmortem for FIX change keys', () => {
+    const { repoRoot, changeDir } = createRepo('FIX-001-broken-closeout');
+
+    try {
+      const result = run(
+        'bash',
+        [EVALUATE_POSTMORTEM_TRIGGER, '--dir', changeDir, '--date', '2026-05-17'],
+        repoRoot
+      );
+
+      expect(result.stdout).toContain('POSTMORTEM_REQUIRED=yes');
+      expect(result.stdout).toContain('TRIGGERS=change-key:FIX');
+      expect(result.stdout).toContain(
+        'INCIDENT_PATH=devflow/postmortems/incidents/2026-05-17-FIX-001-broken-closeout.md'
+      );
+    } finally {
+      fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+  });
+
+  test('carries task and session postmortem triggers into the gate decision', () => {
+    const { repoRoot, changeDir } = createRepo('REQ-001-demo', [
+      '',
+      '- Postmortem signal: yes'
+    ]);
+
+    try {
+      const result = run(
+        'bash',
+        [
+          EVALUATE_POSTMORTEM_TRIGGER,
+          '--dir',
+          changeDir,
+          '--trigger',
+          'cc-check-reroute'
+        ],
+        repoRoot
+      );
+
+      expect(result.stdout).toContain('POSTMORTEM_REQUIRED=yes');
+      expect(result.stdout).toContain('task:postmortem-required');
+      expect(result.stdout).toContain('session:cc-check-reroute');
     } finally {
       fs.rmSync(repoRoot, { recursive: true, force: true });
     }

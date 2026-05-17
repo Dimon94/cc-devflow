@@ -19,10 +19,10 @@ Everything else is Git history, PR history, or final response.
 2. Run or cite the current validation commands.
 3. Commit any remaining owned changes.
 4. Build `pr-brief.md` only when PR/handoff needs it.
-5. Write incident postmortem only when triggered.
+5. Run `evaluate-postmortem-trigger.sh`; write incident postmortem when it returns `POSTMORTEM_REQUIRED=yes`.
 6. Push/create/update PR when requested and available.
 7. Archive completed change only after merge or explicit closeout.
 
 ## Blockers
 
-Return to `cc-check` when evidence changed. Return to `cc-do` when implementation is unfinished. Do not patch around missing proof in Act.
+Return to `cc-check` when evidence changed. Return to `cc-do` when implementation is unfinished. If the postmortem gate depends on session-only rework evidence, pass it as `--trigger <short-label>` instead of silently dropping it. Do not patch around missing proof in Act.

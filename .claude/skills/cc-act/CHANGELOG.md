@@ -1,5 +1,11 @@
 # CC-Act Skill Changelog
 
+## v1.9.3 - 2026-05-17
+
+- add `evaluate-postmortem-trigger.sh` so FIX closeout, task-recorded incident markers, and session rework triggers produce an explicit postmortem gate decision
+- render the postmortem trigger verdict into `pr-brief.md` so handoff material records whether an incident postmortem is required
+- require final closeout to report either `POSTMORTEM_REQUIRED=no` or the written incident path instead of relying on implicit model memory
+
 ## v1.9.2 - 2026-05-17
 
 - make `render-pr-brief.sh` resolve `Output language` from `task.md` or runtime config and render PR handoff headings, metadata, and placeholders in Chinese when configured

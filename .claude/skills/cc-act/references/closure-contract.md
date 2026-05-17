@@ -11,8 +11,9 @@
 1. Git commits are the process record.
 2. PR text is rebuilt from current commits, diff, `task.md`, and fresh validation.
 3. Incident postmortems are factual and evidence-backed.
-4. No process file beyond the allowed durable outputs.
-5. If verification changes during Act, return to `cc-check`.
+4. `cc-act` must make the postmortem trigger decision explicit with `POSTMORTEM_REQUIRED=yes/no`.
+5. No process file beyond the allowed durable outputs.
+6. If verification changes during Act, return to `cc-check`.
 
 ## Exit
 
