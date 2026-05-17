@@ -50,6 +50,13 @@ function field(output, key) {
   return line ? line.slice(key.length + 1) : '';
 }
 
+function worktreePaths(repoRoot) {
+  return run('git', ['worktree', 'list', '--porcelain'], repoRoot).stdout
+    .split('\n')
+    .filter((line) => line.startsWith('worktree '))
+    .map((line) => line.slice('worktree '.length));
+}
+
 function createRepo() {
   const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-dev-work-branch-'));
   run('git', ['init', '-b', 'main'], repoRoot);
@@ -118,6 +125,32 @@ describe('cc-dev work branch anchor', () => {
 
     expect(result.status).toBe(1);
     expect(result.stderr).toContain('refusing to anchor work on default branch main');
+  });
+
+  test('does not register a change worktree when branch preflight fails', () => {
+    const repoRoot = createRepo();
+    const worktreesRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-dev-worktrees-'));
+    run('git', ['switch', '-c', 'req/003-isolate-main-checkout-with-worktrees'], repoRoot);
+    run('git', ['switch', 'main'], repoRoot);
+
+    const result = exec('bash', [
+      PREPARE_CHANGE_WORKTREE,
+      '--change-key',
+      'REQ-003-isolate-main-checkout-with-worktrees',
+      '--worktrees-root',
+      worktreesRoot
+    ], repoRoot);
+
+    const targetPath = path.join(
+      worktreesRoot,
+      'REQ-003-isolate-main-checkout-with-worktrees',
+      path.basename(repoRoot)
+    );
+
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('case-variant branch already exists');
+    expect(fs.existsSync(targetPath)).toBe(false);
+    expect(worktreePaths(repoRoot)).not.toContain(targetPath);
   });
 
   test('fails closed when HEAD uses REQ case but only req branch exists', () => {
