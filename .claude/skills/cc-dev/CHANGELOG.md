@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.3
+
+- add `prepare-change-worktree.sh` so new REQ/FIX work starts in an isolated worktree while the main checkout stays on `main`
+- make cc-dev route lower-level stages into the returned `WORKTREE_PATH` before durable artifacts are written
+
 ## 1.1.2
 
 - make the resolver live-probe `workflow-context` so stale CLIs that still ask for manifest or planning process files are rejected
