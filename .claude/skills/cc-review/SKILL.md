@@ -161,16 +161,30 @@ Language rule:
 - Language source order: `task.md` `Output language`, PR/task/handoff language fields, then current conversation language.
 - If no language source is available, record the assumption before the tree.
 - Do not hard-code English labels such as `Review Chain` when the configured output language is not English.
+- Use the Label table as the shared source for chain titles, node labels, and placeholder text.
+
+Label table:
+
+| Semantic slot | en | zh-CN |
+| --- | --- | --- |
+| reviewChain | Review Chain | 审查链 |
+| findingMarker | FINDING | 问题 |
+| source | Source | 来源 |
+| faultNode | Fault node | 错误节点 |
+| whyWrong | why wrong | 错误原因 |
+| firstAffectedSeam | first affected seam | 首个受影响边界 |
+| downstreamImpact | Downstream impact | 下游影响 |
+| fixRoute | Fix route | 修复路线 |
 
 ```text
-Review Chain
-FINDING: <severity + short name>
-|-- Source: <task / diff / PR / log / prompt / provider contract>
-|-- Fault node: <file / section / behavior>
-|   |-- why wrong: <violated contract or smell>
-|   `-- first affected seam: <public seam / caller / artifact>
-|-- Downstream impact: <user / operator / release / maintenance>
-`-- Fix route: <cc-plan / cc-investigate / cc-do / cc-check / cc-act / stop>
+<reviewChain>
+<findingMarker>: <severity + short name>
+|-- <source>: <task / diff / PR / log / prompt / provider contract>
+|-- <faultNode>: <file / section / behavior>
+|   |-- <whyWrong>: <violated contract or smell>
+|   `-- <firstAffectedSeam>: <public seam / caller / artifact>
+|-- <downstreamImpact>: <user / operator / release / maintenance>
+`-- <fixRoute>: <cc-plan / cc-investigate / cc-do / cc-check / cc-act / stop>
 ```
 
 Plan / investigation review 的树写进 `task.md` 对应 finding 或 review gate。Implementation / PR review 的树写在当前回复或 GitHub review；不要为了树图创建本地 review 过程文件。

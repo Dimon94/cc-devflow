@@ -99,31 +99,57 @@ Correct Test Seam:
 ASCII Branch Chain Analysis:
 Language rule: keep connector tokens ASCII; write node labels and evidence text in `Output language`.
 
+Label table:
+| Semantic slot | en | zh-CN |
+| --- | --- | --- |
+| problemChain | Problem Chain | 问题链 |
+| symptomMarker | SYMPTOM | 症状 |
+| failureSite | Failure site | 失败位置 |
+| directCaller | direct caller | 直接调用方 |
+| badValueState | bad value/state | 错误值或状态 |
+| upstreamOrigin | Upstream origin | 上游源头 |
+| codeSource | code source | 代码来源 |
+| promptSource | prompt source | 提示词来源 |
+| trigger | trigger | 触发条件 |
+| rejectedSymptomFix | Rejected symptom fix | 已拒绝的症状修补 |
+| solutionChain | Solution Chain | 解决链 |
+| fixMarker | FIX | 修复 |
+| firstBadStateRepair | First bad state repair | 首个错误状态修复 |
+| contractRestored | Contract restored | 恢复的合同 |
+| regressionSeam | Regression seam | 回归缝隙 |
+| escapePrevention | Escape prevention | 逃逸预防 |
+| impactChain | Impact Chain | 影响链 |
+| blastRadiusMarker | BLAST RADIUS | 影响范围 |
+| upstreamPreserved | Upstream preserved | 保持不变的上游 |
+| downstreamAffected | Downstream affected | 受影响下游 |
+| riskBranch | Risk branch | 风险分支 |
+| verificationBranch | Verification branch | 验证分支 |
+
 ```text
-Problem Chain
-SYMPTOM: <observed failure>
-|-- Failure site: <file / command / UI / artifact>
-|   |-- direct caller: <caller>
-|   `-- bad value/state: <first observed bad state>
-|-- Upstream origin: <earliest proven creator>
-|   |-- code source: <file / function / config>
-|   |-- prompt source: <prompt / instruction / provider contract, or N/A>
-|   `-- trigger: <input / event / race / migration>
-`-- Rejected symptom fix: <why guard-at-failure is insufficient>
+<problemChain>
+<symptomMarker>: <observed failure>
+|-- <failureSite>: <file / command / UI / artifact>
+|   |-- <directCaller>: <caller>
+|   `-- <badValueState>: <first observed bad state>
+|-- <upstreamOrigin>: <earliest proven creator>
+|   |-- <codeSource>: <file / function / config>
+|   |-- <promptSource>: <prompt / instruction / provider contract, or N/A>
+|   `-- <trigger>: <input / event / race / migration>
+`-- <rejectedSymptomFix>: <why guard-at-failure is insufficient>
 
-Solution Chain
-FIX: <minimal repair>
-|-- First bad state repair: <change>
-|-- Contract restored: <invariant>
-|-- Regression seam: <test / harness / replay>
-`-- Escape prevention: <guard / assertion / operator check>
+<solutionChain>
+<fixMarker>: <minimal repair>
+|-- <firstBadStateRepair>: <change>
+|-- <contractRestored>: <invariant>
+|-- <regressionSeam>: <test / harness / replay>
+`-- <escapePrevention>: <guard / assertion / operator check>
 
-Impact Chain
-BLAST RADIUS: <affected behavior>
-|-- Upstream preserved: <contracts that must stay unchanged>
-|-- Downstream affected: <callers / artifacts / docs / release>
-|-- Risk branch: <possible regression>
-`-- Verification branch: <commands / evidence>
+<impactChain>
+<blastRadiusMarker>: <affected behavior>
+|-- <upstreamPreserved>: <contracts that must stay unchanged>
+|-- <downstreamAffected>: <callers / artifacts / docs / release>
+|-- <riskBranch>: <possible regression>
+`-- <verificationBranch>: <commands / evidence>
 ```
 
 Verification:

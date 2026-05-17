@@ -3,6 +3,7 @@
 ## v1.6.4 - 2026-05-17
 
 - require ASCII branch-chain node labels and evidence text to follow `Output language` while keeping tree connector tokens ASCII
+- replace hard-coded English branch-chain examples with an `en` / `zh-CN` label table and semantic slots
 
 ## v1.6.3 - 2026-05-17
 

@@ -11,6 +11,11 @@
     "currentFocusStage": "Stage 2"
   },
   "context": {
+    "projectDirectionMode": "",
+    "projectDirectionRationale": "",
+    "directionQuestionsSelected": [],
+    "directionQuestionsSkipped": [],
+    "directionGuardrailsApplied": [],
     "planningPosture": "",
     "evidenceMaturity": "",
     "canonicalTerms": [],
@@ -127,7 +132,7 @@
   },
   "backlogMeta": {
     "roadmapVersion": "roadmap.v2",
-    "skillVersion": "4.4.1",
+    "skillVersion": "5.3.1",
     "currentFocusStage": "Stage 2"
   },
   "dependencyHandoff": {

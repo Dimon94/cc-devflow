@@ -138,6 +138,7 @@
 
 ## Implementation Tracking
 - Roadmap state source: `roadmap.json`
+- Output language: en
 
 <!-- roadmap-tracking:start -->
 | RM-ID | Item | Stage | Priority | Primary Capability | Secondary Capabilities | Expected Spec Delta | Depends On | Status | REQ | Progress |
@@ -146,7 +147,6 @@
 | RM-002 | Add copied-state feedback to the share dialog | Stage 1 | P2 | cap-invite-links | - | extend invite-link feedback truth | RM-001 | Planned | - | 0% |
 | RM-004 | Collaboration analytics follow-up | - | - | - | - | - | - | - | - | - |
 <!-- roadmap-tracking:end -->
-
 
 ## Technical Architecture
 

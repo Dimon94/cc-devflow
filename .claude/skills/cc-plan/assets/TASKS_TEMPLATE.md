@@ -85,23 +85,42 @@ Engineering Review Gate:
 ASCII Branch Chain Analysis:
 Language rule: keep connector tokens ASCII; write node labels and evidence text in `Output language`.
 
-```text
-Requirement Impact Chain
-REQ: <user-visible change>
-|-- Upstream source: <roadmap / issue / user request / existing task>
-|-- Current code path: <entry>
-|   |-- caller: <file / command / UI / API>
-|   |-- data or state: <field / config / artifact>
-|   `-- deepest affected layer: <module / prompt / provider contract / storage>
-|-- Required change: <smallest behavior delta>
-`-- Verification seam: <public test / command / artifact>
+Label table:
+| Semantic slot | en | zh-CN |
+| --- | --- | --- |
+| requirementChain | Requirement Impact Chain | 需求影响链 |
+| requirementMarker | REQ | 需求 |
+| upstreamSource | Upstream source | 上游来源 |
+| currentCodePath | Current code path | 当前代码路径 |
+| caller | caller | 调用方 |
+| dataOrState | data or state | 数据或状态 |
+| deepestAffectedLayer | deepest affected layer | 最深影响层 |
+| requiredChange | Required change | 必要变更 |
+| verificationSeam | Verification seam | 验证缝隙 |
+| businessChain | Business Impact Chain | 业务影响链 |
+| outcomeMarker | OUTCOME | 结果 |
+| directBehaviorImpact | Direct behavior impact | 直接行为影响 |
+| downstreamImpact | Downstream impact | 下游影响 |
+| riskBranch | Risk branch | 风险分支 |
+| nonGoalBranch | Non-goal branch | 非目标分支 |
 
-Business Impact Chain
-OUTCOME: <operator / user value>
-|-- Direct behavior impact: <what changes for user>
-|-- Downstream impact: <consumers / docs / examples / release>
-|-- Risk branch: <regression / migration / support / cost>
-`-- Non-goal branch: <explicitly not changed>
+```text
+<requirementChain>
+<requirementMarker>: <user-visible change>
+|-- <upstreamSource>: <roadmap / issue / user request / existing task>
+|-- <currentCodePath>: <entry>
+|   |-- <caller>: <file / command / UI / API>
+|   |-- <dataOrState>: <field / config / artifact>
+|   `-- <deepestAffectedLayer>: <module / prompt / provider contract / storage>
+|-- <requiredChange>: <smallest behavior delta>
+`-- <verificationSeam>: <public test / command / artifact>
+
+<businessChain>
+<outcomeMarker>: <operator / user value>
+|-- <directBehaviorImpact>: <what changes for user>
+|-- <downstreamImpact>: <consumers / docs / examples / release>
+|-- <riskBranch>: <regression / migration / support / cost>
+`-- <nonGoalBranch>: <explicitly not changed>
 ```
 
 Acceptance:

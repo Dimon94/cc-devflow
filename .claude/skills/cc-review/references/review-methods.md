@@ -23,15 +23,28 @@ Selected methods stay in scratch reasoning and final response/task updates. Do n
 
 For any plan, investigation, PR, broad implementation, or code-smell finding, include a compact ASCII tree in the durable task update or review output. Keep `|--`, `` `-- ``, `|`, spaces, and punctuation ASCII; write labels, explanations, findings, and evidence summaries in the configured output language. Resolve language from `task.md` `Output language`, PR/task/handoff language fields, then the current conversation language.
 
+Label table:
+
+| Semantic slot | en | zh-CN |
+| --- | --- | --- |
+| reviewChain | Review Chain | 审查链 |
+| findingMarker | FINDING | 问题 |
+| source | Source | 来源 |
+| faultNode | Fault node | 错误节点 |
+| whyWrong | why wrong | 错误原因 |
+| firstAffectedSeam | first affected seam | 首个受影响边界 |
+| downstreamImpact | Downstream impact | 下游影响 |
+| fixRoute | Fix route | 修复路线 |
+
 ```text
-Review Chain
-FINDING: <severity + short name>
-|-- Source: <task / diff / PR / log / prompt / provider contract>
-|-- Fault node: <file / section / behavior>
-|   |-- why wrong: <violated contract or smell>
-|   `-- first affected seam: <public seam / caller / artifact>
-|-- Downstream impact: <user / operator / release / maintenance>
-`-- Fix route: <cc-plan / cc-investigate / cc-do / cc-check / cc-act / stop>
+<reviewChain>
+<findingMarker>: <severity + short name>
+|-- <source>: <task / diff / PR / log / prompt / provider contract>
+|-- <faultNode>: <file / section / behavior>
+|   |-- <whyWrong>: <violated contract or smell>
+|   `-- <firstAffectedSeam>: <public seam / caller / artifact>
+|-- <downstreamImpact>: <user / operator / release / maintenance>
+`-- <fixRoute>: <cc-plan / cc-investigate / cc-do / cc-check / cc-act / stop>
 ```
 
 Trace upstream to the first supported source and downstream to the affected public seam. If prompt text, agent instructions, model/provider parameters, or generated artifacts are part of the chain, name the exact prompt/provider contract or write `unknown -> Evidence Request`.

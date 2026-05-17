@@ -3,6 +3,7 @@
 ## 2.2.3 - 2026-05-17
 
 - require ASCII Branch Chain labels, findings, and evidence summaries to follow the configured output language while keeping connectors ASCII
+- replace hard-coded English Review Chain examples with an `en` / `zh-CN` label table and semantic slots
 
 ## 2.2.2 - 2026-05-17
 

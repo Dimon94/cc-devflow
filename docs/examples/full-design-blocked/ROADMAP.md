@@ -60,13 +60,13 @@
 
 ## Implementation Tracking
 - Roadmap state source: `roadmap.json`
+- Output language: en
 
 <!-- roadmap-tracking:start -->
 | RM-ID | Item | Stage | Priority | Primary Capability | Secondary Capabilities | Expected Spec Delta | Depends On | Status | REQ | Progress |
 |------|------|------|------|------|------|------|------|------|------|------|
 | RM-010 | Add CSV bulk invite import for admins | Stage 2 | P1 | cap-bulk-invite-import | cap-workspace-membership | define import semantics before widening current truth | - | Verification blocked | REQ-002 | 80% |
 <!-- roadmap-tracking:end -->
-
 
 ## Technical Architecture
 

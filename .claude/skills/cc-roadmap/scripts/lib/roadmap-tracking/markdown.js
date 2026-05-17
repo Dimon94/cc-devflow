@@ -28,6 +28,7 @@ const DOCUMENT_LABELS = {
     technicalArchitecture: 'Technical Architecture',
     roadmapStateSource: 'Roadmap state source',
     trackingSource: 'Tracking source',
+    outputLanguage: 'Output language',
     deprecatedProjection: '> Deprecated projection. Edit `roadmap.json` instead.',
     backlogMeta: 'Backlog Meta',
     roadmapVersion: 'Roadmap version',
@@ -84,6 +85,7 @@ const DOCUMENT_LABELS = {
     technicalArchitecture: '技术架构',
     roadmapStateSource: '路线图状态源',
     trackingSource: '跟踪源',
+    outputLanguage: 'Output language',
     deprecatedProjection: '> 已废弃投影。请编辑 `roadmap.json`。',
     backlogMeta: '待办元信息',
     roadmapVersion: '路线图版本',
@@ -164,6 +166,10 @@ const DOCUMENT_LABELS = {
 
 function labelsFor(tracking) {
   return DOCUMENT_LABELS[tracking?.outputPolicy?.documentLanguage] || DOCUMENT_LABELS.en;
+}
+
+function outputLanguageFor(tracking) {
+  return tracking?.outputPolicy?.documentLanguage || DEFAULT_TRACKING.outputPolicy?.documentLanguage || 'en';
 }
 
 function extractAnySection(markdown, headings) {
@@ -294,6 +300,7 @@ function parseBacklogMeta(sectionBody) {
     currentFocusStage: ''
   };
   let lastSyncedAt = '';
+  let documentLanguage = '';
 
   for (const line of lines) {
     const match = /^-\s+([^:]+):\s*(.*)$/.exec(line);
@@ -312,10 +319,12 @@ function parseBacklogMeta(sectionBody) {
       lastSyncedAt = value;
     } else if (label === 'current focus stage' || label === '当前聚焦阶段') {
       meta.currentFocusStage = value;
+    } else if (label === 'output language') {
+      documentLanguage = value;
     }
   }
 
-  return { meta, lastSyncedAt };
+  return { meta, lastSyncedAt, documentLanguage };
 }
 
 function parseBacklogQueue(sectionBody) {
@@ -493,6 +502,9 @@ function trackingFromBacklog(markdown, baseTracking) {
     if (parsed.lastSyncedAt) {
       next.lastSyncedAt = parsed.lastSyncedAt;
     }
+    if (parsed.documentLanguage) {
+      next.outputPolicy.documentLanguage = parsed.documentLanguage;
+    }
   }
 
   const queueSection = extractAnySection(markdown, ['Queue', DOCUMENT_LABELS['zh-CN'].queue]);
@@ -621,10 +633,12 @@ function buildTrackingBody(roadmapFile, trackingFile, tracking) {
   const relativePath = path.relative(path.dirname(roadmapFile), trackingFile).replace(/\\/g, '/');
   const displayPath = relativePath || path.basename(trackingFile);
   const sourceLabel = isRoadmapState(tracking) ? labels.roadmapStateSource : labels.trackingSource;
+  const outputLanguage = outputLanguageFor(tracking);
 
   return [
     '',
     `- ${sourceLabel}: \`${displayPath}\``,
+    `- ${labels.outputLanguage}: ${outputLanguage}`,
     '',
     '<!-- roadmap-tracking:start -->',
     renderRoadmapTable(tracking),
@@ -828,6 +842,7 @@ function renderBacklogDocument({ backlogFile, trackingFile, tracking }) {
   const relativePath = path.relative(path.dirname(backlogFile), trackingFile).replace(/\\/g, '/');
   const displayPath = relativePath || path.basename(trackingFile);
   const sourceLabel = isRoadmapState(tracking) ? labels.roadmapStateSource : labels.trackingSource;
+  const outputLanguage = outputLanguageFor(tracking);
   const deprecationNotice = isRoadmapState(tracking)
     ? [labels.deprecatedProjection, '']
     : [];
@@ -843,6 +858,7 @@ function renderBacklogDocument({ backlogFile, trackingFile, tracking }) {
     `- ${labels.lastSynced}: ${formatInlineCode(tracking.lastSyncedAt)}`,
     `- ${labels.currentFocusStage}: ${formatInlineCode(tracking.backlogMeta.currentFocusStage)}`,
     `- ${sourceLabel}: \`${displayPath}\``,
+    `- ${labels.outputLanguage}: ${outputLanguage}`,
     '',
     `## ${labels.queue}`,
     '',

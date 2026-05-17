@@ -9,6 +9,7 @@
 - Last synced: `2026-04-19`
 - Current focus stage: `Stage 1`
 - Roadmap state source: `roadmap.json`
+- Output language: en
 
 ## Queue
 
@@ -22,6 +23,16 @@
 - Serial spine: RM-001 -> RM-002
 - Parallel-ready next wave: none until RM-001 proves the copy action shape
 - Notes on blockers: RM-002 should reuse the final interaction contract from RM-001, not race it
+
+## Project Direction Handoff
+
+- Project direction mode: -
+- Direction mode rationale: -
+- Direction-specific questions selected: -
+- Direction-specific questions skipped: -
+- Direction guardrails applied: -
+- Planning posture: -
+- Evidence maturity: -
 
 ## Ready For Req-Plan
 

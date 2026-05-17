@@ -228,6 +228,7 @@ describe('cc-roadmap tracking sync', () => {
 
     const renderedRoadmap = fs.readFileSync(roadmapPath, 'utf8');
     expect(renderedRoadmap).toContain('- Roadmap state source: `roadmap.json`');
+    expect(renderedRoadmap).toContain('- Output language: en');
     expect(renderedRoadmap).toContain('## Technical Architecture');
     expect(renderedRoadmap).toContain('```mermaid');
     expect(renderedRoadmap).toContain('flowchart TD');
@@ -239,7 +240,9 @@ describe('cc-roadmap tracking sync', () => {
     expect(renderedBacklog.startsWith('# BACKLOG\n\n> Deprecated projection. Edit `roadmap.json` instead.')).toBe(
       true
     );
+    expect(renderedBacklog).toContain('- Skill version: `5.2.0`');
     expect(renderedBacklog).toContain('- Roadmap state source: `roadmap.json`');
+    expect(renderedBacklog).toContain('- Output language: en');
     expect(renderedBacklog).toContain('## Project Direction Handoff');
     expect(renderedBacklog).toContain('- Project direction mode: founder-business');
     expect(renderedBacklog).toContain(
@@ -352,11 +355,13 @@ describe('cc-roadmap tracking sync', () => {
     expect(renderedRoadmap).toContain('# 路线图');
     expect(renderedRoadmap).toContain('## 执行跟踪');
     expect(renderedRoadmap).toContain('- 路线图状态源: `roadmap.json`');
+    expect(renderedRoadmap).toContain('- Output language: zh-CN');
     expect(renderedRoadmap).toContain('| RM-ID | 事项 | 阶段 | 优先级 | 主能力 |');
 
     const renderedBacklog = fs.readFileSync(backlogPath, 'utf8');
     expect(renderedBacklog).toContain('# 待办队列');
     expect(renderedBacklog).toContain('> 已废弃投影。请编辑 `roadmap.json`。');
+    expect(renderedBacklog).toContain('- Output language: zh-CN');
     expect(renderedBacklog).toContain('## 项目方向交接');
     expect(renderedBacklog).toContain('- 项目方向模式: founder-business');
     expect(renderedBacklog).toContain('| RM-010 | 生成中文投影 |');

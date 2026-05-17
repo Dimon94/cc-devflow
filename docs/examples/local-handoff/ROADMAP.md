@@ -52,13 +52,13 @@
 
 ## Implementation Tracking
 - Roadmap state source: `roadmap.json`
+- Output language: en
 
 <!-- roadmap-tracking:start -->
 | RM-ID | Item | Stage | Priority | Primary Capability | Secondary Capabilities | Expected Spec Delta | Depends On | Status | REQ | Progress |
 |------|------|------|------|------|------|------|------|------|------|------|
 | RM-020 | Add an audit-log export summary download | Stage 2 | P1 | cap-audit-log-export | - | codify local export summary truth | - | Local handoff | REQ-003 | 100% |
 <!-- roadmap-tracking:end -->
-
 
 ## Technical Architecture
 

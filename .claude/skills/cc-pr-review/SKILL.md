@@ -61,15 +61,28 @@ Output findings in the response or GitHub review only. Do not write local proces
 
 For each non-trivial finding, include:
 
-Language rule: keep `|--`, `` `-- ``, `|`, spaces, and punctuation ASCII; write labels, explanations, findings, and evidence summaries in the PR/task/handoff output language, falling back to the current conversation language when unavailable.
+Language rule: keep `|--`, `` `-- ``, `|`, spaces, and punctuation ASCII; write labels, explanations, findings, and evidence summaries in the PR/task/handoff output language, falling back to the current conversation language when unavailable. Use the Label table as the shared source for chain titles, node labels, and placeholder text.
+
+Label table:
+
+| Semantic slot | en | zh-CN |
+| --- | --- | --- |
+| prReviewChain | PR Review Chain | PR 审查链 |
+| findingMarker | FINDING | 问题 |
+| prSource | PR source | PR 来源 |
+| changedNode | Changed node | 变更节点 |
+| upstreamContract | upstream contract | 上游合同 |
+| firstAffectedSeam | first affected seam | 首个受影响边界 |
+| downstreamLandingRisk | Downstream landing risk | 下游合并风险 |
+| route | Route | 路线 |
 
 ```text
-PR Review Chain
-FINDING: <severity + short name>
-|-- PR source: <PR number / commit / diff hunk / check>
-|-- Changed node: <file / behavior / artifact>
-|   |-- upstream contract: <task / spec / prompt / provider / API>
-|   `-- first affected seam: <runtime / user / operator / package>
-|-- Downstream landing risk: <merge / release / main parity / sibling work>
-`-- Route: <cc-dev / cc-do / cc-review / cc-pr-land / stop>
+<prReviewChain>
+<findingMarker>: <severity + short name>
+|-- <prSource>: <PR number / commit / diff hunk / check>
+|-- <changedNode>: <file / behavior / artifact>
+|   |-- <upstreamContract>: <task / spec / prompt / provider / API>
+|   `-- <firstAffectedSeam>: <runtime / user / operator / package>
+|-- <downstreamLandingRisk>: <merge / release / main parity / sibling work>
+`-- <route>: <cc-dev / cc-do / cc-review / cc-pr-land / stop>
 ```

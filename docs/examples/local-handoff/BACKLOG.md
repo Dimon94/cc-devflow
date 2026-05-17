@@ -9,6 +9,7 @@
 - Last synced: `2026-04-19`
 - Current focus stage: `Stage 2`
 - Roadmap state source: `roadmap.json`
+- Output language: en
 
 ## Queue
 
@@ -21,6 +22,16 @@
 - Serial spine: RM-020
 - Parallel-ready next wave: -
 - Notes on blockers: export work stays local-only until the next maintainer has remote access
+
+## Project Direction Handoff
+
+- Project direction mode: -
+- Direction mode rationale: -
+- Direction-specific questions selected: -
+- Direction-specific questions skipped: -
+- Direction guardrails applied: -
+- Planning posture: -
+- Evidence maturity: -
 
 ## Ready For Req-Plan
 

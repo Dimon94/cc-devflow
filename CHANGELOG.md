@@ -14,7 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated `cc-plan`, `cc-investigate`, `cc-review`, and `cc-pr-review` to require ASCII branch-chain analysis in their task or review outputs.
 - Added plan and investigation task-template fields that trace upstream sources, deepest affected code or prompt/provider layers, downstream impact, and verification seams.
 - Clarified that ASCII branch-chain connector tokens stay ASCII while labels, findings, evidence, and explanatory text follow the configured output language.
+- Replaced hard-coded English branch-chain templates with shared semantic label tables for English and Chinese outputs.
 - Updated runtime output-policy rendering so `zh-CN` configurations describe the policy in Chinese instead of English-only prose.
+- Added `Output language` metadata to generated roadmap and backlog projections.
 
 ### Removed
 

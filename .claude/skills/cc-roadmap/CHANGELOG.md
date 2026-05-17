@@ -3,6 +3,7 @@
 ## v5.3.1 - 2026-05-17
 
 - make generated `ROADMAP.md` and deprecated `BACKLOG.md` projections render headings, labels, empty placeholders, and readiness booleans in Chinese when `outputPolicy.documentLanguage` is `zh-CN`
+- render `Output language` metadata in generated roadmap and backlog projections and keep v3 backlog metadata aligned with roadmap state metadata
 - preserve parsing for both English and Chinese projection labels so rerenders do not lose roadmap state after localization
 
 ## v5.3.0 - 2026-05-11

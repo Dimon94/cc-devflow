@@ -51,6 +51,9 @@ const DEFAULT_BACKLOG = {
 
 const DEFAULT_TRACKING = {
   version: 2,
+  outputPolicy: {
+    documentLanguage: 'en'
+  },
   lastSyncedAt: '',
   backlogMeta: {
     roadmapVersion: '',
@@ -219,6 +222,10 @@ function normalizeTracking(raw) {
 
   return {
     version: 2,
+    outputPolicy: {
+      ...DEFAULT_TRACKING.outputPolicy,
+      ...(raw.outputPolicy || {})
+    },
     lastSyncedAt: String(raw.lastSyncedAt || '').trim(),
     backlogMeta: {
       roadmapVersion: String(backlogMeta.roadmapVersion || '').trim(),
@@ -268,6 +275,14 @@ function normalizeRoadmapState(raw = {}) {
   const context = raw.context || {};
   const route = raw.route || {};
   const architecture = raw.architecture || {};
+  const normalizedMeta = {
+    ...DEFAULT_ROADMAP_STATE.meta,
+    roadmapVersion: String(meta.roadmapVersion || tracking.backlogMeta.roadmapVersion).trim(),
+    skillVersion: String(meta.skillVersion || tracking.backlogMeta.skillVersion).trim(),
+    status: String(meta.status || DEFAULT_ROADMAP_STATE.meta.status).trim(),
+    lastUpdated: String(meta.lastUpdated || tracking.lastSyncedAt).trim(),
+    currentFocusStage: String(meta.currentFocusStage || tracking.backlogMeta.currentFocusStage).trim()
+  };
 
   return {
     ...DEFAULT_ROADMAP_STATE,
@@ -276,14 +291,7 @@ function normalizeRoadmapState(raw = {}) {
       ...DEFAULT_ROADMAP_STATE.outputPolicy,
       ...(raw.outputPolicy || {})
     },
-    meta: {
-      ...DEFAULT_ROADMAP_STATE.meta,
-      roadmapVersion: String(meta.roadmapVersion || tracking.backlogMeta.roadmapVersion).trim(),
-      skillVersion: String(meta.skillVersion || tracking.backlogMeta.skillVersion).trim(),
-      status: String(meta.status || DEFAULT_ROADMAP_STATE.meta.status).trim(),
-      lastUpdated: String(meta.lastUpdated || tracking.lastSyncedAt).trim(),
-      currentFocusStage: String(meta.currentFocusStage || tracking.backlogMeta.currentFocusStage).trim()
-    },
+    meta: normalizedMeta,
     context: {
       ...DEFAULT_ROADMAP_STATE.context,
       ...context,
@@ -301,7 +309,11 @@ function normalizeRoadmapState(raw = {}) {
     },
     stages: Array.isArray(raw.stages) ? raw.stages : [],
     items: tracking.items,
-    backlogMeta: tracking.backlogMeta,
+    backlogMeta: {
+      roadmapVersion: normalizedMeta.roadmapVersion,
+      skillVersion: normalizedMeta.skillVersion,
+      currentFocusStage: normalizedMeta.currentFocusStage
+    },
     dependencyHandoff: tracking.dependencyHandoff,
     lastSyncedAt: tracking.lastSyncedAt,
     handoff: buildRoadmapHandoff(tracking, raw.handoff || {}),
