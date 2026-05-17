@@ -3,6 +3,8 @@ name: npm-release
 version: 1.1.0
 description: Use when ready to publish a new version of cc-devflow npm package to npm registry, including version sync, changelog finalization, git tag creation, and publish verification.
 reads:
+  - PLAYBOOK.md
+  - CHANGELOG.md
   - references/checklist-contract.md
 ---
 
@@ -10,7 +12,9 @@ reads:
 
 ## Read First
 
-1. `references/checklist-contract.md`
+1. `PLAYBOOK.md`
+2. `CHANGELOG.md`
+3. `references/checklist-contract.md`
 
 > [PROTOCOL]: 发布前先确认 git 干净、版本结论正确、CHANGELOG 已落地、npm 身份可用，然后再 commit/tag/push/publish
 
