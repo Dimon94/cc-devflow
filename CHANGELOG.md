@@ -11,6 +11,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _No unreleased changes._
 
+## [4.5.17] - 2026-05-17
+
+### Added
+
+- Added an explicit `cc-act` postmortem trigger gate through `evaluate-postmortem-trigger.sh`.
+- Added `pr-brief.md` postmortem trigger output so closeout records whether an incident postmortem is required.
+
+### Changed
+
+- Updated `cc-act` to require `POSTMORTEM_REQUIRED=yes/no` before declaring closeout complete.
+- Updated project postmortem guidance so session-only rework, reroutes, or tool failures can be passed into the gate with `--trigger`.
+
 ## [4.5.16] - 2026-05-17
 
 ### Changed
