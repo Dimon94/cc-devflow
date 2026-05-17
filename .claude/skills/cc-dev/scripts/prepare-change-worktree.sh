@@ -42,6 +42,11 @@ if [[ ! "$CHANGE_KEY" =~ ^(REQ|FIX)-[0-9]+-.+ ]]; then
   exit 1
 fi
 
+prefix="${CHANGE_KEY%%-*}"
+suffix="${CHANGE_KEY#*-}"
+target_branch="$prefix/$suffix"
+target_lower="$(printf '%s' "$target_branch" | tr '[:upper:]' '[:lower:]')"
+
 repo_root="$(git rev-parse --show-toplevel)"
 repo_name="$(basename "$repo_root")"
 
@@ -59,6 +64,33 @@ ensure_script="$script_dir/ensure-work-branch.sh"
 
 if [[ ! -x "$ensure_script" ]]; then
   echo "WorktreePrepareError: missing executable anchor script: $ensure_script" >&2
+  exit 1
+fi
+
+while IFS= read -r ref_name; do
+  ref_lower="$(printf '%s' "$ref_name" | tr '[:upper:]' '[:lower:]')"
+  if [[ "$ref_name" != "$target_branch" && "$ref_lower" == "$target_lower" ]]; then
+    echo "WorktreePrepareError: case-variant branch already exists: $ref_name" >&2
+    echo "Expected exact branch: $target_branch" >&2
+    exit 1
+  fi
+done < <(git for-each-ref --format='%(refname:short)' refs/heads 2>/dev/null || true)
+
+branch_worktree_path=""
+current_worktree_path=""
+while IFS= read -r line; do
+  case "$line" in
+    worktree\ *) current_worktree_path="${line#worktree }" ;;
+    branch\ refs/heads/"$target_branch")
+      branch_worktree_path="$current_worktree_path"
+      break
+      ;;
+  esac
+done < <(git worktree list --porcelain 2>/dev/null || true)
+
+if [[ -n "$branch_worktree_path" && "$branch_worktree_path" != "$worktree_path" ]]; then
+  echo "WorktreePrepareError: branch $target_branch is already used by worktree: $branch_worktree_path" >&2
+  echo "Expected worktree path: $worktree_path" >&2
   exit 1
 fi
 
