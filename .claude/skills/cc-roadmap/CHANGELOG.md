@@ -1,5 +1,10 @@
 # Roadmap Skill Changelog
 
+## v5.3.1 - 2026-05-17
+
+- make generated `ROADMAP.md` and deprecated `BACKLOG.md` projections render headings, labels, empty placeholders, and readiness booleans in Chinese when `outputPolicy.documentLanguage` is `zh-CN`
+- preserve parsing for both English and Chinese projection labels so rerenders do not lose roadmap state after localization
+
 ## v5.3.0 - 2026-05-11
 
 - add the Roadmap Funnel Protocol with fixed F0-F9 rounds for direction mode, demand reality, status quo, specific human/sponsor, wedge/lake boundary, observation signal, future fit, premise challenge, alternatives, and route approval

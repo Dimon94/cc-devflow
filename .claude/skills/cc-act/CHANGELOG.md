@@ -1,5 +1,10 @@
 # CC-Act Skill Changelog
 
+## v1.9.2 - 2026-05-17
+
+- make `render-pr-brief.sh` resolve `Output language` from `task.md` or runtime config and render PR handoff headings, metadata, and placeholders in Chinese when configured
+- keep machine literals such as branch names, SHAs, paths, and commit subjects unchanged while localizing the surrounding durable handoff document
+
 ## v1.9.1 - 2026-05-13
 
 - simplify closeout rules so `cc-act` names only the allowed durable outputs and bans extra process files as a class

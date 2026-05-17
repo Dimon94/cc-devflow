@@ -50,57 +50,137 @@ status="$(git -C "$REPO_ROOT" status --short 2>/dev/null || true)"
 commits="$(git -C "$REPO_ROOT" log --oneline -10 2>/dev/null || true)"
 changed="$(git -C "$REPO_ROOT" diff --stat HEAD 2>/dev/null || true)"
 
+trim() {
+  sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'
+}
+
+resolve_output_language() {
+  local language=""
+  if [[ -f "$task_file" ]]; then
+    language="$(
+      awk -F': *' '/Output language:/ { print $2; exit }' "$task_file" \
+        | tr -d '\r`' \
+        | trim
+    )"
+  fi
+
+  if [[ -n "$language" ]]; then
+    printf '%s\n' "$language"
+    return
+  fi
+
+  local devflow="$script_dir/../../cc-dev/scripts/resolve-cc-devflow.sh"
+  if [[ -f "$devflow" ]]; then
+    language="$(
+      bash "$devflow" config resolve --cwd "$REPO_ROOT" --format policy 2>/dev/null \
+        | awk -F': *' '/^- Output language:/ { print $2; exit }' \
+        | tr -d '\r`' \
+        | trim
+    )"
+  fi
+
+  printf '%s\n' "${language:-en}"
+}
+
+output_language="$(resolve_output_language)"
+
+if [[ "$output_language" == "zh-CN" ]]; then
+  title="PR 交接简报"
+  change_heading="变更"
+  change_key_label="变更编号"
+  branch_label="分支"
+  head_label="当前提交"
+  task_heading="任务摘要"
+  done_prefix="已完成"
+  missing_task="缺少 task.md"
+  commits_heading="最近提交"
+  no_commits="未找到提交"
+  diff_heading="当前差异"
+  no_diff="没有未提交差异"
+  status_heading="工作树状态"
+  clean_status="干净"
+  body_heading="PR 正文草稿"
+  summary_label="摘要"
+  summary_placeholder="<根据 task.md 和提交记录总结用户可见变化>"
+  validation_label="验证"
+  validation_placeholder="<填写最新 cc-check 命令和结果>"
+  risk_label="风险 / 回滚"
+  risk_placeholder="<总结残余风险和回滚路径>"
+else
+  title="PR Brief"
+  change_heading="Change"
+  change_key_label="Change key"
+  branch_label="Branch"
+  head_label="Head"
+  task_heading="Task Summary"
+  done_prefix="Done"
+  missing_task="Missing task.md"
+  commits_heading="Recent Commits"
+  no_commits="No commits found"
+  diff_heading="Current Diff"
+  no_diff="No uncommitted diff"
+  status_heading="Worktree Status"
+  clean_status="Clean"
+  body_heading="PR Body Draft"
+  summary_label="Summary"
+  summary_placeholder="<summarize user-visible change from task.md and commits>"
+  validation_label="Validation"
+  validation_placeholder="<copy fresh cc-check commands and results>"
+  risk_label="Risk / rollback"
+  risk_placeholder="<summarize residual risk and rollback path>"
+fi
+
+render_prefixed_lines() {
+  local content="$1"
+  local empty_text="$2"
+
+  if [[ -n "$content" ]]; then
+    printf '%s\n' "$content" | sed 's/^/- /'
+  else
+    printf -- '- %s\n' "$empty_text"
+  fi
+}
+
 {
-  echo "# PR Brief"
+  echo "# $title"
   echo
-  echo "## Change"
+  echo "## $change_heading"
   echo
-  echo "- Change key: $(basename "$change_dir")"
-  echo "- Branch: ${branch:-unknown}"
-  echo "- Head: ${head_sha:-unknown}"
+  echo "- $change_key_label: $(basename "$change_dir")"
+  echo "- $branch_label: ${branch:-unknown}"
+  echo "- $head_label: ${head_sha:-unknown}"
+  echo "- Output language: $output_language"
   echo
-  echo "## Task Summary"
+  echo "## $task_heading"
   echo
   if [[ -f "$task_file" ]]; then
-    awk '/^- \[[xX]\] /{print "- Done: " substr($0, 7)}' "$task_file"
+    awk -v prefix="$done_prefix" '/^- \[[xX]\] /{print "- " prefix ": " substr($0, 7)}' "$task_file"
   else
-    echo "- Missing task.md"
+    printf -- '- %s\n' "$missing_task"
   fi
   echo
-  echo "## Recent Commits"
+  echo "## $commits_heading"
   echo
-  if [[ -n "$commits" ]]; then
-    printf '%s\n' "$commits" | sed 's/^/- /'
-  else
-    echo "- No commits found"
-  fi
+  render_prefixed_lines "$commits" "$no_commits"
   echo
-  echo "## Current Diff"
+  echo "## $diff_heading"
   echo
-  if [[ -n "$changed" ]]; then
-    printf '%s\n' "$changed" | sed 's/^/- /'
-  else
-    echo "- No uncommitted diff"
-  fi
+  render_prefixed_lines "$changed" "$no_diff"
   echo
-  echo "## Worktree Status"
+  echo "## $status_heading"
   echo
-  if [[ -n "$status" ]]; then
-    printf '%s\n' "$status" | sed 's/^/- /'
-  else
-    echo "- Clean"
-  fi
+  render_prefixed_lines "$status" "$clean_status"
   echo
-  echo "## PR Body Draft"
+  echo "## $body_heading"
   echo
-  echo "Summary:"
-  echo "- <summarize user-visible change from task.md and commits>"
+  echo "$summary_label:"
+  printf -- '- %s\n' "$summary_placeholder"
   echo
-  echo "Validation:"
-  echo "- <copy fresh cc-check commands and results>"
+  echo "$validation_label:"
+  printf -- '- %s\n' "$validation_placeholder"
   echo
-  echo "Risk / rollback:"
-  echo "- <summarize residual risk and rollback path>"
+  echo "$risk_label:"
+  printf -- '- %s\n' "$risk_placeholder"
 } > "$OUT_FILE"
 
 echo "Rendered $OUT_FILE"

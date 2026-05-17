@@ -115,7 +115,7 @@ function normalizeHeader(value) {
   return String(value || '')
     .trim()
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, ' ');
+    .replace(/[^\p{L}\p{N}]+/gu, ' ');
 }
 
 function normalizeCell(value) {
@@ -159,7 +159,7 @@ function formatInlineCode(value) {
 
 function normalizeBoolean(value) {
   const normalized = normalizeCell(value).toLowerCase();
-  return normalized === 'yes' || normalized === 'true';
+  return normalized === 'yes' || normalized === 'true' || normalized === '是';
 }
 
 function emptyBacklog() {
@@ -315,36 +315,78 @@ function normalizeRoadmapState(raw = {}) {
 }
 
 const ROADMAP_HEADER_TO_KEY = new Map(
-  ROADMAP_COLUMNS.map(([header, key]) => [normalizeHeader(header), key])
+  [
+    ...ROADMAP_COLUMNS,
+    ['事项', 'item'],
+    ['阶段', 'stage'],
+    ['优先级', 'priority'],
+    ['主能力', 'primaryCapability'],
+    ['次能力', 'secondaryCapabilities'],
+    ['预期规格变化', 'expectedSpecDelta'],
+    ['依赖', 'dependsOn'],
+    ['状态', 'status'],
+    ['进度', 'progress']
+  ].map(([header, key]) => [normalizeHeader(header), key])
 );
 
 const BACKLOG_QUEUE_HEADER_TO_KEY = new Map(
-  BACKLOG_QUEUE_COLUMNS.map(([header, key]) => [normalizeHeader(header), key])
+  [
+    ...BACKLOG_QUEUE_COLUMNS,
+    ['标题', 'item'],
+    ['来源阶段', 'stage'],
+    ['优先级', 'priority'],
+    ['主能力', 'primaryCapability'],
+    ['次能力', 'secondaryCapabilities'],
+    ['能力缺口', 'capabilityGap'],
+    ['预期规格变化', 'expectedSpecDelta'],
+    ['证据', 'evidence'],
+    ['依赖', 'dependsOn'],
+    ['可并行', 'parallelWith'],
+    ['未知项', 'unknowns'],
+    ['下一决策', 'nextDecision'],
+    ['就绪', 'ready']
+  ].map(([header, key]) => [normalizeHeader(header), key])
 );
 
 const READY_FIELD_MAP = new Map(
   [
     ['Primary Capability', 'primaryCapability'],
+    ['主能力', 'primaryCapability'],
     ['Secondary Capabilities', 'secondaryCapabilities'],
+    ['次能力', 'secondaryCapabilities'],
     ['Why now', 'whyNow'],
+    ['为什么现在做', 'whyNow'],
     ['Success signal', 'successSignal'],
+    ['成功信号', 'successSignal'],
     ['Entry constraints', 'entryConstraints'],
+    ['进入约束', 'entryConstraints'],
     ['Capability gap', 'capabilityGap'],
+    ['能力缺口', 'capabilityGap'],
     ['Expected spec delta', 'expectedSpecDelta'],
+    ['预期规格变化', 'expectedSpecDelta'],
     ['Open risks', 'openRisks'],
+    ['未决风险', 'openRisks'],
     ['First planning question', 'firstPlanningQuestion'],
+    ['首个规划问题', 'firstPlanningQuestion'],
     ['Required context to load', 'requiredContextToLoad'],
+    ['必须加载的上下文', 'requiredContextToLoad'],
     ['Depends On', 'dependsOn'],
+    ['依赖', 'dependsOn'],
     ['Parallel With', 'parallelWith'],
-    ['Why this is ready now', 'whyReadyNow']
+    ['可并行', 'parallelWith'],
+    ['Why this is ready now', 'whyReadyNow'],
+    ['为什么现在已就绪', 'whyReadyNow']
   ].map(([label, key]) => [normalizeHeader(label), key])
 );
 
 const PARKED_FIELD_MAP = new Map(
   [
     ['Reason parked', 'parkedReason'],
+    ['暂存原因', 'parkedReason'],
     ['Trigger to reopen', 'triggerToReopen'],
-    ['Missing evidence', 'missingEvidence']
+    ['重新打开触发条件', 'triggerToReopen'],
+    ['Missing evidence', 'missingEvidence'],
+    ['缺失证据', 'missingEvidence']
   ].map(([label, key]) => [normalizeHeader(label), key])
 );
 

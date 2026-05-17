@@ -9,7 +9,6 @@ const {
   ROADMAP_COLUMNS,
   ROADMAP_HEADER_TO_KEY,
   formatBacklogValue,
-  formatBoolean,
   formatCell,
   formatInlineCode,
   formatList,
@@ -20,6 +19,163 @@ const {
   normalizeTracking,
   parseList
 } = require('./schema');
+
+const DOCUMENT_LABELS = {
+  en: {
+    roadmapTitle: 'ROADMAP',
+    backlogTitle: 'BACKLOG',
+    implementationTracking: 'Implementation Tracking',
+    technicalArchitecture: 'Technical Architecture',
+    roadmapStateSource: 'Roadmap state source',
+    trackingSource: 'Tracking source',
+    deprecatedProjection: '> Deprecated projection. Edit `roadmap.json` instead.',
+    backlogMeta: 'Backlog Meta',
+    roadmapVersion: 'Roadmap version',
+    skillVersion: 'Skill version',
+    lastSynced: 'Last synced',
+    currentFocusStage: 'Current focus stage',
+    queue: 'Queue',
+    dependencyHandoff: 'Dependency Handoff',
+    serialSpine: 'Serial spine',
+    parallelReadyNextWave: 'Parallel-ready next wave',
+    notesOnBlockers: 'Notes on blockers',
+    projectDirectionHandoff: 'Project Direction Handoff',
+    projectDirectionMode: 'Project direction mode',
+    projectDirectionRationale: 'Direction mode rationale',
+    directionQuestionsSelected: 'Direction-specific questions selected',
+    directionQuestionsSkipped: 'Direction-specific questions skipped',
+    directionGuardrailsApplied: 'Direction guardrails applied',
+    planningPosture: 'Planning posture',
+    evidenceMaturity: 'Evidence maturity',
+    readyForReqPlan: 'Ready For Req-Plan',
+    parked: 'Parked',
+    yes: 'Yes',
+    no: 'No',
+    readyEmpty:
+      '- RM-001:\n  - Primary Capability:\n  - Secondary Capabilities:\n  - Why now:\n  - Success signal:\n  - Entry constraints:\n  - Capability gap:\n  - Expected spec delta:\n  - Open risks:\n  - First planning question:\n  - Required context to load:\n  - Depends On:\n  - Parallel With:\n  - Why this is ready now:',
+    parkedEmpty: '- RM-XXX:\n  - Reason parked:\n  - Trigger to reopen:\n  - Missing evidence:',
+    readyFields: {
+      primaryCapability: 'Primary Capability',
+      secondaryCapabilities: 'Secondary Capabilities',
+      whyNow: 'Why now',
+      successSignal: 'Success signal',
+      entryConstraints: 'Entry constraints',
+      capabilityGap: 'Capability gap',
+      expectedSpecDelta: 'Expected spec delta',
+      openRisks: 'Open risks',
+      firstPlanningQuestion: 'First planning question',
+      requiredContextToLoad: 'Required context to load',
+      dependsOn: 'Depends On',
+      parallelWith: 'Parallel With',
+      whyReadyNow: 'Why this is ready now'
+    },
+    parkedFields: {
+      parkedReason: 'Reason parked',
+      triggerToReopen: 'Trigger to reopen',
+      missingEvidence: 'Missing evidence'
+    },
+    roadmapColumns: ROADMAP_COLUMNS.map(([label, key]) => [label, key]),
+    backlogColumns: BACKLOG_QUEUE_COLUMNS.map(([label, key]) => [label, key])
+  },
+  'zh-CN': {
+    roadmapTitle: '路线图',
+    backlogTitle: '待办队列',
+    implementationTracking: '执行跟踪',
+    technicalArchitecture: '技术架构',
+    roadmapStateSource: '路线图状态源',
+    trackingSource: '跟踪源',
+    deprecatedProjection: '> 已废弃投影。请编辑 `roadmap.json`。',
+    backlogMeta: '待办元信息',
+    roadmapVersion: '路线图版本',
+    skillVersion: 'Skill 版本',
+    lastSynced: '最近同步',
+    currentFocusStage: '当前聚焦阶段',
+    queue: '队列',
+    dependencyHandoff: '依赖交接',
+    serialSpine: '串行主线',
+    parallelReadyNextWave: '下一波可并行事项',
+    notesOnBlockers: '阻塞说明',
+    projectDirectionHandoff: '项目方向交接',
+    projectDirectionMode: '项目方向模式',
+    projectDirectionRationale: '方向模式理由',
+    directionQuestionsSelected: '已选择的方向问题',
+    directionQuestionsSkipped: '已跳过的方向问题',
+    directionGuardrailsApplied: '已应用的方向护栏',
+    planningPosture: '规划姿态',
+    evidenceMaturity: '证据成熟度',
+    readyForReqPlan: '可进入 Req-Plan',
+    parked: '暂存',
+    yes: '是',
+    no: '否',
+    readyEmpty:
+      '- RM-001:\n  - 主能力:\n  - 次能力:\n  - 为什么现在做:\n  - 成功信号:\n  - 进入约束:\n  - 能力缺口:\n  - 预期规格变化:\n  - 未决风险:\n  - 首个规划问题:\n  - 必须加载的上下文:\n  - 依赖:\n  - 可并行:\n  - 为什么现在已就绪:',
+    parkedEmpty: '- RM-XXX:\n  - 暂存原因:\n  - 重新打开触发条件:\n  - 缺失证据:',
+    readyFields: {
+      primaryCapability: '主能力',
+      secondaryCapabilities: '次能力',
+      whyNow: '为什么现在做',
+      successSignal: '成功信号',
+      entryConstraints: '进入约束',
+      capabilityGap: '能力缺口',
+      expectedSpecDelta: '预期规格变化',
+      openRisks: '未决风险',
+      firstPlanningQuestion: '首个规划问题',
+      requiredContextToLoad: '必须加载的上下文',
+      dependsOn: '依赖',
+      parallelWith: '可并行',
+      whyReadyNow: '为什么现在已就绪'
+    },
+    parkedFields: {
+      parkedReason: '暂存原因',
+      triggerToReopen: '重新打开触发条件',
+      missingEvidence: '缺失证据'
+    },
+    roadmapColumns: [
+      ['RM-ID', 'rmId'],
+      ['事项', 'item'],
+      ['阶段', 'stage'],
+      ['优先级', 'priority'],
+      ['主能力', 'primaryCapability'],
+      ['次能力', 'secondaryCapabilities'],
+      ['预期规格变化', 'expectedSpecDelta'],
+      ['依赖', 'dependsOn'],
+      ['状态', 'status'],
+      ['REQ', 'req'],
+      ['进度', 'progress']
+    ],
+    backlogColumns: [
+      ['RM-ID', 'rmId'],
+      ['标题', 'item'],
+      ['来源阶段', 'stage'],
+      ['优先级', 'priority'],
+      ['主能力', 'primaryCapability'],
+      ['次能力', 'secondaryCapabilities'],
+      ['能力缺口', 'capabilityGap'],
+      ['预期规格变化', 'expectedSpecDelta'],
+      ['证据', 'evidence'],
+      ['依赖', 'dependsOn'],
+      ['可并行', 'parallelWith'],
+      ['未知项', 'unknowns'],
+      ['下一决策', 'nextDecision'],
+      ['就绪', 'ready']
+    ]
+  }
+};
+
+function labelsFor(tracking) {
+  return DOCUMENT_LABELS[tracking?.outputPolicy?.documentLanguage] || DOCUMENT_LABELS.en;
+}
+
+function extractAnySection(markdown, headings) {
+  for (const heading of headings) {
+    const section = extractSection(markdown, heading);
+    if (section) {
+      return section;
+    }
+  }
+
+  return null;
+}
 
 function splitRow(line) {
   return line
@@ -98,7 +254,10 @@ function parseTable(sectionBody, headerMap, buildRow) {
 }
 
 function trackingFromRoadmap(markdown) {
-  const section = extractSection(markdown, 'Implementation Tracking');
+  const section = extractAnySection(markdown, [
+    'Implementation Tracking',
+    DOCUMENT_LABELS['zh-CN'].implementationTracking
+  ]);
   if (!section) {
     return [];
   }
@@ -145,13 +304,13 @@ function parseBacklogMeta(sectionBody) {
     const label = normalizeHeader(match[1]);
     const value = normalizeCell(match[2].replace(/`/g, ''));
 
-    if (label === 'roadmap version') {
+    if (label === 'roadmap version' || label === '路线图版本') {
       meta.roadmapVersion = value;
-    } else if (label === 'skill version') {
+    } else if (label === 'skill version' || label === 'skill 版本') {
       meta.skillVersion = value;
-    } else if (label === 'last synced') {
+    } else if (label === 'last synced' || label === '最近同步') {
       lastSyncedAt = value;
-    } else if (label === 'current focus stage') {
+    } else if (label === 'current focus stage' || label === '当前聚焦阶段') {
       meta.currentFocusStage = value;
     }
   }
@@ -279,11 +438,11 @@ function parseDependencyHandoff(sectionBody) {
     const label = normalizeHeader(match[1]);
     const value = normalizeCell(match[2].replace(/`/g, ''));
 
-    if (label === 'serial spine') {
+    if (label === 'serial spine' || label === '串行主线') {
       next.serialSpine = value;
-    } else if (label === 'parallel ready next wave') {
+    } else if (label === 'parallel ready next wave' || label === '下一波可并行事项') {
       next.parallelReadyNextWave = value;
-    } else if (label === 'notes on blockers') {
+    } else if (label === 'notes on blockers' || label === '阻塞说明') {
       next.notesOnBlockers = value;
     }
   }
@@ -327,7 +486,7 @@ function mergeItemMaps(baseItems, incomingItems) {
 function trackingFromBacklog(markdown, baseTracking) {
   const next = normalizeTracking(baseTracking);
 
-  const metaSection = extractSection(markdown, 'Backlog Meta');
+  const metaSection = extractAnySection(markdown, ['Backlog Meta', DOCUMENT_LABELS['zh-CN'].backlogMeta]);
   if (metaSection) {
     const parsed = parseBacklogMeta(metaSection.body);
     next.backlogMeta = parsed.meta;
@@ -336,17 +495,23 @@ function trackingFromBacklog(markdown, baseTracking) {
     }
   }
 
-  const queueSection = extractSection(markdown, 'Queue');
+  const queueSection = extractAnySection(markdown, ['Queue', DOCUMENT_LABELS['zh-CN'].queue]);
   if (queueSection) {
     next.items = mergeItemMaps(next.items, parseBacklogQueue(queueSection.body));
   }
 
-  const dependencySection = extractSection(markdown, 'Dependency Handoff');
+  const dependencySection = extractAnySection(markdown, [
+    'Dependency Handoff',
+    DOCUMENT_LABELS['zh-CN'].dependencyHandoff
+  ]);
   if (dependencySection) {
     next.dependencyHandoff = parseDependencyHandoff(dependencySection.body);
   }
 
-  const readySection = extractSection(markdown, 'Ready For Req-Plan');
+  const readySection = extractAnySection(markdown, [
+    'Ready For Req-Plan',
+    DOCUMENT_LABELS['zh-CN'].readyForReqPlan
+  ]);
   if (readySection) {
     next.items = mergeItemMaps(
       next.items,
@@ -373,7 +538,7 @@ function trackingFromBacklog(markdown, baseTracking) {
     );
   }
 
-  const parkedSection = extractSection(markdown, 'Parked');
+  const parkedSection = extractAnySection(markdown, ['Parked', DOCUMENT_LABELS['zh-CN'].parked]);
   if (parkedSection) {
     next.items = mergeItemMaps(
       next.items,
@@ -408,8 +573,10 @@ function trackingFromMarkdown(roadmapMarkdown = '', backlogMarkdown = '') {
 }
 
 function renderRoadmapTable(tracking) {
-  const header = `| ${ROADMAP_COLUMNS.map(([label]) => label).join(' | ')} |`;
-  const separator = `|${ROADMAP_COLUMNS.map(() => '------').join('|')}|`;
+  const labels = labelsFor(tracking);
+  const columns = labels.roadmapColumns;
+  const header = `| ${columns.map(([label]) => label).join(' | ')} |`;
+  const separator = `|${columns.map(() => '------').join('|')}|`;
   const rows = tracking.items.length
     ? tracking.items.map((item) =>
         [
@@ -450,9 +617,10 @@ function isRoadmapState(tracking) {
 }
 
 function buildTrackingBody(roadmapFile, trackingFile, tracking) {
+  const labels = labelsFor(tracking);
   const relativePath = path.relative(path.dirname(roadmapFile), trackingFile).replace(/\\/g, '/');
   const displayPath = relativePath || path.basename(trackingFile);
-  const sourceLabel = isRoadmapState(tracking) ? 'Roadmap state source' : 'Tracking source';
+  const sourceLabel = isRoadmapState(tracking) ? labels.roadmapStateSource : labels.trackingSource;
 
   return [
     '',
@@ -476,6 +644,7 @@ function formatMermaidLabel(value) {
 }
 
 function renderArchitectureDiagram(tracking) {
+  const labels = labelsFor(tracking);
   const architecture = tracking.architecture || {};
   const nodes = Array.isArray(architecture.nodes) ? architecture.nodes : [];
   const edges = Array.isArray(architecture.edges) ? architecture.edges : [];
@@ -484,7 +653,7 @@ function renderArchitectureDiagram(tracking) {
     return '';
   }
 
-  const lines = ['## Technical Architecture', '', '```mermaid', 'flowchart TD'];
+  const lines = [`## ${labels.technicalArchitecture}`, '', '```mermaid', 'flowchart TD'];
 
   nodes.forEach((node) => {
     const id = formatMermaidId(node.id);
@@ -509,20 +678,28 @@ function renderArchitectureDiagram(tracking) {
 }
 
 function renderRoadmapDocument({ original = '# ROADMAP\n', roadmapFile, trackingFile, tracking }) {
-  const section = extractSection(original, 'Implementation Tracking');
+  const labels = labelsFor(tracking);
+  const baseOriginal = original.trim() === '# ROADMAP' ? `# ${labels.roadmapTitle}\n` : original;
+  const section = extractAnySection(baseOriginal, [
+    'Implementation Tracking',
+    labels.implementationTracking
+  ]);
   const body = buildTrackingBody(roadmapFile, trackingFile, tracking);
-  const nextSection = `## Implementation Tracking${body}`;
+  const nextSection = `## ${labels.implementationTracking}${body}`;
   const architectureSection = isRoadmapState(tracking) ? `\n${renderArchitectureDiagram(tracking)}` : '';
 
   const rendered = section
-    ? `${original.slice(0, section.start)}${nextSection}${original.slice(section.end)}`
-    : `${original.replace(/\s*$/, '')}\n\n${nextSection}\n`;
+    ? `${baseOriginal.slice(0, section.start)}${nextSection}${baseOriginal.slice(section.end)}`
+    : `${baseOriginal.replace(/\s*$/, '')}\n\n${nextSection}\n`;
 
   if (!architectureSection.trim()) {
     return rendered;
   }
 
-  const existingArchitecture = extractSection(rendered, 'Technical Architecture');
+  const existingArchitecture = extractAnySection(rendered, [
+    'Technical Architecture',
+    labels.technicalArchitecture
+  ]);
   if (existingArchitecture) {
     return `${rendered.slice(0, existingArchitecture.start)}${architectureSection.trimEnd()}\n${rendered.slice(existingArchitecture.end)}`;
   }
@@ -530,9 +707,15 @@ function renderRoadmapDocument({ original = '# ROADMAP\n', roadmapFile, tracking
   return `${rendered.replace(/\s*$/, '')}\n\n${architectureSection}`;
 }
 
+function renderLocalizedBoolean(value, labels) {
+  return value ? labels.yes : labels.no;
+}
+
 function renderBacklogQueue(tracking) {
-  const header = `| ${BACKLOG_QUEUE_COLUMNS.map(([label]) => label).join(' | ')} |`;
-  const separator = `|${BACKLOG_QUEUE_COLUMNS.map(() => '------').join('|')}|`;
+  const labels = labelsFor(tracking);
+  const columns = labels.backlogColumns;
+  const header = `| ${columns.map(([label]) => label).join(' | ')} |`;
+  const separator = `|${columns.map(() => '------').join('|')}|`;
   const queueItems = tracking.items.filter((item) => !item.backlog.parked);
   const rows = queueItems.length
     ? queueItems.map((item) =>
@@ -550,7 +733,7 @@ function renderBacklogQueue(tracking) {
           formatList(item.backlog.parallelWith),
           formatBacklogValue(item.backlog.unknowns),
           formatBacklogValue(item.backlog.nextDecision),
-          formatBoolean(item.backlog.ready)
+          renderLocalizedBoolean(item.backlog.ready, labels)
         ].join(' | ')
       )
     : [
@@ -568,7 +751,7 @@ function renderBacklogQueue(tracking) {
           '-',
           '-',
           '-',
-          'No'
+          labels.no
         ].join(' | ')
       ];
 
@@ -576,104 +759,110 @@ function renderBacklogQueue(tracking) {
 }
 
 function renderReadyForReqPlan(tracking) {
+  const labels = labelsFor(tracking);
+  const fields = labels.readyFields;
   const readyItems = tracking.items.filter((item) => item.backlog.ready && !item.backlog.parked);
   if (!readyItems.length) {
-    return '- RM-001:\n  - Primary Capability:\n  - Secondary Capabilities:\n  - Why now:\n  - Success signal:\n  - Entry constraints:\n  - Capability gap:\n  - Expected spec delta:\n  - Open risks:\n  - First planning question:\n  - Required context to load:\n  - Depends On:\n  - Parallel With:\n  - Why this is ready now:';
+    return labels.readyEmpty;
   }
 
   return readyItems
     .map((item) =>
       [
         `- ${item.rmId}:`,
-        `  - Primary Capability: ${formatInlineCode(item.primaryCapability)}`,
-        `  - Secondary Capabilities: ${item.secondaryCapabilities.length ? formatInlineCode(item.secondaryCapabilities.join(', ')) : '`-`'}`,
-        `  - Why now: ${formatBacklogValue(item.backlog.whyNow)}`,
-        `  - Success signal: ${formatBacklogValue(item.backlog.successSignal)}`,
-        `  - Entry constraints: ${formatBacklogValue(item.backlog.entryConstraints)}`,
-        `  - Capability gap: ${formatBacklogValue(item.backlog.capabilityGap)}`,
-        `  - Expected spec delta: ${formatBacklogValue(item.expectedSpecDelta)}`,
-        `  - Open risks: ${formatBacklogValue(item.backlog.openRisks)}`,
-        `  - First planning question: ${formatBacklogValue(item.backlog.firstPlanningQuestion)}`,
-        `  - Required context to load: ${formatBacklogValue(item.backlog.requiredContextToLoad)}`,
-        `  - Depends On: ${item.dependsOn.length ? formatInlineCode(item.dependsOn.join(', ')) : '`-`'}`,
-        `  - Parallel With: ${item.backlog.parallelWith.length ? formatInlineCode(item.backlog.parallelWith.join(', ')) : '`-`'}`,
-        `  - Why this is ready now: ${formatBacklogValue(item.backlog.whyReadyNow)}`
+        `  - ${fields.primaryCapability}: ${formatInlineCode(item.primaryCapability)}`,
+        `  - ${fields.secondaryCapabilities}: ${item.secondaryCapabilities.length ? formatInlineCode(item.secondaryCapabilities.join(', ')) : '`-`'}`,
+        `  - ${fields.whyNow}: ${formatBacklogValue(item.backlog.whyNow)}`,
+        `  - ${fields.successSignal}: ${formatBacklogValue(item.backlog.successSignal)}`,
+        `  - ${fields.entryConstraints}: ${formatBacklogValue(item.backlog.entryConstraints)}`,
+        `  - ${fields.capabilityGap}: ${formatBacklogValue(item.backlog.capabilityGap)}`,
+        `  - ${fields.expectedSpecDelta}: ${formatBacklogValue(item.expectedSpecDelta)}`,
+        `  - ${fields.openRisks}: ${formatBacklogValue(item.backlog.openRisks)}`,
+        `  - ${fields.firstPlanningQuestion}: ${formatBacklogValue(item.backlog.firstPlanningQuestion)}`,
+        `  - ${fields.requiredContextToLoad}: ${formatBacklogValue(item.backlog.requiredContextToLoad)}`,
+        `  - ${fields.dependsOn}: ${item.dependsOn.length ? formatInlineCode(item.dependsOn.join(', ')) : '`-`'}`,
+        `  - ${fields.parallelWith}: ${item.backlog.parallelWith.length ? formatInlineCode(item.backlog.parallelWith.join(', ')) : '`-`'}`,
+        `  - ${fields.whyReadyNow}: ${formatBacklogValue(item.backlog.whyReadyNow)}`
       ].join('\n')
     )
     .join('\n\n');
 }
 
 function renderParked(tracking) {
+  const labels = labelsFor(tracking);
+  const fields = labels.parkedFields;
   const parkedItems = tracking.items.filter((item) => item.backlog.parked);
   if (!parkedItems.length) {
-    return '- RM-XXX:\n  - Reason parked:\n  - Trigger to reopen:\n  - Missing evidence:';
+    return labels.parkedEmpty;
   }
 
   return parkedItems
     .map((item) =>
       [
         `- ${item.rmId}:`,
-        `  - Reason parked: ${formatBacklogValue(item.backlog.parkedReason)}`,
-        `  - Trigger to reopen: ${formatBacklogValue(item.backlog.triggerToReopen)}`,
-        `  - Missing evidence: ${formatBacklogValue(item.backlog.missingEvidence)}`
+        `  - ${fields.parkedReason}: ${formatBacklogValue(item.backlog.parkedReason)}`,
+        `  - ${fields.triggerToReopen}: ${formatBacklogValue(item.backlog.triggerToReopen)}`,
+        `  - ${fields.missingEvidence}: ${formatBacklogValue(item.backlog.missingEvidence)}`
       ].join('\n')
     )
     .join('\n\n');
 }
 
 function renderProjectDirectionHandoff(tracking) {
+  const labels = labelsFor(tracking);
   const context = tracking.context || {};
 
   return [
-    `- Project direction mode: ${formatBacklogValue(context.projectDirectionMode)}`,
-    `- Direction mode rationale: ${formatBacklogValue(context.projectDirectionRationale)}`,
-    `- Direction-specific questions selected: ${formatList(context.directionQuestionsSelected || [])}`,
-    `- Direction-specific questions skipped: ${formatList(context.directionQuestionsSkipped || [])}`,
-    `- Direction guardrails applied: ${formatList(context.directionGuardrailsApplied || [])}`,
-    `- Planning posture: ${formatBacklogValue(context.planningPosture)}`,
-    `- Evidence maturity: ${formatBacklogValue(context.evidenceMaturity)}`
+    `- ${labels.projectDirectionMode}: ${formatBacklogValue(context.projectDirectionMode)}`,
+    `- ${labels.projectDirectionRationale}: ${formatBacklogValue(context.projectDirectionRationale)}`,
+    `- ${labels.directionQuestionsSelected}: ${formatList(context.directionQuestionsSelected || [])}`,
+    `- ${labels.directionQuestionsSkipped}: ${formatList(context.directionQuestionsSkipped || [])}`,
+    `- ${labels.directionGuardrailsApplied}: ${formatList(context.directionGuardrailsApplied || [])}`,
+    `- ${labels.planningPosture}: ${formatBacklogValue(context.planningPosture)}`,
+    `- ${labels.evidenceMaturity}: ${formatBacklogValue(context.evidenceMaturity)}`
   ].join('\n');
 }
 
 function renderBacklogDocument({ backlogFile, trackingFile, tracking }) {
+  const labels = labelsFor(tracking);
   const relativePath = path.relative(path.dirname(backlogFile), trackingFile).replace(/\\/g, '/');
   const displayPath = relativePath || path.basename(trackingFile);
-  const sourceLabel = isRoadmapState(tracking) ? 'Roadmap state source' : 'Tracking source';
+  const sourceLabel = isRoadmapState(tracking) ? labels.roadmapStateSource : labels.trackingSource;
   const deprecationNotice = isRoadmapState(tracking)
-    ? ['> Deprecated projection. Edit `roadmap.json` instead.', '']
+    ? [labels.deprecatedProjection, '']
     : [];
 
   return [
-    '# BACKLOG',
+    `# ${labels.backlogTitle}`,
     '',
     ...deprecationNotice,
-    '## Backlog Meta',
+    `## ${labels.backlogMeta}`,
     '',
-    `- Roadmap version: ${formatInlineCode(tracking.backlogMeta.roadmapVersion)}`,
-    `- Skill version: ${formatInlineCode(tracking.backlogMeta.skillVersion)}`,
-    `- Last synced: ${formatInlineCode(tracking.lastSyncedAt)}`,
-    `- Current focus stage: ${formatInlineCode(tracking.backlogMeta.currentFocusStage)}`,
+    `- ${labels.roadmapVersion}: ${formatInlineCode(tracking.backlogMeta.roadmapVersion)}`,
+    `- ${labels.skillVersion}: ${formatInlineCode(tracking.backlogMeta.skillVersion)}`,
+    `- ${labels.lastSynced}: ${formatInlineCode(tracking.lastSyncedAt)}`,
+    `- ${labels.currentFocusStage}: ${formatInlineCode(tracking.backlogMeta.currentFocusStage)}`,
     `- ${sourceLabel}: \`${displayPath}\``,
     '',
-    '## Queue',
+    `## ${labels.queue}`,
     '',
     renderBacklogQueue(tracking),
     '',
-    '## Dependency Handoff',
+    `## ${labels.dependencyHandoff}`,
     '',
-    `- Serial spine: ${formatBacklogValue(tracking.dependencyHandoff.serialSpine)}`,
-    `- Parallel-ready next wave: ${formatBacklogValue(tracking.dependencyHandoff.parallelReadyNextWave)}`,
-    `- Notes on blockers: ${formatBacklogValue(tracking.dependencyHandoff.notesOnBlockers)}`,
+    `- ${labels.serialSpine}: ${formatBacklogValue(tracking.dependencyHandoff.serialSpine)}`,
+    `- ${labels.parallelReadyNextWave}: ${formatBacklogValue(tracking.dependencyHandoff.parallelReadyNextWave)}`,
+    `- ${labels.notesOnBlockers}: ${formatBacklogValue(tracking.dependencyHandoff.notesOnBlockers)}`,
     '',
-    '## Project Direction Handoff',
+    `## ${labels.projectDirectionHandoff}`,
     '',
     renderProjectDirectionHandoff(tracking),
     '',
-    '## Ready For Req-Plan',
+    `## ${labels.readyForReqPlan}`,
     '',
     renderReadyForReqPlan(tracking),
     '',
-    '## Parked',
+    `## ${labels.parked}`,
     '',
     renderParked(tracking),
     ''

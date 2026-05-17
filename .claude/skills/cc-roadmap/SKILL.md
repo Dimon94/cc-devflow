@@ -1,6 +1,6 @@
 ---
 name: cc-roadmap
-version: 5.3.0
+version: 5.3.1
 description: "Use when defining, resetting, or narrowing project direction, stage order, or backlog priority before a concrete requirement enters the PDCA loop."
 triggers:
   - "帮我定路线图"
