@@ -97,6 +97,40 @@ describe('cc-dev work branch anchor', () => {
     );
   });
 
+  test('reuses a change worktree when the root path resolves through a symlink', () => {
+    const repoRoot = createRepo();
+    const physicalRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-dev-worktrees-real-'));
+    const linkParent = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-dev-worktrees-link-'));
+    const linkedRoot = path.join(linkParent, 'worktrees');
+    fs.symlinkSync(physicalRoot, linkedRoot, 'dir');
+
+    const first = run('bash', [
+      PREPARE_CHANGE_WORKTREE,
+      '--change-key',
+      'REQ-004-reuse-linked-worktree',
+      '--worktrees-root',
+      linkedRoot
+    ], repoRoot);
+
+    const second = run('bash', [
+      PREPARE_CHANGE_WORKTREE,
+      '--change-key',
+      'REQ-004-reuse-linked-worktree',
+      '--worktrees-root',
+      linkedRoot
+    ], repoRoot);
+
+    const worktreePath = field(first.stdout, 'WORKTREE_PATH');
+
+    expect(field(first.stdout, 'WORKTREE_ACTION')).toBe('created');
+    expect(field(second.stdout, 'WORKTREE_ACTION')).toBe('reused');
+    expect(field(second.stdout, 'WORK_BRANCH')).toBe('REQ/004-reuse-linked-worktree');
+    expect(run('git', ['branch', '--show-current'], repoRoot).stdout.trim()).toBe('main');
+    expect(run('git', ['branch', '--show-current'], worktreePath).stdout.trim()).toBe(
+      'REQ/004-reuse-linked-worktree'
+    );
+  });
+
   test('creates an exact-case REQ branch from detached HEAD', () => {
     const repoRoot = createRepo();
     run('git', ['switch', '--detach', 'HEAD'], repoRoot);
