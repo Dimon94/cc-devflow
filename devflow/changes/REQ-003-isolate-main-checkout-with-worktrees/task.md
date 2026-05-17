@@ -189,7 +189,7 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --tasks devflow/changes/REQ-003-isolat
   Public verification path: real Git fixture repo, real `git worktree list`, real branch checks.
   Ready when: no upstream dependency exists.
 
-- [ ] T002 [IMPL] Implement the change worktree preparation script (dependsOn:T001) `.claude/skills/cc-dev/scripts/prepare-change-worktree.sh`
+- [x] T002 [IMPL] Implement the change worktree preparation script (dependsOn:T001) `.claude/skills/cc-dev/scripts/prepare-change-worktree.sh`
   Goal: Create or reuse the isolated worktree, then run `ensure-work-branch.sh` inside it so branch validation remains centralized.
   Contract: user story `US-001`; method/interface `prepare-change-worktree.sh --change-key <REQ/FIX-...> [--base main] [--worktrees-root <path>]`.
   Do not re-decide: keep `ensure-work-branch.sh` responsible for exact-case branch validation; wrapper only owns path creation/reuse and machine-readable output.
