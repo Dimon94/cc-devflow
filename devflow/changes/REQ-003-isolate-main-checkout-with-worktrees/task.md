@@ -217,7 +217,7 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --tasks devflow/changes/REQ-003-isolat
   Public verification path: skill text instructs preparation from main to isolated worktree before `task.md`.
   Ready when: T002 is green.
 
-- [ ] T004 [VERIFY] Regenerate Codex mirror and run distribution gates (dependsOn:T003) `.codex/skills/cc-plan/SKILL.md`
+- [x] T004 [VERIFY] Regenerate Codex mirror and run distribution gates (dependsOn:T003) `.codex/skills/cc-plan/SKILL.md`
   Goal: Propagate the source contract to generated Codex skills and prove publish/example surfaces are coherent.
   Contract: user story `US-003`; method/interface adapter output and validation scripts.
   Do not re-decide: do not hand-maintain `.codex`; use adapter generation only.
