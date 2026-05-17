@@ -253,6 +253,117 @@ describe('cc-roadmap tracking sync', () => {
     fs.rmSync(tempDir, { recursive: true, force: true });
   });
 
+  test('renders roadmap and backlog projections in configured Chinese', () => {
+    const repoRoot = path.resolve(__dirname, '..');
+    const script = path.join(
+      repoRoot,
+      '.claude/skills/cc-roadmap/scripts/roadmap-tracking.js'
+    );
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-roadmap-v3-zh-'));
+    const roadmapDir = path.join(tempDir, 'devflow');
+    const roadmapPath = path.join(roadmapDir, 'ROADMAP.md');
+    const backlogPath = path.join(roadmapDir, 'BACKLOG.md');
+    const statePath = path.join(roadmapDir, 'roadmap.json');
+
+    fs.mkdirSync(roadmapDir, { recursive: true });
+    fs.writeFileSync(roadmapPath, '# ROADMAP\n');
+    fs.writeFileSync(backlogPath, '# BACKLOG\n');
+    fs.writeFileSync(
+      statePath,
+      `${JSON.stringify(
+        {
+          version: 3,
+          outputPolicy: {
+            documentLanguage: 'zh-CN'
+          },
+          meta: {
+            roadmapVersion: 'roadmap.v2',
+            skillVersion: '5.2.0',
+            status: 'active',
+            lastUpdated: '2026-05-01',
+            currentFocusStage: 'Stage 1'
+          },
+          context: {
+            projectDirectionMode: 'founder-business',
+            projectDirectionRationale: '需要选择付费楔子',
+            directionQuestionsSelected: ['需求现实'],
+            directionQuestionsSkipped: [],
+            directionGuardrailsApplied: ['保持项目语言'],
+            planningPosture: 'startup',
+            evidenceMaturity: 'idea'
+          },
+          items: [
+            {
+              rmId: 'RM-010',
+              item: '生成中文投影',
+              stage: 'Stage 1',
+              priority: 'P0',
+              primaryCapability: 'roadmap-truth-model',
+              secondaryCapabilities: [],
+              expectedSpecDelta: 'render views from roadmap.json',
+              dependsOn: [],
+              status: 'Ready',
+              req: 'REQ-010',
+              progress: '20%',
+              backlog: {
+                capabilityGap: 'views are not state generated',
+                evidence: 'manual markdown drift',
+                parallelWith: [],
+                unknowns: '',
+                nextDecision: 'ship renderer',
+                ready: true,
+                whyNow: 'state is canonical',
+                successSignal: 'generated views cite roadmap.json',
+                entryConstraints: '',
+                openRisks: '',
+                firstPlanningQuestion: '',
+                requiredContextToLoad: '',
+                whyReadyNow: 'contract is frozen',
+                parked: false
+              }
+            }
+          ],
+          handoff: {
+            readyForCcPlan: ['RM-010'],
+            parked: [],
+            serialSpine: ['RM-010'],
+            parallelWaves: []
+          },
+          architecture: {
+            diagramType: 'flowchart',
+            nodes: [{ id: 'roadmap_json', label: 'roadmap.json' }],
+            edges: []
+          }
+        },
+        null,
+        2
+      )}\n`
+    );
+
+    const result = spawnSync(
+      'node',
+      [script, 'render', '--roadmap', roadmapPath, '--backlog', backlogPath, '--tracking', statePath],
+      { cwd: repoRoot, encoding: 'utf8' }
+    );
+
+    expect(result.status).toBe(0);
+
+    const renderedRoadmap = fs.readFileSync(roadmapPath, 'utf8');
+    expect(renderedRoadmap).toContain('# 路线图');
+    expect(renderedRoadmap).toContain('## 执行跟踪');
+    expect(renderedRoadmap).toContain('- 路线图状态源: `roadmap.json`');
+    expect(renderedRoadmap).toContain('| RM-ID | 事项 | 阶段 | 优先级 | 主能力 |');
+
+    const renderedBacklog = fs.readFileSync(backlogPath, 'utf8');
+    expect(renderedBacklog).toContain('# 待办队列');
+    expect(renderedBacklog).toContain('> 已废弃投影。请编辑 `roadmap.json`。');
+    expect(renderedBacklog).toContain('## 项目方向交接');
+    expect(renderedBacklog).toContain('- 项目方向模式: founder-business');
+    expect(renderedBacklog).toContain('| RM-010 | 生成中文投影 |');
+
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  });
+
   test('bootstraps legacy tracking tables into json truth and rerenders roadmap', () => {
     const repoRoot = path.resolve(__dirname, '..');
     const script = path.join(
