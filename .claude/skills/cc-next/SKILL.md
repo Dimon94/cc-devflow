@@ -1,6 +1,6 @@
 ---
 name: cc-next
-version: 1.1.1
+version: 1.2.0
 description: Use when you need to pick the next ready work item from roadmap truth, active changes, and remote issues, then produce one Goal Packet for cc-dev.
 triggers:
   - 选下一个需求
@@ -18,6 +18,7 @@ reads:
   - devflow/changes/<change-key>/task.md
   - devflow/changes/<change-key>/handoff/pr-brief.md
   - devflow/changes/archive/
+  - references/checklist-contract.md
 writes:
   - path: chat Goal Packet for cc-dev
     durability: transient
@@ -47,6 +48,10 @@ tool_budget:
 ---
 
 # CC-Next
+
+## Read First
+
+1. `references/checklist-contract.md`
 
 `cc-next` 只选下一件事，不实现。
 
@@ -88,3 +93,8 @@ Goal Packet
 ```
 
 Keep output short: queue truth, selected goal, reason, next gate.
+
+
+## Checklist Contract
+
+Follow `references/checklist-contract.md` before each pause point. The checklist is the local do-confirm/read-do contract for this skill; skip only with an explicit blocker or route.

@@ -1,5 +1,10 @@
 # Roadmap Skill Changelog
 
+## v5.4.0 - 2026-05-18
+
+- add a roadmap-specific checklist contract with explicit pause points before route recommendation and durable roadmap writeback
+- make roadmap direction checks cover user/operator truth, workaround evidence, route lens, kill signal, and downstream handoff readiness
+
 ## v5.3.1 - 2026-05-17
 
 - make generated `ROADMAP.md` and deprecated `BACKLOG.md` projections render headings, labels, empty placeholders, and readiness booleans in Chinese when `outputPolicy.documentLanguage` is `zh-CN`

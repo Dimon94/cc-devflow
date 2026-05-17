@@ -1,5 +1,10 @@
 # CC-Plan Skill Changelog
 
+## v3.11.0 - 2026-05-18
+
+- add a plan-specific checklist contract that turns the planning flow into preflight, design, task, and exit pause points
+- require the checklist to keep product discovery, Second-Move Review, branch-chain analysis, task blocks, and plan commit evidence together
+
 ## v3.10.7 - 2026-05-17
 
 - require new plans to prepare an isolated change worktree before writing `task.md`

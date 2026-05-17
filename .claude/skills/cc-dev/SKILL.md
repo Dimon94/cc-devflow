@@ -1,6 +1,6 @@
 ---
 name: cc-dev
-version: 1.1.3
+version: 1.2.0
 description: Use when a selected objective should be driven autonomously in the current session and worktree through PDCA or IDCA until a PR, local handoff, clarification, or blocker.
 triggers:
   - 自动驾驶开发这个需求
@@ -19,6 +19,7 @@ reads:
   - scripts/prepare-change-worktree.sh
   - scripts/ensure-work-branch.sh
   - devflow/changes/<change-key>/task.md
+  - references/checklist-contract.md
 writes:
   - path: devflow/changes/<change-key>/task.md
     durability: durable
@@ -65,6 +66,10 @@ tool_budget:
 ---
 
 # CC-Dev
+
+## Read First
+
+1. `references/checklist-contract.md`
 
 `cc-dev` 是目标驱动层。它在当前 worktree 内串起：
 
@@ -116,3 +121,8 @@ Before declaring terminal success:
 - treat uncertainty as not complete
 
 Stop only when no required work remains or a real blocker needs the user.
+
+
+## Checklist Contract
+
+Follow `references/checklist-contract.md` before each pause point. The checklist is the local do-confirm/read-do contract for this skill; skip only with an explicit blocker or route.

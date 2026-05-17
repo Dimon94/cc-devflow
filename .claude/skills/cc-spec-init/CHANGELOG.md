@@ -1,5 +1,9 @@
 # CC-Spec-Init Skill Changelog
 
+## v1.3.0 - 2026-05-18
+
+- add a capability-spec checklist contract for boundary, current truth, gaps, language, index link, and commit pause points
+
 ## v1.1.0 - 2026-04-28
 
 - add a language boundary gate for canonical capability terms, aliases to avoid, flagged ambiguity, and relationship constraints

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.0
+
+- add a stage-transition checklist contract so autonomous PDCA/IDCA pauses on branch, task, Git, verification, and PR truth before each route hop
+
 ## 1.1.3
 
 - add `prepare-change-worktree.sh` so new REQ/FIX work starts in an isolated worktree while the main checkout stays on `main`

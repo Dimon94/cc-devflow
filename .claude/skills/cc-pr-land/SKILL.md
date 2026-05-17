@@ -1,6 +1,6 @@
 ---
 name: cc-pr-land
-version: 1.1.0
+version: 1.2.0
 description: Use in a separate session to land reviewed GitHub PRs into main with review-first, rebase-first discipline.
 triggers:
   - 合并这个 PR
@@ -14,6 +14,7 @@ reads:
   - GitHub pull requests
   - devflow/changes/<change-key>/task.md
   - devflow/changes/<change-key>/handoff/pr-brief.md
+  - references/checklist-contract.md
 writes:
   - path: GitHub pull request head branch
     durability: remote
@@ -52,6 +53,15 @@ tool_budget:
 
 # CC-PR-Land
 
+## Read First
+
+1. `references/checklist-contract.md`
+
 Land reviewed PRs. Do not implement new feature scope.
 
 Evidence lives in GitHub, Git history, command output, and final response. Do not create local process files for landing state.
+
+
+## Checklist Contract
+
+Follow `references/checklist-contract.md` before each pause point. The checklist is the local do-confirm/read-do contract for this skill; skip only with an explicit blocker or route.

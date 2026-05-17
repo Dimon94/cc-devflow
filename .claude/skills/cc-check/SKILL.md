@@ -1,6 +1,6 @@
 ---
 name: cc-check
-version: 1.12.2
+version: 1.13.0
 description: Use when a planned or investigated change needs fresh verification evidence and an honest pass/fail/blocked verdict before cc-act.
 triggers:
   - 验收这个需求
@@ -15,6 +15,7 @@ reads:
   - references/gate-contract.md
   - references/review-contract.md
   - ../cc-dev/scripts/resolve-cc-devflow.sh
+  - references/checklist-contract.md
 writes:
   - path: current response
     durability: ephemeral
@@ -58,6 +59,14 @@ tool_budget:
 # CC-Check
 
 > [PROTOCOL]: 变更时同步更新 `version`、`CHANGELOG.md`、相关模板/脚本引用，然后检查 `CLAUDE.md`
+
+## Read First
+
+1. `references/checklist-contract.md`
+
+## Checklist Contract
+
+Follow `references/checklist-contract.md` before each pause point. The checklist is the local do-confirm/read-do contract for this skill; skip only with an explicit blocker or route.
 
 ## Role
 

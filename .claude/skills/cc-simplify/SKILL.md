@@ -1,10 +1,11 @@
 ---
 name: cc-simplify
-version: 1.4.2
+version: 1.5.0
 description: "Use when changed code needs an automatic subagent-backed simplification pass for scope drift, reuse, code quality, efficiency, test quality, and confidence-gated smell fixes before cc-check or cc-act."
 reads:
   - devflow/changes/<change-key>/task.md
   - current Git diff
+  - references/checklist-contract.md
 writes:
   - path: code changes
     durability: working-tree
@@ -15,6 +16,10 @@ writes:
 ---
 
 # CC-Simplify
+
+## Read First
+
+1. `references/checklist-contract.md`
 
 `cc-simplify` 是 ship 前的坏味道清理关口。
 
@@ -298,3 +303,8 @@ Decision：
 - 不跳过 spec drift。
 - 不用 mock 通过来证明真实行为正确。
 - 不在没有新鲜验证时声称“已简化完成”。
+
+
+## Checklist Contract
+
+Follow `references/checklist-contract.md` before each pause point. The checklist is the local do-confirm/read-do contract for this skill; skip only with an explicit blocker or route.

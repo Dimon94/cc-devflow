@@ -1,5 +1,9 @@
 # CC-Act Skill Changelog
 
+## v1.10.0 - 2026-05-18
+
+- add a closeout-specific checklist contract for mode selection, commit coherence, stale verification detection, postmortem trigger proof, PR brief rebuild, and handoff status
+
 ## v1.9.3 - 2026-05-17
 
 - add `evaluate-postmortem-trigger.sh` so FIX closeout, task-recorded incident markers, and session rework triggers produce an explicit postmortem gate decision

@@ -1,6 +1,6 @@
 ---
 name: cc-investigate
-version: 1.6.5
+version: 1.7.0
 description: Use when a bug, regression, broken task, or unexpected behavior needs root-cause investigation before coding resumes.
 triggers:
   - 帮我查这个 bug
@@ -19,6 +19,7 @@ reads:
   - ../cc-dev/scripts/ensure-work-branch.sh
   - ../cc-roadmap/scripts/locate-roadmap-item.sh
   - ../cc-roadmap/scripts/sync-roadmap-progress.sh
+  - references/checklist-contract.md
 writes:
   - path: devflow/changes/<change-key>/task.md
     durability: durable
@@ -58,6 +59,10 @@ tool_budget:
 ---
 
 # CC-Investigate
+
+## Read First
+
+1. `references/checklist-contract.md`
 
 `cc-investigate` 是 IDCA 的 `Investigate`。它把 bug 现象压成根因合同，并把修复边界写入同一个 `task.md`。
 
@@ -210,3 +215,8 @@ Escape reason 不能写成人工提醒；它必须变成 regression test、artif
 - 复现 / 证据命令
 - Investigate commit hash
 - 下一步 `cc-do` 或 reroute
+
+
+## Checklist Contract
+
+Follow `references/checklist-contract.md` before each pause point. The checklist is the local do-confirm/read-do contract for this skill; skip only with an explicit blocker or route.

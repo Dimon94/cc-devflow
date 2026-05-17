@@ -1,6 +1,6 @@
 ---
 name: cc-pr-review
-version: 1.1.3
+version: 1.2.0
 description: Use in a separate session to review one remote GitHub PR before landing. It reports findings from PR truth and current diff without writing process files.
 triggers:
   - review 这个 PR
@@ -13,6 +13,7 @@ reads:
   - GitHub pull request
   - devflow/changes/<change-key>/task.md
   - devflow/changes/<change-key>/handoff/pr-brief.md
+  - references/checklist-contract.md
 writes:
   - path: GitHub pull request comments or review
     durability: remote
@@ -46,6 +47,10 @@ tool_budget:
 ---
 
 # CC-PR-Review
+
+## Read First
+
+1. `references/checklist-contract.md`
 
 Review remote PR reality. Do not merge.
 
@@ -86,3 +91,8 @@ Label table:
 |-- <downstreamLandingRisk>: <merge / release / main parity / sibling work>
 `-- <route>: <cc-dev / cc-do / cc-review / cc-pr-land / stop>
 ```
+
+
+## Checklist Contract
+
+Follow `references/checklist-contract.md` before each pause point. The checklist is the local do-confirm/read-do contract for this skill; skip only with an explicit blocker or route.

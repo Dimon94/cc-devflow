@@ -1,5 +1,9 @@
 # CC-Simplify Skill Changelog
 
+## v1.5.0 - 2026-05-18
+
+- add a simplify-specific checklist contract that preserves the existing smell pipeline as explicit scope, reviewer, evidence, fix, and verification pause points
+
 ## v1.4.2 - 2026-05-13
 
 - replace reviewer-agent JSONL findings with short response-only finding lines

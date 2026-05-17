@@ -1,5 +1,9 @@
 # CC-Review Changelog
 
+## 2.3.0 - 2026-05-18
+
+- add a review-specific checklist contract so findings must pass scope, evidence, chain, impact, recommendation, and route gates before they are reported or written back
+
 ## 2.2.3 - 2026-05-17
 
 - require ASCII Branch Chain labels, findings, and evidence summaries to follow the configured output language while keeping connectors ASCII

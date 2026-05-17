@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.10.7
+version: 3.11.0
 description: Use when a requirement, roadmap item, or bug needs scope clarification, design decisions, and executable task breakdown before coding starts.
 triggers:
   - 帮我规划这个需求
@@ -19,6 +19,7 @@ reads:
   - ../cc-dev/scripts/ensure-work-branch.sh
   - ../cc-roadmap/scripts/locate-roadmap-item.sh
   - ../cc-roadmap/scripts/sync-roadmap-progress.sh
+  - references/checklist-contract.md
 writes:
   - path: devflow/changes/<change-key>/task.md
     durability: durable
@@ -57,11 +58,19 @@ tool_budget:
 
 # CC-Plan
 
+## Read First
+
+1. `references/checklist-contract.md`
+
 `cc-plan` 是 PDCA 的 `Plan`。它只产出一份 durable 任务合同：
 
 - `devflow/changes/<change-key>/task.md`
 
 不要生成额外过程文件。Git commit 是阶段历史，`task.md` 是任务真相。
+
+## Checklist Contract
+
+Follow `references/checklist-contract.md` before each pause point. The checklist is the local do-confirm/read-do contract for this skill; skip only with an explicit blocker or route.
 
 ## Operating Contract
 

@@ -1,5 +1,9 @@
 # CC-Check Skill Changelog
 
+## v1.13.0 - 2026-05-18
+
+- add a verification-specific checklist contract that makes reset, rerun, boundary check, evidence matrix, failure ownership, and route freeze explicit pause points
+
 ## v1.12.2 - 2026-05-14
 
 - restore the verification flow that was over-pruned during artifact minimization: reset contract, rerun reality, boundary checks, claim evidence, QA/test-quality review, diff/scope audit, and failure ownership

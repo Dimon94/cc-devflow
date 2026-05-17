@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.0
+
+- add a remote-PR checklist contract so review pauses on live GitHub truth, linked task evidence, checks, diff findings, and landing route before any recommendation
+
 ## 1.1.3
 
 - require ASCII PR Review Chain labels, findings, and evidence summaries to follow the PR/task/handoff output language while keeping connectors ASCII

@@ -1,6 +1,6 @@
 ---
 name: cc-act
-version: 1.9.3
+version: 1.10.0
 description: Use when verified work must be committed, handed off, pushed, or turned into a PR with the smallest durable delivery surface.
 triggers:
   - 准备提 PR
@@ -20,6 +20,7 @@ reads:
   - ../cc-dev/scripts/resolve-cc-devflow.sh
   - scripts/ensure-ship-branch.sh
   - scripts/evaluate-postmortem-trigger.sh
+  - references/checklist-contract.md
 writes:
   - path: devflow/changes/<change-key>/handoff/pr-brief.md
     durability: durable
@@ -61,6 +62,10 @@ tool_budget:
 ---
 
 # CC-Act
+
+## Read First
+
+1. `references/checklist-contract.md`
 
 `cc-act` 把已经验证的现实落地。它不再制造收尾文档农场。
 
@@ -108,3 +113,8 @@ PDCA / IDCA 每个阶段或执行环境完成后都提交 Git commit。Git histo
 ## Exit
 
 最终响应说明 commit、验证、PR 或本地 handoff 状态，以及是否写了 incident postmortem。
+
+
+## Checklist Contract
+
+Follow `references/checklist-contract.md` before each pause point. The checklist is the local do-confirm/read-do contract for this skill; skip only with an explicit blocker or route.

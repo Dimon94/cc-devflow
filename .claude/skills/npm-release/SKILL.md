@@ -1,12 +1,22 @@
 ---
 name: npm-release
-version: 1.0.0
+version: 1.1.0
 description: Use when ready to publish a new version of cc-devflow npm package to npm registry, including version sync, changelog finalization, git tag creation, and publish verification.
+reads:
+  - references/checklist-contract.md
 ---
 
 # NPM Release Workflow
 
+## Read First
+
+1. `references/checklist-contract.md`
+
 > [PROTOCOL]: 发布前先确认 git 干净、版本结论正确、CHANGELOG 已落地、npm 身份可用，然后再 commit/tag/push/publish
+
+## Checklist Contract
+
+Follow `references/checklist-contract.md` before each pause point. The checklist is the local do-confirm/read-do contract for this skill; skip only with an explicit blocker or route.
 
 ## Overview
 

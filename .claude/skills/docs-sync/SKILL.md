@@ -1,12 +1,18 @@
 ---
 name: docs-sync
-version: 1.2.0
+version: 1.3.0
 description: Use when a shipped skill, CLI contract, or public-facing workflow loop changed and you need to sync skill versions, CHANGELOGs, README/CONTRIBUTING/docs content, and migration notes before commit or ship.
+reads:
+  - references/checklist-contract.md
 ---
 
 # Docs-Sync
 
 > [PROTOCOL]: 变更时同步更新 `version`、`CHANGELOG.md`、公开 docs、必要的 migration note，然后检查 `CLAUDE.md`
+
+## Checklist Contract
+
+Follow `references/checklist-contract.md` before each pause point. The checklist is the local do-confirm/read-do contract for this skill; skip only with an explicit blocker or route.
 
 ## Role
 
@@ -19,6 +25,7 @@ description: Use when a shipped skill, CLI contract, or public-facing workflow l
 1. `PLAYBOOK.md`
 2. `CHANGELOG.md`
 3. `references/sync-contract.md`
+4. `references/checklist-contract.md`
 
 ## Use This Skill When
 

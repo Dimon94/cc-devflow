@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.0
+
+- add a next-work checklist contract so queue selection pauses on roadmap truth, active changes, archive state, and handoff reality before producing a Goal Packet
+
 ## 1.1.1
 
 - replace manifest and verification-report wording with `task.md`, fresh evidence, and response-only routing

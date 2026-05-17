@@ -1,6 +1,6 @@
 ---
 name: cc-do
-version: 1.7.2
+version: 1.8.0
 description: Use when implementing frozen tasks, resuming interrupted work, applying an investigation handoff, or fixing review feedback inside the approved scope.
 triggers:
   - 开始做 T003
@@ -15,6 +15,7 @@ reads:
   - references/parallel-dispatch.md
   - docs/guides/project-postmortem.md
   - ../cc-dev/scripts/resolve-cc-devflow.sh
+  - references/checklist-contract.md
 writes:
   - path: devflow/changes/<change-key>/task.md
     durability: durable
@@ -51,6 +52,10 @@ tool_budget:
 ---
 
 # CC-Do
+
+## Read First
+
+1. `references/checklist-contract.md`
 
 `cc-do` 是 PDCA / IDCA 的 `Do`。它只执行 `task.md` 中已经冻结的任务。
 
@@ -102,3 +107,8 @@ NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
 ## Exit
 
 退出时报告任务 ID、验证命令、commit hash、剩余任务或下一步 `cc-check`。不要写过程文件。
+
+
+## Checklist Contract
+
+Follow `references/checklist-contract.md` before each pause point. The checklist is the local do-confirm/read-do contract for this skill; skip only with an explicit blocker or route.

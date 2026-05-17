@@ -1,5 +1,9 @@
 # CC-Investigate Skill Changelog
 
+## v1.7.0 - 2026-05-18
+
+- add an investigation-specific checklist contract for symptom, reproduction, hypothesis falsification, root-cause proof, repair boundary, and handoff pause points
+
 ## v1.6.5 - 2026-05-17
 
 - require new FIX investigations to prepare an isolated worktree before writing `task.md`

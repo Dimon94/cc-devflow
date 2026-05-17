@@ -1,5 +1,9 @@
 # CC-Do Skill Changelog
 
+## v1.8.0 - 2026-05-18
+
+- add an execution-specific checklist contract for task preflight, Red/Green evidence, refactor proof, completion script use, verification, and task commit
+
 ## v1.7.2 - 2026-05-14
 
 - restore the execution discipline that was over-pruned during artifact minimization: tracer-bullet TDD, public seam Red evidence, mock/fixture honesty, Green minimality, refactor-after-green, and repeated-failure reroutes

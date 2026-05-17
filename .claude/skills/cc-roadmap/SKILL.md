@@ -1,6 +1,6 @@
 ---
 name: cc-roadmap
-version: 5.3.1
+version: 5.4.0
 description: "Use when defining, resetting, or narrowing project direction, stage order, or backlog priority before a concrete requirement enters the PDCA loop."
 triggers:
   - "帮我定路线图"
@@ -18,6 +18,7 @@ reads:
   - "assets/BACKLOG_TEMPLATE.md"
   - "assets/TRACKING_TEMPLATE.json"
   - "references/roadmap-dialogue.md"
+  - references/checklist-contract.md
 writes:
   - path: "devflow/roadmap.json"
     durability: "durable"
@@ -69,6 +70,10 @@ tool_budget:
 
 > [PROTOCOL]: 变更时同步更新 `version`、`CHANGELOG.md`、相关模板/脚本引用，必要时写 migration note，然后检查 `CLAUDE.md`
 
+## Checklist Contract
+
+Follow `references/checklist-contract.md` before each pause point. The checklist is the local do-confirm/read-do contract for this skill; skip only with an explicit blocker or route.
+
 ## Role
 
 `cc-roadmap` 只负责一件事：决定项目接下来 1-3 个阶段该推进哪几个 capability。
@@ -91,6 +96,7 @@ tool_budget:
 4. `assets/ROADMAP_TEMPLATE.md`
 5. `assets/BACKLOG_TEMPLATE.md`
 6. `references/roadmap-dialogue.md`
+7. `references/checklist-contract.md`
 
 ## Use This Skill When
 

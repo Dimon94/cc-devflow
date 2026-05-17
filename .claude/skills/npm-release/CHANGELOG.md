@@ -1,5 +1,9 @@
 # npm-release Skill Changelog
 
+## v1.1.0 - 2026-05-18
+
+- add an npm-release checklist contract for registry identity, version parity, changelog, dry-run, tag, publish, and post-publish verification pause points
+
 ## v1.0.0 - 2026-04-10
 
 - 为 `npm-release` 补齐 `version` frontmatter，纳入仓库维护类 skill 契约。

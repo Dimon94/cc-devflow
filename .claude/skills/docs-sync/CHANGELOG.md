@@ -1,5 +1,9 @@
 # Docs-Sync Skill Changelog
 
+## v1.3.0 - 2026-05-18
+
+- add a docs-sync checklist contract for change inventory, skill versioning, changelog updates, public-doc drift, migration notes, and exit proof
+
 ## v1.2.0 - 2026-04-28
 
 - add a skill contract quality gate for trigger descriptions, concise SKILL.md entrypoints, references, scripts, and template consistency
