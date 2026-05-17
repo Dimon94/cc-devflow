@@ -82,6 +82,28 @@ Engineering Review Gate:
 - Mock boundary:
 - Feedback loop:
 
+ASCII Branch Chain Analysis:
+Language rule: keep connector tokens ASCII; write node labels and evidence text in `Output language`.
+
+```text
+Requirement Impact Chain
+REQ: <user-visible change>
+|-- Upstream source: <roadmap / issue / user request / existing task>
+|-- Current code path: <entry>
+|   |-- caller: <file / command / UI / API>
+|   |-- data or state: <field / config / artifact>
+|   `-- deepest affected layer: <module / prompt / provider contract / storage>
+|-- Required change: <smallest behavior delta>
+`-- Verification seam: <public test / command / artifact>
+
+Business Impact Chain
+OUTCOME: <operator / user value>
+|-- Direct behavior impact: <what changes for user>
+|-- Downstream impact: <consumers / docs / examples / release>
+|-- Risk branch: <regression / migration / support / cost>
+`-- Non-goal branch: <explicitly not changed>
+```
+
 Acceptance:
 -
 

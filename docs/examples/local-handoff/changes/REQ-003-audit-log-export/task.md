@@ -4,8 +4,9 @@
 
 - Requirement version: `REQ-003.v1`
 - Design version: `design.v1`
-- CC-Plan skill version: `3.10.4`
+- CC-Plan skill version: `3.10.6`
 - Work branch: `REQ/003-audit-log-export`
+- Output language: en
 - Source roadmap item: `RM-020`
 - Source roadmap version: `roadmap.v3`
 
@@ -36,6 +37,27 @@
   - Better architecture: later introduce a reporting backend for scheduled exports.
   - Selected move: visible-row CSV download from the existing panel.
   - Rejected tradeoff: no JSON export, scheduling, or shared reporting backend here.
+- ASCII Branch Chain Analysis:
+  Language rule: connector tokens stay ASCII; node text follows `Output language: en`.
+
+```text
+Requirement Impact Chain
+REQ: CSV export for visible audit summary rows
+|-- Upstream source: RM-020 + weekly admin reporting workflow
+|-- Current code path: src/admin/AuditSummaryPanel.tsx
+|   |-- caller: admin audit summary panel action
+|   |-- data or state: visible summary rows
+|   `-- deepest affected layer: browser download/blob boundary for CSV output
+|-- Required change: export visible rows without adding reporting storage
+`-- Verification seam: src/admin/AuditSummaryPanel.test.tsx
+
+Business Impact Chain
+OUTCOME: admins stop manually copying weekly audit summaries
+|-- Direct behavior impact: visible rows become a downloadable CSV
+|-- Downstream impact: local handoff documents proof for CSV-only export
+|-- Risk branch: exported rows diverge from visible panel state
+`-- Non-goal branch: JSON export, scheduled reporting, and backend history stay out
+```
 - Read first:
   - `design.md`
   - `src/admin/AuditSummaryPanel.tsx`

@@ -4,8 +4,9 @@
 
 - Requirement version: `REQ-002.v2`
 - Design version: `design.v2`
-- CC-Plan skill version: `3.10.4`
+- CC-Plan skill version: `3.10.6`
 - Work branch: `REQ/002-bulk-invite-import`
+- Output language: en
 - Source roadmap item: `RM-010`
 - Source roadmap version: `roadmap.v2`
 
@@ -36,6 +37,27 @@
   - Better architecture: later move bulk provisioning into a job-backed import workflow.
   - Selected move: row classification first, then admin surface and audit mapping.
   - Rejected tradeoff: no SCIM, background jobs, or rollback wizard in this requirement.
+- ASCII Branch Chain Analysis:
+  Language rule: connector tokens stay ASCII; node text follows `Output language: en`.
+
+```text
+Requirement Impact Chain
+REQ: deterministic bulk invite row outcomes
+|-- Upstream source: RM-010 + admin import failure cases
+|-- Current code path: src/invite/bulk-import.ts
+|   |-- caller: src/admin/BulkInvitePanel.tsx
+|   |-- data or state: CSV rows, duplicate state, seat-limit state, audit rows
+|   `-- deepest affected layer: row-outcome matrix shared by invite and audit behavior
+|-- Required change: classify each row before executing visible bulk results
+`-- Verification seam: bulk-import and admin panel tests
+
+Business Impact Chain
+OUTCOME: admins can trust mixed CSV import results
+|-- Direct behavior impact: duplicate, invalid, and over-limit rows get stable results
+|-- Downstream impact: audit mapping and visible admin result rendering
+|-- Risk branch: row semantics drift between UI and audit log
+`-- Non-goal branch: SCIM, background jobs, and rollback wizard stay out
+```
 - Read first:
   - `design.md`
   - `src/admin/BulkInvitePanel.tsx`

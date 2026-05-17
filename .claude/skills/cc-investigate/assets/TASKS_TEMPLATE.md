@@ -96,6 +96,36 @@ Correct Test Seam:
 - Mock boundary:
 - Private implementation assertions avoided:
 
+ASCII Branch Chain Analysis:
+Language rule: keep connector tokens ASCII; write node labels and evidence text in `Output language`.
+
+```text
+Problem Chain
+SYMPTOM: <observed failure>
+|-- Failure site: <file / command / UI / artifact>
+|   |-- direct caller: <caller>
+|   `-- bad value/state: <first observed bad state>
+|-- Upstream origin: <earliest proven creator>
+|   |-- code source: <file / function / config>
+|   |-- prompt source: <prompt / instruction / provider contract, or N/A>
+|   `-- trigger: <input / event / race / migration>
+`-- Rejected symptom fix: <why guard-at-failure is insufficient>
+
+Solution Chain
+FIX: <minimal repair>
+|-- First bad state repair: <change>
+|-- Contract restored: <invariant>
+|-- Regression seam: <test / harness / replay>
+`-- Escape prevention: <guard / assertion / operator check>
+
+Impact Chain
+BLAST RADIUS: <affected behavior>
+|-- Upstream preserved: <contracts that must stay unchanged>
+|-- Downstream affected: <callers / artifacts / docs / release>
+|-- Risk branch: <possible regression>
+`-- Verification branch: <commands / evidence>
+```
+
 Verification:
 -
 

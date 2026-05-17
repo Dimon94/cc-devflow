@@ -106,6 +106,7 @@ Findings stay in the response. Ask which repair option to apply before editing c
 Return:
 
 - findings ordered by severity
+- ASCII Branch Chain per non-trivial finding or code smell propagation
 - smallest safe repair option
 - broader cleanup option when the smell is real
 - defer option with explicit risk

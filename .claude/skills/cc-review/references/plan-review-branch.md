@@ -106,6 +106,7 @@ Each planning smell becomes a finding in `task.md` and routes to `cc-plan`.
 Write plan review findings directly into `task.md`:
 
 - scope or architecture finding
+- ASCII Branch Chain for each non-trivial scope, root-cause, or architecture finding
 - evidence and impact
 - required task or contract change
 - decision options when user judgment is needed

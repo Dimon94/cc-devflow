@@ -1,5 +1,14 @@
 # CC-Review Changelog
 
+## 2.2.3 - 2026-05-17
+
+- require ASCII Branch Chain labels, findings, and evidence summaries to follow the configured output language while keeping connectors ASCII
+
+## 2.2.2 - 2026-05-17
+
+- require ASCII Branch Chains for non-trivial plan, investigation, PR, implementation, and code-smell findings
+- route plan and investigation review chains into `task.md` while keeping implementation and PR chains in the response or GitHub review instead of local process files
+
 ## 2.2.1 - 2026-05-14
 
 - restore deep review method flow without restoring review process files

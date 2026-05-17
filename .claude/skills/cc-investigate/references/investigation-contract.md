@@ -26,6 +26,7 @@
 - repair boundary
 - correct test seam
 - verification command
+- ASCII branch-chain connector tokens stay ASCII, but labels, evidence, and explanatory text follow `Output language`.
 
 ## Investigation Modes
 

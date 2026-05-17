@@ -16,6 +16,7 @@
 12. Non-trivial plans complete Second-Move Review before approval; the first workable plan is not frozen until a simpler move and a better-architecture move have both been considered.
 13. Non-trivial plans complete product/creative discovery before engineering design; if worth, shape, wedge, or 10x/better version is unclear, ask product questions before implementation questions.
 14. Product/creative confirmation and engineering confirmation are separate rounds unless roadmap/spec evidence already answers one of them and `task.md` records the skip reason.
+15. ASCII branch-chain connector tokens stay ASCII, but labels, evidence, and explanatory text follow `Output language`.
 
 ## Planning Flow
 

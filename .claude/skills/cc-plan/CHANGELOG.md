@@ -1,5 +1,14 @@
 # CC-Plan Skill Changelog
 
+## v3.10.6 - 2026-05-17
+
+- require ASCII branch-chain node labels and evidence text to follow `Output language` while keeping tree connector tokens ASCII
+
+## v3.10.5 - 2026-05-17
+
+- require ASCII Branch Chain Analysis in `task.md#Contract Summary` so requirement plans trace upstream sources, deepest affected code or prompt/provider layer, downstream business impact, and verification seams
+- add the branch-chain section to the plan task template
+
 ## v3.10.4 - 2026-05-14
 
 - require product discovery before engineering planning

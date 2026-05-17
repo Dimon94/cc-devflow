@@ -4,8 +4,9 @@
 
 - Requirement version: `REQ-001.v1`
 - Design version: `design.v1`
-- CC-Plan skill version: `3.10.4`
+- CC-Plan skill version: `3.10.6`
 - Work branch: `REQ/001-copy-invite-link`
+- Output language: en
 - Source roadmap item: `RM-001`
 - Source roadmap version: `roadmap.v1`
 
@@ -37,6 +38,27 @@
   - Better architecture: centralize all share actions behind a richer share command model later.
   - Selected move: same-dialog copy action with minimal copied-state confirmation.
   - Rejected tradeoff: no broader share-service redesign in this bounded requirement.
+- ASCII Branch Chain Analysis:
+  Language rule: connector tokens stay ASCII; node text follows `Output language: en`.
+
+```text
+Requirement Impact Chain
+REQ: one-click copy for the visible invite URL
+|-- Upstream source: RM-001 + share dialog user story
+|-- Current code path: src/features/share/ShareDialog.tsx
+|   |-- caller: share dialog render flow
+|   |-- data or state: existing invite URL prop + copied confirmation state
+|   `-- deepest affected layer: clipboard boundary in the dialog behavior
+|-- Required change: add copy action without changing share-service contracts
+`-- Verification seam: src/features/share/ShareDialog.test.tsx
+
+Business Impact Chain
+OUTCOME: users can share invites without manual text selection
+|-- Direct behavior impact: visible invite URL copies from the dialog
+|-- Downstream impact: tests and PR brief document the bounded copy behavior
+|-- Risk branch: clipboard boundary failure or stale copied-state feedback
+`-- Non-goal branch: invite generation, analytics, and fallback redesign stay out
+```
 - Read first:
   - `design.md`
   - `src/features/share/ShareDialog.tsx`

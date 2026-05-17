@@ -1,6 +1,6 @@
 ---
 name: cc-investigate
-version: 1.6.2
+version: 1.6.4
 description: Use when a bug, regression, broken task, or unexpected behavior needs root-cause investigation before coding resumes.
 triggers:
   - 帮我查这个 bug
@@ -36,6 +36,7 @@ entry_gate:
 exit_criteria:
   - "`task.md#Root Cause Contract` proves symptom site, first bad state, violated contract, original trigger, counterfactual proof, and escape reason."
   - "`task.md#Root Cause Contract` records investigation mode, feedback loop, evidence chain, tested hypotheses, boundary/backward/reference evidence when applicable, correct test seam, and diagnose-only boundary when applicable."
+  - "`task.md#Root Cause Contract` contains ASCII Branch Chain Analysis trees for problem chain, solution chain, and impact chain, tracing upstream root cause and downstream blast radius to the deepest proven prompt/code/provider/data source; tree connector characters stay ASCII while node text follows the configured output language."
   - "`task.md` contains the repair tasks needed by `cc-do`."
   - "Evidence gaps produce Evidence Request, diagnose-only, or reroute tasks instead of fake repair tasks."
   - "No process file is created beyond `task.md`."
@@ -80,7 +81,7 @@ NO REPAIR WITHOUT A FROZEN ROOT-CAUSE CONTRACT
 4. Trace：找到 first bad state，而不是只给 symptom guard。
 5. Hypothesize：列候选，写证伪方法，逐个打掉。
 6. Prove：完成 Root Cause Proof Ladder。
-7. Freeze：把根因、修复边界、测试 seam、allowed/forbidden files 写进 `task.md`。
+7. Freeze：把根因、ASCII Branch Chain Analysis、修复边界、测试 seam、allowed/forbidden files 写进 `task.md`。
 8. Commit：提交 Investigate 阶段，再交给 `cc-do`。
 
 ## Investigation Modes
@@ -112,6 +113,50 @@ NO REPAIR WITHOUT A FROZEN ROOT-CAUSE CONTRACT
 8. Diagnostic Instrumentation：临时 probe 必须有 tag、location、question answered、command、expected signal、actual signal、cleanup requirement。
 9. Correct Test Seam：说明 regression test 是否覆盖真实触发链；只能测私有实现时，先记录设计缺口或 reroute。
 10. Repair Boundary：affected module、allowed files、forbidden files、blast radius、split-or-reroute decision。
+
+## ASCII Branch Chain Analysis
+
+`task.md#Root Cause Contract` 必须包含 ASCII 分叉树代码块。调查要先向上追坏状态来源，再向下追影响面，最后把修复路径也画出来。
+
+Language rule:
+
+- Tree structure tokens must stay ASCII: `|--`, `` `-- ``, `|`, spaces, and plain punctuation.
+- Node labels, placeholder text, explanations, and evidence summaries must follow `Output language` in `task.md`.
+- If `Output language` is unset, use the current conversation language and record the assumption.
+- Do not hard-code English labels such as `Problem Chain` when the configured output language is not English.
+
+```text
+Problem Chain
+SYMPTOM: <observed failure>
+|-- Failure site: <file / command / UI / artifact>
+|   |-- direct caller: <caller>
+|   `-- bad value/state: <first observed bad state>
+|-- Upstream origin: <earliest proven creator>
+|   |-- code source: <file / function / config>
+|   |-- prompt source: <prompt / instruction / provider contract, or N/A>
+|   `-- trigger: <input / event / race / migration>
+`-- Rejected symptom fix: <why guard-at-failure is insufficient>
+
+Solution Chain
+FIX: <minimal repair>
+|-- First bad state repair: <change>
+|-- Contract restored: <invariant>
+|-- Regression seam: <test / harness / replay>
+`-- Escape prevention: <guard / assertion / operator check>
+
+Impact Chain
+BLAST RADIUS: <affected behavior>
+|-- Upstream preserved: <contracts that must stay unchanged>
+|-- Downstream affected: <callers / artifacts / docs / release>
+|-- Risk branch: <possible regression>
+`-- Verification branch: <commands / evidence>
+```
+
+规则：
+
+- `Upstream origin` 必须追到最早被证据支持的制造点；如果最早点可能是提示词，必须写出精确 prompt / provider 合同位置。
+- `Impact Chain` 必须覆盖下游调用方、artifact、operator 或用户可见行为；只列修复文件不合格。
+- 缺 L2、L4 或 L5 时，树里写 `unknown -> Evidence Request`，并进入 diagnose-only / reroute。
 
 ## Root Cause Proof Ladder
 

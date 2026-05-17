@@ -1,6 +1,6 @@
 ---
 name: cc-pr-review
-version: 1.1.1
+version: 1.1.3
 description: Use in a separate session to review one remote GitHub PR before landing. It reports findings from PR truth and current diff without writing process files.
 triggers:
   - review 这个 PR
@@ -29,6 +29,7 @@ entry_gate:
 exit_criteria:
   - Review result is approved-for-landing, changes-requested, needs-clarification, or blocked.
   - Findings cite concrete PR diff, command output, checks, local task facts, or missing evidence.
+  - Non-trivial findings include an ASCII Branch Chain that traces PR source, changed node, upstream contract, downstream landing risk, and route; tree connector characters stay ASCII while node text follows the configured output language.
   - Required fixes route back to cc-dev or cc-do; clean PRs route to cc-pr-land.
   - No local process file is created.
 reroutes:
@@ -57,3 +58,18 @@ Build the review from:
 - `task.md` and `handoff/pr-brief.md` when available
 
 Output findings in the response or GitHub review only. Do not write local process files.
+
+For each non-trivial finding, include:
+
+Language rule: keep `|--`, `` `-- ``, `|`, spaces, and punctuation ASCII; write labels, explanations, findings, and evidence summaries in the PR/task/handoff output language, falling back to the current conversation language when unavailable.
+
+```text
+PR Review Chain
+FINDING: <severity + short name>
+|-- PR source: <PR number / commit / diff hunk / check>
+|-- Changed node: <file / behavior / artifact>
+|   |-- upstream contract: <task / spec / prompt / provider / API>
+|   `-- first affected seam: <runtime / user / operator / package>
+|-- Downstream landing risk: <merge / release / main parity / sibling work>
+`-- Route: <cc-dev / cc-do / cc-review / cc-pr-land / stop>
+```

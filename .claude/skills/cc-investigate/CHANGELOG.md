@@ -1,5 +1,14 @@
 # CC-Investigate Skill Changelog
 
+## v1.6.4 - 2026-05-17
+
+- require ASCII branch-chain node labels and evidence text to follow `Output language` while keeping tree connector tokens ASCII
+
+## v1.6.3 - 2026-05-17
+
+- require ASCII Branch Chain Analysis in `task.md#Root Cause Contract` so investigations trace problem chains upstream to the first proven creator, solution chains through the repaired contract, and impact chains downstream to affected seams
+- add prompt/provider source tracing and evidence-request handling to the investigation task template
+
 ## v1.6.2 - 2026-05-14
 
 - restore the investigation flow that was over-pruned during artifact minimization: mode classification, feedback loop contract, evidence chain, hypothesis falsification, boundary/backward/reference evidence, diagnostic instrumentation, and correct test seam

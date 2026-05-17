@@ -24,6 +24,8 @@
 ## Required Outputs
 
 - PR review packet
+- ASCII PR Review Chain for each non-trivial finding
+- Output-language check: ASCII connectors only; labels and finding text follow the PR/task/handoff language
 - Covered lanes
 - Findings triage
 - Checks status
@@ -40,6 +42,7 @@ Each accepted finding should include:
 - Why it matters:
 - Evidence:
 - Confidence:
+- ASCII Branch Chain:
 - Fix path:
 ```
 

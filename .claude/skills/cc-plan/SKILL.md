@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.10.4
+version: 3.10.6
 description: Use when a requirement, roadmap item, or bug needs scope clarification, design decisions, and executable task breakdown before coding starts.
 triggers:
   - 帮我规划这个需求
@@ -34,6 +34,7 @@ entry_gate:
   - Ask with the Decision Question Protocol when the answer changes scope, design, implementation boundary, or verification.
 exit_criteria:
   - "`task.md#Contract Summary` states the approved solution, non-goals, frozen decisions, work branch, user stories, decision questions, planning-flow results, review gate, verification expectations, and open assumptions."
+  - "`task.md#Contract Summary` contains an ASCII Branch Chain Analysis for requirement impact and business impact, tracing upstream sources, current code path, deepest affected layer, downstream blast radius, and prompt/provider contracts when involved; tree connector characters stay ASCII while node text follows the configured output language."
   - "`task.md` contains executable task blocks generated from `assets/TASKS_TEMPLATE.md`."
   - "Non-trivial plans complete product/creative discovery before engineering design: worth doing, desired product shape, narrowest wedge, 10x/better version, and do-nothing consequence."
   - "Non-trivial plans complete Second-Move Review before approval: first good move, simpler move, better architecture, selected move, and rejected tradeoff."
@@ -66,7 +67,7 @@ tool_budget:
 2. 用 `next-change-key --prefix REQ|FIX --description "..."` 生成 `changeId` 和完整 `changeKey`，不要手动扫描编号。
 3. 分配 change key 后立刻运行 `../cc-dev/scripts/ensure-work-branch.sh --change-key <REQ/FIX-...>` 锚定 exact-case 分支：`REQ-003-copy-link` 对应 `REQ/003-copy-link`，`FIX-014-auth-race` 对应 `FIX/014-auth-race`。当前在 default branch 或存在 `REQ/...` / `req/...` 大小写碰撞时停止并报告 setup blocker。
 4. 写 task blocks 前先确认方案。tiny 计划仍要过 planning flow，只是更短。
-5. `task.md` 必须包含 `Contract Summary`、决策问题、planning flow、review gate、任务列表、验证命令、完成证据、禁止重决策事项和阶段 commit 要求。
+5. `task.md` 必须包含 `Contract Summary`、ASCII Branch Chain Analysis、决策问题、planning flow、review gate、任务列表、验证命令、完成证据、禁止重决策事项和阶段 commit 要求。
 6. 完成 Plan 后提交 Git commit。下一阶段从 Git history 和 `task.md` 恢复，不靠过程文件。
 
 ```bash
@@ -82,6 +83,7 @@ bash "$DEVFLOW" config resolve --format policy
 - 非 trivial 计划至少经过两轮用户确认：先确认产品价值和形态，再确认工程方案和任务合同；只有 roadmap / spec 已经给出等价证据时才能记录 skip reason。
 - 第一手好方案不能直接冻结；非 trivial 计划必须过 Second-Move Review：先写 first good move，再找 simpler move 和 better architecture，最后选择一个当前可执行的 move。
 - 计划先做上下文和设计判断，再拆 task；不能把架构、接口、字段、测试缝隙留给 `cc-do` 猜。
+- 需求链路必须画成 ASCII 分叉树：从用户需求追到现有入口、调用方、状态/数据流、最深底层影响点，再向下游展开业务影响、风险和验证面。
 - 用户视角必须清楚：真实用户 / operator、status quo、最痛失败场景、最小成功信号和非目标。
 - 行为变更任务按 tracer bullet 写：`[TEST] -> [IMPL] -> [REFACTOR]`，不要水平切层。
 - 每个任务写清目标、文件、依赖、TDD phase、读什么、怎么验证、完成证据。
@@ -102,6 +104,43 @@ bash "$DEVFLOW" config resolve --format policy
 9. Final Approval：展示冻结方案和任务合同摘要；用户批准前不生成执行 task blocks。
 
 `tiny-design` 可以把每轮压成一句话；`full-design` 必须保留足够证据让执行者不二次设计。任一轮 `blocked` 时，只能问一个 blocking question、拆回 roadmap / 多个 REQ/FIX，或记录用户明确接受的人工边界。非 trivial 计划的产品/创意确认和工程方案确认必须分成至少两次确认，不能一次性把所有问题塞给用户。
+
+## ASCII Branch Chain Analysis
+
+`task.md#Contract Summary` 必须包含一个 ASCII 分叉树代码块。它不是插图，是执行合同的一部分。
+
+Language rule:
+
+- Tree structure tokens must stay ASCII: `|--`, `` `-- ``, `|`, spaces, and plain punctuation.
+- Node labels, placeholder text, explanations, and evidence summaries must follow `Output language` in `task.md`.
+- If `Output language` is unset, use the current conversation language and record the assumption.
+- Do not hard-code English labels such as `Requirement Impact Chain` when the configured output language is not English.
+
+```text
+Requirement Impact Chain
+REQ: <user-visible change>
+|-- Upstream source: <roadmap / issue / user request / existing task>
+|-- Current code path: <entry>
+|   |-- caller: <file / command / UI / API>
+|   |-- data or state: <field / config / artifact>
+|   `-- deepest affected layer: <module / prompt / provider contract / storage>
+|-- Required change: <smallest behavior delta>
+`-- Verification seam: <public test / command / artifact>
+
+Business Impact Chain
+OUTCOME: <operator / user value>
+|-- Direct behavior impact: <what changes for user>
+|-- Downstream impact: <consumers / docs / examples / release>
+|-- Risk branch: <regression / migration / support / cost>
+`-- Non-goal branch: <explicitly not changed>
+```
+
+规则：
+
+- 先向上追来源，再向下追影响面；不要只写目标文件列表。
+- 必须找到“最深底层会影响的链路”：数据模型、状态机、CLI/runtime、prompt、provider contract、存储或外部边界。
+- 若需求影响提示词、agent 指令、provider 参数、生成 artifact，树里必须写出精确 prompt/provider 合同位置。
+- 没有证据的分支写 `unknown -> Evidence Request`，不能伪装成已确认。
 
 ## Decision Question Protocol
 
