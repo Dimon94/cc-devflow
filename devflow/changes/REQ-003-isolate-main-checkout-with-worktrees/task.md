@@ -232,7 +232,7 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --tasks devflow/changes/REQ-003-isolat
 
 ## Phase 3: Plan Closeout
 
-- [ ] T005 [VERIFY] Commit the Plan stage and hand off to cc-do (dependsOn:T004) `devflow/changes/REQ-003-isolate-main-checkout-with-worktrees/task.md`
+- [x] T005 [VERIFY] Commit the Plan stage and hand off to cc-do (dependsOn:T004) `devflow/changes/REQ-003-isolate-main-checkout-with-worktrees/task.md`
   Goal: Record this frozen plan in Git so implementation can resume from repository truth.
   Contract: plan-stage commit contains only this `task.md`.
   Do not re-decide: implementation belongs to `cc-do`; this task closes `cc-plan`.
