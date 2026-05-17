@@ -1,6 +1,6 @@
 ---
 name: cc-investigate
-version: 1.6.4
+version: 1.6.5
 description: Use when a bug, regression, broken task, or unexpected behavior needs root-cause investigation before coding resumes.
 triggers:
   - 帮我查这个 bug
@@ -15,6 +15,7 @@ reads:
   - docs/guides/project-postmortem.md
   - assets/TASKS_TEMPLATE.md
   - ../cc-dev/scripts/resolve-cc-devflow.sh
+  - ../cc-dev/scripts/prepare-change-worktree.sh
   - ../cc-dev/scripts/ensure-work-branch.sh
   - ../cc-roadmap/scripts/locate-roadmap-item.sh
   - ../cc-roadmap/scripts/sync-roadmap-progress.sh
@@ -28,7 +29,8 @@ effects:
 entry_gate:
   - Resolve the CLI with `../cc-dev/scripts/resolve-cc-devflow.sh require next-change-key config`.
   - Assign a FIX change key through `next-change-key --prefix FIX --description "<short bug name>"`.
-  - Enforce the Worktree Branch Contract before writing `task.md`.
+  - Prepare an isolated FIX worktree before writing `task.md`; keep the main checkout on `main`.
+  - Enforce the Worktree Branch Contract inside the returned FIX worktree.
   - Reproduce or build the closest honest feedback loop before naming root cause.
   - Classify the investigation mode before tracing: reproduce-first, diff-trace, boundary-probe, backward-trace, reference-compare, condition-wait, workflow-forensics, performance, or diagnose-only.
   - Search relevant code, logs, recent history, and project postmortems before declaring the bug novel.
@@ -76,7 +78,7 @@ NO REPAIR WITHOUT A FROZEN ROOT-CAUSE CONTRACT
 ## Investigation Loop
 
 1. Classify：复现优先、diff trace、boundary probe、flaky、performance、workflow forensics 或 diagnose-only。
-2. Anchor：分配 FIX change key 后运行 `../cc-dev/scripts/ensure-work-branch.sh --change-key <FIX-...>`，必须得到 exact-case `FIX/...` 分支；大小写碰撞或 default branch 都是 setup blocker。
+2. Anchor：分配 FIX change key 后运行 `../cc-dev/scripts/prepare-change-worktree.sh --change-key <FIX-...>`，从主 checkout 创建或复用独立 FIX worktree；进入返回的 `WORKTREE_PATH` 后必须得到 exact-case `FIX/...` 分支。大小写碰撞或目标分支不匹配都是 setup blocker。
 3. Reproduce：用测试、脚本、日志、浏览器路径或最小 harness 证明同一个症状。
 4. Trace：找到 first bad state，而不是只给 symptom guard。
 5. Hypothesize：列候选，写证伪方法，逐个打掉。

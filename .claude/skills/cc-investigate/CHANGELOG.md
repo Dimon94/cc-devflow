@@ -1,5 +1,10 @@
 # CC-Investigate Skill Changelog
 
+## v1.6.5 - 2026-05-17
+
+- require new FIX investigations to prepare an isolated worktree before writing `task.md`
+- keep the main checkout bound to `main` while investigations continue in the returned `WORKTREE_PATH`
+
 ## v1.6.4 - 2026-05-17
 
 - require ASCII branch-chain node labels and evidence text to follow `Output language` while keeping tree connector tokens ASCII

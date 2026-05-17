@@ -1,5 +1,10 @@
 # CC-Plan Skill Changelog
 
+## v3.10.7 - 2026-05-17
+
+- require new plans to prepare an isolated change worktree before writing `task.md`
+- keep the main checkout bound to `main` instead of treating it as a branch-switching work surface
+
 ## v3.10.6 - 2026-05-17
 
 - require ASCII branch-chain node labels and evidence text to follow `Output language` while keeping tree connector tokens ASCII

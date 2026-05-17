@@ -204,7 +204,7 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --tasks devflow/changes/REQ-003-isolat
 
 ## Phase 2: Skill Contract Propagation
 
-- [ ] T003 [IMPL] Update cc-plan, cc-investigate, and cc-dev entry contracts (dependsOn:T002) `.claude/skills/cc-plan/SKILL.md`
+- [x] T003 [IMPL] Update cc-plan, cc-investigate, and cc-dev entry contracts (dependsOn:T002) `.claude/skills/cc-plan/SKILL.md`
   Goal: Make new planning and investigation flows call the worktree-preparation script before writing durable artifacts.
   Contract: user stories `US-001`, `US-002`; method/interface skill entry gates and operating loops name the new script and required path handoff.
   Do not re-decide: `.claude` remains source of truth; `cc-plan` and `cc-investigate` must not instruct direct branch switching in the main checkout.
