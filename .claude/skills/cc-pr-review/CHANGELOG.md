@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.0
+
+- inline the complexity hotspot scanner and optimization references so PR review can use complexity-optimizer behavior without an external skill dependency
+- add PR-scoped complexity review for nested scans, repeated membership checks, sort-in-loop, render recomputation, and N+1 database/API patterns
+- require complexity findings to include before/after complexity estimates, behavior-equivalence risk, and needed tests or measurements
+
 ## 1.2.0
 
 - add a remote-PR checklist contract so review pauses on live GitHub truth, linked task evidence, checks, diff findings, and landing route before any recommendation

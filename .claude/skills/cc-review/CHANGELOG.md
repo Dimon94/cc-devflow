@@ -1,5 +1,11 @@
 # CC-Review Changelog
 
+## 2.4.0 - 2026-05-18
+
+- inline the complexity hotspot scanner and optimization references so review runs can use complexity-optimizer behavior without depending on an external skill
+- add a complexity/hotspots risk lane for nested scans, repeated membership checks, sort-in-loop, render recomputation, and N+1 database/API patterns
+- require complexity findings to report current and proposed complexity, behavior-equivalence risk, and needed tests or measurements
+
 ## 2.3.0 - 2026-05-18
 
 - add a review-specific checklist contract so findings must pass scope, evidence, chain, impact, recommendation, and route gates before they are reported or written back

@@ -11,7 +11,7 @@
 3. 不读取、不生成、不维护过程文件。
 4. Git history 是唯一持久 review 记忆；重复 review 时用 `git diff <old>...HEAD` 缩小范围。
 5. 可用 subagent 时可以派发只读 reviewer；raw output 留在会话里，主线程验证后再进入最终 findings。
-6. 复杂实现或 mixed review 考虑 intent/regression、security/privacy、performance/reliability、contracts/coverage 四类风险 lane。
+6. 复杂实现或 mixed review 考虑 intent/regression、security/privacy、performance/reliability、complexity/hotspots、contracts/coverage 五类风险 lane。
 7. 按 selected facet 或 changed surface 逐节点检查；每个节点 checked、skipped 或 blocked。
 8. 不固定 finding 数量。证据决定输出。
 9. 每条 finding 必须有 evidence、impact、recommendation 和 route。
@@ -27,10 +27,11 @@
 - 现有代码或计划解决了哪些子问题？
 - 哪些设计约束会让实现变脆？
 - 哪些代码坏味道在当前 blast radius 内？
+- 哪些复杂度热点是当前 diff 放大或引入的？
 - 哪些测试、日志、UI 操作或端到端证据缺失？
 - 哪些 finding 必须修，哪些可以 defer，哪些只是 advisory？
 - 哪些节点已经审过，哪些 skipped / blocked，原因是什么？
-- 四类风险 lane 哪些覆盖了，哪些因为 scope 小或工具不可用跳过？
+- 风险 lane 哪些覆盖了，哪些因为 scope 小或工具不可用跳过？
 - subagent findings 哪些被接受、合并、降级或拒收？
 - 下一步为什么是 `cc-plan` / `cc-do` / `cc-check` / `cc-act` / `stop`？
 
