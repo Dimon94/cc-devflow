@@ -11,6 +11,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _No unreleased changes._
 
+## [4.5.19] - 2026-05-18
+
+### Added
+
+- Added checklist-contract references across shipped skills so planning, execution, verification, review, docs sync, and npm release workflows expose explicit pre-exit checklists.
+
+### Changed
+
+- Updated example bindings and public docs for the checklist-contract skill surface.
+- Clarified checklist review behavior in `cc-review`, `docs-sync`, and `npm-release` so contract issues are judged before closeout.
+
 ## [4.5.18] - 2026-05-17
 
 ### Changed
