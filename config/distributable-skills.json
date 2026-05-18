@@ -29,6 +29,7 @@
   ],
   "internalSkills": [
     "docs-sync",
+    "managed-skill-sync",
     "npm-release"
   ]
 }
