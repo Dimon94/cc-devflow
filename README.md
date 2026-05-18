@@ -99,8 +99,8 @@ flowchart TD
 | `cc-plan` | A feature or change needs scope, design, and task freezing | `task.md#Contract Summary` |
 | `cc-investigate` | A bug needs symptom, reproduction, root cause, and repair boundary | `task.md#Root Cause Contract` |
 | `cc-do` | Planned or investigated work needs implementation | code, tests, `task.md` status, Git commit |
-| `cc-review` | Complex plans, investigations, or diffs need optional deep review before implementation or verification | plan findings in `task.md`; implementation findings and repair options in the response |
-| `cc-pr-review` | A remote PR needs an independent review session before landing | PR review packet, findings, and landing verdict |
+| `cc-review` | Complex plans, investigations, diffs, or complexity hotspots need optional deep review before implementation or verification | plan findings in `task.md`; implementation findings and repair options in the response |
+| `cc-pr-review` | A remote PR needs an independent review session before landing, including PR-scoped complexity hotspot review when relevant | PR review packet, findings, and landing verdict |
 | `cc-pr-land` | Reviewed PRs need rebase-first landing into main with parity proof | integrated main plus local/remote parity evidence |
 | `cc-check` | Work needs fresh verification evidence | pass/fail/blocked response and Git commit |
 | `cc-act` | Verified work needs a PR, local handoff, or closeout | optional `handoff/pr-brief.md`, Git/PR truth, or incident postmortem |
@@ -122,7 +122,7 @@ Every shipped skill carries its own `references/checklist-contract.md`; there is
 
 Every post-planning stage starts from `task.md`, current Git history/status, and PR or handoff truth when present. There is no runtime context query layer; disputed facts must be re-read from source artifacts. Use `npm run benchmark:skills` to keep public skill entrypoints thin; deeper planning rules should live behind conditional references instead of default context.
 
-`cc-review` is optional and deeper than `cc-check`. It can run immediately after `cc-plan` / `cc-investigate` to review the frozen plan or root-cause contract, or after `cc-do` to review the implementation. Plan and investigation review findings are written directly into `task.md`. Implementation review findings are returned in the response with repair options; the user chooses the repair path before code is edited. PR reviews stay in the response or GitHub review. No local review report, ledger, findings JSON, or other review output file is written.
+`cc-review` is optional and deeper than `cc-check`. It can run immediately after `cc-plan` / `cc-investigate` to review the frozen plan or root-cause contract, or after `cc-do` to review the implementation. It also carries a built-in complexity hotspot facet for nested scans, repeated membership checks, render recomputation, and N+1 database/API patterns. Plan and investigation review findings are written directly into `task.md`. Implementation review findings are returned in the response with repair options; the user chooses the repair path before code is edited. PR reviews stay in the response or GitHub review. No local review report, ledger, findings JSON, or other review output file is written.
 
 ## Verification And Ship Gates
 

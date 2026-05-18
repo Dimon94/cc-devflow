@@ -9,7 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Added
+
+- Added built-in complexity hotspot review to `cc-review` and `cc-pr-review`, including local scanner/reference copies for nested scans, repeated membership checks, render recomputation, and N+1 database/API patterns without depending on an external skill.
 
 ## [4.5.19] - 2026-05-18
 

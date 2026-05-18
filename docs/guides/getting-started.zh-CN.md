@@ -89,7 +89,7 @@ find .codex/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort
 - `cc-spec-init` 产出 `devflow/specs/INDEX.md` 和 capability spec
 - `cc-plan` 产出 `task.md#Contract Summary`
 - `cc-investigate` 产出 `task.md#Root Cause Contract`
-- `cc-review` 把计划 / 调查 finding 写入 `task.md`；执行 finding 留在回复里，等用户选择修复方案后再改代码
+- `cc-review` 把计划 / 调查 finding 写入 `task.md`；执行 finding 留在回复里，等用户选择修复方案后再改代码；复杂度热点 finding 需要包含 before/after complexity 和必要测试或测量
 - `cc-check` 在当前回复、PR 文件或 Git commit 里记录验证事实
 - `cc-act` 只产出最终 PR 文件 `handoff/pr-brief.md`；真实事故需要尸检时才产出 incident postmortem 文件
 
