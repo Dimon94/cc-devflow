@@ -77,7 +77,7 @@ Integration with CI to run pressure scenarios against agent responses.
 
 ## Creating New Scenarios
 
-1. Identify a rationalization pattern from `rationalization-library.md`
+1. Identify a rationalization pattern from `rationalization-library.md`.
 2. Design a scenario that would trigger that rationalization
 3. Combine multiple pressure types for realism
 4. Document expected violation and correct behavior
@@ -112,7 +112,7 @@ A scenario passes when:
 ## Integration with Rationalization Library
 
 When a new rationalization is discovered during pressure testing:
-1. Add to `rationalization-library.md`
+1. Add it to `rationalization-library.md`.
 2. Update relevant skill guardrails
 3. Create new pressure scenario to prevent regression
 

@@ -14,8 +14,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added Phenomenal, Essential, and Philosophical cognitive layers to non-trivial `cc-review` and `cc-pr-review` chains, with a fixed thought path from phenomenon intake through final output.
 - Added three-layer upstream and downstream review-chain contracts to `cc-review` and `cc-pr-review`, including required evidence, diagnosis, and causal-path records for non-trivial findings.
 - Added explicit `Default Output` contracts across the core `cc-*` skills so terminal responses use fixed short formats.
+- Added `tests/pressure-scenarios/rationalization-library.md` so pressure scenarios share a real excuse-to-guardrail registry.
 - Added built-in complexity hotspot review to `cc-review` and `cc-pr-review`, including local scanner/reference copies for nested scans, repeated membership checks, render recomputation, and N+1 database/API patterns without depending on an external skill.
 - Registered `managed-skill-sync` as an internal-only skill so publish inventory validation accepts the maintainer workflow without adding it to the public distribution.
+
+### Fixed
+
+- Replaced the pressure-scenario runner's non-portable `head -n -1` extraction with awk-based section parsing so macOS runs show real scenario content.
 
 ## [4.5.19] - 2026-05-18
 

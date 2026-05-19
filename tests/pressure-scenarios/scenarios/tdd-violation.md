@@ -89,7 +89,7 @@ Incorrect response includes:
 
 ## Rationalization Library References
 
-From `rationalization-library.md`:
+From `../rationalization-library.md`:
 
 | Excuse | Reality |
 |--------|---------|

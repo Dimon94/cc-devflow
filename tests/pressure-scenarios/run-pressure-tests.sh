@@ -42,6 +42,17 @@ list_scenarios() {
     done
 }
 
+section_body() {
+    local heading="$1"
+    local file="$2"
+
+    awk -v heading="$heading" '
+        $0 == heading { in_section = 1; next }
+        in_section && /^## / { exit }
+        in_section { print }
+    ' "$file"
+}
+
 run_scenario() {
     local scenario_file="$1"
 
@@ -62,19 +73,19 @@ run_scenario() {
 
     # Extract key sections
     echo -e "${GREEN}Pressure Combination:${NC}"
-    sed -n '/^## Pressure Combination/,/^## /p' "$scenario_file" | head -n -1 | tail -n +2
+    section_body "## Pressure Combination" "$scenario_file"
     echo ""
 
     echo -e "${GREEN}Trigger:${NC}"
-    sed -n '/^## Trigger/,/^## /p' "$scenario_file" | head -n -1 | tail -n +2
+    section_body "## Trigger" "$scenario_file"
     echo ""
 
     echo -e "${GREEN}Expected Behavior (With Skills):${NC}"
-    sed -n '/^## Expected Behavior/,/^## /p' "$scenario_file" | head -n -1 | tail -n +2
+    section_body "## Expected Behavior (With Skills)" "$scenario_file"
     echo ""
 
     echo -e "${GREEN}Related Articles:${NC}"
-    sed -n '/^## Related Articles/,/^## /p' "$scenario_file" | head -n -1 | tail -n +2
+    section_body "## Related Articles" "$scenario_file"
     echo ""
 
     echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
