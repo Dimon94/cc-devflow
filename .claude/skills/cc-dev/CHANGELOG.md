@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.0 - 2026-05-18
+
+- add a Default Output contract for terminal audits across PDCA, IDCA, resume, PR, and handoff routes
+
 ## 1.2.0
 
 - add a stage-transition checklist contract so autonomous PDCA/IDCA pauses on branch, task, Git, verification, and PR truth before each route hop

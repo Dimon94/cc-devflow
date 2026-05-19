@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.11.0
+version: 3.12.0
 description: Use when a requirement, roadmap item, or bug needs scope clarification, design decisions, and executable task breakdown before coding starts.
 triggers:
   - 帮我规划这个需求
@@ -67,6 +67,17 @@ tool_budget:
 - `devflow/changes/<change-key>/task.md`
 
 不要生成额外过程文件。Git commit 是阶段历史，`task.md` 是任务真相。
+
+## Default Output
+
+After `task.md` is frozen, keep the response to:
+
+1. Change: REQ/FIX key, worktree, and branch.
+2. Scope: approved solution, non-goals, and frozen decisions.
+3. Tasks: task count and first ready task.
+4. Verification: planned commands and behavior evidence path.
+5. Roadmap sync: synced, skipped with reason, or not applicable.
+6. Route: `cc-do`, `cc-investigate`, `roadmap`, or `stop`.
 
 ## Checklist Contract
 

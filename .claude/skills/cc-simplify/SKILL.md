@@ -1,6 +1,6 @@
 ---
 name: cc-simplify
-version: 1.5.0
+version: 1.6.0
 description: "Use when changed code needs an automatic subagent-backed simplification pass for scope drift, reuse, code quality, efficiency, test quality, and confidence-gated smell fixes before cc-check or cc-act."
 reads:
   - devflow/changes/<change-key>/task.md
@@ -304,6 +304,17 @@ Decision：
 - 不用 mock 通过来证明真实行为正确。
 - 不在没有新鲜验证时声称“已简化完成”。
 
+
+## Default Output
+
+End the simplification pass with:
+
+1. Agents used: yes/no and reason if unavailable.
+2. Findings: confirmed smells fixed, deferred smells, or `NO FINDINGS`.
+3. Changes: files touched and smell removed.
+4. Verification: command, exit status, and claim proven or blocker.
+5. Residual risk: none or named risk.
+6. Route: `cc-check`, `cc-act`, `cc-do`, or `stop`.
 
 ## Checklist Contract
 

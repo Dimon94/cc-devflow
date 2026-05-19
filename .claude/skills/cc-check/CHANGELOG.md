@@ -1,5 +1,9 @@
 # CC-Check Skill Changelog
 
+## v1.14.0 - 2026-05-18
+
+- make the short Default Output contract explicit so pass, fail, and blocked verdicts use the same evidence shape
+
 ## v1.13.0 - 2026-05-18
 
 - add a verification-specific checklist contract that makes reset, rerun, boundary check, evidence matrix, failure ownership, and route freeze explicit pause points

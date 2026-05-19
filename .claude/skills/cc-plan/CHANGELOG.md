@@ -1,5 +1,9 @@
 # CC-Plan Skill Changelog
 
+## v3.12.0 - 2026-05-18
+
+- add a Default Output contract for plan-stage handoff summaries after task.md is frozen
+
 ## v3.11.0 - 2026-05-18
 
 - add a plan-specific checklist contract that turns the planning flow into preflight, design, task, and exit pause points

@@ -89,7 +89,7 @@ Typical outputs:
 - `cc-spec-init` writes `devflow/specs/INDEX.md` and capability specs
 - `cc-plan` writes `task.md#Contract Summary`
 - `cc-investigate` writes `task.md#Root Cause Contract`
-- `cc-review` writes plan/investigation findings into `task.md`; implementation findings stay in the response until the user chooses a repair option; complexity hotspot findings include before/after complexity and needed tests or measurements
+- `cc-review` writes plan/investigation findings into `task.md`; implementation findings stay in the response until the user chooses a repair option; non-trivial review chains record evidence, diagnosis, Phenomenal/Essential/Philosophical cognitive layers, causal path, at least three upstream layers, and at least three downstream layers; complexity hotspot findings include before/after complexity and needed tests or measurements
 - `cc-check` reports verification facts in the response, PR brief, or Git commit
 - `cc-act` writes exactly one final PR file, `handoff/pr-brief.md`, or incident postmortem files when a real incident needs a corpse report
 

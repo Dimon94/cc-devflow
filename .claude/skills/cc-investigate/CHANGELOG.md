@@ -1,5 +1,9 @@
 # CC-Investigate Skill Changelog
 
+## v1.8.0 - 2026-05-18
+
+- add a Default Output contract for root-cause handoff summaries without adding new process files
+
 ## v1.7.0 - 2026-05-18
 
 - add an investigation-specific checklist contract for symptom, reproduction, hypothesis falsification, root-cause proof, repair boundary, and handoff pause points

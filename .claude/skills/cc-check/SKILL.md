@@ -1,6 +1,6 @@
 ---
 name: cc-check
-version: 1.13.0
+version: 1.14.0
 description: Use when a planned or investigated change needs fresh verification evidence and an honest pass/fail/blocked verdict before cc-act.
 triggers:
   - 验收这个需求
@@ -63,6 +63,17 @@ tool_budget:
 ## Read First
 
 1. `references/checklist-contract.md`
+
+## Default Output
+
+Use this short shape for every verdict:
+
+1. Verdict: exactly `pass`, `fail`, or `blocked`.
+2. Evidence: command, exit status, key observation, and claim proven.
+3. Review: clean, findings remain, not reviewed, or skipped with reason.
+4. QA: feedback loop, test quality, and behavior evidence when applicable.
+5. Diff: scope match, missing scope, or scope drift.
+6. Route: `cc-act`, `cc-do`, `cc-investigate`, `cc-plan`, or `stop`.
 
 ## Checklist Contract
 

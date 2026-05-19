@@ -1,5 +1,9 @@
 # CC-Spec-Init Skill Changelog
 
+## v1.4.0 - 2026-05-18
+
+- add a Default Output contract for capability spec initialization and updates
+
 ## v1.3.0 - 2026-05-18
 
 - add a capability-spec checklist contract for boundary, current truth, gaps, language, index link, and commit pause points

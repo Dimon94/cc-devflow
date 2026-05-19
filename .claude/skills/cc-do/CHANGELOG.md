@@ -1,5 +1,9 @@
 # CC-Do Skill Changelog
 
+## v1.9.0 - 2026-05-18
+
+- add a fixed Default Output contract for task execution, TDD evidence, verification, commit, and next route
+
 ## v1.8.0 - 2026-05-18
 
 - add an execution-specific checklist contract for task preflight, Red/Green evidence, refactor proof, completion script use, verification, and task commit

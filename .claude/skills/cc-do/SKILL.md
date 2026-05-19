@@ -1,6 +1,6 @@
 ---
 name: cc-do
-version: 1.8.0
+version: 1.9.0
 description: Use when implementing frozen tasks, resuming interrupted work, applying an investigation handoff, or fixing review feedback inside the approved scope.
 triggers:
   - 开始做 T003
@@ -108,6 +108,16 @@ NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
 
 退出时报告任务 ID、验证命令、commit hash、剩余任务或下一步 `cc-check`。不要写过程文件。
 
+
+## Default Output
+
+When pausing or finishing a task, report only:
+
+1. Task: task ID and observable behavior completed.
+2. TDD: Red evidence, Green evidence, and refactor note or recorded exception.
+3. Verification: command, exit status, and claim proven or blocker.
+4. Commit: commit hash or explicit reason no commit exists.
+5. Route: next task, `cc-check`, `cc-plan`, `cc-investigate`, or `stop`.
 
 ## Checklist Contract
 

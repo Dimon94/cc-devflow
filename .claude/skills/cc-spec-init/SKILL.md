@@ -1,6 +1,6 @@
 ---
 name: cc-spec-init
-version: 1.3.0
+version: 1.4.0
 description: Use when you need to initialize or evolve capability specs under `devflow/specs/`.
 reads:
   - PLAYBOOK.md
@@ -49,6 +49,17 @@ Changes link to specs through `task.md`, roadmap text, PR text, and Git commits.
 - `INDEX.md` links to existing capability files
 - spec changes are committed to Git
 
+
+## Default Output
+
+Report spec work as:
+
+1. Specs: index and capability files created or updated.
+2. Boundary: capability name, ownership, and current truth.
+3. Gaps: open questions, deprecated capabilities, or split/merge decisions.
+4. Links: roadmap, task, PR, or commit references that now point to the spec.
+5. Commit: commit hash or explicit reason no commit exists.
+6. Route: `cc-roadmap`, `cc-plan`, `cc-act`, or `stop`.
 
 ## Checklist Contract
 

@@ -1,5 +1,9 @@
 # Roadmap Skill Changelog
 
+## v5.5.0 - 2026-05-18
+
+- add a Default Output contract for roadmap artifacts, next battle, dependencies, and handoff readiness
+
 ## v5.4.0 - 2026-05-18
 
 - add a roadmap-specific checklist contract with explicit pause points before route recommendation and durable roadmap writeback

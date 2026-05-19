@@ -1,5 +1,9 @@
 # CC-Simplify Skill Changelog
 
+## v1.6.0 - 2026-05-18
+
+- add a Default Output contract for simplification findings, fixes, verification, and route decisions
+
 ## v1.5.0 - 2026-05-18
 
 - add a simplify-specific checklist contract that preserves the existing smell pipeline as explicit scope, reviewer, evidence, fix, and verification pause points

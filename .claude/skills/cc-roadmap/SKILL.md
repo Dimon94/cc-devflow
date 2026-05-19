@@ -1,6 +1,6 @@
 ---
 name: cc-roadmap
-version: 5.4.0
+version: 5.5.0
 description: "Use when defining, resetting, or narrowing project direction, stage order, or backlog priority before a concrete requirement enters the PDCA loop."
 triggers:
   - "帮我定路线图"
@@ -69,6 +69,17 @@ tool_budget:
 # Roadmap
 
 > [PROTOCOL]: 变更时同步更新 `version`、`CHANGELOG.md`、相关模板/脚本引用，必要时写 migration note，然后检查 `CLAUDE.md`
+
+## Default Output
+
+After roadmap work, report:
+
+1. Artifacts: `devflow/ROADMAP.md`, `devflow/roadmap.json`, and any compatibility projection updated.
+2. Next battle: first RM/item and why it wins priority.
+3. Signals: success signal, dependency chain, and parallel-ready work.
+4. Specs: capability links or gaps.
+5. Handoff: items ready for `cc-plan` or blockers.
+6. Route: `cc-plan`, `cc-next`, or `stop`.
 
 ## Checklist Contract
 

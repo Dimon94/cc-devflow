@@ -1,6 +1,6 @@
 ---
 name: cc-investigate
-version: 1.7.0
+version: 1.8.0
 description: Use when a bug, regression, broken task, or unexpected behavior needs root-cause investigation before coding resumes.
 triggers:
   - 帮我查这个 bug
@@ -216,6 +216,17 @@ Escape reason 不能写成人工提醒；它必须变成 regression test、artif
 - Investigate commit hash
 - 下一步 `cc-do` 或 reroute
 
+
+## Default Output
+
+After freezing investigation truth, answer with:
+
+1. Change: FIX key and `task.md` path.
+2. Symptom: reproduced or closest honest feedback loop.
+3. Root cause: first bad state and violated contract.
+4. Repair boundary: allowed files, forbidden files, and test seam.
+5. Evidence gaps: none, diagnose-only boundary, or evidence request.
+6. Route: `cc-do`, `cc-plan`, `roadmap`, or `stop`.
 
 ## Checklist Contract
 

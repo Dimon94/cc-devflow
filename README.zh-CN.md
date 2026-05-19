@@ -120,7 +120,7 @@ Canonical language 和 durable decisions 只收敛到 cc-devflow 原生真相源
 
 planning 之后的每个阶段都从 `task.md`、当前 Git history/status，以及存在时的 PR 或 handoff truth 开始。系统不再提供 runtime context query 层；有争议的事实必须回到源 artifact 重新读取。用 `npm run benchmark:skills` 保持 public skill 入口足够薄；深层规划规则应该放在条件 reference 后面，而不是默认上下文里。
 
-`cc-review` 是可选的深度 Review，不替代 `cc-check`。它可以接在 `cc-plan` / `cc-investigate` 后审冻结的计划或根因合同，也可以接在 `cc-do` 后审实现。它内置复杂度热点 facet，可审查嵌套扫描、循环内 membership/search、render path 重算、N+1 database/API 等模式。计划 / 调查 Review 的 finding 直接写进 `task.md`。执行 Review 的 finding 在当前回复里组织成修复选项，用户选择后才改代码。PR Review 只留在对话或 GitHub review 中。不写本地 review report、ledger、findings JSON 或其它 Review 产物文件。
+`cc-review` 是可选的深度 Review，不替代 `cc-check`。它可以接在 `cc-plan` / `cc-investigate` 后审冻结的计划或根因合同，也可以接在 `cc-do` 后审实现。它内置复杂度热点 facet，可审查嵌套扫描、循环内 membership/search、render path 重算、N+1 database/API 等模式。非 trivial review finding 必须记录证据、诊断、现象层 / 本质层 / 哲学层、因果链，且至少包含上游三层和下游三层；思维路径固定为“现象接收 → 本质诊断 → 哲学沉思 → 本质整合 → 现象输出”。计划 / 调查 Review 的 finding 直接写进 `task.md`。执行 Review 的 finding 在当前回复里组织成修复选项，用户选择后才改代码。PR Review 只留在对话或 GitHub review 中。不写本地 review report、ledger、findings JSON 或其它 Review 产物文件。
 
 ## 验证与交付门禁
 

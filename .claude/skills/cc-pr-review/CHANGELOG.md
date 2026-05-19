@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.6.0 - 2026-05-19
+
+- add mandatory Phenomenal, Essential, and Philosophical cognitive layers to non-trivial PR review chains
+- require PR findings to follow the fixed thought path from phenomenon intake through essence diagnosis, philosophy reflection, essence integration, and phenomenon output
+
+## v1.5.0 - 2026-05-19
+
+- require non-trivial PR review chains to record evidence, diagnosis, causal path, at least three upstream layers, and at least three downstream layers
+- extend the PR Review Chain template with explicit upstream PR/task/proof and downstream seam/behavior/release-risk sections
+
+## v1.4.0 - 2026-05-18
+
+- add a Default Output contract for remote PR review verdicts and route decisions
+
 ## 1.3.0
 
 - inline the complexity hotspot scanner and optimization references so PR review can use complexity-optimizer behavior without an external skill dependency

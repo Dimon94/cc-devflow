@@ -1,5 +1,19 @@
 # CC-Review Changelog
 
+## v2.7.0 - 2026-05-19
+
+- add mandatory Phenomenal, Essential, and Philosophical cognitive layers to non-trivial review chains
+- require review findings to follow the fixed thought path from phenomenon intake through essence diagnosis, philosophy reflection, essence integration, and phenomenon output
+
+## v2.6.0 - 2026-05-19
+
+- require non-trivial review chains to record evidence, diagnosis, causal path, at least three upstream layers, and at least three downstream layers
+- extend the ASCII Branch Chain template with explicit upstream and downstream chain sections instead of compressing source and impact into shallow nodes
+
+## v2.5.0 - 2026-05-18
+
+- add a Default Output contract that fixes short result shapes for plan, implementation, PR, and clean reviews
+
 ## 2.4.0 - 2026-05-18
 
 - inline the complexity hotspot scanner and optimization references so review runs can use complexity-optimizer behavior without depending on an external skill

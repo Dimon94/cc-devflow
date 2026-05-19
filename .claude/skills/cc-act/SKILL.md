@@ -1,6 +1,6 @@
 ---
 name: cc-act
-version: 1.10.0
+version: 1.11.0
 description: Use when verified work must be committed, handed off, pushed, or turned into a PR with the smallest durable delivery surface.
 triggers:
   - 准备提 PR
@@ -114,6 +114,16 @@ PDCA / IDCA 每个阶段或执行环境完成后都提交 Git commit。Git histo
 
 最终响应说明 commit、验证、PR 或本地 handoff 状态，以及是否写了 incident postmortem。
 
+
+## Default Output
+
+Keep the final response short and fixed:
+
+1. Commit: latest commit hash or explicit uncommitted state.
+2. Verification: fresh evidence reused from cc-check or reroute reason.
+3. Delivery: PR URL, updated PR, local handoff path, or post-merge closeout state.
+4. Postmortem: `POSTMORTEM_REQUIRED=no` or incident path written.
+5. Route: terminal state or next skill.
 
 ## Checklist Contract
 

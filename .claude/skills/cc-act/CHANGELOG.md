@@ -1,5 +1,9 @@
 # CC-Act Skill Changelog
 
+## v1.11.0 - 2026-05-18
+
+- add a fixed Default Output contract for commit, evidence, delivery, postmortem gate, and route reporting
+
 ## v1.10.0 - 2026-05-18
 
 - add a closeout-specific checklist contract for mode selection, commit coherence, stale verification detection, postmortem trigger proof, PR brief rebuild, and handoff status

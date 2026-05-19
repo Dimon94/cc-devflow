@@ -1,6 +1,6 @@
 ---
 name: cc-next
-version: 1.2.0
+version: 1.3.0
 description: Use when you need to pick the next ready work item from roadmap truth, active changes, and remote issues, then produce one Goal Packet for cc-dev.
 triggers:
   - 选下一个需求
@@ -94,6 +94,16 @@ Goal Packet
 
 Keep output short: queue truth, selected goal, reason, next gate.
 
+
+## Default Output
+
+Keep selection output compact:
+
+1. Queue truth: active changes, roadmap source, and issue source checked.
+2. Selection: one chosen goal or `no-ready-goal`.
+3. Why next: priority, dependency, and readiness evidence.
+4. Goal Packet: objective, source, route, completion criteria, stop conditions, PR expectation.
+5. Route: `cc-dev`, `cc-roadmap`, or `stop`.
 
 ## Checklist Contract
 

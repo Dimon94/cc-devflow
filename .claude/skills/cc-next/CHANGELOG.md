@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.0 - 2026-05-18
+
+- add a Default Output contract for next-work selection and no-ready-goal responses
+
 ## 1.2.0
 
 - add a next-work checklist contract so queue selection pauses on roadmap truth, active changes, archive state, and handoff reality before producing a Goal Packet

@@ -1,6 +1,6 @@
 ---
 name: cc-pr-land
-version: 1.2.0
+version: 1.3.0
 description: Use in a separate session to land reviewed GitHub PRs into main with review-first, rebase-first discipline.
 triggers:
   - 合并这个 PR
@@ -61,6 +61,16 @@ Land reviewed PRs. Do not implement new feature scope.
 
 Evidence lives in GitHub, Git history, command output, and final response. Do not create local process files for landing state.
 
+
+## Default Output
+
+For landing sessions, report:
+
+1. PR: number, title, and head branch.
+2. Review: prior review proof and any post-rebase re-review.
+3. Landing: merge/rebase action and resulting main commit.
+4. Parity: local main, remote main, and active main worktree proof.
+5. Route: landed, `cc-pr-review`, `cc-dev`, or `stop`.
 
 ## Checklist Contract
 
