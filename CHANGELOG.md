@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.21] - 2026-05-20
+
+### Added
+
+- Added Socratic Dialogue gates to `cc-roadmap`, `cc-plan`, and `cc-investigate` so roadmap, planning, and investigation stages continue one-question confirmation rounds until the user explicitly releases the next stage.
+- Added adversarial review, hidden-assumption, and surgical-method naming guidance to the planning and investigation contracts.
+
+### Changed
+
+- Updated planning and investigation task templates so generated `task.md` files persist dialogue rounds, release phrases, hidden assumptions, and review findings.
+- Updated example bindings and sample artifacts for `cc-roadmap@5.6.0`, `cc-plan@3.13.0`, and `cc-investigate@1.9.0`.
+
 ## [4.5.20] - 2026-05-19
 
 ### Added
