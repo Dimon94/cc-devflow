@@ -155,6 +155,14 @@ Verification:
 Risk / Escalate If:
 -
 
+## Failure Ledger
+
+Use this section only for real execution failures, reroutes, disproven assumptions, stale validation, wrong-file touches, repeated tool failures, or user-corrected misses. Do not prefill speculative risks.
+
+| ID | Symptom | Evidence | Attempted fix | Result | Lesson candidate | Status | Keep for postmortem |
+|----|---------|----------|---------------|--------|------------------|--------|---------------------|
+| FL-001 |  |  |  |  |  | unreviewed / confirmed-lesson / noise / unresolved-risk | no |
+
 ## Execution Protocol
 
 ClaudeCode / Codex 执行本计划时，必须把 `task.md` 当成唯一任务合同。

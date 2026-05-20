@@ -1,6 +1,6 @@
 ---
 name: cc-check
-version: 1.14.0
+version: 1.15.0
 description: Use when a planned or investigated change needs fresh verification evidence and an honest pass/fail/blocked verdict before cc-act.
 triggers:
   - 验收这个需求
@@ -20,6 +20,10 @@ writes:
   - path: current response
     durability: ephemeral
     required: true
+  - path: devflow/changes/<change-key>/task.md
+    durability: durable
+    required: false
+    when: classifying `Failure Ledger` entries touched by this verification
   - path: Git commit
     durability: durable
     required: true
@@ -34,6 +38,7 @@ exit_criteria:
   - Verdict is exactly pass, fail, or blocked.
   - Every passing statement cites fresh command output, exit status, and what claim it proves.
   - Behavior changes and bugfixes include feedback-loop and test-quality review.
+  - Any `task.md#Failure Ledger` entry touched by this verification is classified as `confirmed-lesson`, `noise`, or `unresolved-risk`.
   - Current diff is checked against `task.md` for missing scope, scope creep, and unintended file touch.
   - Failures are classified as branch, baseline, environment, external, or unknown.
   - Missing evidence is separated from real failure.
@@ -97,11 +102,15 @@ NO PASS WITHOUT FRESH EVIDENCE
 2. Re-run the smallest trustworthy gate: tests, typecheck, lint, build, browser check, CLI smoke, or domain-specific verifier.
 3. Map each explicit requirement to proof.
 4. Review test quality when behavior changed: red/green proof, public seam, honest fixtures, no private implementation assertions.
-5. Return verdict:
+5. Classify any relevant Failure Ledger entries:
+   - `confirmed-lesson`: verified failure pattern worth compressing at `cc-act`.
+   - `noise`: local dead end, transient command issue, or disproven suspicion.
+   - `unresolved-risk`: real concern still missing proof or owner.
+6. Return verdict:
    - `pass`: all required claims have fresh proof.
    - `fail`: a command, review, or behavior check proves the change is wrong.
    - `blocked`: required environment, auth, input, or evidence is missing.
-6. Commit the stage when this PDCA/IDCA environment completes.
+7. Commit the stage when this PDCA/IDCA environment completes.
 
 ## Verification Phases
 
@@ -125,6 +134,18 @@ NO PASS WITHOUT FRESH EVIDENCE
 7. Review Freshness：本轮 review 是否覆盖当前 HEAD；未 review 要说清风险。
 8. Failure Ownership：失败归属 branch、baseline、environment、external 或 unknown。
 9. Docs / Browser / Operator：UI、CLI、docs、operator workflow 受影响时有证据或 skip reason。
+
+## Failure Ledger Review
+
+如果 `task.md#Failure Ledger` 有本轮相关条目，`cc-check` 必须把现场记录过滤成可压缩事实：
+
+| Status | Meaning | Keep for postmortem |
+| --- | --- | --- |
+| `confirmed-lesson` | 新鲜验证证明这是会复发的流程、测试、架构、AI 或交付教训 | `yes` when it should change future workflow behavior |
+| `noise` | 临时误会、已推翻假设、一次性环境抖动或无复用价值的尝试 | `no` |
+| `unresolved-risk` | 风险真实但证据、owner 或修复边界还不够 | `no` until resolved or explicitly escalated |
+
+不要把所有失败都送进尸检。只有 `confirmed-lesson` 且 `Keep for postmortem: yes` 的条目，才是 `cc-act` 收尾压缩的输入。
 
 ## Claim Evidence Matrix
 

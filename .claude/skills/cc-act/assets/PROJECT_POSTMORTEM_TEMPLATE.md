@@ -10,6 +10,7 @@
 
 - Change:
 - Incident / failure:
+- Failure Ledger source:
 - Severity: low / medium / high
 - Impact:
 - Current status: repaired / mitigated / deferred / monitoring
@@ -30,6 +31,12 @@
 - Investigation reminder:
 - Execution reminder:
 - Ship reminder:
+
+## Failure Assets Compressed
+
+| Ledger ID | Confirmed lesson | Evidence | Kept / dropped |
+| --- | --- | --- | --- |
+| FL-001 |  |  | kept / dropped |
 
 ## Git Evidence
 
@@ -93,3 +100,12 @@
 | Type | Action | Owner | Target |
 | --- | --- | --- | --- |
 | root-cause-fix / detection / docs / backlog |  |  |  |
+
+## Workflow Patch Candidate
+
+- Should change workflow: yes / no
+- Type: no-action / skill-rule / template-field / script-guard / regression-test / roadmap-followup
+- Target:
+- Minimal rule:
+- Verification gate:
+- Compression note:

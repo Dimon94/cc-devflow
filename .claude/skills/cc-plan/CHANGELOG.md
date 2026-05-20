@@ -1,5 +1,9 @@
 # CC-Plan Skill Changelog
 
+## v3.15.0 - 2026-05-20
+
+- add `task.md#Failure Ledger` to the task template so execution failures start as local task evidence before closeout compression
+
 ## v3.14.0 - 2026-05-20
 
 - require ten-round Dialogue Checkpoints in `task.md#Contract Summary` so long requirement and technical confirmation can resume after context compression

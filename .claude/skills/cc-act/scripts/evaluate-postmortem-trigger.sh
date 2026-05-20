@@ -68,6 +68,12 @@ if [[ -f "$task_file" ]]; then
   if rg -i --quiet '(incident|failure|reroute|rework)[ -]?postmortem[: ]+(yes|required|true)' "$task_file"; then
     add_trigger "task:incident-postmortem"
   fi
+  if rg -i --quiet 'Keep for postmortem:[[:space:]]*(yes|true|required)' "$task_file"; then
+    add_trigger "task:failure-ledger"
+  fi
+  if rg -i --quiet '\|[^|]*confirmed-lesson[^|]*\|[[:space:]]*(yes|true|required)[[:space:]]*\|' "$task_file"; then
+    add_trigger "task:failure-ledger"
+  fi
 fi
 
 while IFS= read -r trigger; do

@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-003.v1`
 - Design version: `design.v1`
-- CC-Plan skill version: `3.14.0`
+- CC-Plan skill version: `3.15.0`
 - Work branch: `REQ/003-audit-log-export`
 - Output language: en
 - Source roadmap item: `RM-020`
@@ -70,6 +70,12 @@ OUTCOME: admins stop manually copying weekly audit summaries
   - export format
   - panel placement
 - Parallel boundaries: none
+
+## Failure Ledger
+
+| ID | Symptom | Evidence | Attempted fix | Result | Lesson candidate | Status | Keep for postmortem |
+|----|---------|----------|---------------|--------|------------------|--------|---------------------|
+| FL-001 | none recorded | N/A | N/A | N/A | N/A | noise | no |
 
 ## Execution Protocol
 

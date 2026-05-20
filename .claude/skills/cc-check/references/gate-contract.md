@@ -61,6 +61,16 @@ Classify every failure:
 
 `unknown` cannot support `pass`. It needs a rescue action or a reroute.
 
+## Failure Ledger Review
+
+When `task.md#Failure Ledger` contains entries touched by this verification, classify each one:
+
+- `confirmed-lesson`: verified pattern worth compressing at closeout.
+- `noise`: disproven suspicion, transient dead end, or local attempt with no reuse value.
+- `unresolved-risk`: real risk that still lacks proof, owner, or repair boundary.
+
+Only `confirmed-lesson` entries marked `Keep for postmortem: yes` should drive `cc-act` incident postmortems.
+
 ## Reroute
 
 - `none`

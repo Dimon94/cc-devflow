@@ -126,9 +126,9 @@ Every post-planning stage starts from `task.md`, current Git history/status, and
 
 ## Verification And Ship Gates
 
-`cc-check` now treats QA as a feedback-loop problem, not only a green-test problem. Bugfix and behavior work records the loop used to prove reality, expected versus actual behavior, reproduction steps, test boundary quality, and architecture follow-ups when no clean public test seam exists.
+`cc-check` now treats QA as a feedback-loop problem, not only a green-test problem. Bugfix and behavior work records the loop used to prove reality, expected versus actual behavior, reproduction steps, test boundary quality, and architecture follow-ups when no clean public test seam exists. It also classifies `task.md#Failure Ledger` entries as confirmed lessons, noise, or unresolved risks before closeout.
 
-`cc-act` carries that evidence into PR briefs, handoffs, or incident postmortems when needed. It checks source roadmap progress during closeout, updates `devflow/roadmap.json`, and regenerates `devflow/ROADMAP.md` / `devflow/BACKLOG.md` when verified reality changes. Follow-ups must be durable behavior briefs with current behavior, desired behavior, key interfaces, acceptance criteria, and explicit out-of-scope notes before they are written back to roadmap or backlog.
+`cc-act` carries that evidence into PR briefs, handoffs, or incident postmortems when needed. It compresses confirmed Failure Ledger entries into postmortems and requires each incident to name a workflow patch candidate or an explicit no-action decision. It checks source roadmap progress during closeout, updates `devflow/roadmap.json`, and regenerates `devflow/ROADMAP.md` / `devflow/BACKLOG.md` when verified reality changes. Follow-ups must be durable behavior briefs with current behavior, desired behavior, key interfaces, acceptance criteria, and explicit out-of-scope notes before they are written back to roadmap or backlog.
 
 ## Installation Modes
 
@@ -246,7 +246,7 @@ The currently distributed skill folders are:
 
 - `devflow/specs/` stores durable capability truth: `INDEX.md` plus `capabilities/*.md`.
 - New change directories use `REQ-<number>-<description>` for requirements or `FIX-<number>-<description>` for bug fixes. `REQ` and `FIX` numbers advance independently, so the same number may exist in both prefixes. Parallel worktrees may also create repeated numbers; the full change key must use a specific description to distinguish the work.
-- `devflow/changes/<change>/` stores durable change truth in `task.md`, optional `handoff/pr-brief.md`, and Git commits. Real recurring failures may also write incident postmortems under `devflow/postmortems/`.
+- `devflow/changes/<change>/` stores durable change truth in `task.md`, optional `handoff/pr-brief.md`, and Git commits. Real failures start in `task.md#Failure Ledger`; confirmed recurring lessons may also be compressed into incident postmortems under `devflow/postmortems/`.
 - New changes default to one human-authored Markdown artifact: `task.md`. Feature plans put the frozen design in `## Contract Summary`; bug investigations put root-cause truth in `## Root Cause Contract`. Legacy planning and review artifacts are readable fallback inputs only.
 - Workflow state is Git-owned: keep `task.md` current, commit each completed stage/environment, and do not create extra process files.
 - Use `npm run verify:examples` and `npm run benchmark:skills` to keep workflow truth and skill entrypoints small and measurable.

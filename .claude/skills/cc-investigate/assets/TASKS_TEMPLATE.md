@@ -189,6 +189,14 @@ Diagnose-Only / Reroute:
 Risk / Escalate If:
 -
 
+## Failure Ledger
+
+Use this section only for real repair failures, reroutes, disproven hypotheses, stale validation, wrong-file touches, repeated tool failures, or user-corrected misses. Do not prefill speculative risks.
+
+| ID | Symptom | Evidence | Attempted fix | Result | Lesson candidate | Status | Keep for postmortem |
+|----|---------|----------|---------------|--------|------------------|--------|---------------------|
+| FL-001 |  |  |  |  |  | unreviewed / confirmed-lesson / noise / unresolved-risk | no |
+
 ## Execution Protocol
 
 Codex / ClaudeCode must treat this `task.md` as the only repair contract.

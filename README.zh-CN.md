@@ -124,9 +124,9 @@ planning 之后的每个阶段都从 `task.md`、当前 Git history/status，以
 
 ## 验证与交付门禁
 
-`cc-check` 现在把 QA 当成反馈环问题，而不是只看测试是否绿。Bugfix 和行为变更需要记录证明现实的 loop、expected / actual、复现步骤、测试边界质量；如果没有干净的 public test seam，要留下架构 follow-up。
+`cc-check` 现在把 QA 当成反馈环问题，而不是只看测试是否绿。Bugfix 和行为变更需要记录证明现实的 loop、expected / actual、复现步骤、测试边界质量；如果没有干净的 public test seam，要留下架构 follow-up。它还会把 `task.md#Failure Ledger` 里的失败记录分类成 confirmed lesson、noise 或 unresolved risk。
 
-`cc-act` 会把这些证据带进 PR brief、handoff 和 release note。它会在 closeout 检查 source roadmap progress，必要时更新 `devflow/roadmap.json` 并重新生成 `devflow/ROADMAP.md` / `devflow/BACKLOG.md`。Follow-up 必须写成 durable behavior brief，包含 current behavior、desired behavior、key interfaces、acceptance criteria 和 out-of-scope，再回写 roadmap 或 backlog。
+`cc-act` 会把这些证据带进 PR brief、handoff 和 release note。它会把 confirmed Failure Ledger 压缩成尸检报告，并要求每份 incident 写出 workflow patch candidate 或明确 no-action。它会在 closeout 检查 source roadmap progress，必要时更新 `devflow/roadmap.json` 并重新生成 `devflow/ROADMAP.md` / `devflow/BACKLOG.md`。Follow-up 必须写成 durable behavior brief，包含 current behavior、desired behavior、key interfaces、acceptance criteria 和 out-of-scope，再回写 roadmap 或 backlog。
 
 ## 安装方式
 
@@ -244,7 +244,7 @@ npx cc-devflow config doctor --cwd /path/to/your/project
 
 - `devflow/specs/` 保存 durable capability truth：`INDEX.md` 和 `capabilities/*.md`。
 - 新 change 目录使用 `REQ-<number>-<description>` 表示需求，使用 `FIX-<number>-<description>` 表示 Bug 修复。`REQ` 和 `FIX` 各自递增自己的编号，跨前缀同号允许共存。并行工作树也可能产生重复编号，必须用完整 change key 的描述区分业务内容。
-- `devflow/changes/<change>/` 的 durable change truth 只保留 `task.md`、可选 `handoff/pr-brief.md` 和 Git commits。真实复发故障可以在 `devflow/postmortems/` 写 incident postmortem。
+- `devflow/changes/<change>/` 的 durable change truth 只保留 `task.md`、可选 `handoff/pr-brief.md` 和 Git commits。真实失败先进入 `task.md#Failure Ledger`；被验证为长期教训的复发故障再压缩进 `devflow/postmortems/` 的 incident postmortem。
 - 新 change 默认只有一个人工编写的 Markdown artifact：`task.md`。功能计划把冻结设计写进 `## Contract Summary`；Bug 调查把根因真相写进 `## Root Cause Contract`。历史 planning / review artifacts 只作为可读 fallback 输入。
 - 流程状态归 Git：保持 `task.md` 当前，每个完成阶段 / 执行环境提交 commit，不创建额外过程文件。
 - 用 `npm run verify:examples` 和 `npm run benchmark:skills` 保持 workflow truth 与 skill 入口小而可测。

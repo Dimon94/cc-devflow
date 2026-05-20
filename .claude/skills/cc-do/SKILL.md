@@ -1,6 +1,6 @@
 ---
 name: cc-do
-version: 1.9.0
+version: 1.10.0
 description: Use when implementing frozen tasks, resuming interrupted work, applying an investigation handoff, or fixing review feedback inside the approved scope.
 triggers:
   - 开始做 T003
@@ -20,7 +20,7 @@ writes:
   - path: devflow/changes/<change-key>/task.md
     durability: durable
     required: true
-    when: task checkbox/status changes
+    when: task checkbox/status changes or Failure Ledger records real execution failure
 effects:
   - code changes
   - test changes
@@ -34,6 +34,7 @@ exit_criteria:
   - Current task has Red/Green evidence or a recorded TDD exception in `task.md`.
   - Red evidence proves the target behavior through a public seam; Green evidence is minimal and does not pre-build future behavior.
   - Refactor evidence names the smell removed or states why no refactor was needed.
+  - Real failures, reroutes, disproven assumptions, stale validation, wrong-file touches, repeated tool failures, and user-corrected misses are recorded in `task.md#Failure Ledger`.
   - Verification commands have been run or explicitly blocked.
   - Task status is updated through `scripts/mark-task-complete.sh`.
   - The completed task/environment is committed to Git.
@@ -65,7 +66,7 @@ tool_budget:
 - `devflow/changes/<change-key>/task.md` 中的任务状态
 - Git commit
 
-不要生成额外过程文件。失败和阻塞写在对用户的响应里；需要长期保留的失败教训交给 `cc-act` 写 incident postmortem。
+不要生成额外过程文件。真实失败先写进 `task.md#Failure Ledger`，阻塞仍写在对用户的响应里；需要长期保留的失败教训交给 `cc-act` 压缩成 incident postmortem。
 
 ## TDD Iron Law
 
@@ -99,6 +100,18 @@ NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
 7. Refactor 只能在 Green 后做，只清理当前 slice 暴露出的重复、命名、浅模块、长方法、feature envy、primitive obsession、错误处理或三层以上分支。
 8. 三次修补仍失败时，先质疑 `Root Cause Contract` 或 `Contract Summary`，reroute 到 `cc-investigate` / `cc-plan`，不要继续堆补丁。
 9. 完成脚本失败时，修缺失证据、依赖或 task block，不手改 checkbox 绕过。
+
+## Failure Ledger
+
+`task.md#Failure Ledger` 是现场记录，不是尸检报告。只记录已经发生的失败资产：
+
+- 返工：同一任务需要重新实现、重跑或重选路径。
+- Reroute：当前证据推翻计划、根因或验证边界。
+- 误判：测试绿但行为不对、旧输出被误当新证据、review 漏掉实际风险。
+- 工具 / Git / 发布异常：影响本次执行结论的命令、权限、依赖、分支或发布失败。
+- 用户纠偏：用户指出 agent 的判断、范围或实现方向明显错误。
+
+每条记录写成 `FL-###`，包含 symptom、evidence、attempted fix、result、lesson candidate。先把 `Status` 设为 `unreviewed`，`Keep for postmortem` 默认为 `no`；不要在执行阶段把临时噪音升级成长期教训。
 
 ## Parallel Rule
 

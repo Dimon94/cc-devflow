@@ -1,5 +1,10 @@
 # CC-Check Skill Changelog
 
+## v1.15.0 - 2026-05-20
+
+- add Failure Ledger review so verification classifies recorded failures as confirmed lessons, noise, or unresolved risks before closeout
+- allow scoped `task.md` updates for ledger classification while keeping separate verification reports banned
+
 ## v1.14.0 - 2026-05-18
 
 - make the short Default Output contract explicit so pass, fail, and blocked verdicts use the same evidence shape

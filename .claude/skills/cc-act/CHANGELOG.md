@@ -1,5 +1,11 @@
 # CC-Act Skill Changelog
 
+## v1.12.0 - 2026-05-20
+
+- compress confirmed Failure Ledger entries into incident postmortems instead of treating raw task failures as long-term truth
+- add `Workflow Patch Candidate` to the postmortem template so each incident decides whether the workflow changes through a skill rule, template field, script guard, regression test, roadmap follow-up, or explicit no-action
+- teach `evaluate-postmortem-trigger.sh` to trigger on confirmed ledger entries marked for postmortem
+
 ## v1.11.0 - 2026-05-18
 
 - add a fixed Default Output contract for commit, evidence, delivery, postmortem gate, and route reporting

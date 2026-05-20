@@ -1,5 +1,10 @@
 # CC-Do Skill Changelog
 
+## v1.10.0 - 2026-05-20
+
+- require real rework, reroutes, stale validation, wrong-file touches, repeated tool failures, and user corrections to be recorded in `task.md#Failure Ledger`
+- keep the ledger as现场 evidence for `cc-check` and `cc-act` instead of creating separate execution reports
+
 ## v1.9.0 - 2026-05-18
 
 - add a fixed Default Output contract for task execution, TDD evidence, verification, commit, and next route

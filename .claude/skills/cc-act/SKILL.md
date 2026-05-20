@@ -1,6 +1,6 @@
 ---
 name: cc-act
-version: 1.11.0
+version: 1.12.0
 description: Use when verified work must be committed, handed off, pushed, or turned into a PR with the smallest durable delivery surface.
 triggers:
   - 准备提 PR
@@ -41,13 +41,14 @@ effects:
 entry_gate:
   - "Resolve the CLI with `../cc-dev/scripts/resolve-cc-devflow.sh require config`."
   - "Read `task.md`, Git status, latest commits, validation evidence, and current PR state when relevant."
+  - "Read `task.md#Failure Ledger`; only confirmed entries marked `Keep for postmortem: yes` are long-term incident input."
   - "Run `scripts/evaluate-postmortem-trigger.sh --dir <change-dir>` before deciding no incident postmortem is needed."
   - "If verification changed during Act, return to `cc-check`."
   - "Pick one mode: `create-pr`, `update-pr`, `local-handoff`, or `post-merge-closeout`."
 exit_criteria:
   - "All completed work is committed with coherent Conventional Commit messages."
   - "PR mode writes or refreshes only `handoff/pr-brief.md`."
-  - "Postmortem trigger gate is explicit: either `POSTMORTEM_REQUIRED=no` is reported, or the incident postmortem path is written."
+  - "Postmortem trigger gate is explicit: either `POSTMORTEM_REQUIRED=no` is reported, or the incident postmortem path is written with `Workflow Patch Candidate` completed."
   - "No process file is created beyond the allowed durable outputs."
   - "Push, PR, or local handoff status is explicit."
 reroutes:
@@ -104,7 +105,23 @@ scripts/evaluate-postmortem-trigger.sh --dir devflow/changes/<change-key>
 
 如果本轮会话出现了返工、reroute、三次修补仍失败、发布/Git/验证工具异常，但这些信号还没有进入 `task.md` 或 Git history，调用脚本时用 `--trigger <short-label>` 把会话证据纳入本次 gate。没有触发时，最终响应也必须写明 `POSTMORTEM_REQUIRED=no`。
 
-尸检报告必须基于 Git 证据和验证命令。不要把教训拆成额外原则文件。
+尸检报告必须基于 Git 证据、验证命令和 `task.md#Failure Ledger` 中已确认的失败资产。不要把教训拆成额外原则文件。
+
+## Failure Compression
+
+`cc-act` 负责把现场失败压缩成长期知识：
+
+1. 读取 `Failure Ledger`。
+2. 丢弃 `noise` 和未解决的 `unresolved-risk`，除非用户明确要求记录。
+3. 只把 `confirmed-lesson` 且 `Keep for postmortem: yes` 的条目写进 incident postmortem。
+4. 每份 incident postmortem 必须完成 `Workflow Patch Candidate`：
+   - `no-action`：说明为什么只记忆、不改 workflow。
+   - `skill-rule`：目标 skill 和最小规则。
+   - `template-field`：目标模板和字段。
+   - `script-guard`：目标脚本和失败条件。
+   - `regression-test`：目标测试或 fixture。
+   - `roadmap-followup`：目标 roadmap/backlog 行为 brief。
+5. 如果候选补丁会改验证口径或代码，收尾后 reroute 到 `cc-check` 或新 REQ/FIX，不把未验证的新规则塞进当前交付。
 
 ## Commit Rule
 
@@ -122,7 +139,7 @@ Keep the final response short and fixed:
 1. Commit: latest commit hash or explicit uncommitted state.
 2. Verification: fresh evidence reused from cc-check or reroute reason.
 3. Delivery: PR URL, updated PR, local handoff path, or post-merge closeout state.
-4. Postmortem: `POSTMORTEM_REQUIRED=no` or incident path written.
+4. Postmortem: `POSTMORTEM_REQUIRED=no` or incident path written with workflow patch candidate.
 5. Route: terminal state or next skill.
 
 ## Checklist Contract

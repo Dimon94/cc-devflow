@@ -19,7 +19,8 @@ Do not recover from process files. They are not part of the workflow.
 5. Restate the task's goal, public seam, files, verification, and do-not-re-decide items.
 6. Re-run the task's verification command if previous output is stale.
 7. If Red/Green evidence is missing, rebuild the TDD loop before editing production code.
-8. Continue or reroute.
+8. If prior execution hit real rework, reroute, stale validation, wrong-file touch, repeated tool failure, or user correction, make sure `task.md#Failure Ledger` records it.
+9. Continue or reroute.
 
 ## Bad Recovery Signals
 

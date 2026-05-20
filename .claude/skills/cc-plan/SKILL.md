@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.14.0
+version: 3.15.0
 description: Use when a requirement, roadmap item, or bug needs scope clarification, design decisions, and executable task breakdown before coding starts.
 triggers:
   - 帮我规划这个需求

@@ -157,4 +157,28 @@ describe('cc-act postmortem trigger evaluator', () => {
       fs.rmSync(repoRoot, { recursive: true, force: true });
     }
   });
+
+  test('requires a postmortem for confirmed Failure Ledger lessons', () => {
+    const { repoRoot, changeDir } = createRepo('REQ-002-ledger-learning', [
+      '',
+      '## Failure Ledger',
+      '',
+      '| ID | Symptom | Evidence | Attempted fix | Result | Lesson candidate | Status | Keep for postmortem |',
+      '|----|---------|----------|---------------|--------|------------------|--------|---------------------|',
+      '| FL-001 | stale validation reused | cc-check output | rerun gate | fixed | require fresh proof | confirmed-lesson | yes |'
+    ]);
+
+    try {
+      const result = run(
+        'bash',
+        [EVALUATE_POSTMORTEM_TRIGGER, '--dir', changeDir],
+        repoRoot
+      );
+
+      expect(result.stdout).toContain('POSTMORTEM_REQUIRED=yes');
+      expect(result.stdout).toContain('task:failure-ledger');
+    } finally {
+      fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+  });
 });

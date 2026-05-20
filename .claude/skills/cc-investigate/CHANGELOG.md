@@ -1,5 +1,9 @@
 # CC-Investigate Skill Changelog
 
+## v1.11.0 - 2026-05-20
+
+- add `task.md#Failure Ledger` to repair handoffs so real investigation and implementation failures can be filtered before incident postmortems
+
 ## v1.10.0 - 2026-05-20
 
 - require ten-round Dialogue Checkpoints in `task.md#Root Cause Contract` so long phenomenon and repair-boundary confirmation can resume after context compression

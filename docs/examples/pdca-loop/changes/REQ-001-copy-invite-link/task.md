@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-001.v1`
 - Design version: `design.v1`
-- CC-Plan skill version: `3.14.0`
+- CC-Plan skill version: `3.15.0`
 - Work branch: `REQ/001-copy-invite-link`
 - Output language: en
 - Source roadmap item: `RM-001`
@@ -73,6 +73,12 @@ OUTCOME: users can share invites without manual text selection
 - Parallel boundaries: none; this patch is intentionally serial
 
 > 顶部 handoff 只保留执行者必须知道的现实，不重复讲背景故事。
+
+## Failure Ledger
+
+| ID | Symptom | Evidence | Attempted fix | Result | Lesson candidate | Status | Keep for postmortem |
+|----|---------|----------|---------------|--------|------------------|--------|---------------------|
+| FL-001 | none recorded | N/A | N/A | N/A | N/A | noise | no |
 
 ## Execution Protocol
 
