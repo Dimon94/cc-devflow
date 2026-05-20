@@ -2,7 +2,7 @@
 
 ## Diagnosis
 
-Landing risk concentrates at stale reviews, conflict resolution by guesswork, and unproven main parity.
+Landing risk concentrates at unauthenticated GitHub reads, stale reviews, conflict resolution by guesswork, and unproven main parity.
 
 ## Checklist Mode
 
@@ -12,12 +12,18 @@ Landing risk concentrates at stale reviews, conflict resolution by guesswork, an
 
 ## Pause Points
 
-1. Before merge/rebase: refresh PR truth and review status.
-2. Before resolving conflicts: stop if product intent would be guessed.
-3. After landing: prove remote/local/active-main parity.
+1. Before any PR read: resolve GitHub tooling and prove authenticated GitHub access.
+2. Before merge/rebase: refresh PR truth and review status.
+3. Before resolving conflicts: stop if product intent would be guessed.
+4. After landing: prove remote/local/active-main parity.
 
 ## Required Checks
 
+- [ ] `gh` is resolved from PATH or a common absolute install path before it is declared unavailable
+- [ ] GitHub PR, review, and check reads use authenticated `gh` or authenticated REST/curl
+- [ ] token preflight prints only environment variable names, never token values
+- [ ] anonymous GitHub `404` blocks landing unless authenticated live proof resolves it
+- [ ] local refs, fetched refs, and `git ls-remote` are not used as PR/review/check substitutes
 - [ ] live PR truth is fetched before landing
 - [ ] prior review exists or review pass is performed before merge
 - [ ] material rebase/conflict resolution triggers re-review

@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.3.1 - 2026-05-20
+
+- require `gh` resolution through PATH and common install paths before declaring it unavailable
+- require authenticated GitHub truth for PRs, reviews, and checks, with anonymous `404` treated as a stop condition
+- clarify that fetched refs and `git ls-remote` are branch evidence only, not PR truth substitutes
+
 ## v1.3.0 - 2026-05-18
 
 - add a Default Output contract for PR landing status, review proof, main parity, and blockers
