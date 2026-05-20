@@ -1,5 +1,11 @@
 # CC-Plan Skill Changelog
 
+## v3.13.0 - 2026-05-20
+
+- add the Socratic Dialogue Protocol so non-trivial plans continue one-question requirement and technical rounds until the user explicitly releases the plan to the next stage
+- require technical Socratic dialogue to challenge 3 hidden assumptions, overengineering risk, and the current code or proposal with an adversarial review before task generation
+- record explicit releases, repo-answered questions, user-answered rounds, and review findings in `task.md#Contract Summary`
+
 ## v3.12.0 - 2026-05-18
 
 - add a Default Output contract for plan-stage handoff summaries after task.md is frozen
@@ -194,7 +200,7 @@
 
 ## v3.6.0 - 2026-04-28
 
-- absorb grilling-session discipline into native planning: one decision branch at a time, recommended answer with evidence, and no user questions when repo evidence can answer
+- absorb dialogue-session discipline into native planning: one decision branch at a time, recommended answer with evidence, and no user questions when repo evidence can answer
 - require domain language and durable decision scans before naming modules, interfaces, tests, or tasks
 - add interface/deep-module checks so new public surfaces identify callers, hidden complexity, misuse risk, and alternative shapes before task split
 - strengthen test-first planning around vertical tracer bullets so tasks do not become horizontal "all tests first, all implementation later" slices
@@ -296,7 +302,7 @@ Migration note:
 
 Migration note:
 
-- 旧 requirement 目录如果已有 `BRAINSTORM.md`、`PLAN_REVIEW.md`、`context-package.md`，不要继续维护同类新文件；把仍然有效的信息吸收进 `DESIGN.md` 或 `TASKS.md`。
+- 旧 requirement 目录如果已有 `BRAINSTORM.md`、`PLAN_REVIEW.md`、`context-package.md`，不要继续维护同类新文件；把仍然有效的信息迁移到 `DESIGN.md` 或 `TASKS.md`。
 - `resume-index.md` 不再属于 `cc-plan` 阶段产物，它属于 `cc-act` 的 handoff / closeout 工件。
 - `cc-do` 的默认任务上下文现在以 `DESIGN.md` + `TASKS.md` 为主，不再默认读取 `context-package.md`。
 

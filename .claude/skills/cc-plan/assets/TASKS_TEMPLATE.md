@@ -34,6 +34,19 @@ Product / Creative Discovery:
 - Do-nothing consequence:
 - Product confirmation rounds:
 
+Socratic Dialogue:
+- Requirement release: pending | approved
+- Technical release: pending | approved
+- Repo-answered questions:
+- User-answered rounds:
+- 3 hidden assumptions challenged:
+  1.
+  2.
+  3.
+- Overengineering challenge:
+- Adversarial review findings:
+- Explicit release phrase:
+
 Requirement Reality:
 - User / operator:
 - Status quo workaround:

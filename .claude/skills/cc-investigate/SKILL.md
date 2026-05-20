@@ -1,6 +1,6 @@
 ---
 name: cc-investigate
-version: 1.8.0
+version: 1.9.0
 description: Use when a bug, regression, broken task, or unexpected behavior needs root-cause investigation before coding resumes.
 triggers:
   - 帮我查这个 bug
@@ -35,11 +35,14 @@ entry_gate:
   - Reproduce or build the closest honest feedback loop before naming root cause.
   - Classify the investigation mode before tracing: reproduce-first, diff-trace, boundary-probe, backward-trace, reference-compare, condition-wait, workflow-forensics, performance, or diagnose-only.
   - Search relevant code, logs, recent history, and project postmortems before declaring the bug novel.
+  - Inspect the current state before asking technical detail or solution questions; phenomenon questions may capture reproduction facts, but solution confirmation starts only after symptom, feedback loop, and evidence chain are grounded.
+  - Run the Investigation Socratic Dialogue Protocol before freezing the repair boundary when technical details or solution shape need user confirmation.
   - Record hypotheses with falsification methods; do not collapse first intuition into root cause.
 exit_criteria:
   - "`task.md#Root Cause Contract` proves symptom site, first bad state, violated contract, original trigger, counterfactual proof, and escape reason."
   - "`task.md#Root Cause Contract` records investigation mode, feedback loop, evidence chain, tested hypotheses, boundary/backward/reference evidence when applicable, correct test seam, and diagnose-only boundary when applicable."
   - "`task.md#Root Cause Contract` contains ASCII Branch Chain Analysis trees for problem chain, solution chain, and impact chain, tracing upstream root cause and downstream blast radius to the deepest proven prompt/code/provider/data source; tree connector characters stay ASCII while node text follows the configured output language."
+  - "`task.md#Root Cause Contract` records Investigation Socratic Dialogue rounds, including repo-answered facts, user-answered phenomenon gaps, the 3 hidden repair assumptions, overengineering / symptom-fix challenge, adversarial review findings, and explicit user release to freeze repair tasks when confirmation was needed."
   - "`task.md` contains the repair tasks needed by `cc-do`."
   - "Evidence gaps produce Evidence Request, diagnose-only, or reroute tasks instead of fake repair tasks."
   - "No process file is created beyond `task.md`."
@@ -87,9 +90,10 @@ NO REPAIR WITHOUT A FROZEN ROOT-CAUSE CONTRACT
 3. Reproduce：用测试、脚本、日志、浏览器路径或最小 harness 证明同一个症状。
 4. Trace：找到 first bad state，而不是只给 symptom guard。
 5. Hypothesize：列候选，写证伪方法，逐个打掉。
-6. Prove：完成 Root Cause Proof Ladder。
-7. Freeze：把根因、ASCII Branch Chain Analysis、修复边界、测试 seam、allowed/forbidden files 写进 `task.md`。
-8. Commit：提交 Investigate 阶段，再交给 `cc-do`。
+6. Grill：现状查完后，如果需要确认技术细节或解决方案，用一问一答继续追问；用户没有明确说足够详细前，不冻结 repair tasks。
+7. Prove：完成 Root Cause Proof Ladder。
+8. Freeze：把根因、ASCII Branch Chain Analysis、修复边界、测试 seam、allowed/forbidden files 写进 `task.md`。
+9. Commit：提交 Investigate 阶段，再交给 `cc-do`。
 
 ## Investigation Modes
 
@@ -120,6 +124,24 @@ NO REPAIR WITHOUT A FROZEN ROOT-CAUSE CONTRACT
 8. Diagnostic Instrumentation：临时 probe 必须有 tag、location、question answered、command、expected signal、actual signal、cleanup requirement。
 9. Correct Test Seam：说明 regression test 是否覆盖真实触发链；只能测私有实现时，先记录设计缺口或 reroute。
 10. Repair Boundary：affected module、allowed files、forbidden files、blast radius、split-or-reroute decision。
+11. Investigation Socratic Dialogue：记录哪些问题由 repo 证据回答、哪些现象缺口由用户回答、3 个隐含修复假设、过度工程 / 症状修补挑战、adversarial review finding、以及用户允许冻结修复任务的原话。
+
+## Investigation Socratic Dialogue Protocol
+
+问题现象调研必须先看现状。`cc-investigate` 可以在复现前问最小现象事实：触发入口、期望 / 实际、影响面、最近变化、可用日志或 artifact；但不能在读代码、日志、历史、反馈 loop 之前要求用户确认技术方案。
+
+命名原则：允许使用通用、可理解、能稳定触发正确行为的方法词，例如 `Socratic Dialogue`、`Adversarial Review`、`surgical diagnosis`、`surgical repair`；不要使用项目外读者无法理解的内部暗语或个人化来源名。
+
+现状查完后，如果根因、repair boundary、test seam 或方案取舍仍需要用户判断，启动一问一答确认：
+
+1. 先报告已证实事实、最强假设、被证伪假设、仍缺的技术判断。
+2. 每次只问一个 D<N> 问题；给推荐答案、repo 证据、选项和如果用户反对会改变的 repair boundary。
+3. 能继续通过代码、日志、测试、历史或 artifact 查明的问题，先查，不问。
+4. 在冻结 repair tasks 前必须挑战 3 个隐含修复假设：first bad state 是否真的最早、repair 是否只是 symptom guard、test seam 是否覆盖真实触发链。
+5. 必须做一次 adversarial review：指出当前代码或修复方案的 bug 风险、耦合、过度工程、接口膨胀、测试假象和逃逸原因。
+6. 用户没有明确说“足够详细，可以冻结根因 / 进入修复 / 进入下一个阶段”或等价表达时，只能继续追问、写 Evidence Request、diagnose-only 或 reroute，不能生成 repair tasks。
+
+用户催促跳过时，最多保留 2 个 blocking 问题；不能跳过 current-state inspection、hidden assumptions、symptom-fix challenge 和 adversarial review。
 
 ## ASCII Branch Chain Analysis
 

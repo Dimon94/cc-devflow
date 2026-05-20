@@ -26,6 +26,7 @@
 - repair boundary
 - correct test seam
 - verification command
+- investigation Socratic dialogue: current-state inspection before solution questions, repo-answered facts, user-answered phenomenon gaps, 3 hidden repair assumptions, overengineering/symptom-fix challenge, adversarial review findings, and explicit release before repair tasks when confirmation was needed
 - ASCII branch-chain connector tokens stay ASCII, but labels, evidence, and explanatory text follow `Output language`.
 
 ## Investigation Modes
@@ -53,6 +54,12 @@ The contract must climb the ladder:
 6. Escape Reason
 
 Missing first bad state, original trigger, or counterfactual proof means no confirmed repair task. Return an Evidence Request, diagnose-only handoff, or reroute.
+
+## Investigation Socratic Dialogue
+
+Ask only the minimum phenomenon facts needed to reproduce before current-state inspection. Technical-detail and solution-shape questions come after code, logs, history, artifacts, and feedback loop evidence have been inspected.
+
+When confirmation is needed, ask one question at a time with a recommended answer. Prefer answering from evidence over asking the user. Before repair tasks exist, challenge 3 hidden assumptions, reject symptom-site fixes unless proven as original trigger, run an adversarial review of the current code or proposed repair, and wait for explicit user release that the root-cause contract is detailed enough to enter repair.
 
 ## Output Shape
 

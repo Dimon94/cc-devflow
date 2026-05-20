@@ -1,5 +1,11 @@
 # CC-Investigate Skill Changelog
 
+## v1.9.0 - 2026-05-20
+
+- require current-state inspection before technical-detail or solution-shape questions during investigations
+- add the Investigation Socratic Dialogue Protocol so phenomenon gaps and repair decisions proceed one question at a time with recommended answers after evidence gathering
+- record repo-answered facts, user-answered phenomenon gaps, hidden repair assumptions, symptom-fix challenges, adversarial review findings, and explicit repair release in `task.md#Root Cause Contract`
+
 ## v1.8.0 - 2026-05-18
 
 - add a Default Output contract for root-cause handoff summaries without adding new process files

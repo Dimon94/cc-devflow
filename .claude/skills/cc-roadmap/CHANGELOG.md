@@ -1,5 +1,11 @@
 # Roadmap Skill Changelog
 
+## v5.6.0 - 2026-05-20
+
+- add Socratic Roadmap Dialogue so route discovery proceeds one route-changing question at a time with recommended answers and evidence-first lookup
+- block ready RM handoff until the user explicitly releases the route as detailed enough for `cc-plan` or the next stage
+- require backlog handoffs to carry the explicit release alongside source funnel rounds, frozen decisions, and remaining blocking questions
+
 ## v5.5.0 - 2026-05-18
 
 - add a Default Output contract for roadmap artifacts, next battle, dependencies, and handoff readiness
@@ -47,7 +53,7 @@ Migration note:
 
 ## v4.4.0 - 2026-04-28
 
-- absorb strategic grilling discipline into roadmap work: one route-changing question at a time, recommended answer with evidence, and no user question when repo evidence can answer
+- absorb strategic dialogue discipline into roadmap work: one route-changing question at a time, recommended answer with evidence, and no user question when repo evidence can answer
 - require domain language and durable decision scans before naming stages, capabilities, roadmap items, or backlog handoffs
 - add language / spec decision conflict gates so route recommendations expose terminology and decision drift instead of creating a second conceptual system
 - update roadmap and backlog templates with domain-language and durable-decision handoff sections for downstream `cc-plan`

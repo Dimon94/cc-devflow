@@ -16,7 +16,9 @@
 12. Non-trivial plans complete Second-Move Review before approval; the first workable plan is not frozen until a simpler move and a better-architecture move have both been considered.
 13. Non-trivial plans complete product/creative discovery before engineering design; if worth, shape, wedge, or 10x/better version is unclear, ask product questions before implementation questions.
 14. Product/creative confirmation and engineering confirmation are separate rounds unless roadmap/spec evidence already answers one of them and `task.md` records the skip reason.
-15. ASCII branch-chain connector tokens stay ASCII, but labels, evidence, and explanatory text follow `Output language`.
+15. Non-trivial plans run a Socratic Dialogue before final approval: one question at a time, recommended answer included, repo-answerable questions answered from evidence first, and task generation blocked until the user explicitly says the requirement and technical plan are detailed enough.
+16. Technical Socratic dialogue must challenge 3 hidden assumptions, overengineering risk, and the current code or proposal with an adversarial review before task blocks are generated.
+17. ASCII branch-chain connector tokens stay ASCII, but labels, evidence, and explanatory text follow `Output language`.
 
 ## Planning Flow
 
@@ -33,6 +35,15 @@ Every non-trivial plan confirms these rounds before task generation:
 9. Final Approval: approved option and task contract summary.
 
 Tiny plans may compress a round to one evidence-backed line. Full designs must preserve enough detail that `cc-do` does not invent architecture, fields, interfaces, or tests.
+
+## Socratic Dialogue
+
+The dialogue is complete only when both releases are explicit:
+
+- Requirement release: the user confirms the demand, user/operator, status quo, success signal, non-goals, and scope are detailed enough to enter technical planning.
+- Technical release: after repo evidence or proposal review, the user confirms the interface, data contract, abstraction boundary, test seam, and task shape are detailed enough to generate tasks.
+
+Record repo-answered questions, user-answered rounds, hidden assumptions, overengineering challenge, adversarial review findings, and the release phrase in `task.md#Contract Summary`.
 
 ## Decision Questions
 

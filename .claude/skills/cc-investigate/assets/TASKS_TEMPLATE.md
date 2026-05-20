@@ -87,6 +87,19 @@ Diagnostic Instrumentation:
 - Actual signal:
 - Cleanup requirement:
 
+Investigation Socratic Dialogue:
+- Current-state inspection complete: yes | no
+- Solution questions asked before current-state evidence: no | blocked
+- Repo-answered facts:
+- User-answered phenomenon gaps:
+- 3 hidden repair assumptions challenged:
+  1.
+  2.
+  3.
+- Overengineering / symptom-fix challenge:
+- Adversarial review findings:
+- Explicit release phrase:
+
 Repair Boundary:
 -
 
