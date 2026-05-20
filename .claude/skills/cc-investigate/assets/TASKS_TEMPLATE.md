@@ -92,6 +92,16 @@ Investigation Socratic Dialogue:
 - Solution questions asked before current-state evidence: no | blocked
 - Repo-answered facts:
 - User-answered phenomenon gaps:
+- Dialogue Checkpoints:
+  - CP-001:
+    - Round range:
+    - Next question:
+    - Decisions made:
+    - Rejected repair options and reasons:
+    - Remaining open questions:
+    - Evidence sources read:
+    - Hidden assumptions / adversarial findings so far:
+    - Release status:
 - 3 hidden repair assumptions challenged:
   1.
   2.

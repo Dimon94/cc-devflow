@@ -74,6 +74,16 @@
 - Approved route:
 - Open concerns:
 - Skipped rounds and reasons:
+- Dialogue Checkpoints:
+  - CP-001:
+    - Round range:
+    - Next question:
+    - Decisions made:
+    - Rejected routes and reasons:
+    - Remaining open questions:
+    - Evidence read:
+    - Premise / alternatives findings so far:
+    - Release status:
 
 ## AI Leverage Route Lens
 

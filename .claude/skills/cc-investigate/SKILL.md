@@ -1,6 +1,6 @@
 ---
 name: cc-investigate
-version: 1.9.0
+version: 1.10.0
 description: Use when a bug, regression, broken task, or unexpected behavior needs root-cause investigation before coding resumes.
 triggers:
   - 帮我查这个 bug
@@ -37,12 +37,13 @@ entry_gate:
   - Search relevant code, logs, recent history, and project postmortems before declaring the bug novel.
   - Inspect the current state before asking technical detail or solution questions; phenomenon questions may capture reproduction facts, but solution confirmation starts only after symptom, feedback loop, and evidence chain are grounded.
   - Run the Investigation Socratic Dialogue Protocol before freezing the repair boundary when technical details or solution shape need user confirmation.
+  - Persist a Dialogue Checkpoint in `task.md#Root Cause Contract` before asking question rounds 11, 21, 31, and every next tenth round.
   - Record hypotheses with falsification methods; do not collapse first intuition into root cause.
 exit_criteria:
   - "`task.md#Root Cause Contract` proves symptom site, first bad state, violated contract, original trigger, counterfactual proof, and escape reason."
   - "`task.md#Root Cause Contract` records investigation mode, feedback loop, evidence chain, tested hypotheses, boundary/backward/reference evidence when applicable, correct test seam, and diagnose-only boundary when applicable."
   - "`task.md#Root Cause Contract` contains ASCII Branch Chain Analysis trees for problem chain, solution chain, and impact chain, tracing upstream root cause and downstream blast radius to the deepest proven prompt/code/provider/data source; tree connector characters stay ASCII while node text follows the configured output language."
-  - "`task.md#Root Cause Contract` records Investigation Socratic Dialogue rounds, including repo-answered facts, user-answered phenomenon gaps, the 3 hidden repair assumptions, overengineering / symptom-fix challenge, adversarial review findings, and explicit user release to freeze repair tasks when confirmation was needed."
+  - "`task.md#Root Cause Contract` records Investigation Socratic Dialogue rounds, including repo-answered facts, user-answered phenomenon gaps, ten-round Dialogue Checkpoints, the 3 hidden repair assumptions, overengineering / symptom-fix challenge, adversarial review findings, and explicit user release to freeze repair tasks when confirmation was needed."
   - "`task.md` contains the repair tasks needed by `cc-do`."
   - "Evidence gaps produce Evidence Request, diagnose-only, or reroute tasks instead of fake repair tasks."
   - "No process file is created beyond `task.md`."
@@ -142,6 +143,17 @@ NO REPAIR WITHOUT A FROZEN ROOT-CAUSE CONTRACT
 6. 用户没有明确说“足够详细，可以冻结根因 / 进入修复 / 进入下一个阶段”或等价表达时，只能继续追问、写 Evidence Request、diagnose-only 或 reroute，不能生成 repair tasks。
 
 用户催促跳过时，最多保留 2 个 blocking 问题；不能跳过 current-state inspection、hidden assumptions、symptom-fix challenge 和 adversarial review。
+
+### Dialogue Checkpoint
+
+多轮追问会消耗上下文。每完成 10 轮 user-facing question round，必须先更新 `task.md#Root Cause Contract` 的 `Dialogue Checkpoints`，再问第 11 / 21 / 31 轮问题。checkpoint 不创建新文件，必须包含：
+
+1. round range covered 和 next question number。
+2. decisions made、rejected repair options with reasons、remaining open questions。
+3. evidence sources read、user answers that changed the phenomenon or repair boundary、hidden assumptions / adversarial findings so far。
+4. current release status：root-cause contract 是否足够详细、repair boundary 是否仍 blocked。
+
+会话压缩或恢复后，先读最新 checkpoint 和 `Investigation Socratic Dialogue` 字段，再继续下一轮；不要依赖聊天记忆重建根因决策。
 
 ## ASCII Branch Chain Analysis
 

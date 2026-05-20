@@ -39,6 +39,16 @@ Socratic Dialogue:
 - Technical release: pending | approved
 - Repo-answered questions:
 - User-answered rounds:
+- Dialogue Checkpoints:
+  - CP-001:
+    - Round range:
+    - Next question:
+    - Decisions made:
+    - Rejected options and reasons:
+    - Remaining open questions:
+    - Evidence read:
+    - Hidden assumptions / review findings so far:
+    - Release status:
 - 3 hidden assumptions challenged:
   1.
   2.

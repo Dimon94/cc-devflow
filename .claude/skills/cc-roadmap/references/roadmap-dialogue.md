@@ -21,6 +21,7 @@
 - 需求分析调研必须先给当前理解和推荐，再一问一答压缩决策树；用户没有明确说足够详细前，不进入 `F9 Route Approval`
 - 问题编号使用 `D<N> - <decision title>`；选项只用 `A` / `B` / `C`，推荐项标 `(recommended)`
 - 每轮回答必须落入 `Roadmap Funnel Transcript`
+- 每 10 轮 user-facing question round 必须先写 Dialogue Checkpoint，再问下一轮；checkpoint 记录 round range、next question、decisions made、rejected routes、remaining open questions、evidence read、premise / alternatives findings 和 release status
 - 能从 repo / capability spec / roadmap / design / git history 得到答案时先查证，不问用户
 - 没证据时明确写 assumption
 - 用户没批准前，不把事项偷下放成 requirement
@@ -56,3 +57,4 @@
 - ready 项必须带 canonical terms、capability spec context 或明确的 language / decision conflict
 - ready 项必须带 Source funnel rounds、Frozen decisions、Do not re-decide、Remaining blocking question
 - ready 项必须带 explicit release：用户原话、释放到哪个下一阶段，以及仍保留的 blocking question
+- 长对话恢复必须先读最新 Dialogue Checkpoint 和 `Roadmap Funnel Transcript`，不能靠聊天记忆重建路线

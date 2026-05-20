@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.22] - 2026-05-20
+
+### Added
+
+- Added ten-round Dialogue Checkpoints to `cc-roadmap`, `cc-plan`, and `cc-investigate` so long route, requirement, and repair-boundary conversations persist decisions before context compression.
+
+### Changed
+
+- Updated roadmap, planning, and investigation templates to record checkpoint round ranges, next questions, decisions, rejected options, open questions, evidence, review findings, and release status inside existing durable artifacts.
+
 ## [4.5.21] - 2026-05-20
 
 ### Added

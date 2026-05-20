@@ -1,5 +1,10 @@
 # CC-Investigate Skill Changelog
 
+## v1.10.0 - 2026-05-20
+
+- require ten-round Dialogue Checkpoints in `task.md#Root Cause Contract` so long phenomenon and repair-boundary confirmation can resume after context compression
+- update the investigation contract and task template to record round ranges, decisions, rejected repair options, open questions, evidence sources, adversarial findings, and release status
+
 ## v1.9.0 - 2026-05-20
 
 - require current-state inspection before technical-detail or solution-shape questions during investigations

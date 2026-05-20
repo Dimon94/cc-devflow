@@ -1,5 +1,10 @@
 # Roadmap Skill Changelog
 
+## v5.7.0 - 2026-05-20
+
+- require ten-round Dialogue Checkpoints in the Roadmap Funnel Transcript so long route discovery can resume after context compression
+- update the roadmap dialogue contract and template to record round ranges, route decisions, rejected routes, open questions, evidence, premise / alternative findings, and release status
+
 ## v5.6.0 - 2026-05-20
 
 - add Socratic Roadmap Dialogue so route discovery proceeds one route-changing question at a time with recommended answers and evidence-first lookup

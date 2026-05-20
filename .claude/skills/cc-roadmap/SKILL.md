@@ -1,6 +1,6 @@
 ---
 name: cc-roadmap
-version: 5.6.0
+version: 5.7.0
 description: "Use when defining, resetting, or narrowing project direction, stage order, or backlog priority before a concrete requirement enters the PDCA loop."
 triggers:
   - "帮我定路线图"
@@ -45,6 +45,7 @@ entry_gate:
   - "Apply the AI Leverage Route Lens before route approval: name the reachable user/operator, current workaround, human-vs-agent effort, complete-lake boundary, ocean boundary, first success signal, and kill signal."
   - "Run the Roadmap Funnel Protocol as fixed one-question rounds; every round must either be answered from repo evidence, asked to the user, or explicitly skipped with reason."
   - "Run Socratic Roadmap Dialogue before route approval; each user-facing round asks one route-changing question with a recommended answer, and the route cannot freeze until the user explicitly says the direction is detailed enough for the next stage."
+  - "Persist a Dialogue Checkpoint in the Roadmap Funnel Transcript before asking question rounds 11, 21, 31, and every next tenth round."
   - "If AI makes a complete same-blast-radius route cheap and verifiable, prefer boil-lake over a timid MVP slice."
   - "If the route cannot name a real user/operator and current workaround, mark it as needs-evidence instead of producing implementation-ready RM handoff."
 exit_criteria:
@@ -53,7 +54,7 @@ exit_criteria:
   - "The roadmap shows an explicit RM dependency graph so serial blockers and parallel-ready work are obvious."
   - "The user-approved recommendation is explicit and grounded in current evidence."
   - "Each Stage 1 or ready-for-cc-plan item records an AI Leverage Route Lens verdict: boil-lake, sharp-wedge, needs-evidence, or pivot."
-  - "The Roadmap Funnel Transcript is persisted in `devflow/roadmap.json`, rendered into `devflow/ROADMAP.md`, and each ready RM carries the source funnel rounds, explicit release, frozen decisions, and remaining blocking question."
+  - "The Roadmap Funnel Transcript is persisted in `devflow/roadmap.json`, rendered into `devflow/ROADMAP.md`, and each ready RM carries the source funnel rounds, ten-round Dialogue Checkpoints, explicit release, frozen decisions, and remaining blocking question."
 reroutes:
   - when: "The user is already discussing one concrete requirement, bug, or execution task."
     target: "cc-plan"
@@ -275,6 +276,17 @@ Verdict 只允许四种：
 7. 用户没有明确说“足够详细，可以进入 cc-plan / 下一阶段 / 冻结路线”或等价表达时，`F9 Route Approval` 只能停在等待确认，不能把 RM 标成 ready。
 8. 用户要求加速时，最多保留 2 个 blocking 路线问题；不能跳过 F7、F8 和 explicit release。
 
+### Dialogue Checkpoint
+
+多轮路线追问会消耗上下文。每完成 10 轮 user-facing question round，必须先更新 Roadmap Funnel Transcript 的 `Dialogue Checkpoints`，再问第 11 / 21 / 31 轮问题。checkpoint 不创建新文件，必须包含：
+
+1. round range covered 和 next question number。
+2. decisions made、rejected routes with reasons、remaining open route questions。
+3. repo / spec / roadmap / history evidence read、user answers that changed route shape、premise challenge / alternatives findings so far。
+4. current release status：route approval 是否足够详细、是否仍 blocking `cc-plan` handoff。
+
+会话压缩或恢复后，先读最新 checkpoint 和 Roadmap Funnel Transcript，再继续下一轮；不要依赖聊天记忆重建路线决策。
+
 ## Roadmap Funnel Protocol
 
 路线图必须按固定轮次推进，输出必须写成 `cc-roadmap` 的原生规则文本。
@@ -305,6 +317,7 @@ STOP 规则：
 
 - `devflow/roadmap.json.context.roadmapFunnel.rounds[]` 记录每轮 `id`、`question`、`answerSource`、`answer`、`evidence`、`decisionImpact`、`status`。
 - release 必须作为一轮 transcript 事实记录：用户原话、释放到哪个阶段、仍保留哪些 blocking question。
+- 每 10 轮 user-facing question round 必须在 transcript 写入 `Dialogue Checkpoints`；checkpoint 必须覆盖 round range、next question、decisions made、rejected routes、open questions、evidence read、premise / alternatives findings 和 release status。
 - `devflow/ROADMAP.md` 必须渲染 `## Roadmap Funnel Transcript`，让后续读者知道路线不是拍脑袋。
 - `devflow/BACKLOG.md` 的 ready RM 必须记录 `Source funnel rounds`、`explicit release`、`Frozen decisions`、`Do not re-decide`、`Remaining blocking question`。
 - 没有闭合 `F7` 和 `F8` 时，不允许把任何 RM 标成 ready for `cc-plan`，除非用户给出已成形且有证据的计划；即便如此也要把跳过理由写入 transcript。

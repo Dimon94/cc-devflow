@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-003.v1`
 - Design version: `design.v1`
-- CC-Plan skill version: `3.13.0`
+- CC-Plan skill version: `3.14.0`
 - Work branch: `REQ/003-audit-log-export`
 - Output language: en
 - Source roadmap item: `RM-020`

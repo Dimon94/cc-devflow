@@ -1,5 +1,10 @@
 # CC-Plan Skill Changelog
 
+## v3.14.0 - 2026-05-20
+
+- require ten-round Dialogue Checkpoints in `task.md#Contract Summary` so long requirement and technical confirmation can resume after context compression
+- update the planning contract and task template to record round ranges, decisions, rejected options, open questions, evidence, review findings, and release status
+
 ## v3.13.0 - 2026-05-20
 
 - add the Socratic Dialogue Protocol so non-trivial plans continue one-question requirement and technical rounds until the user explicitly releases the plan to the next stage

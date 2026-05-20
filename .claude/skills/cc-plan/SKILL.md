@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.13.0
+version: 3.14.0
 description: Use when a requirement, roadmap item, or bug needs scope clarification, design decisions, and executable task breakdown before coding starts.
 triggers:
   - 帮我规划这个需求
@@ -35,6 +35,7 @@ entry_gate:
   - Read repo evidence before asking the user: roadmap handoff, specs, relevant code/tests/docs, recent commits, and existing task truth when present.
   - Run the planning flow before task generation: product/creative discovery, requirement reality, system shape, interface/data contract, abstraction boundary, execution architecture, task contract, Second-Move Review, and final approval.
   - Run the Socratic Dialogue Protocol after evidence gathering and before final approval; do not freeze task blocks until the user explicitly says the requirement and technical plan are detailed enough for the next stage.
+  - Persist a Dialogue Checkpoint in `task.md#Contract Summary` before asking question rounds 11, 21, 31, and every next tenth round.
   - Ask with the Decision Question Protocol when the answer changes scope, design, implementation boundary, or verification.
 exit_criteria:
   - "`task.md#Contract Summary` states the approved solution, non-goals, frozen decisions, work branch, user stories, decision questions, planning-flow results, review gate, verification expectations, and open assumptions."
@@ -42,7 +43,7 @@ exit_criteria:
   - "`task.md` contains executable task blocks generated from `assets/TASKS_TEMPLATE.md`."
   - "Non-trivial plans complete product/creative discovery before engineering design: worth doing, desired product shape, narrowest wedge, 10x/better version, and do-nothing consequence."
   - "Non-trivial plans complete Second-Move Review before approval: first good move, simpler move, better architecture, selected move, and rejected tradeoff."
-  - "`task.md#Contract Summary` records the Socratic Dialogue: repo-answered questions, user-answered rounds, the three hidden assumptions challenged, overengineering/code-review findings, and the explicit user release to generate tasks."
+  - "`task.md#Contract Summary` records the Socratic Dialogue: repo-answered questions, user-answered rounds, ten-round Dialogue Checkpoints, the three hidden assumptions challenged, overengineering/code-review findings, and the explicit user release to generate tasks."
   - "User decisions that changed the plan were asked as D<N> questions and recorded in `task.md`."
   - "No process file is created beyond `task.md`."
   - "Source roadmap progress is synced or explicitly skipped in the final response."
@@ -108,7 +109,7 @@ bash "$DEVFLOW" config resolve --format policy
 - 非 trivial 计划至少经过两轮用户确认：先确认产品价值和形态，再确认工程方案和任务合同；只有 roadmap / spec 已经给出等价证据时才能记录 skip reason。
 - 第一手好方案不能直接冻结；非 trivial 计划必须过 Second-Move Review：先写 first good move，再找 simpler move 和 better architecture，最后选择一个当前可执行的 move。
 - 计划先做上下文和设计判断，再拆 task；不能把架构、接口、字段、测试缝隙留给 `cc-do` 猜。
-- 需求不清时进入苏格拉底式追问：先承认“我怀疑需求还没说清楚，先别写代码”，再一轮只问一个会改变范围或形态的问题；每题给推荐答案。用户没有明确说“足够详细，可以进入下一个阶段”前，不生成 task blocks。
+- 需求不清时进入苏格拉底式追问：先承认“我怀疑需求还没说清楚，先别写代码”，再一轮只问一个会改变范围或形态的问题；每题给推荐答案。用户没有明确说“足够详细，可以进入下一个阶段”前，不生成 task blocks；每 10 轮问题必须先把 checkpoint 写入 `task.md#Contract Summary`。
 - 从需求细化进入技术方案时，必须先区分“已有代码 / 技术思考”还是“只有想法”。已有代码先读代码和测试再做技术追问；只有想法先审方案假设。两种情况都要挑战 3 个隐含假设、指出过度工程风险，并做一次严格的代码 / 方案审查。
 - 需求链路必须画成 ASCII 分叉树：从用户需求追到现有入口、调用方、状态/数据流、最深底层影响点，再向下游展开业务影响、风险和验证面。
 - 用户视角必须清楚：真实用户 / operator、status quo、最痛失败场景、最小成功信号和非目标。
@@ -162,6 +163,17 @@ bash "$DEVFLOW" config resolve --format policy
 6. `Release gate`：用户没有明确说“足够详细，可以生成任务 / 进入 cc-do / 下一个阶段”前，不写 task blocks。
 
 如果用户要求快速推进，只能保留最多 2 个 blocking 技术问题；不能跳过 hidden assumptions、overengineering challenge 和 adversarial review。
+
+### Dialogue Checkpoint
+
+多轮追问会消耗上下文。每完成 10 轮 user-facing question round，必须先更新 `task.md#Contract Summary` 的 `Dialogue Checkpoints`，再问第 11 / 21 / 31 轮问题。checkpoint 不创建新文件，必须包含：
+
+1. round range covered 和 next question number。
+2. decisions made、rejected options with reasons、remaining open questions。
+3. repo evidence read、user answers that changed scope、hidden assumptions / review findings so far。
+4. current release status：requirement release、technical release、是否仍 blocked。
+
+会话压缩或恢复后，先读最新 checkpoint 和 `Socratic Dialogue` 字段，再继续下一轮；不要依赖聊天记忆重建决策。
 
 ## ASCII Branch Chain Analysis
 

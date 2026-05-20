@@ -18,7 +18,8 @@
 14. Product/creative confirmation and engineering confirmation are separate rounds unless roadmap/spec evidence already answers one of them and `task.md` records the skip reason.
 15. Non-trivial plans run a Socratic Dialogue before final approval: one question at a time, recommended answer included, repo-answerable questions answered from evidence first, and task generation blocked until the user explicitly says the requirement and technical plan are detailed enough.
 16. Technical Socratic dialogue must challenge 3 hidden assumptions, overengineering risk, and the current code or proposal with an adversarial review before task blocks are generated.
-17. ASCII branch-chain connector tokens stay ASCII, but labels, evidence, and explanatory text follow `Output language`.
+17. Every 10 user-facing Socratic question rounds, write a Dialogue Checkpoint into `task.md#Contract Summary` before asking the next question.
+18. ASCII branch-chain connector tokens stay ASCII, but labels, evidence, and explanatory text follow `Output language`.
 
 ## Planning Flow
 
@@ -43,7 +44,9 @@ The dialogue is complete only when both releases are explicit:
 - Requirement release: the user confirms the demand, user/operator, status quo, success signal, non-goals, and scope are detailed enough to enter technical planning.
 - Technical release: after repo evidence or proposal review, the user confirms the interface, data contract, abstraction boundary, test seam, and task shape are detailed enough to generate tasks.
 
-Record repo-answered questions, user-answered rounds, hidden assumptions, overengineering challenge, adversarial review findings, and the release phrase in `task.md#Contract Summary`.
+Record repo-answered questions, user-answered rounds, ten-round Dialogue Checkpoints, hidden assumptions, overengineering challenge, adversarial review findings, and the release phrase in `task.md#Contract Summary`.
+
+Each Dialogue Checkpoint covers the last 10 user-facing question rounds and records round range, next question number, decisions made, rejected options and reasons, remaining open questions, evidence read, hidden assumptions or review findings so far, and current release status. After context compression, resume from the latest checkpoint before asking another question.
 
 ## Decision Questions
 
