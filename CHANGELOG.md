@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.23] - 2026-05-21
+
+### Added
+
+- Added a shared user-choice output protocol for Codex and Claude Code so workflow decisions prefer host-native structured choice UI and use fixed A/B/C text only as fallback.
+- Added delivery-mode choice to `cc-act` so local handoff, PR creation, PR update, and post-merge closeout are explicit user choices when not already specified.
+- Added candidate choice to `cc-next` so multiple ready next-work items are ranked and presented for user selection before a Goal Packet is produced.
+
+### Changed
+
+- Updated `cc-plan`, `cc-roadmap`, `cc-investigate`, `cc-review`, `cc-simplify`, and `cc-dev` to route user-facing decisions through the shared choice protocol.
+- Updated example bindings and sample artifacts for the new skill versions.
+
 ## [4.5.22] - 2026-05-20
 
 ### Added
