@@ -22,6 +22,80 @@ physical_path() {
   fi
 }
 
+resolve_base_branch() {
+  local base_branch="$1"
+
+  if [[ -z "$base_branch" ]]; then
+    base_branch="$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's|refs/remotes/origin/||' || true)"
+  fi
+  if [[ -z "$base_branch" ]] && git rev-parse --verify origin/main >/dev/null 2>&1; then
+    base_branch="main"
+  fi
+  if [[ -z "$base_branch" ]] && git rev-parse --verify refs/heads/main >/dev/null 2>&1; then
+    base_branch="main"
+  fi
+  if [[ -z "$base_branch" ]] && git rev-parse --verify origin/master >/dev/null 2>&1; then
+    base_branch="master"
+  fi
+  if [[ -z "$base_branch" ]] && git rev-parse --verify refs/heads/master >/dev/null 2>&1; then
+    base_branch="master"
+  fi
+  if [[ -z "$base_branch" ]]; then
+    base_branch="main"
+  fi
+
+  printf '%s\n' "$base_branch"
+}
+
+read_primary_worktree_state() {
+  local primary_path=""
+  local primary_branch=""
+  local in_primary=""
+
+  while IFS= read -r line; do
+    case "$line" in
+      worktree\ *)
+        if [[ -z "$primary_path" ]]; then
+          primary_path="${line#worktree }"
+          in_primary="1"
+        else
+          break
+        fi
+        ;;
+      branch\ refs/heads/*)
+        if [[ -n "$in_primary" ]]; then
+          primary_branch="${line#branch refs/heads/}"
+        fi
+        ;;
+    esac
+  done < <(git worktree list --porcelain 2>/dev/null || true)
+
+  printf '%s\t%s\n' "$primary_path" "$primary_branch"
+}
+
+assert_primary_checkout_on_base() {
+  local base_branch="$1"
+  local state
+  local primary_path
+  local primary_branch
+
+  state="$(read_primary_worktree_state)"
+  primary_path="${state%%$'\t'*}"
+  primary_branch="${state#*$'\t'}"
+
+  if [[ -z "$primary_path" ]]; then
+    echo "WorktreePrepareError: cannot identify primary git worktree" >&2
+    exit 1
+  fi
+
+  if [[ "$primary_branch" != "$base_branch" ]]; then
+    echo "WorktreePrepareError: primary checkout must remain on $base_branch" >&2
+    echo "Primary checkout: $primary_path" >&2
+    echo "Current primary branch: ${primary_branch:-DETACHED}" >&2
+    exit 1
+  fi
+}
+
 CHANGE_KEY=""
 BASE_BRANCH=""
 WORKTREES_ROOT=""
@@ -59,6 +133,9 @@ target_lower="$(printf '%s' "$target_branch" | tr '[:upper:]' '[:lower:]')"
 
 repo_root="$(git rev-parse --show-toplevel)"
 repo_name="$(basename "$repo_root")"
+BASE_BRANCH="$(resolve_base_branch "$BASE_BRANCH")"
+
+assert_primary_checkout_on_base "$BASE_BRANCH"
 
 if [[ -z "$WORKTREES_ROOT" ]]; then
   if [[ -n "${CODEX_HOME:-}" ]]; then
@@ -122,11 +199,11 @@ else
 fi
 
 ensure_args=(--change-key "$CHANGE_KEY")
-if [[ -n "$BASE_BRANCH" ]]; then
-  ensure_args+=(--base "$BASE_BRANCH")
-fi
+ensure_args+=(--base "$BASE_BRANCH")
 
 anchor_output="$(cd "$worktree_path" && bash "$ensure_script" "${ensure_args[@]}")"
+
+assert_primary_checkout_on_base "$BASE_BRANCH"
 
 cat <<EOF
 WORKTREE_ACTION=$action

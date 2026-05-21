@@ -172,6 +172,39 @@ function validateNoRetiredText(errors) {
   }
 }
 
+function validateNoMainBranchAutoSwitch(errors) {
+  const forbiddenPatterns = [
+    {
+      pattern: /\bgit\s+(checkout|switch)\s+main\b/,
+      message: 'must not tell agents to checkout or switch to main'
+    },
+    {
+      pattern: /\bgit\s+push\s+origin\s+main\b/,
+      message: 'must not hard-code pushing origin main'
+    },
+    {
+      pattern: /On branch main/,
+      message: 'must not require status text for main branch'
+    },
+    {
+      pattern: /Not on main branch/,
+      message: 'must not treat non-main branches as release blockers'
+    }
+  ];
+
+  const files = walkFiles(path.join(ROOT, '.claude', 'skills'), (file) => /\.(md|sh)$/.test(file));
+
+  for (const file of files) {
+    const rel = path.relative(ROOT, file);
+    const text = fs.readFileSync(file, 'utf8');
+    for (const { pattern, message } of forbiddenPatterns) {
+      if (pattern.test(text)) {
+        errors.push(`Branch isolation violation in ${rel}: ${message}`);
+      }
+    }
+  }
+}
+
 function validateSkillFrontmatter(errors) {
   for (const skillName of DISTRIBUTED_SKILLS) {
     const rel = `.claude/skills/${skillName}/SKILL.md`;
@@ -262,6 +295,7 @@ function main() {
   validateSkillFrontmatter(errors);
   validateNoRetiredFiles(errors);
   validateNoRetiredText(errors);
+  validateNoMainBranchAutoSwitch(errors);
   validateCliSurface(errors);
   validateExampleBindings(errors);
   validatePackSmoke(errors);
@@ -287,6 +321,7 @@ module.exports = {
   validateSkillFrontmatter,
   validateNoRetiredFiles,
   validateNoRetiredText,
+  validateNoMainBranchAutoSwitch,
   validateCliSurface,
   validateExampleBindings,
   validatePackSmoke

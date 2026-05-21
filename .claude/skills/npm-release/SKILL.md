@@ -35,13 +35,13 @@ Standardized release process for cc-devflow npm package ensuring consistent vers
 Use this skill when:
 - ✅ Ready to release a new version of cc-devflow
 - ✅ All changes committed and pushed
-- ✅ On main branch with clean working directory
+- ✅ Already in the user-confirmed release worktree and target branch
 - ✅ Need to publish to npm registry
 - ✅ npm auth is available for the target registry
 
 Don't use when:
 - ❌ Working directory has uncommitted changes
-- ❌ Not on main branch
+- ❌ Current worktree or branch is not the user-confirmed release target
 - ❌ Pre-release/beta versions (needs adaptation)
 
 ## Release Types
@@ -58,21 +58,29 @@ Follow [Semantic Versioning](https://semver.org/):
 
 ### Phase 1: Pre-Release Checks
 
+Release skills must never auto-switch branches. If the current worktree is not
+already the user-confirmed release target, stop and ask for the correct release
+worktree/branch or create a separate release worktree without changing the main
+checkout.
+
 ```bash
 # 1. Verify git status
-git status
-# MUST show: "On branch main", "working tree clean"
+git status --short
 
-# 2. Check current version
+# 2. Capture current branch as the release target
+release_target_branch="$(git branch --show-current)"
+test -n "$release_target_branch"
+
+# 3. Check current version
 cat package.json | grep version
 # e.g., "version": "2.4.3"
 
-# 3. Review recent changes
+# 4. Review recent changes
 git log --oneline -10
 ```
 
 **STOP if**:
-- Not on main branch
+- Current branch is not the user-confirmed release target
 - Uncommitted changes exist
 - Unpushed commits exist
 - `npm whoami` fails for the publish registry
@@ -173,8 +181,8 @@ git show vX.Y.Z
 **Step 1: Push to GitHub**
 
 ```bash
-# Push commits
-git push origin main
+# Push current release branch without switching worktrees
+git push origin "HEAD:${release_target_branch}"
 
 # Push tags
 git push origin vX.Y.Z
@@ -215,7 +223,7 @@ npm view cc-devflow version
 | Update changelog | Edit CHANGELOG.md | Document changes |
 | Create commit | `git commit -m "chore(release): ..."` | Commit version bump |
 | Create tag | `git tag -a vX.Y.Z -m "..."` | Tag release |
-| Push commits | `git push origin main` | Push to GitHub |
+| Push commits | `git push origin "HEAD:${release_target_branch}"` | Push current release branch |
 | Push tags | `git push origin vX.Y.Z` | Push tag to GitHub |
 | Publish npm | `npm publish` | Publish to registry |
 
@@ -265,12 +273,12 @@ npm view cc-devflow version
 **Fix**:
 ```bash
 # Option 1: Retry after network stabilizes
-git push origin main
+git push origin "HEAD:${release_target_branch}"
 git push origin vX.Y.Z
 
 # Option 2: Switch to SSH (if HTTPS blocked)
 git remote set-url origin git@github.com:Dimon94/cc-devflow.git
-git push origin main
+git push origin "HEAD:${release_target_branch}"
 ```
 
 ## Network Troubleshooting

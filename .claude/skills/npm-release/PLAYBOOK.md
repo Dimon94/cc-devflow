@@ -7,6 +7,7 @@
 3. commit、tag、push、publish 顺序固定，不能乱。
 4. `npm whoami` 失败时停止真实发布，只保留本地准备结果。
 5. 发布失败时优先保住版本一致性，不要制造半发布状态。
+6. 禁止自动 `checkout` / `switch` 到 `main`；当前 worktree 必须已经是用户确认的发布目标。
 
 ## Standard Flow
 
@@ -19,7 +20,7 @@
 7. `git add`
 8. `git commit`
 9. `git tag -a`
-10. `git push origin main`
+10. `git push origin "HEAD:<release-target-branch>"`
 11. `git push origin vX.Y.Z`
 12. `npm publish --dry-run`
 13. `npm publish`

@@ -187,6 +187,24 @@ describe('cc-dev work branch anchor', () => {
     expect(worktreePaths(repoRoot)).not.toContain(targetPath);
   });
 
+  test('refuses to prepare worktree when primary checkout moved off main', () => {
+    const repoRoot = createRepo();
+    const worktreesRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-dev-worktrees-'));
+    run('git', ['switch', '-c', 'feature/unwanted-primary-branch'], repoRoot);
+
+    const result = exec('bash', [
+      PREPARE_CHANGE_WORKTREE,
+      '--change-key',
+      'REQ-003-isolate-main-checkout-with-worktrees',
+      '--worktrees-root',
+      worktreesRoot
+    ], repoRoot);
+
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('primary checkout must remain on main');
+    expect(result.stderr).toContain('Current primary branch: feature/unwanted-primary-branch');
+  });
+
   test('fails closed when HEAD uses REQ case but only req branch exists', () => {
     const repoRoot = createRepo();
     run('git', ['switch', '-c', 'req/067-unified-provider-control-plane'], repoRoot);

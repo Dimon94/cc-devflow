@@ -55,4 +55,31 @@ describe('validate-publish', () => {
     expect(result.stderr).toContain('Unknown top-level option: --cwd');
     expect(result.stderr).not.toContain('Codex executed');
   });
+
+  test('skill contracts do not tell agents to switch or push main directly', () => {
+    const forbidden = [
+      /\bgit\s+(checkout|switch)\s+main\b/,
+      /\bgit\s+push\s+origin\s+main\b/,
+      /On branch main/,
+      /Not on main branch/
+    ];
+    const skillRoot = path.join(ROOT, '.claude', 'skills');
+
+    function walk(target) {
+      const stat = fs.statSync(target);
+      if (stat.isDirectory()) {
+        return fs.readdirSync(target).flatMap((entry) => walk(path.join(target, entry)));
+      }
+      return /\.(md|sh)$/.test(target) ? [target] : [];
+    }
+
+    const offenders = walk(skillRoot).flatMap((file) => {
+      const text = fs.readFileSync(file, 'utf8');
+      return forbidden
+        .filter((pattern) => pattern.test(text))
+        .map((pattern) => `${path.relative(ROOT, file)} matched ${pattern}`);
+    });
+
+    expect(offenders).toEqual([]);
+  });
 });
