@@ -1,5 +1,10 @@
 # Roadmap Skill Changelog
 
+## v5.8.0 - 2026-05-21
+
+- add the shared user-choice output protocol so route-changing questions prefer Codex `request_user_input` or Claude Code structured input before falling back to fixed A/B/C text
+- require roadmap funnel questions and route approvals to use the host-native choice protocol and persist the result in the Roadmap Funnel Transcript
+
 ## v5.7.0 - 2026-05-20
 
 - require ten-round Dialogue Checkpoints in the Roadmap Funnel Transcript so long route discovery can resume after context compression

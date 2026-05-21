@@ -18,6 +18,7 @@
 
 - 一次只推进一个关键未知点
 - 每个问题附带推荐答案、证据来源，以及用户反对时会改变哪条路线
+- 每个需要用户选择的问题先按 `../cc-dev/references/user-choice-output-protocol.md` 使用宿主原生结构化选择；没有结构化工具时才用固定 A/B/C fallback
 - 需求分析调研必须先给当前理解和推荐，再一问一答压缩决策树；用户没有明确说足够详细前，不进入 `F9 Route Approval`
 - 问题编号使用 `D<N> - <decision title>`；选项只用 `A` / `B` / `C`，推荐项标 `(recommended)`
 - 每轮回答必须落入 `Roadmap Funnel Transcript`

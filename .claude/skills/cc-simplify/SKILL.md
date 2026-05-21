@@ -1,10 +1,11 @@
 ---
 name: cc-simplify
-version: 1.6.0
+version: 1.7.0
 description: "Use when changed code needs an automatic subagent-backed simplification pass for scope drift, reuse, code quality, efficiency, test quality, and confidence-gated smell fixes before cc-check or cc-act."
 reads:
   - devflow/changes/<change-key>/task.md
   - current Git diff
+  - ../cc-dev/references/user-choice-output-protocol.md
   - references/checklist-contract.md
 writes:
   - path: code changes
@@ -222,6 +223,8 @@ Decision：
 - 需要超过约 20 行的新设计，或触碰超过 5 个文件
 - 删除功能、改变公共 API、改变用户可见行为
 - finding 证明 frozen plan、root cause、acceptance 已经失效
+
+当 Decision 是 `ask` 时，按 `../cc-dev/references/user-choice-output-protocol.md` 让用户选择：Codex 优先 `request_user_input`，Claude Code 优先结构化输入；没有结构化工具时才输出固定 A/B/C fallback 并停止。不要继续自动修复会改变用户可见行为的 finding。
 
 ## Phase 4: 验证 finding 是否成立
 

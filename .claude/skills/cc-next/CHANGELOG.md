@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.4.0 - 2026-05-21
+
+- change cc-next from unilateral next-work selection to ranked candidate choice when multiple ready items exist
+- route multi-candidate next-work decisions through the shared user-choice output protocol before producing the final Goal Packet
+
 ## v1.3.0 - 2026-05-18
 
 - add a Default Output contract for next-work selection and no-ready-goal responses

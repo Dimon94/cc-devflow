@@ -1,5 +1,10 @@
 # CC-Investigate Skill Changelog
 
+## v1.12.0 - 2026-05-21
+
+- add the shared user-choice output protocol so repair-boundary questions prefer Codex `request_user_input` or Claude Code structured input before falling back to fixed A/B/C text
+- require investigation solution choices to use the host-native choice protocol and then persist the selected answer in `task.md#Root Cause Contract`
+
 ## v1.11.0 - 2026-05-20
 
 - add `task.md#Failure Ledger` to repair handoffs so real investigation and implementation failures can be filtered before incident postmortems

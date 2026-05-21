@@ -1,5 +1,10 @@
 # CC-Plan Skill Changelog
 
+## v3.16.0 - 2026-05-21
+
+- add the shared user-choice output protocol so Codex uses `request_user_input` and Claude Code uses structured input when available before falling back to fixed A/B/C text
+- require every planning decision question to use the host-native choice protocol before writing the selected answer into `task.md`
+
 ## v3.15.0 - 2026-05-20
 
 - add `task.md#Failure Ledger` to the task template so execution failures start as local task evidence before closeout compression

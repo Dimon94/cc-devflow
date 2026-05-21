@@ -1,6 +1,6 @@
 ---
 name: cc-act
-version: 1.12.0
+version: 1.13.0
 description: Use when verified work must be committed, handed off, pushed, or turned into a PR with the smallest durable delivery surface.
 triggers:
   - 准备提 PR
@@ -20,6 +20,7 @@ reads:
   - ../cc-dev/scripts/resolve-cc-devflow.sh
   - scripts/ensure-ship-branch.sh
   - scripts/evaluate-postmortem-trigger.sh
+  - ../cc-dev/references/user-choice-output-protocol.md
   - references/checklist-contract.md
 writes:
   - path: devflow/changes/<change-key>/handoff/pr-brief.md
@@ -44,6 +45,7 @@ entry_gate:
   - "Read `task.md#Failure Ledger`; only confirmed entries marked `Keep for postmortem: yes` are long-term incident input."
   - "Run `scripts/evaluate-postmortem-trigger.sh --dir <change-dir>` before deciding no incident postmortem is needed."
   - "If verification changed during Act, return to `cc-check`."
+  - "If the delivery mode is not already explicit, ask the user to choose with `../cc-dev/references/user-choice-output-protocol.md`; do not default every closeout to remote push and PR."
   - "Pick one mode: `create-pr`, `update-pr`, `local-handoff`, or `post-merge-closeout`."
 exit_criteria:
   - "All completed work is committed with coherent Conventional Commit messages."
@@ -84,6 +86,22 @@ tool_budget:
 - `update-pr`: 已有 PR，需要更新提交或 body。
 - `local-handoff`: 不推远端，但本地 commit 和下一步清楚。
 - `post-merge-closeout`: 已合并后的验证、归档、尸检。
+
+## Delivery Choice
+
+如果用户没有明确要求远程 PR、更新 PR、本地合并或 post-merge closeout，`cc-act` 必须先让用户选择 delivery mode，而不是默认推送远端并创建 PR。
+
+使用 `../cc-dev/references/user-choice-output-protocol.md`：
+
+- Codex App / Codex 工具环境：优先调用 `request_user_input`，选项包含 `local-handoff` 与 `create-pr`，必要时包含 `update-pr` 或 `post-merge-closeout`。
+- Claude Code：如果有 MCP elicitation / ask-question 工具，使用结构化单选；否则输出固定 A/B/C 文本块并停止。
+
+默认推荐规则：
+
+1. 已有 PR 且本轮只是更新交付物：推荐 `update-pr`。
+2. 用户明确要远程协作、审查或发布：推荐 `create-pr`。
+3. 用户只要求本地提交、个人项目收尾，或远程上下文缺失：推荐 `local-handoff`，说明下一步可以 rebase 后 fast-forward 合并到本地主分支。
+4. 已经合并并要求归档 / closeout：推荐 `post-merge-closeout`。
 
 ## PR Brief
 

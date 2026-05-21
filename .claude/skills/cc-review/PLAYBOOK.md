@@ -16,7 +16,7 @@
 8. 不固定 finding 数量。证据决定输出。
 9. 每条 finding 必须有 evidence、impact、recommendation 和 route。
 10. 输出前聚合 raw findings：合并重复，降级弱证据，拒收 speculative / out-of-scope / stale findings。
-11. 计划 review 的结果直接写回 `task.md`；执行 review 的结果先询问用户选择修复方案；只差验收，进 `cc-check`。
+11. 计划 review 的结果直接写回 `task.md`；执行 review 的结果通过共享 choice protocol 询问用户选择修复方案；只差验收，进 `cc-check`。
 
 ## Review Standard
 
@@ -37,4 +37,4 @@
 
 ## Decision Rule
 
-计划 review 发现的范围、架构、用户可见行为、公共 API、测试策略问题，必须直接写进 `task.md` 的合同、任务或开放问题里。执行 review 发现的问题必须在当前回复里给出修复选项，并询问用户是否修复以及选择哪种方案；用户选择后再直接修改代码并验证。
+计划 review 发现的范围、架构、用户可见行为、公共 API、测试策略问题，必须直接写进 `task.md` 的合同、任务或开放问题里。执行 review 发现的问题必须给出修复选项，并按 `../cc-dev/references/user-choice-output-protocol.md` 询问用户是否修复以及选择哪种方案；用户选择后再直接修改代码并验证。

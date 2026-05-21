@@ -1,5 +1,10 @@
 # CC-Act Skill Changelog
 
+## v1.13.0 - 2026-05-21
+
+- require delivery-mode selection when the user has not explicitly chosen remote PR, PR update, local handoff, or post-merge closeout
+- add the shared user-choice output protocol so Codex uses `request_user_input` and Claude Code uses structured input when available before falling back to fixed A/B/C text
+
 ## v1.12.0 - 2026-05-20
 
 - compress confirmed Failure Ledger entries into incident postmortems instead of treating raw task failures as long-term truth

@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.4.0 - 2026-05-21
+
+- route ambiguous PDCA/IDCA and terminal-state choices through the shared user-choice output protocol instead of plain blocking prose
+- keep open-ended clarification as a normal blocking question, but require structured choice UI whenever the user is choosing between routes
+
 ## v1.3.0 - 2026-05-18
 
 - add a Default Output contract for terminal audits across PDCA, IDCA, resume, PR, and handoff routes

@@ -1,5 +1,10 @@
 # CC-Simplify Skill Changelog
 
+## v1.7.0 - 2026-05-21
+
+- route `ask` simplification decisions through the shared user-choice output protocol before changing public API, user-visible behavior, security boundaries, or broad design
+- keep fixed A/B/C text as fallback only when Codex or Claude Code exposes no structured choice tool
+
 ## v1.6.0 - 2026-05-18
 
 - add a Default Output contract for simplification findings, fixes, verification, and route decisions

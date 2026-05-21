@@ -1,5 +1,10 @@
 # CC-Review Changelog
 
+## v2.8.0 - 2026-05-21
+
+- route implementation repair choices through the shared user-choice output protocol so Codex uses `request_user_input` and Claude Code uses structured input when available
+- keep Markdown A/B/C repair options as fallback only when the host exposes no structured choice tool
+
 ## v2.7.0 - 2026-05-19
 
 - add mandatory Phenomenal, Essential, and Philosophical cognitive layers to non-trivial review chains

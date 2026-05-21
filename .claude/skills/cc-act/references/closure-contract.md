@@ -16,6 +16,7 @@
 6. When a postmortem is written, `Workflow Patch Candidate` is completed before exit.
 7. No process file beyond the allowed durable outputs.
 8. If verification changes during Act, return to `cc-check`.
+9. If delivery mode is not explicit, ask the user through `../cc-dev/references/user-choice-output-protocol.md` before pushing, creating a PR, or merging locally.
 
 ## Exit
 

@@ -1,6 +1,6 @@
 ---
 name: cc-investigate
-version: 1.11.0
+version: 1.12.0
 description: Use when a bug, regression, broken task, or unexpected behavior needs root-cause investigation before coding resumes.
 triggers:
   - 帮我查这个 bug
@@ -19,6 +19,7 @@ reads:
   - ../cc-dev/scripts/ensure-work-branch.sh
   - ../cc-roadmap/scripts/locate-roadmap-item.sh
   - ../cc-roadmap/scripts/sync-roadmap-progress.sh
+  - ../cc-dev/references/user-choice-output-protocol.md
   - references/checklist-contract.md
 writes:
   - path: devflow/changes/<change-key>/task.md
@@ -38,6 +39,7 @@ entry_gate:
   - Inspect the current state before asking technical detail or solution questions; phenomenon questions may capture reproduction facts, but solution confirmation starts only after symptom, feedback loop, and evidence chain are grounded.
   - Run the Investigation Socratic Dialogue Protocol before freezing the repair boundary when technical details or solution shape need user confirmation.
   - Persist a Dialogue Checkpoint in `task.md#Root Cause Contract` before asking question rounds 11, 21, 31, and every next tenth round.
+  - Use `../cc-dev/references/user-choice-output-protocol.md` for repair-boundary choices; prefer host-native structured choice UI and fall back to the fixed A/B/C text block only when no such tool exists.
   - Record hypotheses with falsification methods; do not collapse first intuition into root cause.
 exit_criteria:
   - "`task.md#Root Cause Contract` proves symptom site, first bad state, violated contract, original trigger, counterfactual proof, and escape reason."
@@ -136,7 +138,7 @@ NO REPAIR WITHOUT A FROZEN ROOT-CAUSE CONTRACT
 现状查完后，如果根因、repair boundary、test seam 或方案取舍仍需要用户判断，启动一问一答确认：
 
 1. 先报告已证实事实、最强假设、被证伪假设、仍缺的技术判断。
-2. 每次只问一个 D<N> 问题；给推荐答案、repo 证据、选项和如果用户反对会改变的 repair boundary。
+2. 每次只问一个 D<N> 问题；按 `../cc-dev/references/user-choice-output-protocol.md` 使用 Codex `request_user_input`、Claude Code 结构化输入或固定 A/B/C fallback，给推荐答案、repo 证据、选项和如果用户反对会改变的 repair boundary。
 3. 能继续通过代码、日志、测试、历史或 artifact 查明的问题，先查，不问。
 4. 在冻结 repair tasks 前必须挑战 3 个隐含修复假设：first bad state 是否真的最早、repair 是否只是 symptom guard、test seam 是否覆盖真实触发链。
 5. 必须做一次 adversarial review：指出当前代码或修复方案的 bug 风险、耦合、过度工程、接口膨胀、测试假象和逃逸原因。

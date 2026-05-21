@@ -1,6 +1,6 @@
 ---
 name: cc-roadmap
-version: 5.7.0
+version: 5.8.0
 description: "Use when defining, resetting, or narrowing project direction, stage order, or backlog priority before a concrete requirement enters the PDCA loop."
 triggers:
   - "帮我定路线图"
@@ -18,6 +18,7 @@ reads:
   - "assets/BACKLOG_TEMPLATE.md"
   - "assets/TRACKING_TEMPLATE.json"
   - "references/roadmap-dialogue.md"
+  - ../cc-dev/references/user-choice-output-protocol.md
   - references/checklist-contract.md
 writes:
   - path: "devflow/roadmap.json"
@@ -46,6 +47,7 @@ entry_gate:
   - "Run the Roadmap Funnel Protocol as fixed one-question rounds; every round must either be answered from repo evidence, asked to the user, or explicitly skipped with reason."
   - "Run Socratic Roadmap Dialogue before route approval; each user-facing round asks one route-changing question with a recommended answer, and the route cannot freeze until the user explicitly says the direction is detailed enough for the next stage."
   - "Persist a Dialogue Checkpoint in the Roadmap Funnel Transcript before asking question rounds 11, 21, 31, and every next tenth round."
+  - "Use `../cc-dev/references/user-choice-output-protocol.md` whenever a route-changing question needs user input; prefer host-native structured choice UI and fall back to the fixed A/B/C text block only when no such tool exists."
   - "If AI makes a complete same-blast-radius route cheap and verifiable, prefer boil-lake over a timid MVP slice."
   - "If the route cannot name a real user/operator and current workaround, mark it as needs-evidence instead of producing implementation-ready RM handoff."
 exit_criteria:
@@ -292,6 +294,7 @@ Verdict 只允许四种：
 路线图必须按固定轮次推进，输出必须写成 `cc-roadmap` 的原生规则文本。
 
 每轮只允许处理一个 route-changing unknown。能从仓库证据回答就写 `answered-by-evidence`；不能回答才问用户；用户催促跳过时最多保留 2 个最关键问题，然后进入 premise challenge 和 alternatives。每个问题都必须给推荐答案、证据、反对时会改变的路线，并在回答后更新 `Roadmap Funnel Transcript`。
+每个需要用户选择的轮次都必须先按 `../cc-dev/references/user-choice-output-protocol.md` 选择输出：Codex 用 `request_user_input`；Claude Code 有 MCP elicitation / ask-question 工具时用结构化输入；否则用固定 A/B/C fallback 文本并停止。
 
 固定轮次：
 

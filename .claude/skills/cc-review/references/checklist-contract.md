@@ -14,7 +14,7 @@ Review quality collapses when suspicion, stale context, or style preference is p
 
 1. Before reviewing nodes: freeze scope and delta.
 2. Before emitting a finding: prove evidence, impact, route, and branch chain when needed.
-3. Before exit: write plan/investigation findings into `task.md` or ask for implementation repair choice.
+3. Before exit: write plan/investigation findings into `task.md` or ask for implementation repair choice through `../cc-dev/references/user-choice-output-protocol.md`.
 
 ## Required Checks
 

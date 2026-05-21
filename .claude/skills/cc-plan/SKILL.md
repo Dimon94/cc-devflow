@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.15.0
+version: 3.16.0
 description: Use when a requirement, roadmap item, or bug needs scope clarification, design decisions, and executable task breakdown before coding starts.
 triggers:
   - 帮我规划这个需求
@@ -19,6 +19,7 @@ reads:
   - ../cc-dev/scripts/ensure-work-branch.sh
   - ../cc-roadmap/scripts/locate-roadmap-item.sh
   - ../cc-roadmap/scripts/sync-roadmap-progress.sh
+  - ../cc-dev/references/user-choice-output-protocol.md
   - references/checklist-contract.md
 writes:
   - path: devflow/changes/<change-key>/task.md
@@ -37,6 +38,7 @@ entry_gate:
   - Run the Socratic Dialogue Protocol after evidence gathering and before final approval; do not freeze task blocks until the user explicitly says the requirement and technical plan are detailed enough for the next stage.
   - Persist a Dialogue Checkpoint in `task.md#Contract Summary` before asking question rounds 11, 21, 31, and every next tenth round.
   - Ask with the Decision Question Protocol when the answer changes scope, design, implementation boundary, or verification.
+  - Use `../cc-dev/references/user-choice-output-protocol.md` for every user-facing decision question; prefer Codex `request_user_input` or Claude Code structured input when available, and use the fixed A/B/C text block only as fallback.
 exit_criteria:
   - "`task.md#Contract Summary` states the approved solution, non-goals, frozen decisions, work branch, user stories, decision questions, planning-flow results, review gate, verification expectations, and open assumptions."
   - "`task.md#Contract Summary` contains an ASCII Branch Chain Analysis for requirement impact and business impact, tracing upstream sources, current code path, deepest affected layer, downstream blast radius, and prompt/provider contracts when involved; tree connector characters stay ASCII while node text follows the configured output language."
@@ -238,6 +240,7 @@ Label table:
 只在答案会改变范围、方案、接口、任务切分或验证口径时提问。能从 repo evidence、roadmap、spec、测试或 git history 确认的，不问用户。
 提问前先做一次 Second-Move Review：这个问题是否能由 repo evidence 回答，是否把用户拉进实现细节，是否有更高质量的问题能一次冻结更多下游决策。
 产品/创意问题优先于工程问题。若“值不值得做”或“做成什么样”仍不清楚，只问产品/创意层 D<N>；不要提前问文件、接口、字段、测试实现。
+每次需要用户选择时，先按 `../cc-dev/references/user-choice-output-protocol.md` 选择宿主原生格式：Codex 用 `request_user_input`，Claude Code 有 MCP elicitation / ask-question 工具时用结构化输入；没有结构化工具时才输出下面的 A/B/C 文本块并停止。
 
 固定格式：
 

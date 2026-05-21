@@ -1,6 +1,6 @@
 ---
 name: cc-review
-version: 2.7.0
+version: 2.8.0
 description: Use when a plan, bug fix, PR, implementation diff, or complexity hotspot needs review findings. Plan reviews write findings into task.md; implementation reviews ask the user to choose a repair option before fixing.
 triggers:
   - 深度 review 这个方案
@@ -23,6 +23,7 @@ reads:
   - references/complexity-report-template.md
   - scripts/collect-review-context.sh
   - scripts/analyze_complexity.py
+  - ../cc-dev/references/user-choice-output-protocol.md
   - references/checklist-contract.md
 writes:
   - path: current response
@@ -45,13 +46,14 @@ entry_gate:
   - For repeat reviews, use `git diff <old>...HEAD` or `scripts/collect-review-context.sh` to narrow the delta before re-reviewing.
   - Freeze the requested scope before finding smells; report only issues inside the change blast radius or clearly amplified by it.
   - When the scope includes loops, rendering, repeated scans, database/API iteration, large inputs, or performance-sensitive paths, select the built-in complexity facet and use the local scanner/reference copy only as leads.
+  - When implementation review findings require a repair choice, use `../cc-dev/references/user-choice-output-protocol.md` instead of free-form prose.
   - Subagents are optional read-only reviewers; their raw output stays in the conversation and is not saved to files.
 exit_criteria:
   - Findings are listed first, ordered by severity and backed by concrete file/line, command, diff, UI, log, or missing-evidence proof.
   - Every finding has impact, recommendation, and route: cc-plan, cc-do, cc-check, cc-act, or stop.
   - Findings include an ASCII Branch Chain when they involve plan scope, root cause, implementation behavior, PR diff risk, or code smell propagation; each non-trivial chain records evidence, diagnosis, causal path, Phenomenal/Essential/Philosophical layers, at least three upstream layers, and at least three downstream layers. Tree connector characters stay ASCII while node text follows the configured output language.
   - Plan or investigation review findings are written into the relevant `task.md` section before exit.
-  - Implementation review findings are returned with concrete repair options and a blocking user choice; no repair happens until the user selects an option.
+  - Implementation review findings are returned with concrete repair options and a blocking user choice through `../cc-dev/references/user-choice-output-protocol.md`; no repair happens until the user selects an option.
   - In-scope code smells are either findings, explicit defers, or clean with reason.
   - Selected review facets or changed surfaces are checked, skipped with reason, or blocked; no artificial finding cap was applied.
   - If the complexity facet is selected, findings include current pattern, estimated current complexity, recommended change, estimated complexity after, risk level, and tests or measurements needed.
@@ -147,7 +149,7 @@ Review 的价值在于问题质量，不在于过程记录数量。没有证据�
 ## Exit Contract
 
 - Plan / investigation review: directly update `devflow/changes/<change-key>/task.md` with the review findings, decision options, blocked assumptions, and required task changes. Final response only summarizes what was written and the next route.
-- Implementation review: do not edit code during the review pass. Return findings plus repair options, ask the user which option to apply, and stop. After the user chooses, apply the selected repair directly and verify it.
+- Implementation review: do not edit code during the review pass. Return findings plus repair options, use the shared choice protocol to ask which option to apply, and stop. After the user chooses, apply the selected repair directly and verify it.
 - PR review: return findings in the response or GitHub review only; do not write local files.
 - Clean review: say `No findings`, name residual verification risk, and route to `cc-check` or `stop`.
 
@@ -307,6 +309,7 @@ Subagent 只拿自己的 review packet：scope、delta、node/facet、需要读�
 ## Decision Questions
 
 只有 finding 需要用户判断时才提问。不要在第一个问题处打断整个 review，除非答案会阻塞下一个 node。
+需要用户选择时，先按 `../cc-dev/references/user-choice-output-protocol.md` 使用 Codex `request_user_input`、Claude Code 结构化输入或固定 A/B/C fallback。不要把普通 Markdown 伪装成宿主原生选择器。
 
 格式：
 
@@ -321,7 +324,7 @@ B) <broader cleanup> - impact
 C) <defer> - risk
 ```
 
-Plan / investigation review 的 decision question 写进 `task.md`。Implementation review 的 repair options 留在当前回复，等待用户选择。
+Plan / investigation review 的 decision question 写进 `task.md`。Implementation review 的 repair options 通过共享 choice protocol 等待用户选择。
 
 ## Output
 
@@ -344,6 +347,6 @@ Plan / investigation review 的 decision question 写进 `task.md`。Implementat
 2. ASCII Branch Chain: one tree per non-trivial finding or smell propagation.
 3. Repair options: smallest safe fix, broader cleanup, defer with risk.
 4. Recommendation: one option and why.
-5. User choice needed: ask which option to apply.
+5. User choice needed: ask which option to apply through the shared choice protocol.
 
 没有问题时直接说 `No findings`，并说明还没验证的风险。

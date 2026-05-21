@@ -1,6 +1,6 @@
 ---
 name: cc-dev
-version: 1.3.0
+version: 1.4.0
 description: Use when a selected objective should be driven autonomously in the current session and worktree through PDCA or IDCA until a PR, local handoff, clarification, or blocker.
 triggers:
   - 自动驾驶开发这个需求
@@ -19,6 +19,7 @@ reads:
   - scripts/prepare-change-worktree.sh
   - scripts/ensure-work-branch.sh
   - devflow/changes/<change-key>/task.md
+  - references/user-choice-output-protocol.md
   - references/checklist-contract.md
 writes:
   - path: devflow/changes/<change-key>/task.md
@@ -97,6 +98,10 @@ IDCA: cc-investigate -> cc-do -> cc-check -> cc-act
 | Verified work only needs PR/handoff | resume at `cc-act` |
 
 If route or success criteria are ambiguous, ask one blocking question or stop.
+When that blocking question is a route or terminal-state choice, use
+`references/user-choice-output-protocol.md`: Codex `request_user_input` first,
+Claude Code structured input when available, and fixed A/B/C fallback only when
+no structured choice tool exists.
 
 ## Stage Discipline
 
