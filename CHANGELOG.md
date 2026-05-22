@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.25] - 2026-05-22
+
+### Added
+
+- Added the `task.md#Failure Ledger` review-escape contract so `cc-review` can record process, test, design, and repeatable model-pattern escapes for later `cc-check` classification and `cc-act` postmortem compression.
+
 ### Changed
 
 - Tightened `cc-review` ASCII Branch Chains so non-trivial findings walk upward from the fault node through direct input/caller proof, contract/spec/provider, and source intent/roadmap when available, then downward through first affected seam, behavior/artifact, and release/maintenance risk when available.
