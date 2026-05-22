@@ -23,6 +23,10 @@ const SKILL_LIMITS = {
   'cc-investigate': {
     maxBytes: 16000,
     maxLines: 360
+  },
+  'cc-roadmap': {
+    maxBytes: 24000,
+    maxLines: 420
   }
 };
 

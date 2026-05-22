@@ -38,6 +38,16 @@ Every non-trivial plan confirms these rounds before task generation:
 
 Tiny plans may compress a round to one evidence-backed line. Full designs must preserve enough detail that `cc-do` does not invent architecture, fields, interfaces, or tests.
 
+## Planning Standard
+
+- Use the smallest reversible design that solves the real need; do not expand to imaginary future enemies.
+- Missing evidence is recorded as an assumption; it is not promoted to fact.
+- Product/creative confirmation comes before implementation questions: worth doing, target experience, narrowest wedge, 10x/better version, and do-nothing consequence.
+- The first workable plan is not enough for non-trivial work. Record first good move, simpler move, better architecture, selected move, and rejected tradeoff.
+- Plans resolve architecture, interfaces, fields, and test seams before task generation; `cc-do` must not guess them.
+- Behavior tasks use tracer bullets: `[TEST] -> [IMPL] -> [REFACTOR]`, not horizontal layer slicing.
+- Regression tests cannot be deferred. If no honest seam exists, plan a spike or design correction.
+
 ## Socratic Dialogue
 
 The dialogue is complete only when both releases are explicit:
@@ -52,6 +62,92 @@ Each Dialogue Checkpoint covers the last 10 user-facing question rounds and reco
 ## Decision Questions
 
 Ask only when the answer changes product value, product shape, scope, design, task split, interface, or verification. Before asking, run Second-Move Review on the question itself: can repo evidence answer it, is it too implementation-shaped for the user, and would a better question freeze more downstream decisions? Product/creative questions come before engineering questions when worth or shape is unclear. Use `D<N>` with known evidence, recommendation, 2-3 mutually exclusive options, impact, and a stop point. Prefer Codex `request_user_input` or Claude Code structured input when available; use the fixed A/B/C fallback only when no structured-input tool exists. Record the answer in `task.md#Contract Summary`.
+
+Fixed fallback format:
+
+```text
+D<N> - <decision title>
+Planning object: <REQ/FIX/RM/change key>
+Known evidence: <repo / roadmap / code / test facts>
+Decision needed: <what changes downstream>
+Recommendation: <A/B/C> because <reason>
+Options:
+A) <label> (recommended)
+  Good: <upside>
+  Cost/Risk: <cost or risk>
+B) <label>
+  Good: <upside>
+  Cost/Risk: <cost or risk>
+C) <label, optional>
+  Good: <upside>
+  Cost/Risk: <cost or risk>
+Impact: <what cc-do will do differently>
+STOP: wait for the user answer before continuing.
+```
+
+## ASCII Branch Chain Analysis
+
+`task.md#Contract Summary` contains an ASCII branch-chain block. The tree is execution contract, not decoration.
+
+Language rule:
+
+- Tree structure tokens stay ASCII: `|--`, `` `-- ``, `|`, spaces, and plain punctuation.
+- Node labels, placeholder text, explanations, and evidence summaries follow `Output language` in `task.md`.
+- If `Output language` is unset, use the current conversation language and record the assumption.
+- Do not hard-code English labels such as `Requirement Impact Chain` when the configured output language is not English.
+- Use this label table as the shared source for chain titles, node labels, and placeholder text.
+
+| Semantic slot | en | zh-CN |
+| --- | --- | --- |
+| requirementChain | Requirement Impact Chain | 需求影响链 |
+| requirementMarker | REQ | 需求 |
+| upstreamSource | Upstream source | 上游来源 |
+| currentCodePath | Current code path | 当前代码路径 |
+| caller | caller | 调用方 |
+| dataOrState | data or state | 数据或状态 |
+| deepestAffectedLayer | deepest affected layer | 最深影响层 |
+| requiredChange | Required change | 必要变更 |
+| verificationSeam | Verification seam | 验证缝隙 |
+| businessChain | Business Impact Chain | 业务影响链 |
+| outcomeMarker | OUTCOME | 结果 |
+| directBehaviorImpact | Direct behavior impact | 直接行为影响 |
+| downstreamImpact | Downstream impact | 下游影响 |
+| riskBranch | Risk branch | 风险分支 |
+| nonGoalBranch | Non-goal branch | 非目标分支 |
+
+```text
+<requirementChain>
+<requirementMarker>: <user-visible change>
+|-- <upstreamSource>: <roadmap / issue / user request / existing task>
+|-- <currentCodePath>: <entry>
+|   |-- <caller>: <file / command / UI / API>
+|   |-- <dataOrState>: <field / config / artifact>
+|   `-- <deepestAffectedLayer>: <module / prompt / provider contract / storage>
+|-- <requiredChange>: <smallest behavior delta>
+`-- <verificationSeam>: <public test / command / artifact>
+
+<businessChain>
+<outcomeMarker>: <operator / user value>
+|-- <directBehaviorImpact>: <what changes for user>
+|-- <downstreamImpact>: <consumers / docs / examples / release>
+|-- <riskBranch>: <regression / migration / support / cost>
+`-- <nonGoalBranch>: <explicitly not changed>
+```
+
+Trace upstream source before downstream impact. Always find the deepest affected data model, state machine, CLI/runtime, prompt, provider contract, storage, or external boundary. If a branch lacks evidence, write `unknown -> Evidence Request`.
+
+## Engineering Review Gate
+
+Before freezing task blocks, write a lightweight review into `task.md#Contract Summary`:
+
+1. Existing leverage map: map each subproblem to existing code, scripts, specs, templates, or tests.
+2. Scope challenge: if the plan touches more than 8 files, adds more than 2 services/classes, or creates cross-module coupling, explain why this is not overengineering.
+3. Second-Move Review: compare first good move, simpler move, better architecture, selected move, and rejected tradeoff.
+4. Domain language check: align core nouns, filenames, test names, and task titles with repo truth; otherwise record an assumption.
+5. Interface depth check: keep the public surface small and deep; hide complexity inside the owning module.
+6. Test seam check: Red tasks prove behavior through public interface, caller flow, or user-visible path.
+7. Mock boundary check: mock only external API, time, randomness, filesystem, network, or required database seams.
+8. Feedback loop check: pick the shortest credible feedback loop for every behavior.
 
 ## Required Task Fields
 

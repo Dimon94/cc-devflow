@@ -1,5 +1,10 @@
 # CC-Plan Skill Changelog
 
+## v3.17.1 - 2026-05-22
+
+- move the long planning protocol into `references/planning-contract.md` so the entry skill stays small while preserving the full Plan contract
+- keep only the progressive-disclosure, operating, and task-contract gates in the entrypoint
+
 ## v3.17.0 - 2026-05-22
 
 - require `detect-worktree-state.sh` before change worktree preparation so Plan entry uses the shared read-only worktree preflight

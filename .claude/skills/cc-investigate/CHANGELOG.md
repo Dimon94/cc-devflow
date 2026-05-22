@@ -1,5 +1,10 @@
 # CC-Investigate Skill Changelog
 
+## v1.13.1 - 2026-05-22
+
+- move the long investigation protocol into `references/investigation-contract.md` so the entry skill stays small while preserving the full root-cause contract
+- keep only the progressive-disclosure, investigation-loop, evidence, and proof-ladder gates in the entrypoint
+
 ## v1.13.0 - 2026-05-22
 
 - require `detect-worktree-state.sh` before FIX worktree preparation so Investigate entry uses the shared read-only worktree preflight

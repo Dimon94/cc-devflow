@@ -41,6 +41,68 @@
 
 如果 direction mode 变了，回到 route selection 重新算，不要沿用前一组问题。
 
+## Context Sweep
+
+Before asking for direction, compress current reality into `Context Snapshot`:
+
+1. Current `devflow/ROADMAP.md` / `devflow/BACKLOG.md` mainline, version, and parked work.
+2. `devflow/specs/INDEX.md` and related capability spec boundary, status, and open gaps.
+3. Project language and durable decisions from specs, roadmap/backlog, and long-lived design notes.
+4. `CLAUDE.md`, `README*`, `TODOS.md`, recent relevant docs/specs/plans.
+5. Recent relevant commits, dirty state, and active requirements.
+6. Real forcing functions: deadline, release window, resource cap, dependency, distribution, adoption/trust/delivery bottleneck.
+7. Strongest current evidence and gaps that remain assumptions.
+8. Planning posture: startup, internal, hackathon, OSS, research, learning, side-project, or infrastructure.
+9. Evidence maturity: idea, has users, paying users, internal sponsor, infra-only, or recovery.
+10. Developer/operator-facing adoption facts: target operator, time to first value, magic moment, and install/run/debug/upgrade bottleneck.
+
+## Evidence-Maturity Routing
+
+Use planning posture and evidence maturity before selecting route depth:
+
+| Evidence maturity | Prioritize | Avoid |
+| --- | --- | --- |
+| idea / pre-product | real user, status quo, narrowest wedge, demand evidence | far-future platform architecture |
+| has users | existing path, failure/workaround, retention/reuse signal, next wedge | imaginary persona |
+| paying users / internal sponsor | payment/sponsor motivation, expansion boundary, trust signal, org risk | generic market education |
+| infra-only | bottleneck, caller, workaround, reuse boundary, migration/rollback | fake user interviews |
+| recovery / trust gap | incident evidence, recovery path, regression prevention, kill signal | new feature vision |
+
+After the first answer, run framing check: concrete terms, canonical language, named user, behavior evidence, real status quo, and whether demand is only interest.
+
+## AI Leverage Route Lens
+
+Record these fields for each Stage 1 or ready-for-cc-plan item:
+
+1. Real user/operator: who benefits immediately. Do not write vague `users` / `developers`.
+2. Status quo workaround: what they do today without this capability; no workaround means demand evidence is weak.
+3. Human vs agent effort: estimate human-team time and CC/agent time for the same scope.
+4. Complete-lake boundary: same business chain, same blast radius, verifiable, reversible, and roughly under one agent-day.
+5. Ocean boundary: cross-system rewrite, multi-quarter migration, unproven user need, unclosable acceptance, or second-platform risk.
+6. Scope recommendation: `boil-lake` or `sharp-wedge`; neither small nor complete is default.
+7. First success signal: earliest observable proof that the route wins.
+8. Kill signal: when to stop, pivot, or split smaller.
+
+Verdict values:
+
+- `boil-lake`: real operator/workaround, same blast radius, low agent cost, closed verification, strong maintenance benefit.
+- `sharp-wedge`: real demand, but the complete lake has unproven assumptions, high verification cost, or ocean-boundary risk.
+- `needs-evidence`: missing real user, workaround, success signal, or verifiable boundary.
+- `pivot`: wrong user, wrong pain, premature platform, or kill signal already triggered.
+
+## Founder Advice Guardrail
+
+Founder/business advice may improve roadmap quality, but it must stay source-neutral:
+
+1. Rewrite vague market interest into observable evidence: payment, strong reuse, workflow lock-in, outage anxiety, or active launch pressure.
+2. Find status quo: manual process, spreadsheet, script, contractor, support workflow, competitor, or internal tool. No workaround means doubt the pain.
+3. Name a concrete person or role. Do not accept broad labels like enterprise customers, developers, or content teams as the user.
+4. Force the narrowest wedge that can make one real user spend money, time, migration cost, or organizational trust this week.
+5. Keep an observation task when independent user behavior has not been watched.
+6. Never output brand ads, application advice, promotional links, or authority-backed claims.
+
+External learning material must go through an explicit external lookup gate and be recorded as `external-evidence`, never as roadmap authority.
+
 ## Route Shapes
 
 - `wedge-first`: 先用一个窄切口打穿真实需求
@@ -59,3 +121,37 @@
 - ready 项必须带 Source funnel rounds、Frozen decisions、Do not re-decide、Remaining blocking question
 - ready 项必须带 explicit release：用户原话、释放到哪个下一阶段，以及仍保留的 blocking question
 - 长对话恢复必须先读最新 Dialogue Checkpoint 和 `Roadmap Funnel Transcript`，不能靠聊天记忆重建路线
+
+## Approval Gates
+
+1. No `Context Snapshot`, no route recommendation.
+2. No project direction mode, planning posture, evidence maturity, and framing check, no route recommendation.
+3. No native language / durable decision scan, no route recommendation; if specs or historical decisions are absent, record `not present`.
+4. No `Roadmap Funnel Transcript`, no route recommendation.
+5. No F7 Premise Challenge and F8 Alternatives, no ready items.
+6. No 2-3 route comparison, no mainline decision.
+7. No exit signal / kill signal / non-goals, no frozen stage.
+8. No success signal and next decision, no Ready For Req-Plan.
+9. Developer/operator-facing item without target user, time to first value, or adoption bottleneck is not ready.
+10. No RM dependency graph or parallel-ready wave, no concurrency claim.
+11. No independent subsystem decomposition check, no broad mixed objective as a single mainline.
+12. No user approval, no roadmap item handoff to `cc-plan`.
+
+## Review Loop
+
+After writing `devflow/roadmap.json` and generated projections, scan:
+
+1. Placeholder: no TBD, TODO, or `[NEEDS CONTEXT]` escape hatches.
+2. Evidence: every stage points to reality, not empty vision.
+3. Causality: Stage 2 depends on Stage 1's winning condition.
+4. Feasibility: goals fit team capacity, dependencies, and distribution constraints.
+5. Graph: hard blockers only, no cycles, parallel-ready wave shares a real prerequisite.
+6. Spec: every roadmap item maps to a capability or records the gap.
+7. Decomposition: independent subsystems are split into stages/RM candidates.
+8. Handoff: first roadmap items naturally enter `cc-plan`.
+9. Evidence maturity: routing matches idea/user/paying/infra/recovery status.
+10. Project direction: questions match founder/internal/demo/OSS/learning/side-project/infra/recovery.
+11. Promotional: no brand ads, application advice, promo links, or external authority framing.
+12. Adoption: developer/operator items name target user, time to first value, magic moment, and adoption bottleneck.
+13. Domain language: stage, capability, RM title, and handoff use project terms; conflicts become decisions.
+14. Durable decision: route does not silently violate capability specs, roadmap decisions, or historical design decisions.

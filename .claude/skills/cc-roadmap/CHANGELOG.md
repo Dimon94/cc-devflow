@@ -1,5 +1,10 @@
 # Roadmap Skill Changelog
 
+## v5.8.1 - 2026-05-22
+
+- move the long roadmap funnel, route lens, guardrail, and review protocols into `references/roadmap-dialogue.md` so the entry skill stays small while preserving the full roadmap contract
+- keep only the progressive-disclosure, entry, roadmap, and review gates in the entrypoint
+
 ## v5.8.0 - 2026-05-21
 
 - add the shared user-choice output protocol so route-changing questions prefer Codex `request_user_input` or Claude Code structured input before falling back to fixed A/B/C text
