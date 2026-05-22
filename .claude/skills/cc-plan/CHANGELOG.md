@@ -1,5 +1,10 @@
 # CC-Plan Skill Changelog
 
+## v3.17.0 - 2026-05-22
+
+- require `detect-worktree-state.sh` before change worktree preparation so Plan entry uses the shared read-only worktree preflight
+- clarify that submodule entry, wrong linked worktree, case collisions, and target branch mismatches are setup blockers
+
 ## v3.16.0 - 2026-05-21
 
 - add the shared user-choice output protocol so Codex uses `request_user_input` and Claude Code uses structured input when available before falling back to fixed A/B/C text

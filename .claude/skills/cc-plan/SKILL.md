@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.16.0
+version: 3.17.0
 description: Use when a requirement, roadmap item, or bug needs scope clarification, design decisions, and executable task breakdown before coding starts.
 triggers:
   - 帮我规划这个需求
@@ -15,6 +15,7 @@ reads:
   - assets/TASKS_TEMPLATE.md
   - references/planning-contract.md
   - ../cc-dev/scripts/resolve-cc-devflow.sh
+  - ../cc-dev/scripts/detect-worktree-state.sh
   - ../cc-dev/scripts/prepare-change-worktree.sh
   - ../cc-dev/scripts/ensure-work-branch.sh
   - ../cc-roadmap/scripts/locate-roadmap-item.sh
@@ -31,6 +32,7 @@ effects:
 entry_gate:
   - Resolve the CLI with `../cc-dev/scripts/resolve-cc-devflow.sh require next-change-key config` before workflow commands.
   - Assign a canonical REQ/FIX change key through `next-change-key` before writing `task.md`.
+  - Detect the current Git surface with `../cc-dev/scripts/detect-worktree-state.sh` before preparing the change worktree.
   - Prepare an isolated change worktree immediately after the change key exists; keep the main checkout on `main`.
   - Enforce the Worktree Branch Contract inside the returned change worktree before writing `task.md`.
   - Read repo evidence before asking the user: roadmap handoff, specs, relevant code/tests/docs, recent commits, and existing task truth when present.
@@ -92,11 +94,12 @@ Follow `references/checklist-contract.md` before each pause point. The checklist
 
 1. 先用 resolver 找到当前仓库的 `cc-devflow`，并确认支持 `next-change-key`、`config`。
 2. 用 `next-change-key --prefix REQ|FIX --description "..."` 生成 `changeId` 和完整 `changeKey`，不要手动扫描编号。
-3. 分配 change key 后立刻运行 `../cc-dev/scripts/prepare-change-worktree.sh --change-key <REQ/FIX-...>`，从主 checkout 创建或复用独立 change worktree；主目录必须继续绑定 `main`。
-4. 进入脚本返回的 `WORKTREE_PATH` 后，再由 `../cc-dev/scripts/ensure-work-branch.sh --change-key <REQ/FIX-...>` 锚定 exact-case 分支：`REQ-003-copy-link` 对应 `REQ/003-copy-link`，`FIX-014-auth-race` 对应 `FIX/014-auth-race`。大小写碰撞或目标分支不匹配都是 setup blocker。
-5. 写 task blocks 前先确认方案。tiny 计划仍要过 planning flow，只是更短。
-6. `task.md` 必须包含 `Contract Summary`、ASCII Branch Chain Analysis、决策问题、planning flow、review gate、任务列表、验证命令、完成证据、禁止重决策事项和阶段 commit 要求。
-7. 完成 Plan 后提交 Git commit。下一阶段从 Git history 和 `task.md` 恢复，不靠过程文件。
+3. 分配 change key 后立刻运行 `../cc-dev/scripts/detect-worktree-state.sh`，用只读 helper 确认当前是 primary / linked / submodule / detached 中哪一种状态。
+4. 再运行 `../cc-dev/scripts/prepare-change-worktree.sh --change-key <REQ/FIX-...>`，从主 checkout 创建或复用独立 change worktree；主目录必须继续绑定 `main`。
+5. 进入脚本返回的 `WORKTREE_PATH` 后，再由 `../cc-dev/scripts/ensure-work-branch.sh --change-key <REQ/FIX-...>` 锚定 exact-case 分支：`REQ-003-copy-link` 对应 `REQ/003-copy-link`，`FIX-014-auth-race` 对应 `FIX/014-auth-race`。大小写碰撞、submodule 入口、错误 linked worktree 或目标分支不匹配都是 setup blocker。
+6. 写 task blocks 前先确认方案。tiny 计划仍要过 planning flow，只是更短。
+7. `task.md` 必须包含 `Contract Summary`、ASCII Branch Chain Analysis、决策问题、planning flow、review gate、任务列表、验证命令、完成证据、禁止重决策事项和阶段 commit 要求。
+8. 完成 Plan 后提交 Git commit。下一阶段从 Git history 和 `task.md` 恢复，不靠过程文件。
 
 ```bash
 DEVFLOW=".claude/skills/cc-dev/scripts/resolve-cc-devflow.sh"

@@ -1,5 +1,10 @@
 # CC-Investigate Skill Changelog
 
+## v1.13.0 - 2026-05-22
+
+- require `detect-worktree-state.sh` before FIX worktree preparation so Investigate entry uses the shared read-only worktree preflight
+- clarify that submodule entry, wrong linked worktree, case collisions, and target branch mismatches are setup blockers
+
 ## v1.12.0 - 2026-05-21
 
 - add the shared user-choice output protocol so repair-boundary questions prefer Codex `request_user_input` or Claude Code structured input before falling back to fixed A/B/C text

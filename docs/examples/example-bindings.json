@@ -3,9 +3,9 @@
   "skills": {
     "cc-roadmap": "5.8.0",
     "cc-next": "1.4.0",
-    "cc-dev": "1.4.0",
-    "cc-plan": "3.16.0",
-    "cc-investigate": "1.12.0",
+    "cc-dev": "1.5.0",
+    "cc-plan": "3.17.0",
+    "cc-investigate": "1.13.0",
     "cc-do": "1.10.0",
     "cc-review": "2.10.0",
     "cc-pr-review": "1.6.0",

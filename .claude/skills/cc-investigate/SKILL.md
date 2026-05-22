@@ -1,6 +1,6 @@
 ---
 name: cc-investigate
-version: 1.12.0
+version: 1.13.0
 description: Use when a bug, regression, broken task, or unexpected behavior needs root-cause investigation before coding resumes.
 triggers:
   - 帮我查这个 bug
@@ -15,6 +15,7 @@ reads:
   - docs/guides/project-postmortem.md
   - assets/TASKS_TEMPLATE.md
   - ../cc-dev/scripts/resolve-cc-devflow.sh
+  - ../cc-dev/scripts/detect-worktree-state.sh
   - ../cc-dev/scripts/prepare-change-worktree.sh
   - ../cc-dev/scripts/ensure-work-branch.sh
   - ../cc-roadmap/scripts/locate-roadmap-item.sh
@@ -31,6 +32,7 @@ effects:
 entry_gate:
   - Resolve the CLI with `../cc-dev/scripts/resolve-cc-devflow.sh require next-change-key config`.
   - Assign a FIX change key through `next-change-key --prefix FIX --description "<short bug name>"`.
+  - Detect the current Git surface with `../cc-dev/scripts/detect-worktree-state.sh` before preparing the FIX worktree.
   - Prepare an isolated FIX worktree before writing `task.md`; keep the main checkout on `main`.
   - Enforce the Worktree Branch Contract inside the returned FIX worktree.
   - Reproduce or build the closest honest feedback loop before naming root cause.
@@ -89,14 +91,15 @@ NO REPAIR WITHOUT A FROZEN ROOT-CAUSE CONTRACT
 ## Investigation Loop
 
 1. Classify：复现优先、diff trace、boundary probe、flaky、performance、workflow forensics 或 diagnose-only。
-2. Anchor：分配 FIX change key 后运行 `../cc-dev/scripts/prepare-change-worktree.sh --change-key <FIX-...>`，从主 checkout 创建或复用独立 FIX worktree；进入返回的 `WORKTREE_PATH` 后必须得到 exact-case `FIX/...` 分支。大小写碰撞或目标分支不匹配都是 setup blocker。
-3. Reproduce：用测试、脚本、日志、浏览器路径或最小 harness 证明同一个症状。
-4. Trace：找到 first bad state，而不是只给 symptom guard。
-5. Hypothesize：列候选，写证伪方法，逐个打掉。
-6. Grill：现状查完后，如果需要确认技术细节或解决方案，用一问一答继续追问；用户没有明确说足够详细前，不冻结 repair tasks。
-7. Prove：完成 Root Cause Proof Ladder。
-8. Freeze：把根因、ASCII Branch Chain Analysis、修复边界、测试 seam、allowed/forbidden files 写进 `task.md`。
-9. Commit：提交 Investigate 阶段，再交给 `cc-do`。
+2. Detect：分配 FIX change key 后先运行 `../cc-dev/scripts/detect-worktree-state.sh`，用只读 helper 确认当前是 primary / linked / submodule / detached 中哪一种状态。
+3. Anchor：再运行 `../cc-dev/scripts/prepare-change-worktree.sh --change-key <FIX-...>`，从主 checkout 创建或复用独立 FIX worktree；进入返回的 `WORKTREE_PATH` 后必须得到 exact-case `FIX/...` 分支。大小写碰撞、submodule 入口、错误 linked worktree 或目标分支不匹配都是 setup blocker。
+4. Reproduce：用测试、脚本、日志、浏览器路径或最小 harness 证明同一个症状。
+5. Trace：找到 first bad state，而不是只给 symptom guard。
+6. Hypothesize：列候选，写证伪方法，逐个打掉。
+7. Grill：现状查完后，如果需要确认技术细节或解决方案，用一问一答继续追问；用户没有明确说足够详细前，不冻结 repair tasks。
+8. Prove：完成 Root Cause Proof Ladder。
+9. Freeze：把根因、ASCII Branch Chain Analysis、修复边界、测试 seam、allowed/forbidden files 写进 `task.md`。
+10. Commit：提交 Investigate 阶段，再交给 `cc-do`。
 
 ## Investigation Modes
 
