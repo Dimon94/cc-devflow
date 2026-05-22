@@ -20,6 +20,14 @@ const PREPARE_CHANGE_WORKTREE = path.join(
   'scripts',
   'prepare-change-worktree.sh'
 );
+const DETECT_WORKTREE_STATE = path.join(
+  ROOT,
+  '.claude',
+  'skills',
+  'cc-dev',
+  'scripts',
+  'detect-worktree-state.sh'
+);
 
 function run(command, args, cwd) {
   const result = spawnSync(command, args, {
@@ -58,7 +66,9 @@ function worktreePaths(repoRoot) {
 }
 
 function createRepo() {
-  const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-dev-work-branch-'));
+  const repoRoot = fs.realpathSync(
+    fs.mkdtempSync(path.join(os.tmpdir(), 'cc-dev-work-branch-'))
+  );
   run('git', ['init', '-b', 'main'], repoRoot);
   run('git', ['config', 'user.name', 'Test User'], repoRoot);
   run('git', ['config', 'user.email', 'test@example.com'], repoRoot);
@@ -69,6 +79,66 @@ function createRepo() {
 }
 
 describe('cc-dev work branch anchor', () => {
+  test('reports primary checkout state without mutating git', () => {
+    const repoRoot = createRepo();
+
+    const result = run('bash', [DETECT_WORKTREE_STATE], repoRoot);
+
+    expect(field(result.stdout, 'INSIDE_WORK_TREE')).toBe('true');
+    expect(field(result.stdout, 'WORKTREE_KIND')).toBe('primary');
+    expect(field(result.stdout, 'IS_PRIMARY_CHECKOUT')).toBe('yes');
+    expect(field(result.stdout, 'IS_SUBMODULE')).toBe('no');
+    expect(field(result.stdout, 'WORKTREE_PATH')).toBe(repoRoot);
+    expect(field(result.stdout, 'PRIMARY_WORKTREE_PATH')).toBe(repoRoot);
+    expect(field(result.stdout, 'CURRENT_BRANCH')).toBe('main');
+    expect(field(result.stdout, 'BRANCH_STATE')).toBe('branch');
+    expect(field(result.stdout, 'PRIMARY_BRANCH')).toBe('main');
+    expect(run('git', ['branch', '--show-current'], repoRoot).stdout.trim()).toBe('main');
+  });
+
+  test('reports linked worktree state separately from primary checkout', () => {
+    const repoRoot = createRepo();
+    const linkedPath = fs.realpathSync(
+      fs.mkdtempSync(path.join(os.tmpdir(), 'cc-dev-linked-'))
+    );
+    fs.rmdirSync(linkedPath);
+
+    run('git', ['worktree', 'add', '-b', 'feature/linked-worktree', linkedPath], repoRoot);
+
+    const result = run('bash', [DETECT_WORKTREE_STATE], linkedPath);
+
+    expect(field(result.stdout, 'WORKTREE_KIND')).toBe('linked');
+    expect(field(result.stdout, 'IS_PRIMARY_CHECKOUT')).toBe('no');
+    expect(field(result.stdout, 'IS_SUBMODULE')).toBe('no');
+    expect(field(result.stdout, 'WORKTREE_PATH')).toBe(linkedPath);
+    expect(field(result.stdout, 'PRIMARY_WORKTREE_PATH')).toBe(repoRoot);
+    expect(field(result.stdout, 'CURRENT_BRANCH')).toBe('feature/linked-worktree');
+    expect(field(result.stdout, 'BRANCH_STATE')).toBe('branch');
+    expect(field(result.stdout, 'PRIMARY_BRANCH')).toBe('main');
+  });
+
+  test('reports submodules before applying linked-worktree policy', () => {
+    const parentRoot = createRepo();
+    const submoduleSource = createRepo();
+    const submodulePath = path.join(parentRoot, 'vendor', 'submodule');
+
+    run('git', [
+      '-c',
+      'protocol.file.allow=always',
+      'submodule',
+      'add',
+      submoduleSource,
+      submodulePath
+    ], parentRoot);
+    run('git', ['commit', '-am', 'test: add submodule'], parentRoot);
+
+    const result = run('bash', [DETECT_WORKTREE_STATE], submodulePath);
+
+    expect(field(result.stdout, 'WORKTREE_KIND')).toBe('submodule');
+    expect(field(result.stdout, 'IS_SUBMODULE')).toBe('yes');
+    expect(field(result.stdout, 'SUPERPROJECT_WORKTREE')).toBe(parentRoot);
+  });
+
   test('creates a change worktree without moving the main checkout', () => {
     const repoRoot = createRepo();
     const worktreesRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-dev-worktrees-'));
@@ -183,6 +253,36 @@ describe('cc-dev work branch anchor', () => {
 
     expect(result.status).toBe(1);
     expect(result.stderr).toContain('case-variant branch already exists');
+    expect(fs.existsSync(targetPath)).toBe(false);
+    expect(worktreePaths(repoRoot)).not.toContain(targetPath);
+  });
+
+  test('refuses to prepare a nested change worktree from an unrelated linked worktree', () => {
+    const repoRoot = createRepo();
+    const linkedPath = fs.realpathSync(
+      fs.mkdtempSync(path.join(os.tmpdir(), 'cc-dev-linked-'))
+    );
+    const worktreesRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-dev-worktrees-'));
+    fs.rmdirSync(linkedPath);
+    run('git', ['worktree', 'add', '-b', 'feature/unrelated-linked', linkedPath], repoRoot);
+
+    const result = exec('bash', [
+      PREPARE_CHANGE_WORKTREE,
+      '--change-key',
+      'REQ-005-no-nested-linked-worktree',
+      '--worktrees-root',
+      worktreesRoot
+    ], linkedPath);
+
+    const targetPath = path.join(
+      worktreesRoot,
+      'REQ-005-no-nested-linked-worktree',
+      path.basename(repoRoot)
+    );
+
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('already inside linked worktree on feature/unrelated-linked');
+    expect(result.stderr).toContain('Run from the primary checkout on main');
     expect(fs.existsSync(targetPath)).toBe(false);
     expect(worktreePaths(repoRoot)).not.toContain(targetPath);
   });
