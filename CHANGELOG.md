@@ -9,10 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.24] - 2026-05-22
+
 ### Added
 
 - Added the `cc-review` structural quality / code-judo facet for thermo-nuclear maintainability reviews, including stricter approval blockers for avoidable branching, thin wrappers, cast-heavy contracts, wrong-layer logic, and file-size sprawl.
 - Added the remaining `complexity-optimizer` report and safety contract to `cc-review`, including default full complexity reports, files-modified status, and optimization behavior-preservation gates.
+- Added `cc-dev` worktree-state detection helpers and planning/investigation prechecks so main-checkout work is detected before edits.
+
+### Changed
+
+- Slimmed `cc-plan`, `cc-investigate`, and `cc-roadmap` entrypoints by moving long-form workflow contracts into progressively loaded references.
+- Updated skill benchmark budgets and example bindings for the new progressive-disclosure skill versions.
+
+### Fixed
+
+- Required `cc-review` repair-selection responses to show the full 2-3 mutually exclusive options instead of only returning a selected letter.
 
 ## [4.5.23] - 2026-05-21
 
