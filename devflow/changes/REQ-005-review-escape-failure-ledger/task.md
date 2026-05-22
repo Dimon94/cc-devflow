@@ -112,7 +112,7 @@ Use this section only for real execution failures, reroutes, disproven assumptio
 
 | ID | Source | Trigger | Escape class | Symptom | Evidence | Attempted fix | Result | Lesson candidate | Status | Keep for postmortem |
 |----|--------|---------|--------------|---------|----------|---------------|--------|------------------|--------|---------------------|
-| FL-001 |  |  | process-escape / test-escape / design-escape / model-pattern-escape |  |  |  |  |  | unreviewed / confirmed-lesson / noise / unresolved-risk | no |
+| FL-001 | cc-do | tool-failure | process-escape | T001 Red command could not execute because `jest` was missing. | `npm test -- test/review-escape-failure-ledger.test.js` exited 127 with `sh: jest: command not found`. | Ran `npm ci` in the isolated worktree. | Dependencies installed; rerun reached the expected contract-test failures. | Isolated worktrees need dependency bootstrap before interpreting test failure as product signal. | unreviewed | no |
 
 ## Execution Protocol
 
@@ -134,7 +134,7 @@ Codex 执行本计划时，必须把 `task.md` 当成唯一任务合同。
 
 ## Phase 1: Review Escape Contract
 
-- [ ] T001 [TEST] Lock review escape Failure Ledger wording (dependsOn:none) `test/review-escape-failure-ledger.test.js`
+- [x] T001 [TEST] Lock review escape Failure Ledger wording (dependsOn:none) `test/review-escape-failure-ledger.test.js`
   Goal: Prove current contract does not yet define the four eligible review escape classes and new ledger fields.
   Contract: user stories `US-001` through `US-003`; interface real skill/template files.
   Do not re-decide: eligible classes, no new log, ordinary findings excluded.
@@ -142,7 +142,7 @@ Codex 执行本计划时，必须把 `task.md` 当成唯一任务合同。
   Files: `test/review-escape-failure-ledger.test.js`
   Read first: `task.md`, `cc-review`, `cc-check`, `cc-act`, task templates.
   Verification: `npm test -- test/review-escape-failure-ledger.test.js`
-  Evidence: failing output before implementation, passing output after implementation.
+  Evidence: Red output after dependency bootstrap: 3 failures for missing `Review Escape Ledger`, new Failure Ledger fields, and `cc-check` / `cc-act` review escape wording.
   Completion: after failing evidence exists, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --tasks devflow/changes/REQ-005-review-escape-failure-ledger/task.md --task T001`.
   Public verification path: Jest reads shipped skill/template text.
   Ready when: no dependencies.
