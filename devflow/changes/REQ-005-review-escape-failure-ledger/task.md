@@ -112,7 +112,7 @@ Use this section only for real execution failures, reroutes, disproven assumptio
 
 | ID | Source | Trigger | Escape class | Symptom | Evidence | Attempted fix | Result | Lesson candidate | Status | Keep for postmortem |
 |----|--------|---------|--------------|---------|----------|---------------|--------|------------------|--------|---------------------|
-| FL-001 | cc-do | tool-failure | process-escape | T001 Red command could not execute because `jest` was missing. | `npm test -- test/review-escape-failure-ledger.test.js` exited 127 with `sh: jest: command not found`. | Ran `npm ci` in the isolated worktree. | Dependencies installed; rerun reached the expected contract-test failures. | Isolated worktrees need dependency bootstrap before interpreting test failure as product signal. | unreviewed | no |
+| FL-001 | cc-do | tool-failure | process-escape | T001 Red command could not execute because `jest` was missing. | `npm test -- test/review-escape-failure-ledger.test.js` exited 127 with `sh: jest: command not found`. | Ran `npm ci` in the isolated worktree. | Dependencies installed; rerun reached the expected contract-test failures. | Existing worktree bootstrap rule covered this; no new postmortem input. | noise | no |
 
 ## Execution Protocol
 
@@ -160,7 +160,7 @@ Codex 执行本计划时，必须把 `task.md` 当成唯一任务合同。
   Public verification path: skills and example task artifacts expose the contract.
   Ready when: T001 has failing evidence.
 
-- [ ] T003 [CHECK] Regenerate Codex mirror and validate package surface (dependsOn:T002) `.codex/skills`
+- [x] T003 [CHECK] Regenerate Codex mirror and validate package surface (dependsOn:T002) `.codex/skills`
   Goal: Prove generated Codex mirror and public package examples match the authoritative source.
   Contract: `.claude` source edited first; `.codex` generated through `npm run adapt:codex`.
   Do not re-decide: no hand-maintained `.codex` edits.
@@ -168,7 +168,7 @@ Codex 执行本计划时，必须把 `task.md` 当成唯一任务合同。
   Files: `.codex/skills/**`, validation outputs.
   Read first: `task.md`, changed files.
   Verification: `npm run adapt:codex`; `npm run adapt:check`; `npm run verify:examples`; `npm run verify:publish`; `git diff --check`
-  Evidence: command output.
+  Evidence: `npm run adapt:codex` completed; `npm run adapt:check` no drift; `npm run verify:examples` passed; `npm run verify:publish` passed; `git diff --check` passed; `npm test` passed 31 suites / 258 tests.
   Completion: after validation evidence exists, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --tasks devflow/changes/REQ-005-review-escape-failure-ledger/task.md --task T003`.
   Public verification path: generated mirror and publish validation.
   Ready when: T002 is complete.

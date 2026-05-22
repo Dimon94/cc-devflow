@@ -4,7 +4,7 @@
 
 - Example version: `1.0.0`
 - Last reviewed: `2026-04-17`
-- Bound skills: `cc-roadmap@5.8.1`, `cc-plan@3.17.1`, `cc-do@1.10.0`, `cc-check@1.15.0`, `cc-act@1.13.0`
+- Bound skills: `cc-roadmap@5.8.1`, `cc-plan@3.18.0`, `cc-do@1.10.0`, `cc-check@1.16.0`, `cc-act@1.14.0`
 
 This example shows verified work that is **ready to move forward**, but `cc-act` still chooses `local-handoff`.
 
