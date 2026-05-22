@@ -71,3 +71,15 @@ Verification:
 - `npm run verify:publish`: `validate-publish: ok`.
 - `npm test -- --runInBand`: 30 suites / 254 tests passed.
 - `git diff --check`: passed.
+
+Follow-up:
+- User asked whether `cc-plan` and `cc-investigate` should also be optimized.
+- Updated both entry contracts to read `detect-worktree-state.sh` before worktree preparation.
+- Preserved the same blocker model: submodule entry, wrong linked worktree, case collision, or target branch mismatch blocks setup instead of falling back to `main`.
+- `npm run adapt:codex`: completed after the entry contract updates.
+- `npm run adapt:check`: no drift detected.
+- `npm run verify:examples`: example bindings in sync after bumping `cc-plan`, `cc-investigate`, and `cc-dev` bindings.
+- `npm run verify:publish`: `validate-publish: ok`.
+- `npx jest test/cc-dev-work-branch.test.js --runInBand`: 11 passed.
+- `npm test -- --runInBand`: 30 suites / 254 tests passed.
+- `git diff --check`: passed.
