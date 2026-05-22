@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.5.0 - 2026-05-22
+
+- add `detect-worktree-state.sh` as the standalone read-only preflight for primary, linked, submodule, detached, and branch-state truth
+- make `prepare-change-worktree.sh` consume the detector and fail closed when called from the wrong linked worktree
+
 ## v1.4.0 - 2026-05-21
 
 - route ambiguous PDCA/IDCA and terminal-state choices through the shared user-choice output protocol instead of plain blocking prose

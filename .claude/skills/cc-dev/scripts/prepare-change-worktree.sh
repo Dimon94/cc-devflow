@@ -47,41 +47,10 @@ resolve_base_branch() {
   printf '%s\n' "$base_branch"
 }
 
-read_primary_worktree_state() {
-  local primary_path=""
-  local primary_branch=""
-  local in_primary=""
-
-  while IFS= read -r line; do
-    case "$line" in
-      worktree\ *)
-        if [[ -z "$primary_path" ]]; then
-          primary_path="${line#worktree }"
-          in_primary="1"
-        else
-          break
-        fi
-        ;;
-      branch\ refs/heads/*)
-        if [[ -n "$in_primary" ]]; then
-          primary_branch="${line#branch refs/heads/}"
-        fi
-        ;;
-    esac
-  done < <(git worktree list --porcelain 2>/dev/null || true)
-
-  printf '%s\t%s\n' "$primary_path" "$primary_branch"
-}
-
 assert_primary_checkout_on_base() {
   local base_branch="$1"
-  local state
-  local primary_path
-  local primary_branch
-
-  state="$(read_primary_worktree_state)"
-  primary_path="${state%%$'\t'*}"
-  primary_branch="${state#*$'\t'}"
+  local primary_path="$2"
+  local primary_branch="$3"
 
   if [[ -z "$primary_path" ]]; then
     echo "WorktreePrepareError: cannot identify primary git worktree" >&2
@@ -110,6 +79,10 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+detect_script="$script_dir/detect-worktree-state.sh"
+ensure_script="$script_dir/ensure-work-branch.sh"
+
 if [[ -z "$CHANGE_KEY" ]]; then
   usage
   exit 1
@@ -135,7 +108,29 @@ repo_root="$(git rev-parse --show-toplevel)"
 repo_name="$(basename "$repo_root")"
 BASE_BRANCH="$(resolve_base_branch "$BASE_BRANCH")"
 
-assert_primary_checkout_on_base "$BASE_BRANCH"
+if [[ ! -x "$detect_script" ]]; then
+  echo "WorktreePrepareError: missing executable detect script: $detect_script" >&2
+  exit 1
+fi
+
+state_output="$(bash "$detect_script")"
+state_field() {
+  local key="$1"
+  printf '%s\n' "$state_output" | sed -n "s/^$key=//p" | head -n 1
+}
+
+worktree_kind="$(state_field WORKTREE_KIND)"
+current_branch="$(state_field CURRENT_BRANCH)"
+primary_path="$(state_field PRIMARY_WORKTREE_PATH)"
+primary_branch="$(state_field PRIMARY_BRANCH)"
+
+if [[ "$worktree_kind" == "submodule" ]]; then
+  echo "WorktreePrepareError: cannot prepare a change worktree from inside a submodule" >&2
+  echo "Run from the repository checkout that owns devflow changes." >&2
+  exit 1
+fi
+
+assert_primary_checkout_on_base "$BASE_BRANCH" "$primary_path" "$primary_branch"
 
 if [[ -z "$WORKTREES_ROOT" ]]; then
   if [[ -n "${CODEX_HOME:-}" ]]; then
@@ -146,8 +141,6 @@ if [[ -z "$WORKTREES_ROOT" ]]; then
 fi
 
 worktree_path="$WORKTREES_ROOT/$CHANGE_KEY/$repo_name"
-script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ensure_script="$script_dir/ensure-work-branch.sh"
 
 if [[ ! -x "$ensure_script" ]]; then
   echo "WorktreePrepareError: missing executable anchor script: $ensure_script" >&2
@@ -162,6 +155,12 @@ while IFS= read -r ref_name; do
     exit 1
   fi
 done < <(git for-each-ref --format='%(refname:short)' refs/heads 2>/dev/null || true)
+
+if [[ "$worktree_kind" == "linked" && "$current_branch" != "$target_branch" ]]; then
+  echo "WorktreePrepareError: already inside linked worktree on $current_branch" >&2
+  echo "Run from the primary checkout on $BASE_BRANCH or from the target worktree $target_branch." >&2
+  exit 1
+fi
 
 branch_worktree_path=""
 current_worktree_path=""
@@ -203,7 +202,10 @@ ensure_args+=(--base "$BASE_BRANCH")
 
 anchor_output="$(cd "$worktree_path" && bash "$ensure_script" "${ensure_args[@]}")"
 
-assert_primary_checkout_on_base "$BASE_BRANCH"
+post_state_output="$(bash "$detect_script")"
+post_primary_path="$(printf '%s\n' "$post_state_output" | sed -n 's/^PRIMARY_WORKTREE_PATH=//p' | head -n 1)"
+post_primary_branch="$(printf '%s\n' "$post_state_output" | sed -n 's/^PRIMARY_BRANCH=//p' | head -n 1)"
+assert_primary_checkout_on_base "$BASE_BRANCH" "$post_primary_path" "$post_primary_branch"
 
 cat <<EOF
 WORKTREE_ACTION=$action
