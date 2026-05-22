@@ -23,31 +23,54 @@ Selected methods stay in scratch reasoning and final response/task updates. Do n
 
 For any plan, investigation, PR, broad implementation, or code-smell finding, include a compact ASCII tree in the durable task update or review output. Keep `|--`, `` `-- ``, `|`, spaces, and punctuation ASCII; write labels, explanations, findings, and evidence summaries in the configured output language. Resolve language from `task.md` `Output language`, PR/task/handoff language fields, then the current conversation language.
 
+Build the chain around the faulty node. Walk upward through three concrete layers when available: direct input/caller proof, governing contract/spec/provider, then source intent/roadmap. Walk downward through three concrete layers when available: first affected seam, behavior or artifact, then release or maintenance risk. If a layer cannot be proven from current evidence, keep the layer and mark it `missing evidence` or `blocked`; do not compress the gap into a generic source or impact line.
+
 Label table:
 
 | Semantic slot | en | zh-CN |
 | --- | --- | --- |
 | reviewChain | Review Chain | 审查链 |
 | findingMarker | FINDING | 问题 |
-| source | Source | 来源 |
+| evidence | Evidence | 证据 |
+| diagnosis | Diagnosis | 诊断 |
+| cognitiveLayers | Cognitive layers | 认知层 |
+| causalPath | Causal path | 因果链 |
+| upstreamChain | Upstream chain | 上游链路 |
+| upstreamInput | upstream L1 direct input/caller proof | 上游 L1 直接输入/调用方证据 |
+| upstreamContract | upstream L2 contract/spec/provider | 上游 L2 合同/规格/provider |
+| upstreamOrigin | upstream L3 source intent/roadmap | 上游 L3 来源意图/roadmap |
 | faultNode | Fault node | 错误节点 |
 | whyWrong | why wrong | 错误原因 |
+| downstreamChain | Downstream chain | 下游链路 |
 | firstAffectedSeam | first affected seam | 首个受影响边界 |
+| downstreamBehavior | downstream L2 behavior/artifact | 下游 L2 行为/产物 |
+| downstreamReleaseRisk | downstream L3 release/maintenance risk | 下游 L3 发布/维护风险 |
 | downstreamImpact | Downstream impact | 下游影响 |
 | fixRoute | Fix route | 修复路线 |
 
 ```text
 <reviewChain>
 <findingMarker>: <severity + short name>
-|-- <source>: <task / diff / PR / log / prompt / provider contract>
+|-- <evidence>: <task / diff / PR / log / prompt / provider contract / missing evidence>
+|-- <diagnosis>: <violated contract / smell / root cause>
+|-- <cognitiveLayers>: <phenomenon -> essence -> philosophy -> integration -> output>
+|-- <causalPath>: <upstream cause -> faulty node -> downstream consequence>
+|-- <upstreamChain>: <walk upward from the fault node; include three concrete layers when available>
+|   |-- <upstreamInput>: <direct caller / input / fixture / baseline / command proof>
+|   |-- <upstreamContract>: <spec / API / schema / prompt / provider contract>
+|   `-- <upstreamOrigin>: <user request / task / issue / roadmap / missing evidence or blocked>
 |-- <faultNode>: <file / section / behavior>
 |   |-- <whyWrong>: <violated contract or smell>
 |   `-- <firstAffectedSeam>: <public seam / caller / artifact>
+|-- <downstreamChain>: <walk downward from the fault node; include three concrete layers when available>
+|   |-- <firstAffectedSeam>: <public seam / caller / artifact>
+|   |-- <downstreamBehavior>: <runtime behavior / generated output / user-visible result>
+|   `-- <downstreamReleaseRisk>: <release / main parity / sibling work / maintenance / missing evidence or blocked>
 |-- <downstreamImpact>: <user / operator / release / maintenance>
 `-- <fixRoute>: <cc-plan / cc-investigate / cc-do / cc-check / cc-act / stop>
 ```
 
-Trace upstream to the first supported source and downstream to the affected public seam. If prompt text, agent instructions, model/provider parameters, or generated artifacts are part of the chain, name the exact prompt/provider contract or write `unknown -> Evidence Request`.
+If prompt text, agent instructions, model/provider parameters, or generated artifacts are part of the chain, name the exact prompt/provider contract or write `missing evidence / blocked`.
 
 ## Review Nodes
 

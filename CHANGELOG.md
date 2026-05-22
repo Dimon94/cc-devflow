@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Tightened `cc-review` ASCII Branch Chains so non-trivial findings walk upward from the fault node through direct input/caller proof, contract/spec/provider, and source intent/roadmap when available, then downward through first affected seam, behavior/artifact, and release/maintenance risk when available.
+
 ## [4.5.24] - 2026-05-22
 
 ### Added

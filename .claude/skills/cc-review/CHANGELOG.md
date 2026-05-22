@@ -1,5 +1,11 @@
 # CC-Review Changelog
 
+## v2.10.2 - 2026-05-22
+
+- require ASCII Branch Chains to be fault-centered walks that look up through direct input/caller proof, contract/spec/provider, and source intent/roadmap when available
+- require downstream chain walks to cover first affected seam, behavior/artifact, and release/maintenance risk when available
+- align the review-methods reference template with the deeper upstream/downstream chain contract and keep missing layers explicit as missing evidence or blocked
+
 ## v2.10.1 - 2026-05-22
 
 - make recommend-only repair prompts a protocol failure so implementation review choices must use host-native choice UI or a fallback block with 2-3 mutually exclusive options
