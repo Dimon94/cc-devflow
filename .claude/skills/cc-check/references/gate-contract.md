@@ -63,13 +63,13 @@ Classify every failure:
 
 ## Failure Ledger Review
 
-When `task.md#Failure Ledger` contains entries touched by this verification, classify each one:
+When `task.md#Failure Ledger` contains entries touched by this verification, including eligible `cc-review` review escape candidates, classify each one:
 
 - `confirmed-lesson`: verified pattern worth compressing at closeout.
 - `noise`: disproven suspicion, transient dead end, or local attempt with no reuse value.
 - `unresolved-risk`: real risk that still lacks proof, owner, or repair boundary.
 
-Only `confirmed-lesson` entries marked `Keep for postmortem: yes` should drive `cc-act` incident postmortems.
+Only `confirmed-lesson` entries marked `Keep for postmortem: yes` should drive `cc-act` incident postmortems. Raw review findings are not ledger input unless `cc-review` already wrote them as process/test/design/model-pattern escape candidates.
 
 ## Reroute
 

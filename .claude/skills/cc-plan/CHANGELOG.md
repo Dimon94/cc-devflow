@@ -1,5 +1,10 @@
 # CC-Plan Skill Changelog
 
+## v3.18.0 - 2026-05-22
+
+- expand the task template Failure Ledger with `Source`, `Trigger`, and `Escape class` fields for eligible review escape candidates
+- keep review escape capture inside `task.md` instead of adding a new process log
+
 ## v3.17.1 - 2026-05-22
 
 - move the long planning protocol into `references/planning-contract.md` so the entry skill stays small while preserving the full Plan contract

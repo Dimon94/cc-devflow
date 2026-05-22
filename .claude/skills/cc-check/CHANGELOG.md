@@ -1,5 +1,10 @@
 # CC-Check Skill Changelog
 
+## v1.16.0 - 2026-05-22
+
+- classify `cc-review` review escape candidates in `task.md#Failure Ledger`
+- limit eligible review escapes to process, test, design, and model-pattern escapes before closeout compression
+
 ## v1.15.0 - 2026-05-20
 
 - add Failure Ledger review so verification classifies recorded failures as confirmed lessons, noise, or unresolved risks before closeout

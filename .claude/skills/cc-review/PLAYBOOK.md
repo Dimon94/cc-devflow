@@ -18,7 +18,7 @@
 10. 复杂度 report-only 请求默认输出完整报告并明确没有改文件；只有用户明确要求 fix / optimize / apply / refactor 时才进入修复选择。
 11. 复杂度修复前必须确认数据规模、热路径、排序、重复键、identity、cache invalidation、权限、分页和错误语义；修复后先 narrow test，再 broad relevant test/build，必要时补 measurement。
 12. 输出前聚合 raw findings：合并重复，降级弱证据，拒收 speculative / out-of-scope / stale findings。
-13. 计划 review 的结果直接写回 `task.md`；执行 review 的结果通过共享 choice protocol 询问用户选择修复方案；只差验收，进 `cc-check`。
+13. 计划 review 的结果直接写回 `task.md`；执行 review 的结果通过共享 choice protocol 询问用户选择修复方案；只有流程、测试、设计或模型写法逃逸类 finding 追加到 `task.md#Failure Ledger`；只差验收，进 `cc-check`。
 
 ## Review Standard
 
@@ -45,4 +45,4 @@
 
 ## Decision Rule
 
-计划 review 发现的范围、架构、用户可见行为、公共 API、测试策略问题，必须直接写进 `task.md` 的合同、任务或开放问题里。执行 review 发现的问题必须给出修复选项，并按 `../cc-dev/references/user-choice-output-protocol.md` 询问用户是否修复以及选择哪种方案；用户选择后再直接修改代码并验证。
+计划 review 发现的范围、架构、用户可见行为、公共 API、测试策略问题，必须直接写进 `task.md` 的合同、任务或开放问题里。执行 review 发现的问题必须给出修复选项，并按 `../cc-dev/references/user-choice-output-protocol.md` 询问用户是否修复以及选择哪种方案；用户选择后再直接修改代码并验证。review 证明流程、测试、设计或模型写法逃逸时，额外写入 `task.md#Failure Ledger`，默认 `Status=unreviewed`、`Keep for postmortem=no`。

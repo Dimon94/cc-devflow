@@ -74,9 +74,9 @@ OUTCOME: admins can trust mixed CSV import results
 
 ## Failure Ledger
 
-| ID | Symptom | Evidence | Attempted fix | Result | Lesson candidate | Status | Keep for postmortem |
-|----|---------|----------|---------------|--------|------------------|--------|---------------------|
-| FL-001 | none recorded | N/A | N/A | N/A | N/A | noise | no |
+| ID | Source | Trigger | Escape class | Symptom | Evidence | Attempted fix | Result | Lesson candidate | Status | Keep for postmortem |
+|----|--------|---------|--------------|---------|----------|---------------|--------|------------------|--------|---------------------|
+| FL-001 | none | none | process-escape / test-escape / design-escape / model-pattern-escape | none recorded | N/A | N/A | N/A | N/A | noise | no |
 
 ## Execution Protocol
 

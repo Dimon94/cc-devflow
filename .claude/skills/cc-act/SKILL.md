@@ -1,6 +1,6 @@
 ---
 name: cc-act
-version: 1.13.0
+version: 1.14.0
 description: Use when verified work must be committed, handed off, pushed, or turned into a PR with the smallest durable delivery surface.
 triggers:
   - 准备提 PR
@@ -42,7 +42,7 @@ effects:
 entry_gate:
   - "Resolve the CLI with `../cc-dev/scripts/resolve-cc-devflow.sh require config`."
   - "Read `task.md`, Git status, latest commits, validation evidence, and current PR state when relevant."
-  - "Read `task.md#Failure Ledger`; only confirmed entries marked `Keep for postmortem: yes` are long-term incident input."
+  - "Read `task.md#Failure Ledger`; only confirmed entries marked `Keep for postmortem: yes` are long-term incident input, including eligible review escape candidates."
   - "Run `scripts/evaluate-postmortem-trigger.sh --dir <change-dir>` before deciding no incident postmortem is needed."
   - "If verification changed during Act, return to `cc-check`."
   - "If the delivery mode is not already explicit, ask the user to choose with `../cc-dev/references/user-choice-output-protocol.md`; do not default every closeout to remote push and PR."
@@ -123,7 +123,7 @@ scripts/evaluate-postmortem-trigger.sh --dir devflow/changes/<change-key>
 
 如果本轮会话出现了返工、reroute、三次修补仍失败、发布/Git/验证工具异常，但这些信号还没有进入 `task.md` 或 Git history，调用脚本时用 `--trigger <short-label>` 把会话证据纳入本次 gate。没有触发时，最终响应也必须写明 `POSTMORTEM_REQUIRED=no`。
 
-尸检报告必须基于 Git 证据、验证命令和 `task.md#Failure Ledger` 中已确认的失败资产。不要把教训拆成额外原则文件。
+尸检报告必须基于 Git 证据、验证命令和 `task.md#Failure Ledger` 中已确认的失败资产。不要把 raw `cc-review` findings、聊天记忆或未分类 review escape candidates 写成尸检事实。不要把教训拆成额外原则文件。
 
 ## Failure Compression
 
@@ -131,7 +131,7 @@ scripts/evaluate-postmortem-trigger.sh --dir devflow/changes/<change-key>
 
 1. 读取 `Failure Ledger`。
 2. 丢弃 `noise` 和未解决的 `unresolved-risk`，除非用户明确要求记录。
-3. 只把 `confirmed-lesson` 且 `Keep for postmortem: yes` 的条目写进 incident postmortem。
+3. 只把 `confirmed-lesson` 且 `Keep for postmortem: yes` 的条目写进 incident postmortem；`Source=cc-review` 的 review escape candidates 也必须先经过 `cc-check` 分类。
 4. 每份 incident postmortem 必须完成 `Workflow Patch Candidate`：
    - `no-action`：说明为什么只记忆、不改 workflow。
    - `skill-rule`：目标 skill 和最小规则。

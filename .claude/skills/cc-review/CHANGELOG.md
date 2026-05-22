@@ -1,5 +1,11 @@
 # CC-Review Changelog
 
+## v2.11.0 - 2026-05-22
+
+- add the Review Escape Ledger contract so only process, test, design, and model-pattern escapes are written into `task.md#Failure Ledger`
+- keep ordinary findings, style suggestions, one-off bugs, and speculative risks out of the ledger
+- require review escape candidates to start as `Source=cc-review`, `Status=unreviewed`, and `Keep for postmortem=no`
+
 ## v2.10.2 - 2026-05-22
 
 - require ASCII Branch Chains to be fault-centered walks that look up through direct input/caller proof, contract/spec/provider, and source intent/roadmap when available

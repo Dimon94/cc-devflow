@@ -1,5 +1,10 @@
 # CC-Act Skill Changelog
 
+## v1.14.0 - 2026-05-22
+
+- compress eligible `cc-review` review escape candidates only after `cc-check` classifies them as confirmed ledger lessons
+- forbid raw `cc-review` findings and unclassified review escape candidates from becoming postmortem facts
+
 ## v1.13.0 - 2026-05-21
 
 - require delivery-mode selection when the user has not explicitly chosen remote PR, PR update, local handoff, or post-merge closeout

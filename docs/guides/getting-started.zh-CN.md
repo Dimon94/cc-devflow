@@ -89,7 +89,7 @@ find .codex/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort
 - `cc-spec-init` 产出 `devflow/specs/INDEX.md` 和 capability spec
 - `cc-plan` 产出 `task.md#Contract Summary`
 - `cc-investigate` 产出 `task.md#Root Cause Contract`
-- `cc-review` 把计划 / 调查 finding 写入 `task.md`；执行 finding 留在回复里，等用户选择修复方案后再改代码；非 trivial review chain 必须记录证据、诊断、现象层 / 本质层 / 哲学层，并以错误节点为中心记录因果链：上游在有证据时向上追直接输入/调用方、合同/规格/provider、来源意图/roadmap 三层，下游在有证据时向下追首个受影响边界、行为/产物、发布/维护风险三层，并按“现象接收 → 本质诊断 → 哲学沉思 → 本质整合 → 现象输出”组织；复杂度报告需要包含 scope、检测到的 stack/test/build 命令、ranked findings、before/after complexity、patch status、files-modified yes/no 和必要测试或测量；结构质量 finding 需要覆盖 code-judo 简化、分支 / 抽象 / 类型边界坏味道、ownership boundary 和 approval/blocking verdict
+- `cc-review` 把计划 / 调查 finding 写入 `task.md`；执行 finding 留在回复里，等用户选择修复方案后再改代码；只有流程 / 测试 / 设计 / 模型写法逃逸类 finding 可以写入 `task.md#Failure Ledger`；非 trivial review chain 必须记录证据、诊断、现象层 / 本质层 / 哲学层，并以错误节点为中心记录因果链：上游在有证据时向上追直接输入/调用方、合同/规格/provider、来源意图/roadmap 三层，下游在有证据时向下追首个受影响边界、行为/产物、发布/维护风险三层，并按“现象接收 → 本质诊断 → 哲学沉思 → 本质整合 → 现象输出”组织；复杂度报告需要包含 scope、检测到的 stack/test/build 命令、ranked findings、before/after complexity、patch status、files-modified yes/no 和必要测试或测量；结构质量 finding 需要覆盖 code-judo 简化、分支 / 抽象 / 类型边界坏味道、ownership boundary 和 approval/blocking verdict
 - `cc-check` 在当前回复、PR 文件或 Git commit 里记录验证事实
 - `cc-act` 只产出最终 PR 文件 `handoff/pr-brief.md`；真实事故需要尸检时才产出 incident postmortem 文件
 
@@ -97,7 +97,7 @@ durable truth 分两层：
 
 - `devflow/specs/`：capability 真相，保留 `INDEX.md` 与 `capabilities/*.md`
 - 新 change 目录必须命名为 `REQ-<number>-<description>`（需求）或 `FIX-<number>-<description>`（修复）；`REQ` 和 `FIX` 分别维护自己的递增编号，跨前缀同号不是冲突；并行工作树造成重复编号时，完整 change key 的描述负责区分业务内容，旧小写目录只作为历史兼容读取。
-- `devflow/changes/<change>/`：变更真相，只保留 `task.md`、可选 `handoff/pr-brief.md` 和 Git commit；真实复发事故可在 `devflow/postmortems/` 写尸检文件。不要生成额外过程文件。
+- `devflow/changes/<change>/`：变更真相，只保留 `task.md`、可选 `handoff/pr-brief.md` 和 Git commit；真实复发事故和已分类的 review escape 可在 `devflow/postmortems/` 写尸检文件。不要生成额外过程文件。
 - 流程状态归 Git：保留 `task.md`，每个完成阶段提交 commit，不创建额外过程文件。
 - 历史 `planning/design.md`、`planning/analysis.md` 和 `cc-review-*.md` 是旧 change 的可读 fallback，不再是新默认写入。
 - worker prompt、journal、assignment、session log 统一放到 `devflow/workspaces/<change>/`，作为 ephemeral scratch。

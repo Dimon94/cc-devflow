@@ -1,5 +1,10 @@
 # CC-Investigate Skill Changelog
 
+## v1.14.0 - 2026-05-22
+
+- expand the repair task template Failure Ledger with `Source`, `Trigger`, and `Escape class` fields for eligible review escape candidates
+- keep review escape capture inside `task.md` instead of adding a new process log
+
 ## v1.13.1 - 2026-05-22
 
 - move the long investigation protocol into `references/investigation-contract.md` so the entry skill stays small while preserving the full root-cause contract

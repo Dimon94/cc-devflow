@@ -147,7 +147,7 @@ Codex 执行本计划时，必须把 `task.md` 当成唯一任务合同。
   Public verification path: Jest reads shipped skill/template text.
   Ready when: no dependencies.
 
-- [ ] T002 [IMPL] Add review escape Failure Ledger contract (dependsOn:T001) `.claude/skills`
+- [x] T002 [IMPL] Add review escape Failure Ledger contract (dependsOn:T001) `.claude/skills`
   Goal: Update authoritative `.claude` skills, templates, docs, and examples so eligible `cc-review` escapes become structured Failure Ledger candidates.
   Contract: user stories `US-001` through `US-003`; `.claude` is source, `.codex` is generated.
   Do not re-decide: no separate log, no all-findings ledger, model-pattern filtered by repeatability/preventability.
@@ -155,7 +155,7 @@ Codex 执行本计划时，必须把 `task.md` 当成唯一任务合同。
   Files: `.claude/skills/cc-review/SKILL.md`, `.claude/skills/cc-review/references/*`, `.claude/skills/cc-check/SKILL.md`, `.claude/skills/cc-act/SKILL.md`, `.claude/skills/cc-plan/assets/TASKS_TEMPLATE.md`, `.claude/skills/cc-investigate/assets/TASKS_TEMPLATE.md`, docs/examples as needed.
   Read first: `task.md`, failing test output.
   Verification: `npm test -- test/review-escape-failure-ledger.test.js`
-  Evidence: passing output and focused diff.
+  Evidence: `npm test -- test/review-escape-failure-ledger.test.js` passed with 3 tests after source contract updates.
   Completion: after green evidence exists, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --tasks devflow/changes/REQ-005-review-escape-failure-ledger/task.md --task T002`.
   Public verification path: skills and example task artifacts expose the contract.
   Ready when: T001 has failing evidence.

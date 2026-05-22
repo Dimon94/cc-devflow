@@ -22,6 +22,7 @@ Review quality collapses when suspicion, stale context, or style preference is p
 - [ ] scope and explicit non-scope are frozen before finding smells
 - [ ] delta is grounded in Git diff, PR diff, `task.md`, commands, logs, UI, or missing evidence
 - [ ] each finding has evidence, impact, recommendation, and route
+- [ ] any Failure Ledger writeback is limited to process/test/design/model-pattern escape findings
 - [ ] complexity report requests include scope, detected stack/test/build commands, ranked findings, patch status, and files-modified yes/no
 - [ ] complexity repair recommendations preserve ordering, duplicate-key semantics, object identity, cache invalidation, permissions, pagination, and error behavior or mark the evidence as blocked
 - [ ] implementation repair choices use host-native choice UI or a fallback block with 2-3 mutually exclusive options; a single recommended action is not a valid choice

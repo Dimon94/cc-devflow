@@ -1,6 +1,6 @@
 ---
 name: cc-check
-version: 1.15.0
+version: 1.16.0
 description: Use when a planned or investigated change needs fresh verification evidence and an honest pass/fail/blocked verdict before cc-act.
 triggers:
   - 验收这个需求
@@ -38,7 +38,7 @@ exit_criteria:
   - Verdict is exactly pass, fail, or blocked.
   - Every passing statement cites fresh command output, exit status, and what claim it proves.
   - Behavior changes and bugfixes include feedback-loop and test-quality review.
-  - Any `task.md#Failure Ledger` entry touched by this verification is classified as `confirmed-lesson`, `noise`, or `unresolved-risk`.
+  - Any `task.md#Failure Ledger` entry touched by this verification, including review escape candidates, is classified as `confirmed-lesson`, `noise`, or `unresolved-risk`.
   - Current diff is checked against `task.md` for missing scope, scope creep, and unintended file touch.
   - Failures are classified as branch, baseline, environment, external, or unknown.
   - Missing evidence is separated from real failure.
@@ -102,7 +102,7 @@ NO PASS WITHOUT FRESH EVIDENCE
 2. Re-run the smallest trustworthy gate: tests, typecheck, lint, build, browser check, CLI smoke, or domain-specific verifier.
 3. Map each explicit requirement to proof.
 4. Review test quality when behavior changed: red/green proof, public seam, honest fixtures, no private implementation assertions.
-5. Classify any relevant Failure Ledger entries:
+5. Classify any relevant Failure Ledger entries, including review escape candidates:
    - `confirmed-lesson`: verified failure pattern worth compressing at `cc-act`.
    - `noise`: local dead end, transient command issue, or disproven suspicion.
    - `unresolved-risk`: real concern still missing proof or owner.
@@ -137,7 +137,7 @@ NO PASS WITHOUT FRESH EVIDENCE
 
 ## Failure Ledger Review
 
-如果 `task.md#Failure Ledger` 有本轮相关条目，`cc-check` 必须把现场记录过滤成可压缩事实：
+如果 `task.md#Failure Ledger` 有本轮相关条目，`cc-check` 必须把现场记录过滤成可压缩事实。`cc-review` 写入的 review escape candidates 只在 `Escape class` 是 `process-escape`、`test-escape`、`design-escape` 或 `model-pattern-escape` 时参与分类；普通 review finding 不在这里补录。
 
 | Status | Meaning | Keep for postmortem |
 | --- | --- | --- |
