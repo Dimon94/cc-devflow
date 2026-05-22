@@ -22,6 +22,8 @@ Review quality collapses when suspicion, stale context, or style preference is p
 - [ ] scope and explicit non-scope are frozen before finding smells
 - [ ] delta is grounded in Git diff, PR diff, `task.md`, commands, logs, UI, or missing evidence
 - [ ] each finding has evidence, impact, recommendation, and route
+- [ ] complexity report requests include scope, detected stack/test/build commands, ranked findings, patch status, and files-modified yes/no
+- [ ] complexity repair recommendations preserve ordering, duplicate-key semantics, object identity, cache invalidation, permissions, pagination, and error behavior or mark the evidence as blocked
 - [ ] weak or out-of-scope claims are downgraded to residual risk or blocked evidence
 
 ## Exit Rule

@@ -1,5 +1,17 @@
 # CC-Review Changelog
 
+## v2.10.0 - 2026-05-22
+
+- absorb the remaining `complexity-optimizer` contract into the built-in complexity facet, including default full reports for analysis / scan / audit requests
+- require complexity reports to include scope, detected stack/test/build commands, ranked findings, patch status, files-modified status, and residual verification risk
+- add optimization safety gates for ordering, duplicate keys, identity, cache invalidation, authorization, pagination, errors, narrow tests, broad tests, and measurements
+
+## v2.9.0 - 2026-05-22
+
+- add the structural quality / code-judo review facet for thermo-nuclear maintainability reviews
+- require structural findings to report current structure, missed simplification, ownership boundary, recommended restructuring, behavior-equivalence proof, and approval verdict
+- expand the approval bar so working code can still be blocked when it adds avoidable branching, thin wrappers, cast-heavy contracts, file-size sprawl, or wrong-layer logic
+
 ## v2.8.0 - 2026-05-21
 
 - route implementation repair choices through the shared user-choice output protocol so Codex uses `request_user_input` and Claude Code uses structured input when available

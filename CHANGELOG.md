@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added the `cc-review` structural quality / code-judo facet for thermo-nuclear maintainability reviews, including stricter approval blockers for avoidable branching, thin wrappers, cast-heavy contracts, wrong-layer logic, and file-size sprawl.
+- Added the remaining `complexity-optimizer` report and safety contract to `cc-review`, including default full complexity reports, files-modified status, and optimization behavior-preservation gates.
+
 ## [4.5.23] - 2026-05-21
 
 ### Added

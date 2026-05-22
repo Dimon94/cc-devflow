@@ -89,7 +89,7 @@ find .codex/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort
 - `cc-spec-init` 产出 `devflow/specs/INDEX.md` 和 capability spec
 - `cc-plan` 产出 `task.md#Contract Summary`
 - `cc-investigate` 产出 `task.md#Root Cause Contract`
-- `cc-review` 把计划 / 调查 finding 写入 `task.md`；执行 finding 留在回复里，等用户选择修复方案后再改代码；非 trivial review chain 必须记录证据、诊断、现象层 / 本质层 / 哲学层、因果链、上游三层和下游三层，并按“现象接收 → 本质诊断 → 哲学沉思 → 本质整合 → 现象输出”组织；复杂度热点 finding 需要包含 before/after complexity 和必要测试或测量
+- `cc-review` 把计划 / 调查 finding 写入 `task.md`；执行 finding 留在回复里，等用户选择修复方案后再改代码；非 trivial review chain 必须记录证据、诊断、现象层 / 本质层 / 哲学层、因果链、上游三层和下游三层，并按“现象接收 → 本质诊断 → 哲学沉思 → 本质整合 → 现象输出”组织；复杂度报告需要包含 scope、检测到的 stack/test/build 命令、ranked findings、before/after complexity、patch status、files-modified yes/no 和必要测试或测量；结构质量 finding 需要覆盖 code-judo 简化、分支 / 抽象 / 类型边界坏味道、ownership boundary 和 approval/blocking verdict
 - `cc-check` 在当前回复、PR 文件或 Git commit 里记录验证事实
 - `cc-act` 只产出最终 PR 文件 `handoff/pr-brief.md`；真实事故需要尸检时才产出 incident postmortem 文件
 

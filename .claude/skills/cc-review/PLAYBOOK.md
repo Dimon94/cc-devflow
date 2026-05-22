@@ -11,12 +11,14 @@
 3. 不读取、不生成、不维护过程文件。
 4. Git history 是唯一持久 review 记忆；重复 review 时用 `git diff <old>...HEAD` 缩小范围。
 5. 可用 subagent 时可以派发只读 reviewer；raw output 留在会话里，主线程验证后再进入最终 findings。
-6. 复杂实现或 mixed review 考虑 intent/regression、security/privacy、performance/reliability、complexity/hotspots、contracts/coverage 五类风险 lane。
+6. 复杂实现或 mixed review 考虑 intent/regression、security/privacy、performance/reliability、complexity/hotspots、contracts/coverage、structural-quality/code-judo 六类风险 lane。
 7. 按 selected facet 或 changed surface 逐节点检查；每个节点 checked、skipped 或 blocked。
 8. 不固定 finding 数量。证据决定输出。
 9. 每条 finding 必须有 evidence、impact、recommendation 和 route。
-10. 输出前聚合 raw findings：合并重复，降级弱证据，拒收 speculative / out-of-scope / stale findings。
-11. 计划 review 的结果直接写回 `task.md`；执行 review 的结果通过共享 choice protocol 询问用户选择修复方案；只差验收，进 `cc-check`。
+10. 复杂度 report-only 请求默认输出完整报告并明确没有改文件；只有用户明确要求 fix / optimize / apply / refactor 时才进入修复选择。
+11. 复杂度修复前必须确认数据规模、热路径、排序、重复键、identity、cache invalidation、权限、分页和错误语义；修复后先 narrow test，再 broad relevant test/build，必要时补 measurement。
+12. 输出前聚合 raw findings：合并重复，降级弱证据，拒收 speculative / out-of-scope / stale findings。
+13. 计划 review 的结果直接写回 `task.md`；执行 review 的结果通过共享 choice protocol 询问用户选择修复方案；只差验收，进 `cc-check`。
 
 ## Review Standard
 
@@ -28,6 +30,12 @@
 - 哪些设计约束会让实现变脆？
 - 哪些代码坏味道在当前 blast radius 内？
 - 哪些复杂度热点是当前 diff 放大或引入的？
+- 本次复杂度 review 的 scope、技术栈、测试/build 命令和 hot path 是什么？
+- scanner lead 哪些被回读代码证实，哪些只是 false positive 或低价值 constant-factor 清理？
+- report-only 请求是否明确写了 files modified: no？
+- 如果建议优化，排序、重复键、identity、cache invalidation、权限、分页和错误行为如何保持？
+- 哪些结构质量问题让分支、抽象、类型边界、文件规模或 ownership boundary 变差？
+- 是否存在行为不变但能删除整类特殊情况、helper、mode 或层级的 code-judo move？
 - 哪些测试、日志、UI 操作或端到端证据缺失？
 - 哪些 finding 必须修，哪些可以 defer，哪些只是 advisory？
 - 哪些节点已经审过，哪些 skipped / blocked，原因是什么？

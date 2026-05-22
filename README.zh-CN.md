@@ -99,7 +99,7 @@ flowchart TD
 | `cc-plan` | 新功能或变更需要澄清范围、设计方案、冻结任务 | `task.md#Contract Summary` |
 | `cc-investigate` | Bug 需要症状、复现、根因和修复边界 | `task.md#Root Cause Contract` |
 | `cc-do` | 已计划或已调查的任务需要实现 | 代码、测试、`task.md` 状态、Git commit |
-| `cc-review` | 复杂方案、调查根因、diff 或复杂度热点需要在实现前或验证前做可选深度 Review | 计划 finding 写入 `task.md`；执行 finding 和修复选项回到对话 |
+| `cc-review` | 复杂方案、调查根因、diff、复杂度报告、优化热点或极严结构质量 Review 需要在实现前或验证前做可选深度 Review | 计划 finding 写入 `task.md`；执行 finding 和修复选项回到对话 |
 | `cc-pr-review` | 远程 PR 需要单独会话做合并前 Review，相关时包含 PR 范围内复杂度热点审查 | PR review packet、findings 和 landing verdict |
 | `cc-pr-land` | 已 Review PR 需要 rebase-first 合并到 main 并证明 parity | 已集成 main 和本地 / 远程一致性证据 |
 | `cc-check` | 工作需要新鲜验证证据 | pass/fail/blocked 回复和 Git commit |
@@ -120,7 +120,7 @@ Canonical language 和 durable decisions 只收敛到 cc-devflow 原生真相源
 
 planning 之后的每个阶段都从 `task.md`、当前 Git history/status，以及存在时的 PR 或 handoff truth 开始。系统不再提供 runtime context query 层；有争议的事实必须回到源 artifact 重新读取。用 `npm run benchmark:skills` 保持 public skill 入口足够薄；深层规划规则应该放在条件 reference 后面，而不是默认上下文里。
 
-`cc-review` 是可选的深度 Review，不替代 `cc-check`。它可以接在 `cc-plan` / `cc-investigate` 后审冻结的计划或根因合同，也可以接在 `cc-do` 后审实现。它内置复杂度热点 facet，可审查嵌套扫描、循环内 membership/search、render path 重算、N+1 database/API 等模式。非 trivial review finding 必须记录证据、诊断、现象层 / 本质层 / 哲学层、因果链，且至少包含上游三层和下游三层；思维路径固定为“现象接收 → 本质诊断 → 哲学沉思 → 本质整合 → 现象输出”。计划 / 调查 Review 的 finding 直接写进 `task.md`。执行 Review 的 finding 在当前回复里组织成修复选项，用户选择后才改代码。PR Review 只留在对话或 GitHub review 中。不写本地 review report、ledger、findings JSON 或其它 Review 产物文件。
+`cc-review` 是可选的深度 Review，不替代 `cc-check`。它可以接在 `cc-plan` / `cc-investigate` 后审冻结的计划或根因合同，也可以接在 `cc-do` 后审实现。它内置 complexity optimizer facet，可输出完整复杂度报告，审查嵌套扫描、循环内 membership/search、render path 重算、N+1 database/API 等模式；也内置 structural quality / code-judo facet，用于 thermo-nuclear 级可维护性 Review。复杂度报告必须包含 scope、检测到的 stack/test/build 命令、before/after complexity、patch status 和 files-modified yes/no；复杂度修复建议必须先证明排序、重复键、identity、cache invalidation、权限、分页和错误行为不变，再进入修复选项。结构质量 finding 会推动行为不变的简化：删除可避免分支、thin wrapper、cast-heavy contract、错误层级逻辑和文件膨胀，并要求说明更清晰的 ownership boundary。非 trivial review finding 必须记录证据、诊断、现象层 / 本质层 / 哲学层、因果链，且至少包含上游三层和下游三层；思维路径固定为“现象接收 → 本质诊断 → 哲学沉思 → 本质整合 → 现象输出”。计划 / 调查 Review 的 finding 直接写进 `task.md`。执行 Review 的 finding 在当前回复里组织成修复选项，用户选择后才改代码。PR Review 只留在对话或 GitHub review 中。不写本地 review report、ledger、findings JSON 或其它 Review 产物文件。
 
 ## 验证与交付门禁
 
