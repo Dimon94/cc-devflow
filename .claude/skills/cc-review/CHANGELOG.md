@@ -1,5 +1,10 @@
 # CC-Review Changelog
 
+## v2.10.1 - 2026-05-22
+
+- make recommend-only repair prompts a protocol failure so implementation review choices must use host-native choice UI or a fallback block with 2-3 mutually exclusive options
+- add a checklist gate that rejects single-action repair prompts such as "choose A" without the corresponding A/B/C choice set
+
 ## v2.10.0 - 2026-05-22
 
 - absorb the remaining `complexity-optimizer` contract into the built-in complexity facet, including default full reports for analysis / scan / audit requests
