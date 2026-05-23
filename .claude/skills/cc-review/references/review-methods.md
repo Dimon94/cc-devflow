@@ -16,6 +16,7 @@ Pick every method needed by the current risk. This is a routing map, not a findi
 | UI/runtime mismatch | E2E/plugin verification |
 | code quality or simplification risk | structural-quality reference plus smell scan |
 | prototype, messy, or slop-prone codebase | structural-quality antislop recovery |
+| demo-to-product, API, audit, admin, feature flag, or agent-readiness risk | productization surfaces |
 | security, observability, release, or test-suite hardening risk | hardening specialists |
 | broad implementation diff | risk-lane review swarm profile |
 
@@ -123,6 +124,7 @@ Use this profile when a broad implementation diff, PR landing review, or mixed r
 | security-privacy | Did the diff weaken auth, validation, secret handling, sensitive data boundaries, defaults, or trust of external input? |
 | performance-reliability | Did the diff add duplicate work, hot-path cost, missing cleanup, retry storms, ordering races, or brittle failure handling? |
 | contracts-coverage | Did the diff miss API/schema/type/config/flag alignment, migration fallout, regression tests, logs, metrics, assertions, or error paths? |
+| productization-surfaces | Are shared actions, programmatic APIs, agent docs, audit trails, admin/manageability, feature flags, idempotency, and operator paths product-shaped rather than demo-only? |
 | hardening-specialists | Which security, observability, release-readiness, or test-strategy specialists are required by the touched surfaces? |
 
 Small diffs may use one combined reviewer that covers all lanes. Large or multi-surface diffs should assign separate reviewers for the highest-risk lanes when the host supports subagents.
@@ -144,6 +146,14 @@ controls rather than ordinary code quality:
 Specialists do not change the output persistence model. They only select review
 nodes and sharpen findings. Each selected specialist ends as checked, skipped,
 or blocked in the normal review output.
+
+## Productization Surfaces
+
+Use `productization-surfaces.md` when a working app needs product control
+surfaces reviewed: shared action layer, API/agent surface, audit trail,
+admin/manageability UI, feature flags, idempotency, or operator paths. This
+facet does not build services during review; missing services route to
+`cc-plan` unless an agreed scoped fix can go to `cc-do`.
 
 ## Structural Quality
 

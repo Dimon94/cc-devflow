@@ -11,7 +11,7 @@
 3. 不读取、不生成、不维护过程文件。
 4. Git history 是唯一持久 review 记忆；重复 review 时用 `git diff <old>...HEAD` 缩小范围。
 5. 可用 subagent 时可以派发只读 reviewer；raw output 留在会话里，主线程验证后再进入最终 findings。
-6. 复杂实现或 mixed review 考虑 intent/regression、security/privacy、performance/reliability、complexity/hotspots、contracts/coverage、structural-quality/code-judo 六类风险 lane；命中 prototype cleanup、large files、vague utils、entrypoint god file、global CSS sprawl、persisted-state compatibility 或 real viewport QA 风险时加载 structural-quality 清单；命中 auth、secret、telemetry、deploy、test-suite trust 等生产控制面时加载 hardening specialist 清单。
+6. 复杂实现或 mixed review 考虑 intent/regression、security/privacy、performance/reliability、complexity/hotspots、contracts/coverage、productization-surface、structural-quality/code-judo 七类风险 lane；命中 shared action layer、API/agent surface、audit trail、admin/manageability、feature flag、idempotency 或 operator path 时加载 productization surface 清单；命中 prototype cleanup、large files、vague utils、entrypoint god file、global CSS sprawl、persisted-state compatibility 或 real viewport QA 风险时加载 structural-quality 清单；命中 auth、secret、telemetry、deploy、test-suite trust 等生产控制面时加载 hardening specialist 清单。
 7. 按 selected facet 或 changed surface 逐节点检查；每个节点 checked、skipped 或 blocked。
 8. 不固定 finding 数量。证据决定输出。
 9. 每条 finding 必须有 evidence、impact、recommendation 和 route。

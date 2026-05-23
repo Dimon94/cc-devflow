@@ -1,5 +1,11 @@
 # CC-Review Changelog
 
+## v2.13.0 - 2026-05-23
+
+- add the productization surface review facet for demo-to-product readiness, shared action layers, programmatic APIs, agent docs, audit trails, admin/manageability UI, feature flags, idempotency, and operator paths
+- keep productization review as a finding/routing lens that sends missing product services to `cc-plan` or scoped fixes to `cc-do` instead of implementing services during review
+- update review lanes, checklist gates, and hardening guidance so broad productionize reviews combine productization surfaces with the relevant hardening specialists
+
 ## v2.12.2 - 2026-05-23
 
 - absorb maintainability guardrails into the structural quality facet: thin entrypoints, small feature-owned files, pure domain logic, centralized contracts, compatibility-preserving state, CSS ownership, focused tests, and real viewport evidence

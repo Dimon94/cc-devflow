@@ -25,6 +25,7 @@ Review quality collapses when suspicion, stale context, or style preference is p
 - [ ] any Failure Ledger writeback is limited to process/test/design/model-pattern escape findings
 - [ ] structural quality is selected when the scope asks for harsh maintainability, code-judo, antislop cleanup, prototype-to-maintainable structure, busy branching, vague utility buckets, thin wrappers, weak type boundaries, wrong-layer logic, unsafe persisted-state changes, CSS sprawl, viewport QA risk, or file-size sprawl
 - [ ] maintainability guardrails check thin entrypoints, small feature-owned files, pure domain logic, centralized contracts, compatibility migration, CSS ownership, focused tests, and real viewport evidence when those surfaces are in scope
+- [ ] productization surface review is selected when the scope touches demo-to-product readiness, shared action layers, programmatic APIs, agent docs, audit trails, admin/manageability UI, feature flags, idempotency, or operator paths
 - [ ] complexity report requests include scope, detected stack/test/build commands, ranked findings, patch status, and files-modified yes/no
 - [ ] complexity repair recommendations preserve ordering, duplicate-key semantics, object identity, cache invalidation, permissions, pagination, and error behavior or mark the evidence as blocked
 - [ ] hardening specialists selected by the scope are checked, skipped with reason, or blocked with missing evidence

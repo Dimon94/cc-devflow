@@ -32,10 +32,10 @@ request.
 | `release-readiness-hardening` | env/runtime config, migrations, deploy path, health/readiness, smoke tests, rollback, feature flags/kill switches, staging/production verification, post-deploy monitoring |
 | `test-strategy-hardening` | broad test-suite trust, flaky/skipped/slow tests, missing contract/regression tests, overmocking, low-value snapshots, missing e2e/visual/smoke coverage |
 
-For broad "productionize this app" review, run the specialists above as separate
-facets. If the ask requires building product services such as audit logs, API
-keys, OpenAPI, admin UI, or feature flags, route to `cc-plan` or `cc-do`; do not
-implement from the review pass.
+For broad "productionize this app" review, run the specialists above and
+`productization-surfaces.md` as separate facets. If the ask requires building
+product services such as audit logs, API keys, OpenAPI, admin UI, or feature
+flags, route to `cc-plan` or `cc-do`; do not implement from the review pass.
 
 ## Security Hardening
 
