@@ -1,5 +1,11 @@
 # CC-Review Changelog
 
+## v2.12.1 - 2026-05-23
+
+- slim the main `SKILL.md` entrypoint by moving structural quality details into `references/structural-quality.md`
+- keep ASCII Branch Chain and cognitive-layer templates in `references/review-methods.md` as the shared progressively loaded source
+- preserve review behavior while giving the main skill file headroom under the benchmark size limit
+
 ## v2.12.0 - 2026-05-23
 
 - add hardening specialist review lenses for security, observability, release-readiness, and test-strategy risks

@@ -14,7 +14,7 @@ Pick every method needed by the current risk. This is a routing map, not a findi
 | uncertain fix impact | future reality tree |
 | implementation complexity | logic tree and smell scan |
 | UI/runtime mismatch | E2E/plugin verification |
-| code quality or simplification risk | cc-simplify reference plus smell scan |
+| code quality or simplification risk | structural-quality reference plus smell scan |
 | security, observability, release, or test-suite hardening risk | hardening specialists |
 | broad implementation diff | risk-lane review swarm profile |
 
@@ -26,6 +26,11 @@ For any plan, investigation, PR, broad implementation, or code-smell finding, in
 
 Build the chain around the faulty node. Walk upward through three concrete layers when available: direct input/caller proof, governing contract/spec/provider, then source intent/roadmap. Walk downward through three concrete layers when available: first affected seam, behavior or artifact, then release or maintenance risk. If a layer cannot be proven from current evidence, keep the layer and mark it `missing evidence` or `blocked`; do not compress the gap into a generic source or impact line.
 
+Non-trivial chains keep three cognitive layers and the fixed thought path:
+Phenomenal layer, Essential layer, Philosophical layer, then phenomenon received
+-> essence diagnosed -> philosophy considered -> essence integrated ->
+phenomenon output.
+
 Label table:
 
 | Semantic slot | en | zh-CN |
@@ -35,11 +40,16 @@ Label table:
 | evidence | Evidence | 证据 |
 | diagnosis | Diagnosis | 诊断 |
 | cognitiveLayers | Cognitive layers | 认知层 |
+| phenomenalLayer | Phenomenal layer | 现象层 |
+| essentialLayer | Essential layer | 本质层 |
+| philosophicalLayer | Philosophical layer | 哲学层 |
+| thoughtPath | Thought path | 思维路径 |
 | causalPath | Causal path | 因果链 |
 | upstreamChain | Upstream chain | 上游链路 |
 | upstreamInput | upstream L1 direct input/caller proof | 上游 L1 直接输入/调用方证据 |
 | upstreamContract | upstream L2 contract/spec/provider | 上游 L2 合同/规格/provider |
 | upstreamOrigin | upstream L3 source intent/roadmap | 上游 L3 来源意图/roadmap |
+| source | Source | 来源 |
 | faultNode | Fault node | 错误节点 |
 | whyWrong | why wrong | 错误原因 |
 | downstreamChain | Downstream chain | 下游链路 |
@@ -55,6 +65,10 @@ Label table:
 |-- <evidence>: <task / diff / PR / log / prompt / provider contract / missing evidence>
 |-- <diagnosis>: <violated contract / smell / root cause>
 |-- <cognitiveLayers>: <phenomenon -> essence -> philosophy -> integration -> output>
+|   |-- <phenomenalLayer>: <surface symptom / visible failure / reproducible trace>
+|   |-- <essentialLayer>: <system structure / root cause / violated invariant>
+|   |-- <philosophicalLayer>: <design principle / architectural truth / why this shape is right>
+|   `-- <thoughtPath>: <phenomenon received -> essence diagnosed -> philosophy considered -> essence integrated -> phenomenon output>
 |-- <causalPath>: <upstream cause -> faulty node -> downstream consequence>
 |-- <upstreamChain>: <walk upward from the fault node; include three concrete layers when available>
 |   |-- <upstreamInput>: <direct caller / input / fixture / baseline / command proof>
@@ -129,6 +143,14 @@ controls rather than ordinary code quality:
 Specialists do not change the output persistence model. They only select review
 nodes and sharpen findings. Each selected specialist ends as checked, skipped,
 or blocked in the normal review output.
+
+## Structural Quality
+
+Use `structural-quality.md` when the review asks for harsh maintainability,
+code-judo, or structural quality, or when the diff adds busy branching, thin
+wrappers, cast-heavy boundaries, wrong-layer logic, file-size sprawl, or missed
+ownership simplification. Structural quality is a facet inside normal
+`cc-review`; it does not create separate reports.
 
 ## Aggregation
 
