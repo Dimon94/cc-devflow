@@ -1,5 +1,11 @@
 # CC-Review Changelog
 
+## v2.12.2 - 2026-05-23
+
+- absorb maintainability guardrails into the structural quality facet: thin entrypoints, small feature-owned files, pure domain logic, centralized contracts, compatibility-preserving state, CSS ownership, focused tests, and real viewport evidence
+- add antislop recovery rules for prototype or messy codebase reviews without creating migration reports or microsites during review
+- extend the checklist so structural quality is selected for slop-prone surfaces and compatibility risks
+
 ## v2.12.1 - 2026-05-23
 
 - slim the main `SKILL.md` entrypoint by moving structural quality details into `references/structural-quality.md`

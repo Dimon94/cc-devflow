@@ -15,6 +15,7 @@ Pick every method needed by the current risk. This is a routing map, not a findi
 | implementation complexity | logic tree and smell scan |
 | UI/runtime mismatch | E2E/plugin verification |
 | code quality or simplification risk | structural-quality reference plus smell scan |
+| prototype, messy, or slop-prone codebase | structural-quality antislop recovery |
 | security, observability, release, or test-suite hardening risk | hardening specialists |
 | broad implementation diff | risk-lane review swarm profile |
 
@@ -147,10 +148,12 @@ or blocked in the normal review output.
 ## Structural Quality
 
 Use `structural-quality.md` when the review asks for harsh maintainability,
-code-judo, or structural quality, or when the diff adds busy branching, thin
-wrappers, cast-heavy boundaries, wrong-layer logic, file-size sprawl, or missed
-ownership simplification. Structural quality is a facet inside normal
-`cc-review`; it does not create separate reports.
+code-judo, antislop cleanup, prototype-to-maintainable structure, or structural
+quality, or when the diff adds busy branching, thin wrappers, cast-heavy
+boundaries, wrong-layer logic, file-size sprawl, vague utility buckets, unsafe
+persisted-state changes, styling sprawl, or missed ownership simplification.
+Structural quality is a facet inside normal `cc-review`; it does not create
+separate reports, migration microsites, or implementation plans during review.
 
 ## Aggregation
 
