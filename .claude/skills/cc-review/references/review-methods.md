@@ -15,6 +15,7 @@ Pick every method needed by the current risk. This is a routing map, not a findi
 | implementation complexity | logic tree and smell scan |
 | UI/runtime mismatch | E2E/plugin verification |
 | code quality or simplification risk | cc-simplify reference plus smell scan |
+| security, observability, release, or test-suite hardening risk | hardening specialists |
 | broad implementation diff | risk-lane review swarm profile |
 
 Selected methods stay in scratch reasoning and final response/task updates. Do not write process files.
@@ -107,8 +108,27 @@ Use this profile when a broad implementation diff, PR landing review, or mixed r
 | security-privacy | Did the diff weaken auth, validation, secret handling, sensitive data boundaries, defaults, or trust of external input? |
 | performance-reliability | Did the diff add duplicate work, hot-path cost, missing cleanup, retry storms, ordering races, or brittle failure handling? |
 | contracts-coverage | Did the diff miss API/schema/type/config/flag alignment, migration fallout, regression tests, logs, metrics, assertions, or error paths? |
+| hardening-specialists | Which security, observability, release-readiness, or test-strategy specialists are required by the touched surfaces? |
 
 Small diffs may use one combined reviewer that covers all lanes. Large or multi-surface diffs should assign separate reviewers for the highest-risk lanes when the host supports subagents.
+
+## Hardening Specialists
+
+Use `hardening-specialists.md` when the review scope touches production
+controls rather than ordinary code quality:
+
+- security-hardening for auth, roles, secrets, untrusted input, file/network,
+  web security, dependency, and sensitive logging risk.
+- observability-hardening for opaque operations, missing correlation, logs,
+  error classes, metrics, traces, user-visible status, and redaction risk.
+- release-readiness-hardening for env validation, deploy gates, migrations,
+  health/readiness, smoke tests, rollback, feature flags, and post-deploy checks.
+- test-strategy-hardening for suite trust, flake, skip, slow tests, overmocking,
+  missing contract/regression/e2e/visual/smoke coverage, and low-value tests.
+
+Specialists do not change the output persistence model. They only select review
+nodes and sharpen findings. Each selected specialist ends as checked, skipped,
+or blocked in the normal review output.
 
 ## Aggregation
 

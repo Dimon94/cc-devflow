@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added `cc-review` hardening specialist lenses for security, observability, release-readiness, and test-strategy risks, with checked/skipped/blocked coverage and residual-risk evidence.
+
 ## [4.5.25] - 2026-05-22
 
 ### Added

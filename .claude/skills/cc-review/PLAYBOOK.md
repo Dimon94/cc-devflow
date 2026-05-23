@@ -11,7 +11,7 @@
 3. 不读取、不生成、不维护过程文件。
 4. Git history 是唯一持久 review 记忆；重复 review 时用 `git diff <old>...HEAD` 缩小范围。
 5. 可用 subagent 时可以派发只读 reviewer；raw output 留在会话里，主线程验证后再进入最终 findings。
-6. 复杂实现或 mixed review 考虑 intent/regression、security/privacy、performance/reliability、complexity/hotspots、contracts/coverage、structural-quality/code-judo 六类风险 lane。
+6. 复杂实现或 mixed review 考虑 intent/regression、security/privacy、performance/reliability、complexity/hotspots、contracts/coverage、structural-quality/code-judo 六类风险 lane；命中 auth、secret、telemetry、deploy、test-suite trust 等生产控制面时加载 hardening specialist 清单。
 7. 按 selected facet 或 changed surface 逐节点检查；每个节点 checked、skipped 或 blocked。
 8. 不固定 finding 数量。证据决定输出。
 9. 每条 finding 必须有 evidence、impact、recommendation 和 route。
@@ -34,6 +34,11 @@
 - scanner lead 哪些被回读代码证实，哪些只是 false positive 或低价值 constant-factor 清理？
 - report-only 请求是否明确写了 files modified: no？
 - 如果建议优化，排序、重复键、identity、cache invalidation、权限、分页和错误行为如何保持？
+- 哪些 hardening specialist 被选中：security、observability、release-readiness、test-strategy？哪些 skipped / blocked，原因是什么？
+- 安全 finding 是否说明了具体边界、actor、绕过路径、缺失控制、验证和 residual risk？
+- 可观测性 finding 是否说明了无法回答的事故问题、缺失信号、关联字段、redaction 和失败路径验证？
+- 发布就绪 finding 是否说明了缺失 gate、部署/迁移/配置失败模式、rollback 或 smoke 证据？
+- 测试策略 finding 是否说明了现有测试为什么抓不住该行为、最小高信号测试形状、fixture/mock 边界和 suite 成本？
 - 哪些结构质量问题让分支、抽象、类型边界、文件规模或 ownership boundary 变差？
 - 是否存在行为不变但能删除整类特殊情况、helper、mode 或层级的 code-judo move？
 - 哪些测试、日志、UI 操作或端到端证据缺失？

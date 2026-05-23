@@ -1,5 +1,11 @@
 # CC-Review Changelog
 
+## v2.12.0 - 2026-05-23
+
+- add hardening specialist review lenses for security, observability, release-readiness, and test-strategy risks
+- require selected hardening specialists to end as checked, skipped with reason, or blocked with missing evidence
+- require hardening findings to name the violated control, evidence, proof path, and residual risk without creating new review artifacts
+
 ## v2.11.0 - 2026-05-22
 
 - add the Review Escape Ledger contract so only process, test, design, and model-pattern escapes are written into `task.md#Failure Ledger`

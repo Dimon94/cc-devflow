@@ -1,11 +1,12 @@
 ---
 name: cc-review
-version: 2.11.0
+version: 2.12.0
 description: >-
   Use when a plan, bug fix, PR, implementation diff, complexity hotspot, or
-  structural maintainability hotspot needs review findings or a complexity
-  report. Plan reviews write findings into task.md; implementation reviews ask
-  the user to choose a repair option before fixing.
+  structural maintainability hotspot needs findings, production hardening
+  specialist review, or complexity report. Plan reviews write
+  findings into task.md; implementation reviews ask the user to choose a repair
+  option before fixing.
 triggers:
   - 深度 review 这个方案
   - review 这个复杂需求
@@ -29,10 +30,14 @@ triggers:
   - code-judo review
   - 结构质量 review
   - 极严代码质量 review
+  - hardening specialist review
+  - security observability release test strategy review
+  - 安全 可观测性 发布 测试策略 加固 review
   - run cc-review
 reads:
   - PLAYBOOK.md
   - references/review-methods.md
+  - references/hardening-specialists.md
   - references/plan-review-branch.md
   - references/implementation-review-branch.md
   - references/e2e-and-plugin-verification.md
@@ -57,6 +62,7 @@ effects:
   - complexity hotspot review
   - complexity analysis report
   - structural code-quality review
+  - hardening specialist review
   - reroute recommendation
 entry_gate:
   - Classify the review target as plan, implementation, PR, or mixed.
@@ -65,6 +71,7 @@ entry_gate:
   - For repeat reviews, use `git diff <old>...HEAD` or `scripts/collect-review-context.sh` to narrow the delta before re-reviewing.
   - Freeze the requested scope before finding smells; report only issues inside the change blast radius or clearly amplified by it.
   - When the scope includes loops, rendering, repeated scans, database/API iteration, large inputs, or performance-sensitive paths, select the built-in complexity facet and use the local scanner/reference copy only as leads.
+  - When the scope touches auth, secrets, untrusted input, telemetry, long-running operations, release/deploy gates, or broad test-suite trust, load `references/hardening-specialists.md` and select only the relevant hardening specialists.
   - When the user asks to analyze, scan, audit, review, or give a complexity report, produce the full complexity report automatically and state that no files were modified.
   - When the user asks to fix, optimize, apply, change, refactor, or reduce complexity, still run the review pass first; implementation findings require repair options and the shared user-choice protocol before editing.
   - When the scope asks for thermo-nuclear / harsh maintainability review, or the diff grows busy files, adds ad-hoc branching, introduces thin wrappers, weakens type boundaries, or moves logic away from its canonical layer, select the structural quality facet.
@@ -84,6 +91,7 @@ exit_criteria:
   - If a complexity report is requested, the response includes scope analyzed, detected stack/test/build commands, top findings ranked by likely impact, patch status, files modified yes/no, and residual verification risk.
   - If the complexity facet recommends a repair, behavior preservation is proven through relevant tests, ordering/identity/cache/authorization checks, and benchmarks or measurements when the improvement is non-obvious or performance-critical.
   - If the structural quality facet is selected, findings include the current structure, missed code-judo simplification, branching or abstraction smell, canonical ownership boundary, recommended restructuring, behavior-preserving argument, and approval/blocking verdict.
+  - If hardening specialists are selected, every selected specialist is checked, skipped with reason, or blocked, and findings include the violated security, observability, release, or test-strategy control plus evidence, proof path, and residual risk.
   - Subagent findings, when used, are accepted, merged, downgraded, or rejected by the main thread before final output.
   - If no issues are found, the answer says so and names residual test or evidence risk.
   - No process file was created.
@@ -112,7 +120,7 @@ tool_budget:
 
 Match the review branch:
 
-1. Target: plan, implementation, PR, mixed, complexity hotspot/report, or structural quality hotspot.
+1. Target: plan, implementation, PR, mixed, complexity hotspot/report, structural quality hotspot, or hardening specialist review.
 2. Findings: ordered by severity with file/line, evidence, impact, fix, and route.
 3. Branch Chain: included for each non-trivial finding with evidence, diagnosis, causal path, Phenomenal/Essential/Philosophical layers, and fault-centered upstream/downstream walks of up to three concrete layers each; explicitly skipped only for trivial findings.
 4. Repair options: required for implementation findings before editing.
@@ -145,6 +153,7 @@ Review 的价值在于问题质量，不在于过程记录数量。没有证据�
 4. Implementation review: `references/implementation-review-branch.md`
 5. UI/runtime/plugin review: `references/e2e-and-plugin-verification.md`
 6. Complexity hotspot / report review: `references/complexity-optimization-playbook.md` and `references/complexity-report-template.md`
+7. Hardening specialist review: `references/hardening-specialists.md`
 
 只按触发条件读取参考，不默认打开全部文件。
 
@@ -212,6 +221,14 @@ Review 的价值在于问题质量，不在于过程记录数量。没有证据�
 6. Structural quality / code-judo: 是否能通过重新归位所有权、删除特殊分支、收紧类型边界、复用 canonical helper、拆分超大文件、合并重复路径或原子化更新，让行为不变但结构明显更简单。
 
 这些是审查视角，不是 finding 配额。
+
+## Hardening Specialist Review
+
+Hardening specialists are conditional lenses, not parallel workflow skills. Load
+`references/hardening-specialists.md` for selected security, observability,
+release-readiness, or test-strategy risk. Selected specialists must end as
+checked, skipped with reason, or blocked; findings must name the violated
+control, evidence, proof path, and residual risk.
 
 ## Structural Quality / Code-Judo Review
 
