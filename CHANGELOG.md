@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Extended `cc-plan` and `cc-do` with confidence-per-minute TDD gates so plans freeze suite layer, proof value, runtime, fixture/mock boundaries, and low-value tests to avoid before execution can treat Red evidence as valid.
 - Extended `cc-check` with the same confidence-per-minute verification gate so green tests must prove the changed behavior before a pass verdict.
 - Extended `cc-act` with a release-readiness gate ledger for PR and handoff output, covering local checks, config/env, migrations/data, deploy/health, smoke/cleanup, rollback, and watch items.
+- Extended `cc-investigate` with a Regression Proof Contract so bug handoffs freeze failure ownership, suite layer, runtime budget, proof value, fixture/mock boundary, focused suite shape, and low-value tests to avoid before `cc-do` starts.
 
 ## [4.5.25] - 2026-05-22
 

@@ -119,6 +119,16 @@ Correct Test Seam:
 - Mock boundary:
 - Private implementation assertions avoided:
 
+Regression Proof Contract:
+- Failure ownership: branch regression | baseline failure | environment drift | external dependency | product/spec ambiguity | unknown
+- Shortest trustworthy seam:
+- Suite layer: unit | integration | contract | E2E | smoke | golden artifact | migration check | trace replay | manual/probe loop
+- Command / runtime budget:
+- Proof value:
+- Fixture / mock boundary:
+- Focused suite shape:
+- Low-value tests to avoid:
+
 ASCII Branch Chain Analysis:
 Language rule: keep connector tokens ASCII; write node labels and evidence text in `Output language`.
 
@@ -219,6 +229,8 @@ Codex / ClaudeCode must treat this `task.md` as the only repair contract.
   Evidence: failing output
   Completion: after failing evidence exists, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --tasks devflow/changes/<change-key>/task.md --task T001`.
   Public verification path: public interface / caller flow / CLI / API / UI / trace replay / harness.
+  Regression proof: use the Regression Proof Contract fields above; do not use decorative Red tests, private call counts, or broad snapshots as proof.
+  Fixture / mock boundary: inherit the allowed and forbidden boundaries from Root Cause Contract.
   Ready when: reproduction path is available.
 
 - [ ] T002 [IMPL] Repair the first bad state (dependsOn:T001) `path/to/file`
@@ -232,4 +244,5 @@ Codex / ClaudeCode must treat this `task.md` as the only repair contract.
   Evidence: passing output + Git diff
   Completion: after green evidence exists, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --tasks devflow/changes/<change-key>/task.md --task T002`.
   Public verification path: same as T001.
+  Regression proof: keep the same proof value and focused suite shape; Green is invalid if it only satisfies a guard that bypasses the first bad state.
   Ready when: T001 has the expected failing evidence.

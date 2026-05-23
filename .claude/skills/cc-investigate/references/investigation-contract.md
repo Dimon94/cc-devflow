@@ -25,6 +25,7 @@
 - boundary probe, backward trace, or reference comparison when applicable
 - repair boundary
 - correct test seam
+- regression proof contract: failure ownership, suite layer, command/runtime budget, proof value, fixture/mock boundary, focused suite shape, and low-value tests to avoid
 - verification command
 - investigation Socratic dialogue: current-state inspection before solution questions, repo-answered facts, user-answered phenomenon gaps, ten-round Dialogue Checkpoints, 3 hidden repair assumptions, overengineering/symptom-fix challenge, adversarial review findings, and explicit release before repair tasks when confirmation was needed
 - ASCII branch-chain connector tokens stay ASCII, but labels, evidence, and explanatory text follow `Output language`.
@@ -56,8 +57,26 @@ Write investigation truth into `task.md#Root Cause Contract`, not a new process 
 7. Hypothesis Table: 3-5 candidates reduced to 1-3 active hypotheses; every row has support, counter-evidence, falsification method, expected observation, and actual observation.
 8. Diagnostic Instrumentation: temporary probes include tag, location, question answered, command, expected signal, actual signal, and cleanup requirement.
 9. Correct Test Seam: say whether the regression test covers the real trigger chain; if only private implementation can be tested, record the design gap or reroute.
-10. Repair Boundary: affected module, allowed files, forbidden files, blast radius, split-or-reroute decision.
-11. Investigation Socratic Dialogue: repo-answered facts, user-answered phenomenon gaps, 3 hidden repair assumptions, symptom-fix challenge, adversarial review finding, and the user's explicit release to freeze repair tasks when needed.
+10. Regression Proof Contract: failure ownership, shortest trustworthy seam, suite layer, command/runtime budget, proof value, fixture/mock boundary, focused suite shape, and low-value tests to avoid.
+11. Repair Boundary: affected module, allowed files, forbidden files, blast radius, split-or-reroute decision.
+12. Investigation Socratic Dialogue: repo-answered facts, user-answered phenomenon gaps, 3 hidden repair assumptions, symptom-fix challenge, adversarial review finding, and the user's explicit release to freeze repair tasks when needed.
+
+## Regression Proof Contract
+
+The investigation must tell `cc-do` what kind of Red evidence is valid. A regression test is not valid because it fails; it is valid because it catches the proven first bad state through the shortest trustworthy user, API, CLI, artifact, or domain seam.
+
+Record:
+
+- Failure ownership: branch regression, baseline failure, environment drift, external dependency, product/spec ambiguity, or unknown.
+- Shortest trustworthy seam: public caller, API, CLI, UI path, persisted artifact, trace replay, or domain function that exercises the real trigger chain.
+- Suite layer: unit, integration, contract, E2E, smoke, golden artifact, migration check, trace replay, or manual/probe loop.
+- Command/runtime budget: exact command or driver, expected duration, determinism, and retry/stress rules for flaky failures.
+- Proof value: the bug or escaped contract this test would have caught before the reported symptom.
+- Fixture/mock boundary: real data/state required, allowed fake boundary, forbidden overmocking, and whether provider/network/time/filesystem seams are simulated.
+- Focused suite shape: minimum cases needed for Red, Green, and regression confidence.
+- Low-value tests to avoid: broad snapshots, duplicate happy paths, no-op smoke tests, private-method call counts, overmocked internals, tests that only assert the new guard, and slow suites that do not isolate this failure.
+
+If no correct seam exists, freeze an Evidence Request, design-gap task, or `cc-plan` reroute. Do not hand `cc-do` a decorative Red task.
 
 ## Root Cause Proof
 

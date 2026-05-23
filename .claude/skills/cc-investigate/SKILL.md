@@ -1,6 +1,6 @@
 ---
 name: cc-investigate
-version: 1.14.0
+version: 1.14.1
 description: Use when a bug, regression, broken task, or unexpected behavior needs root-cause investigation before coding resumes.
 triggers:
   - 帮我查这个 bug
@@ -46,6 +46,7 @@ entry_gate:
 exit_criteria:
   - "`task.md#Root Cause Contract` proves symptom site, first bad state, violated contract, original trigger, counterfactual proof, and escape reason."
   - "`task.md#Root Cause Contract` records investigation mode, feedback loop, evidence chain, tested hypotheses, boundary/backward/reference evidence when applicable, correct test seam, and diagnose-only boundary when applicable."
+  - "`task.md#Root Cause Contract` records a Regression Proof Contract: failure ownership, suite layer, command/runtime budget, proof value, fixture/mock boundary, focused suite shape, and low-value tests to avoid."
   - "`task.md#Root Cause Contract` contains ASCII Branch Chain Analysis trees for problem chain, solution chain, and impact chain, tracing upstream root cause and downstream blast radius to the deepest proven prompt/code/provider/data source; tree connector characters stay ASCII while node text follows the configured output language."
   - "`task.md#Root Cause Contract` records Investigation Socratic Dialogue rounds, including repo-answered facts, user-answered phenomenon gaps, ten-round Dialogue Checkpoints, the 3 hidden repair assumptions, overengineering / symptom-fix challenge, adversarial review findings, and explicit user release to freeze repair tasks when confirmation was needed."
   - "`task.md` contains the repair tasks needed by `cc-do`."
@@ -109,7 +110,7 @@ NO REPAIR WITHOUT A FROZEN ROOT-CAUSE CONTRACT
 6. Hypothesize：列候选，写证伪方法，逐个打掉。
 7. Grill：现状查完后，如果需要确认技术细节或解决方案，用一问一答继续追问；用户没有明确说足够详细前，不冻结 repair tasks。
 8. Prove：完成 Root Cause Proof Ladder。
-9. Freeze：把根因、ASCII Branch Chain Analysis、修复边界、测试 seam、allowed/forbidden files 写进 `task.md`。
+9. Freeze：把根因、ASCII Branch Chain Analysis、修复边界、回归证明合同、测试 seam、allowed/forbidden files 写进 `task.md`。
 10. Commit：提交 Investigate 阶段，再交给 `cc-do`。
 
 ## Evidence Flow

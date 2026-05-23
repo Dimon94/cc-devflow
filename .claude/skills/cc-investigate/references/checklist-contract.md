@@ -22,6 +22,7 @@ Bug work becomes patch stacking when the first plausible cause is treated as pro
 - [ ] symptom and closest honest feedback loop are captured
 - [ ] hypotheses list includes falsification methods and rejected false causes
 - [ ] first bad state, violated contract, original trigger, counterfactual proof, and escape reason are proven
+- [ ] regression proof contract names failure ownership, suite layer, command/runtime budget, proof value, fixture/mock boundary, focused suite shape, and low-value tests to avoid
 - [ ] repair tasks state what to fix, what not to touch, and what command proves the repair
 
 ## Exit Rule

@@ -1,5 +1,10 @@
 # CC-Investigate Skill Changelog
 
+## v1.14.1 - 2026-05-24
+
+- add a Regression Proof Contract to root-cause handoffs so repair tasks inherit failure ownership, suite layer, runtime budget, proof value, fixture/mock boundary, focused suite shape, and low-value tests to avoid
+- reject decorative Red evidence before `cc-do` by requiring the shortest trustworthy seam that exercises the proven first bad state
+
 ## v1.14.0 - 2026-05-22
 
 - expand the repair task template Failure Ledger with `Source`, `Trigger`, and `Escape class` fields for eligible review escape candidates
