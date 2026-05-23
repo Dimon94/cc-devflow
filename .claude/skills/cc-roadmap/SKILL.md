@@ -1,6 +1,6 @@
 ---
 name: cc-roadmap
-version: 5.8.1
+version: 5.9.0
 description: "Use when defining, resetting, or narrowing project direction, stage order, or backlog priority before a concrete requirement enters the PDCA loop."
 triggers:
   - "帮我定路线图"
@@ -52,11 +52,11 @@ entry_gate:
   - "If the route cannot name a real user/operator and current workaround, mark it as needs-evidence instead of producing implementation-ready RM handoff."
 exit_criteria:
   - "The next 1-3 stages are frozen with goal, why now, dependencies, exit signal, kill signal, and non-goals."
-  - "The first backlog items can naturally enter cc-plan without extra strategic guessing, including explicit capability links and expected spec delta."
+  - "The first backlog items can naturally enter cc-plan without extra strategic guessing, including explicit capability links, expected spec delta, and review gate hints."
   - "The roadmap shows an explicit RM dependency graph so serial blockers and parallel-ready work are obvious."
   - "The user-approved recommendation is explicit and grounded in current evidence."
   - "Each Stage 1 or ready-for-cc-plan item records an AI Leverage Route Lens verdict: boil-lake, sharp-wedge, needs-evidence, or pivot."
-  - "The Roadmap Funnel Transcript is persisted in `devflow/roadmap.json`, rendered into `devflow/ROADMAP.md`, and each ready RM carries the source funnel rounds, ten-round Dialogue Checkpoints, explicit release, frozen decisions, and remaining blocking question."
+  - "The Roadmap Funnel Transcript is persisted in `devflow/roadmap.json`, rendered into `devflow/ROADMAP.md`, and each ready RM carries the source funnel rounds, ten-round Dialogue Checkpoints, explicit release, frozen decisions, review gate hints, and remaining blocking question."
 reroutes:
   - when: "The user is already discussing one concrete requirement, bug, or execution task."
     target: "cc-plan"

@@ -22,6 +22,7 @@ Roadmap decisions already have strong gates, but they are spread across funnel p
 - [ ] project-direction class and evidence maturity were selected before priority ranking
 - [ ] reachable user/operator, current workaround, first success signal, and kill signal are named
 - [ ] 1-3 stages have dependencies, non-goals, exit signals, and AI leverage verdicts
+- [ ] ready RM items include review gate hints for plan/investigation and implementation risk
 - [ ] ready RM handoff can enter `cc-plan` without strategic guessing
 
 ## Exit Rule

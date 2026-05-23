@@ -53,7 +53,7 @@ const DOCUMENT_LABELS = {
     yes: 'Yes',
     no: 'No',
     readyEmpty:
-      '- RM-001:\n  - Primary Capability:\n  - Secondary Capabilities:\n  - Why now:\n  - Success signal:\n  - Entry constraints:\n  - Capability gap:\n  - Expected spec delta:\n  - Open risks:\n  - First planning question:\n  - Required context to load:\n  - Depends On:\n  - Parallel With:\n  - Why this is ready now:',
+      '- RM-001:\n  - Primary Capability:\n  - Secondary Capabilities:\n  - Why now:\n  - Success signal:\n  - Entry constraints:\n  - Capability gap:\n  - Expected spec delta:\n  - Open risks:\n  - Review gate hints:\n  - First planning question:\n  - Required context to load:\n  - Depends On:\n  - Parallel With:\n  - Why this is ready now:',
     parkedEmpty: '- RM-XXX:\n  - Reason parked:\n  - Trigger to reopen:\n  - Missing evidence:',
     readyFields: {
       primaryCapability: 'Primary Capability',
@@ -64,6 +64,7 @@ const DOCUMENT_LABELS = {
       capabilityGap: 'Capability gap',
       expectedSpecDelta: 'Expected spec delta',
       openRisks: 'Open risks',
+      reviewGateHints: 'Review gate hints',
       firstPlanningQuestion: 'First planning question',
       requiredContextToLoad: 'Required context to load',
       dependsOn: 'Depends On',
@@ -110,7 +111,7 @@ const DOCUMENT_LABELS = {
     yes: '是',
     no: '否',
     readyEmpty:
-      '- RM-001:\n  - 主能力:\n  - 次能力:\n  - 为什么现在做:\n  - 成功信号:\n  - 进入约束:\n  - 能力缺口:\n  - 预期规格变化:\n  - 未决风险:\n  - 首个规划问题:\n  - 必须加载的上下文:\n  - 依赖:\n  - 可并行:\n  - 为什么现在已就绪:',
+      '- RM-001:\n  - 主能力:\n  - 次能力:\n  - 为什么现在做:\n  - 成功信号:\n  - 进入约束:\n  - 能力缺口:\n  - 预期规格变化:\n  - 未决风险:\n  - 审查门禁提示:\n  - 首个规划问题:\n  - 必须加载的上下文:\n  - 依赖:\n  - 可并行:\n  - 为什么现在已就绪:',
     parkedEmpty: '- RM-XXX:\n  - 暂存原因:\n  - 重新打开触发条件:\n  - 缺失证据:',
     readyFields: {
       primaryCapability: '主能力',
@@ -121,6 +122,7 @@ const DOCUMENT_LABELS = {
       capabilityGap: '能力缺口',
       expectedSpecDelta: '预期规格变化',
       openRisks: '未决风险',
+      reviewGateHints: '审查门禁提示',
       firstPlanningQuestion: '首个规划问题',
       requiredContextToLoad: '必须加载的上下文',
       dependsOn: '依赖',
@@ -414,6 +416,7 @@ function parseReadySection(sectionBody) {
     expectedSpecDelta: '',
     openRisks: '',
     firstPlanningQuestion: '',
+    reviewGateHints: '',
     requiredContextToLoad: '',
     dependsOn: '',
     parallelWith: '',
@@ -540,6 +543,7 @@ function trackingFromBacklog(markdown, baseTracking) {
           entryConstraints: entry.entryConstraints,
           capabilityGap: entry.capabilityGap,
           openRisks: entry.openRisks,
+          reviewGateHints: entry.reviewGateHints,
           firstPlanningQuestion: entry.firstPlanningQuestion,
           requiredContextToLoad: entry.requiredContextToLoad,
           parallelWith: parseList(entry.parallelWith),
@@ -792,6 +796,7 @@ function renderReadyForReqPlan(tracking) {
         `  - ${fields.capabilityGap}: ${formatBacklogValue(item.backlog.capabilityGap)}`,
         `  - ${fields.expectedSpecDelta}: ${formatBacklogValue(item.expectedSpecDelta)}`,
         `  - ${fields.openRisks}: ${formatBacklogValue(item.backlog.openRisks)}`,
+        `  - ${fields.reviewGateHints}: ${formatBacklogValue(item.backlog.reviewGateHints)}`,
         `  - ${fields.firstPlanningQuestion}: ${formatBacklogValue(item.backlog.firstPlanningQuestion)}`,
         `  - ${fields.requiredContextToLoad}: ${formatBacklogValue(item.backlog.requiredContextToLoad)}`,
         `  - ${fields.dependsOn}: ${item.dependsOn.length ? formatInlineCode(item.dependsOn.join(', ')) : '`-`'}`,

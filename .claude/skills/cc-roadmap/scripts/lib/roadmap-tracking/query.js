@@ -45,6 +45,7 @@ function formatTrackingMatches(matches) {
     lines.push(`Success signal: ${backlog.successSignal || '-'}`);
     lines.push(`Entry constraints: ${backlog.entryConstraints || '-'}`);
     lines.push(`Open risks: ${backlog.openRisks || '-'}`);
+    lines.push(`Review gate hints: ${backlog.reviewGateHints || '-'}`);
     lines.push(`First planning question: ${backlog.firstPlanningQuestion || '-'}`);
     lines.push(`Required context to load: ${backlog.requiredContextToLoad || '-'}`);
     lines.push(`Why this is ready now: ${backlog.whyReadyNow || '-'}`);

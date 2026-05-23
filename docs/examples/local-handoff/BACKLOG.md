@@ -5,7 +5,7 @@
 ## Backlog Meta
 
 - Roadmap version: `roadmap.v2`
-- Skill version: `5.8.1`
+- Skill version: `5.9.0`
 - Last synced: `2026-04-19`
 - Current focus stage: `Stage 2`
 - Roadmap state source: `roadmap.json`
@@ -44,6 +44,7 @@
   - Capability gap: admins can export raw audit data but not a compact summary for review
   - Expected spec delta: codify local export summary truth
   - Open risks: handoff may age if schema changes before the next maintainer resumes
+  - Review gate hints: run implementation review before remote landing if schema or export permissions changed since local proof
   - First planning question: does the summary format need another review before remote landing?
   - Required context to load: admin export screen, generated summary fixture, local handoff notes
   - Depends On: `-`

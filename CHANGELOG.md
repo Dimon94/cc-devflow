@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Extended `cc-investigate` with a Regression Proof Contract so bug handoffs freeze failure ownership, suite layer, runtime budget, proof value, fixture/mock boundary, focused suite shape, and low-value tests to avoid before `cc-do` starts.
 - Extended `cc-dev` with explicit optional `cc-review` gates so autonomous PDCA/IDCA runs review complex or high-risk plans, investigations, and implementations before continuing, or records concrete low-risk skip reasons.
 - Extended `cc-next` Goal Packets with review gate hints so complexity, hardening, test-strategy, and release-risk signals survive handoff into `cc-dev`.
+- Extended `cc-roadmap` ready RM handoffs with durable review gate hints rendered through `roadmap.json`, `BACKLOG.md`, and roadmap lookup output.
 
 ## [4.5.25] - 2026-05-22
 

@@ -68,6 +68,7 @@
         "successSignal": "admins can download a concise audit summary without manual spreadsheet cleanup",
         "entryConstraints": "stay local-only and avoid remote automation",
         "openRisks": "handoff may age if schema changes before the next maintainer resumes",
+        "reviewGateHints": "run implementation review before remote landing if schema or export permissions changed since local proof",
         "firstPlanningQuestion": "does the summary format need another review before remote landing?",
         "requiredContextToLoad": "admin export screen, generated summary fixture, local handoff notes",
         "whyReadyNow": "the requirement is already proven and only needs a clean resume point",

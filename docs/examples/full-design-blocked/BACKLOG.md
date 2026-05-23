@@ -5,7 +5,7 @@
 ## Backlog Meta
 
 - Roadmap version: `roadmap.v2`
-- Skill version: `5.8.1`
+- Skill version: `5.9.0`
 - Last synced: `2026-04-19`
 - Current focus stage: `Stage 2`
 - Roadmap state source: `roadmap.json`
@@ -44,6 +44,7 @@
   - Capability gap: admins can invite one user at a time but cannot safely import invite batches
   - Expected spec delta: define import semantics before widening current truth
   - Open risks: another partial implementation pass would deepen the semantic drift
+  - Review gate hints: run plan review before implementation because import semantics touch data, audit, limits, and billing-adjacent behavior
   - First planning question: which subflows share one import contract and which need explicit splits?
   - Required context to load: invite limits, billing rules, duplicate handling, audit logging
   - Depends On: `-`

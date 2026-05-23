@@ -59,6 +59,7 @@
   - Capability gap:
   - Expected spec delta:
   - Open risks:
+  - Review gate hints:
   - First planning question:
   - Source funnel rounds:
   - Frozen decisions:

@@ -1,5 +1,10 @@
 # Roadmap Skill Changelog
 
+## v5.9.0 - 2026-05-24
+
+- add `reviewGateHints` to ready RM handoffs so roadmap items preserve complexity, hardening, productization, test-strategy, and release-risk signals for `cc-next` / `cc-dev`
+- render and parse the review gate hints through `roadmap.json`, generated `BACKLOG.md`, and roadmap lookup output
+
 ## v5.8.1 - 2026-05-22
 
 - move the long roadmap funnel, route lens, guardrail, and review protocols into `references/roadmap-dialogue.md` so the entry skill stays small while preserving the full roadmap contract

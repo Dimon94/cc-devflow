@@ -37,6 +37,7 @@
         "successSignal": "the capability has a trusted import contract before implementation resumes",
         "entryConstraints": "must freeze limits, duplicates, warnings, and audit behavior first",
         "openRisks": "another partial implementation pass would deepen the semantic drift",
+        "reviewGateHints": "run plan review before implementation because import semantics touch data, audit, limits, and billing-adjacent behavior",
         "firstPlanningQuestion": "which subflows share one import contract and which need explicit splits?",
         "requiredContextToLoad": "invite limits, billing rules, duplicate handling, audit logging",
         "whyReadyNow": "the blocker is design truth, not implementation effort",

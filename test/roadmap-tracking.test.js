@@ -60,6 +60,7 @@ describe('cc-roadmap tracking sync', () => {
                 successSignal: 'one structured state renders all roadmap views',
                 entryConstraints: 'preserve legacy input migration',
                 openRisks: 'downstream projects may still have old tracking files',
+                reviewGateHints: 'run plan review; implementation review can skip unless renderer code changes',
                 firstPlanningQuestion: 'can this stay one compatibility release?',
                 requiredContextToLoad: 'roadmap scripts and examples',
                 whyReadyNow: 'the drift surface is visible and bounded',
@@ -119,7 +120,8 @@ describe('cc-roadmap tracking sync', () => {
         backlog: expect.objectContaining({
           capabilityGap: 'roadmap and backlog duplicate RM state',
           ready: true,
-          whyNow: 'the sidecar is already acting as shared truth'
+          whyNow: 'the sidecar is already acting as shared truth',
+          reviewGateHints: 'run plan review; implementation review can skip unless renderer code changes'
         })
       })
     ]);
@@ -187,6 +189,7 @@ describe('cc-roadmap tracking sync', () => {
                 successSignal: 'generated views cite roadmap.json',
                 entryConstraints: '',
                 openRisks: '',
+                reviewGateHints: 'run plan review because this changes generated projections',
                 firstPlanningQuestion: '',
                 requiredContextToLoad: '',
                 whyReadyNow: 'contract is frozen',
@@ -250,6 +253,9 @@ describe('cc-roadmap tracking sync', () => {
     );
     expect(renderedBacklog).toContain(
       '- Direction guardrails applied: brand-neutral founder advice'
+    );
+    expect(renderedBacklog).toContain(
+      '- Review gate hints: run plan review because this changes generated projections'
     );
     expect(renderedBacklog).toContain('| RM-010 | Generate roadmap views from state |');
 

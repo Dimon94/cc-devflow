@@ -68,6 +68,7 @@
         "successSignal": "users can copy the invite link with one click",
         "entryConstraints": "no backend changes, no share dialog redesign",
         "openRisks": "clipboard failure copy may still need follow-up UX",
+        "reviewGateHints": "skip plan review for tiny UI patch; run implementation review only if clipboard fallback changes shared behavior",
         "firstPlanningQuestion": "can this stay a tiny-design patch without changing contracts?",
         "requiredContextToLoad": "current share dialog, current invite URL source, existing tests",
         "whyReadyNow": "the ask is narrow, the evidence is real, and the dependency surface is already known",

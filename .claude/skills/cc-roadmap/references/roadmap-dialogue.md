@@ -119,6 +119,7 @@ External learning material must go through an explicit external lookup gate and 
 - ready 项必须带成功信号、下一决策、`Depends On`、`Parallel With`
 - ready 项必须带 canonical terms、capability spec context 或明确的 language / decision conflict
 - ready 项必须带 Source funnel rounds、Frozen decisions、Do not re-decide、Remaining blocking question
+- ready 项必须带 Review gate hints：plan/research 是否需要 `cc-review`、implementation 是否可能需要 `cc-review`、风险触发、低风险跳过理由或缺失证据
 - ready 项必须带 explicit release：用户原话、释放到哪个下一阶段，以及仍保留的 blocking question
 - 长对话恢复必须先读最新 Dialogue Checkpoint 和 `Roadmap Funnel Transcript`，不能靠聊天记忆重建路线
 
@@ -131,7 +132,7 @@ External learning material must go through an explicit external lookup gate and 
 5. No F7 Premise Challenge and F8 Alternatives, no ready items.
 6. No 2-3 route comparison, no mainline decision.
 7. No exit signal / kill signal / non-goals, no frozen stage.
-8. No success signal and next decision, no Ready For Req-Plan.
+8. No success signal, next decision, and review gate hints, no Ready For Req-Plan.
 9. Developer/operator-facing item without target user, time to first value, or adoption bottleneck is not ready.
 10. No RM dependency graph or parallel-ready wave, no concurrency claim.
 11. No independent subsystem decomposition check, no broad mixed objective as a single mainline.
@@ -148,7 +149,7 @@ After writing `devflow/roadmap.json` and generated projections, scan:
 5. Graph: hard blockers only, no cycles, parallel-ready wave shares a real prerequisite.
 6. Spec: every roadmap item maps to a capability or records the gap.
 7. Decomposition: independent subsystems are split into stages/RM candidates.
-8. Handoff: first roadmap items naturally enter `cc-plan`.
+8. Handoff: first roadmap items naturally enter `cc-plan` and carry review gate hints for `cc-next` / `cc-dev`.
 9. Evidence maturity: routing matches idea/user/paying/infra/recovery status.
 10. Project direction: questions match founder/internal/demo/OSS/learning/side-project/infra/recovery.
 11. Promotional: no brand ads, application advice, promo links, or external authority framing.

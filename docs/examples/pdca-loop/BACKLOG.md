@@ -5,7 +5,7 @@
 ## Backlog Meta
 
 - Roadmap version: `roadmap.v1`
-- Skill version: `5.8.1`
+- Skill version: `5.9.0`
 - Last synced: `2026-04-19`
 - Current focus stage: `Stage 1`
 - Roadmap state source: `roadmap.json`
@@ -45,6 +45,7 @@
   - Capability gap: share dialog exposes invite URL but not direct copy action
   - Expected spec delta: tighten invite-link copy truth
   - Open risks: clipboard failure copy may still need follow-up UX
+  - Review gate hints: skip plan review for tiny UI patch; run implementation review only if clipboard fallback changes shared behavior
   - First planning question: can this stay a tiny-design patch without changing contracts?
   - Required context to load: current share dialog, current invite URL source, existing tests
   - Depends On: `-`
