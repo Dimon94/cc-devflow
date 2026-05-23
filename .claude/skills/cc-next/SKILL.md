@@ -1,6 +1,6 @@
 ---
 name: cc-next
-version: 1.4.0
+version: 1.4.1
 description: Use when you need to rank the next ready work items from roadmap truth, active changes, and remote issues, then let the user choose one Goal Packet for cc-dev.
 triggers:
   - 选下一个需求
@@ -10,8 +10,10 @@ triggers:
   - choose next ready issue
 reads:
   - ../cc-roadmap/SKILL.md
+  - ../cc-dev/SKILL.md
   - ../cc-plan/SKILL.md
   - ../cc-investigate/SKILL.md
+  - ../cc-review/SKILL.md
   - devflow/roadmap.json
   - devflow/ROADMAP.md
   - devflow/BACKLOG.md
@@ -36,7 +38,7 @@ entry_gate:
   - When more than one ready candidate exists, rank 2-3 candidates and ask the user to choose through `../cc-dev/references/user-choice-output-protocol.md`.
 exit_criteria:
   - Exactly one outcome is true: selected-goal, candidate-choice-pending, or no-ready-goal.
-  - A selected goal has objective, source evidence, route, completion criteria, stop conditions, and cc-dev entry.
+  - A selected goal has objective, source evidence, route, review gate hints, completion criteria, stop conditions, and cc-dev entry.
   - A candidate-choice-pending response has 2-3 ranked candidates, one recommendation, impact tradeoffs, and no implementation action.
   - No implementation, branch creation, PR review, or merge action happened inside cc-next.
 reroutes:
@@ -89,7 +91,7 @@ Archived changes are ignored unless the user asks to restore or audit them.
 
 1. 先读 roadmap、active changes、archive、handoff 和 issue truth。
 2. 把 candidate 分成 `resume-*`、`archive-closeout`、fresh roadmap / issue work。
-3. 排出最多 3 个 ready candidates；每个 candidate 必须有 source evidence、why now、route、completion criteria、stop conditions 和 PR expectation。
+3. 排出最多 3 个 ready candidates；每个 candidate 必须有 source evidence、why now、route、review gate hints、completion criteria、stop conditions 和 PR expectation。
 4. 如果只有 1 个 ready candidate，可以直接输出 `selected-goal`。
 5. 如果有 2-3 个 ready candidates，必须按 `../cc-dev/references/user-choice-output-protocol.md` 让用户选择；推荐项放第一，但等待用户确认后才输出最终 Goal Packet。
 6. 如果没有 ready candidate，输出 `no-ready-goal` 并 route `cc-roadmap` 或 `stop`。
@@ -110,6 +112,7 @@ Goal Packet
 - Route: PDCA | IDCA | resume
 - Existing change: <change-key or none>
 - Why this next: <selection evidence>
+- Review gate hints: <plan/investigation gate, implementation gate, risk triggers, skip reason, or missing evidence>
 - Completion criteria: <observable finish line>
 - Stop conditions: <when cc-dev must stop or reroute>
 - PR expectation: open/update PR or local handoff
@@ -125,7 +128,7 @@ Keep selection output compact:
 1. Queue truth: active changes, roadmap source, and issue source checked.
 2. Candidates: one chosen goal, 2-3 choices waiting for user selection, or `no-ready-goal`.
 3. Recommendation: why the first candidate is recommended, plus tradeoffs for the alternatives.
-4. Goal Packet: only after there is exactly one selected candidate; include objective, source, route, completion criteria, stop conditions, PR expectation.
+4. Goal Packet: only after there is exactly one selected candidate; include objective, source, route, review gate hints, completion criteria, stop conditions, PR expectation.
 5. Route: `cc-dev`, `cc-roadmap`, or `stop`.
 
 ## Checklist Contract

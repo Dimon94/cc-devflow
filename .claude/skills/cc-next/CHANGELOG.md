@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.4.1 - 2026-05-24
+
+- add review gate hints to `cc-dev` Goal Packets so next-work selection preserves complexity, hardening, test-strategy, and release-risk signals
+- require selected goals to say whether plan/investigation and implementation `cc-review` gates should run, can be skipped with low-risk reasons, or are blocked by missing evidence
+
 ## v1.4.0 - 2026-05-21
 
 - change cc-next from unilateral next-work selection to ranked candidate choice when multiple ready items exist
