@@ -2,7 +2,7 @@
 
 ## Visible State Machine
 
-`Goal Packet | objective -> cc-dev -> cc-plan | cc-investigate -> cc-do -> cc-check -> cc-act -> cc-pr-review | stop`
+`Goal Packet | objective -> cc-dev -> cc-plan | cc-investigate -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act -> cc-pr-review | stop`
 
 - Enter from: `cc-next` Goal Packet or explicit user objective.
 - Stay in: `cc-dev` while the completion audit finds required work that can be advanced by a lower-level cc-* stage.
@@ -17,14 +17,16 @@
 5. 先分类 PDCA / IDCA，再调用底层 skill。
 6. feature/change 走 `cc-plan`。
 7. bug/regression 走 `cc-investigate`。
-8. 已冻结任务可直接恢复到 `cc-do`。
-9. 没有 fresh `cc-check`，不进入 PR ship。
-10. `cc-act` 只能 create/update PR 或 local-handoff。
-11. 不合并 PR，不推 main。
-12. 每轮停下前都做 completion audit。
-13. 不确定就是没完成。
-14. 时间耗尽、token 紧张、已经努力，都不等于完成。
-15. 终点必须是 remote PR、local handoff、needs clarification 或 blocked。
+8. 复杂或高风险 plan/investigation 先走 `cc-review`，简单低风险必须记录 skip reason。
+9. 已冻结任务可恢复到 `cc-do`，但恢复前仍要重判 review gate。
+10. 复杂或高风险 implementation 在 `cc-check` 前走 `cc-review`，简单低风险必须记录 skip reason。
+11. 没有 fresh `cc-check`，不进入 PR ship。
+12. `cc-act` 只能 create/update PR 或 local-handoff。
+13. 不合并 PR，不推 main。
+14. 每轮停下前都做 completion audit。
+15. 不确定就是没完成。
+16. 时间耗尽、token 紧张、已经努力，都不等于完成。
+17. 终点必须是 remote PR、local handoff、needs clarification 或 blocked。
 
 ## Required Outputs
 
@@ -32,6 +34,7 @@
 - Current worktree/branch truth
 - Change key or reason none exists
 - Stage sequence used
+- Review gate decisions and findings or skip reasons
 - Completion audit checklist summary
 - Terminal state
 - PR URL or handoff path when available

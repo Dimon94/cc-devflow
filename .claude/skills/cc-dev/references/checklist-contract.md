@@ -8,12 +8,12 @@ Autonomous driving fails when stage transitions inherit memory instead of re-rea
 
 - Mode: do-confirm
 - Evidence sink: `task.md`, Git commits, PR/handoff state, and the final audit
-- Failure route: `cc-plan`, `cc-investigate`, `cc-do`, `cc-check`, `cc-act`, `cc-pr-review`, or stop
+- Failure route: `cc-plan`, `cc-investigate`, `cc-do`, `cc-review`, `cc-check`, `cc-act`, `cc-pr-review`, or stop
 
 ## Pause Points
 
 1. Before first lower-level stage: resolve CLI, route, change key, worktree, and branch.
-2. Before each stage transition: reread `task.md`, Git, and PR/handoff truth.
+2. Before each stage transition: reread `task.md`, Git, PR/handoff truth, and review gate decisions.
 3. Before exit: map every objective requirement to file, command, commit, PR, or blocker evidence.
 
 ## Required Checks
@@ -22,6 +22,7 @@ Autonomous driving fails when stage transitions inherit memory instead of re-rea
 - [ ] route is PDCA, IDCA, resume, or blocked with reason
 - [ ] main checkout remains on `main` and work happens in the isolated change branch/worktree
 - [ ] `task.md`, Git status/history, and PR/handoff truth are reread before each transition
+- [ ] plan/investigation and implementation review gates are run, skipped with concrete low-risk reasons, or blocked with missing evidence
 - [ ] terminal state is one of remote-pr-opened, remote-pr-updated, local-handoff, needs-clarification, or blocked
 
 ## Exit Rule

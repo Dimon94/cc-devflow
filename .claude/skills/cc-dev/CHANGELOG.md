@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.5.1 - 2026-05-24
+
+- add `cc-review` as an explicit optional gate inside autonomous PDCA/IDCA so complex or high-risk plans, investigations, and implementations are reviewed before continuing
+- require skipped review gates to record concrete low-risk reasons in the stage audit instead of relying on agent memory
+
 ## v1.5.0 - 2026-05-22
 
 - add `detect-worktree-state.sh` as the standalone read-only preflight for primary, linked, submodule, detached, and branch-state truth

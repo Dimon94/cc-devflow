@@ -1,6 +1,6 @@
 ---
 name: cc-dev
-version: 1.5.0
+version: 1.5.1
 description: Use when a selected objective should be driven autonomously in the current session and worktree through PDCA or IDCA until a PR, local handoff, clarification, or blocker.
 triggers:
   - 自动驾驶开发这个需求
@@ -13,6 +13,7 @@ reads:
   - ../cc-plan/SKILL.md
   - ../cc-investigate/SKILL.md
   - ../cc-do/SKILL.md
+  - ../cc-review/SKILL.md
   - ../cc-check/SKILL.md
   - ../cc-act/SKILL.md
   - scripts/resolve-cc-devflow.sh
@@ -50,6 +51,7 @@ entry_gate:
 exit_criteria:
   - The selected route reached exactly one terminal state: remote-pr-opened, remote-pr-updated, local-handoff, needs-clarification, or blocked.
   - For code work, cc-check produced fresh evidence before cc-act shipped or handed off.
+  - The plan/investigation and implementation review gates were run, skipped with concrete low-risk reasons, or blocked with missing evidence.
   - Every completed stage or execution environment has a Git commit.
   - The final audit maps objective requirements to files, commands, tests, commits, PR, or handoff evidence.
   - No process file is created outside the allowed durable outputs.
@@ -60,6 +62,8 @@ reroutes:
     target: cc-investigate
   - when: Verification or act changes require code fixes.
     target: cc-do
+  - when: A frozen plan, root-cause contract, or implementation is complex or high-risk.
+    target: cc-review
   - when: The remote PR exists and needs independent review.
     target: cc-pr-review
 tool_budget:
@@ -77,8 +81,8 @@ tool_budget:
 `cc-dev` 是目标驱动层。它在当前 worktree 内串起：
 
 ```text
-PDCA: cc-plan        -> cc-do -> cc-check -> cc-act
-IDCA: cc-investigate -> cc-do -> cc-check -> cc-act
+PDCA: cc-plan        -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
+IDCA: cc-investigate -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
 ```
 
 状态来源只有三类：
@@ -111,9 +115,11 @@ no structured choice tool exists.
 2. Once the change key exists, run `scripts/prepare-change-worktree.sh --change-key <REQ/FIX-...>` from the trunk checkout when needed, continue in the returned `WORKTREE_PATH`, and keep the main checkout on `main`.
 3. Inside the change worktree, anchor the canonical exact-case `REQ/*` or `FIX/*` branch with `scripts/ensure-work-branch.sh --change-key <REQ/FIX-...>`; case-variant refs are setup blockers.
 4. Plan or Investigate writes `task.md`, then commits.
-5. Do completes each task/environment, updates `task.md`, then commits.
-6. Check reruns fresh evidence, then commits the stage when useful.
-7. Act creates/updates `pr-brief.md` only when needed and finishes push/PR/local handoff.
+5. Before `cc-do`, decide the plan/investigation review gate: run `cc-review` when scope is non-trivial, touches security/data/auth/release/observability, carries hardening/productization risk, has complex root cause, or shows maintainability/test-strategy smell; otherwise record the skip reason in the stage audit.
+6. Do completes each task/environment, updates `task.md`, then commits.
+7. Before `cc-check`, decide the implementation review gate with the same risk test, plus changed-code complexity, review-escape, and user-requested review signals.
+8. Check reruns fresh evidence, then commits the stage when useful.
+9. Act creates/updates `pr-brief.md` only when needed and finishes push/PR/local handoff.
 
 Git is the process record. Process files are not part of the product.
 
@@ -125,6 +131,7 @@ Before declaring terminal success:
 - inspect files changed
 - inspect latest commits
 - inspect commands/tests run
+- inspect review gate decisions and findings when present
 - inspect PR or handoff state when relevant
 - treat uncertainty as not complete
 
@@ -138,8 +145,9 @@ At terminal handoff, use this short audit:
 1. Outcome: `remote-pr-opened`, `remote-pr-updated`, `local-handoff`, `needs-clarification`, or `blocked`.
 2. Objective: requirement or bug statement satisfied or blocked.
 3. Evidence: changed files, commands, commits, PR, or handoff proof.
-4. Route taken: PDCA, IDCA, or resume path.
-5. Remaining risk: none, named residual risk, or blocker.
+4. Review gates: plan/investigation and implementation gates ran, skipped with reason, or blocked.
+5. Route taken: PDCA, IDCA, or resume path.
+6. Remaining risk: none, named residual risk, or blocker.
 
 ## Checklist Contract
 
