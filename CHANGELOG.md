@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Slimmed the `cc-review` main skill entrypoint by moving structural quality and review-chain detail into progressively loaded references.
 - Extended the `cc-review` structural quality facet with maintainability guardrails and antislop recovery checks for thin entrypoints, small feature-owned files, pure domain logic, centralized contracts, compatibility-preserving state, CSS ownership, focused tests, and real viewport evidence.
 - Added a Hardening Proof Protocol so `cc-review` hardening findings map reviewed surfaces, classify release risk gates, name proof paths, and close with residual risk.
+- Extended `cc-review` test-strategy hardening to judge confidence per minute, suite layer/runtime, proof value, and keep/rewrite/delete/quarantine actions.
 
 ## [4.5.25] - 2026-05-22
 

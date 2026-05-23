@@ -1,6 +1,6 @@
 ---
 name: cc-review
-version: 2.13.1
+version: 2.13.2
 description: >-
   Use when a plan, bug fix, PR, implementation diff, complexity hotspot, or
   structural maintainability hotspot needs findings, production hardening

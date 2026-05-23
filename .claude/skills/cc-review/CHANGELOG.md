@@ -1,5 +1,11 @@
 # CC-Review Changelog
 
+## v2.13.2 - 2026-05-23
+
+- add a confidence-per-minute protocol to the test-strategy hardening specialist
+- require test-strategy findings to classify suite layer, command/runtime, proof value, fixture/mock boundary, and keep/rewrite/delete/quarantine action
+- flag broad snapshots, duplicate happy paths, overmocked internals, no-op smoke tests, and tests whose names exceed their proof
+
 ## v2.13.1 - 2026-05-23
 
 - add a shared Hardening Proof Protocol so selected specialists must map reviewed surfaces, classify risk gates, name existing controls, prove or block evidence, and close with residual risk

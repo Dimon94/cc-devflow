@@ -36,6 +36,7 @@
 - 如果建议优化，排序、重复键、identity、cache invalidation、权限、分页和错误行为如何保持？
 - 哪些 hardening specialist 被选中：security、observability、release-readiness、test-strategy？哪些 skipped / blocked，原因是什么？
 - hardening surface map 是什么？每个 finding 是 `must-fix-before-release`、`should-fix-soon` 还是 `accepted/deferred-risk`？证明路径和 residual risk 是什么？
+- 如果选中 test-strategy，哪些 suite 真正提高 confidence per minute？哪些 broad snapshot、重复 happy path、overmocked test、no-op smoke 或慢测试应该 keep / rewrite / delete / quarantine？
 - 安全 finding 是否说明了具体边界、actor、绕过路径、缺失控制、验证和 residual risk？
 - 可观测性 finding 是否说明了无法回答的事故问题、缺失信号、关联字段、redaction 和失败路径验证？
 - 发布就绪 finding 是否说明了缺失 gate、部署/迁移/配置失败模式、rollback 或 smoke 证据？

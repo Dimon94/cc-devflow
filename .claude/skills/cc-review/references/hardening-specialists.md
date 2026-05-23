@@ -187,6 +187,30 @@ reason, and risk.
 
 ## Test Strategy Hardening
 
+### Confidence Per Minute Protocol
+
+Test strategy review optimizes confidence per minute, not raw coverage count.
+Use this protocol when reviewing broad suite trust or changed testing surfaces:
+
+1. Inventory commands, frameworks, e2e/visual harnesses, fixtures, mocks,
+   snapshots, CI config, coverage tooling, and approximate runtime.
+2. Classify suites by layer: pure unit, contract/schema, integration,
+   e2e/browser, visual, smoke, load/perf, migration/data, and release.
+3. Record current status: pass, fail, flaky, skipped, quarantined, network-bound,
+   order-dependent, slow, or blocked.
+4. Judge proof value: name which real bug, regression, product contract,
+   critical journey, external/provider parse, migration, permission, or failure
+   mode each important suite would catch.
+5. Flag low-value tests: broad snapshots, duplicate happy paths, brittle
+   implementation assertions, no-op smoke tests, overmocked internals, tests
+   whose names promise more than their assertions prove, and fixtures that hide
+   coupling.
+6. Recommend the smallest suite shape: fast local default, focused
+   changed-surface commands, high-signal e2e golden paths, release smoke, and
+   optional nightly/heavy checks.
+7. Slow valuable tests are not automatically bad. Keep them, but move them to an
+   explicit suite if they block normal developer feedback.
+
 ### Checks
 
 - Inventory: unit, typecheck, lint, build, integration, e2e, visual, smoke,
@@ -220,13 +244,16 @@ A test-strategy finding should include:
 - why existing tests do not catch the failure
 - minimal high-signal test shape
 - fixture/mock boundary requirements
+- confidence-per-minute argument: what bug the suite would catch relative to
+  runtime and maintenance cost
 - risk gate: `must-fix-before-release`, `should-fix-soon`, or
   `accepted/deferred-risk`
 - expected suite command and runtime impact
 - whether to keep, rewrite, delete, or quarantine affected tests
 
 Do not equate raw coverage percentage with confidence. The question is what bug
-the suite would catch that it used to miss.
+the suite would catch that it used to miss, and whether it is worth its runtime
+and maintenance cost.
 
 ## Specialist Output Shape
 
