@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-001.v1`
 - Design version: `design.v1`
-- CC-Plan skill version: `3.18.0`
+- CC-Plan skill version: `3.18.1`
 - Work branch: `REQ/001-copy-invite-link`
 - Output language: en
 - Source roadmap item: `RM-001`
@@ -71,6 +71,13 @@ OUTCOME: users can share invites without manual text selection
   - invite URL source
   - share-service contracts
 - Parallel boundaries: none; this patch is intentionally serial
+- Test Strategy Shape:
+  - Suite layer: component behavior test
+  - Expected command / runtime: `npm test -- src/features/share/ShareDialog.test.tsx`; fast focused suite
+  - Proof value: catches the missing copy action and stale copied-state feedback
+  - Fixture / mock boundary: render real dialog props; mock only the clipboard boundary
+  - Low-value tests to avoid: broad snapshots, internal state assertions, duplicate button happy paths
+  - Focused suite shape: one Red for the visible copy behavior, then keep the same focused command through Green
 
 > 顶部 handoff 只保留执行者必须知道的现实，不重复讲背景故事。
 
@@ -111,6 +118,10 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/pdca-loop/cha
 - [x] T001 [TEST] Add a failing dialog test for the missing copy action (dependsOn:none) `src/features/share/ShareDialog.test.tsx`
   Goal: 证明当前 share dialog 还不能一键复制 invite link。
   TDD phase: red
+  Suite layer / runtime: component behavior; fast focused suite.
+  Confidence value: catches the missing user-visible copy action.
+  Fixture/mock boundary: real dialog props; mock only clipboard.
+  Low-value tests to avoid: broad snapshots and internal copied-state assertions.
   Files: `src/features/share/ShareDialog.test.tsx`
   Read first: `design.md`, `src/features/share/ShareDialog.tsx`
   Verification: `npm test -- src/features/share/ShareDialog.test.tsx`
@@ -124,6 +135,10 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/pdca-loop/cha
 - [x] T002 [IMPL] Add the copy button and copied-state confirmation (dependsOn:T001) `src/features/share/ShareDialog.tsx`
   Goal: 用最小实现让 T001 转绿，并保持当前 share contract 不变。
   TDD phase: green
+  Suite layer / runtime: same focused component suite.
+  Confidence value: preserves T001 without adding future share-service branches.
+  Fixture/mock boundary: same as T001.
+  Low-value tests to avoid: widening assertions without a new Red.
   Files: `src/features/share/ShareDialog.tsx`
   Read first: `design.md`, `src/features/share/ShareDialog.test.tsx`
   Verification: `npm test -- src/features/share/ShareDialog.test.tsx`

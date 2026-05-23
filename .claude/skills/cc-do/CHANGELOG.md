@@ -1,5 +1,11 @@
 # CC-Do Skill Changelog
 
+## v1.10.1 - 2026-05-23
+
+- require task preflight to validate suite layer, runtime expectation, and confidence-per-minute proof value before coding
+- reject low-value Red evidence such as broad snapshots, duplicate happy paths, no-op smoke tests, brittle internal assertions, and overmocked implementation details
+- update the checklist and playbook so Green cannot start until Red proves a real bug, regression, or user-visible failure through a public seam
+
 ## v1.10.0 - 2026-05-20
 
 - require real rework, reroutes, stale validation, wrong-file touches, repeated tool failures, and user corrections to be recorded in `task.md#Failure Ledger`

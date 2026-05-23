@@ -104,6 +104,15 @@ Engineering Review Gate:
 - Test seam:
 - Mock boundary:
 - Feedback loop:
+- Confidence per minute:
+
+Test Strategy Shape:
+- Suite layer:
+- Expected command / runtime:
+- Proof value: the bug or regression this catches:
+- Fixture / mock boundary:
+- Low-value tests to avoid:
+- Focused suite shape:
 
 ASCII Branch Chain Analysis:
 Language rule: keep connector tokens ASCII; write node labels and evidence text in `Output language`.
@@ -200,6 +209,10 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --tasks devflow/changes/<change-key>/t
   Contract: user story `US-001`; method/interface `<public seam>`; input/output `<contract>`.
   Do not re-decide: target behavior, public seam, allowed mock boundary.
   TDD phase: red
+  Suite layer / runtime: `<unit|contract|integration|e2e|visual|smoke>`; expected `<command time>`.
+  Confidence value: catches `<specific bug/regression/user-visible failure>`.
+  Fixture/mock boundary: `<real fixture fields>`; mock only `<external boundary>`.
+  Low-value tests to avoid: broad snapshots, duplicate happy paths, internal call-count assertions, no-op smoke.
   Files: `path/to/test`
   Read first: `task.md`
   Verification: `npm test -- path/to/test`
@@ -213,6 +226,10 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --tasks devflow/changes/<change-key>/t
   Contract: user story `US-001`; method/interface `<method or operation>`; input/output `<contract>`.
   Do not re-decide: file ownership, method shape, error shape, Green minimality boundary.
   TDD phase: green
+  Suite layer / runtime: same as T001 unless implementation exposes a new public contract.
+  Confidence value: preserves T001 behavior without pre-building future untested branches.
+  Fixture/mock boundary: same as T001.
+  Low-value tests to avoid: widening assertions after Green without a new Red.
   Files: `path/to/file`
   Read first: `task.md`, `path/to/test`
   Verification: `npm test -- path/to/test`

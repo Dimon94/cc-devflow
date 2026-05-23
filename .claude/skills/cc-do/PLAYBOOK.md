@@ -9,7 +9,7 @@
 ## Task Gates
 
 1. Task selected from `task.md`
-2. Task shape checked: one behavior, public seam, mock boundary, Green minimality
+2. Task shape checked: one behavior, public seam, suite layer/runtime, proof value, mock boundary, Green minimality
 3. Red observed for the expected behavior or TDD exception recorded
 4. Green observed with minimal production change
 5. Refactor complete or explicitly unnecessary
@@ -22,6 +22,8 @@
 - No production code before an expected failing test unless the task records a TDD exception.
 - Red must fail because the target behavior is missing, not because of syntax, fixture, or mock mistakes.
 - Red must enter through a public seam; private implementation tests do not unlock Green.
+- Red must carry confidence per minute: name the suite layer, expected command/runtime, and the real bug, regression, or user-visible failure it would catch.
+- Broad snapshots, duplicate happy paths, no-op smoke tests, brittle internal assertions, and overmocked self-modules do not unlock Green.
 - Green must satisfy only the current Red.
 - Refactor happens only after Green and stays inside the current slice.
 - Fixture shortcuts and boundary mocks must not hide input contract problems.

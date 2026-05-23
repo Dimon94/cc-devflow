@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-002.v2`
 - Design version: `design.v2`
-- CC-Plan skill version: `3.18.0`
+- CC-Plan skill version: `3.18.1`
 - Work branch: `REQ/002-bulk-invite-import`
 - Output language: en
 - Source roadmap item: `RM-010`
@@ -71,6 +71,13 @@ OUTCOME: admins can trust mixed CSV import results
   - seat-limit fallback behavior
   - audit row-result contract
 - Parallel boundaries: no parallel execution until row-outcome semantics are frozen
+- Test Strategy Shape:
+  - Suite layer: contract/rule tests first, admin component flow after semantics freeze
+  - Expected command / runtime: `npm test -- src/invite/bulk-import.test.ts`; focused rule suite before UI suite
+  - Proof value: catches duplicate, invalid-row, and seat-limit drift before audit/UI mapping
+  - Fixture / mock boundary: real CSV row fixtures; mock only file upload, billing, and seat-limit boundaries
+  - Low-value tests to avoid: broad snapshots, duplicate happy paths, UI-only tests that miss row semantics
+  - Focused suite shape: rule matrix Red/Green before admin and audit integration tasks
 
 ## Failure Ledger
 
@@ -109,6 +116,10 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/full-design-b
 - [x] T001 [TEST] Add failing tests for duplicate and over-limit row outcomes (dependsOn:none) `src/invite/bulk-import.test.ts`
   Goal: 先把最危险的 bulk invite 行为变成红灯。
   TDD phase: red
+  Suite layer / runtime: contract/rule suite; focused command before UI tests.
+  Confidence value: catches duplicate and over-limit row classification drift.
+  Fixture/mock boundary: real CSV rows; mock only billing / seat limit boundary.
+  Low-value tests to avoid: UI-only snapshots that do not prove row semantics.
   Files: `src/invite/bulk-import.test.ts`
   Read first: `design.md`, `src/invite/bulk-import.ts`
   Verification: `npm test -- src/invite/bulk-import.test.ts`
@@ -122,6 +133,10 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/full-design-b
 - [x] T002 [IMPL] Implement the initial bulk invite row classification (dependsOn:T001) `src/invite/bulk-import.ts`
   Goal: 给 duplicate / over-limit 行为一个最小实现。
   TDD phase: green
+  Suite layer / runtime: same focused rule suite.
+  Confidence value: preserves T001 without expanding into admin/audit behavior.
+  Fixture/mock boundary: same as T001.
+  Low-value tests to avoid: adding hidden happy paths without a new Red.
   Files: `src/invite/bulk-import.ts`
   Read first: `design.md`, `src/invite/bulk-import.test.ts`
   Verification: `npm test -- src/invite/bulk-import.test.ts`

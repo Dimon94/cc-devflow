@@ -1,6 +1,6 @@
 ---
 name: cc-do
-version: 1.10.0
+version: 1.10.1
 description: Use when implementing frozen tasks, resuming interrupted work, applying an investigation handoff, or fixing review feedback inside the approved scope.
 triggers:
   - 开始做 T003
@@ -29,10 +29,11 @@ entry_gate:
   - Resolve the CLI with `../cc-dev/scripts/resolve-cc-devflow.sh require config`.
   - Read `task.md`, current Git status, and only the code/tests needed by the current task.
   - Reject execution if the task cannot be restated from `task.md` and repo evidence.
-  - Validate the task's execution shape before coding: Red test name, one observable behavior, public verification path, allowed boundary mocks, Green minimality guard, and refactor candidates.
+  - Validate the task's execution shape before coding: Red test name, one observable behavior, suite layer/runtime, confidence-per-minute proof value, public verification path, allowed boundary mocks, Green minimality guard, and refactor candidates.
 exit_criteria:
   - Current task has Red/Green evidence or a recorded TDD exception in `task.md`.
-  - Red evidence proves the target behavior through a public seam; Green evidence is minimal and does not pre-build future behavior.
+  - Red evidence proves the target behavior through a public seam and has real proof value for the named bug, regression, or user-visible failure; Green evidence is minimal and does not pre-build future behavior.
+  - Low-value tests such as broad snapshots, duplicate happy paths, no-op smoke tests, brittle implementation assertions, or overmocked internals are rewritten, rejected as Red evidence, or explicitly routed back to `cc-plan`.
   - Refactor evidence names the smell removed or states why no refactor was needed.
   - Real failures, reroutes, disproven assumptions, stale validation, wrong-file touches, repeated tool failures, and user-corrected misses are recorded in `task.md#Failure Ledger`.
   - Verification commands have been run or explicitly blocked.
@@ -96,10 +97,11 @@ NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
 3. 一个 Red 只证明一个逻辑行为；bulk Red、实现步骤式测试名、直接查内部状态都要先修测试设计。
 4. Mock 只能放在系统边界：外部 API、时间、随机性、文件系统、网络或必要数据库边界；mock 自家模块默认说明 seam 有问题。
 5. Fixture 必须诚实：partial fixture、cast、generated stub、缺字段 payload 都要说明真实 contract 字段和测试填充字段。
-6. Green 只写当前红灯要求的最小实现；新增接口优先小而深，依赖从调用方传入，边界 adapter 用具体操作而不是 generic catch-all。
-7. Refactor 只能在 Green 后做，只清理当前 slice 暴露出的重复、命名、浅模块、长方法、feature envy、primitive obsession、错误处理或三层以上分支。
-8. 三次修补仍失败时，先质疑 `Root Cause Contract` 或 `Contract Summary`，reroute 到 `cc-investigate` / `cc-plan`，不要继续堆补丁。
-9. 完成脚本失败时，修缺失证据、依赖或 task block，不手改 checkbox 绕过。
+6. Red 必须说明 confidence-per-minute：suite layer、预计命令/耗时、会抓住哪个真实 bug / regression / 用户可见失败。只证明实现细节、快照漂移、重复 happy path 或 no-op smoke 的测试不能解锁 Green。
+7. Green 只写当前红灯要求的最小实现；新增接口优先小而深，依赖从调用方传入，边界 adapter 用具体操作而不是 generic catch-all。
+8. Refactor 只能在 Green 后做，只清理当前 slice 暴露出的重复、命名、浅模块、长方法、feature envy、primitive obsession、错误处理或三层以上分支。
+9. 三次修补仍失败时，先质疑 `Root Cause Contract` 或 `Contract Summary`，reroute 到 `cc-investigate` / `cc-plan`，不要继续堆补丁。
+10. 完成脚本失败时，修缺失证据、依赖或 task block，不手改 checkbox 绕过。
 
 ## Failure Ledger
 

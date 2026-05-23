@@ -12,15 +12,19 @@
 8. Planning flow results are written into `task.md#Contract Summary`; removing old process files must not remove planning thought.
 9. Placeholder tasks are invalid.
 10. Behavior work uses tracer bullets and TDD unless an exception is recorded.
-11. Roadmap sync, when needed, happens through roadmap files and Git commit, not change metadata.
-12. Non-trivial plans complete Second-Move Review before approval; the first workable plan is not frozen until a simpler move and a better-architecture move have both been considered.
-13. Non-trivial plans complete product/creative discovery before engineering design; if worth, shape, wedge, or 10x/better version is unclear, ask product questions before implementation questions.
-14. Product/creative confirmation and engineering confirmation are separate rounds unless roadmap/spec evidence already answers one of them and `task.md` records the skip reason.
-15. Non-trivial plans run a Socratic Dialogue before final approval: one question at a time, recommended answer included, repo-answerable questions answered from evidence first, and task generation blocked until the user explicitly says the requirement and technical plan are detailed enough.
-16. Technical Socratic dialogue must challenge 3 hidden assumptions, overengineering risk, and the current code or proposal with an adversarial review before task blocks are generated.
-17. Every 10 user-facing Socratic question rounds, write a Dialogue Checkpoint into `task.md#Contract Summary` before asking the next question.
-18. ASCII branch-chain connector tokens stay ASCII, but labels, evidence, and explanatory text follow `Output language`.
-19. User-facing decisions use `../cc-dev/references/user-choice-output-protocol.md`: host-native structured choice first, fixed A/B/C text fallback only when no structured-input tool exists.
+11. Test planning optimizes confidence per minute, not coverage theater. Every
+    behavior task names the bug or regression its test would catch, the suite
+    layer, expected command/runtime, fixture/mock boundary, and low-value test
+    shapes to avoid.
+12. Roadmap sync, when needed, happens through roadmap files and Git commit, not change metadata.
+13. Non-trivial plans complete Second-Move Review before approval; the first workable plan is not frozen until a simpler move and a better-architecture move have both been considered.
+14. Non-trivial plans complete product/creative discovery before engineering design; if worth, shape, wedge, or 10x/better version is unclear, ask product questions before implementation questions.
+15. Product/creative confirmation and engineering confirmation are separate rounds unless roadmap/spec evidence already answers one of them and `task.md` records the skip reason.
+16. Non-trivial plans run a Socratic Dialogue before final approval: one question at a time, recommended answer included, repo-answerable questions answered from evidence first, and task generation blocked until the user explicitly says the requirement and technical plan are detailed enough.
+17. Technical Socratic dialogue must challenge 3 hidden assumptions, overengineering risk, and the current code or proposal with an adversarial review before task blocks are generated.
+18. Every 10 user-facing Socratic question rounds, write a Dialogue Checkpoint into `task.md#Contract Summary` before asking the next question.
+19. ASCII branch-chain connector tokens stay ASCII, but labels, evidence, and explanatory text follow `Output language`.
+20. User-facing decisions use `../cc-dev/references/user-choice-output-protocol.md`: host-native structured choice first, fixed A/B/C text fallback only when no structured-input tool exists.
 
 ## Planning Flow
 
@@ -32,7 +36,7 @@ Every non-trivial plan confirms these rounds before task generation:
 4. Interface/Data Contract: public seam, caller, input/output, fields, error shape, permission/boundary.
 5. Abstraction Boundary: where complexity lives, rejected abstractions, public/private method split.
 6. Execution Architecture: foundation/core/integration/polish decisions, file responsibility, failure recovery.
-7. Task Contract: tracer bullets, Red test names, public seams, Green minimality, refactor candidates.
+7. Task Contract: tracer bullets, Red test names, public seams, confidence-per-minute test value, suite layer, command/runtime, fixture/mock boundary, Green minimality, refactor candidates.
 8. Second-Move Review: first good move, simpler move, better architecture, selected move, and rejected tradeoff.
 9. Final Approval: approved option and task contract summary.
 
@@ -47,6 +51,10 @@ Tiny plans may compress a round to one evidence-backed line. Full designs must p
 - Plans resolve architecture, interfaces, fields, and test seams before task generation; `cc-do` must not guess them.
 - Behavior tasks use tracer bullets: `[TEST] -> [IMPL] -> [REFACTOR]`, not horizontal layer slicing.
 - Regression tests cannot be deferred. If no honest seam exists, plan a spike or design correction.
+- Test suites are chosen by proof value. Prefer the fastest layer that catches
+  the real bug, keep valuable slow suites explicit, and avoid broad snapshots,
+  duplicate happy paths, no-op smoke tests, overmocked internals, and brittle
+  implementation assertions.
 
 ## Socratic Dialogue
 
@@ -148,6 +156,9 @@ Before freezing task blocks, write a lightweight review into `task.md#Contract S
 6. Test seam check: Red tasks prove behavior through public interface, caller flow, or user-visible path.
 7. Mock boundary check: mock only external API, time, randomness, filesystem, network, or required database seams.
 8. Feedback loop check: pick the shortest credible feedback loop for every behavior.
+9. Confidence-per-minute check: identify the suite layer, command/runtime,
+   proof value, fixture/mock boundary, and low-value tests that `cc-do` must not
+   treat as Red evidence.
 
 ## Required Task Fields
 
@@ -156,6 +167,10 @@ Before freezing task blocks, write a lightweight review into `task.md#Contract S
 - files
 - dependencies
 - TDD phase
+- suite layer and expected runtime
+- confidence-per-minute proof value
+- fixture/mock boundary
+- low-value tests to avoid
 - public verification path
 - verification command
 - completion evidence

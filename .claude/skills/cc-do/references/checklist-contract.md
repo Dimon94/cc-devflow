@@ -19,8 +19,8 @@ Execution mistakes are usually skipped basics: wrong task, private seam tests, m
 ## Required Checks
 
 - [ ] current task can be restated from `task.md` and repo evidence
-- [ ] Red test name, public seam, behavior, mock boundary, Green minimality guard, and refactor candidate are known
-- [ ] Red evidence fails for the intended behavior before Green when TDD applies
+- [ ] Red test name, public seam, behavior, suite layer/runtime, proof value, mock boundary, Green minimality guard, and refactor candidate are known
+- [ ] Red evidence fails for the intended behavior before Green when TDD applies, and would catch a real bug/regression/user-visible failure rather than only a snapshot, duplicate happy path, no-op smoke, internal call-count, or overmocked implementation detail
 - [ ] task status is updated through `scripts/mark-task-complete.sh`, not manual checkbox editing
 - [ ] verification ran or blocker is explicit and the completed slice is committed
 

@@ -1,5 +1,11 @@
 # CC-Plan Skill Changelog
 
+## v3.18.1 - 2026-05-23
+
+- add confidence-per-minute test strategy planning so each behavior task freezes suite layer, command/runtime expectation, proof value, fixture/mock boundary, and low-value tests to avoid
+- update the task template with a `Test Strategy Shape` section and per-task test-value fields so `cc-do` does not invent or accept decorative Red evidence
+- extend the planning review gate with test proof value and focused suite shape while keeping the single `task.md` artifact contract
+
 ## v3.18.0 - 2026-05-22
 
 - expand the task template Failure Ledger with `Source`, `Trigger`, and `Escape class` fields for eligible review escape candidates

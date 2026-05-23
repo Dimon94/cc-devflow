@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.18.0
+version: 3.18.1
 description: Use when a requirement, roadmap item, or bug needs scope clarification, design decisions, and executable task breakdown before coding starts.
 triggers:
   - 帮我规划这个需求
@@ -43,6 +43,7 @@ entry_gate:
   - Use `../cc-dev/references/user-choice-output-protocol.md` for every user-facing decision question; prefer Codex `request_user_input` or Claude Code structured input when available, and use the fixed A/B/C text block only as fallback.
 exit_criteria:
   - "`task.md#Contract Summary` states the approved solution, non-goals, frozen decisions, work branch, user stories, decision questions, planning-flow results, review gate, verification expectations, and open assumptions."
+  - "`task.md#Contract Summary` records the test strategy shape: suite layer, command/runtime expectation, proof value, fixture/mock boundary, low-value tests to avoid, and the smallest high-signal feedback loop."
   - "`task.md#Contract Summary` contains an ASCII Branch Chain Analysis for requirement impact and business impact, tracing upstream sources, current code path, deepest affected layer, downstream blast radius, and prompt/provider contracts when involved; tree connector characters stay ASCII while node text follows the configured output language."
   - "`task.md` contains executable task blocks generated from `assets/TASKS_TEMPLATE.md`."
   - "Non-trivial plans complete product/creative discovery before engineering design: worth doing, desired product shape, narrowest wedge, 10x/better version, and do-nothing consequence."

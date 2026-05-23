@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-003.v1`
 - Design version: `design.v1`
-- CC-Plan skill version: `3.18.0`
+- CC-Plan skill version: `3.18.1`
 - Work branch: `REQ/003-audit-log-export`
 - Output language: en
 - Source roadmap item: `RM-020`
@@ -70,6 +70,13 @@ OUTCOME: admins stop manually copying weekly audit summaries
   - export format
   - panel placement
 - Parallel boundaries: none
+- Test Strategy Shape:
+  - Suite layer: component behavior test
+  - Expected command / runtime: `npm test -- src/admin/AuditSummaryPanel.test.tsx`; fast focused suite
+  - Proof value: catches missing CSV download action and visible-row/export divergence
+  - Fixture / mock boundary: real visible row data; mock only browser download/blob boundary
+  - Low-value tests to avoid: broad snapshots, duplicate render happy paths, internal blob-call assertions
+  - Focused suite shape: prove visible rows export through the panel action, then keep the same command through Green
 
 ## Failure Ledger
 
@@ -108,6 +115,10 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --manifest docs/examples/local-handoff
 - [x] T001 [TEST] Add a failing test for the missing download action (dependsOn:none) `src/admin/AuditSummaryPanel.test.tsx`
   Goal: 证明现在还没有可下载的 summary export。
   TDD phase: red
+  Suite layer / runtime: component behavior; fast focused suite.
+  Confidence value: catches the missing user-visible download action.
+  Fixture/mock boundary: real visible row data; mock only browser download/blob.
+  Low-value tests to avoid: broad snapshots and internal blob-call assertions.
   Files: `src/admin/AuditSummaryPanel.test.tsx`
   Read first: `design.md`, `src/admin/AuditSummaryPanel.tsx`
   Verification: `npm test -- src/admin/AuditSummaryPanel.test.tsx`
