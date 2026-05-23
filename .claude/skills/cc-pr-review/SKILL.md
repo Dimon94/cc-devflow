@@ -1,16 +1,20 @@
 ---
 name: cc-pr-review
-version: 1.6.0
-description: Use in a separate session to review one remote GitHub PR before landing, including PR-scoped complexity hotspot review. It reports findings from PR truth and current diff without writing process files.
+version: 1.7.0
+description: Use in a separate session to review one remote GitHub PR before landing, including PR-scoped complexity, hardening, and productization risk. It reports findings from PR truth and current diff without writing process files.
 triggers:
   - review 这个 PR
   - 单独会话 review PR
   - review remote PR
   - pre-landing PR review
   - PR 复杂度专项 review
+  - PR hardening review
+  - PR production readiness review
 reads:
   - ../cc-review/SKILL.md
   - ../cc-check/SKILL.md
+  - ../cc-review/references/hardening-specialists.md
+  - ../cc-review/references/productization-surfaces.md
   - GitHub pull request
   - devflow/changes/<change-key>/task.md
   - devflow/changes/<change-key>/handoff/pr-brief.md
@@ -27,17 +31,22 @@ effects:
   - remote PR review
   - finding triage
   - PR-scoped complexity hotspot review
+  - PR-scoped hardening specialist review
+  - PR-scoped productization surface review
   - fix or landing recommendation
 entry_gate:
   - Freeze PR title, body, commits, head branch, base branch, checks, linked issues, and current diff from GitHub.
   - Read local `task.md` and `pr-brief.md` when the PR links to a change key.
   - When the PR diff touches loops, rendering, repeated scans, database/API iteration, large-input paths, or performance-sensitive code, select the built-in complexity facet and treat scanner output only as leads.
+  - When the PR diff touches auth, secrets, untrusted input, telemetry, long-running work, release/deploy gates, broad test-suite trust, or product control surfaces, select the relevant hardening or productization facets from `cc-review` references.
   - Do not merge, push main, or write local process files.
 exit_criteria:
   - Review result is approved-for-landing, changes-requested, needs-clarification, or blocked.
   - Findings cite concrete PR diff, command output, checks, local task facts, or missing evidence.
   - Non-trivial findings include an ASCII Branch Chain that records evidence, diagnosis, Phenomenal/Essential/Philosophical layers, causal path, at least three upstream layers from PR source to contract/input proof, at least three downstream layers from first affected seam to landing/release risk, changed node, and route; tree connector characters stay ASCII while node text follows the configured output language.
   - Complexity findings include current pattern, estimated current complexity, recommended change, estimated complexity after, risk level, and tests or measurements needed.
+  - Selected hardening specialists end as checked, skipped with reason, or blocked with missing evidence; findings name reviewed surface, risk gate, proof path, and residual risk.
+  - Selected productization findings name the missing or duplicated product control surface, affected workflow, smallest product contract or fix, validation path, and residual risk.
   - Required fixes route back to cc-dev or cc-do; clean PRs route to cc-pr-land.
   - No local process file is created.
 reroutes:
@@ -59,6 +68,7 @@ tool_budget:
 
 1. `references/checklist-contract.md`
 2. Complexity hotspot review, when selected: `references/complexity-optimization-playbook.md` and `references/complexity-report-template.md`
+3. Hardening and productization facets, when selected: `../cc-review/references/hardening-specialists.md` and `../cc-review/references/productization-surfaces.md`
 
 Review remote PR reality. Do not merge.
 
@@ -73,6 +83,33 @@ Build the review from:
 Complexity hotspot review is built in. It must not call or depend on an external `complexity-optimizer` skill. Use only the local `scripts/analyze_complexity.py` and local complexity references copied into this skill directory.
 
 Use the complexity facet when PR changes touch nested scans, repeated membership/search, sort-in-loop, pairwise comparisons, render recomputation, N+1 database/API loops, large input paths, or performance-sensitive shared utilities. Scanner output is only a lead; accepted findings must cite the PR diff or checked-out file lines and explain behavior-equivalence risk.
+
+Hardening and productization facets are also built in through `cc-review`
+references. They are PR-scoped lenses, not quotas. Select only the surfaces
+present in the PR diff, linked task, or PR body:
+
+- `security-hardening`: auth, roles, sessions, API keys, secrets, untrusted
+  input, uploads/downloads, SSRF/network egress, webhooks, CORS/CSRF, rate
+  limits, sensitive logging, or dependency risk.
+- `observability-hardening`: opaque failures, long-running work, queues/jobs,
+  provider calls, deploy/boot failures, structured logs, request IDs, traces,
+  metrics, dashboards, alerting, or user-visible status.
+- `release-readiness-hardening`: env/runtime config, migrations, deploy path,
+  health/readiness, smoke tests, rollback, feature flags, staging/production
+  proof, or post-deploy monitoring.
+- `test-strategy-hardening`: broad suite trust, flaky/skipped/slow tests,
+  missing contract/regression tests, overmocking, low-value snapshots, missing
+  e2e/visual/smoke coverage, or weak proof value.
+- Productization surface: shared action layer, programmatic API, agent docs,
+  audit trail, admin/manageability UI, feature flags, idempotency, or operator
+  paths.
+
+For every selected facet, close it as `checked`, `skipped:<reason>`, or
+`blocked:<missing evidence>`. A finding must name the reviewed surface, violated
+control or missing product surface, risk gate, proof path, smallest safe fix,
+route, and residual risk. Do not say the PR is secure, observable, ready to
+ship, or productized; say which PR surfaces were reviewed and what remains
+uncertain.
 
 Broad scan command:
 
@@ -171,7 +208,8 @@ Return PR review results in this shape:
 2. Evidence: PR diff, checks, task facts, command output, or missing proof.
 3. Findings: ordered by severity, each with file/line or PR hunk plus evidence, diagnosis, cognitive layers, causal path, three upstream layers, and three downstream layers when non-trivial.
 4. Complexity: checked, skipped with reason, or findings.
-5. Route: `cc-pr-land`, `cc-dev`, `cc-review`, or `stop`.
+5. Hardening/productization: selected facets checked, skipped with reason, blocked with missing evidence, or findings.
+6. Route: `cc-pr-land`, `cc-dev`, `cc-review`, or `stop`.
 
 ## Checklist Contract
 

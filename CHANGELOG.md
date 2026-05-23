@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Extended `cc-dev` with explicit optional `cc-review` gates so autonomous PDCA/IDCA runs review complex or high-risk plans, investigations, and implementations before continuing, or records concrete low-risk skip reasons.
 - Extended `cc-next` Goal Packets with review gate hints so complexity, hardening, test-strategy, and release-risk signals survive handoff into `cc-dev`.
 - Extended `cc-roadmap` ready RM handoffs with durable review gate hints rendered through `roadmap.json`, `BACKLOG.md`, and roadmap lookup output.
+- Extended `cc-pr-review` with PR-scoped hardening and productization facets so remote pre-landing reviews can block or route security, observability, release, test-strategy, API, audit, admin, feature-flag, idempotency, and operator risks.
 
 ## [4.5.25] - 2026-05-22
 

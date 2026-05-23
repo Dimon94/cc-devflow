@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.7.0 - 2026-05-24
+
+- add PR-scoped hardening specialist selection for security, observability, release-readiness, and test-strategy risk
+- add PR-scoped productization surface review so API, agent, audit, admin, feature flag, idempotency, and operator gaps can block or route landing
+- require selected PR hardening/productization facets to close as checked, skipped, or blocked with proof path and residual risk
+
 ## v1.6.0 - 2026-05-19
 
 - add mandatory Phenomenal, Essential, and Philosophical cognitive layers to non-trivial PR review chains

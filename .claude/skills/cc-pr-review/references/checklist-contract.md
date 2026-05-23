@@ -22,6 +22,7 @@ PR review becomes unsafe when local refs or old chat state substitute for live P
 - [ ] `task.md` and `pr-brief.md` are read when the PR links to a change key
 - [ ] findings cite PR diff, command/check output, task facts, or missing evidence
 - [ ] non-trivial risk includes an ASCII PR Review Chain
+- [ ] hardening/productization facets are selected, skipped with reason, or blocked with missing evidence when the PR touches production risk or product control surfaces
 - [ ] result is approved-for-landing, changes-requested, needs-clarification, or blocked
 
 ## Exit Rule

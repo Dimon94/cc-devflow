@@ -17,9 +17,10 @@
 5. finding 必须有证据。
 6. 没有证据就写 unknown，不伪装成 bug。
 7. 宽 diff 使用 intent/regression、security/privacy、performance/reliability、complexity/hotspots、contracts/coverage 风险 lane。
-8. subAgent reviewer 只读；主线程负责验证和去重。
-9. PR head 或 checks 改了，重新 refresh。
-10. 干净 PR 的下一步是 `cc-pr-land`，不是在本 skill 里顺手合并。
+8. 触碰 auth、secret、输入、telemetry、release、测试信任或产品控制面的 PR，选择对应 hardening / productization facet；不相关时写明 skip reason。
+9. subAgent reviewer 只读；主线程负责验证和去重。
+10. PR head 或 checks 改了，重新 refresh。
+11. 干净 PR 的下一步是 `cc-pr-land`，不是在本 skill 里顺手合并。
 
 ## Required Outputs
 
@@ -28,6 +29,7 @@
 - Output-language check: ASCII connectors only; labels and finding text follow the PR/task/handoff language
 - Covered lanes
 - Complexity hotspot coverage when the PR touches loops, rendering, repeated scans, database/API iteration, or large-input paths
+- Hardening/productization facet coverage when the PR touches production risk or product control surfaces
 - Findings triage
 - Checks status
 - Verdict

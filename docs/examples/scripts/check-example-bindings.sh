@@ -35,21 +35,19 @@ REQ_DO_VERSION="$(skill_version cc-do)"
 REQ_CHECK_VERSION="$(skill_version cc-check)"
 REQ_ACT_VERSION="$(skill_version cc-act)"
 
-for pair in \
-  "cc-roadmap:$ROADMAP_VERSION" \
-  "cc-plan:$REQ_PLAN_VERSION" \
-  "cc-do:$REQ_DO_VERSION" \
-  "cc-check:$REQ_CHECK_VERSION" \
-  "cc-act:$REQ_ACT_VERSION"
-do
+while IFS= read -r pair; do
   skill="${pair%%:*}"
-  version="${pair##*:}"
-  expected="$(jq -r --arg skill "$skill" '.skills[$skill]' "$BINDINGS_FILE")"
+  expected="${pair##*:}"
+  version="$(skill_version "$skill")"
+  if [[ -z "$version" ]]; then
+    echo "Binding references missing or unversioned skill: $skill" >&2
+    exit 1
+  fi
   if [[ "$expected" != "$version" ]]; then
     echo "Binding mismatch for $skill: bindings=$expected current=$version" >&2
     exit 1
   fi
-done
+done < <(jq -r '.skills | to_entries[] | "\(.key):\(.value)"' "$BINDINGS_FILE")
 
 while IFS= read -r encoded; do
   example_id="$(jq -r '.id' <<<"$encoded")"
