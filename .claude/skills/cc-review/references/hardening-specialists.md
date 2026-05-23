@@ -23,6 +23,30 @@ request.
    review. Return findings in the normal `cc-review` output or write eligible
    plan/investigation findings into `task.md`.
 
+## Hardening Proof Protocol
+
+Use this protocol for every selected specialist. It is the shared shape behind
+security, observability, release-readiness, and test-strategy review.
+
+1. Surface map: name the reviewed routes, jobs, webhooks, providers, files,
+   configs, UI/admin flows, migrations, test suites, release path, or missing
+   evidence. Do not review an unnamed surface.
+2. Risk gate: classify each real issue as `must-fix-before-release`,
+   `should-fix-soon`, or `accepted/deferred-risk`. The gate must follow impact
+   and exploit/failure likelihood, not the amount of prose available.
+3. Existing controls: state what already protects the surface, what is absent,
+   and whether the absence is acceptable for the current product shape.
+4. Proof path: name the test, command, smoke, screenshot, log/event, dashboard,
+   dependency audit, or manual path that proves or would prove the control.
+5. Skips and blockers: skipped specialists need a reason tied to scope; blocked
+   specialists need the missing evidence or environment.
+6. Residual risk: every specialist closes with what remains uncertain after the
+   current evidence.
+
+Do not say an app is secure, observable, ready to ship, or well tested. Say what
+scope was reviewed, which gates passed, which were skipped or blocked, and what
+risk remains.
+
 ## Specialist Selection
 
 | Specialist | Select when current scope touches |
@@ -68,9 +92,12 @@ flags, route to `cc-plan` or `cc-do`; do not implement from the review pass.
 
 A security finding should include:
 
+- reviewed attack surface
 - vulnerable boundary and actor
 - exploit or bypass sketch
 - current missing control
+- risk gate: `must-fix-before-release`, `should-fix-soon`, or
+  `accepted/deferred-risk`
 - smallest behavior-preserving fix
 - focused test or verification path
 - residual risk after the fix
@@ -105,9 +132,12 @@ read path, trust boundary, or secret path.
 
 An observability finding should include:
 
+- reviewed operation or journey
 - incident question that cannot be answered today
 - missing signal or broken correlation point
 - privacy/redaction constraint
+- risk gate: `must-fix-before-release`, `should-fix-soon`, or
+  `accepted/deferred-risk`
 - proposed event/log/metric/span shape
 - smoke or failure-path verification
 - residual blind spot
@@ -142,9 +172,12 @@ redaction rule.
 
 A release-readiness finding should include:
 
+- reviewed release surface
 - release gate that is missing, stale, or impossible to prove
 - concrete release failure mode
 - affected deploy/migration/config path
+- risk gate: `must-fix-before-release`, `should-fix-soon`, or
+  `accepted/deferred-risk`
 - required gate or rollback fix
 - command or smoke evidence needed
 - accepted risk if deferred
@@ -182,10 +215,13 @@ reason, and risk.
 
 A test-strategy finding should include:
 
+- reviewed suite or behavior layer
 - behavior or contract currently unprotected
 - why existing tests do not catch the failure
 - minimal high-signal test shape
 - fixture/mock boundary requirements
+- risk gate: `must-fix-before-release`, `should-fix-soon`, or
+  `accepted/deferred-risk`
 - expected suite command and runtime impact
 - whether to keep, rewrite, delete, or quarantine affected tests
 
@@ -199,10 +235,12 @@ When specialists are selected, include this information inside the normal
 
 ```text
 Hardening specialists:
+- surface-map: <routes/jobs/providers/configs/suites/release path reviewed or blocked>
 - security-hardening: checked | skipped:<reason> | blocked:<missing evidence>
 - observability-hardening: checked | skipped:<reason> | blocked:<missing evidence>
 - release-readiness-hardening: checked | skipped:<reason> | blocked:<missing evidence>
 - test-strategy-hardening: checked | skipped:<reason> | blocked:<missing evidence>
+- residual-risk: <remaining uncertainty after evidence>
 ```
 
 Findings still come first and stay ordered by severity. The specialist list is

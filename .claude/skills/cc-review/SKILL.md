@@ -1,6 +1,6 @@
 ---
 name: cc-review
-version: 2.13.0
+version: 2.13.1
 description: >-
   Use when a plan, bug fix, PR, implementation diff, complexity hotspot, or
   structural maintainability hotspot needs findings, production hardening
@@ -98,7 +98,7 @@ exit_criteria:
   - If a complexity report is requested, the response includes scope analyzed, detected stack/test/build commands, top findings ranked by likely impact, patch status, files modified yes/no, and residual verification risk.
   - If the complexity facet recommends a repair, behavior preservation is proven through relevant tests, ordering/identity/cache/authorization checks, and benchmarks or measurements when the improvement is non-obvious or performance-critical.
   - If the structural quality facet is selected, findings include the current structure, missed code-judo simplification, branching or abstraction smell, canonical ownership boundary, recommended restructuring, behavior-preserving argument, and approval/blocking verdict.
-  - If hardening specialists are selected, every selected specialist is checked, skipped with reason, or blocked, and findings include the violated security, observability, release, or test-strategy control plus evidence, proof path, and residual risk.
+  - If hardening specialists are selected, every selected specialist is checked, skipped with reason, or blocked, and findings include the reviewed surface map, violated security, observability, release, or test-strategy control, evidence, proof path, risk gate, and residual risk.
   - If the productization surface facet is selected, findings name the missing or duplicated action, API, agent, audit, admin, feature-flag, idempotency, or operator surface, with repo evidence, route, validation path, and residual risk.
   - Subagent findings, when used, are accepted, merged, downgraded, or rejected by the main thread before final output.
   - If no issues are found, the answer says so and names residual test or evidence risk.
@@ -239,7 +239,7 @@ Hardening specialists are conditional lenses, not parallel workflow skills. Load
 `references/hardening-specialists.md` for selected security, observability,
 release-readiness, or test-strategy risk. Selected specialists must end as
 checked, skipped with reason, or blocked; findings must name the violated
-control, evidence, proof path, and residual risk.
+control, evidence, proof path, risk gate, and residual risk.
 
 ## Productization Surface Review
 

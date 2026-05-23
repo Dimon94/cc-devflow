@@ -1,5 +1,11 @@
 # CC-Review Changelog
 
+## v2.13.1 - 2026-05-23
+
+- add a shared Hardening Proof Protocol so selected specialists must map reviewed surfaces, classify risk gates, name existing controls, prove or block evidence, and close with residual risk
+- require security, observability, release-readiness, and test-strategy findings to include risk gates: `must-fix-before-release`, `should-fix-soon`, or `accepted/deferred-risk`
+- extend the hardening output shape with `surface-map` and `residual-risk` coverage lines
+
 ## v2.13.0 - 2026-05-23
 
 - add the productization surface review facet for demo-to-product readiness, shared action layers, programmatic APIs, agent docs, audit trails, admin/manageability UI, feature flags, idempotency, and operator paths
