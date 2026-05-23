@@ -21,6 +21,7 @@ Ship failures usually come from stale verification, implicit postmortem decision
 - [ ] `task.md`, Git status, latest commits, validation evidence, and PR state are current
 - [ ] one ship mode is selected: create-pr, update-pr, local-handoff, or post-merge-closeout
 - [ ] verification did not change during Act; otherwise route to `cc-check`
+- [ ] release-readiness gates are stated as passed, failed, skipped with reason, blocked with missing evidence, or not applicable; rollback/watch path is named when relevant
 - [ ] postmortem trigger script ran and result is explicit
 - [ ] PR brief is rebuilt from current diff, commits, task, and verification rather than inherited prose
 

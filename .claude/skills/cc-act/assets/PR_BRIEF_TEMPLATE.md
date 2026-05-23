@@ -33,6 +33,17 @@
 - Result:
 - Key observation:
 
+## Release Readiness
+
+| Gate | Status | Evidence / reason | Rollback / watch |
+|------|--------|-------------------|------------------|
+| Local quality | passed / failed / skipped / blocked / not-applicable |  |  |
+| Runtime config | passed / failed / skipped / blocked / not-applicable |  |  |
+| Migrations / data | passed / failed / skipped / blocked / not-applicable |  |  |
+| Deploy / health | passed / failed / skipped / blocked / not-applicable |  |  |
+| Smoke / cleanup | passed / failed / skipped / blocked / not-applicable |  |  |
+| Rollback / watch | passed / failed / skipped / blocked / not-applicable |  |  |
+
 ## PR Body Draft
 
 ```markdown
@@ -46,5 +57,5 @@
 
 ## Risk / Rollback
 
-- <risk and rollback>
+- <risk, rollback, and watch items>
 ```

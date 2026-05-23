@@ -1,6 +1,6 @@
 ---
 name: cc-act
-version: 1.14.0
+version: 1.14.1
 description: Use when verified work must be committed, handed off, pushed, or turned into a PR with the smallest durable delivery surface.
 triggers:
   - 准备提 PR
@@ -42,6 +42,7 @@ effects:
 entry_gate:
   - "Resolve the CLI with `../cc-dev/scripts/resolve-cc-devflow.sh require config`."
   - "Read `task.md`, Git status, latest commits, validation evidence, and current PR state when relevant."
+  - "Identify release-readiness gates from the verified scope: local checks, config/env, migrations/data, deploy/health, smoke/cleanup, rollback, and watch items. Mark irrelevant gates as skipped with reason instead of inventing release work."
   - "Read `task.md#Failure Ledger`; only confirmed entries marked `Keep for postmortem: yes` are long-term incident input, including eligible review escape candidates."
   - "Run `scripts/evaluate-postmortem-trigger.sh --dir <change-dir>` before deciding no incident postmortem is needed."
   - "If verification changed during Act, return to `cc-check`."
@@ -51,6 +52,7 @@ exit_criteria:
   - "All completed work is committed with coherent Conventional Commit messages."
   - "PR mode writes or refreshes only `handoff/pr-brief.md`."
   - "Postmortem trigger gate is explicit: either `POSTMORTEM_REQUIRED=no` is reported, or the incident postmortem path is written with `Workflow Patch Candidate` completed."
+  - "Release-readiness gate status is explicit in PR/handoff output or final response: passed, failed, skipped with reason, blocked with missing evidence, or not applicable."
   - "No process file is created beyond the allowed durable outputs."
   - "Push, PR, or local handoff status is explicit."
 reroutes:
@@ -105,7 +107,7 @@ tool_budget:
 
 ## PR Brief
 
-`pr-brief.md` 只服务 PR / handoff，内容来自当前 Git diff、commits、`task.md` 和验证命令。不要继承旧 PR body；每次创建或更新 PR 前重建。
+`pr-brief.md` 只服务 PR / handoff，内容来自当前 Git diff、commits、`task.md`、验证命令和 release-readiness gate。不要继承旧 PR body；每次创建或更新 PR 前重建。
 
 ## Postmortem
 
@@ -158,7 +160,8 @@ Keep the final response short and fixed:
 2. Verification: fresh evidence reused from cc-check or reroute reason.
 3. Delivery: PR URL, updated PR, local handoff path, or post-merge closeout state.
 4. Postmortem: `POSTMORTEM_REQUIRED=no` or incident path written with workflow patch candidate.
-5. Route: terminal state or next skill.
+5. Release: gate status, rollback/watch path, or explicit not-applicable reason.
+6. Route: terminal state or next skill.
 
 ## Checklist Contract
 

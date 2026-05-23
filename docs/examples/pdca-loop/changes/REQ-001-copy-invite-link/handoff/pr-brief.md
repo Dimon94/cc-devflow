@@ -43,6 +43,17 @@
 - Documentation release: README and CLAUDE unchanged for this scoped example
 - PR body accuracy: regenerate the PR body from this brief, current validation evidence, and current diff
 
+## Release Readiness
+
+| Gate | Status | Evidence / reason | Rollback / watch |
+|------|--------|-------------------|------------------|
+| Local quality | passed | `npm test -- src/features/share/ShareDialog.test.tsx`; `npm run lint -- src/features/share/ShareDialog.tsx` | rerun focused component suite |
+| Runtime config | not-applicable | no env or startup config changed | no config rollback needed |
+| Migrations / data | not-applicable | no data model or persistence change | no migration rollback needed |
+| Deploy / health | skipped | example PR brief does not deploy | target repo deploy gate required before release |
+| Smoke / cleanup | not-applicable | no temporary records are created | no cleanup needed |
+| Rollback / watch | passed | revert dialog and test changes together | watch copied-state feedback after merge |
+
 ## Pull Request Body Contract
 
 - Language source: `Output language: en`

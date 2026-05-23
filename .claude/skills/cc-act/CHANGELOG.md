@@ -1,5 +1,11 @@
 # CC-Act Skill Changelog
 
+## v1.14.1 - 2026-05-23
+
+- add a release-readiness gate ledger to closeout so PR and handoff output states local checks, config/env, migrations/data, deploy/health, smoke/cleanup, rollback, and watch items
+- require gates to be marked passed, failed, skipped with reason, blocked with missing evidence, or not applicable instead of implying generic release readiness
+- update the PR brief template with release readiness evidence and rollback/watch columns while keeping `pr-brief.md` as the only handoff artifact
+
 ## v1.14.0 - 2026-05-22
 
 - compress eligible `cc-review` review escape candidates only after `cc-check` classifies them as confirmed ledger lessons

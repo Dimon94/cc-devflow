@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Extended `cc-review` hardening output with observability incident questions and a release gate ledger so production readiness findings carry operator questions, safe telemetry shape, gate status, rollback, and watch-path evidence.
 - Extended `cc-plan` and `cc-do` with confidence-per-minute TDD gates so plans freeze suite layer, proof value, runtime, fixture/mock boundaries, and low-value tests to avoid before execution can treat Red evidence as valid.
 - Extended `cc-check` with the same confidence-per-minute verification gate so green tests must prove the changed behavior before a pass verdict.
+- Extended `cc-act` with a release-readiness gate ledger for PR and handoff output, covering local checks, config/env, migrations/data, deploy/health, smoke/cleanup, rollback, and watch items.
 
 ## [4.5.25] - 2026-05-22
 

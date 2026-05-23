@@ -18,10 +18,13 @@ Everything else is Git history, PR history, or final response.
 1. Verify Git status and latest commits.
 2. Run or cite the current validation commands.
 3. Commit any remaining owned changes.
-4. Build `pr-brief.md` only when PR/handoff needs it.
-5. Run `evaluate-postmortem-trigger.sh`; write incident postmortem when it returns `POSTMORTEM_REQUIRED=yes`.
-6. Push/create/update PR when requested and available.
-7. Archive completed change only after merge or explicit closeout.
+4. State release-readiness gates: local checks, config/env, migrations/data,
+   deploy/health, smoke/cleanup, rollback, and watch items. Mark skipped,
+   blocked, or not applicable gates honestly.
+5. Build `pr-brief.md` only when PR/handoff needs it.
+6. Run `evaluate-postmortem-trigger.sh`; write incident postmortem when it returns `POSTMORTEM_REQUIRED=yes`.
+7. Push/create/update PR when requested and available.
+8. Archive completed change only after merge or explicit closeout.
 
 ## Blockers
 
