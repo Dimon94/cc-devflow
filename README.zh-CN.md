@@ -124,7 +124,7 @@ planning 之后的每个阶段都从 `task.md`、当前 Git history/status，以
 
 ## 验证与交付门禁
 
-`cc-check` 现在把 QA 当成反馈环问题，而不是只看测试是否绿。Bugfix 和行为变更需要记录证明现实的 loop、expected / actual、复现步骤、测试边界质量；如果没有干净的 public test seam，要留下架构 follow-up。它还会把 `task.md#Failure Ledger` 里的失败记录分类成 confirmed lesson、noise 或 unresolved risk。
+`cc-check` 现在把 QA 当成反馈环问题，而不是只看测试是否绿。Bugfix 和行为变更需要记录证明现实的 loop、expected / actual、复现步骤、confidence-per-minute proof value、测试边界质量；如果没有干净的 public test seam，要留下架构 follow-up。绿灯但没有证明价值的测试、宽泛 snapshot、重复 happy path、no-op smoke、脆弱内部断言、过度 mock 自家模块，会退回 `cc-do` 或 `cc-plan`，不能支撑 pass。它还会把 `task.md#Failure Ledger` 里的失败记录分类成 confirmed lesson、noise 或 unresolved risk。
 
 `cc-act` 会把这些证据带进 PR brief、handoff 和 release note。它会把 confirmed Failure Ledger 压缩成尸检报告，并要求每份 incident 写出 workflow patch candidate 或明确 no-action。它会在 closeout 检查 source roadmap progress，必要时更新 `devflow/roadmap.json` 并重新生成 `devflow/ROADMAP.md` / `devflow/BACKLOG.md`。Follow-up 必须写成 durable behavior brief，包含 current behavior、desired behavior、key interfaces、acceptance criteria 和 out-of-scope，再回写 roadmap 或 backlog。
 

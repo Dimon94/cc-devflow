@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Extended `cc-review` test-strategy hardening to judge confidence per minute, suite layer/runtime, proof value, and keep/rewrite/delete/quarantine actions.
 - Extended `cc-review` hardening output with observability incident questions and a release gate ledger so production readiness findings carry operator questions, safe telemetry shape, gate status, rollback, and watch-path evidence.
 - Extended `cc-plan` and `cc-do` with confidence-per-minute TDD gates so plans freeze suite layer, proof value, runtime, fixture/mock boundaries, and low-value tests to avoid before execution can treat Red evidence as valid.
+- Extended `cc-check` with the same confidence-per-minute verification gate so green tests must prove the changed behavior before a pass verdict.
 
 ## [4.5.25] - 2026-05-22
 

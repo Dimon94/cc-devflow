@@ -1,6 +1,6 @@
 ---
 name: cc-check
-version: 1.16.0
+version: 1.16.1
 description: Use when a planned or investigated change needs fresh verification evidence and an honest pass/fail/blocked verdict before cc-act.
 triggers:
   - 验收这个需求
@@ -37,7 +37,7 @@ entry_gate:
 exit_criteria:
   - Verdict is exactly pass, fail, or blocked.
   - Every passing statement cites fresh command output, exit status, and what claim it proves.
-  - Behavior changes and bugfixes include feedback-loop and test-quality review.
+  - Behavior changes and bugfixes include feedback-loop, confidence-per-minute, and test-quality review.
   - Any `task.md#Failure Ledger` entry touched by this verification, including review escape candidates, is classified as `confirmed-lesson`, `noise`, or `unresolved-risk`.
   - Current diff is checked against `task.md` for missing scope, scope creep, and unintended file touch.
   - Failures are classified as branch, baseline, environment, external, or unknown.
@@ -101,7 +101,7 @@ NO PASS WITHOUT FRESH EVIDENCE
 1. Read `task.md` and the current diff.
 2. Re-run the smallest trustworthy gate: tests, typecheck, lint, build, browser check, CLI smoke, or domain-specific verifier.
 3. Map each explicit requirement to proof.
-4. Review test quality when behavior changed: red/green proof, public seam, honest fixtures, no private implementation assertions.
+4. Review test quality when behavior changed: red/green proof, public seam, confidence-per-minute proof value, suite layer/runtime, honest fixtures, low-value tests avoided, no private implementation assertions.
 5. Classify any relevant Failure Ledger entries, including review escape candidates:
    - `confirmed-lesson`: verified failure pattern worth compressing at `cc-act`.
    - `noise`: local dead end, transient command issue, or disproven suspicion.
@@ -129,7 +129,7 @@ NO PASS WITHOUT FRESH EVIDENCE
 2. Task Completion：`task.md` 的任务是否真的完成，完成证据是否对应当前 diff。
 3. Requirement Diff：当前改动是否兑现需求，是否有 scope creep、missing requirement、意外文件触点。
 4. Claim Evidence：每个通过声明都有命令、退出码、观察和证明的 claim。
-5. QA Test Quality：red/green、public seam、mock boundary、fixture honesty、test-only API smell。
+5. QA Test Quality：red/green、public seam、confidence-per-minute proof value、suite layer/runtime、mock boundary、fixture honesty、低价值测试规避、test-only API smell。
 6. Behavior Evidence：用户可见 expected / actual / reproduction steps 是否被当前反馈环覆盖。
 7. Review Freshness：本轮 review 是否覆盖当前 HEAD；未 review 要说清风险。
 8. Failure Ownership：失败归属 branch、baseline、environment、external 或 unknown。
@@ -158,9 +158,35 @@ NO PASS WITHOUT FRESH EVIDENCE
 | Build succeeds | build command exit 0 | tests only |
 | Bug fixed | original symptom or regression loop passes | code changed |
 | Regression test works | red -> green evidence | green only |
+| Test strategy is trustworthy | suite layer, command/runtime, proof value, fixture/mock boundary, and low-value tests avoided | coverage number or snapshot count |
 | Requirements met | each task/acceptance mapped to proof | self-report |
 
 缺关键 claim 证据时，结论至少是 `blocked`。
+
+## Confidence Per Minute
+
+`cc-check` judges whether the executed suite carries its weight. A passing suite
+can still be `fail` or `blocked` when it cannot prove the changed behavior.
+
+For behavior changes and bugfixes, name:
+
+- suite layer: unit, contract/schema, integration, e2e/browser, visual, smoke,
+  migration/data, release, or domain verifier.
+- command/runtime: the focused command that ran now and whether runtime is
+  acceptable for the gate.
+- proof value: the bug, regression, product contract, permission boundary,
+  external/provider parse, migration, or user-visible failure the suite would
+  catch.
+- fixture/mock boundary: real contract fields used and external boundaries
+  mocked; internal self-module mocks are suspect.
+- low-value tests avoided or repaired: broad snapshots, duplicate happy paths,
+  no-op smoke tests, brittle implementation assertions, tests whose names
+  promise more than assertions prove, and fixtures that hide coupling.
+
+If a green suite does not answer the required behavior question, route to
+`cc-do` for a better test or `cc-plan` when the planned seam is wrong. If the
+right proof requires missing credentials, services, data, or UI access, the
+verdict is `blocked`.
 
 ## Failure Ownership
 
@@ -181,6 +207,6 @@ NO PASS WITHOUT FRESH EVIDENCE
 - Verdict: `pass` / `fail` / `blocked`
 - Evidence: command, exit status, and the claim it proves
 - Review: clean, findings remain, not reviewed, or skipped with reason
-- QA: feedback loop, test quality, and behavior evidence when applicable
+- QA: feedback loop, confidence-per-minute, test quality, and behavior evidence when applicable
 - Diff: scope match, missing scope, or scope drift
 - Route: `cc-act` / `cc-do` / `cc-investigate` / `cc-plan` / `stop`

@@ -1,5 +1,11 @@
 # CC-Check Skill Changelog
 
+## v1.16.1 - 2026-05-23
+
+- add confidence-per-minute verification so behavior and bugfix passes must name suite layer, command/runtime, proof value, fixture/mock boundary, and low-value tests avoided
+- treat green but decorative suites as `fail` or `blocked` instead of allowing broad snapshots, duplicate happy paths, no-op smoke tests, brittle internal assertions, or overmocked internals to support a pass
+- update checklist, gate, and review contracts so weak test strategy routes to `cc-do` or `cc-plan`
+
 ## v1.16.0 - 2026-05-22
 
 - classify `cc-review` review escape candidates in `task.md#Failure Ledger`

@@ -32,6 +32,7 @@ Skipping a relevant phase requires a concrete reason in the response.
 - `mode`：failing test、curl / HTTP、CLI fixture、browser、trace replay、bisect、differential loop 等
 - `determinism`：反馈是否稳定，flaky 时复现率是多少
 - `signalSharpness`：失败是否指向目标行为，而不是语法、fixture 或 mock 问题
+- `confidencePerMinute`：suite layer、命令/耗时、proof value、fixture/mock boundary，以及是否避开 broad snapshot、重复 happy path、no-op smoke、脆弱内部断言、过度 mock 自家模块
 - `blockedReason`：无法建立 loop 时缺少什么 artifact、权限、服务或输入
 
 没有可信 loop 的 bugfix 默认不能 `pass`。
@@ -45,6 +46,7 @@ Every claim needs proof:
 - build succeeds: build command exit 0
 - bug fixed: original symptom or regression loop now passes
 - regression test works: red then green evidence
+- test strategy is trustworthy: suite layer, command/runtime, proof value, fixture/mock boundary, and low-value tests avoided
 - requirements met: each task or acceptance item mapped to proof
 
 Missing proof is `blocked`, not `pass`.

@@ -108,6 +108,7 @@ Planning handoffs should be evidence-rich before implementation starts:
 - `cc-roadmap` records planning posture, evidence maturity, framing check, dependency graph, and any developer/operator adoption context.
 - `cc-plan` records option roles, implementation surface, decision horizon, error/rescue map, test framework source, coverage quality, confidence-per-minute proof value, focused suite shape, and regression-test requirements when they apply.
 - `cc-do` does not treat decorative Red tests as valid TDD evidence; broad snapshots, duplicate happy paths, no-op smoke tests, brittle internal assertions, and overmocked implementation details must be rewritten or routed back to planning.
+- `cc-check` re-applies that standard before pass: a green suite must name the behavior it proves, the suite layer, command/runtime, fixture/mock boundary, and low-value tests avoided.
 
 Typical public contract fields:
 

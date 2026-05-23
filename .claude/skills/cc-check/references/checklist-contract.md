@@ -21,6 +21,7 @@ Verification is brittle when green commands are treated as equivalent to proven 
 - [ ] `task.md`, current diff, relevant code/tests, PR text, and fresh command output were read
 - [ ] commands were rerun now, not inherited from `cc-do` narration
 - [ ] each passing claim maps to command, exit status, key observation, and requirement
+- [ ] behavior or bugfix evidence includes confidence-per-minute proof value: suite layer, command/runtime, real bug/regression/user-visible failure caught, fixture/mock boundary, and low-value tests avoided
 - [ ] diff is checked for missing scope, scope creep, and unintended file touch
 - [ ] failures are owned as branch, baseline, environment, external, or unknown
 
