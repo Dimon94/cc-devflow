@@ -128,6 +128,26 @@ read path, trust boundary, or secret path.
 - Validation: success, failure, retry, cancel, and timeout paths emit distinct,
   correlated, non-duplicated telemetry.
 
+### Incident Question Protocol
+
+Observability review answers incident questions, not "does logging exist?"
+For each critical journey or finding, test whether an operator can answer:
+
+1. Which user action, route, job, webhook, provider call, or deploy step failed?
+2. What is the current state: success, running, retrying, canceled, timed out,
+   validation/auth/provider/internal failure, or unknown?
+3. Which safe identifiers connect the user-visible status to logs, metrics,
+   spans, job rows, provider run IDs, and admin/support views?
+4. Which provider, model, region, version, feature flag, migration, or build was
+   involved without logging private content or secrets?
+5. What is the next action: retry, wait, cancel, rollback, user correction,
+   operator intervention, or escalation?
+
+Classify each gap as correlation break, state ambiguity, error taxonomy gap,
+latency/cost blind spot, unsafe redaction, duplicate/noisy telemetry, or
+user/admin invisibility. The fix must name the event/log/metric/span fields and
+the success or failure path that proves them.
+
 ### Finding Proof
 
 An observability finding should include:
@@ -167,6 +187,39 @@ redaction rule.
 - Rollback: code, config, data, and feature-flag rollback paths are concrete.
 - Post-deploy: logs, metrics, dashboards, 4xx/5xx spikes, provider failures,
   boot errors, and watch items are checked or explicitly blocked.
+
+### Release Gate Ledger
+
+Release-readiness review turns "can we ship?" into gate status. Include a
+compact gate ledger in the normal `cc-review` output, not a new file.
+
+Gate status values are `passed`, `failed`, `skipped:<reason>`,
+`blocked:<missing evidence>`, or `not-applicable:<reason>`. A passed gate needs
+command output, CI/deploy truth, smoke evidence, config evidence, log/metric
+evidence, or explicit product scope proof; intent does not pass a gate.
+
+Minimum gates when relevant:
+
+- Git/version/target: branch, dirty files, version/changelog/package, CI, PR,
+  tag, or release target.
+- Local quality: typecheck, lint, unit, build, focused integration, e2e/visual,
+  or domain verifier selected from touched surfaces.
+- Runtime config: required env vars, startup validation, production-only config,
+  and clear boot failures.
+- Migrations/data: ordering, compatibility, idempotency, backup, rollback, and
+  locking risk.
+- Deploy/health: deploy command, platform config, artifact, health/readiness,
+  and provider dependency checks.
+- Rollout control: feature flag, kill switch, fallback, or accepted no-flag
+  reason.
+- Smoke/cleanup: production-shaped smoke creates temporary data, proves critical
+  routes/auth/persistence/providers, cleans up, and verifies no residue.
+- Rollback/watch: concrete rollback path plus post-deploy logs, dashboards,
+  alerts, 4xx/5xx, provider failures, boot errors, and named watch items.
+
+For each failed or blocked gate, name the smallest fix, route, required proof,
+and rollback or watch path. For each skipped gate, name the owner or decision
+source when available, reason, and accepted risk.
 
 ### Finding Proof
 
@@ -265,7 +318,9 @@ Hardening specialists:
 - surface-map: <routes/jobs/providers/configs/suites/release path reviewed or blocked>
 - security-hardening: checked | skipped:<reason> | blocked:<missing evidence>
 - observability-hardening: checked | skipped:<reason> | blocked:<missing evidence>
+- observability-incident-questions: <answered | finding:<question> | skipped:<reason> | blocked:<missing evidence>>
 - release-readiness-hardening: checked | skipped:<reason> | blocked:<missing evidence>
+- release-gate-ledger: <passed/failed/skipped/blocked gates with evidence summary>
 - test-strategy-hardening: checked | skipped:<reason> | blocked:<missing evidence>
 - residual-risk: <remaining uncertainty after evidence>
 ```

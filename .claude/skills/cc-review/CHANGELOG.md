@@ -1,5 +1,11 @@
 # CC-Review Changelog
 
+## v2.13.3 - 2026-05-23
+
+- add an observability incident-question protocol so findings answer what operators cannot diagnose, what safe signal shape is missing, and how success/failure telemetry would prove it
+- add a release gate ledger shape for release-readiness review, with passed/failed/skipped/blocked gate status, evidence, route, rollback, and watch-path expectations
+- require hardening output coverage to surface incident-question and release-gate evidence inside the normal `cc-review` response without creating new process artifacts
+
 ## v2.13.2 - 2026-05-23
 
 - add a confidence-per-minute protocol to the test-strategy hardening specialist
