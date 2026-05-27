@@ -2,13 +2,13 @@
 
 ## Diagnosis
 
-Landing risk concentrates at unauthenticated GitHub reads, stale reviews, conflict resolution by guesswork, and unproven main parity.
+Landing risk concentrates at unauthenticated GitHub reads, stale reviews, lost review-gate coverage, conflict resolution by guesswork, and unproven main parity.
 
 ## Checklist Mode
 
 - Mode: do-confirm
 - Evidence sink: GitHub PR state, `origin/main`, local main, and final parity proof
-- Failure route: `cc-pr-review` for stale/unreviewed risk, `cc-dev` for fixes, or blocked when parity cannot be proven
+- Failure route: `cc-pr-review` for stale/unreviewed or missing-gate risk, `cc-dev` for fixes, or blocked when parity cannot be proven
 
 ## Pause Points
 
@@ -26,6 +26,8 @@ Landing risk concentrates at unauthenticated GitHub reads, stale reviews, confli
 - [ ] local refs, fetched refs, and `git ls-remote` are not used as PR/review/check substitutes
 - [ ] live PR truth is fetched before landing
 - [ ] prior review exists or review pass is performed before merge
+- [ ] review-gate coverage from `cc-pr-review` is carried forward: complexity, hardening/productization, and release/readiness facets are checked, skipped with reason, not applicable, or routed away
+- [ ] blocked, failed, changes-requested, must-fix-before-release, missing, or stale facet coverage blocks landing
 - [ ] material rebase/conflict resolution triggers re-review
 - [ ] requirement shrinkage is rejected or ruled out
 - [ ] remote main, local main, and active main worktree parity are verified

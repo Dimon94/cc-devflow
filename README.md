@@ -101,7 +101,7 @@ flowchart TD
 | `cc-do` | Planned or investigated work needs implementation | code, tests, `task.md` status, Git commit |
 | `cc-review` | Complex plans, investigations, diffs, complexity reports, optimization hotspots, hardening risks, or harsh structural quality reviews need optional deep review before implementation or verification | plan findings in `task.md`; implementation findings and repair options in the response |
 | `cc-pr-review` | A remote PR needs an independent review session before landing, including PR-scoped complexity, hardening, and productization review when relevant | PR review packet, findings, facet coverage, and landing verdict |
-| `cc-pr-land` | Reviewed PRs need rebase-first landing into main with parity proof | integrated main plus local/remote parity evidence |
+| `cc-pr-land` | Reviewed PRs need production-gate-aware, rebase-first landing into main with parity proof | gate carry-forward plus integrated main and local/remote parity evidence |
 | `cc-check` | Work needs fresh verification evidence | pass/fail/blocked response and Git commit |
 | `cc-act` | Verified work needs a PR, local handoff, or closeout | optional `handoff/pr-brief.md`, Git/PR truth, or incident postmortem |
 

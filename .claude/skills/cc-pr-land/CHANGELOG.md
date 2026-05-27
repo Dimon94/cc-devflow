@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.4.0 - 2026-05-27
+
+- require landing sessions to carry forward `cc-pr-review` gate coverage for complexity, hardening/productization, and release/readiness facets
+- block landing when required facet coverage is missing, stale, failed, blocked, changes-requested, or marked `must-fix-before-release`
+- route missing/stale review coverage back to `cc-pr-review` and concrete implementation fixes back to `cc-dev`
+
 ## v1.3.1 - 2026-05-20
 
 - require `gh` resolution through PATH and common install paths before declaring it unavailable
