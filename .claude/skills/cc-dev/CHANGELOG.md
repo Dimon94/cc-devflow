@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.6.3 - 2026-05-28
+
+- make PDCA strict review convergence explicit: `cc-plan` contracts must be reviewed and repaired until no P1/P2-equivalent findings remain before `cc-do`
+- require PDCA review gates to cover product value, scope/non-goals, interface and data contract, abstraction boundary, task slicing, test seam, verification path, overengineering risk, and release assumptions
+
 ## v1.6.2 - 2026-05-28
 
 - make IDCA strict review convergence explicit: `cc-investigate` root-cause contracts must be reviewed and repaired until no P1/P2-equivalent findings remain before `cc-do`

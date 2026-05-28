@@ -1,6 +1,6 @@
 ---
 name: cc-dev
-version: 1.6.2
+version: 1.6.3
 description: Use when a selected objective should be driven autonomously in the current session and worktree through PDCA or IDCA until cc-act delivery choice, clarification, or blocker.
 triggers:
   - 自动驾驶开发这个需求
@@ -96,6 +96,14 @@ IDCA strict: cc-investigate -> cc-review* -> cc-do -> cc-review* -> cc-check -> 
 
 `cc-review*` means repeat review -> repair/reroute -> review until no P1/P2-equivalent findings remain. P1/P2-equivalent means `critical`, `important`, explicit must-fix, blocking missing evidence, or any finding whose route is required before the next stage. Prefer read-only reviewer subagents when the host provides them; when subagents are unavailable, run the same review facets in the main thread and say so in the review gate evidence.
 
+PDCA uses an explicit strict review contract. For new behavior, changed
+behavior, UI/API/spec work, and product/architecture changes, the first review
+gate covers the frozen `cc-plan` contract: product value, scope/non-goals,
+interface and data contract, abstraction boundary, task slicing, test seam,
+verification path, overengineering risk, and release assumptions. The second
+review gate covers the implemented change before `cc-check`. Do not treat PDCA
+review as implied by the flow diagram; record the gate result.
+
 IDCA uses the same strict review contract as PDCA. For bugs, regressions,
 crashes, and inconsistencies, the first review gate covers the frozen
 `cc-investigate` root-cause contract: reproduction truth, failure ownership,
@@ -146,6 +154,7 @@ Git is the process record. Process files are not part of the product.
 Strict convergence preserves lower-level skill contracts:
 
 - Plan or investigation findings route to `cc-plan` / `cc-investigate`, update `task.md`, then review the revised contract again.
+- PDCA plan findings must be repaired in `cc-plan` before `cc-do`; do not implement from an unreviewed or P1/P2-tainted requirement, architecture, task, or test contract.
 - IDCA investigation findings must be repaired in `cc-investigate` before `cc-do`; do not let an unreviewed or P1/P2-tainted root-cause contract drive implementation.
 - Implementation findings route to `cc-do` only when the fix is mechanical, already authorized by `task.md`, or selected by the user.
 - If an implementation finding requires product, architecture, scope, or risk tradeoff selection, use `references/user-choice-output-protocol.md` and stop as `needs-clarification`; do not auto-repair around `cc-review`'s choice gate.

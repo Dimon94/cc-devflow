@@ -15,8 +15,9 @@ remains. P1/P2-equivalent means `critical`, `important`, explicit must-fix,
 blocking missing evidence, or any finding whose route is required before the next
 stage.
 
-This applies equally to IDCA. Bug/regression work reviews the
-`cc-investigate` root-cause contract before `cc-do`, then reviews the
+This is explicit for both routes. PDCA reviews the frozen `cc-plan` contract
+before `cc-do`, then reviews the implementation before `cc-check`. IDCA reviews
+the `cc-investigate` root-cause contract before `cc-do`, then reviews the
 implementation before `cc-check`.
 
 ## Core Rules
@@ -49,6 +50,9 @@ The loop is:
 3. If any P1/P2-equivalent finding remains, route to the owning stage:
    `cc-plan`/`cc-investigate` for contract findings, `cc-do` for mechanical or
    already-authorized implementation fixes.
+   PDCA product value, scope, interface/data contract, abstraction boundary,
+   task slicing, test seam, verification path, overengineering, and release
+   assumption findings return to `cc-plan` before implementation.
    IDCA root-cause, reproduction, failure-ownership, repair-boundary, and
    regression-proof findings return to `cc-investigate` before implementation.
 4. Re-read `task.md`, Git, and review output after the repair, then run
