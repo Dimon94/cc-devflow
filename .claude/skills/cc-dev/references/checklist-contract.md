@@ -24,6 +24,7 @@ Autonomous driving fails when stage transitions inherit memory instead of re-rea
 - [ ] `task.md`, Git status/history, and PR/handoff truth are reread before each transition
 - [ ] plan/investigation and implementation review gates are run, skipped with concrete low-risk reasons, or blocked with missing evidence
 - [ ] strict review mode, when requested, repeated each `cc-review` gate until no P1/P2-equivalent findings remained or stopped as needs-clarification/blocked
+- [ ] IDCA strict mode, when selected, reviewed the `cc-investigate` root-cause contract before `cc-do` and did not implement from an unresolved investigation finding
 - [ ] implementation review repairs did not bypass the shared user-choice protocol for product, architecture, scope, or risk tradeoffs
 - [ ] final delivery mode was selected by the user or through the shared choice protocol before `cc-act` executed
 - [ ] local-main merge mode, when selected, has rebase, `--ff-only` merge, containing-commit proof, and no-push evidence

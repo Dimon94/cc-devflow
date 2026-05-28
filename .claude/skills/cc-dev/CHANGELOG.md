@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.6.2 - 2026-05-28
+
+- make IDCA strict review convergence explicit: `cc-investigate` root-cause contracts must be reviewed and repaired until no P1/P2-equivalent findings remain before `cc-do`
+- require IDCA review gates to cover reproduction truth, failure ownership, repair boundary, regression proof, blast radius, and reroute assumptions
+
 ## v1.6.1 - 2026-05-28
 
 - clarify that `cc-dev` does not choose final delivery by default; after `cc-check`, it routes to `cc-act` for an explicit user-selected delivery mode

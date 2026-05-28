@@ -1,6 +1,6 @@
 ---
 name: cc-dev
-version: 1.6.1
+version: 1.6.2
 description: Use when a selected objective should be driven autonomously in the current session and worktree through PDCA or IDCA until cc-act delivery choice, clarification, or blocker.
 triggers:
   - 自动驾驶开发这个需求
@@ -96,6 +96,13 @@ IDCA strict: cc-investigate -> cc-review* -> cc-do -> cc-review* -> cc-check -> 
 
 `cc-review*` means repeat review -> repair/reroute -> review until no P1/P2-equivalent findings remain. P1/P2-equivalent means `critical`, `important`, explicit must-fix, blocking missing evidence, or any finding whose route is required before the next stage. Prefer read-only reviewer subagents when the host provides them; when subagents are unavailable, run the same review facets in the main thread and say so in the review gate evidence.
 
+IDCA uses the same strict review contract as PDCA. For bugs, regressions,
+crashes, and inconsistencies, the first review gate covers the frozen
+`cc-investigate` root-cause contract: reproduction truth, failure ownership,
+repair boundary, regression proof, blast radius, and reroute assumptions. The
+second review gate covers the implemented fix before `cc-check`. Do not treat
+IDCA review as optional just because the symptom is already understood.
+
 状态来源只有三类：
 
 - `task.md`
@@ -139,6 +146,7 @@ Git is the process record. Process files are not part of the product.
 Strict convergence preserves lower-level skill contracts:
 
 - Plan or investigation findings route to `cc-plan` / `cc-investigate`, update `task.md`, then review the revised contract again.
+- IDCA investigation findings must be repaired in `cc-investigate` before `cc-do`; do not let an unreviewed or P1/P2-tainted root-cause contract drive implementation.
 - Implementation findings route to `cc-do` only when the fix is mechanical, already authorized by `task.md`, or selected by the user.
 - If an implementation finding requires product, architecture, scope, or risk tradeoff selection, use `references/user-choice-output-protocol.md` and stop as `needs-clarification`; do not auto-repair around `cc-review`'s choice gate.
 - If the same P1/P2-equivalent finding survives two repair attempts, stop as `blocked` or reroute to the owning planning/investigation stage with the evidence.

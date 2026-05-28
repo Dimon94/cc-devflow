@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Clarified `cc-dev` strict review convergence for IDCA so `cc-investigate` root-cause contracts are reviewed and repaired before `cc-do`, matching the PDCA review gate shape.
+
 ## [4.5.28] - 2026-05-28
 
 ### Changed

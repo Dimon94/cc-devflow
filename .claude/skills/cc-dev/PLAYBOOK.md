@@ -15,6 +15,10 @@ remains. P1/P2-equivalent means `critical`, `important`, explicit must-fix,
 blocking missing evidence, or any finding whose route is required before the next
 stage.
 
+This applies equally to IDCA. Bug/regression work reviews the
+`cc-investigate` root-cause contract before `cc-do`, then reviews the
+implementation before `cc-check`.
+
 ## Core Rules
 
 1. 主 checkout 是 trunk，必须保持在 `main`。
@@ -24,7 +28,7 @@ stage.
 5. 先分类 PDCA / IDCA，再调用底层 skill。
 6. feature/change 走 `cc-plan`。
 7. bug/regression 走 `cc-investigate`。
-8. 用户要求严格审查收敛时，plan/investigation 必须多轮 `cc-review` 到无 P1/P2-equivalent；否则复杂或高风险 plan/investigation 先走 `cc-review`，简单低风险必须记录 skip reason。
+8. 用户要求严格审查收敛时，PDCA plan 和 IDCA investigation 都必须多轮 `cc-review` 到无 P1/P2-equivalent；否则复杂或高风险 plan/investigation 先走 `cc-review`，简单低风险必须记录 skip reason。
 9. 已冻结任务可恢复到 `cc-do`，但恢复前仍要重判 review gate。
 10. 用户要求严格审查收敛时，implementation 必须多轮 `cc-review` 到无 P1/P2-equivalent；否则复杂或高风险 implementation 在 `cc-check` 前走 `cc-review`，简单低风险必须记录 skip reason。
 11. 没有 fresh `cc-check`，不进入 PR ship。
@@ -45,6 +49,8 @@ The loop is:
 3. If any P1/P2-equivalent finding remains, route to the owning stage:
    `cc-plan`/`cc-investigate` for contract findings, `cc-do` for mechanical or
    already-authorized implementation fixes.
+   IDCA root-cause, reproduction, failure-ownership, repair-boundary, and
+   regression-proof findings return to `cc-investigate` before implementation.
 4. Re-read `task.md`, Git, and review output after the repair, then run
    `cc-review` again.
 5. Continue only when the gate says no P1/P2-equivalent findings remain.
