@@ -2,7 +2,7 @@
 
 ## Visible State Machine
 
-`Goal Packet | objective -> cc-dev -> cc-plan | cc-investigate -> [cc-review*] -> cc-do -> [cc-review*] -> cc-check -> cc-act -> cc-pr-review | stop`
+`Goal Packet | objective -> cc-dev -> cc-plan | cc-investigate -> [cc-review*] -> cc-do -> [cc-review*] -> cc-check -> cc-act(delivery choice) -> cc-pr-review | stop`
 
 - Enter from: `cc-next` Goal Packet or explicit user objective.
 - Stay in: `cc-dev` while the completion audit finds required work that can be advanced by a lower-level cc-* stage.
@@ -28,8 +28,8 @@ stage.
 9. 已冻结任务可恢复到 `cc-do`，但恢复前仍要重判 review gate。
 10. 用户要求严格审查收敛时，implementation 必须多轮 `cc-review` 到无 P1/P2-equivalent；否则复杂或高风险 implementation 在 `cc-check` 前走 `cc-review`，简单低风险必须记录 skip reason。
 11. 没有 fresh `cc-check`，不进入 PR ship。
-12. `cc-act` 只能 create/update PR、local-handoff、local-main-merge 或 post-merge-closeout。
-13. 不合并 PR；不推 main；只有用户明确要求本地合并时才走 local-main-merge。
+12. `cc-act` 只能 create/update PR、local-handoff、local-main-merge 或 post-merge-closeout，并且必须由用户显式选择或确认 delivery mode。
+13. `cc-dev` 不预选本地合并或远程 PR；不合并 PR；不推 main。
 14. 每轮停下前都做 completion audit。
 15. 不确定就是没完成。
 16. 时间耗尽、token 紧张、已经努力，都不等于完成。
@@ -53,17 +53,18 @@ Do not bypass `cc-review` implementation repair choices. When a finding requires
 product, architecture, scope, or risk selection, use the shared user-choice
 protocol and stop as `needs-clarification`.
 
-## Local Main Merge
+## Delivery Choice
 
-When the explicit terminal request is local `main` integration, route `cc-act`
-to `local-main-merge`. The closeout must prove:
+After `cc-check` passes, `cc-dev` routes to `cc-act` for delivery choice.
+`cc-dev` must not hard-code the terminal delivery. The user chooses one:
 
-- current work branch commit and fresh `cc-check` evidence
-- successful rebase onto local `main`
-- owning primary checkout stayed on `main`
-- `git merge --ff-only <work-branch>` succeeded from that checkout
-- local `main` contains the delivered commit
-- no remote push occurred unless separately requested
+- `create-pr` / `update-pr`: remote collaboration or review.
+- `local-main-merge`: local rebase + fast-forward merge into the owning `main`.
+- `local-handoff`: committed local work without merge or push.
+- `post-merge-closeout`: already merged work that needs archive or closeout.
+
+If the user did not choose, use the shared choice protocol and stop until the
+choice is explicit.
 
 ## Required Outputs
 
@@ -74,7 +75,7 @@ to `local-main-merge`. The closeout must prove:
 - Review gate decisions and findings or skip reasons
 - Completion audit checklist summary
 - Terminal state
-- PR URL, handoff path, or local-main merge proof when available
+- selected delivery mode and its proof when available
 
 ## Audit Checklist
 
@@ -86,8 +87,7 @@ The audit must map objective text to evidence:
 - tests
 - gate scripts
 - current verification verdict
-- handoff or PR brief
-- local `main` merge evidence when requested
+- selected `cc-act` delivery evidence: PR, handoff, local-main merge, or post-merge closeout
 - GitHub PR state
 
 If a checklist item has no evidence, continue work or stop as blocked.

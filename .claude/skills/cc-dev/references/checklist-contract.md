@@ -7,14 +7,14 @@ Autonomous driving fails when stage transitions inherit memory instead of re-rea
 ## Checklist Mode
 
 - Mode: do-confirm
-- Evidence sink: `task.md`, Git commits, PR/handoff/local-main state, and the final audit
+- Evidence sink: `task.md`, Git commits, selected cc-act delivery state, and the final audit
 - Failure route: `cc-plan`, `cc-investigate`, `cc-do`, `cc-review`, `cc-check`, `cc-act`, `cc-pr-review`, or stop
 
 ## Pause Points
 
 1. Before first lower-level stage: resolve CLI, route, change key, worktree, and branch.
 2. Before each stage transition: reread `task.md`, Git, PR/handoff truth, and review gate decisions.
-3. Before exit: map every objective requirement to file, command, commit, PR, local-main merge, or blocker evidence.
+3. Before exit: map every objective requirement to file, command, commit, selected delivery, or blocker evidence.
 
 ## Required Checks
 
@@ -25,7 +25,8 @@ Autonomous driving fails when stage transitions inherit memory instead of re-rea
 - [ ] plan/investigation and implementation review gates are run, skipped with concrete low-risk reasons, or blocked with missing evidence
 - [ ] strict review mode, when requested, repeated each `cc-review` gate until no P1/P2-equivalent findings remained or stopped as needs-clarification/blocked
 - [ ] implementation review repairs did not bypass the shared user-choice protocol for product, architecture, scope, or risk tradeoffs
-- [ ] local-main merge mode, when requested, has rebase, `--ff-only` merge, containing-commit proof, and no-push evidence
+- [ ] final delivery mode was selected by the user or through the shared choice protocol before `cc-act` executed
+- [ ] local-main merge mode, when selected, has rebase, `--ff-only` merge, containing-commit proof, and no-push evidence
 - [ ] terminal state is one of remote-pr-opened, remote-pr-updated, local-handoff, local-main-merged, needs-clarification, or blocked
 
 ## Exit Rule

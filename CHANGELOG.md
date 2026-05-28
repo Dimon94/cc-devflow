@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Clarified `cc-dev` closeout so it routes to `cc-act` for explicit user-selected delivery instead of choosing between local-main merge and remote PR itself.
+
 ## [4.5.27] - 2026-05-28
 
 ### Added

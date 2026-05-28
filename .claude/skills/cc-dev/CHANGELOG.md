@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.6.1 - 2026-05-28
+
+- clarify that `cc-dev` does not choose final delivery by default; after `cc-check`, it routes to `cc-act` for an explicit user-selected delivery mode
+- keep `local-main-merge` and remote PR as sibling `cc-act` delivery choices instead of biasing `cc-dev` toward either route
+
 ## v1.6.0 - 2026-05-28
 
 - add strict `cc-review` convergence mode for user-requested multi-round/subAgent review gates, repeating plan/investigation and implementation reviews until no P1/P2-equivalent findings remain
