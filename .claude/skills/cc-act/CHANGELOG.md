@@ -1,5 +1,11 @@
 # CC-Act Skill Changelog
 
+## v1.15.0 - 2026-05-28
+
+- add `local-main-merge` as an explicit delivery mode for user-requested local `main` integration
+- require local-main merge closeout to prove fresh verification, work-branch rebase, owning-main `--ff-only` merge, final containing commit, and no remote push unless separately requested
+- update closeout checklist and closure contract so local-main merge is distinct from local handoff and post-merge closeout
+
 ## v1.14.1 - 2026-05-23
 
 - add a release-readiness gate ledger to closeout so PR and handoff output states local checks, config/env, migrations/data, deploy/health, smoke/cleanup, rollback, and watch items

@@ -1,7 +1,7 @@
 ---
 name: cc-act
-version: 1.14.1
-description: Use when verified work must be committed, handed off, pushed, or turned into a PR with the smallest durable delivery surface.
+version: 1.15.0
+description: Use when verified work must be committed, handed off, pushed, merged into local main, or turned into a PR with the smallest durable delivery surface.
 triggers:
   - 准备提 PR
   - 帮我发版
@@ -37,6 +37,7 @@ writes:
     when: closing a FIX or recurring AI/process/engineering failure
 effects:
   - final Git commits
+  - optional local-main fast-forward merge
   - optional push or PR creation
   - archive completed change after merge when requested
 entry_gate:
@@ -46,15 +47,15 @@ entry_gate:
   - "Read `task.md#Failure Ledger`; only confirmed entries marked `Keep for postmortem: yes` are long-term incident input, including eligible review escape candidates."
   - "Run `scripts/evaluate-postmortem-trigger.sh --dir <change-dir>` before deciding no incident postmortem is needed."
   - "If verification changed during Act, return to `cc-check`."
-  - "If the delivery mode is not already explicit, ask the user to choose with `../cc-dev/references/user-choice-output-protocol.md`; do not default every closeout to remote push and PR."
-  - "Pick one mode: `create-pr`, `update-pr`, `local-handoff`, or `post-merge-closeout`."
+  - "If the delivery mode is not already explicit, ask the user to choose with `../cc-dev/references/user-choice-output-protocol.md`; do not default every closeout to remote push, PR, or local-main merge."
+  - "Pick one mode: `create-pr`, `update-pr`, `local-handoff`, `local-main-merge`, or `post-merge-closeout`."
 exit_criteria:
   - "All completed work is committed with coherent Conventional Commit messages."
   - "PR mode writes or refreshes only `handoff/pr-brief.md`."
   - "Postmortem trigger gate is explicit: either `POSTMORTEM_REQUIRED=no` is reported, or the incident postmortem path is written with `Workflow Patch Candidate` completed."
   - "Release-readiness gate status is explicit in PR/handoff output or final response: passed, failed, skipped with reason, blocked with missing evidence, or not applicable."
   - "No process file is created beyond the allowed durable outputs."
-  - "Push, PR, or local handoff status is explicit."
+  - "Push, PR, local handoff, or local-main merge status is explicit."
 reroutes:
   - when: Verification is stale, incomplete, or changed during Act.
     target: cc-check
@@ -87,15 +88,16 @@ tool_budget:
 - `create-pr`: feature branch 可推送且没有现有 PR。
 - `update-pr`: 已有 PR，需要更新提交或 body。
 - `local-handoff`: 不推远端，但本地 commit 和下一步清楚。
+- `local-main-merge`: 用户明确要求本地合并时，rebase 当前工作分支到本地 `main`，再从 owning main checkout 执行 `git merge --ff-only <work-branch>`；不推远端。
 - `post-merge-closeout`: 已合并后的验证、归档、尸检。
 
 ## Delivery Choice
 
-如果用户没有明确要求远程 PR、更新 PR、本地合并或 post-merge closeout，`cc-act` 必须先让用户选择 delivery mode，而不是默认推送远端并创建 PR。
+如果用户没有明确要求远程 PR、更新 PR、本地合并或 post-merge closeout，`cc-act` 必须先让用户选择 delivery mode，而不是默认推送远端、创建 PR 或合并本地 `main`。
 
 使用 `../cc-dev/references/user-choice-output-protocol.md`：
 
-- Codex App / Codex 工具环境：优先调用 `request_user_input`，选项包含 `local-handoff` 与 `create-pr`，必要时包含 `update-pr` 或 `post-merge-closeout`。
+- Codex App / Codex 工具环境：优先调用 `request_user_input`，选项包含 `local-handoff` 与 `create-pr`，必要时包含 `update-pr`、`local-main-merge` 或 `post-merge-closeout`。
 - Claude Code：如果有 MCP elicitation / ask-question 工具，使用结构化单选；否则输出固定 A/B/C 文本块并停止。
 
 默认推荐规则：
@@ -103,7 +105,25 @@ tool_budget:
 1. 已有 PR 且本轮只是更新交付物：推荐 `update-pr`。
 2. 用户明确要远程协作、审查或发布：推荐 `create-pr`。
 3. 用户只要求本地提交、个人项目收尾，或远程上下文缺失：推荐 `local-handoff`，说明下一步可以 rebase 后 fast-forward 合并到本地主分支。
-4. 已经合并并要求归档 / closeout：推荐 `post-merge-closeout`。
+4. 用户明确要求 rebase 并合并到本地 `main`：推荐 `local-main-merge`。
+5. 已经合并并要求归档 / closeout：推荐 `post-merge-closeout`。
+
+## Local Main Merge
+
+`local-main-merge` 是本地交付动作，不是远程发布动作。它只在用户明确要求本地 `main` 合并时执行。
+
+Required proof:
+
+1. Fresh `cc-check` pass evidence exists for the work branch.
+2. Work branch is committed and has no unexpected dirty scope.
+3. Owning primary checkout path is known and currently on `main`.
+4. Local `main` is clean enough for the merge surface.
+5. Work branch rebases onto current local `main`.
+6. Owning main checkout runs `git merge --ff-only <work-branch>`.
+7. Final proof shows local `main` contains the delivered commit.
+8. No `git push` runs unless the user separately requested it.
+
+If any proof is missing, stop as blocked or route back to `cc-check` / `cc-do`; do not downgrade to `local-handoff` while claiming the local merge happened.
 
 ## PR Brief
 
@@ -149,7 +169,7 @@ PDCA / IDCA 每个阶段或执行环境完成后都提交 Git commit。Git histo
 
 ## Exit
 
-最终响应说明 commit、验证、PR 或本地 handoff 状态，以及是否写了 incident postmortem。
+最终响应说明 commit、验证、PR、本地 handoff 或 local-main merge 状态，以及是否写了 incident postmortem。
 
 
 ## Default Output
@@ -158,7 +178,7 @@ Keep the final response short and fixed:
 
 1. Commit: latest commit hash or explicit uncommitted state.
 2. Verification: fresh evidence reused from cc-check or reroute reason.
-3. Delivery: PR URL, updated PR, local handoff path, or post-merge closeout state.
+3. Delivery: PR URL, updated PR, local handoff path, local-main merge proof, or post-merge closeout state.
 4. Postmortem: `POSTMORTEM_REQUIRED=no` or incident path written with workflow patch candidate.
 5. Release: gate status, rollback/watch path, or explicit not-applicable reason.
 6. Route: terminal state or next skill.

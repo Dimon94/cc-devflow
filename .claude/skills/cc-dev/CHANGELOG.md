@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.6.0 - 2026-05-28
+
+- add strict `cc-review` convergence mode for user-requested multi-round/subAgent review gates, repeating plan/investigation and implementation reviews until no P1/P2-equivalent findings remain
+- require strict implementation review loops to respect `cc-review` repair-choice protocol and stop as `needs-clarification` when product, architecture, scope, or risk tradeoffs need user selection
+- route explicit local `main` merge requests to `cc-act` `local-main-merge` mode with rebase, fast-forward merge, containing-commit, and no-push evidence
+
 ## v1.5.1 - 2026-05-24
 
 - add `cc-review` as an explicit optional gate inside autonomous PDCA/IDCA so complex or high-risk plans, investigations, and implementations are reviewed before continuing

@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added `cc-dev` strict review convergence mode so user-requested multi-round/subAgent review gates repeat until no P1/P2-equivalent findings remain before `cc-do` or `cc-check`.
+- Added `cc-act` `local-main-merge` delivery mode for explicit local `main` integration with rebase, owning-checkout `--ff-only` merge, containing-commit proof, and no remote push unless separately requested.
+
+### Changed
+
+- Tightened `cc-dev` implementation review loops so product, architecture, scope, or risk tradeoff findings stop through the shared choice protocol instead of bypassing `cc-review` repair selection.
+
 ## [4.5.26] - 2026-05-27
 
 ### Added

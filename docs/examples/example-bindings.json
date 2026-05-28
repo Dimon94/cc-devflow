@@ -1,9 +1,9 @@
 {
-  "updatedAt": "2026-05-23",
+  "updatedAt": "2026-05-28",
   "skills": {
     "cc-roadmap": "5.9.0",
     "cc-next": "1.4.1",
-    "cc-dev": "1.5.1",
+    "cc-dev": "1.6.0",
     "cc-plan": "3.18.1",
     "cc-investigate": "1.14.1",
     "cc-do": "1.10.1",
@@ -11,7 +11,7 @@
     "cc-pr-review": "1.7.0",
     "cc-pr-land": "1.4.0",
     "cc-check": "1.16.1",
-    "cc-act": "1.14.1",
+    "cc-act": "1.15.0",
     "cc-spec-init": "1.4.0"
   },
   "examples": [

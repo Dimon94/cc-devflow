@@ -2,7 +2,7 @@
 
 ## State Machine
 
-`cc-check -> cc-act -> next roadmap/REQ/FIX`
+`cc-check -> cc-act -> PR | local handoff | local main merge | post-merge closeout | next roadmap/REQ/FIX`
 
 Act ships verified work. It does not create process state.
 
@@ -24,7 +24,25 @@ Everything else is Git history, PR history, or final response.
 5. Build `pr-brief.md` only when PR/handoff needs it.
 6. Run `evaluate-postmortem-trigger.sh`; write incident postmortem when it returns `POSTMORTEM_REQUIRED=yes`.
 7. Push/create/update PR when requested and available.
-8. Archive completed change only after merge or explicit closeout.
+8. For `local-main-merge`, rebase the work branch onto local `main`, fast-forward merge from the owning main checkout, prove `main` contains the delivered commit, and do not push unless explicitly requested.
+9. Archive completed change only after merge or explicit closeout.
+
+## Local Main Merge
+
+Use this mode only when the user explicitly asks for local `main` integration.
+
+Required sequence:
+
+1. Confirm the work branch has fresh `cc-check` pass evidence.
+2. Confirm all intended changes are committed.
+3. Confirm the owning primary checkout is on `main`.
+4. Rebase the work branch on current local `main`.
+5. From the owning primary checkout, run `git merge --ff-only <work-branch>`.
+6. Verify local `main` contains the delivered commit.
+7. Report that no remote push happened unless the user separately requested it.
+
+If the owning main checkout is dirty, not on `main`, missing, or cannot fast-forward,
+stop blocked with the exact Git evidence.
 
 ## Blockers
 

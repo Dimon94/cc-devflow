@@ -51,10 +51,27 @@ Rules:
   or owner, then route to `cc-check` when the gate is required for shipping.
 - `local-handoff` may mark deploy/health or post-deploy gates as blocked or not
   applicable, but must not describe the work as released.
+- `local-main-merge` may mark remote deploy/health gates as not applicable, but
+  must prove local rebase, fast-forward merge, and containing commit evidence.
 - PR mode includes the gate ledger in `pr-brief.md` so reviewers can see what is
   proven, skipped, blocked, and what to watch after merge.
+
+## Local Main Merge Gate
+
+`local-main-merge` is allowed only after explicit user request and fresh
+verification. It must not push.
+
+Required evidence:
+
+- work branch name and delivered commit
+- owning primary checkout path on `main`
+- current local `main` commit before merge
+- successful work-branch rebase on local `main`
+- successful `git merge --ff-only <work-branch>` from the owning checkout
+- final local `main` commit and proof it contains the delivered commit
+- explicit no-push statement unless a separate push request was made
 
 ## Exit
 
 Close with commit hashes, validation commands, release gate status, PR/handoff
-state, rollback/watch path, and any incident postmortem path.
+or local-main merge state, rollback/watch path, and any incident postmortem path.
