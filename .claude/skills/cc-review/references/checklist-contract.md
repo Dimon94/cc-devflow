@@ -14,14 +14,17 @@ Review quality collapses when suspicion, stale context, or style preference is p
 
 1. Before reviewing nodes: freeze scope and delta.
 2. Before emitting a finding: prove evidence, impact, route, and branch chain when needed.
-3. Before exit: write plan/investigation findings into `task.md` or ask for implementation repair choice through `../cc-dev/references/user-choice-output-protocol.md`.
+3. Before exit: verify domain context growth, write plan/investigation findings into `task.md`, or ask for implementation repair choice through `../cc-dev/references/user-choice-output-protocol.md`.
 
 ## Required Checks
 
 - [ ] review target is classified as plan, investigation, implementation, PR, or mixed
+- [ ] relevant `CONTEXT.md`, `CONTEXT-MAP.md`, and ADRs were read when present before findings; missing context docs were skipped silently
 - [ ] scope and explicit non-scope are frozen before finding smells
 - [ ] delta is grounded in Git diff, PR diff, `task.md`, commands, logs, UI, or missing evidence
 - [ ] each finding has evidence, impact, recommendation, and route
+- [ ] ADR conflicts are explicit findings, residual risk, or blocked evidence instead of silent direction changes
+- [ ] context growth was proposed for stable new language, context splits, or ADR-worthy decisions and only written after user confirmation
 - [ ] any Failure Ledger writeback is limited to process/test/design/model-pattern escape findings
 - [ ] structural quality is selected when the scope asks for harsh maintainability, code-judo, antislop cleanup, prototype-to-maintainable structure, busy branching, vague utility buckets, thin wrappers, weak type boundaries, wrong-layer logic, unsafe persisted-state changes, CSS sprawl, viewport QA risk, or file-size sprawl
 - [ ] maintainability guardrails check thin entrypoints, small feature-owned files, pure domain logic, centralized contracts, compatibility migration, CSS ownership, focused tests, and real viewport evidence when those surfaces are in scope

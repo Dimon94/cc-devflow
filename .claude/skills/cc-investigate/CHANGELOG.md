@@ -1,5 +1,12 @@
 # CC-Investigate Skill Changelog
 
+## v1.15.1 - 2026-05-31
+
+- add the shared Domain Context Contract so investigations read relevant
+  `CONTEXT.md`, `CONTEXT-MAP.md`, and ADRs before naming the violated contract
+- require root-cause closeout to check for user-confirmed context growth when a
+  durable term, contract, or ADR-worthy decision crystallizes
+
 ## v1.15.0 - 2026-05-31
 
 - slim the entrypoint to the IDCA investigation law, load table, core flow, and default handoff shape

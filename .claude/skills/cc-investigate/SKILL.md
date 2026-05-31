@@ -18,6 +18,7 @@ reads:
   - ../cc-dev/scripts/detect-worktree-state.sh
   - ../cc-dev/scripts/prepare-change-worktree.sh
   - ../cc-dev/scripts/ensure-work-branch.sh
+  - ../cc-dev/references/domain-context-contract.md
   - ../cc-roadmap/scripts/locate-roadmap-item.sh
   - ../cc-roadmap/scripts/sync-roadmap-progress.sh
   - ../cc-dev/references/user-choice-output-protocol.md
@@ -29,6 +30,7 @@ writes:
 entry_gate:
   - Resolve CLI, create FIX key, prepare isolated exact-case `FIX/...` worktree before writing `task.md`.
   - Reproduce the symptom or closest honest feedback loop before naming root cause.
+  - Read relevant `CONTEXT.md`, `CONTEXT-MAP.md`, and ADRs through `../cc-dev/references/domain-context-contract.md` before naming the violated contract.
   - Classify mode and follow `PLAYBOOK.md` plus `references/investigation-contract.md`.
   - Inspect code, logs, history, artifacts, and postmortems before solution questions.
   - Record falsifiable hypotheses; first intuition is not root cause.
@@ -36,6 +38,7 @@ exit_criteria:
   - "`task.md#Root Cause Contract` proves symptom site, first bad state, violated contract, original trigger, counterfactual proof, and escape reason."
   - "`task.md#Root Cause Contract` records mode, feedback loop, evidence chain, hypotheses, Regression Proof Contract, ASCII Branch Chain, and dialogue checkpoints when used."
   - "`task.md` contains only proven `cc-do` tasks; gaps become Evidence Request, diagnose-only, reroute, or stop."
+  - "Domain context growth was checked after root-cause freeze; confirmed updates were written to `CONTEXT.md`, `CONTEXT-MAP.md`, or `docs/adr/*.md`, while deferred updates were recorded in `task.md`."
   - "No process file beyond `task.md`; roadmap progress is synced or explicitly skipped."
   - "Investigate-stage changes are committed to Git before handoff."
 reroutes:
@@ -64,6 +67,7 @@ NO REPAIR WITHOUT A FROZEN ROOT-CAUSE CONTRACT
 | Investigation workflow | `PLAYBOOK.md` |
 | Checklist before pause or exit | `references/checklist-contract.md` |
 | Evidence flow, modes, proof ladder, Branch Chain, Socratic dialogue | `references/investigation-contract.md` |
+| Domain language, context map, or ADR discipline | `../cc-dev/references/domain-context-contract.md` |
 | Repair-boundary choice needs user confirmation | `../cc-dev/references/user-choice-output-protocol.md` |
 | Recurring bug or escape reason needs history | `docs/guides/project-postmortem.md` |
 | Frozen root cause needs repair tasks | `assets/TASKS_TEMPLATE.md` |

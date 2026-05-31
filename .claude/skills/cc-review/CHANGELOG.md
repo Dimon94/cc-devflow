@@ -1,5 +1,12 @@
 # CC-Review Changelog
 
+## v2.14.1 - 2026-05-31
+
+- add the shared Domain Context Contract so reviews read relevant `CONTEXT.md`,
+  `CONTEXT-MAP.md`, and ADRs before findings
+- require ADR conflicts and context growth proposals to be explicit review
+  findings, residual risk, task updates, or user-confirmed context edits
+
 ## v2.14.0 - 2026-05-31
 
 - slim the main `SKILL.md` entrypoint to under 100 lines so Agent startup only reads routing, facet loading, and output rules

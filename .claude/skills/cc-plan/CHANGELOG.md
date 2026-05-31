@@ -1,5 +1,12 @@
 # CC-Plan Skill Changelog
 
+## v3.19.1 - 2026-05-31
+
+- add the shared Domain Context Contract so plans read relevant `CONTEXT.md`,
+  `CONTEXT-MAP.md`, and ADRs before decision questions
+- require plan closeout to check for user-confirmed context growth without
+  turning `CONTEXT.md` into specs or task notes
+
 ## v3.19.0 - 2026-05-31
 
 - slim the entrypoint to the Plan purpose, load table, core flow, and default handoff shape

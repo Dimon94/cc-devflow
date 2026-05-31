@@ -15,6 +15,7 @@ reads:
   - references/parallel-dispatch.md
   - docs/guides/project-postmortem.md
   - ../cc-dev/scripts/resolve-cc-devflow.sh
+  - ../cc-dev/references/domain-context-contract.md
   - references/checklist-contract.md
 writes:
   - path: devflow/changes/<change-key>/task.md
@@ -28,6 +29,7 @@ effects:
 entry_gate:
   - Resolve CLI with `../cc-dev/scripts/resolve-cc-devflow.sh require config`.
   - Read `task.md`, Git status, and only code/tests needed by the current task.
+  - Read relevant `CONTEXT.md`, `CONTEXT-MAP.md`, and ADRs through `../cc-dev/references/domain-context-contract.md` before editing.
   - Reject execution if the task cannot be restated from `task.md` and repo evidence.
   - Validate execution shape: Red name, one behavior, public seam, suite/runtime, proof value, mock boundary, Green minimality, refactor candidate.
 exit_criteria:
@@ -36,6 +38,7 @@ exit_criteria:
   - Low-value Red evidence is rewritten, rejected, or routed back to `cc-plan`.
   - Refactor evidence names the smell removed or says why no refactor was needed.
   - Real failures and reroutes are recorded in `task.md#Failure Ledger`.
+  - "Domain context growth was checked after execution evidence; confirmed updates were written to `CONTEXT.md`, `CONTEXT-MAP.md`, or `docs/adr/*.md`, while deferred updates were recorded in `task.md` when they affect the current slice."
   - Verification commands ran or are explicitly blocked.
   - Task status is updated through `scripts/mark-task-complete.sh`.
   - Completed task/environment is committed to Git.
@@ -68,6 +71,7 @@ NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
 | Execution loop, TDD gates, Failure Ledger, parallel rule | `PLAYBOOK.md` |
 | Resume or interrupted work | `references/execution-recovery.md` |
 | Checklist before pause or exit | `references/checklist-contract.md` |
+| Domain language, context map, or ADR discipline | `../cc-dev/references/domain-context-contract.md` |
 | Task explicitly allows parallel execution | `references/parallel-dispatch.md` |
 | Recurring execution failure | `docs/guides/project-postmortem.md` |
 

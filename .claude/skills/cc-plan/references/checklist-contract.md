@@ -14,14 +14,16 @@ Planning has many correct gates, but long prose makes it easy to miss a small st
 
 1. Before writing `task.md`: finish evidence read, value check, and worktree setup.
 2. Before generating task blocks: freeze interfaces, data, abstraction boundary, and execution architecture.
-3. Before handoff: verify roadmap sync/skip reason and Plan-stage commit.
+3. Before handoff: verify domain context growth, roadmap sync/skip reason, and Plan-stage commit.
 
 ## Required Checks
 
 - [ ] change key, isolated worktree, and exact-case work branch are established
 - [ ] repo evidence was read before asking the user
+- [ ] relevant `CONTEXT.md`, `CONTEXT-MAP.md`, and ADRs were read when present; missing context docs were skipped silently
 - [ ] product value and engineering design were confirmed separately for non-trivial plans
 - [ ] Second-Move Review compared first move, simpler move, and better architecture
+- [ ] context growth was proposed for stable new terms, context splits, or ADR-worthy decisions and only written after user confirmation
 - [ ] `task.md` contains Contract Summary, ASCII Branch Chain Analysis, task blocks, verification, non-goals, and commit requirement
 
 ## Exit Rule

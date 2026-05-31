@@ -14,16 +14,18 @@ Bug work becomes patch stacking when the first plausible cause is treated as pro
 
 1. Before naming root cause: reproduce or create the closest honest feedback loop.
 2. Before repair tasks: falsify competing hypotheses and trace the deepest proven source.
-3. Before exit: commit investigation and route only proven repair work.
+3. Before exit: verify domain context growth, commit investigation, and route only proven repair work.
 
 ## Required Checks
 
 - [ ] FIX key, isolated worktree, and branch contract are established
+- [ ] relevant `CONTEXT.md`, `CONTEXT-MAP.md`, and ADRs were read when present; missing context docs were skipped silently
 - [ ] symptom and closest honest feedback loop are captured
 - [ ] hypotheses list includes falsification methods and rejected false causes
 - [ ] first bad state, violated contract, original trigger, counterfactual proof, and escape reason are proven
 - [ ] regression proof contract names failure ownership, suite layer, command/runtime budget, proof value, fixture/mock boundary, focused suite shape, and low-value tests to avoid
 - [ ] repair tasks state what to fix, what not to touch, and what command proves the repair
+- [ ] context growth was proposed for durable terms, violated contracts, context splits, or ADR-worthy root-cause decisions and only written after user confirmation
 
 ## Exit Rule
 

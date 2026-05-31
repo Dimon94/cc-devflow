@@ -17,6 +17,7 @@ reads:
   - PLAYBOOK.md
   - references/review-methods.md
   - references/checklist-contract.md
+  - ../cc-dev/references/domain-context-contract.md
   - ../cc-dev/references/user-choice-output-protocol.md
 writes:
   - path: current response
@@ -28,6 +29,7 @@ writes:
     when: plan review changes the task contract or an eligible review escape is recorded
 entry_gate:
   - "Classify: plan, implementation, PR, mixed, or report-only."
+  - "Read relevant `CONTEXT.md`, `CONTEXT-MAP.md`, and ADRs through `../cc-dev/references/domain-context-contract.md` before findings."
   - "Read only evidence needed for the requested scope."
   - "Use Git/current diff as durable review memory; create no process files."
   - "Select extra facets only from the table below."
@@ -35,6 +37,7 @@ exit_criteria:
   - "Findings are severity ordered and backed by source evidence."
   - "Every finding has evidence, impact, recommendation, and route: cc-plan, cc-do, cc-check, cc-act, or stop."
   - "Plan findings write task.md; implementation findings ask for repair choice before edits."
+  - "Domain context growth was checked before exit; confirmed updates were written to `CONTEXT.md`, `CONTEXT-MAP.md`, or `docs/adr/*.md`, while ADR conflicts or deferred updates were surfaced as findings, residual risk, or `task.md` updates."
   - "Selected facets are checked, skipped, or blocked."
   - "No process file was created."
 reroutes:
@@ -54,13 +57,14 @@ All paths below are relative to this `SKILL.md` directory, not the shell cwd.
 
 1. Always read `references/review-methods.md` and `references/checklist-contract.md`.
 2. Read `PLAYBOOK.md` only for complex or mixed reviews.
-3. Classify, freeze scope, inspect evidence, emit findings, then route.
+3. Read applicable domain context and ADRs, classify, freeze scope, inspect evidence, emit findings, then route.
 4. Review Escape Ledger is only for repeatable and preventable process-escape / test-escape / design-escape / model-pattern-escape; ordinary findings do not enter `task.md#Failure Ledger`.
 
 ## Facet Loading
 
 | Load | When |
 | --- | --- |
+| `../cc-dev/references/domain-context-contract.md` | before findings, ADR conflict checks, or context growth proposals |
 | `references/plan-review-branch.md` | plan, task.md, docs, issue, architecture, or scope |
 | `references/implementation-review-branch.md` | code, tests, docs, or PR diff |
 | `references/structural-quality.md` | maintainability, smell, thin wrapper, busy branch, wrong-layer logic |

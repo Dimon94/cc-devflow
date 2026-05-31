@@ -1,5 +1,12 @@
 # CC-Do Skill Changelog
 
+## v1.11.1 - 2026-05-31
+
+- add the shared Domain Context Contract so execution reads relevant
+  `CONTEXT.md`, `CONTEXT-MAP.md`, and ADRs before editing
+- require execution closeout to propose context growth only when implementation
+  evidence proves durable language or ADR truth wrong or incomplete
+
 ## v1.11.0 - 2026-05-31
 
 - slim the entrypoint to the Do purpose, TDD iron law, load table, core flow, and default output

@@ -14,14 +14,16 @@ Execution mistakes are usually skipped basics: wrong task, private seam tests, m
 
 1. Before editing: identify the one task, allowed files, public seam, and verification command.
 2. Before marking complete: confirm Red/Green/refactor evidence and completion script output.
-3. Before exit: commit the task/environment and name the next route.
+3. Before exit: verify domain context growth, commit the task/environment, and name the next route.
 
 ## Required Checks
 
 - [ ] current task can be restated from `task.md` and repo evidence
+- [ ] relevant `CONTEXT.md`, `CONTEXT-MAP.md`, and ADRs were read when present before editing; missing context docs were skipped silently
 - [ ] Red test name, public seam, behavior, suite layer/runtime, proof value, mock boundary, Green minimality guard, and refactor candidate are known
 - [ ] Red evidence fails for the intended behavior before Green when TDD applies, and would catch a real bug/regression/user-visible failure rather than only a snapshot, duplicate happy path, no-op smoke, internal call-count, or overmocked implementation detail
 - [ ] task status is updated through `scripts/mark-task-complete.sh`, not manual checkbox editing
+- [ ] context growth was proposed only when execution proved durable language or ADR truth wrong or incomplete, and only written after user confirmation
 - [ ] verification ran or blocker is explicit and the completed slice is committed
 
 ## Exit Rule
