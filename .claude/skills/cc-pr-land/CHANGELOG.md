@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.5.0 - 2026-05-31
+
+- slim the entrypoint to landing boundary, load table, core flow, and default output
+- move GitHub truth preflight and Review Gate Carry-Forward details into `PLAYBOOK.md`
+- keep reviewed-verdict and main parity proof in the playbook so landing remains review-first without a thick entrypoint
+
 ## v1.4.1 - 2026-05-31
 
 - add a Reviewed Verdict And Main Parity Guard so landing cannot merge on implied approval

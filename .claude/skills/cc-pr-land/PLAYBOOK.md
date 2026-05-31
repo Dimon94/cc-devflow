@@ -39,6 +39,27 @@
 - Main parity proof
 - Cleanup result
 
+## GitHub Truth Preflight
+
+Run before listing, reviewing, rebasing, or merging any PR:
+
+1. Resolve `gh` with `command -v gh`, then `/opt/homebrew/bin/gh` and `/usr/local/bin/gh`. If a fallback is used, call that absolute path.
+2. Prefer authenticated `gh` after `gh auth status` succeeds. Do not print tokens.
+3. If REST/curl is needed, inspect only token environment variable names such as `GH_TOKEN`, `GITHUB_TOKEN`, `GITHUB_PAT`, `GHE_TOKEN`, or `GITHUB_ENTERPRISE_TOKEN`; never print values.
+4. If no authenticated GitHub path is available, stop. Do not infer PR queue, reviews, checks, or mergeability from local refs.
+5. Treat anonymous REST `404` for repository or PR endpoints as private-repo or unauthenticated-access evidence unless authenticated proof says otherwise.
+6. `git fetch`, `git ls-remote`, and remote refs prove branch existence or commit ids only; they do not replace live PR, review, and check truth.
+
+## Review Gate Carry-Forward
+
+`cc-pr-land` is the final merge gate. It must preserve the review verdict, not reinterpret it as vague approval. Before landing, read PR review output, GitHub review comments, linked `task.md`, and `handoff/pr-brief.md` when available, then classify:
+
+- Complexity: checked, skipped with reason, blocked, failed, or not applicable.
+- Hardening/productization: selected facets checked, skipped with reason, blocked with missing evidence, failed, or not applicable.
+- Release/readiness: local checks, config/env, migrations/data, deploy/health, smoke/cleanup, rollback, and watch items passed, skipped with reason, blocked, failed, or not applicable when those surfaces are part of the PR.
+
+Do not land unresolved `blocked`, `failed`, `changes-requested`, `must-fix-before-release`, missing facet coverage, or stale coverage after a material rebase/conflict resolution. Route missing or stale review coverage to `cc-pr-review`; route concrete implementation fixes to `cc-dev`. A skipped or not-applicable gate must name evidence or scope reason.
+
 ## Reviewed Verdict And Main Parity Guard
 
 Do not merge on implied approval. A PR needs an explicit reviewed verdict from
