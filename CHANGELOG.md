@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.36] - 2026-06-01
+
+### Changed
+
+- Moved default PDCA review convergence into `cc-check`, which now runs
+  subAgent `cc-review` loops until no P0/P1/P2 finding remains before pass.
+- Updated `cc-dev` so the default PDCA path no longer inserts automatic
+  `cc-review` stages between `cc-plan`, `cc-do`, and `cc-check`.
+- Updated `cc-plan` task templates and examples to record the final
+  check-stage review convergence gate instead of default review-only
+  environments.
+
 ## [4.5.34] - 2026-06-01
 
 ### Fixed
