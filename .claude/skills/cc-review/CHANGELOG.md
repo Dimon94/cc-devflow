@@ -1,5 +1,14 @@
 # CC-Review Changelog
 
+## v2.14.0 - 2026-05-31
+
+- slim the main `SKILL.md` entrypoint to under 100 lines so Agent startup only reads routing, facet loading, and output rules
+- clarify that body references resolve relative to the current `SKILL.md` directory, while frontmatter `reads` is the platform-rewritten path source
+- document the resource-resolution rule in `PLAYBOOK.md` so progressive disclosure does not depend on the shell cwd
+- move the detailed review loop, exit contract, review escape ledger, risk lanes, facet contracts, finding rules, subagent rules, decision-question protocol, and output shapes into `PLAYBOOK.md` so capability is preserved behind progressive disclosure
+- de-duplicate review-chain selection so `PLAYBOOK.md` chooses narrow review nodes by trigger, while specialty checklists stay in their facet references
+- move the structural approval bar into `references/structural-quality.md` so structural strictness is preserved without making every review read it
+
 ## v2.13.4 - 2026-05-31
 
 - add a Finding Proof Contract so findings require source evidence, a violated control, and a repair option or route before they can be reported

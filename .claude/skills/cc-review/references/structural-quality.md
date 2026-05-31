@@ -21,6 +21,22 @@ workflow and not a nit quota.
 - Keep recommendations behavior-preserving and name the tests or measurements
   needed to prove that preservation.
 
+## Approval Bar
+
+Do not approve only because behavior works. When the structural-quality facet is
+selected, approval also requires:
+
+- no clear structural regression
+- no obvious behavior-preserving code-judo simplification left on the table
+- no unjustified push past 1000 LOC or continued growth of an already oversized
+  hot file
+- no scattered special branches, feature checks, or temporary modes in shared
+  flows
+- no hacky or magical abstraction that hides a simple data shape
+- no thin wrapper, duplicate helper, cast-heavy contract, or unnecessary
+  optionality that blurs the real invariant
+- no logic placed in the wrong layer or bypassing an existing canonical helper
+
 ## Maintainability Guardrails
 
 - Entrypoints stay thin: `main`, `App`, route files, layouts, and top-level
