@@ -1,5 +1,9 @@
 # CC-Plan Skill Changelog
 
+## v3.18.2 - 2026-05-31
+
+- add a Design Pressure contract for non-trivial plans so task contracts name deep module shape, information hiding, caller knowledge, public seams, and vertical slices before `cc-do`
+
 ## v3.18.1 - 2026-05-23
 
 - add confidence-per-minute test strategy planning so each behavior task freezes suite layer, command/runtime expectation, proof value, fixture/mock boundary, and low-value tests to avoid

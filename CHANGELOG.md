@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added a `cc-plan` Design Pressure contract so non-trivial plans freeze deep module shape, information hiding, caller knowledge, public seams, and vertical task slices before `cc-do`.
+
 ## [4.5.29] - 2026-05-28
 
 ### Changed

@@ -56,6 +56,27 @@ Tiny plans may compress a round to one evidence-backed line. Full designs must p
   duplicate happy paths, no-op smoke tests, overmocked internals, and brittle
   implementation assertions.
 
+## Design Pressure
+
+Before freezing non-trivial tasks, make the design pressure explicit in
+`task.md#Contract Summary`:
+
+- Prefer a deep module: a small public interface that hides real complexity
+  instead of a thin wrapper that only adds another name.
+- Preserve information hiding. Storage shape, protocol details, provider quirks,
+  normalization, and messy edge handling should live inside the owning module.
+- Minimize caller knowledge. Ordinary callers should not need setup order,
+  representation details, cache rules, transport choices, or mode flags to use
+  the planned interface correctly.
+- Name the public seam that proves behavior: command, API, UI path, generated
+  artifact, or other user/operator-visible flow.
+- Keep the task split vertical slice shaped. Each task should move through a
+  behavior seam with `[TEST] -> [IMPL] -> [REFACTOR]`, not through horizontal
+  layers that leave behavior unproven.
+- If a special case appears, first ask whether the owning module can eliminate
+  the invalid state or isolate the unusual behavior behind the same public
+  contract.
+
 ## Socratic Dialogue
 
 The dialogue is complete only when both releases are explicit:
