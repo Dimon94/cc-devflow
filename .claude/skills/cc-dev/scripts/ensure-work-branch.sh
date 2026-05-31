@@ -57,6 +57,8 @@ done < <(git for-each-ref --format='%(refname:short)' refs/heads 2>/dev/null || 
 if [[ -n "$case_collision" ]]; then
   echo "WorkBranchError: case-variant branch already exists: $case_collision" >&2
   echo "Expected exact branch: $target_branch" >&2
+  echo "Use a fresh change key, or rename the old branch only after proving no worktree owns it:" >&2
+  echo "  git branch -m '$case_collision' '$target_branch'" >&2
   exit 1
 fi
 

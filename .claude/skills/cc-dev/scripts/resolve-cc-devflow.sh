@@ -65,15 +65,35 @@ candidate_supports() {
   shift
   local help_output
 
-  help_output="$("$@" --help 2>&1)" || return 1
+  if command -v timeout >/dev/null 2>&1; then
+    help_output="$(timeout 10 "$@" --help 2>&1)" || {
+      printf 'Rejected cc-devflow CLI candidate: %s\n' "$label" >&2
+      printf 'Reason: --help failed or timed out after 10s.\n' >&2
+      return 1
+    }
+  else
+    help_output="$("$@" --help 2>&1)" || {
+      printf 'Rejected cc-devflow CLI candidate: %s\n' "$label" >&2
+      printf 'Reason: --help failed.\n' >&2
+      return 1
+    }
+  fi
 
   for capability in "${REQUIRED[@]}"; do
     case "$capability" in
       next-change-key|config|init|adapt)
-        contains_word "$help_output" "$capability" || return 1
+        contains_word "$help_output" "$capability" || {
+          printf 'Rejected cc-devflow CLI candidate: %s\n' "$label" >&2
+          printf 'Reason: missing required capability "%s" in --help output.\n' "$capability" >&2
+          return 1
+        }
         ;;
       *)
-        contains_word "$help_output" "$capability" || return 1
+        contains_word "$help_output" "$capability" || {
+          printf 'Rejected cc-devflow CLI candidate: %s\n' "$label" >&2
+          printf 'Reason: missing required capability "%s" in --help output.\n' "$capability" >&2
+          return 1
+        }
         ;;
     esac
   done

@@ -152,6 +152,9 @@ while IFS= read -r ref_name; do
   if [[ "$ref_name" != "$target_branch" && "$ref_lower" == "$target_lower" ]]; then
     echo "WorktreePrepareError: case-variant branch already exists: $ref_name" >&2
     echo "Expected exact branch: $target_branch" >&2
+    echo "Run cc-devflow next-change-key again after this branch is visible, or choose a fresh REQ/FIX key." >&2
+    echo "If this branch is the intended work, rename it only after proving no worktree owns it:" >&2
+    echo "  git branch -m '$ref_name' '$target_branch'" >&2
     exit 1
   fi
 done < <(git for-each-ref --format='%(refname:short)' refs/heads 2>/dev/null || true)
