@@ -1,6 +1,6 @@
 ---
 name: cc-spec-init
-version: 1.4.0
+version: 1.4.1
 description: Use when you need to initialize or evolve capability specs under `devflow/specs/`.
 reads:
   - PLAYBOOK.md

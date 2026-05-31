@@ -1,5 +1,10 @@
 # CC-Spec-Init Skill Changelog
 
+## v1.4.1 - 2026-05-31
+
+- add an Overlap Decision Gate so overlapping capability names are resolved as split, merge, deprecate, or keep separate before durable spec writes
+- require canonical vocabulary, aliases to avoid, ownership boundary, and relationship constraints to be recorded when overlap is found
+
 ## v1.4.0 - 2026-05-18
 
 - add a Default Output contract for capability spec initialization and updates
