@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a `cc-act` Delivery Mode And Release Gate Guard so closeout cannot infer a delivery mode or ship reasonless release gate statuses.
 - Added a `cc-review` Finding Proof Contract so findings require source evidence, a violated control, a repair route, and no local report file.
 - Added a `cc-pr-review` API Contract Landing Blocker so changed public/API contracts without proof tests cannot route to landing.
+- Added a `cc-pr-land` Reviewed Verdict And Main Parity Guard so landing requires explicit review verdicts and command-backed main parity proof.
 
 ## [4.5.29] - 2026-05-28
 

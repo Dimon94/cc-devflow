@@ -1,6 +1,6 @@
 ---
 name: cc-pr-land
-version: 1.4.0
+version: 1.4.1
 description: Use in a separate session to land reviewed GitHub PRs into main with review-first, production-gate-aware, rebase-first discipline.
 triggers:
   - 合并这个 PR

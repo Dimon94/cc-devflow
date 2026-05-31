@@ -11,7 +11,7 @@ describe('cc-pr-land review gate carry-forward contract', () => {
   test('landing preserves PR review production gates instead of generic approval', () => {
     const skill = read('.claude/skills/cc-pr-land/SKILL.md');
 
-    expect(skill).toContain('version: 1.4.0');
+    expect(skill).toContain('version: 1.4.1');
     expect(skill).toContain('production-gate-aware');
     expect(skill).toContain('Review Gate Carry-Forward');
     expect(skill).toContain('Complexity: checked, skipped with reason, blocked, failed, or not applicable');

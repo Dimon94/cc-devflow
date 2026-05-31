@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.4.1 - 2026-05-31
+
+- add a Reviewed Verdict And Main Parity Guard so landing cannot merge on implied approval
+- require local main, remote main, and active main worktree parity to be proven by command evidence before declaring landing complete
+
 ## v1.4.0 - 2026-05-27
 
 - require landing sessions to carry forward `cc-pr-review` gate coverage for complexity, hardening/productization, and release/readiness facets

@@ -39,6 +39,18 @@
 - Main parity proof
 - Cleanup result
 
+## Reviewed Verdict And Main Parity Guard
+
+Do not merge on implied approval. A PR needs an explicit reviewed verdict from
+`cc-pr-review`, GitHub review, or an equivalent recorded review packet before
+landing. Missing, stale, or ambiguous review evidence must route to
+`cc-pr-review`; route to `cc-pr-review` before any merge attempt.
+
+Main parity proof is command evidence, not prose. Before declaring landing
+complete, show local main, remote main, and active main worktree commit proof
+from Git/GitHub commands. If main parity command proof is missing, stop instead
+of treating the merge as complete.
+
 ## Stop Conditions
 
 Stop instead of guessing when:
