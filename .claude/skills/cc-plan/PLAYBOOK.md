@@ -40,9 +40,13 @@ Every plan starts from the domain model, not from a blank task list:
 5. Plan synthesis: convert the approved answers into scope, non-goals,
    user/edge stories, interface/data contract, state ownership, test strategy,
    Design Pressure, Second-Move Review, and verification seams.
-6. Task generation: write `task.md` task blocks from `assets/TASKS_TEMPLATE.md`
+6. Execution environments: for non-trivial or parallel-ready work, define the
+   independently committable environments before task blocks. Each environment
+   names route, tasks, dependencies, touched paths, verification, merge gate,
+   unlocks, and initial status.
+7. Task generation: write `task.md` task blocks from `assets/TASKS_TEMPLATE.md`
    only after requirement release and technical release.
-7. Closeout: validate the plan artifact, commit the Plan stage, and route onward.
+8. Closeout: validate the plan artifact, commit the Plan stage, and route onward.
 
 ## Rules
 
@@ -57,6 +61,9 @@ Every plan starts from the domain model, not from a blank task list:
 9. Non-trivial plans use at least two confirmation rounds unless source evidence already answers one: product/creative confirmation, then engineering/task confirmation.
 10. Domain grilling is part of planning: challenge terms against `CONTEXT.md`, sharpen fuzzy language, test concrete scenarios, check code-answerable claims from repo evidence, and update confirmed glossary/ADR decisions inline through `references/domain-grilling-contract.md`.
 11. User-facing decisions use `D<N>` questions with recommendation, options, impact, and STOP.
+12. Parallel work is a plan contract, not an execution guess. If a task can run
+    in parallel, record the execution environment graph and its gates in
+    `task.md`; otherwise say why the change stays serial.
 
 ## Progressive Flow
 
@@ -115,6 +122,29 @@ Each task block includes:
 - verification command
 - completion evidence
 - commit point if the task closes an execution environment
+
+## Required Execution Environment Fields
+
+Each non-trivial plan records `## Execution Environments` before the task
+blocks. Omit it only for tiny serial changes and say why in `Contract Summary`.
+
+Each environment includes:
+
+- ID: `E001` for planned work, `R001` for review-only, `C001` for check-only,
+  `A001` for act-only closeout, and `EF001` for diagnosis environments created
+  after a failure.
+- Route: `cc-do`, `cc-review`, `cc-check`, `cc-diagnose`, or `cc-act`.
+- Status: initial `planned`; later `dispatched`, `completed`, `integrated`,
+  `blocked`, or `skipped`.
+- Tasks: task IDs included in the environment.
+- DependsOn / Unlocks: environment IDs, not only task IDs.
+- Parallel: `yes` only when the environment has no causal dependency or touched
+  path conflict with its sibling batch.
+- Touches: files, directories, public interfaces, mutable resources, and
+  submodules expected to change or be exercised.
+- Verification: focused commands or review/check evidence required.
+- Merge gate: commit/evidence/clean worktree/cherry-pick requirements.
+- Child: thread/session/worktree/branch/commit fields start as `pending`.
 
 Tasks must be tracer bullets: `[TEST] -> [IMPL] -> [REFACTOR]`. Each task names the public verification path, command, completion evidence, suite layer/runtime, proof value, fixture/mock boundary, and low-value tests to avoid. Regression tests cannot be deferred; if no honest seam exists, plan a spike or design correction.
 

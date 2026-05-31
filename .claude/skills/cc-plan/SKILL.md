@@ -13,6 +13,7 @@ triggers:
 reads:
   - PLAYBOOK.md
   - assets/TASKS_TEMPLATE.md
+  - references/pre-plan-grill.md
   - references/planning-contract.md
   - references/domain-grilling-contract.md
   - references/CONTEXT-FORMAT.md
@@ -38,6 +39,7 @@ entry_gate:
   - Use host-native structured choice via `../cc-dev/references/user-choice-output-protocol.md` when decisions need user input.
 exit_criteria:
   - "`task.md#Contract Summary` records approved solution, non-goals, decisions, branch, stories, planning flow, review gate, verification, assumptions, test strategy, ASCII Branch Chain, and dialogue checkpoints when used."
+  - "`task.md#Execution Environments` records execution units, dependency graph, parallel eligibility, child route, merge gate, and durable orchestration status when the change is non-trivial or user requested parallel work."
   - "`task.md` contains executable task blocks from `assets/TASKS_TEMPLATE.md`."
   - "Non-trivial plans complete product/creative discovery, Second-Move Review, Design Pressure, and explicit user release before task generation."
   - "D<N> decisions that changed the plan are recorded in `task.md`."
@@ -65,6 +67,7 @@ reroutes:
 | Planning workflow and setup | `PLAYBOOK.md` |
 | Checklist before pause or exit | `references/checklist-contract.md` |
 | Planning flow, Decision Questions, Design Pressure, Branch Chain | `references/planning-contract.md` |
+| User asks for pre-plan grilling or the requirement is too broad to freeze | `references/pre-plan-grill.md` |
 | Domain grilling, glossary challenge, inline context updates, ADR offer rules | `references/domain-grilling-contract.md` |
 | CONTEXT glossary format | `references/CONTEXT-FORMAT.md` |
 | ADR format | `references/ADR-FORMAT.md` |
@@ -94,10 +97,13 @@ Every `cc-plan` run follows this chain before `task.md` is frozen:
 5. Plan synthesis: turn the approved answers into scope, non-goals, user/edge
    stories, interface/data contract, state ownership, test strategy, Design
    Pressure, Second-Move Review, and verification seams.
-6. Task generation: write executable task blocks from
+6. Execution architecture: when work can be split, define execution environments
+   before task blocks. Each environment owns one independently committable,
+   independently verifiable slice and names its child skill route.
+7. Task generation: write executable task blocks from
    `assets/TASKS_TEMPLATE.md` only after requirement release and technical
    release. The task blocks are the downstream execution contract for `cc-do`.
-7. Closeout: validate the plan artifact, commit the Plan stage, and route to
+8. Closeout: validate the plan artifact, commit the Plan stage, and route to
    `cc-do`, `cc-diagnose`, or `stop`.
 
 ## Flow

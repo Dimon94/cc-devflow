@@ -33,6 +33,7 @@
 
 每个 subagent 在开工前必须拿到：
 
+- execution environment ID 和 route
 - 当前任务全文
 - 当前 requirement 摘要
 - 当前进度摘要
@@ -44,6 +45,16 @@
 - 非目标
 
 少任何一项，都不是“已准备好的并行任务”。
+
+## Child Boundary
+
+收到 dispatch packet 的 `cc-do` 子线程只拥有当前 execution environment。
+
+- 可以更新当前 environment 对应 task blocks、evidence 和 Failure Ledger。
+- 可以提交当前 environment 的代码、测试、文档和允许的 task evidence。
+- 不可以修改 sibling environment 状态。
+- 不可以解锁下一阶段。
+- 不可以替主控 cherry-pick、merge、push 或宣布整体完成。
 
 ## Scheduling Heuristics
 

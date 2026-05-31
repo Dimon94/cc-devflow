@@ -32,6 +32,7 @@ entry_gate:
   - Read relevant `CONTEXT.md`, `CONTEXT-MAP.md`, and ADRs through `../cc-dev/references/domain-context-contract.md` before editing.
   - Reject execution if the task cannot be restated from `task.md` and repo evidence.
   - Validate execution shape: Red name, one behavior, public seam, suite/runtime, proof value, mock boundary, Green minimality, refactor candidate.
+  - When invoked from parallel orchestration, accept exactly one execution environment or dispatch packet; do not inspect or update sibling environments except dependency status.
 exit_criteria:
   - Current task has Red/Green evidence or recorded TDD exception in `task.md`.
   - Red proves one target behavior through a public seam with real proof value; Green stays minimal.
@@ -42,6 +43,7 @@ exit_criteria:
   - Verification commands ran or are explicitly blocked.
   - Task status is updated through `scripts/mark-task-complete.sh`.
   - Completed task/environment is committed to Git.
+  - Parallel child final report includes environment ID, commit, verification, dirty state, touched files, blockers, and route recommendation.
   - No process file beyond `task.md` updates and Git commits.
 reroutes:
   - when: New evidence disproves root cause.
@@ -57,6 +59,8 @@ reroutes:
 `cc-do` 只执行 `task.md` 已冻结的任务，不重新规划。Bug 热修默认先走 `cc-diagnose`，只有已经写成 `task.md` 的修复任务才进入这里。
 
 默认只更新代码、测试、`task.md` 任务状态和 Git commit。不要生成额外过程文件。
+
+在并行编排中，`cc-do` 是 child executor，不是 orchestrator。它只执行收到的一个 execution environment，提交该环境的 verified commit，并把解锁、cherry-pick、phase gate 和最终 `cc-check` 留给主控 `cc-dev`。
 
 ```text
 NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST

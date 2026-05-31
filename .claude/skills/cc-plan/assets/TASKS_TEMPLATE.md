@@ -163,6 +163,48 @@ Verification:
 Risk / Escalate If:
 -
 
+## Execution Environments
+
+Durable orchestration state only. Do not write heartbeat polling logs, child
+thread scratch notes, or large command output here.
+
+| Env | Route | Status | DependsOn | Parallel | Child | Commit | Gate |
+|-----|-------|--------|-----------|----------|-------|--------|------|
+| E001 | cc-do | planned | none | no | pending | pending | pending |
+
+### E001 first-closed-slice
+
+Goal:
+Route: cc-do
+Status: planned
+Tasks: T001, T002
+DependsOn: none
+Parallel: no
+Touches:
+- `path/to/test`
+- `path/to/file`
+Verification:
+- `npm test -- path/to/test`
+Merge gate:
+- child commit exists
+- child worktree is clean
+- focused verification passed
+- touched paths stayed inside this environment
+Unlocks:
+- E002
+Child:
+- Thread: pending
+- Worktree: pending
+- Branch: pending
+- Commit: pending
+Integration:
+- Cherry-picked: pending
+- Focused verification: pending
+
+Use `R###` for review-only environments, `C###` for check-only environments,
+`A###` for isolated act/closeout environments, and `EF###` for diagnosis
+environments created after a failed child, cherry-pick, or phase gate.
+
 ## Failure Ledger
 
 Use this section only for real execution failures, reroutes, disproven assumptions, stale validation, wrong-file touches, repeated tool failures, user-corrected misses, or eligible `cc-review` escape findings. Eligible review escapes are limited to process, test, design, and model-pattern escapes. Do not prefill speculative risks.

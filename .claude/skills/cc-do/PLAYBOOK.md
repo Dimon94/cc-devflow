@@ -110,6 +110,19 @@ Each entry is `FL-###` with symptom, evidence, attempted fix, result, and lesson
 
 Parallelize only when the task explicitly allows it, dependencies are satisfied, touched paths do not overlap, and each execution environment can commit independently. Otherwise stay serial.
 
+When invoked by `cc-dev` parallel orchestration:
+
+1. Read only the assigned execution environment and its included task blocks.
+2. Treat sibling environments as out of scope except for dependency status.
+3. Do not create child threads, sibling worktrees, or integration commits.
+4. Complete all tasks listed in the environment, or stop blocked with evidence.
+5. Commit the environment if files changed.
+6. Report environment ID, route, commit, verification, dirty state, touched
+   files, blockers, and route recommendation.
+
+Do not mark a sibling environment as complete. Do not unlock a phase. Do not
+cherry-pick another child result.
+
 ## Reroute Triggers
 
 - New evidence disproves root cause: `cc-diagnose`

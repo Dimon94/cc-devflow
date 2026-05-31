@@ -20,6 +20,17 @@ writes: []
 
 探索代码库时，先用项目领域词汇表建立相关模块的心智模型；如果触碰区域有 ADR，也要读取。
 
+## Parallel Orchestration Boundary
+
+当 `cc-dev` 把本 skill 作为 `EF###` diagnosis environment 派发时：
+
+- 只诊断触发该 environment 的失败：child failure、cherry-pick conflict、phase gate failure 或 `cc-check` fail。
+- 先建立反馈环并复现原始失败；没有反馈环就返回 blocked。
+- 修复必须产出独立 commit，除非诊断结论是不需要改文件。
+- commit 只包含该 failure 的最小修复、回归测试、必要 task evidence 和 debug cleanup。
+- 如果发现真实问题超出当前 change scope，返回 route `cc-plan` 或独立 `FIX`，不要偷偷扩大当前需求。
+- 最终报告必须包含 environment、commit、复现 loop、回归命令、dirty state、debug probe 清理和 route recommendation。
+
 ## Phase 1 - 建立反馈环
 
 **这就是整个 skill 的核心。** 其他步骤都是机械动作。只要你有一个快速、确定、Agent 可运行的 pass/fail 信号，就能找到原因；二分、假设检验、打点都只是消费这个信号。没有反馈环，盯着代码看再久也没用。
