@@ -10,9 +10,9 @@
 
 ## Capability Map
 
-| Capability ID | Title | Type | Status | Primary Owner | Roadmap Links | Open Gaps | Last Verified |
+| Capability ID | Title | Type | Status | Primary Owner | Planning Links | Open Gaps | Last Verified |
 |---------------|-------|------|--------|---------------|---------------|-----------|---------------|
-| cap-example | Example Capability | user-visible | partial | team | RM-001 | 2 | 2026-04-19 |
+| cap-example | Example Capability | user-visible | partial | team | REQ-001-example | 2 | 2026-04-19 |
 
 ## Active Change Links
 
@@ -30,6 +30,6 @@
 ## Index Review
 
 - Missing capability files:
-- Dangling roadmap links:
+- Dangling planning links:
 - Dangling change links:
 - Next cleanup:

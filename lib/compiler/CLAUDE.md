@@ -92,5 +92,4 @@ npm run adapt -- --verbose          # Detailed output
 ---
 
 **Created**: 2025-12-18
-**REQ**: REQ-005 (RM-007)
 **Version**: 1.0.0

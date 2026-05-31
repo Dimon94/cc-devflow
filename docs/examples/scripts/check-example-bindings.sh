@@ -29,7 +29,6 @@ assert_contains() {
   fi
 }
 
-ROADMAP_VERSION="$(skill_version cc-roadmap)"
 REQ_PLAN_VERSION="$(skill_version cc-plan)"
 REQ_DO_VERSION="$(skill_version cc-do)"
 REQ_CHECK_VERSION="$(skill_version cc-check)"
@@ -57,15 +56,13 @@ while IFS= read -r encoded; do
   task_file="$change_dir/task.md"
   handoff_dir="$change_dir/handoff"
 
-  for file in "$readme" "$root/ROADMAP.md" "$root/BACKLOG.md" "$root/roadmap.json" "$task_file"; do
+  for file in "$readme" "$task_file"; do
     if [[ ! -f "$file" ]]; then
       echo "Example $example_id is missing required file: $file" >&2
       exit 1
     fi
   done
 
-  assert_contains "$root/ROADMAP.md" "- Skill version: \`$ROADMAP_VERSION\`"
-  assert_contains "$root/BACKLOG.md" "- Skill version: \`$ROADMAP_VERSION\`"
   assert_contains "$task_file" "- CC-Plan skill version: \`$REQ_PLAN_VERSION\`"
   assert_contains "$task_file" "## Execution Protocol"
   assert_contains "$task_file" "task.md"
@@ -75,7 +72,6 @@ while IFS= read -r encoded; do
   assert_contains "$task_file" "Public verification path:"
 
   assert_contains "$readme" "## Example Meta"
-  assert_contains "$readme" "\`cc-roadmap@$ROADMAP_VERSION\`"
   assert_contains "$readme" "\`cc-plan@$REQ_PLAN_VERSION\`"
   assert_contains "$readme" "\`cc-do@$REQ_DO_VERSION\`"
   assert_contains "$readme" "\`cc-check@$REQ_CHECK_VERSION\`"

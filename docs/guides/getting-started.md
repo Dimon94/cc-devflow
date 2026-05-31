@@ -14,8 +14,6 @@ CC-DevFlow has two entry paths:
 The core workflow runs planned work through PDCA and keeps bug work on the lighter `cc-diagnose` hotfix path:
 
 ```text
-cc-roadmap -> cc-next -> cc-dev
-
 PDCA: cc-plan -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
 Hotfix: cc-diagnose -> focused fix -> regression proof
 ```
@@ -36,12 +34,11 @@ The public skills are the visible harness. Each distributed `SKILL.md` now carri
 npx cc-devflow init --dir /path/to/your/project
 ```
 
-The whole-pack install includes roadmap, next-work selection, autonomous dev, manual PDCA, `cc-diagnose` for hotfix/debug work, optional `cc-review`, PR review/landing, plus `cc-spec-init` and `cc-simplify` as maintenance helpers.
 
 ### Single Skill Install
 
 ```bash
-npx skills add https://github.com/Dimon94/cc-devflow --skill cc-roadmap
+npx skills add https://github.com/Dimon94/cc-devflow --skill cc-plan
 ```
 
 ## Adapt For A Platform
@@ -73,23 +70,20 @@ find .codex/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort
 Use the skills in this order:
 
 ```text
-1. cc-roadmap
-2. use cc-plan for planned work, or cc-diagnose directly for bugs
-3. optional cc-review for complex frozen plans
-4. cc-do
-5. optional cc-review for complex implementations
-6. cc-check
-7. cc-act
-8. repeat
+1. use cc-plan for planned work, or cc-diagnose directly for bugs
+2. optional cc-review for complex frozen plans
+3. cc-do
+4. optional cc-review for complex implementations
+5. cc-check
+6. cc-act
+7. repeat
 ```
 
 Typical outputs:
 
-- `cc-roadmap` writes `devflow/roadmap.json` as the editable roadmap truth, then generates `devflow/ROADMAP.md` and deprecated `devflow/BACKLOG.md`
 - `cc-spec-init` writes `devflow/specs/INDEX.md` and capability specs
 - `cc-plan` writes `task.md#Contract Summary`
 - `cc-diagnose` records reproduction, hypotheses, probes, fix evidence, and regression proof in the response or final commit/PR text
-- `cc-review` writes plan findings into `task.md`; implementation findings stay in the response until the user chooses a repair option; only process/test/design/model-pattern review escapes may be written into `task.md#Failure Ledger`; non-trivial review chains record evidence, diagnosis, Phenomenal/Essential/Philosophical cognitive layers, and a fault-centered causal path that walks up through direct input/caller proof, contract/spec/provider, and source intent/roadmap when available, then down through first affected seam, behavior/artifact, and release/maintenance risk when available; complexity reports include scope, detected stack/test/build commands, ranked findings, before/after complexity, patch status, files-modified yes/no, and needed tests or measurements; structural quality findings cover code-judo simplification, maintainability guardrails, branching/abstraction/type-boundary smells, ownership boundaries, compatibility-preserving state changes, real viewport evidence, and approval/blocking verdicts; productization findings cover shared action layers, API/agent surfaces, audit trails, admin/manageability UI, feature flags, idempotency, and operator paths; hardening specialists cover selected security, observability, release-readiness, and test-strategy risks with surface maps, risk gates, checked/skipped/blocked coverage, proof paths, confidence-per-minute test judgment, and residual risk
 - `cc-check` reports verification facts in the response, PR brief, or Git commit
 - `cc-act` writes exactly one final PR file, `handoff/pr-brief.md`, or incident postmortem files when a real incident needs a corpse report
 
@@ -105,7 +99,6 @@ Change truth lives in `devflow/changes/<change>/`.
 
 Planning handoffs should be evidence-rich before implementation starts:
 
-- `cc-roadmap` records planning posture, evidence maturity, framing check, dependency graph, and any developer/operator adoption context.
 - `cc-plan` records option roles, implementation surface, decision horizon, error/rescue map, test framework source, coverage quality, confidence-per-minute proof value, focused suite shape, and regression-test requirements when they apply.
 - `cc-do` does not treat decorative Red tests as valid TDD evidence; broad snapshots, duplicate happy paths, no-op smoke tests, brittle internal assertions, and overmocked implementation details must be rewritten or routed back to planning.
 - `cc-check` re-applies that standard before pass: a green suite must name the behavior it proves, the suite layer, command/runtime, fixture/mock boundary, and low-value tests avoided.

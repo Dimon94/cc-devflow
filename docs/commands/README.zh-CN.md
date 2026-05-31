@@ -12,8 +12,6 @@ npx cc-devflow adapt --cwd /path/to/your/project --platform codex
 真正的工作流直接使用 Skill：
 
 ```text
-cc-roadmap
-
 PDCA: cc-plan -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
 Hotfix: cc-diagnose -> focused fix -> regression proof
 ```
@@ -26,5 +24,5 @@ Hotfix: cc-diagnose -> focused fix -> regression proof
 如果你只想安装单个 Skill，再使用 [skills.sh CLI](https://skills.sh/docs/cli)：
 
 ```bash
-npx skills add https://github.com/Dimon94/cc-devflow --skill cc-roadmap
+npx skills add https://github.com/Dimon94/cc-devflow --skill cc-plan
 ```

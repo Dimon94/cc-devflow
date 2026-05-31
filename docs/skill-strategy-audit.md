@@ -20,7 +20,6 @@
 | `engineering/tdd` | 禁止水平切片，使用 tracer bullet 垂直 Red/Green 循环 | `cc-do` / `cc-plan` | 已有 planning 规则；补强执行阶段逐条 task 的 tracer bullet guard |
 | `engineering/to-issues` | 独立可领的 vertical slices，HITL/AFK 标注，依赖顺序创建 | `cc-plan` / `cc-act` | 迁移为 task / follow-up 切片规则 |
 | `engineering/to-prd` | 从现有上下文合成 PRD，测试决策只写行为和模块，不写短期文件路径 | `cc-plan` | 迁移为 design durable output 规则，不迁移 GitHub issue 自动创建 |
-| `engineering/zoom-out` | 不熟悉区域时先上升一层，画模块和调用方地图 | `cc-roadmap` / `cc-plan` | 已被 context sweep 覆盖；仅作为审计备注 |
 | `misc/git-guardrails-claude-code` | 阻断危险 git 动作，保留用户确认边界 | `cc-act` | 迁移为 destructive / publish action guard，不迁移 Claude hook 实现 |
 | `misc/migrate-to-shoehorn` | 测试里的 partial fixture 要显式表达，不用不透明 cast 掩盖类型事实 | `cc-do` / `cc-check` | 迁移为通用 test fixture discipline，不绑定 shoehorn 依赖 |
 | `misc/scaffold-exercises` | 生成目录后必须跑专用 lint，移动用 `git mv` 保留历史 | `cc-act` | 仅迁移验证/移动原则；课程目录规则不迁移 |

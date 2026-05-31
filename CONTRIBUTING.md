@@ -12,7 +12,6 @@ cc-devflow is now a skills-first repository with a restored distributable CLI.
 
 Public surface:
 
-- `cc-roadmap`
 - `cc-next`
 - `cc-dev`
 - `cc-plan`
@@ -109,7 +108,6 @@ The user-facing story should stay:
 
 - whole pack: `cc-devflow init`
 - platform outputs: `cc-devflow adapt`
-- workflow execution: visible `cc-roadmap + PDCA/IDCA` skills
 - capability truth maintenance: `cc-spec-init`
 
 ### 2. Preserve Skills-First Layout
@@ -213,7 +211,6 @@ This should confirm:
 - do not describe `.claude/commands/` as required structure
 - do not describe internal runtime helpers as the supported public workflow
 - if a shipped skill changes, update that skill's `version`, local `CHANGELOG.md`, and affected public docs in the same PR
-- keep the workflow story as `cc-roadmap`, `cc-next`, `cc-dev`, manual PDCA/IDCA skills, optional `cc-review`, and PR review/landing skills; document maintenance helpers such as `cc-spec-init` / `cc-simplify` separately
 - do not hand-edit `.codex/skills`; regenerate it from `.claude/skills` with `npm run adapt`
 
 ---

@@ -12,7 +12,6 @@
 
 ## Requirement
 
-- `RM-001` / `REQ-001`: add a one-click copy action to the existing share dialog
 
 ## Ship Mode
 
@@ -59,7 +58,6 @@
 - Language source: `Output language: en`
 - PR body language: English
 - Title rule: use English after the Conventional Commits `type(scope)` prefix; keep identifiers, paths, commands, and issue keys unchanged.
-- Body source: current `pr-brief.md`, current diff, current verification response, and roadmap/backlog writeback.
 - Required sections: summary, problem, changes, validation, review/gate evidence, risk/rollback, docs/writeback, and follow-ups.
 - Completeness gate: no empty headings, no stale inherited PR body, no generic "tests passed" without commands or evidence, and no `<placeholder>` text before `gh pr create`.
 
@@ -74,7 +72,6 @@
 
 ## Problem
 
-- Requirement: `RM-001` / `REQ-001`
 - User-visible gap: users can see the invite URL but cannot copy it with one click from the share dialog.
 
 ## Changes
@@ -107,11 +104,9 @@
 
 - `CLAUDE.md`: unchanged
 - `README.md`: unchanged
-- Roadmap progress: `RM-001` is ready for PR review after this create-pr handoff.
 
 ## Follow-ups
 
-- If users still miss the feedback, lift `RM-002` into the next requirement.
 ```
 
 ## Summary
@@ -158,7 +153,6 @@
 
 ## Follow-Ups
 
-- if users still miss the feedback, lift `RM-002` into the next requirement
 
 ## Risks
 

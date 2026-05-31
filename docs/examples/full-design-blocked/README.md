@@ -4,13 +4,12 @@
 
 - Example version: `1.0.0`
 - Last reviewed: `2026-04-17`
-- Bound skills: `cc-roadmap@5.10.0`, `cc-plan@3.19.0`, `cc-do@1.11.0`, `cc-check@1.17.0`
+- Bound skills: `cc-plan@3.19.0`, `cc-do@1.11.0`, `cc-check@1.17.0`
 
 This example shows a requirement that **looked executable**, but `cc-check` correctly stopped it and sent it back to `cc-plan`.
 
 The shape is intentional:
 
-- roadmap item is real enough to matter
 - design requires `full-design`
 - tasks were executed far enough to produce evidence
 - the verification verdict is still `blocked`
@@ -40,9 +39,6 @@ The sample shows what happens when implementation moved before the integration d
 
 ## Artifact Map
 
-- `roadmap.json` (editable roadmap truth)
-- `ROADMAP.md` (generated view)
-- `BACKLOG.md` (deprecated projection)
 - `changes/REQ-002-bulk-invite-import/task.md`
 - `changes/REQ-002-bulk-invite-import/task.md`
 

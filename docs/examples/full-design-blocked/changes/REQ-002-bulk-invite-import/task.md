@@ -7,8 +7,6 @@
 - CC-Plan skill version: `3.19.0`
 - Work branch: `REQ/002-bulk-invite-import`
 - Output language: en
-- Source roadmap item: `RM-010`
-- Source roadmap version: `roadmap.v2`
 
 ## Execution Handoff
 
@@ -43,7 +41,6 @@
 ```text
 Requirement Impact Chain
 REQ: deterministic bulk invite row outcomes
-|-- Upstream source: RM-010 + admin import failure cases
 |-- Current code path: src/invite/bulk-import.ts
 |   |-- caller: src/admin/BulkInvitePanel.tsx
 |   |-- data or state: CSV rows, duplicate state, seat-limit state, audit rows

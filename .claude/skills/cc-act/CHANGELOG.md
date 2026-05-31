@@ -36,7 +36,6 @@
 ## v1.12.0 - 2026-05-20
 
 - compress confirmed Failure Ledger entries into incident postmortems instead of treating raw task failures as long-term truth
-- add `Workflow Patch Candidate` to the postmortem template so each incident decides whether the workflow changes through a skill rule, template field, script guard, regression test, roadmap follow-up, or explicit no-action
 - teach `evaluate-postmortem-trigger.sh` to trigger on confirmed ledger entries marked for postmortem
 
 ## v1.11.0 - 2026-05-18
@@ -84,7 +83,6 @@
 ## v1.8.8 - 2026-05-12
 
 - require `cc-devflow query workflow-context` before ship work so `cc-act` confirms the context-index next action before opening delivery artifacts
-- make deep closeout reads conditional on ship-mode, rollback, roadmap-sync, or postmortem triggers
 - keep `ship-readiness` as the hard readiness query while using workflow context for the end-to-end PDCA/IDCA handoff
 
 ## v1.8.7 - 2026-05-11
@@ -101,7 +99,6 @@
 
 - add a language-aware Pull Request Body Contract so `create-pr` and `update-pr` derive PR title/body language from runtime `Output language`
 - render a detailed PR body draft in `pr-brief.md` with summary, problem, changes, validation, review/gate evidence, risk/rollback, docs/writeback, and follow-ups
-- block shallow PR descriptions by requiring current diff/report-card/doc-sync/roadmap facts, real validation evidence, and no leftover placeholders before `gh pr create` or `gh pr edit`
 
 ## v1.8.5 - 2026-05-11
 
@@ -111,8 +108,6 @@
 
 ## v1.8.4 - 2026-05-11
 
-- prefer `change-meta.json` for roadmap sync and spec file summaries so `task-manifest.json` stays focused on execution state
-- keep backward-compatible manifest fallback for older change folders while preserving one owner for roadmap/spec status
 
 ## v1.8.3 - 2026-05-11
 
@@ -122,9 +117,6 @@
 
 ## v1.8.2 - 2026-05-06
 
-- add an execution-time Roadmap Progress Check so act verifies source RM state before ship work continues
-- align all roadmap writeback guidance on `devflow/roadmap.json` with generated `ROADMAP.md` / `BACKLOG.md` projections
-- update delivery templates and act render scripts to surface roadmap sync state in PR briefs, release notes, resume indexes, and doc sync reports
 
 ## v1.8.1 - 2026-04-29
 

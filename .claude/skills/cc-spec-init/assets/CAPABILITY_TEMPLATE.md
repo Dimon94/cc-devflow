@@ -6,7 +6,7 @@ status: partial
 primary_owner: ""
 output_language: ""
 last_verified_at: 2026-04-19
-roadmap_links:
+planning_links:
   - RM-001
 related_changes:
   - REQ-001-example
@@ -49,9 +49,9 @@ Missing:
 Intentional Gaps:
 - 有意不做、暂时不做的部分
 
-# Roadmap Links
+# Planning Links
 
-- RM-001: 未来推进什么
+- REQ-001-example: 未来推进什么
 
 # Change Ledger
 

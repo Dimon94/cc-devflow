@@ -1,7 +1,6 @@
 {
   "updatedAt": "2026-05-28",
   "skills": {
-    "cc-roadmap": "5.10.0",
     "cc-next": "1.5.0",
     "cc-dev": "1.8.0",
     "cc-plan": "3.19.0",
@@ -22,7 +21,6 @@
       "root": "docs/examples/pdca-loop",
       "changeDir": "docs/examples/pdca-loop/changes/REQ-001-copy-invite-link",
       "covers": [
-        "cc-roadmap",
         "cc-plan",
         "cc-do",
         "cc-check",
@@ -36,7 +34,6 @@
       "root": "docs/examples/full-design-blocked",
       "changeDir": "docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import",
       "covers": [
-        "cc-roadmap",
         "cc-plan",
         "cc-do",
         "cc-check"
@@ -49,7 +46,6 @@
       "root": "docs/examples/local-handoff",
       "changeDir": "docs/examples/local-handoff/changes/REQ-003-audit-log-export",
       "covers": [
-        "cc-roadmap",
         "cc-plan",
         "cc-do",
         "cc-check",

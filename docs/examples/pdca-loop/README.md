@@ -4,9 +4,8 @@
 
 - Example version: `1.0.0`
 - Last reviewed: `2026-04-17`
-- Bound skills: `cc-roadmap@5.10.0`, `cc-plan@3.19.0`, `cc-do@1.11.0`, `cc-check@1.17.0`, `cc-act@1.16.0`
+- Bound skills: `cc-plan@3.19.0`, `cc-do@1.11.0`, `cc-check@1.17.0`, `cc-act@1.16.0`
 
-This folder shows one minimal but complete `cc-roadmap -> cc-plan -> cc-do -> cc-check -> cc-act` loop.
 
 The example is intentionally small:
 
@@ -23,13 +22,10 @@ The immediate pain is simple: users can open the share dialog and see the invite
 
 The sample requirement is:
 
-- `RM-001`: add a `Copy invite link` button to the existing share dialog
+- add a `Copy invite link` button to the existing share dialog
 
 ## Artifact Map
 
-- `roadmap.json`: editable roadmap truth that renders the generated views
-- `ROADMAP.md`: generated view of what `cc-roadmap` decided and why this item is first
-- `BACKLOG.md`: deprecated capability-aware projection that makes `RM-001` ready for `cc-plan`
 - `changes/REQ-001-copy-invite-link/task.md`: executable task handoff
 - `changes/REQ-001-copy-invite-link/handoff/pr-brief.md`: ship-ready PR handoff
 
@@ -48,7 +44,6 @@ It does **not** need process files, so the example intentionally stops there.
 
 When reading the sample, check whether you can answer these in under a minute:
 
-1. Why is `RM-001` the next roadmap item?
 2. Why does the requirement stay `tiny-design` instead of `full-design`?
 3. Which task proved the missing behavior first?
 4. What fresh evidence let `cc-check` say `pass`?

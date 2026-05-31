@@ -7,8 +7,6 @@
 - CC-Plan skill version: `3.19.0`
 - Work branch: `REQ/001-copy-invite-link`
 - Output language: en
-- Source roadmap item: `RM-001`
-- Source roadmap version: `roadmap.v1`
 
 ## Execution Handoff
 
@@ -44,7 +42,6 @@
 ```text
 Requirement Impact Chain
 REQ: one-click copy for the visible invite URL
-|-- Upstream source: RM-001 + share dialog user story
 |-- Current code path: src/features/share/ShareDialog.tsx
 |   |-- caller: share dialog render flow
 |   |-- data or state: existing invite URL prop + copied confirmation state

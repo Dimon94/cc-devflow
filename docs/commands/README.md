@@ -12,8 +12,6 @@ npx cc-devflow adapt --cwd /path/to/your/project --platform codex
 Use skills directly for the workflow itself:
 
 ```text
-cc-roadmap
-
 PDCA: cc-plan -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
 Hotfix: cc-diagnose -> focused fix -> regression proof
 ```
@@ -26,5 +24,5 @@ Use maintenance skills separately when needed:
 Use [skills.sh CLI](https://skills.sh/docs/cli) when you only want one skill:
 
 ```bash
-npx skills add https://github.com/Dimon94/cc-devflow --skill cc-roadmap
+npx skills add https://github.com/Dimon94/cc-devflow --skill cc-plan
 ```

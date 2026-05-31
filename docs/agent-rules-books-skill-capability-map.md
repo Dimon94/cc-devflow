@@ -86,7 +86,6 @@ Source editing rule:
 
 | cc-devflow skill | Source paths for future PRD/issues |
 | --- | --- |
-| `cc-roadmap` | `.claude/skills/cc-roadmap/SKILL.md`; `.claude/skills/cc-roadmap/PLAYBOOK.md`; `.claude/skills/cc-roadmap/references/roadmap-dialogue.md`; generated mirror: `.codex/skills/cc-roadmap/` |
 | `cc-next` | `.claude/skills/cc-next/SKILL.md`; `.claude/skills/cc-next/PLAYBOOK.md`; generated mirror: `.codex/skills/cc-next/` |
 | `cc-dev` | `.claude/skills/cc-dev/SKILL.md`; `.claude/skills/cc-dev/PLAYBOOK.md`; `.claude/skills/cc-dev/references/checklist-contract.md`; generated mirror: `.codex/skills/cc-dev/` |
 | `cc-plan` | `.claude/skills/cc-plan/SKILL.md`; `.claude/skills/cc-plan/PLAYBOOK.md`; `.claude/skills/cc-plan/references/planning-contract.md`; `.claude/skills/cc-plan/assets/TASKS_TEMPLATE.md`; generated mirror: `.codex/skills/cc-plan/` |
@@ -105,8 +104,6 @@ Source editing rule:
 
 | cc-devflow skill | Current responsibility | Candidate source lenses | Extractable keywords and flows | Target surface | TDD proof idea |
 | --- | --- | --- | --- | --- | --- |
-| `cc-roadmap` | Define or reset project direction before concrete requirements enter PDCA. | DDD Distilled, DDD, APoSD, Pragmatic Programmer | bounded context, ubiquitous language, context map, core domain, user/operator, current workaround, kill signal, decision horizon, simplify the route before slicing implementation | `PLAYBOOK.md` route-shaping section; `references/roadmap-dialogue.md` vocabulary prompts | Fixture roadmap input with fuzzy goals produces stages with domain language, context boundary, exit signal, and no implementation task leakage. |
-| `cc-next` | Rank ready work from roadmap truth, active local changes, and remote issues. | Pragmatic Programmer, Release It, APoSD | tracer value, risk first, reversibility, dependency graph, readiness, highest learning per step, avoid local optimum | `SKILL.md` ranking pressure; `PLAYBOOK.md` scoring details | Ranking fixture prefers a ready high-risk learning item over a vague larger item and explains dependency blockers. |
 | `cc-dev` | Drive one selected planned objective autonomously through PDCA until delivery choice or blocker. | Pragmatic Programmer, Release It, Refactoring, WELC | tracer bullet, feedback loop, strict review convergence, stop-the-line blocker, one terminal state, no context drift, visible evidence chain | `SKILL.md` route/state-machine contract; `PLAYBOOK.md` stage-transition pressure; `references/checklist-contract.md` | Scenario fixture with stale validation forces reroute to `cc-check` or `cc-do` instead of shipping. |
 | `cc-plan` | Clarify scope, freeze design decisions, and break work into executable tasks before coding. | APoSD, Clean Architecture, DDD Distilled, Refactoring, WELC | deep module, information hiding, caller knowledge, dependency direction, public seam, characterization test, vertical slice, design it twice, non-goals | `SKILL.md` Design Pressure; `PLAYBOOK.md` option comparison; `assets/TASKS_TEMPLATE.md` task fields | A planning fixture for a non-trivial API change must include boundary, public test seam, viable/ideal option, and vertical task slices. |
 | `cc-diagnose` | Build a fast bug feedback loop, reproduce, hypothesise, instrument, fix, and regression-test without the old heavy IDCA handoff. | WELC, Pragmatic Programmer, DDIA, Release It | characterization test, seam discovery, hypothesis falsification, first bad state, feedback loop sharpening, data consistency, blast radius, escape analysis | `SKILL.md` six-phase diagnosis loop | Bug fixture with weak evidence cannot continue to hypotheses until reproduction or closest honest loop is recorded. |
@@ -220,5 +217,4 @@ surface is missing.
 9. Upgrade `cc-act` with Release It closeout extraction.
 10. Add `cc-review` lens routing fixtures and compatibility-risk checks.
 11. Upgrade `cc-review` specialist lenses incrementally.
-12. Repeat for roadmap, next, investigate, simplify, specs, docs, and maintainer
     release skills in priority order.

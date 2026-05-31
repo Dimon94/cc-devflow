@@ -64,9 +64,6 @@ Use this when the only thing you know is the file in front of you.
 
 | If the main file you have is... | You are probably here | Read this first |
 | --- | --- | --- |
-| `roadmap.json` | `cc-roadmap` editable machine truth source | [pdca-loop/roadmap.json](./pdca-loop/roadmap.json) |
-| `ROADMAP.md` | `cc-roadmap` generated human view | [pdca-loop/ROADMAP.md](./pdca-loop/ROADMAP.md) |
-| `BACKLOG.md` | deprecated `cc-roadmap` -> `cc-plan` projection | [pdca-loop/BACKLOG.md](./pdca-loop/BACKLOG.md) |
 | `task.md` | `cc-plan`, `cc-diagnose`, or `cc-do` | [pdca-loop/task.md](./pdca-loop/changes/REQ-001-copy-invite-link/task.md) |
 | Git diff / commit | `cc-do` or `cc-check` | current branch history and working tree |
 | current response verdict | `cc-check` | the verification summary from the latest run |
@@ -98,7 +95,6 @@ If both are true, you are usually in `cc-act` local handoff territory, not back 
 - Read: [pdca-loop/README.md](./pdca-loop/README.md)
 - Best when:
   - you want to understand the straight-through loop once
-  - you need a clean example of `cc-roadmap -> cc-plan -> cc-do -> cc-check -> cc-act`
 
 ### 2. Counterexample: `full-design` + `blocked` + reroute to `cc-plan`
 

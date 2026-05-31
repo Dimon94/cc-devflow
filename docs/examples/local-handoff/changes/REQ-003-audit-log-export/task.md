@@ -7,8 +7,6 @@
 - CC-Plan skill version: `3.19.0`
 - Work branch: `REQ/003-audit-log-export`
 - Output language: en
-- Source roadmap item: `RM-020`
-- Source roadmap version: `roadmap.v3`
 
 ## Execution Handoff
 
@@ -43,7 +41,6 @@
 ```text
 Requirement Impact Chain
 REQ: CSV export for visible audit summary rows
-|-- Upstream source: RM-020 + weekly admin reporting workflow
 |-- Current code path: src/admin/AuditSummaryPanel.tsx
 |   |-- caller: admin audit summary panel action
 |   |-- data or state: visible summary rows

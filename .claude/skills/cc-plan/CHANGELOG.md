@@ -159,8 +159,6 @@
 ## v3.8.3 - 2026-05-11
 
 - slim `task-manifest.json` back to execution graph truth instead of duplicating `planning/design.md` and `planning/tasks.md`
-- retire manifest-only narrative/protocol/status mirrors: top-level `status`, `activePhase`, `sourceRoadmap`, `spec`, `executionProtocol`, `planningMeta.requirementBrief`, `planningMeta.ambiguityGate`, `planningMeta.reviewLoop`, `sourceEvidence[]`, `languageAndDecisions`, `executionDiscipline`, and task-level `completion`
-- keep roadmap/spec state in `change-meta.json` and `devflow/roadmap.json`, task completion commands in `planning/tasks.md`, and execution graph state in `task-manifest.json`
 - add progressive disclosure indexes to design and task templates so lower-frequency context is opened only when needed
 
 ## v3.8.2 - 2026-05-10
@@ -222,9 +220,6 @@
 
 ## v3.7.2 - 2026-05-06
 
-- add a Roadmap Sync Gate so approved planning runs must reconcile the source RM before handing off to `cc-do`
-- document `locate-roadmap-item.sh` and `sync-roadmap-progress.sh` as the canonical way to update `devflow/roadmap.json` and regenerate `ROADMAP.md` / `BACKLOG.md`
-- update design, tiny-design, tasks, and manifest templates with roadmap sync status fields
 
 ## v3.7.1 - 2026-04-29
 
@@ -240,9 +235,7 @@
 
 ## v3.6.2 - 2026-04-28
 
-- clarify that canonical language and durable decisions come from cc-devflow native sources: `devflow/specs/`, roadmap/backlog handoff, planning design/analysis, and change metadata
 - remove external context/architecture-decision files from the standard planning contract so they are not implied as generated artifacts
-- route long-lived decisions into capability spec deltas, roadmap/backlog decision notes, or the current design decision log
 
 ## v3.6.1 - 2026-04-28
 
@@ -267,7 +260,6 @@
 
 ## v3.5.5 - 2026-04-28
 
-- require over-broad asks to split back into roadmap stages or separate REQ/FIX candidates before detailed planning
 - clarify that `tiny-design` is a short approved design, not permission to skip the design gate
 - add implementation surface mapping so file responsibilities are locked before task decomposition
 - add review calibration so only build-blocking scope, ambiguity, verification, or execution issues fail the planning gate
@@ -313,14 +305,12 @@ Migration note:
 
 ## v3.4.0 - 2026-04-19
 
-- add `change-meta.json` as a required planning output so roadmap items, capability specs, and execution share one machine truth source
 - upgrade design and tiny-design templates with capability handoff, invariant impact, expected spec delta, and gap change sections
 - extend `task-manifest.json` and task handoff templates so `cc-do` can load capability specs without relying on chat memory
 
 Migration note:
 
 - new planning runs should generate `devflow/changes/<change-key>/change-meta.json`
-- capability-linked roadmap items should carry one explicit `Primary capability`
 
 ## v3.3.0 - 2026-04-17
 
@@ -361,15 +351,11 @@ Migration note:
 ## v2.0.0 - 2026-04-10
 
 - 增加 `version` frontmatter，并定义 cc-plan skill 的 semver 规则。
-- 强化 `Context Sweep`，要求在 planning 前显式读取上游 roadmap handoff、requirement 目录现状、代码与文档上下文。
-- 增加 `Source Handoff` / `Source Alignment` 约定，保证 `roadmap -> cc-plan` 的 success signal、constraints、dependencies、non-goals 不在 handoff 时丢失。
 - 升级 `BRAINSTORM.md`、`DESIGN.md`、`PLAN_REVIEW.md`、`context-package.md`、`TASKS.md`、`task-manifest.json` 模板，加入版本链和来源元数据。
 - 新增 `scripts/bump-skill-version.sh`，用于递增 skill 版本并同步 changelog。
 
 Migration note:
 
-- 旧 requirement 目录仍可继续使用，但建议补齐 requirement version、design version、source roadmap item / version 等元数据。
-- `task-manifest.json` 新增 `sourceRoadmap` 和 `planningMeta` 字段；旧消费方若只读取原有字段不会受影响。
 
 ## v1.0.0 - 2026-04-10
 
