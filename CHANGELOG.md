@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.34] - 2026-06-01
+
+### Fixed
+
+- Required Codex parallel orchestration to use real thread and automation tools
+  instead of generic subagents, preserving thread IDs for polling, correction,
+  and acceptance.
+
 ## [4.5.33] - 2026-06-01
 
 ### Added
