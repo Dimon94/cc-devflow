@@ -46,6 +46,29 @@ Submodule entry, wrong linked worktree, branch case collision, target mismatch, 
 
 Tiny plans may compress rounds to evidence-backed lines. Full designs preserve enough detail that `cc-do` does not invent architecture, fields, interfaces, or tests.
 
+## 规划判断
+
+好计划的标准不是“看起来完整”，而是让 `cc-do` 不再需要替你做决策。`cc-do` 应该执行，不应该推断产品形态、数据字段、错误语义或测试接缝。
+
+只有满足这些条件，才冻结计划：
+
+1. 用户 / operator 和最小成功信号是具体的。
+2. non-goals 能挡住明显的范围膨胀。
+3. 公开接缝、数据 contract、错误、权限、状态归属都被命名。
+4. task slice 是纵向的，并且可以独立验证。
+5. 选定设计已经和“更简单的一步”以及“更好架构的一步”比较过。
+6. 验证命令证明行为，不是证明实现琐事。
+
+坏计划信号：
+
+- 任务只是“backend / frontend / tests”这种分层桶。
+- task 写“实现逻辑”，但没有公开行为和证明命令。
+- 关键术语和 roadmap / spec 不一致，却没有记录假设。
+- 计划直接选第一个能跑的方案，没有做 Second-Move Review。
+- 行为工作把 Red 测试推迟到实现之后。
+
+出现这些信号时，继续规划，或从 `cc-do` / `cc-check` 打回。
+
 ## Dialogue And Decisions
 
 Ask only decisions that change product value, product shape, scope, design, task split, interface, or verification. Use `../cc-dev/references/user-choice-output-protocol.md`: host-native structured choice first, fixed A/B/C fallback only when needed.

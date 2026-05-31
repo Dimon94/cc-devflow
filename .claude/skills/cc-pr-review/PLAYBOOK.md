@@ -108,6 +108,28 @@ and the missing contract, regression, or caller proof. The verdict is
 `changes-requested` or `blocked`; route to `cc-dev` or `cc-do` for the smallest
 test and implementation repair before `cc-pr-land`.
 
+## Verdict 门槛
+
+只有当前 PR head 有足够 landing 证据时，才允许 approve。Review 可以带残余风险，但风险必须被命名并限制边界。
+
+Approve 需要：
+
+1. 使用 live PR 事实，而不是过期本地 ref。
+2. 根据 task、PR body 或 issue 事实理解 diff 意图。
+3. 选中的风险 lane 要么已检查，要么有理由 skip，要么明确不适用。
+4. 公开 contract 变化有测试或明确的非代码证据支撑。
+5. checks 状态被理解，包括 skipped 或 unavailable 的 checks。
+
+坏 approve 信号：
+
+- 只写 “Looks good”，没有列 checked lanes。
+- CI 变绿，但没覆盖改动的公开接缝。
+- PR head 或 checks 变化后，review 仍沿用旧结论。
+- 因为难查，就跳过 hardening / productization facet。
+- 直接接受 complexity scanner 输出，没有回到代码和 diff 复核。
+
+出现这些信号时，verdict 是 `changes-requested`、`blocked` 或 `needs-review`，不是 approved。
+
 ## Finding Shape
 
 Each accepted finding should include:

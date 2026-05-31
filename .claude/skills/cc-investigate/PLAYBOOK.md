@@ -42,6 +42,29 @@ Submodule entry, wrong linked worktree, detached state, branch case collision, o
 8. Freeze: write root cause, repair boundary, regression proof, allowed/forbidden files, and test seam into `task.md`.
 9. Commit: commit the Investigate stage before handoff.
 
+## 调查判断
+
+根因是第一个被证明会制造坏状态的位置，不是症状第一次冒出来的代码行。好的调查会让后续修复变得无聊：`cc-do` 明确知道要阻止哪个状态，也知道哪个证明能抓住它。
+
+只有满足这些条件，才冻结调查结果：
+
+1. 复现路径，或最接近的诚实反馈环，匹配用户报告的症状。
+2. 第一个坏状态位于症状点的上游。
+3. 被违反的 contract 说明了这个状态为什么坏。
+4. 原始触发条件说明了坏状态如何被制造。
+5. 反事实证据说明：在选定 repair boundary 修，就能阻止症状。
+6. 回归证明使用最短、可信、公开的接缝。
+
+坏调查信号：
+
+- 根因只是堆栈行或失败断言。
+- 假设有支持证据，但没有反证 / 排除结果。
+- repair boundary 只是“这里加 guard”，没有说明为什么拒绝症状点修补。
+- 测试接缝只打私有实现细节。
+- escape reason 只是“以后小心”。
+
+出现这些信号时，写 `Evidence Request`、只做 diagnose，或重新路由；不要创建修复任务。
+
 ## Dialogue
 
 Ask phenomenon questions early only when reproduction facts are missing. Technical-detail and solution-shape questions happen after code, logs, history, artifacts, and feedback-loop evidence have been inspected.

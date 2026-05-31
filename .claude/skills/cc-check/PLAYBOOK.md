@@ -114,6 +114,28 @@ Every failure needs error name, evidence, owner, and rescue action.
 - `fail`: a command, review, or behavior check proves a defect.
 - `blocked`: required evidence, dependency, auth, input, or environment is unavailable.
 
+## 放行门槛
+
+只有当前证据能说服一个没看过聊天记录的维护者时，才允许给 `pass`。命令变绿是必要条件，但不总是充分条件。
+
+`pass` 至少需要：
+
+1. 最新相关 diff 之后重新跑出的命令输出。
+2. 需求到证据的逐项映射，而不是只写“suite passed”。
+3. 行为变更或 bugfix 改了测试时，必须审查测试质量。
+4. 每个红灯、 flaky、skip、blocked 信号都有 failure ownership。
+5. 没检查到的表面，要明确残余风险。
+
+坏验证信号：
+
+- 大 suite 通过了，但本次行为没有 focused proof。
+- 测试只断言新增 guard，而不是原始用户可见失败。
+- 浏览器 / UI 行为只从代码推断，没有 viewport、截图或 artifact 路径。
+- mock 替代了你声称已经验证的真实 contract。
+- 把失败称为“环境问题”，但没有证明 base/main 也同样失败。
+
+出现这些信号时，结论是 `fail` 或 `blocked`，不是 `pass`。
+
 ## Required Output
 
 Short response only:

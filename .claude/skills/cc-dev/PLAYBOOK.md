@@ -63,6 +63,28 @@ Do not bypass `cc-review` implementation repair choices. When a finding requires
 product, architecture, scope, or risk selection, use the shared user-choice
 protocol and stop as `needs-clarification`.
 
+## 编排判断
+
+`cc-dev` 负责选阶段，不负责亲自做细活。它最难的判断是：下一个底层 skill 能不能不依赖聊天记忆，直接靠持久文件行动。
+
+路由前先检查：
+
+1. 当前目标到底是方向问题、需求规划、根因调查、实现任务、验证缺口，还是交付选择？
+2. 目标 skill 有没有可用的持久 contract：`roadmap.json`、`task.md`、PR 或 handoff？
+3. 当前 worktree 是不是正确表面，分支状态是否安全？
+4. 用户指令、风险等级或历史 finding 是否要求 review 收敛？
+5. 终点状态是真的，还是 Agent 只是因为会话变长而想停？
+
+坏编排信号：
+
+- 从模糊目标直接进 `cc-do`，而不是先冻结任务 contract。
+- 没有最新 `cc-check` 就进 `cc-act`。
+- 因为“改动很小”跳过 review，但表面涉及 auth、持久化、迁移、公开 API、Agent 面向 contract 或发布关键路径。
+- 上一个活跃改动还没收尾，就创建新改动。
+- 把“看起来没事可做了”当成终点。
+
+不确定时，路由到能冻结缺失真相的最窄 skill。
+
 ## Delivery Choice
 
 After `cc-check` passes, `cc-dev` routes to `cc-act` for delivery choice.

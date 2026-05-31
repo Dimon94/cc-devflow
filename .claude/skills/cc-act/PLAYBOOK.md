@@ -43,6 +43,24 @@ Recommendation defaults:
 
 Do not bias toward local `main` merge or remote PR.
 
+## 收尾判断
+
+`cc-act` 不是“把工作区弄干净”，而是最后一道责任边界。选择交付方式前，先证明三件事：
+
+1. 工作真的完成：`task.md`、提交记录、最新 `cc-check` 证据三者一致。
+2. 发布叙事诚实：跳过的 gate 有具体范围或环境原因，不是为了省事。
+3. 下一个人或 PR reviewer 不读聊天记录，也能看懂风险。
+
+坏收尾信号：
+
+- `cc-check` 证据过期，或者早于最新提交。
+- release-readiness gate 写成 `not applicable`，但没有绑定到本次改动面。
+- PR / handoff 只说“测试通过”，没有列命令、退出码和证明的 claim。
+- `Failure Ledger` 里还有可能影响发布安全的 `unreviewed` 项。
+- 交付方式是为了 Agent 省事，不是因为它匹配协作和发布现实。
+
+出现任一坏信号时，不要伪造漂亮收尾；转回 `cc-check`、`cc-do`，或让用户明确交付选择。
+
 ## Local Main Merge
 
 Use this mode only when the user explicitly asks for local `main` integration.

@@ -72,6 +72,28 @@ complete, show local main, remote main, and active main worktree commit proof
 from Git/GitHub commands. If main parity command proof is missing, stop instead
 of treating the merge as complete.
 
+## 落地判断
+
+Landing 不是机械 merge，而是 review、集成、验证、mainline 状态之间的一致性证明。
+
+合并前先证明：
+
+1. review verdict 对应的就是即将合并的那个 PR head。
+2. 重要 rebase 或冲突解决没有在缺少新 review 的情况下改变行为。
+3. production gates 要么被继承执行，要么明确说明不适用。
+4. 集成后的验证证据，对本次改动面来说足够新。
+5. local main、remote main、活跃 main worktree 能对齐，且不会覆盖未检查工作。
+
+坏落地信号：
+
+- PR approval 早于 force-push、rebase、冲突修复或生成产物变化。
+- mergeability 是从本地分支猜的，不是来自 GitHub PR 事实。
+- 需要 `--force`，但 `--force-with-lease` 无法证明安全。
+- 只描述 main parity，没有用 commit id 证明。
+- 冲突解决删掉了行为，而不是保留需求意图。
+
+出现任一坏信号，路由到 `cc-pr-review`、`cc-dev`，或停止。
+
 ## Stop Conditions
 
 Stop instead of guessing when:

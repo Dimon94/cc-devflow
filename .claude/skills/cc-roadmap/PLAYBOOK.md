@@ -145,6 +145,29 @@ Use `re-scan-context` when the current direction no longer matches repo reality,
 4. 如果 Stage 1 输了，kill signal 是不是具体到可以止损？
 5. 当前问题路由是否匹配 evidence maturity，而不是为了完整感把所有问题都问一遍？
 
+## 战略判断
+
+好 roadmap 会让下一仗很明显，也会让坏扩张显得难堪。它不需要描述所有未来，只需要保留“为什么现在这条路赢”的理由。
+
+只有满足这些条件，才冻结 roadmap：
+
+1. 真实用户、operator 或 sponsor 被命名。
+2. 现状和 workaround 是具体的。
+3. Stage 1 有 1-2 个周期内可见的成功信号。
+4. kill signal 具体到足以停止或转向。
+5. dependencies 区分了硬阻塞和偏好顺序。
+6. ready RM 带着足够上下文，`cc-plan` 不需要猜战略。
+
+坏 roadmap 信号：
+
+- stage 名称是主题，不是结果。
+- backlog 成了“以后也许做”的停车场。
+- route recommendation 没解释为什么另外两个可行选项要等待。
+- 看不出哪些 RM 必须串行，哪些可以并行。
+- AI leverage verdict 很乐观，但没有绑定用户努力、workaround 或验证信号。
+
+出现这些信号时，继续 funnel，或标记为 needs-evidence。
+
 ## Stage Contract
 
 每个阶段至少要有：

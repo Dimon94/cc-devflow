@@ -49,6 +49,28 @@
 - Three failed patch attempts against the same task mean question `Root Cause Contract` or `Contract Summary`, then reroute to `cc-investigate` or `cc-plan`.
 - If the completion script fails, fix missing evidence, dependency metadata, or task block shape; do not hand-edit checkboxes.
 
+## 实现判断
+
+好执行应该窄，但不能浅。实现要让当前 Red 通过公开接缝变绿，同时不要提前建设未来行为。
+
+标记完成前，先证明：
+
+1. Green 之前，Red 确实因为目标行为失败过。
+2. Green 是恢复 contract 的最小生产代码变更。
+3. Refactor 消除了已经观察到的坏味道；如果没有 refactor，要说明确实不需要。
+4. 最终 diff 之后，验证命令是最新跑过的。
+5. `task.md` 状态、完成证据和代码事实一致。
+
+坏实现信号：
+
+- 没有有意义的 Red，就先改生产代码，且没有记录例外理由。
+- Green 增加了 Red 没要求的通用扩展点或未来分支。
+- 测试通过是因为过度 mock 了本仓库自己拥有的模块。
+- 手改 checkbox，或者忽略完成脚本输出。
+- 多次 patch 都在打症状，真正的 contract 仍然可疑。
+
+出现这些信号时，重建 Red、重新路由，或停止为 blocked。
+
 ## Vertical Red/Green Guard
 
 The execution unit is one observable behavior: finish the current Red -> Green -> Refactor cycle before starting the next behavior.
