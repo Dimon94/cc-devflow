@@ -1,6 +1,6 @@
 ---
 name: cc-pr-review
-version: 1.7.0
+version: 1.7.1
 description: Use in a separate session to review one remote GitHub PR before landing, including PR-scoped complexity, hardening, and productization risk. It reports findings from PR truth and current diff without writing process files.
 triggers:
   - review 这个 PR

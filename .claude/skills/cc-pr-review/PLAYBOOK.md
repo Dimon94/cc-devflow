@@ -35,6 +35,17 @@
 - Verdict
 - Next gate
 
+## API Contract Landing Blocker
+
+Changed public API contracts without proof tests are landing blockers. This
+includes route contracts, CLI flags, schemas, exported functions, generated
+artifacts, provider prompts, package surfaces, and caller-visible behavior.
+
+When this blocker applies, cite the PR diff hunk, the changed contract surface,
+and the missing contract, regression, or caller proof. The verdict is
+`changes-requested` or `blocked`; route to `cc-dev` or `cc-do` for the smallest
+test and implementation repair before `cc-pr-land`.
+
 ## Finding Shape
 
 Each accepted finding should include:

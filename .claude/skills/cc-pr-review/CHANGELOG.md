@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.7.1 - 2026-05-31
+
+- add an API Contract Landing Blocker so changed public API contracts without proof tests cannot route to `cc-pr-land`
+- require blockers to cite the PR diff hunk, changed contract surface, and missing contract, regression, or caller proof
+
 ## v1.7.0 - 2026-05-24
 
 - add PR-scoped hardening specialist selection for security, observability, release-readiness, and test-strategy risk

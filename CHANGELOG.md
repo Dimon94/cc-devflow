@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a `cc-check` False Green Guard so fresh green output cannot pass unless it proves the changed behavior, bugfix, contract, boundary, migration, or operator workflow.
 - Added a `cc-act` Delivery Mode And Release Gate Guard so closeout cannot infer a delivery mode or ship reasonless release gate statuses.
 - Added a `cc-review` Finding Proof Contract so findings require source evidence, a violated control, a repair route, and no local report file.
+- Added a `cc-pr-review` API Contract Landing Blocker so changed public/API contracts without proof tests cannot route to landing.
 
 ## [4.5.29] - 2026-05-28
 
