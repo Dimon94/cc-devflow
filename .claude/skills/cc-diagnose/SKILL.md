@@ -25,6 +25,8 @@ writes: []
 当 `cc-dev` 把本 skill 作为 `EF###` diagnosis environment 派发时：
 
 - 只诊断触发该 environment 的失败：child failure、cherry-pick conflict、phase gate failure 或 `cc-check` fail。
+- 在 Codex App 中创建 child thread 时，`projectId` 不能使用任意 worktree path；必须使用已保存项目的 project worktree path 创建子线程，然后在子线程内切到具体起始分支和目标 worktree。不要先拿临时/任务 worktree path 创建线程再等失败后纠正。
+- 如果主控要求“用 Codex App 创建子线程，不用 subagent”，必须创建真实 Codex child thread；不要退回 subagent 或本线程假装并行。
 - 先建立反馈环并复现原始失败；没有反馈环就返回 blocked。
 - 修复必须产出独立 commit，除非诊断结论是不需要改文件。
 - commit 只包含该 failure 的最小修复、回归测试、必要 task evidence 和 debug cleanup。

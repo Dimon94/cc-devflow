@@ -104,14 +104,18 @@ After all required environments in a phase are integrated or completed:
 
 ## Monitoring
 
-If platform thread and automation tools are available, use them to poll child
-threads and send correction prompts. If not, stop as
-`waiting-for-child-results` with a manual polling checklist.
+If platform thread and automation tools are available, confirm each child has
+started, record durable coordinates, create a heartbeat monitor, then stop the
+orchestrator conversation as `waiting-for-child-results`. Do not busy-poll
+running child threads in the main conversation.
 
 On Codex App, this means loading `codex-thread-orchestration.md` and using the
 actual `create_thread`, `read_thread`, `send_message_to_thread`, and
 `automation_update` tools. Do not substitute generic subagents or prose
 delegation for Codex threads.
+
+If no automation tool is available, stop as `waiting-for-child-results` with a
+manual polling checklist.
 
 Do not write heartbeat polling logs into `task.md`. Record only durable facts:
 child id, worktree, branch, commit, status, blocker, integrated commit, and gate

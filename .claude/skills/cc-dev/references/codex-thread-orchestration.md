@@ -28,6 +28,9 @@ platform-specific adapter. Do not guess another mechanism.
 - The `create_thread` target must be a project worktree target when the
   environment changes files. Use a project local target only for read-only
   review/check work that must inspect the current checkout.
+- A `pendingWorktreeId` or similar provisioning token is not a child thread id.
+  It means the App is still creating the worktree/thread and the environment is
+  not yet dispatched.
 
 ## Dispatch
 
@@ -54,9 +57,37 @@ Status: dispatched
 Do not claim `parallel-dispatched` until `create_thread` returned thread ids
 for every environment in the batch.
 
+If `create_thread` returns `pendingWorktreeId` instead of a thread id, use this
+bounded discovery loop:
+
+1. record the environment as `pending-thread`, not `dispatched`
+2. do not call `read_thread` with `pendingWorktreeId`
+3. do not ask the user to supply the thread id manually
+4. call `list_threads` after a short delay and locate the new thread by the
+   dispatch marker: environment id, requested title, project target, branch or
+   worktree path, and recent creation time
+5. call `read_thread` on the candidate id and verify it is the intended
+   environment before storing it as the child thread id
+6. only then update the parent record to `Status: dispatched`
+
+If no exact candidate appears after bounded polling, report
+`waiting-for-child-results` with the `pendingWorktreeId`, project target, title,
+and attempted discovery filters. Do not recreate the child repeatedly; duplicate
+threads make integration ambiguous.
+
 ## Monitoring
 
-Use heartbeat automation when the user wants autonomous progress:
+Use heartbeat automation for running child threads. The orchestrator must not
+busy-poll by repeatedly reading the thread in the same conversation.
+
+After a child thread is confirmed as `running`, the orchestrator must:
+
+1. write only durable coordinates to `task.md`: environment id, thread id,
+   worktree path, branch, and current status
+2. create or update a heartbeat with `automation_update` on a 10 minute cadence
+3. stop the current conversation as `waiting-for-child-results`
+
+The heartbeat owns periodic polling:
 
 1. call `read_thread` for each child thread id
 2. if running, summarize current progress briefly
@@ -69,11 +100,21 @@ Use heartbeat automation when the user wants autonomous progress:
 Heartbeat output is user-facing status, not durable truth. Keep durable state in
 `task.md` concise.
 
+For environments in `pending-thread`, the heartbeat first runs the dispatch
+discovery loop above with `list_threads`. It must not treat a provisioning token
+as completion, failure, or a usable thread id.
+
+Manual repeated `read_thread` calls in the orchestrator are allowed only for a
+bounded dispatch/discovery check or after the heartbeat reports a terminal child
+state that needs integration. They are not a substitute for the 10 minute
+heartbeat wait.
+
 ## Heartbeat Prompt Shape
 
 The heartbeat prompt must include:
 
 - active environment IDs and child thread IDs
+- the 10 minute cadence
 - the integration gate
 - the rule that no new phase unlock happens before required children are
   completed and verified
