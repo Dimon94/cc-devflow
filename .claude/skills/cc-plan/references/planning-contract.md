@@ -170,9 +170,11 @@ Language rule:
 
 Trace upstream source before downstream impact. Always find the deepest affected data model, state machine, CLI/runtime, prompt, provider contract, storage, or external boundary. If a branch lacks evidence, write `unknown -> Evidence Request`.
 
-## Engineering Review Gate
+## Check-Stage Review Convergence Gate
 
-Before freezing task blocks, write a lightweight review into `task.md#Contract Summary`:
+Before freezing task blocks, write a lightweight review-prep section into
+`task.md#Contract Summary`. This is not a spawned `cc-review` subthread; final
+multi-round review convergence belongs to `cc-check`.
 
 1. Existing leverage map: map each subproblem to existing code, scripts, specs, templates, or tests.
 2. Scope challenge: if the plan touches more than 8 files, adds more than 2 services/classes, or creates cross-module coupling, explain why this is not overengineering.
@@ -206,4 +208,4 @@ Before freezing task blocks, write a lightweight review into `task.md#Contract S
 
 ## Review Gate
 
-Before exit, check product/creative discovery, scope, existing leverage, Second-Move Review, domain language, domain grilling, interface depth, test seam, mock boundary, feedback loop, and failure modes. If the plan is not executable from `task.md`, it is not done.
+Before exit, check product/creative discovery, scope, existing leverage, Second-Move Review, domain language, domain grilling, interface depth, test seam, mock boundary, feedback loop, and failure modes. If the plan is not executable from `task.md`, it is not done. Do not create a default `cc-review` child; `cc-check` performs final subAgent review convergence.

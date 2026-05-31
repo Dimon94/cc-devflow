@@ -56,7 +56,7 @@ npx cc-devflow@latest adapt --cwd /path/to/your/project --all
 ```text
 PR Harness: cc-next -> cc-dev -> cc-pr-review -> cc-pr-land
 
-PDCA: cc-plan        -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
+PDCA: cc-plan -> cc-do -> cc-check(review convergence) -> cc-act
 Parallel PDCA: cc-plan -> cc-dev dispatch loop -> child cc-* environments -> integrate -> cc-check -> cc-act
 Hotfix: cc-diagnose -> focused fix -> regression proof
 ```
@@ -69,14 +69,10 @@ flowchart TD
   Route -->|新需求或变更| Plan["cc-plan\n冻结范围和任务"]
   Route -->|Bug 或回归| Diagnose["cc-diagnose\n建立反馈环并修复"]
 
-  Plan --> PlanReview["cc-review\n可选方案 Review"]
-  PlanReview --> Do["cc-do\n实现并留下证据"]
   Plan --> Do
   Diagnose --> Check
 
-  Do --> ImplReview["cc-review\n可选实现 Review"]
-  ImplReview --> Check["cc-check\n新鲜验证裁决"]
-  Do --> Check
+  Do --> Check["cc-check\n新鲜验证 + Review 收敛"]
   Check --> Act["cc-act\n创建或更新远程 PR"]
   Act --> PRReview["cc-pr-review\n单独会话 Review PR"]
   PRReview --> PRLand["cc-pr-land\nRebase 合并并证明 main parity"]
@@ -106,9 +102,9 @@ flowchart TD
 
 ## 计划质量门禁
 
-`cc-plan` 会在 `cc-do` 开始前冻结实现决策。非 trivial 计划需要比较 minimal viable 和 ideal architecture，full-design 需要包含 implementation decision horizon 和 error/rescue map；测试计划要记录测试框架证据、public test seam、behavior assertion、mock boundary、覆盖质量、强制 regression test、refactor candidates、vertical tracer-bullet slices 和 confidence-per-minute 测试策略。`cc-diagnose` 刻意更轻：先用最锋利的反馈环复现，列出可证伪假设，窄口打点，修复后证明原始复现消失，并清掉 debug probe。
+`cc-plan` 会在 `cc-do` 开始前冻结实现决策。非 trivial 计划需要比较 minimal viable 和 ideal architecture，full-design 需要包含 implementation decision horizon 和 error/rescue map；测试计划要记录测试框架证据、public test seam、behavior assertion、mock boundary、覆盖质量、强制 regression test、refactor candidates、vertical tracer-bullet slices 和 confidence-per-minute 测试策略。它只记录最终 `cc-check` Review 收敛门，不再默认拆出 `cc-review` 子线程。`cc-diagnose` 刻意更轻：先用最锋利的反馈环复现，列出可证伪假设，窄口打点，修复后证明原始复现消失，并清掉 debug probe。
 
-大需求需要并行时，`cc-plan` 先在 `task.md#Execution Environments` 冻结 execution environment 依赖图、触点、路由 skill、验证命令和 merge gate；`cc-dev` 再按这张图创建同级 worktree / 子线程，派发 `cc-do`、`cc-review`、`cc-check`、`cc-diagnose` 或有边界的 `cc-act`，并在主控线程串行验收、cherry-pick、跑 phase gate 和最终 `cc-check`。子线程只拥有自己的 environment，不拥有阶段解锁、主分支合并或最终交付裁决。
+大需求需要并行时，`cc-plan` 先在 `task.md#Execution Environments` 冻结 execution environment 依赖图、触点、路由 skill、验证命令和 merge gate；`cc-dev` 再按这张图创建同级 worktree / 子线程，派发 `cc-do`、显式 standalone `cc-review`、`cc-check`、`cc-diagnose` 或有边界的 `cc-act`，并在主控线程串行验收、cherry-pick、跑 phase gate 和最终 `cc-check`。子线程只拥有自己的 environment，不拥有阶段解锁、主分支合并或最终交付裁决。
 
 Canonical language 和 durable decisions 只收敛到 cc-devflow 原生真相源：`devflow/specs/`、`task.md`、Git history 和 PR truth。历史 planning artifacts 只作为可读 fallback 输入。
 
@@ -118,7 +114,7 @@ planning 之后的每个阶段都从 `task.md`、当前 Git history/status，以
 
 ## 验证与交付门禁
 
-`cc-check` 现在把 QA 当成反馈环问题，而不是只看测试是否绿。Bugfix 和行为变更需要记录证明现实的 loop、expected / actual、复现步骤、confidence-per-minute proof value、测试边界质量；如果没有干净的 public test seam，要留下架构 follow-up。绿灯但没有证明价值的测试、宽泛 snapshot、重复 happy path、no-op smoke、脆弱内部断言、过度 mock 自家模块，会退回 `cc-do` 或 `cc-plan`，不能支撑 pass。它还会把 `task.md#Failure Ledger` 里的失败记录分类成 confirmed lesson、noise 或 unresolved risk。
+`cc-check` 现在把 QA 当成反馈环问题，而不是只看测试是否绿。Bugfix 和行为变更需要记录证明现实的 loop、expected / actual、复现步骤、confidence-per-minute proof value、测试边界质量；如果没有干净的 public test seam，要留下架构 follow-up。它还会开启 review subAgent，按照 `task.md`、当前 diff 和新鲜验证证据多轮执行 `cc-review`，直到没有 P0/P1/P2 finding；任何未解决的 P0/P1/P2 都会退回 `cc-plan`、`cc-do` 或 `cc-diagnose`，不能 pass。绿灯但没有证明价值的测试、宽泛 snapshot、重复 happy path、no-op smoke、脆弱内部断言、过度 mock 自家模块，会退回 `cc-do` 或 `cc-plan`，不能支撑 pass。它还会把 `task.md#Failure Ledger` 里的失败记录分类成 confirmed lesson、noise 或 unresolved risk。
 
 `cc-act` 会把这些证据带进 PR brief、handoff 和 release note。PR / handoff 输出还会携带 release-readiness gate ledger，覆盖 local checks、config/env、migrations/data、deploy/health、smoke/cleanup、rollback 和 watch items；skipped、blocked、not-applicable 都必须说明原因。
 

@@ -16,7 +16,9 @@ Parallel work is valid only when `cc-plan` wrote an execution graph in
 ## Environment Types
 
 - `E###`: implementation environment, normally routes to `cc-do`.
-- `R###`: review-only environment, routes to `cc-review`.
+- `R###`: standalone review-only environment, routes to `cc-review`; use only
+  when explicitly requested or already frozen in `task.md`, not for normal PDCA
+  final review convergence.
 - `C###`: verification-only environment, routes to `cc-check`.
 - `A###`: isolated closeout or handoff environment, routes to `cc-act`; it must
   not choose final delivery mode for the orchestrator.

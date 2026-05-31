@@ -96,7 +96,7 @@ User Stories:
 |----|-------|-------|------------|-----------------|
 | US-001 |  |  |  |  |
 
-Engineering Review Gate:
+Check-Stage Review Convergence:
 - Existing leverage map:
 - Scope challenge:
 - Interface depth:
@@ -104,6 +104,7 @@ Engineering Review Gate:
 - Mock boundary:
 - Feedback loop:
 - Confidence per minute:
+- Final gate: `cc-check` launches subAgent `cc-review` until no P0/P1/P2 finding remains.
 
 Test Strategy Shape:
 - Suite layer:
@@ -201,9 +202,11 @@ Integration:
 - Cherry-picked: pending
 - Focused verification: pending
 
-Use `R###` for review-only environments, `C###` for check-only environments,
-`A###` for isolated act/closeout environments, and `EF###` for diagnosis
-environments created after a failed child, cherry-pick, or phase gate.
+Use `C###` for check-only environments, `A###` for isolated act/closeout
+environments, and `EF###` for diagnosis environments created after a failed
+child, cherry-pick, or phase gate. Do not add normal `R###` review-only
+environments; final multi-round `cc-review` subAgents are launched by
+`cc-check`. Add standalone review environments only when explicitly requested.
 
 ## Failure Ledger
 

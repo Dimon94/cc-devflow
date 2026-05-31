@@ -8,12 +8,12 @@ Autonomous driving fails when stage transitions inherit memory instead of re-rea
 
 - Mode: do-confirm
 - Evidence sink: `task.md`, Git commits, selected cc-act delivery state, and the final audit
-- Failure route: `cc-plan`, `cc-diagnose`, `cc-do`, `cc-review`, `cc-check`, `cc-act`, `cc-pr-review`, or stop
+- Failure route: `cc-plan`, `cc-diagnose`, `cc-do`, `cc-check`, `cc-act`, `cc-pr-review`, or stop
 
 ## Pause Points
 
 1. Before first lower-level stage: resolve CLI, route, change key, worktree, and branch.
-2. Before each stage transition: reread `task.md`, Git, PR/handoff truth, and review gate decisions.
+2. Before each stage transition: reread `task.md`, Git, PR/handoff truth, and final check gate decisions when present.
 3. Before exit: map every objective requirement to file, command, commit, selected delivery, or blocker evidence.
 
 ## Required Checks
@@ -22,10 +22,9 @@ Autonomous driving fails when stage transitions inherit memory instead of re-rea
 - [ ] route is PDCA, resume, or blocked with reason
 - [ ] main checkout remains on `main` and work happens in the isolated change branch/worktree
 - [ ] `task.md`, Git status/history, and PR/handoff truth are reread before each transition
-- [ ] plan and implementation review gates are run, skipped with concrete low-risk reasons, or blocked with missing evidence
-- [ ] strict review mode, when requested, repeated each `cc-review` gate until no P1/P2-equivalent findings remained or stopped as needs-clarification/blocked
-- [ ] PDCA strict mode, when selected, reviewed the `cc-plan` contract before `cc-do` and did not implement from an unresolved plan finding
-- [ ] implementation review repairs did not bypass the shared user-choice protocol for product, architecture, scope, or risk tradeoffs
+- [ ] `cc-dev` did not insert automatic review-only subthreads between `cc-plan`, `cc-do`, and `cc-check`
+- [ ] final `cc-check`, when reached, owns subAgent `cc-review` convergence until no P0/P1/P2 finding remains
+- [ ] P0/P1/P2 findings from final review convergence reroute to `cc-plan`, `cc-do`, or `cc-diagnose` instead of being bypassed
 - [ ] final delivery mode was selected by the user or through the shared choice protocol before `cc-act` executed
 - [ ] local-main merge mode, when selected, has rebase, `--ff-only` merge, containing-commit proof, and no-push evidence
 - [ ] terminal state is one of remote-pr-opened, remote-pr-updated, local-handoff, local-main-merged, needs-clarification, or blocked

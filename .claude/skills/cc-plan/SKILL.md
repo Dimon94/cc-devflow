@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.22.0
+version: 3.23.0
 description: Use when scope, design, and executable tasks must be frozen before coding.
 triggers:
   - 帮我规划这个需求
@@ -38,7 +38,7 @@ entry_gate:
   - Ask D<N> decision questions only when the answer changes scope, design, boundary, task split, or verification.
   - Use host-native structured choice via `../cc-dev/references/user-choice-output-protocol.md` when decisions need user input.
 exit_criteria:
-  - "`task.md#Contract Summary` records approved solution, non-goals, decisions, branch, stories, planning flow, review gate, verification, assumptions, test strategy, ASCII Branch Chain, and dialogue checkpoints when used."
+  - "`task.md#Contract Summary` records approved solution, non-goals, decisions, branch, stories, planning flow, check-stage review convergence, verification, assumptions, test strategy, ASCII Branch Chain, and dialogue checkpoints when used."
   - "`task.md#Execution Environments` records execution units, dependency graph, parallel eligibility, child route, merge gate, and durable orchestration status when the change is non-trivial or user requested parallel work."
   - "`task.md` contains executable task blocks from `assets/TASKS_TEMPLATE.md`."
   - "Non-trivial plans complete product/creative discovery, Second-Move Review, Design Pressure, and explicit user release before task generation."
@@ -99,7 +99,9 @@ Every `cc-plan` run follows this chain before `task.md` is frozen:
    Pressure, Second-Move Review, and verification seams.
 6. Execution architecture: when work can be split, define execution environments
    before task blocks. Each environment owns one independently committable,
-   independently verifiable slice and names its child skill route.
+   independently verifiable slice and names its child skill route. Do not create
+   automatic review-only environments for the normal PDCA path; final review
+   convergence belongs to `cc-check`.
 7. Task generation: write executable task blocks from
    `assets/TASKS_TEMPLATE.md` only after requirement release and technical
    release. The task blocks are the downstream execution contract for `cc-do`.

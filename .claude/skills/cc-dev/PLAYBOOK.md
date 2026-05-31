@@ -2,20 +2,20 @@
 
 ## Visible State Machine
 
-`Goal Packet | objective -> cc-dev -> cc-plan -> [parallel dispatch loop | cc-review*] -> cc-do -> [cc-review*] -> cc-check -> cc-act(delivery choice) -> cc-pr-review | stop`
+`Goal Packet | objective -> cc-dev -> cc-plan -> [parallel dispatch loop] -> cc-do -> cc-check(review convergence) -> cc-act(delivery choice) -> cc-pr-review | stop`
 
 - Enter from: `cc-next` Goal Packet or explicit user objective.
 - Stay in: `cc-dev` while the completion audit finds required work that can be advanced by a lower-level cc-* stage.
 - Exit to: `cc-pr-review` after a remote PR is opened or updated, or stop on local-handoff, local-main-merged, clarification, or blocker.
 
-`cc-review*` is a strict convergence loop when the user asks for repeated review,
-subAgent review, no P1/P2 before continuing, or the full standard workflow. Run
-review, repair/reroute, then review again until no P1/P2-equivalent finding
-remains. P1/P2-equivalent means `critical`, `important`, explicit must-fix,
-blocking missing evidence, or any finding whose route is required before the next
-stage.
+`cc-check` owns strict review convergence. When repeated review, subAgent
+review, no P1/P2, or the full standard workflow is required, `cc-dev` still
+routes through `cc-check`; it does not insert automatic `cc-review` stages before
+`cc-do` or before `cc-check`.
 
-PDCA reviews the frozen `cc-plan` contract before `cc-do`, then reviews the implementation before `cc-check`. Bug and regression work routes to `cc-diagnose`; hotfixes stay outside `cc-dev` unless a frozen `task.md` already exists. When `task.md#Execution Environments` exists, `cc-dev` may run a dispatch loop before final `cc-check`.
+Bug and regression work routes to `cc-diagnose`; hotfixes stay outside `cc-dev`
+unless a frozen `task.md` already exists. When `task.md#Execution Environments`
+exists, `cc-dev` may run a dispatch loop before final `cc-check`.
 
 ## Core Rules
 
@@ -26,9 +26,9 @@ PDCA reviews the frozen `cc-plan` contract before `cc-do`, then reviews the impl
 5. 先判断能否走 PDCA；bug/regression 默认交给 `cc-diagnose`，不塞进自动驾驶链路。
 6. feature/change 走 `cc-plan`。
 6a. `task.md#Execution Environments` 存在或用户要求并行时，加载 `references/parallel-orchestration.md`，只按已冻结的 environment 图调度。
-7. 用户要求严格审查收敛时，PDCA plan 必须多轮 `cc-review` 到无 P1/P2-equivalent；否则复杂或高风险 plan 先走 `cc-review`，简单低风险必须记录 skip reason。
-9. 已冻结任务可恢复到 `cc-do`，但恢复前仍要重判 review gate。
-10. 用户要求严格审查收敛时，implementation 必须多轮 `cc-review` 到无 P1/P2-equivalent；否则复杂或高风险 implementation 在 `cc-check` 前走 `cc-review`，简单低风险必须记录 skip reason。
+7. PDCA 不再自动拆分 plan/implementation `cc-review` 子线程；严格审查收敛统一交给最终 `cc-check`。
+9. 已冻结任务可恢复到 `cc-do`；恢复前重读 `task.md` 和 Git 真相，但不自动插入 review-only 子线程。
+10. implementation 完成后进入 `cc-check`，由 `cc-check` 开启 subAgent 多轮 `cc-review` 到无 P0/P1/P2。
 11. 没有 fresh `cc-check`，不进入 PR ship。
 12. `cc-act` 只能 create/update PR、local-handoff、local-main-merge 或 post-merge-closeout，并且必须由用户显式选择或确认 delivery mode。
 13. `cc-dev` 不预选本地合并或远程 PR；不合并 PR；不推 main。
@@ -38,27 +38,18 @@ PDCA reviews the frozen `cc-plan` contract before `cc-do`, then reviews the impl
 16. 时间耗尽、token 紧张、已经努力，都不等于完成。
 17. 终点必须是 remote PR、local handoff、local-main-merged、needs clarification 或 blocked。
 
-## Review Convergence Loop
+## Review Ownership
 
-The loop is:
+`cc-dev` chooses stages; it does not own multi-round review convergence.
 
-1. Run `cc-review` on the current plan or implementation surface.
-2. Aggregate subagent findings in the main thread; downgrade or reject only with
-   evidence.
-3. If any P1/P2-equivalent finding remains, route to the owning stage:
-   `cc-plan`/`cc-diagnose` for contract findings, `cc-do` for mechanical or
-   already-authorized implementation fixes.
-   PDCA product value, scope, interface/data contract, abstraction boundary,
-   task slicing, test seam, verification path, overengineering, and release
-   assumption findings return to `cc-plan` before implementation.
-   Bug root-cause or reproduction uncertainty routes out to `cc-diagnose` instead of continuing `cc-dev`.
-4. Re-read `task.md`, Git, and review output after the repair, then run
-   `cc-review` again.
-5. Continue only when the gate says no P1/P2-equivalent findings remain.
+- `cc-plan` freezes the contract.
+- `cc-do` implements the frozen task.
+- `cc-check` launches review subAgents, aggregates `cc-review` findings, routes
+  P0/P1/P2 repairs, reruns review after repair, and only then can pass.
 
-Do not bypass `cc-review` implementation repair choices. When a finding requires
-product, architecture, scope, or risk selection, use the shared user-choice
-protocol and stop as `needs-clarification`.
+`cc-dev` may still dispatch an explicit `cc-review` environment when it already
+exists in `task.md#Execution Environments` or the user asks for standalone
+review. That is an exception, not the default PDCA path.
 
 ## 编排判断
 
@@ -133,7 +124,7 @@ choice is explicit.
 - Current worktree/branch truth
 - Change key or reason none exists
 - Stage sequence used
-- Review gate decisions and findings or skip reasons
+- `cc-check` review convergence result or reason it was not reached
 - Completion audit checklist summary
 - Terminal state
 - selected delivery mode and its proof when available
@@ -148,6 +139,7 @@ The audit must map objective text to evidence:
 - tests
 - gate scripts
 - current verification verdict
+- final `cc-check` review convergence result
 - selected `cc-act` delivery evidence: PR, handoff, local-main merge, or post-merge closeout
 - GitHub PR state
 

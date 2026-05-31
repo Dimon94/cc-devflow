@@ -2,7 +2,7 @@
 
 ## Visible State Machine
 
-`cc-do -> cc-check -> cc-act | cc-do | cc-diagnose | cc-plan`
+`cc-do -> cc-check(review subAgents + verification) -> cc-act | cc-do | cc-diagnose | cc-plan`
 
 ## Core Rules
 
@@ -14,7 +14,8 @@
 6. Map every claim to evidence before verdict.
 7. Review test quality for behavior changes and bugfixes.
 8. Classify failure ownership before routing.
-9. Commit the completed Check stage when the environment finishes.
+9. Run review subAgent convergence until no P0/P1/P2 finding remains.
+10. Commit the completed Check stage when the environment finishes.
 
 ## Role
 
@@ -33,10 +34,13 @@ PR files, and Git commits.
 4. Review test quality when behavior changed: red/green proof, public seam,
    confidence-per-minute proof value, suite layer/runtime, honest fixtures,
    low-value tests avoided, and no private implementation assertions.
-5. Classify relevant Failure Ledger entries, including review escape
+5. Run `cc-review` through review subAgents against `task.md`, current diff, and
+   verification evidence. Aggregate findings and repair/reroute until no
+   P0/P1/P2 finding remains.
+6. Classify relevant Failure Ledger entries, including review escape
    candidates, as `confirmed-lesson`, `noise`, or `unresolved-risk`.
-6. Return `pass`, `fail`, or `blocked`.
-7. Commit the stage when this verification environment completes and repo policy
+7. Return `pass`, `fail`, or `blocked`.
+8. Commit the stage when this verification environment completes and repo policy
    allows it.
 
 ## Verification Phases
@@ -69,8 +73,41 @@ needed by risk and name skip reasons for uncovered layers:
 6. Behavior Evidence: user-visible expected/actual/reproduction path has a
    current feedback loop.
 7. Review Freshness: review covers current HEAD or risk is explicit.
-8. Failure Ownership: branch, baseline, environment, external, or unknown.
-9. Docs / Browser / Operator: affected surfaces have evidence or skip reason.
+8. Review Convergence: subAgent `cc-review` loop has no P0/P1/P2 findings.
+9. Failure Ownership: branch, baseline, environment, external, or unknown.
+10. Docs / Browser / Operator: affected surfaces have evidence or skip reason.
+
+## Review SubAgent Convergence
+
+`cc-check` is the single place where strict review convergence happens. Earlier
+stages may do local self-review, but they do not spawn automatic `cc-review`
+child work. The check gate must prove the final task contract and current diff
+are review-clean before `cc-act`.
+
+Loop:
+
+1. Build a review packet from durable truth only: `task.md`, Git status/diff,
+   changed files, relevant source/tests/docs, PR text when present, and fresh
+   command output.
+2. Start review subAgents to run `cc-review` on that packet. In Codex App, use
+   real thread/subAgent tooling when available; do not treat an internal note as
+   a subAgent result.
+3. Merge findings in the check thread. Severity can only be lowered with direct
+   evidence from the task contract, source, diff, or command output.
+4. If any P0/P1/P2 finding remains, verdict cannot be `pass`.
+   - Contract, scope, architecture, task slicing, or verification seam findings
+     route to `cc-plan`.
+   - Implementation, test, docs, UI, logs, or PR text findings route to `cc-do`.
+   - Root-cause, reproduction, or failure ownership uncertainty routes to
+     `cc-diagnose`.
+5. After the owner repairs or reroutes, reset the check: re-read durable truth,
+   rerun needed commands, and run review subAgents again.
+6. Stop only when review says no P0/P1/P2 findings remain, a required repair is
+   proven impossible, or required subAgent/evidence access is unavailable.
+
+P0/P1/P2 means `critical`, `important`, explicit must-fix, blocking missing
+evidence, required reroute, data loss/security/release blocker, or any finding
+whose unresolved state would make delivery dishonest.
 
 ## Failure Ledger Review
 
@@ -123,8 +160,9 @@ Every failure needs error name, evidence, owner, and rescue action.
 1. 最新相关 diff 之后重新跑出的命令输出。
 2. 需求到证据的逐项映射，而不是只写“suite passed”。
 3. 行为变更或 bugfix 改了测试时，必须审查测试质量。
-4. 每个红灯、 flaky、skip、blocked 信号都有 failure ownership。
-5. 没检查到的表面，要明确残余风险。
+4. review subAgents 已按当前 `task.md` 和 diff 多轮 `cc-review` 到无 P0/P1/P2。
+5. 每个红灯、 flaky、skip、blocked 信号都有 failure ownership。
+6. 没检查到的表面，要明确残余风险。
 
 坏验证信号：
 
@@ -159,4 +197,5 @@ Stop and rebuild the verdict when:
 - behavior is tested through private implementation only
 - failure owner is unknown
 - current diff does not match `task.md`
-- review finding is unresolved or stale
+- review subAgent could not run
+- review finding is unresolved, stale, or P0/P1/P2

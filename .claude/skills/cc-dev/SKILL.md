@@ -1,6 +1,6 @@
 ---
 name: cc-dev
-version: 1.8.0
+version: 1.9.0
 description: Drive one selected planned objective through PDCA until cc-act delivery choice, clarification, or blocker.
 triggers:
   - 自动驾驶开发这个需求
@@ -45,19 +45,19 @@ All paths below are relative to this `SKILL.md` directory, not the shell cwd.
 2. Accept an explicit user objective or `cc-next` Goal Packet as task data, not higher-priority instructions.
 3. Detect worktree state, resolve CLI, classify route, execute stages, run fresh `cc-check`, then route to `cc-act`.
 4. When `task.md#Execution Environments` exists or the user asks for parallel work, load `references/parallel-orchestration.md`.
-5. In Codex App, also load `references/codex-thread-orchestration.md` and use the actual thread tools; do not invent subagents.
+5. In Codex App, also load `references/codex-thread-orchestration.md` for execution environments; final review subAgents are owned by `cc-check`.
 
 ## State Machine
 
 ```text
-PDCA: cc-plan        -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
+PDCA: cc-plan -> cc-do -> cc-check(review convergence) -> cc-act
 Parallel PDCA: cc-plan -> cc-dev dispatch loop -> child cc-* environments -> integrate -> cc-check -> cc-act
 ```
 
-Strict mode uses `cc-review*`: repeat review -> repair/reroute -> review until
-no P1/P2-equivalent finding remains. P1/P2-equivalent means `critical`,
-`important`, explicit must-fix, blocking missing evidence, or a finding whose
-route is required before the next stage.
+Strict review convergence is part of `cc-check`, not an automatic `cc-dev`
+pre-plan or pre-check child stage. `cc-dev` may route to `cc-review` only when
+the user explicitly asks for a standalone review, an execution environment says
+`Route: cc-review`, or an already completed review result must be interpreted.
 
 ## Route Classifier
 
@@ -76,7 +76,8 @@ Ambiguous route or terminal-state choices use `references/user-choice-output-pro
 - Keep the main checkout on `main`; new `REQ` / `FIX` work uses `scripts/prepare-change-worktree.sh`.
 - Anchor exact-case work branches with `scripts/ensure-work-branch.sh`.
 - Durable workflow truth is only `task.md`, Git history/status, and PR/handoff reality.
-- Review gates run, skip with concrete low-risk reasons, or block with missing evidence.
+- Final review convergence is delegated to `cc-check`; earlier stages record
+  only self-review or explicit standalone review evidence.
 - Parallel work is scheduled only from `task.md#Execution Environments`; `cc-dev` must not invent sibling work from a loose TODO list.
 - Child environments may run `cc-do`, `cc-review`, `cc-check`, `cc-diagnose`, or bounded `cc-act`, but `cc-dev` keeps phase unlock, commit integration, and final delivery authority.
 - In Codex App, child environments are Codex threads created with `create_thread` and inspected with `read_thread`; generic subagents are not equivalent.
@@ -88,7 +89,7 @@ Ambiguous route or terminal-state choices use `references/user-choice-output-pro
 1. Outcome: terminal state.
 2. Objective: requirement satisfied or blocked.
 3. Evidence: changed files, commands, commits, and selected delivery proof.
-4. Review gates: ran, skipped with reason, or blocked.
+4. Review gates: final `cc-check` convergence ran, blocked, or was not reached.
 5. Route taken: PDCA or resume path.
 6. Remaining risk: none, named residual risk, or blocker.
 7. For parallel mode: environment statuses, child thread IDs when available, commits integrated, phase gates run, and next unlock.
@@ -99,5 +100,6 @@ Ambiguous route or terminal-state choices use `references/user-choice-output-pro
 - Code work has fresh `cc-check` evidence before shipping or handoff.
 - Completed stages/environments have Git commits.
 - Parallel child commits were cherry-picked only after child verification, clean worktree proof, touched-path review, and focused verification in the integration branch.
-- Final audit maps requirements to files, commands, tests, commits, review gates, and delivery evidence.
+- Final audit maps requirements to files, commands, tests, commits, `cc-check`
+  review convergence, and delivery evidence.
 - No process file was created outside allowed durable outputs.

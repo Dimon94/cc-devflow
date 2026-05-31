@@ -43,7 +43,8 @@ Every plan starts from the domain model, not from a blank task list:
 6. Execution environments: for non-trivial or parallel-ready work, define the
    independently committable environments before task blocks. Each environment
    names route, tasks, dependencies, touched paths, verification, merge gate,
-   unlocks, and initial status.
+   unlocks, and initial status. Do not create automatic review-only environments
+   for the normal PDCA path; `cc-check` owns final review convergence.
 7. Task generation: write `task.md` task blocks from `assets/TASKS_TEMPLATE.md`
    only after requirement release and technical release.
 8. Closeout: validate the plan artifact, commit the Plan stage, and route onward.
@@ -64,6 +65,9 @@ Every plan starts from the domain model, not from a blank task list:
 12. Parallel work is a plan contract, not an execution guess. If a task can run
     in parallel, record the execution environment graph and its gates in
     `task.md`; otherwise say why the change stays serial.
+13. `cc-plan` does not split review subthreads by default. Record the expected
+    final `cc-check` review convergence gate instead of adding `R###`
+    environments, unless the user explicitly asks for standalone review work.
 
 ## Progressive Flow
 
@@ -130,9 +134,10 @@ blocks. Omit it only for tiny serial changes and say why in `Contract Summary`.
 
 Each environment includes:
 
-- ID: `E001` for planned work, `R001` for review-only, `C001` for check-only,
-  `A001` for act-only closeout, and `EF001` for diagnosis environments created
-  after a failure.
+- ID: `E001` for planned work, `C001` for check-only, `A001` for act-only
+  closeout, and `EF001` for diagnosis environments created after a failure.
+  `R001` review-only environments are allowed only for explicit standalone
+  review requests, not for the normal PDCA review gate.
 - Route: `cc-do`, `cc-review`, `cc-check`, `cc-diagnose`, or `cc-act`.
 - Status: initial `planned`; later `dispatched`, `completed`, `integrated`,
   `blocked`, or `skipped`.
@@ -161,7 +166,7 @@ Tasks must be tracer bullets: `[TEST] -> [IMPL] -> [REFACTOR]`. Each task names 
 - Second-Move Review when non-trivial
 - Approved direction and non-goals
 - User stories and edge stories
-- Engineering review gate
+- Check-stage review convergence gate
 - Verification and escalation triggers
 
 Also record ASCII Branch Chain Analysis, Design Pressure, test strategy shape, user-facing D<N> decisions, and explicit skip reasons for any compressed planning round.

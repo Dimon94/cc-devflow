@@ -56,7 +56,7 @@ After installation, ask your agent to use the workflow skills directly. Start wi
 ```text
 PR Harness: cc-next -> cc-dev -> cc-pr-review -> cc-pr-land
 
-PDCA: cc-plan        -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
+PDCA: cc-plan -> cc-do -> cc-check(review convergence) -> cc-act
 Parallel PDCA: cc-plan -> cc-dev dispatch loop -> child cc-* environments -> integrate -> cc-check -> cc-act
 Hotfix: cc-diagnose -> focused fix -> regression proof
 ```
@@ -69,14 +69,10 @@ flowchart TD
   Route -->|Feature or change| Plan["cc-plan\nFreeze scope and tasks"]
   Route -->|Bug or regression| Diagnose["cc-diagnose\nBuild feedback loop and fix"]
 
-  Plan --> PlanReview["cc-review\nOptional plan review"]
-  PlanReview --> Do["cc-do\nImplement with evidence"]
   Plan --> Do
   Diagnose --> Check
 
-  Do --> ImplReview["cc-review\nOptional implementation review"]
-  ImplReview --> Check["cc-check\nFresh verification verdict"]
-  Do --> Check
+  Do --> Check["cc-check\nFresh verification + review convergence"]
   Check --> Act["cc-act\nCreate or update remote PR"]
   Act --> PRReview["cc-pr-review\nSeparate PR review session"]
   PRReview --> PRLand["cc-pr-land\nRebase, land, prove main parity"]
@@ -106,13 +102,13 @@ Maintenance skills are shipped with the pack:
 
 ## Planning Quality Gates
 
-`cc-plan` freezes implementation decisions before `cc-do` starts. Non-trivial plans compare minimal viable and ideal architecture options, full designs include decision horizon plus error/rescue mapping, and test-first plans record test framework evidence, public test seams, behavior assertions, mock boundaries, coverage quality, mandatory regression tests, refactor candidates, vertical tracer-bullet slices, and confidence-per-minute test strategy when existing behavior changes. `cc-diagnose` is deliberately lighter: reproduce with the sharpest loop available, rank falsifiable hypotheses, instrument narrowly, fix, prove the original repro is gone, and keep debug probes out of the final tree.
+`cc-plan` freezes implementation decisions before `cc-do` starts. Non-trivial plans compare minimal viable and ideal architecture options, full designs include decision horizon plus error/rescue mapping, and test-first plans record test framework evidence, public test seams, behavior assertions, mock boundaries, coverage quality, mandatory regression tests, refactor candidates, vertical tracer-bullet slices, and confidence-per-minute test strategy when existing behavior changes. It records the expected final `cc-check` review convergence gate instead of spawning default `cc-review` child threads. `cc-diagnose` is deliberately lighter: reproduce with the sharpest loop available, rank falsifiable hypotheses, instrument narrowly, fix, prove the original repro is gone, and keep debug probes out of the final tree.
 
 When large work needs parallel execution, `cc-plan` first freezes an execution
 environment graph in `task.md#Execution Environments`: dependencies, touched
 surfaces, routed skill, verification commands, and merge gates. `cc-dev` then
 uses that graph to create sibling worktrees / child sessions, dispatch
-`cc-do`, `cc-review`, `cc-check`, `cc-diagnose`, or bounded `cc-act`, and keep
+`cc-do`, explicit standalone `cc-review`, `cc-check`, `cc-diagnose`, or bounded `cc-act`, and keep
 integration authority in the orchestrator thread through serial cherry-picks,
 phase gates, and final `cc-check`. Child sessions own only their assigned
 environment; they do not unlock phases, merge main, or make final delivery
@@ -128,7 +124,7 @@ Every post-planning stage starts from `task.md`, current Git history/status, and
 
 ## Verification And Ship Gates
 
-`cc-check` now treats QA as a feedback-loop problem, not only a green-test problem. Bugfix and behavior work records the loop used to prove reality, expected versus actual behavior, reproduction steps, confidence-per-minute proof value, test boundary quality, and architecture follow-ups when no clean public test seam exists. Green tests with no meaningful proof value, broad snapshots, duplicate happy paths, no-op smoke tests, brittle internal assertions, or overmocked internals route back to `cc-do` or `cc-plan` instead of supporting a pass. It also classifies `task.md#Failure Ledger` entries, including eligible review escape candidates, as confirmed lessons, noise, or unresolved risks before closeout.
+`cc-check` now treats QA as a feedback-loop problem, not only a green-test problem. Bugfix and behavior work records the loop used to prove reality, expected versus actual behavior, reproduction steps, confidence-per-minute proof value, test boundary quality, and architecture follow-ups when no clean public test seam exists. It also launches review subAgents to run repeated `cc-review` against `task.md`, the current diff, and fresh verification evidence until no P0/P1/P2 finding remains; any unresolved P0/P1/P2 routes back to `cc-plan`, `cc-do`, or `cc-diagnose` instead of passing. Green tests with no meaningful proof value, broad snapshots, duplicate happy paths, no-op smoke tests, brittle internal assertions, or overmocked internals route back to `cc-do` or `cc-plan` instead of supporting a pass. It also classifies `task.md#Failure Ledger` entries, including eligible review escape candidates, as confirmed lessons, noise, or unresolved risks before closeout.
 
 `cc-act` carries that evidence into PR briefs, handoffs, or incident postmortems when needed. PR and handoff output carries a release-readiness gate ledger for local checks, config/env, migrations/data, deploy/health, smoke/cleanup, rollback, and watch items; skipped, blocked, and not-applicable gates must say why.
 

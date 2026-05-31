@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-002.v2`
 - Design version: `design.v2`
-- CC-Plan skill version: `3.22.0`
+- CC-Plan skill version: `3.23.0`
 - Work branch: `REQ/002-bulk-invite-import`
 - Output language: en
 

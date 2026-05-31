@@ -1,6 +1,7 @@
 # Review Contract
 
-`cc-check` verifies fresh reality. It does not read or write process files.
+`cc-check` verifies fresh reality and owns final `cc-review` convergence. It
+does not read or write process files.
 
 ## Minimum Review Facts
 
@@ -12,6 +13,7 @@ Use current evidence:
 - command output
 - code and test inspection
 - cc-review findings from the current conversation when available
+- subAgent `cc-review` findings launched for this check
 
 ## Review Layers
 
@@ -21,10 +23,14 @@ Use current evidence:
 - Test quality: Red/Green proof, public seam, confidence-per-minute proof value, suite layer/runtime, mock boundary, fixture honesty, low-value tests avoided, and no test-only production API.
 - Docs/UI/operator: affected surfaces have evidence or explicit skip reason.
 - Freshness: review facts cover current HEAD, not an earlier diff.
+- Convergence: repeated subAgent `cc-review` finds no P0/P1/P2 issue.
 
 ## Gate Rules
 
 - Unfixed important findings route to `cc-do`.
+- Any P0/P1/P2 finding blocks `pass`; repair or reroute, then review again.
+- If review subAgents cannot be launched or their required evidence is missing,
+  verdict is `blocked`.
 - Missing behavior evidence is `blocked`, not `pass`.
 - Green tests with no meaningful proof value route to `cc-do`; wrong planned seams route to `cc-plan`.
 - Stale command output is ignored.
