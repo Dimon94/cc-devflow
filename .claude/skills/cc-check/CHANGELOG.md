@@ -1,5 +1,11 @@
 # CC-Check Skill Changelog
 
+## v1.17.0 - 2026-05-31
+
+- slim the main `SKILL.md` entrypoint under 100 lines so verification startup only reads fresh-evidence gates, references, Failure Ledger routing, and output shape
+- move verification loop, phases, evidence layers, confidence-per-minute review, and failure ownership detail into `PLAYBOOK.md`
+- keep false-green, claim-evidence, Failure Ledger, and review contracts in references so `cc-check` preserves strict pass/fail/blocked behavior behind progressive disclosure
+
 ## v1.16.2 - 2026-05-31
 
 - add a False Green Guard so fresh green command output still cannot pass unless it proves the changed behavior, bugfix, contract, boundary, migration, or operator workflow

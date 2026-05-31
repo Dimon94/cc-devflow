@@ -10,7 +10,7 @@
     "cc-review": "2.14.0",
     "cc-pr-review": "1.8.0",
     "cc-pr-land": "1.4.1",
-    "cc-check": "1.16.2",
+    "cc-check": "1.17.0",
     "cc-act": "1.15.1",
     "cc-spec-init": "1.4.1",
     "cc-simplify": "1.8.0"

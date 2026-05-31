@@ -1,6 +1,6 @@
 ---
 name: cc-check
-version: 1.16.2
+version: 1.17.0
 description: Use when a planned or investigated change needs fresh verification evidence and an honest pass/fail/blocked verdict before cc-act.
 triggers:
   - 验收这个需求
@@ -28,50 +28,43 @@ writes:
     durability: durable
     required: true
     when: verification completes a PDCA or IDCA environment stage
-entry_gate:
-  - Read `task.md`, current Git diff, relevant code/tests, PR text when present, and fresh command output.
-  - Re-run fresh commands instead of inheriting cc-do narration.
-  - Classify the current reality as pass-candidate, fail-candidate, or blocked-candidate before writing a verdict.
-  - Map every completion claim to command output, exit status, and key observation.
-  - Do not create process files.
-exit_criteria:
-  - Verdict is exactly pass, fail, or blocked.
-  - Every passing statement cites fresh command output, exit status, and what claim it proves.
-  - Behavior changes and bugfixes include feedback-loop, confidence-per-minute, and test-quality review.
-  - Any `task.md#Failure Ledger` entry touched by this verification, including review escape candidates, is classified as `confirmed-lesson`, `noise`, or `unresolved-risk`.
-  - Current diff is checked against `task.md` for missing scope, scope creep, and unintended file touch.
-  - Failures are classified as branch, baseline, environment, external, or unknown.
-  - Missing evidence is separated from real failure.
-  - After pass/fail/blocked, commit the stage state when repository policy allows it.
-  - The next step is unambiguous: cc-act, cc-do, cc-investigate, cc-plan, or stop.
-reroutes:
-  - when: The implementation is incomplete, tests fail, or review findings require code changes.
-    target: cc-do
-  - when: The bug still lacks a trustworthy root cause or the investigation contract is disproven.
-    target: cc-investigate
-  - when: The plan assumptions, scope, or design contract are invalid.
-    target: cc-plan
-recovery_modes:
-  - name: clean-room-reset
-    when: The current verdict is contaminated by stale chat memory or old command output.
-    action: Discard narrative memory, reread task.md and current Git diff, rerun fresh gates, and rebuild the verdict in the response.
-tool_budget:
-  read_files: 8
-  search_steps: 4
-  shell_commands: 6
 ---
 
 # CC-Check
 
-> [PROTOCOL]: 变更时同步更新 `version`、`CHANGELOG.md`、相关模板/脚本引用，然后检查 `CLAUDE.md`
+## Quick Start
 
-## Read First
+All paths below are relative to this `SKILL.md` directory, not the shell cwd.
 
-1. `references/checklist-contract.md`
+1. Read `references/checklist-contract.md` and `PLAYBOOK.md`.
+2. Read `task.md`, current diff, relevant code/tests, PR text when present, and fresh command output.
+3. Re-run commands; do not inherit green claims from chat or `cc-do`.
+4. Classify reality as `pass`, `fail`, or `blocked`.
+5. Map every passing claim to command, exit status, key observation, and claim proven.
+
+## Iron Law
+
+```text
+NO PASS WITHOUT FRESH EVIDENCE
+```
+
+## Reference Loading
+
+| Load | When |
+| --- | --- |
+| `references/gate-contract.md` | verdict rules, phases, false-green guard, failure ledger review, claim evidence |
+| `references/review-contract.md` | diff/scope review, test quality, stale review, reroute rules |
+| `PLAYBOOK.md` | visible state machine, reset signals, default output, verification loop |
+| `../cc-dev/scripts/resolve-cc-devflow.sh` | repository policy or change metadata must be resolved |
+
+## Failure Ledger
+
+When touched, classify `task.md#Failure Ledger` entries, including eligible
+`cc-review` review escape candidates. Only `process-escape`, `test-escape`,
+`design-escape`, and `model-pattern-escape` candidates can become
+`confirmed-lesson`, `noise`, or `unresolved-risk`; ordinary findings stay out.
 
 ## Default Output
-
-Use this short shape for every verdict:
 
 1. Verdict: exactly `pass`, `fail`, or `blocked`.
 2. Evidence: command, exit status, key observation, and claim proven.
@@ -80,133 +73,11 @@ Use this short shape for every verdict:
 5. Diff: scope match, missing scope, or scope drift.
 6. Route: `cc-act`, `cc-do`, `cc-investigate`, `cc-plan`, or `stop`.
 
-## Checklist Contract
+## Exit Criteria
 
-Follow `references/checklist-contract.md` before each pause point. The checklist is the local do-confirm/read-do contract for this skill; skip only with an explicit blocker or route.
-
-## Role
-
-`cc-check` 是 PDCA / IDCA 的验证节点。它把“应该好了”变成“证据表明它好了”。
-
-它不写过程文件。验证事实进入当前回复、PR 文件和 Git commit。
-
-## Iron Law
-
-```text
-NO PASS WITHOUT FRESH EVIDENCE
-```
-
-## Verification Loop
-
-1. Read `task.md` and the current diff.
-2. Re-run the smallest trustworthy gate: tests, typecheck, lint, build, browser check, CLI smoke, or domain-specific verifier.
-3. Map each explicit requirement to proof.
-4. Review test quality when behavior changed: red/green proof, public seam, confidence-per-minute proof value, suite layer/runtime, honest fixtures, low-value tests avoided, no private implementation assertions.
-5. Classify any relevant Failure Ledger entries, including review escape candidates:
-   - `confirmed-lesson`: verified failure pattern worth compressing at `cc-act`.
-   - `noise`: local dead end, transient command issue, or disproven suspicion.
-   - `unresolved-risk`: real concern still missing proof or owner.
-6. Return verdict:
-   - `pass`: all required claims have fresh proof.
-   - `fail`: a command, review, or behavior check proves the change is wrong.
-   - `blocked`: required environment, auth, input, or evidence is missing.
-7. Commit the stage when this PDCA/IDCA environment completes.
-
-## Verification Phases
-
-1. Reset Contract：读取 `task.md`、当前 diff、相关代码 / 测试、PR 文本（如果存在），明确本轮验证对象。
-2. Re-run Reality：重新运行可信 gate，不继承 `cc-do` 叙述；记录命令、退出码、关键输出、skip / blocked 原因。
-3. Check Boundaries：检查 runtime、task completion、requirement diff、claim evidence、QA/test quality、review freshness、docs / UI / DX 影响。
-4. Freeze Verdict：只输出 `pass` / `fail` / `blocked`，并给出 route。
-
-任一阶段发现证据过期、边界矛盾、结论无法诚实成立，都先 reset 或 reroute，不硬凑 `pass`。
-
-## Evidence Layers
-
-`cc-check` 不是只看测试绿不绿。按风险选择必要层，至少说明未覆盖层的 skip reason：
-
-1. Runtime：test、lint、typecheck、build、脚本 gate。
-2. Task Completion：`task.md` 的任务是否真的完成，完成证据是否对应当前 diff。
-3. Requirement Diff：当前改动是否兑现需求，是否有 scope creep、missing requirement、意外文件触点。
-4. Claim Evidence：每个通过声明都有命令、退出码、观察和证明的 claim。
-5. QA Test Quality：red/green、public seam、confidence-per-minute proof value、suite layer/runtime、mock boundary、fixture honesty、低价值测试规避、test-only API smell。
-6. Behavior Evidence：用户可见 expected / actual / reproduction steps 是否被当前反馈环覆盖。
-7. Review Freshness：本轮 review 是否覆盖当前 HEAD；未 review 要说清风险。
-8. Failure Ownership：失败归属 branch、baseline、environment、external 或 unknown。
-9. Docs / Browser / Operator：UI、CLI、docs、operator workflow 受影响时有证据或 skip reason。
-
-## Failure Ledger Review
-
-如果 `task.md#Failure Ledger` 有本轮相关条目，`cc-check` 必须把现场记录过滤成可压缩事实。`cc-review` 写入的 review escape candidates 只在 `Escape class` 是 `process-escape`、`test-escape`、`design-escape` 或 `model-pattern-escape` 时参与分类；普通 review finding 不在这里补录。
-
-| Status | Meaning | Keep for postmortem |
-| --- | --- | --- |
-| `confirmed-lesson` | 新鲜验证证明这是会复发的流程、测试、架构、AI 或交付教训 | `yes` when it should change future workflow behavior |
-| `noise` | 临时误会、已推翻假设、一次性环境抖动或无复用价值的尝试 | `no` |
-| `unresolved-risk` | 风险真实但证据、owner 或修复边界还不够 | `no` until resolved or explicitly escalated |
-
-不要把所有失败都送进尸检。只有 `confirmed-lesson` 且 `Keep for postmortem: yes` 的条目，才是 `cc-act` 收尾压缩的输入。
-
-## Claim Evidence Matrix
-
-不要把所有绿色写成“测试过了”：
-
-| Claim | Required proof | Not enough |
-| --- | --- | --- |
-| Tests pass | current command, exit 0, failures 0 | old output |
-| Lint clean | current lint command, no errors | formatter only |
-| Build succeeds | build command exit 0 | tests only |
-| Bug fixed | original symptom or regression loop passes | code changed |
-| Regression test works | red -> green evidence | green only |
-| Test strategy is trustworthy | suite layer, command/runtime, proof value, fixture/mock boundary, and low-value tests avoided | coverage number or snapshot count |
-| Requirements met | each task/acceptance mapped to proof | self-report |
-
-缺关键 claim 证据时，结论至少是 `blocked`。
-
-## Confidence Per Minute
-
-`cc-check` judges whether the executed suite carries its weight. A passing suite
-can still be `fail` or `blocked` when it cannot prove the changed behavior.
-
-For behavior changes and bugfixes, name:
-
-- suite layer: unit, contract/schema, integration, e2e/browser, visual, smoke,
-  migration/data, release, or domain verifier.
-- command/runtime: the focused command that ran now and whether runtime is
-  acceptable for the gate.
-- proof value: the bug, regression, product contract, permission boundary,
-  external/provider parse, migration, or user-visible failure the suite would
-  catch.
-- fixture/mock boundary: real contract fields used and external boundaries
-  mocked; internal self-module mocks are suspect.
-- low-value tests avoided or repaired: broad snapshots, duplicate happy paths,
-  no-op smoke tests, brittle implementation assertions, tests whose names
-  promise more than assertions prove, and fixtures that hide coupling.
-
-If a green suite does not answer the required behavior question, route to
-`cc-do` for a better test or `cc-plan` when the planned seam is wrong. If the
-right proof requires missing credentials, services, data, or UI access, the
-verdict is `blocked`.
-
-## Failure Ownership
-
-失败不能只写“红了”：
-
-- `branch`：本分支引入或当前改动相关。
-- `baseline`：有 base branch 或历史证据证明预先存在。
-- `environment`：缺依赖、权限、服务、密钥或平台条件。
-- `external`：外部系统或第三方服务失败。
-- `unknown`：归属不明；不能支撑 `pass`。
-
-每个失败写清 error name、证据、owner、rescue action。
-
-## Output
-
-只输出短结论，不写过程文件：
-
-- Verdict: `pass` / `fail` / `blocked`
-- Evidence: command, exit status, and the claim it proves
-- Review: clean, findings remain, not reviewed, or skipped with reason
-- QA: feedback loop, confidence-per-minute, test quality, and behavior evidence when applicable
-- Diff: scope match, missing scope, or scope drift
-- Route: `cc-act` / `cc-do` / `cc-investigate` / `cc-plan` / `stop`
+- Verdict is exactly `pass`, `fail`, or `blocked`.
+- Every passing statement cites fresh proof.
+- Missing evidence is separated from real failure.
+- Failures are owned as branch, baseline, environment, external, or unknown.
+- Behavior changes and bugfixes include feedback-loop and test-quality review.
+- No process file was created.
