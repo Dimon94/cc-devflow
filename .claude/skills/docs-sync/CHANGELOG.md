@@ -1,5 +1,10 @@
 # Docs-Sync Skill Changelog
 
+## v1.3.1 - 2026-05-31
+
+- add a Public Skill Drift Gate so public skill diffs require version, changelog, public docs, and migration-note drift checks before commit
+- name old skill versions, stale workflow text, stale command examples, and missing migration notes as blockers until fixed or ruled out
+
 ## v1.3.0 - 2026-05-18
 
 - add a docs-sync checklist contract for change inventory, skill versioning, changelog updates, public-doc drift, migration notes, and exit proof

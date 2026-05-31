@@ -36,6 +36,15 @@
 
 如果变更只影响其中一部分，可以缩小范围；如果影响公开安装、分发、CLI、workflow 叙事，就至少过一遍全部。
 
+## Public Skill Drift Gate
+
+A public skill diff must scan version, changelog, public docs, and migration-note drift before commit.
+
+Treat these as blockers until fixed or explicitly ruled out with evidence:
+old skill versions, stale public workflow text, missing migration note, stale
+command examples, stale README / CONTRIBUTING references, and changelog entries
+that no longer match the shipped contract.
+
 ## Commit Gate
 
 准备提交前，至少确认：

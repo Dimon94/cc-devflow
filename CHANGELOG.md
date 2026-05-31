@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a `cc-pr-land` Reviewed Verdict And Main Parity Guard so landing requires explicit review verdicts and command-backed main parity proof.
 - Added a `cc-simplify` Confirmed Smell Gate so speculative cleanup is reported without edits and confirmed smells require fresh recheck evidence.
 - Added a `cc-spec-init` Overlap Decision Gate so overlapping capability names resolve split/merge/deprecate/keep-separate decisions before durable spec writes.
+- Added a `docs-sync` Public Skill Drift Gate so public skill changes scan versions, changelogs, public docs, and migration notes before commit.
 
 ## [4.5.29] - 2026-05-28
 
