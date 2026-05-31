@@ -1,5 +1,11 @@
 # CC-Act Skill Changelog
 
+## v1.16.0 - 2026-05-31
+
+- slim the main `SKILL.md` entrypoint under 100 lines so closeout startup only reads durable outputs, ship modes, hard rules, and output shape
+- move delivery-choice defaults, PR brief rebuilding, postmortem trigger rules, and failure compression details into `PLAYBOOK.md`
+- preserve explicit delivery mode, release-readiness gates, local-main merge proof, and postmortem guardrails in the entrypoint
+
 ## v1.15.1 - 2026-05-31
 
 - add a Delivery Mode And Release Gate Guard to refuse ambiguous push/PR/local-main defaults
