@@ -1,5 +1,11 @@
 # CC-Plan Skill Changelog
 
+## v3.19.0 - 2026-05-31
+
+- slim the entrypoint to the Plan purpose, load table, core flow, and default handoff shape
+- move setup, progressive planning flow, dialogue checkpoints, task-shape rules, and handoff details into `PLAYBOOK.md`
+- keep detailed Decision Questions, Design Pressure, ASCII Branch Chain, and review gates in `references/planning-contract.md`
+
 ## v3.18.2 - 2026-05-31
 
 - add a Design Pressure contract for non-trivial plans so task contracts name deep module shape, information hiding, caller knowledge, public seams, and vertical slices before `cc-do`
