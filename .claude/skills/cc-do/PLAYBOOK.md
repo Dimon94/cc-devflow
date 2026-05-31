@@ -28,6 +28,17 @@
 - Refactor happens only after Green and stays inside the current slice.
 - Fixture shortcuts and boundary mocks must not hide input contract problems.
 
+## Vertical Red/Green Guard
+
+The execution unit is one observable behavior: finish the current Red -> Green -> Refactor cycle before starting the next behavior.
+
+- Reject horizontal batches: do not write several Reds, then several Greens.
+- Do not pre-build future behavior while making the current Red pass.
+- If the next behavior needs a different seam, fixture, mock boundary, or task
+  split, stop and update the current task evidence before continuing.
+- If a task cannot be reduced to one observable behavior, reroute to `cc-plan`
+  to split it before implementation continues.
+
 ## Recovery
 
 Recover from Git and `task.md`:

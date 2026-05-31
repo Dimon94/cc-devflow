@@ -1,6 +1,6 @@
 ---
 name: cc-do
-version: 1.10.1
+version: 1.10.2
 description: Use when implementing frozen tasks, resuming interrupted work, applying an investigation handoff, or fixing review feedback inside the approved scope.
 triggers:
   - 开始做 T003

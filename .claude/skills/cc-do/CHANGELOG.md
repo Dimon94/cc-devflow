@@ -1,5 +1,10 @@
 # CC-Do Skill Changelog
 
+## v1.10.2 - 2026-05-31
+
+- add a Vertical Red/Green Guard so execution finishes one observable behavior's Red -> Green -> Refactor cycle before starting the next behavior
+- reject horizontal Red/Green batches and reroute oversized tasks back to `cc-plan` for splitting
+
 ## v1.10.1 - 2026-05-23
 
 - require task preflight to validate suite layer, runtime expectation, and confidence-per-minute proof value before coding
