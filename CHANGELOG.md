@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.31] - 2026-05-31
+
 ### Changed
 
 - Replaced the heavy IDCA bug workflow with a lightweight `cc-diagnose` skill

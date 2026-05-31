@@ -1,6 +1,6 @@
 {
     "name": "cc-devflow",
-    "version": "4.5.30",
+    "version": "4.5.31",
     "description": "Multi-platform CLI and skill pack for agent coding",
     "main": "bin/cc-devflow.js",
     "bin": {
