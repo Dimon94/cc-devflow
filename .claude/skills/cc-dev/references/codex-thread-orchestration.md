@@ -44,6 +44,8 @@ requirements. It must say:
 - final answer must include environment, commit, verification, dirty state,
   touched files, blockers, and route recommendation
 - report the git branch/worktree path used by the child thread
+- include the parent thread id and require a completion handoff notice with
+  `send_message_to_thread` when the child reaches a final report
 
 Required parent record after dispatch:
 
@@ -87,6 +89,12 @@ After a child thread is confirmed as `running`, the orchestrator must:
 2. create or update a heartbeat with `automation_update` on a 10 minute cadence
 3. stop the current conversation as `waiting-for-child-results`
 
+The `automation_update` call is a hard gate, not prose. The orchestrator must
+actually call the tool before it reports that monitoring is active. If the call
+fails or the tool is unavailable, do not continue manual `read_thread` polling;
+stop as `waiting-for-child-results` and report that heartbeat setup failed,
+including the child thread ids and a manual polling checklist.
+
 The heartbeat owns periodic polling:
 
 1. call `read_thread` for each child thread id
@@ -122,6 +130,32 @@ The heartbeat prompt must include:
 - the rule to delete the heartbeat after closeout
 
 Do not write raw XML heartbeat directives by hand. Use `automation_update`.
+Do not say "heartbeat created", "monitoring", or "will check later" unless the
+`automation_update` tool call has succeeded and returned an automation id.
+
+## Child Completion Handoff
+
+When the dispatch packet includes a parent thread id and
+`send_message_to_thread` is available in the child, the child must send a short
+handoff notice to the parent after its final report is ready.
+
+The handoff prompt should contain only wake-up coordinates and a compact result
+summary:
+
+```text
+Environment: E###
+Status: completed | blocked
+Child thread: <child thread id if known>
+Commit: <hash subject> | none
+Dirty state: clean | dirty <files>
+Verification: <short pass/fail/block summary>
+Route recommendation: integrate | retry | cc-plan | cc-diagnose | blocked
+```
+
+This child-to-parent message is a completion hint, not an integration gate. The
+orchestrator must still call `read_thread` for that child and verify final
+report, commit hash, dirty state, touched files, blockers, and verification
+evidence before integrating.
 
 ## Integration
 

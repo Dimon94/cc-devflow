@@ -43,6 +43,7 @@ If any condition is unclear, run serially or route back to `cc-plan`.
 Every child receives:
 
 - change key, current branch, base commit, and parent thread summary
+- parent thread id when the host supports `send_message_to_thread`
 - current environment block from `task.md`
 - included task blocks in full
 - allowed route skill and explicit non-goals
@@ -51,6 +52,8 @@ Every child receives:
 - verification commands or review scope
 - required final report format
 - rule: commit required only for routes that changed files
+- rule: after final report is ready, send a short handoff notice back to the
+  parent thread when `send_message_to_thread` is available
 
 ## Child Final Report
 
@@ -74,6 +77,9 @@ Route recommendation: integrate | retry | cc-plan | cc-diagnose | blocked
 For `cc-do` and `cc-diagnose`, a verified commit is required before the child is
 complete. For `cc-review` and `cc-check`, no commit is required unless the skill
 updated allowed durable files.
+
+The child completion handoff is only a wake-up hint. The orchestrator still must
+read the child thread and apply the integration gate before trusting the result.
 
 ## Integration Gate
 
@@ -108,6 +114,11 @@ If platform thread and automation tools are available, confirm each child has
 started, record durable coordinates, create a heartbeat monitor, then stop the
 orchestrator conversation as `waiting-for-child-results`. Do not busy-poll
 running child threads in the main conversation.
+
+Creating the heartbeat means an actual platform tool call, not a written plan.
+If the automation call fails, report `waiting-for-child-results` with the child
+thread ids and manual polling checklist; do not silently replace it with
+repeated `read_thread` calls in the main conversation.
 
 On Codex App, this means loading `codex-thread-orchestration.md` and using the
 actual `create_thread`, `read_thread`, `send_message_to_thread`, and
