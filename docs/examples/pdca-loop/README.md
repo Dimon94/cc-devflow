@@ -4,7 +4,7 @@
 
 - Example version: `1.0.0`
 - Last reviewed: `2026-04-17`
-- Bound skills: `cc-plan@3.19.0`, `cc-do@1.11.0`, `cc-check@1.17.0`, `cc-act@1.16.0`
+- Bound skills: `cc-plan@3.22.0`, `cc-do@1.11.0`, `cc-check@1.17.0`, `cc-act@1.16.0`
 
 
 The example is intentionally small:

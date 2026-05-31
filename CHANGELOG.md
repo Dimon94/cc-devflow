@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.32] - 2026-05-31
+
+### Changed
+
+- Tightened `cc-plan` so every plan starts from domain context, repo evidence,
+  and requirement grilling before task generation.
+- Removed external planning-lane routing and sync language from `cc-plan`;
+  unclear project direction now stops instead of routing through another lane.
+- Added `cc-plan` reference formats for glossary-only `CONTEXT.md` updates and
+  concise ADR creation during confirmed planning decisions.
+
 ## [4.5.31] - 2026-05-31
 
 ### Changed
