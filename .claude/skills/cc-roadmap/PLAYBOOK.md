@@ -22,6 +22,26 @@
 10. 先对齐 `devflow/specs/`、roadmap/backlog 和历史 design decision，再命名 stage、capability、RM 和 backlog；术语或决策冲突必须成为显式路线风险。
 11. Roadmap Funnel Protocol 必须固定推进：方向、真实需求、现状、具体人、wedge/lake、观察信号、future fit、premise challenge、alternatives、route approval。
 12. 每轮要么由证据回答，要么问用户一个 `D<N>` 决策题，要么写明 skipped reason；不能让关键轮次停在聊天记忆里。
+13. 如果 AI 让同爆炸半径的完整路线 cheap 且可验证，优先 boil-lake，不要胆小切 MVP。
+14. 不在 roadmap 里拆实现任务，不写愿望清单，不讨论 20 个阶段，不把无证据猜测包装成战略。
+
+## Runtime Output Policy
+
+写入任何 durable Markdown 或 JSON metadata 前，先运行 `cc-devflow config resolve --format policy`。
+
+- `Output language` 是机器约束，`devflow/roadmap.json`、`devflow/ROADMAP.md` 和兼容投影必须记录并遵守它。
+- `agent_preferences` 是用户偏好建议，只影响表达方式和结构选择，不覆盖本 Skill 的工作流边界。
+- 如果配置解析失败，先修配置或向用户说明阻塞，不要用默认语言继续生成正式文档。
+
+## Roadmap Contract
+
+Allowed: read strategy files and repo reality, compare route shapes, decompose independent subsystems, write `devflow/roadmap.json`, then generate `devflow/ROADMAP.md` and deprecated compatibility `devflow/BACKLOG.md`.
+
+Forbidden: decompose implementation tasks, invent hidden context, output promotional brand advice, or jump into `cc-plan` before route approval.
+
+Every stage records goal, why now, dependencies, exit signal, kill signal, non-goals, evidence, AI Leverage verdict, and dependency graph. Backlog only contains items that can enter `cc-plan` without strategic guessing.
+
+Route recommendation must compare 2-3 shapes and say why the recommended one fits current evidence, why the others wait, which signal wins earliest, and when to stop or pivot.
 
 ## Local Kit
 
@@ -49,6 +69,10 @@
 9. developer / operator adoption 线索：目标人、first success path、TTHW / time to first value、debug / upgrade 卡点
 
 先把这些材料压成 `Context Snapshot`，再追问用户。
+
+## Recovery
+
+Use `re-scan-context` when the current direction no longer matches repo reality, roadmap files, or the latest user constraint. Reload roadmap sources, rewrite Context Snapshot, and recompute the recommended route before continuing.
 
 ## Roadmap Funnel Protocol
 
@@ -174,6 +198,8 @@
 
 ## Review Loop
 
+After writing `devflow/roadmap.json` and generated projections, run the scans in `references/roadmap-dialogue.md`: placeholder, evidence, causality, feasibility, graph, spec, decomposition, handoff, evidence maturity, project direction, promotional, adoption, domain language, and durable decision.
+
 交付前至少扫一遍：
 
 1. 有没有 placeholder
@@ -191,6 +217,19 @@
 - `patch`: 文案澄清、模板说明、小修补
 - `minor`: 上下文收集、评审、字段增强，且不破坏既有 roadmap state 习惯
 - `major`: 核心输出契约变化，需要 migration note
+
+Every skill change updates frontmatter `version` and `CHANGELOG.md`. If existing `devflow/ROADMAP.md`, `devflow/BACKLOG.md`, or `devflow/roadmap-tracking.json` usage changes, write a migration note.
+
+## Good Output
+
+用户应该一眼看懂：
+
+1. 现在先打哪一仗
+2. 为什么不是另外两仗
+3. 哪个 signal 说明这一仗赢了
+4. 哪些 backlog 项已经 ready for `cc-plan`
+5. 哪些 `RM` 必须串行，哪些可以并行开会话
+6. 哪些项目术语、capability spec、roadmap decision 会随第一批 backlog 传给 `cc-plan`
 
 ## Exit Rule
 

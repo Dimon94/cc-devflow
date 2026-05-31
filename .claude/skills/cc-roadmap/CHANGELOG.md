@@ -1,5 +1,11 @@
 # Roadmap Skill Changelog
 
+## v5.10.0 - 2026-05-31
+
+- slim the entrypoint to the roadmap purpose, load table, core flow, outputs, and default response shape
+- move runtime output policy, roadmap contract, recovery, review loop, versioning, and good-output checks into `PLAYBOOK.md`
+- keep route funnel, AI leverage lens, Socratic dialogue, and review scans in `references/roadmap-dialogue.md` for progressive disclosure
+
 ## v5.9.0 - 2026-05-24
 
 - add `reviewGateHints` to ready RM handoffs so roadmap items preserve complexity, hardening, productization, test-strategy, and release-risk signals for `cc-next` / `cc-dev`
