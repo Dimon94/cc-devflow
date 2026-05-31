@@ -1,5 +1,10 @@
 # CC-Review Changelog
 
+## v2.13.4 - 2026-05-31
+
+- add a Finding Proof Contract so findings require source evidence, a violated control, and a repair option or route before they can be reported
+- restate that review output must stay in the current response, GitHub review, or allowed `task.md` update instead of creating local report files
+
 ## v2.13.3 - 2026-05-23
 
 - add an observability incident-question protocol so findings answer what operators cannot diagnose, what safe signal shape is missing, and how success/failure telemetry would prove it

@@ -114,6 +114,24 @@ Node rules:
 - no finding limit exists while nodes remain unchecked
 - prior clean conclusions can be reused only when Git proves the target and dependencies did not change
 
+## Finding Proof Contract
+
+A finding is not valid until it names source evidence from the reviewed task,
+diff, code, test, log, screenshot, PR, or missing-evidence proof.
+
+Each non-clean finding must name the violated control: contract, invariant,
+boundary, release gate, test strategy, smell, ownership rule, or operator
+workflow that was broken.
+
+Each finding must include a repair option or route. Use `cc-plan` for wrong
+scope or architecture, `cc-do` for implementation repair, `cc-check` for proof
+gaps, `cc-act` for closeout gaps, and `stop` only when no project action is
+needed.
+
+Do not create local review report files. Keep review output in the current
+response, GitHub review, or the allowed `task.md` update for plan/investigation
+findings and eligible review escape ledger candidates.
+
 ## Risk-Lane Review Swarm Profile
 
 Use this profile when a broad implementation diff, PR landing review, or mixed review benefits from independent context. The profile is a default decomposition, not a requirement to manufacture findings.
