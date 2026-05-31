@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.5.0 - 2026-05-31
+
+- slim the entrypoint to the cc-next boundary, load table, selection flow, and default output
+- move candidate evidence, active change classes, ranking priority, multi-candidate choice, and Goal Packet template into `PLAYBOOK.md`
+- preserve the no-implementation boundary while making the entry faster for agents to enter
+
 ## v1.4.1 - 2026-05-24
 
 - add review gate hints to `cc-dev` Goal Packets so next-work selection preserves complexity, hardening, test-strategy, and release-risk signals
