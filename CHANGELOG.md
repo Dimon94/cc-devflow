@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added a `cc-plan` Design Pressure contract so non-trivial plans freeze deep module shape, information hiding, caller knowledge, public seams, and vertical task slices before `cc-do`.
 - Added a `cc-do` Vertical Red/Green Guard so execution finishes one observable behavior's Red -> Green -> Refactor cycle before starting the next behavior.
+- Added a `cc-check` False Green Guard so fresh green output cannot pass unless it proves the changed behavior, bugfix, contract, boundary, migration, or operator workflow.
 
 ## [4.5.29] - 2026-05-28
 

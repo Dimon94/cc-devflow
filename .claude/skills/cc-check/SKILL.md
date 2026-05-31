@@ -1,6 +1,6 @@
 ---
 name: cc-check
-version: 1.16.1
+version: 1.16.2
 description: Use when a planned or investigated change needs fresh verification evidence and an honest pass/fail/blocked verdict before cc-act.
 triggers:
   - 验收这个需求

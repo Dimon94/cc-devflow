@@ -1,5 +1,10 @@
 # CC-Check Skill Changelog
 
+## v1.16.2 - 2026-05-31
+
+- add a False Green Guard so fresh green command output still cannot pass unless it proves the changed behavior, bugfix, contract, boundary, migration, or operator workflow
+- route decorative green tests to `cc-do` for better proof or `cc-plan` when the planned public seam is wrong
+
 ## v1.16.1 - 2026-05-23
 
 - add confidence-per-minute verification so behavior and bugfix passes must name suite layer, command/runtime, proof value, fixture/mock boundary, and low-value tests avoided

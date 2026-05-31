@@ -51,6 +51,20 @@ Every claim needs proof:
 
 Missing proof is `blocked`, not `pass`.
 
+## False Green Guard
+
+A green command output is not enough for pass. The evidence must prove the
+changed behavior, bugfix, product contract, permission boundary, migration, or
+operator workflow named by `task.md`.
+
+- If tests are green but only prove broad snapshots, duplicate happy paths,
+  no-op smoke checks, private implementation shape, or overmocked internals,
+  route to `cc-do` for a better test.
+- If the right behavior cannot be proven because the planned public seam,
+  fixture, or acceptance shape is wrong, route to `cc-plan` when the planned seam is wrong.
+- If required credentials, services, data, or UI access are missing, return
+  `blocked` with the missing evidence instead of downgrading to `pass`.
+
 ## Failure Ownership
 
 Classify every failure:
