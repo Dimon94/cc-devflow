@@ -8,7 +8,7 @@ Simplification is valuable only when it refuses beautification and fixes confirm
 
 - Mode: read-do
 - Evidence sink: working-tree code/test edits and the final Simplify Report
-- Failure route: `cc-check` after edits, `cc-plan` for redesign, `cc-investigate` for disproven root cause, or stop
+- Failure route: `cc-check` after edits, `cc-plan` for redesign, `cc-diagnose` for disproven root cause, or stop
 
 ## Pause Points
 

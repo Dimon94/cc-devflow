@@ -8,7 +8,7 @@ Execution mistakes are usually skipped basics: wrong task, private seam tests, m
 
 - Mode: read-do
 - Evidence sink: `task.md`, changed code/tests, verification output, and task-slice commit
-- Failure route: `cc-check` when done, `cc-plan` for scope drift, `cc-investigate` for disproven root cause, or stop
+- Failure route: `cc-check` when done, `cc-plan` for scope drift, `cc-diagnose` for disproven root cause, or stop
 
 ## Pause Points
 

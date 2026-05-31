@@ -117,7 +117,7 @@ Exit with:
 - planned verification commands
 - roadmap sync status
 - Plan commit hash
-- next route: `cc-do`, `cc-investigate`, `roadmap`, or `stop`
+- next route: `cc-do`, `cc-diagnose`, `roadmap`, or `stop`
 
 ## Exit
 

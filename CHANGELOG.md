@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Replaced the heavy IDCA bug workflow with a lightweight `cc-diagnose` skill
+  based on a six-phase diagnose loop: feedback loop, reproduce, hypothesise,
+  instrument, fix/regression-test, and cleanup/post-mortem.
+- Narrowed `cc-dev` back to planned PDCA work; bug and regression signals now
+  route to `cc-diagnose` instead of entering the old `cc-investigate -> cc-do`
+  shared-tail workflow.
+
+### Removed
+
+- Removed the distributed `cc-investigate` skill and its root-cause contract
+  assets from the public skill pack.
+
 ## [4.5.30] - 2026-05-31
 
 ### Added

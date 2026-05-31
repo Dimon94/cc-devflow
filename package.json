@@ -15,7 +15,7 @@
         ".claude/skills/cc-next/",
         ".claude/skills/cc-dev/",
         ".claude/skills/cc-plan/",
-        ".claude/skills/cc-investigate/",
+        ".claude/skills/cc-diagnose/",
         ".claude/skills/cc-do/",
         ".claude/skills/cc-review/",
         ".claude/skills/cc-pr-review/",

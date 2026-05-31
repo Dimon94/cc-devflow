@@ -44,7 +44,7 @@ severity | confidence | file:line | category | evidence | fix | route
 - 是否多做了未请求行为。
 - 行为、边界或 invariant 变化，却没有同步 `task.md` 或 spec。
 - bugfix 被伪装成需求，或需求被伪装成 cleanup。
-- 是否需要 reroute：设计漂移到 `cc-plan`，根因失效到 `cc-investigate`，验证缺口到 `cc-check`。
+- 是否需要 reroute：设计漂移到 `cc-plan`，根因失效到 `cc-diagnose`，验证缺口到 `cc-check`。
 
 ### Agent B: Reuse / Structure
 

@@ -62,7 +62,7 @@ Follow `references/checklist-contract.md` before each pause point. The checklist
    - 同步 `CONTRIBUTING.md` / `CONTRIBUTING.zh-CN.md`
    - 同步受影响的 `docs/**/*.md`
    - 如果会影响发布说明，再同步根 `CHANGELOG.md`
-4. 公开 workflow 叙事要忠于现实：`roadmap` 之后既有 `PDCA`，也有 `IDCA/DDCA`；维护类 skill 单独说明，不要污染主叙事。
+4. 公开 workflow 叙事要忠于现实：`roadmap` 之后是 planned-work `PDCA` 和轻量 `cc-diagnose` hotfix 路径；维护类 skill 单独说明，不要污染主叙事。
 5. 结束前做一次 drift scan，确认没有旧版本号、旧技能列表、旧命令残留在公开 docs 里。
 
 ## Skill Contract Quality Gate

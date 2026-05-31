@@ -21,7 +21,7 @@ request.
    metrics, validation, test, deploy, and feature-flag patterns.
 7. Do not create audit reports, microsites, dashboards, or process files during
    review. Return findings in the normal `cc-review` output or write eligible
-   plan/investigation findings into `task.md`.
+   plan findings into `task.md`.
 
 ## Hardening Proof Protocol
 

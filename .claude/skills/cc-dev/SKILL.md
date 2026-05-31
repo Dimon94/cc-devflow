@@ -1,7 +1,7 @@
 ---
 name: cc-dev
-version: 1.7.0
-description: Drive one selected objective through PDCA or IDCA until cc-act delivery choice, clarification, or blocker.
+version: 1.8.0
+description: Drive one selected planned objective through PDCA until cc-act delivery choice, clarification, or blocker.
 triggers:
   - 自动驾驶开发这个需求
   - 按这个 Goal Packet 执行
@@ -10,7 +10,6 @@ triggers:
 reads:
   - PLAYBOOK.md
   - ../cc-plan/SKILL.md
-  - ../cc-investigate/SKILL.md
   - ../cc-do/SKILL.md
   - ../cc-review/SKILL.md
   - ../cc-check/SKILL.md
@@ -26,7 +25,7 @@ writes:
   - path: devflow/changes/<change-key>/task.md
     durability: durable
     required: false
-    when: planning, investigation, or task completion updates are needed
+    when: planning or task completion updates are needed
   - path: devflow/changes/<change-key>/handoff/pr-brief.md
     durability: durable
     required: false
@@ -47,7 +46,6 @@ All paths below are relative to this `SKILL.md` directory, not the shell cwd.
 
 ```text
 PDCA: cc-plan        -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
-IDCA: cc-investigate -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
 ```
 
 Strict mode uses `cc-review*`: repeat review -> repair/reroute -> review until
@@ -60,7 +58,7 @@ route is required before the next stage.
 | Signal | Route |
 | --- | --- |
 | New behavior, changed behavior, UI/API/spec work | PDCA via `cc-plan` |
-| Broken behavior, regression, crash, inconsistency | IDCA via `cc-investigate` |
+| Broken behavior, regression, crash, inconsistency | stop and route to `cc-diagnose`; hotfixes stay outside `cc-dev` unless a frozen `task.md` already exists |
 | Frozen `task.md` already exists | resume at `cc-do` |
 | Implementation done but evidence stale | resume at `cc-check` |
 | Verified work only needs delivery | resume at `cc-act` for delivery-mode choice |
@@ -79,10 +77,10 @@ Ambiguous route or terminal-state choices use `references/user-choice-output-pro
 ## Default Output
 
 1. Outcome: terminal state.
-2. Objective: requirement or bug satisfied or blocked.
+2. Objective: requirement satisfied or blocked.
 3. Evidence: changed files, commands, commits, and selected delivery proof.
 4. Review gates: ran, skipped with reason, or blocked.
-5. Route taken: PDCA, IDCA, or resume path.
+5. Route taken: PDCA or resume path.
 6. Remaining risk: none, named residual risk, or blocker.
 
 ## Exit Criteria

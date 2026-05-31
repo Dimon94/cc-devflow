@@ -24,7 +24,6 @@ describe('review escape Failure Ledger contract', () => {
   test('Failure Ledger templates carry review escape metadata fields', () => {
     const templateFiles = [
       '.claude/skills/cc-plan/assets/TASKS_TEMPLATE.md',
-      '.claude/skills/cc-investigate/assets/TASKS_TEMPLATE.md',
       'docs/examples/pdca-loop/changes/REQ-001-copy-invite-link/task.md',
       'docs/examples/full-design-blocked/changes/REQ-002-bulk-invite-import/task.md',
       'docs/examples/local-handoff/changes/REQ-003-audit-log-export/task.md'

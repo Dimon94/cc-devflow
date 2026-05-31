@@ -102,10 +102,10 @@ Priority:
 Goal Packet
 - Objective: <one concrete outcome>
 - Source: <roadmap item / issue / existing change>
-- Route: PDCA | IDCA | resume
+- Route: PDCA | hotfix-diagnose | resume
 - Existing change: <change-key or none>
 - Why this next: <selection evidence>
-- Review gate hints: <plan/investigation gate, implementation gate, risk triggers, skip reason, or missing evidence>
+- Review gate hints: <plan gate, implementation gate, risk triggers, skip reason, or missing evidence>
 - Completion criteria: <observable finish line>
 - Stop conditions: <when cc-dev must stop or reroute>
 - PR expectation: open/update PR or local handoff

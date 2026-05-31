@@ -45,7 +45,7 @@ exit_criteria:
   - No process file beyond `task.md` updates and Git commits.
 reroutes:
   - when: New evidence disproves root cause.
-    target: cc-investigate
+    target: cc-diagnose
   - when: New evidence breaks scope or design.
     target: cc-plan
   - when: Implementation and review feedback are complete.
@@ -54,7 +54,7 @@ reroutes:
 
 # CC-Do
 
-`cc-do` 是 PDCA / IDCA 的 Do：只执行 `task.md` 已冻结的任务，不重新规划。
+`cc-do` 只执行 `task.md` 已冻结的任务，不重新规划。Bug 热修默认先走 `cc-diagnose`，只有已经写成 `task.md` 的修复任务才进入这里。
 
 默认只更新代码、测试、`task.md` 任务状态和 Git commit。不要生成额外过程文件。
 
@@ -81,4 +81,4 @@ select ready task -> Red -> Green -> Refactor -> verify -> `mark-task-complete.s
 
 ## Default Output
 
-Answer with: Task, TDD, Verification, Commit, Route (next task, `cc-check`, `cc-plan`, `cc-investigate`, or `stop`).
+Answer with: Task, TDD, Verification, Commit, Route (next task, `cc-check`, `cc-plan`, `cc-diagnose`, or `stop`).

@@ -14,4 +14,4 @@ Do not generate process files beyond the durable files above.
 
 ## Commit Rule
 
-Each completed PDCA or IDCA environment/stage gets a Git commit. Use the commit graph as the process record.
+Each completed planned workflow environment/stage gets a Git commit. Use the commit graph as the process record.

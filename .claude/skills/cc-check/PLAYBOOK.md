@@ -2,7 +2,7 @@
 
 ## Visible State Machine
 
-`cc-do -> cc-check -> cc-act | cc-do | cc-investigate | cc-plan`
+`cc-do -> cc-check -> cc-act | cc-do | cc-diagnose | cc-plan`
 
 ## Core Rules
 
@@ -18,7 +18,7 @@
 
 ## Role
 
-`cc-check` is the PDCA / IDCA verification node. It turns "should be done" into
+`cc-check` is the PDCA and resumed-task verification node. It turns "should be done" into
 "fresh evidence proves or blocks completion".
 
 It writes no process files. Verification facts belong in the current response,
@@ -36,7 +36,7 @@ PR files, and Git commits.
 5. Classify relevant Failure Ledger entries, including review escape
    candidates, as `confirmed-lesson`, `noise`, or `unresolved-risk`.
 6. Return `pass`, `fail`, or `blocked`.
-7. Commit the stage when this PDCA/IDCA environment completes and repo policy
+7. Commit the stage when this verification environment completes and repo policy
    allows it.
 
 ## Verification Phases
@@ -145,7 +145,7 @@ Short response only:
 - Review: clean, findings remain, or not reviewed
 - QA: feedback loop and test quality where applicable
 - Diff: scope match or drift
-- Route: `cc-act` / `cc-do` / `cc-investigate` / `cc-plan` / `stop`
+- Route: `cc-act` / `cc-do` / `cc-diagnose` / `cc-plan` / `stop`
 
 Do not write process files.
 

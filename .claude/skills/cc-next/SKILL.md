@@ -12,7 +12,7 @@ reads:
   - ../cc-roadmap/SKILL.md
   - ../cc-dev/SKILL.md
   - ../cc-plan/SKILL.md
-  - ../cc-investigate/SKILL.md
+  - ../cc-diagnose/SKILL.md
   - ../cc-review/SKILL.md
   - devflow/roadmap.json
   - devflow/ROADMAP.md

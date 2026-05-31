@@ -67,7 +67,7 @@ Use this when the only thing you know is the file in front of you.
 | `roadmap.json` | `cc-roadmap` editable machine truth source | [pdca-loop/roadmap.json](./pdca-loop/roadmap.json) |
 | `ROADMAP.md` | `cc-roadmap` generated human view | [pdca-loop/ROADMAP.md](./pdca-loop/ROADMAP.md) |
 | `BACKLOG.md` | deprecated `cc-roadmap` -> `cc-plan` projection | [pdca-loop/BACKLOG.md](./pdca-loop/BACKLOG.md) |
-| `task.md` | `cc-plan`, `cc-investigate`, or `cc-do` | [pdca-loop/task.md](./pdca-loop/changes/REQ-001-copy-invite-link/task.md) |
+| `task.md` | `cc-plan`, `cc-diagnose`, or `cc-do` | [pdca-loop/task.md](./pdca-loop/changes/REQ-001-copy-invite-link/task.md) |
 | Git diff / commit | `cc-do` or `cc-check` | current branch history and working tree |
 | current response verdict | `cc-check` | the verification summary from the latest run |
 | `pr-brief.md` | `cc-act` | [pdca-loop/pr-brief.md](./pdca-loop/changes/REQ-001-copy-invite-link/handoff/pr-brief.md) |

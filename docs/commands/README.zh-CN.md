@@ -15,7 +15,7 @@ npx cc-devflow adapt --cwd /path/to/your/project --platform codex
 cc-roadmap
 
 PDCA: cc-plan -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
-IDCA: cc-investigate -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
+Hotfix: cc-diagnose -> focused fix -> regression proof
 ```
 
 维护类动作按需单独调用：

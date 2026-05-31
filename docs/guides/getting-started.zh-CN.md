@@ -11,13 +11,13 @@ CC-DevFlow 现在有两条入口：
 - `cc-devflow init`：把整包 `.claude` 安装到你的项目里
 - `cc-devflow adapt`：生成 Codex、Cursor、Qwen、Antigravity 等平台产物
 
-核心工作流可以手动走 PDCA/IDCA Skill，也可以通过 PR harness Skill 自动推进：
+核心工作流让 planned work 走 PDCA，让 Bug 工作走更轻的 `cc-diagnose` hotfix 路径：
 
 ```text
 cc-roadmap -> cc-next -> cc-dev
 
 PDCA: cc-plan -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
-IDCA: cc-investigate -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
+Hotfix: cc-diagnose -> focused fix -> regression proof
 ```
 
 公开 Skill 本身就是可见 harness。现在每个分发 `SKILL.md` 都带结构化 frontmatter 和 `Harness Contract`，每个 `PLAYBOOK.md` 都带 `Visible State Machine`，不再依赖隐藏运行时语义来理解阶段流转。
@@ -36,7 +36,7 @@ IDCA: cc-investigate -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-ac
 npx cc-devflow init --dir /path/to/your/project
 ```
 
-整包安装会带上 roadmap、next-work selection、autonomous dev、手动 PDCA/IDCA、可选 `cc-review`、PR review/landing，以及维护用的 `cc-spec-init` 和 `cc-simplify`。
+整包安装会带上 roadmap、next-work selection、autonomous dev、手动 PDCA、用于 hotfix/debug 的 `cc-diagnose`、可选 `cc-review`、PR review/landing，以及维护用的 `cc-spec-init` 和 `cc-simplify`。
 
 ### 单个 Skill 安装
 
@@ -74,8 +74,8 @@ find .codex/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort
 
 ```text
 1. cc-roadmap
-2. 在 cc-plan 和 cc-investigate 里二选一
-3. 复杂计划或调查根因冻结后可选 cc-review
+2. planned work 用 cc-plan；Bug 直接用 cc-diagnose
+3. 复杂计划可选 cc-review
 4. cc-do
 5. 复杂实现可选 cc-review
 6. cc-check
@@ -88,8 +88,8 @@ find .codex/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort
 - `cc-roadmap` 产出可编辑真相 `devflow/roadmap.json`，再生成 `devflow/ROADMAP.md` 和 deprecated `devflow/BACKLOG.md`
 - `cc-spec-init` 产出 `devflow/specs/INDEX.md` 和 capability spec
 - `cc-plan` 产出 `task.md#Contract Summary`
-- `cc-investigate` 产出 `task.md#Root Cause Contract`
-- `cc-review` 把计划 / 调查 finding 写入 `task.md`；执行 finding 留在回复里，等用户选择修复方案后再改代码；只有流程 / 测试 / 设计 / 模型写法逃逸类 finding 可以写入 `task.md#Failure Ledger`；非 trivial review chain 必须记录证据、诊断、现象层 / 本质层 / 哲学层，并以错误节点为中心记录因果链：上游在有证据时向上追直接输入/调用方、合同/规格/provider、来源意图/roadmap 三层，下游在有证据时向下追首个受影响边界、行为/产物、发布/维护风险三层，并按“现象接收 → 本质诊断 → 哲学沉思 → 本质整合 → 现象输出”组织；复杂度报告需要包含 scope、检测到的 stack/test/build 命令、ranked findings、before/after complexity、patch status、files-modified yes/no 和必要测试或测量；结构质量 finding 需要覆盖 code-judo 简化、可维护性护栏、分支 / 抽象 / 类型边界坏味道、ownership boundary、兼容的持久化状态变更、真实视口证据和 approval/blocking verdict；产品化 finding 覆盖 shared action layer、API/agent surface、audit trail、admin/manageability UI、feature flag、idempotency 和 operator path；hardening specialist 覆盖被选中的安全、可观测性、发布就绪和测试策略风险，并记录 surface map、risk gate、checked/skipped/blocked、proof path、confidence-per-minute 测试判断和 residual risk
+- `cc-diagnose` 在回复或最终 commit/PR 文本里记录复现、假设、探针、修复证据和回归证明
+- `cc-review` 把计划 finding 写入 `task.md`；执行 finding 留在回复里，等用户选择修复方案后再改代码；只有流程 / 测试 / 设计 / 模型写法逃逸类 finding 可以写入 `task.md#Failure Ledger`；非 trivial review chain 必须记录证据、诊断、现象层 / 本质层 / 哲学层，并以错误节点为中心记录因果链：上游在有证据时向上追直接输入/调用方、合同/规格/provider、来源意图/roadmap 三层，下游在有证据时向下追首个受影响边界、行为/产物、发布/维护风险三层，并按“现象接收 → 本质诊断 → 哲学沉思 → 本质整合 → 现象输出”组织；复杂度报告需要包含 scope、检测到的 stack/test/build 命令、ranked findings、before/after complexity、patch status、files-modified yes/no 和必要测试或测量；结构质量 finding 需要覆盖 code-judo 简化、可维护性护栏、分支 / 抽象 / 类型边界坏味道、ownership boundary、兼容的持久化状态变更、真实视口证据和 approval/blocking verdict；产品化 finding 覆盖 shared action layer、API/agent surface、audit trail、admin/manageability UI、feature flag、idempotency 和 operator path；hardening specialist 覆盖被选中的安全、可观测性、发布就绪和测试策略风险，并记录 surface map、risk gate、checked/skipped/blocked、proof path、confidence-per-minute 测试判断和 residual risk
 - `cc-check` 在当前回复、PR 文件或 Git commit 里记录验证事实
 - `cc-act` 只产出最终 PR 文件 `handoff/pr-brief.md`；真实事故需要尸检时才产出 incident postmortem 文件
 

@@ -1,7 +1,7 @@
 ---
 name: cc-check
 version: 1.17.0
-description: Use when a planned or investigated change needs fresh verification evidence and an honest pass/fail/blocked verdict before cc-act.
+description: Use when a planned change or frozen task needs fresh verification evidence and an honest pass/fail/blocked verdict before cc-act.
 triggers:
   - 验收这个需求
   - 帮我确认是否完成
@@ -27,7 +27,7 @@ writes:
   - path: Git commit
     durability: durable
     required: true
-    when: verification completes a PDCA or IDCA environment stage
+    when: verification completes a PDCA or resumed task environment stage
 ---
 
 # CC-Check
@@ -71,7 +71,7 @@ When touched, classify `task.md#Failure Ledger` entries, including eligible
 3. Review: clean, findings remain, not reviewed, or skipped with reason.
 4. QA: feedback loop, test quality, and behavior evidence when applicable.
 5. Diff: scope match, missing scope, or scope drift.
-6. Route: `cc-act`, `cc-do`, `cc-investigate`, `cc-plan`, or `stop`.
+6. Route: `cc-act`, `cc-do`, `cc-diagnose`, `cc-plan`, or `stop`.
 
 ## Exit Criteria
 

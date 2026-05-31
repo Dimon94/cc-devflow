@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" role="img" aria-labelledby="title desc">
   <title id="title">CC-DevFlow PR Harness 运作流程</title>
-  <desc id="desc">一张中文流程图，展示 roadmap 选题、目标自动驾驶、PDCA 和 IDCA 循环、PR 独立 Review、PR 合并和 main 一致性证明。</desc>
+  <desc id="desc">一张中文流程图，展示 roadmap 选题、目标自动驾驶、PDCA 和 hotfix diagnose 路径、PR 独立 Review、PR 合并和 main 一致性证明。</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#07111f"/>
@@ -97,11 +97,11 @@
   <path class="line" d="M455 651 H360"/>
 
   <rect x="845" y="390" width="675" height="335" rx="18" class="lane"/>
-  <text x="875" y="426" class="note">IDCA Bug 调查循环</text>
+  <text x="875" y="426" class="note">Hotfix Bug 诊断路径</text>
   <text x="875" y="455" class="muted">适用于回归、崩溃、错误行为和不稳定失败</text>
   <g transform="translate(885 490)">
     <rect width="270" height="72" rx="14" class="card"/>
-    <text x="24" y="32" class="label">cc-investigate</text>
+    <text x="24" y="32" class="label">cc-diagnose</text>
     <text x="24" y="57" class="small">复现、根因、修复边界</text>
   </g>
   <g transform="translate(1245 490)">

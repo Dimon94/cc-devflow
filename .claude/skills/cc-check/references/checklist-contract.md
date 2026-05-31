@@ -8,7 +8,7 @@ Verification is brittle when green commands are treated as equivalent to proven 
 
 - Mode: do-confirm
 - Evidence sink: current response and the verification-stage Git commit when policy allows
-- Failure route: `cc-act`, `cc-do`, `cc-investigate`, `cc-plan`, or stop
+- Failure route: `cc-act`, `cc-do`, `cc-diagnose`, `cc-plan`, or stop
 
 ## Pause Points
 

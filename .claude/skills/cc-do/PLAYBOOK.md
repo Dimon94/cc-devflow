@@ -2,7 +2,7 @@
 
 ## State Machine
 
-`cc-plan | cc-investigate -> cc-do -> cc-check`
+`cc-plan | cc-diagnose -> cc-do -> cc-check`
 
 `cc-do` edits code. It does not create process files.
 
@@ -46,7 +46,7 @@
 - Mocks belong only at system boundaries: external API, time, randomness, filesystem, network, or required database seams. Mocking owned modules is a seam warning.
 - Fixtures must be honest. Partial fixtures, casts, generated stubs, and missing-field payloads must name the real contract fields and the filled test-only fields.
 - New interfaces should be small and deep. Pass dependencies from callers; prefer concrete boundary operations over generic catch-all adapters.
-- Three failed patch attempts against the same task mean question `Root Cause Contract` or `Contract Summary`, then reroute to `cc-investigate` or `cc-plan`.
+- Three failed patch attempts against the same task mean question the current diagnosis or `Contract Summary`, then reroute to `cc-diagnose` or `cc-plan`.
 - If the completion script fails, fix missing evidence, dependency metadata, or task block shape; do not hand-edit checkboxes.
 
 ## 实现判断
@@ -112,7 +112,7 @@ Parallelize only when the task explicitly allows it, dependencies are satisfied,
 
 ## Reroute Triggers
 
-- New evidence disproves root cause: `cc-investigate`
+- New evidence disproves root cause: `cc-diagnose`
 - New evidence breaks scope, interface, or task contract: `cc-plan`
 - Repeated patch attempts fail after the same task: stop and reroute
 - Review feedback exceeds frozen scope: `cc-plan`

@@ -76,7 +76,7 @@
 - 不为了删除 3 行重复制造 50 行抽象。
 - 如果修复预计触碰超过约 5 个文件，或需要超过约 20 行新设计，停下来询问：拆分、reroute，还是只修 critical path。
 
-需要重新设计时路由到 `cc-plan`；根因被推翻时路由到 `cc-investigate`；验证缺口路由到 `cc-check`。
+需要重新设计时路由到 `cc-plan`；根因被推翻时路由到 `cc-diagnose`；验证缺口路由到 `cc-check`。
 
 ## Phase 6: 新鲜验证
 
@@ -98,7 +98,7 @@
 - Findings skipped:
 - Reroutes / blockers:
 - Verification run:
-- Next step: `cc-check` / `cc-act` / `cc-plan` / `cc-investigate`
+- Next step: `cc-check` / `cc-act` / `cc-plan` / `cc-diagnose`
 
 如果 `cc-simplify` 改了代码、测试或验证口径，下一步必须是 `cc-check`；不要带着旧验证进入 `cc-act`。
 

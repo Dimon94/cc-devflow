@@ -1,6 +1,6 @@
 # cc-devflow
 
-> Agent-first development workflow for roadmap, planning, investigation, implementation, verification, and shipping.
+> Agent-first development workflow for roadmap, planning, diagnosis, implementation, verification, and shipping.
 
 [![GitHub stars](https://img.shields.io/github/stars/Dimon94/cc-devflow?style=social)](https://github.com/Dimon94/cc-devflow/stargazers)
 [![npm version](https://img.shields.io/npm/v/cc-devflow.svg)](https://www.npmjs.com/package/cc-devflow)
@@ -9,7 +9,7 @@
 
 [中文文档](./README.zh-CN.md) | [English](./README.md) | [Getting Started](./docs/guides/getting-started.md) | [Contributing](./CONTRIBUTING.md) | [Security](./SECURITY.md)
 
-CC-DevFlow is a small, explicit workflow system for agent coding. It gives an AI agent one roadmap entry point, then routes every change through either a feature loop or a bug-investigation loop before work can be called done.
+CC-DevFlow is a small, explicit workflow system for agent coding. It gives an AI agent one roadmap entry point, a PDCA feature loop, and a lightweight `cc-diagnose` hotfix/debugging path.
 
 ![CC-DevFlow PR Harness visual workflow](./docs/assets/cc-devflow-pr-harness-en.svg)
 
@@ -51,7 +51,7 @@ Refresh every supported platform output:
 npx cc-devflow@latest adapt --cwd /path/to/your/project --all
 ```
 
-After installation, ask your agent to use the workflow skills directly. Start with `cc-roadmap` for product direction. Use `cc-next` to select the next roadmap-aware target, `cc-dev` to drive the current worktree through PDCA or IDCA until a remote PR is opened, `cc-pr-review` to review that PR in a separate session, and `cc-pr-land` to land reviewed PRs into main. For manual core workflow work, use `cc-plan` for new work, use `cc-investigate` for bugs, optionally run `cc-review` on complex frozen plans or investigations, then continue through `cc-do`, optional implementation `cc-review`, `cc-check`, and `cc-act`.
+After installation, ask your agent to use the workflow skills directly. Start with `cc-roadmap` for product direction. Use `cc-next` to select the next roadmap-aware target, `cc-dev` to drive planned PDCA work until `cc-act` selects delivery, `cc-pr-review` to review remote PRs in a separate session, and `cc-pr-land` to land reviewed PRs into main. For bugs and regressions, use `cc-diagnose` directly; most hotfixes should build a tight feedback loop, patch, regression-test, and close without entering the heavy PDCA tail.
 
 ## Workflow Map
 
@@ -61,7 +61,7 @@ cc-roadmap
 PR Harness: cc-next -> cc-dev -> cc-pr-review -> cc-pr-land
 
 PDCA: cc-plan        -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
-IDCA: cc-investigate -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
+Hotfix: cc-diagnose -> focused fix -> regression proof
 ```
 
 ```mermaid
@@ -71,13 +71,12 @@ flowchart TD
 
   Dev --> Route{"Route"}
   Route -->|Feature or change| Plan["cc-plan\nFreeze scope and tasks"]
-  Route -->|Bug or regression| Investigate["cc-investigate\nFreeze root cause and repair boundary"]
+  Route -->|Bug or regression| Diagnose["cc-diagnose\nBuild feedback loop and fix"]
 
   Plan --> PlanReview["cc-review\nOptional plan review"]
-  Investigate --> PlanReview
   PlanReview --> Do["cc-do\nImplement with evidence"]
   Plan --> Do
-  Investigate --> Do
+  Diagnose --> Check
 
   Do --> ImplReview["cc-review\nOptional implementation review"]
   ImplReview --> Check["cc-check\nFresh verification verdict"]
@@ -97,9 +96,9 @@ flowchart TD
 | `cc-next` | You need to pick the next roadmap-aware ready target from roadmap, unarchived local changes, and issue truth | one Goal Packet for `cc-dev`, including review gate hints |
 | `cc-dev` | A selected objective should be driven in the current worktree to a remote PR | `task.md`, Git commits, and a PR or handoff |
 | `cc-plan` | A feature or change needs scope, design, and task freezing | `task.md#Contract Summary` |
-| `cc-investigate` | A bug needs symptom, reproduction, root cause, and repair boundary | `task.md#Root Cause Contract` |
-| `cc-do` | Planned or investigated work needs implementation | code, tests, `task.md` status, Git commit |
-| `cc-review` | Complex plans, investigations, diffs, complexity reports, optimization hotspots, hardening risks, or harsh structural quality reviews need optional deep review before implementation or verification | plan findings in `task.md`; implementation findings and repair options in the response |
+| `cc-diagnose` | A bug, regression, crash, flaky failure, or performance regression needs a tight feedback loop and hotfix discipline | response evidence, focused code/test changes, and regression proof |
+| `cc-do` | Frozen planned work needs implementation | code, tests, `task.md` status, Git commit |
+| `cc-review` | Complex plans, diffs, complexity reports, optimization hotspots, hardening risks, or harsh structural quality reviews need optional deep review before implementation or verification | plan findings in `task.md`; implementation findings and repair options in the response |
 | `cc-pr-review` | A remote PR needs an independent review session before landing, including PR-scoped complexity, hardening, and productization review when relevant | PR review packet, findings, facet coverage, and landing verdict |
 | `cc-pr-land` | Reviewed PRs need production-gate-aware, rebase-first landing into main with parity proof | gate carry-forward plus integrated main and local/remote parity evidence |
 | `cc-check` | Work needs fresh verification evidence | pass/fail/blocked response and Git commit |
@@ -116,13 +115,13 @@ Maintenance skills are shipped with the pack:
 
 Canonical language and durable decisions stay inside cc-devflow-native sources: `devflow/specs/`, `devflow/roadmap.json`, `devflow/ROADMAP.md`, `task.md`, Git history, and PR truth. Legacy planning artifacts are readable fallback inputs only.
 
-`cc-plan` freezes more implementation decisions before `cc-do` starts. Non-trivial plans compare minimal viable and ideal architecture options, full designs include decision horizon plus error/rescue mapping, and test-first plans record test framework evidence, public test seams, spec-style test names, public verification paths, behavior assertions, mock boundaries, coverage quality, mandatory regression tests, interface depth, Green minimality guards, refactor candidates, vertical tracer-bullet slices, and confidence-per-minute test strategy when existing behavior changes. That test strategy names suite layer, expected command/runtime, proof value, fixture/mock boundary, focused suite shape, and low-value tests to avoid. `cc-investigate` freezes the bug-path equivalent as a Regression Proof Contract: failure ownership, shortest trustworthy seam, suite layer, command/runtime budget, proof value, fixture/mock boundary, focused suite shape, and low-value tests to avoid. Before handoff, `cc-plan` and `cc-investigate` also reconcile the source roadmap item so RM status, REQ/FIX binding, progress, and spec diagnosis do not drift from the frozen change artifacts. `cc-do` treats decorative Red tests as blockers: broad snapshots, duplicate happy paths, no-op smoke tests, brittle internal assertions, and overmocked implementation details do not unlock Green.
+`cc-plan` freezes more implementation decisions before `cc-do` starts. Non-trivial plans compare minimal viable and ideal architecture options, full designs include decision horizon plus error/rescue mapping, and test-first plans record test framework evidence, public test seams, spec-style test names, public verification paths, behavior assertions, mock boundaries, coverage quality, mandatory regression tests, interface depth, Green minimality guards, refactor candidates, vertical tracer-bullet slices, and confidence-per-minute test strategy when existing behavior changes. That test strategy names suite layer, expected command/runtime, proof value, fixture/mock boundary, focused suite shape, and low-value tests to avoid. `cc-diagnose` is deliberately lighter: reproduce with the sharpest loop available, rank falsifiable hypotheses, instrument narrowly, fix, prove the original repro is gone, and keep debug probes out of the final tree. Before handoff, `cc-plan` reconciles the source roadmap item so RM status, REQ binding, progress, and spec diagnosis do not drift from the frozen change artifacts. `cc-do` treats decorative Red tests as blockers: broad snapshots, duplicate happy paths, no-op smoke tests, brittle internal assertions, and overmocked implementation details do not unlock Green.
 
 Every shipped skill carries its own `references/checklist-contract.md`; there is no shared checklist reference. The checklist is a pause-point contract for that skill only, and its proof must land in the skill's normal evidence sink such as `task.md`, the response, PR truth, Git history, or release verification.
 
 Every post-planning stage starts from `task.md`, current Git history/status, and PR or handoff truth when present. There is no runtime context query layer; disputed facts must be re-read from source artifacts. Use `npm run benchmark:skills` to keep public skill entrypoints thin; deeper planning rules should live behind conditional references instead of default context.
 
-`cc-review` is optional and deeper than `cc-check`. It can run immediately after `cc-plan` / `cc-investigate` to review the frozen plan or root-cause contract, or after `cc-do` to review the implementation. It carries a built-in complexity optimizer facet for full reports, nested scans, repeated membership checks, render recomputation, and N+1 database/API patterns, plus a structural quality / code-judo facet for thermo-nuclear maintainability reviews. It also loads hardening specialist lenses for security, observability, release-readiness, and test-strategy risk when the touched scope requires them; each selected specialist must be checked, skipped with reason, or blocked with missing evidence. Complexity report requests produce ranked findings with scope, detected stack/test/build commands, before/after complexity, patch status, and a clear files-modified yes/no statement. Complexity repair recommendations must preserve ordering, duplicate-key semantics, identity, cache invalidation, authorization, pagination, and error behavior before they route to a repair option. Structural findings push for behavior-preserving simplification: deleting avoidable branches, thin wrappers, cast-heavy contracts, wrong-layer logic, and file-size sprawl when a clearer ownership boundary exists. They also check maintainability guardrails: thin entrypoints, small feature-owned files, pure domain logic, centralized contracts, compatibility-preserving persisted state, CSS ownership, focused tests, and real viewport evidence for meaningful UI changes. Productization findings review demo-to-product control surfaces such as shared action layers, programmatic APIs, agent docs, audit trails, admin/manageability UI, feature flags, idempotency, and operator paths; missing services route to `cc-plan` unless a scoped implementation fix is already agreed. Hardening findings name the reviewed surface map, violated control, evidence, proof path, risk gate, and residual risk instead of creating separate audit artifacts. Test-strategy hardening also judges confidence per minute: suite layer, command/runtime, proof value, low-value tests to keep/rewrite/delete/quarantine, and focused suite shape. Non-trivial review findings record evidence, diagnosis, Phenomenal/Essential/Philosophical cognitive layers, and a causal path in a fault-centered ASCII chain that walks up through direct input/caller proof, contract/spec/provider, and source intent/roadmap when available, then down through first affected seam, behavior/artifact, and release/maintenance risk when available. Plan and investigation review findings are written directly into `task.md`. Implementation review findings are returned in the response with repair options; the user chooses the repair path before code is edited. PR reviews stay in the response or GitHub review. Only process, test, design, or model-pattern review escapes may be written into `task.md#Failure Ledger`; ordinary review findings stay in the review output or task update. No local review report, ledger, findings JSON, or other review output file is written.
+`cc-review` is optional and deeper than `cc-check`. It can run immediately after `cc-plan` to review the frozen plan, or after `cc-do` to review the implementation. It carries a built-in complexity optimizer facet for full reports, nested scans, repeated membership checks, render recomputation, and N+1 database/API patterns, plus a structural quality / code-judo facet for thermo-nuclear maintainability reviews. It also loads hardening specialist lenses for security, observability, release-readiness, and test-strategy risk when the touched scope requires them; each selected specialist must be checked, skipped with reason, or blocked with missing evidence. Complexity report requests produce ranked findings with scope, detected stack/test/build commands, before/after complexity, patch status, and a clear files-modified yes/no statement. Complexity repair recommendations must preserve ordering, duplicate-key semantics, identity, cache invalidation, authorization, pagination, and error behavior before they route to a repair option. Structural findings push for behavior-preserving simplification: deleting avoidable branches, thin wrappers, cast-heavy contracts, wrong-layer logic, and file-size sprawl when a clearer ownership boundary exists. They also check maintainability guardrails: thin entrypoints, small feature-owned files, pure domain logic, centralized contracts, compatibility-preserving persisted state, CSS ownership, focused tests, and real viewport evidence for meaningful UI changes. Productization findings review demo-to-product control surfaces such as shared action layers, programmatic APIs, agent docs, audit trails, admin/manageability UI, feature flags, idempotency, and operator paths; missing services route to `cc-plan` unless a scoped implementation fix is already agreed. Hardening findings name the reviewed surface map, violated control, evidence, proof path, risk gate, and residual risk instead of creating separate audit artifacts. Test-strategy hardening also judges confidence per minute: suite layer, command/runtime, proof value, low-value tests to keep/rewrite/delete/quarantine, and focused suite shape. Non-trivial review findings record evidence, diagnosis, Phenomenal/Essential/Philosophical cognitive layers, and a causal path in a fault-centered ASCII chain that walks up through direct input/caller proof, contract/spec/provider, and source intent/roadmap when available, then down through first affected seam, behavior/artifact, and release/maintenance risk when available. Plan review findings are written directly into `task.md`. Implementation review findings are returned in the response with repair options; the user chooses the repair path before code is edited. PR reviews stay in the response or GitHub review. Only process, test, design, or model-pattern review escapes may be written into `task.md#Failure Ledger`; ordinary review findings stay in the review output or task update. No local review report, ledger, findings JSON, or other review output file is written.
 
 ## Verification And Ship Gates
 
@@ -162,7 +161,7 @@ npx skills add https://github.com/Dimon94/cc-devflow --skill cc-roadmap
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-next
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-dev
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-plan
-npx skills add https://github.com/Dimon94/cc-devflow --skill cc-investigate
+npx skills add https://github.com/Dimon94/cc-devflow --skill cc-diagnose
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-do
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-review
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-pr-review
@@ -232,7 +231,7 @@ The currently distributed skill folders are:
 - `.claude/skills/cc-next/`
 - `.claude/skills/cc-dev/`
 - `.claude/skills/cc-plan/`
-- `.claude/skills/cc-investigate/`
+- `.claude/skills/cc-diagnose/`
 - `.claude/skills/cc-do/`
 - `.claude/skills/cc-review/`
 - `.claude/skills/cc-pr-review/`
@@ -247,7 +246,7 @@ The currently distributed skill folders are:
 - `devflow/specs/` stores durable capability truth: `INDEX.md` plus `capabilities/*.md`.
 - New change directories use `REQ-<number>-<description>` for requirements or `FIX-<number>-<description>` for bug fixes. `REQ` and `FIX` numbers advance independently, so the same number may exist in both prefixes. Parallel worktrees may also create repeated numbers; the full change key must use a specific description to distinguish the work.
 - `devflow/changes/<change>/` stores durable change truth in `task.md`, optional `handoff/pr-brief.md`, and Git commits. Real failures start in `task.md#Failure Ledger`; confirmed recurring lessons may also be compressed into incident postmortems under `devflow/postmortems/`.
-- New changes default to one human-authored Markdown artifact: `task.md`. Feature plans put the frozen design in `## Contract Summary`; bug investigations put root-cause truth in `## Root Cause Contract`. Legacy planning and review artifacts are readable fallback inputs only.
+- New planned changes default to one human-authored Markdown artifact: `task.md`, with frozen design in `## Contract Summary`. Hotfix diagnosis does not require a `task.md` handoff unless the work is deliberately promoted into the PDCA tail. Legacy planning and review artifacts are readable fallback inputs only.
 - Workflow state is Git-owned: keep `task.md` current, commit each completed stage/environment, and do not create extra process files.
 - Use `npm run verify:examples` and `npm run benchmark:skills` to keep workflow truth and skill entrypoints small and measurable.
 - `devflow/workspaces/<change>/` stores ephemeral runtime scratch such as worker assignment, journals, prompts, and session logs.

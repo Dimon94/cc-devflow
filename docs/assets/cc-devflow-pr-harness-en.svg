@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" role="img" aria-labelledby="title desc">
   <title id="title">CC-DevFlow PR Harness workflow</title>
-  <desc id="desc">A visual workflow diagram showing roadmap selection, goal-driven development, PDCA and IDCA loops, PR review, and PR landing with main parity.</desc>
+  <desc id="desc">A visual workflow diagram showing roadmap selection, goal-driven development, PDCA and hotfix diagnose paths, PR review, and PR landing with main parity.</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#07111f"/>
@@ -98,11 +98,11 @@
   <path class="line" d="M455 651 H360"/>
 
   <rect x="845" y="390" width="675" height="335" rx="18" class="lane"/>
-  <text x="875" y="426" class="note">IDCA bug loop</text>
+  <text x="875" y="426" class="note">Hotfix bug path</text>
   <text x="875" y="455" class="muted">For regressions, broken behavior, crashes, and flaky failures</text>
   <g transform="translate(885 490)">
     <rect width="270" height="72" rx="14" class="card"/>
-    <text x="24" y="32" class="label">cc-investigate</text>
+    <text x="24" y="32" class="label">cc-diagnose</text>
     <text x="24" y="57" class="small">repro, root cause, boundary</text>
   </g>
   <g transform="translate(1245 490)">

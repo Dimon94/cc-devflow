@@ -11,13 +11,13 @@ CC-DevFlow has two entry paths:
 - `cc-devflow init`: install the whole `.claude` pack into your project
 - `cc-devflow adapt`: generate platform outputs such as Codex rules
 
-The core workflow can run manually through PDCA/IDCA skills or automatically through the PR harness skills:
+The core workflow runs planned work through PDCA and keeps bug work on the lighter `cc-diagnose` hotfix path:
 
 ```text
 cc-roadmap -> cc-next -> cc-dev
 
 PDCA: cc-plan -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
-IDCA: cc-investigate -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
+Hotfix: cc-diagnose -> focused fix -> regression proof
 ```
 
 The public skills are the visible harness. Each distributed `SKILL.md` now carries structured frontmatter plus a `Harness Contract`, and each `PLAYBOOK.md` carries the stage transition rules in a `Visible State Machine` section.
@@ -36,7 +36,7 @@ The public skills are the visible harness. Each distributed `SKILL.md` now carri
 npx cc-devflow init --dir /path/to/your/project
 ```
 
-The whole-pack install includes roadmap, next-work selection, autonomous dev, manual PDCA/IDCA, optional `cc-review`, PR review/landing, plus `cc-spec-init` and `cc-simplify` as maintenance helpers.
+The whole-pack install includes roadmap, next-work selection, autonomous dev, manual PDCA, `cc-diagnose` for hotfix/debug work, optional `cc-review`, PR review/landing, plus `cc-spec-init` and `cc-simplify` as maintenance helpers.
 
 ### Single Skill Install
 
@@ -74,8 +74,8 @@ Use the skills in this order:
 
 ```text
 1. cc-roadmap
-2. choose cc-plan or cc-investigate
-3. optional cc-review for complex frozen plans or investigations
+2. use cc-plan for planned work, or cc-diagnose directly for bugs
+3. optional cc-review for complex frozen plans
 4. cc-do
 5. optional cc-review for complex implementations
 6. cc-check
@@ -88,8 +88,8 @@ Typical outputs:
 - `cc-roadmap` writes `devflow/roadmap.json` as the editable roadmap truth, then generates `devflow/ROADMAP.md` and deprecated `devflow/BACKLOG.md`
 - `cc-spec-init` writes `devflow/specs/INDEX.md` and capability specs
 - `cc-plan` writes `task.md#Contract Summary`
-- `cc-investigate` writes `task.md#Root Cause Contract`
-- `cc-review` writes plan/investigation findings into `task.md`; implementation findings stay in the response until the user chooses a repair option; only process/test/design/model-pattern review escapes may be written into `task.md#Failure Ledger`; non-trivial review chains record evidence, diagnosis, Phenomenal/Essential/Philosophical cognitive layers, and a fault-centered causal path that walks up through direct input/caller proof, contract/spec/provider, and source intent/roadmap when available, then down through first affected seam, behavior/artifact, and release/maintenance risk when available; complexity reports include scope, detected stack/test/build commands, ranked findings, before/after complexity, patch status, files-modified yes/no, and needed tests or measurements; structural quality findings cover code-judo simplification, maintainability guardrails, branching/abstraction/type-boundary smells, ownership boundaries, compatibility-preserving state changes, real viewport evidence, and approval/blocking verdicts; productization findings cover shared action layers, API/agent surfaces, audit trails, admin/manageability UI, feature flags, idempotency, and operator paths; hardening specialists cover selected security, observability, release-readiness, and test-strategy risks with surface maps, risk gates, checked/skipped/blocked coverage, proof paths, confidence-per-minute test judgment, and residual risk
+- `cc-diagnose` records reproduction, hypotheses, probes, fix evidence, and regression proof in the response or final commit/PR text
+- `cc-review` writes plan findings into `task.md`; implementation findings stay in the response until the user chooses a repair option; only process/test/design/model-pattern review escapes may be written into `task.md#Failure Ledger`; non-trivial review chains record evidence, diagnosis, Phenomenal/Essential/Philosophical cognitive layers, and a fault-centered causal path that walks up through direct input/caller proof, contract/spec/provider, and source intent/roadmap when available, then down through first affected seam, behavior/artifact, and release/maintenance risk when available; complexity reports include scope, detected stack/test/build commands, ranked findings, before/after complexity, patch status, files-modified yes/no, and needed tests or measurements; structural quality findings cover code-judo simplification, maintainability guardrails, branching/abstraction/type-boundary smells, ownership boundaries, compatibility-preserving state changes, real viewport evidence, and approval/blocking verdicts; productization findings cover shared action layers, API/agent surfaces, audit trails, admin/manageability UI, feature flags, idempotency, and operator paths; hardening specialists cover selected security, observability, release-readiness, and test-strategy risks with surface maps, risk gates, checked/skipped/blocked coverage, proof paths, confidence-per-minute test judgment, and residual risk
 - `cc-check` reports verification facts in the response, PR brief, or Git commit
 - `cc-act` writes exactly one final PR file, `handoff/pr-brief.md`, or incident postmortem files when a real incident needs a corpse report
 

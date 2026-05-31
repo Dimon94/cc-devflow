@@ -20,7 +20,7 @@ const SKILL_LIMITS = {
     maxBytes: 16000,
     maxLines: 360
   },
-  'cc-investigate': {
+  'cc-diagnose': {
     maxBytes: 16000,
     maxLines: 360
   },

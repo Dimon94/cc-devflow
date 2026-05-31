@@ -91,7 +91,7 @@ Only `confirmed-lesson` entries marked `Keep for postmortem: yes` should drive `
 
 - `none`
 - `cc-do`
-- `cc-investigate`
+- `cc-diagnose`
 - `cc-plan`
 
 ## Clean-Room Rule

@@ -11,9 +11,9 @@
 | `deprecated/design-an-interface` | "design it twice"，用不同接口形态比较 depth、易用错点和隐藏复杂度 | `cc-plan` | 迁移为接口备选比较 gate，不迁移 parallel subagent 强制要求 |
 | `deprecated/qa` | 用户视角 issue、轻量澄清、按可独立验证行为拆分 | `cc-act` / `cc-plan` | 迁移为 follow-up / issue handoff 的行为化规则 |
 | `deprecated/request-refactor-plan` | 重构计划拆成 tiny commits，每步保持可运行 | `cc-plan` / `cc-act` | 迁移为 refactor slicing 和 bisectable commit 规则 |
-| `deprecated/triage-issue` | 先查根因，再写 TDD fix plan，issue 不绑定易腐烂文件行号 | `cc-investigate` / `cc-plan` | 迁移为 repair contract 和 durable issue brief 规则 |
+| `deprecated/triage-issue` | 先查根因，再写 TDD fix plan，issue 不绑定易腐烂文件行号 | `cc-diagnose` / `cc-plan` | 迁移为 repair contract 和 durable issue brief 规则 |
 | `deprecated/ubiquitous-language` | canonical terms、aliases to avoid、ambiguity flag | `cc-spec-init` / `cc-plan` | 迁移为 capability/domain language glossary gate |
-| `engineering/diagnose` | 反馈回路优先级、提高 flaky 复现率、假设必须可证伪、debug tag cleanup | `cc-investigate` | 已有大部分；补强 loop sharpening 和 postmortem handoff |
+| `engineering/diagnose` | 反馈回路优先级、提高 flaky 复现率、假设必须可证伪、debug tag cleanup | `cc-diagnose` | 已有大部分；补强 loop sharpening 和 postmortem handoff |
 | `engineering/github-triage` | label state machine、needs-info 保留已确认事实、resume triage notes | `cc-act` | 迁移为远端 issue/PR closeout 的状态一致性规则 |
 | `engineering/grill-with-docs` | 术语冲突立即叫停、具体场景压测、ADR 只记难逆/意外/真实取舍 | `cc-plan` | 已有大部分；补强 glossary update 和 ADR sparsity |
 | `engineering/improve-codebase-architecture` | deep module、deletion test、one adapter vs two adapters、locality/leverage | `cc-simplify` / `cc-plan` | 迁移为架构坏味道确认清单 |
@@ -34,7 +34,7 @@
 ## Implementation Order
 
 1. `cc-plan`: 吸收接口备选、领域语言、垂直切片和 durable design 输出规则。
-2. `cc-investigate`: 补强 feedback loop sharpening、flaky rate、postmortem handoff。
+2. `cc-diagnose`: 补强 feedback loop sharpening、flaky rate、postmortem handoff。
 3. `cc-do`: 补强 tracer bullet 执行和 test fixture discipline。
 4. `cc-simplify`: 增加 deep module / deletion test / adapter reality 检查。
 5. `cc-act`: 增加 issue/PR 状态、危险 git 动作、工具链验证和 durable follow-up 规则。

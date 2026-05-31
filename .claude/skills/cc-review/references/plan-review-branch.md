@@ -1,6 +1,6 @@
 # Plan Review Branch
 
-Use this reference when the review target is a plan, investigation handoff, or mixed branch whose plan contract may be wrong.
+Use this reference when the review target is a plan or mixed branch whose plan contract may be wrong.
 
 ## Intake
 
@@ -86,7 +86,7 @@ For complex bugs:
 2. Conflict diagram: why the obvious fix conflicts with a real need.
 3. Future reality tree: what the proposed fix changes and what it may break.
 
-If the root cause is not proven, reroute to `cc-investigate`, not `cc-do`.
+If the root cause is not proven, reroute to `cc-diagnose`, not `cc-do`.
 
 ## Planning Smells
 

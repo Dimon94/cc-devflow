@@ -1,6 +1,6 @@
 # cc-devflow
 
-> 面向 Agent 编程的路线图、计划、调查、执行、验证、交付工作流。
+> 面向 Agent 编程的路线图、计划、诊断、执行、验证、交付工作流。
 
 [![GitHub stars](https://img.shields.io/github/stars/Dimon94/cc-devflow?style=social)](https://github.com/Dimon94/cc-devflow/stargazers)
 [![npm version](https://img.shields.io/npm/v/cc-devflow.svg)](https://www.npmjs.com/package/cc-devflow)
@@ -9,7 +9,7 @@
 
 [中文文档](./README.zh-CN.md) | [English](./README.md) | [快速开始](./docs/guides/getting-started.zh-CN.md) | [贡献指南](./CONTRIBUTING.zh-CN.md) | [安全策略](./SECURITY.zh-CN.md)
 
-CC-DevFlow 是一个给 Agent 编程时代准备的小而明确的工作流系统。它先用一个 roadmap 入口确定方向，再让每个变更进入「新需求闭环」或「Bug 调查闭环」，最后必须经过验证和交付收口。
+CC-DevFlow 是一个给 Agent 编程时代准备的小而明确的工作流系统。它先用一个 roadmap 入口确定方向，保留一条 PDCA 新需求闭环，再用轻量 `cc-diagnose` 处理 hotfix 和 debug。
 
 ![CC-DevFlow PR Harness 中文可视化流程](./docs/assets/cc-devflow-pr-harness-zh.svg)
 
@@ -51,7 +51,7 @@ npx cc-devflow@latest adapt --cwd /path/to/your/project --platform antigravity
 npx cc-devflow@latest adapt --cwd /path/to/your/project --all
 ```
 
-安装完成后，直接让 Agent 使用这些 workflow skill。产品方向先走 `cc-roadmap`。需要自动选择下一步时走 `cc-next`；选中目标后用 `cc-dev` 在当前 worktree 内自动跑 PDCA 或 IDCA，直到远程 PR 打开；PR 用单独会话跑 `cc-pr-review`；review 后用单独会话跑 `cc-pr-land` 合并并证明 main parity。手动核心链路仍然是：新需求走 `cc-plan`，Bug 和 regression 走 `cc-investigate`；复杂计划或根因合同冻结后可以先接 `cc-review`，再进入 `cc-do`；实现复杂时还可以再接一次实现 `cc-review`，最后进入 `cc-check` 和 `cc-act`。
+安装完成后，直接让 Agent 使用这些 workflow skill。产品方向先走 `cc-roadmap`。需要自动选择下一步时走 `cc-next`；选中目标后用 `cc-dev` 推进已计划的 PDCA 工作，直到 `cc-act` 选择交付方式；PR 用单独会话跑 `cc-pr-review`；review 后用单独会话跑 `cc-pr-land` 合并并证明 main parity。Bug 和 regression 直接走 `cc-diagnose`；大多数 hotfix 应该建立反馈环、修复、补回归证明，然后收口，不再进入重型 PDCA 尾巴。
 
 ## 流程图
 
@@ -61,7 +61,7 @@ cc-roadmap
 PR Harness: cc-next -> cc-dev -> cc-pr-review -> cc-pr-land
 
 PDCA: cc-plan        -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
-IDCA: cc-investigate -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
+Hotfix: cc-diagnose -> focused fix -> regression proof
 ```
 
 ```mermaid
@@ -71,13 +71,12 @@ flowchart TD
 
   Dev --> Route{"路线"}
   Route -->|新需求或变更| Plan["cc-plan\n冻结范围和任务"]
-  Route -->|Bug 或回归| Investigate["cc-investigate\n冻结根因和修复边界"]
+  Route -->|Bug 或回归| Diagnose["cc-diagnose\n建立反馈环并修复"]
 
   Plan --> PlanReview["cc-review\n可选方案 Review"]
-  Investigate --> PlanReview
   PlanReview --> Do["cc-do\n实现并留下证据"]
   Plan --> Do
-  Investigate --> Do
+  Diagnose --> Check
 
   Do --> ImplReview["cc-review\n可选实现 Review"]
   ImplReview --> Check["cc-check\n新鲜验证裁决"]
@@ -97,9 +96,9 @@ flowchart TD
 | `cc-next` | 需要从 roadmap、未归档本地 change 和 issue truth 里选下一个 ready 目标 | 交给 `cc-dev` 的 Goal Packet |
 | `cc-dev` | 已选目标要在当前 worktree 内自动推进到远程 PR | `task.md`、Git commit、PR 或 handoff |
 | `cc-plan` | 新功能或变更需要澄清范围、设计方案、冻结任务 | `task.md#Contract Summary` |
-| `cc-investigate` | Bug 需要症状、复现、根因和修复边界 | `task.md#Root Cause Contract` |
-| `cc-do` | 已计划或已调查的任务需要实现 | 代码、测试、`task.md` 状态、Git commit |
-| `cc-review` | 复杂方案、调查根因、diff、复杂度报告、优化热点、生产加固风险或极严结构质量 Review 需要在实现前或验证前做可选深度 Review | 计划 finding 写入 `task.md`；执行 finding 和修复选项回到对话 |
+| `cc-diagnose` | Bug、回归、崩溃、flaky 或性能回退需要快速反馈环和 hotfix 纪律 | 回复证据、聚焦代码 / 测试改动、回归证明 |
+| `cc-do` | 已冻结的计划任务需要实现 | 代码、测试、`task.md` 状态、Git commit |
+| `cc-review` | 复杂方案、diff、复杂度报告、优化热点、生产加固风险或极严结构质量 Review 需要在实现前或验证前做可选深度 Review | 计划 finding 写入 `task.md`；执行 finding 和修复选项回到对话 |
 | `cc-pr-review` | 远程 PR 需要单独会话做合并前 Review，相关时包含 PR 范围内复杂度热点审查 | PR review packet、findings 和 landing verdict |
 | `cc-pr-land` | 已 Review PR 需要 rebase-first 合并到 main 并证明 parity | 已集成 main 和本地 / 远程一致性证据 |
 | `cc-check` | 工作需要新鲜验证证据 | pass/fail/blocked 回复和 Git commit |
@@ -116,11 +115,11 @@ flowchart TD
 
 Canonical language 和 durable decisions 只收敛到 cc-devflow 原生真相源：`devflow/specs/`、`devflow/roadmap.json`、`devflow/ROADMAP.md`、`task.md`、Git history 和 PR truth。历史 planning artifacts 只作为可读 fallback 输入。
 
-`cc-plan` 会在 `cc-do` 开始前冻结更多实现决策。非 trivial 计划需要比较 minimal viable 和 ideal architecture，full-design 需要包含 implementation decision horizon 和 error/rescue map；测试计划要记录测试框架证据、public test seam、spec-style test name、public verification path、behavior assertion、mock boundary、覆盖质量、强制 regression test、interface depth、Green minimality guard、refactor candidates、vertical tracer-bullet slices 和 confidence-per-minute 测试策略。该测试策略要写清 suite layer、预计 command/runtime、proof value、fixture/mock boundary、focused suite shape，以及要避免的低价值测试。交接前，`cc-plan` 和 `cc-investigate` 还会校准 source roadmap item，让 RM 状态、REQ/FIX 绑定、progress 和 spec diagnosis 不再漂移。`cc-do` 会把装饰性 Red 当成 blocker：宽泛 snapshot、重复 happy path、no-op smoke、脆弱内部断言、过度 mock 自家模块，都不能解锁 Green。
+`cc-plan` 会在 `cc-do` 开始前冻结更多实现决策。非 trivial 计划需要比较 minimal viable 和 ideal architecture，full-design 需要包含 implementation decision horizon 和 error/rescue map；测试计划要记录测试框架证据、public test seam、spec-style test name、public verification path、behavior assertion、mock boundary、覆盖质量、强制 regression test、interface depth、Green minimality guard、refactor candidates、vertical tracer-bullet slices 和 confidence-per-minute 测试策略。该测试策略要写清 suite layer、预计 command/runtime、proof value、fixture/mock boundary、focused suite shape，以及要避免的低价值测试。`cc-diagnose` 刻意更轻：先用最锋利的反馈环复现，列出可证伪假设，窄口打点，修复后证明原始复现消失，并清掉 debug probe。交接前，`cc-plan` 会校准 source roadmap item，让 RM 状态、REQ 绑定、progress 和 spec diagnosis 不再漂移。`cc-do` 会把装饰性 Red 当成 blocker：宽泛 snapshot、重复 happy path、no-op smoke、脆弱内部断言、过度 mock 自家模块，都不能解锁 Green。
 
 planning 之后的每个阶段都从 `task.md`、当前 Git history/status，以及存在时的 PR 或 handoff truth 开始。系统不再提供 runtime context query 层；有争议的事实必须回到源 artifact 重新读取。用 `npm run benchmark:skills` 保持 public skill 入口足够薄；深层规划规则应该放在条件 reference 后面，而不是默认上下文里。
 
-`cc-review` 是可选的深度 Review，不替代 `cc-check`。它可以接在 `cc-plan` / `cc-investigate` 后审冻结的计划或根因合同，也可以接在 `cc-do` 后审实现。它内置 complexity optimizer facet，可输出完整复杂度报告，审查嵌套扫描、循环内 membership/search、render path 重算、N+1 database/API 等模式；也内置 structural quality / code-judo facet，用于 thermo-nuclear 级可维护性 Review。命中安全、可观测性、发布就绪或测试策略风险时，它还会加载 hardening specialist lens；每个被选中的 specialist 必须 checked、skipped with reason 或 blocked with missing evidence。复杂度报告必须包含 scope、检测到的 stack/test/build 命令、before/after complexity、patch status 和 files-modified yes/no；复杂度修复建议必须先证明排序、重复键、identity、cache invalidation、权限、分页和错误行为不变，再进入修复选项。结构质量 finding 会推动行为不变的简化：删除可避免分支、thin wrapper、cast-heavy contract、错误层级逻辑和文件膨胀，并要求说明更清晰的 ownership boundary。它还会检查可维护性护栏：薄入口、小的 feature-owned 文件、纯领域逻辑、集中契约、兼容的持久化状态迁移、CSS ownership、有价值的测试，以及重要 UI 变化的真实视口证据。产品化 finding 会审 demo 到产品控制面：shared action layer、programmatic API、agent docs、audit trail、admin/manageability UI、feature flag、idempotency 和 operator path；缺失服务默认路由到 `cc-plan`，除非已经有很小且明确的实现修复。Hardening finding 必须说明 reviewed surface map、被破坏的 control、证据、证明路径、risk gate 和 residual risk，不生成额外审计产物。测试策略 hardening 还会判断 confidence per minute：suite layer、command/runtime、proof value、应该 keep/rewrite/delete/quarantine 的低价值测试，以及聚焦 suite shape。非 trivial review finding 必须记录证据、诊断、现象层 / 本质层 / 哲学层，并在以错误节点为中心的 ASCII 链路中记录因果链：上游在有证据时向上追直接输入/调用方、合同/规格/provider、来源意图/roadmap 三层，下游在有证据时向下追首个受影响边界、行为/产物、发布/维护风险三层；思维路径固定为“现象接收 → 本质诊断 → 哲学沉思 → 本质整合 → 现象输出”。计划 / 调查 Review 的 finding 直接写进 `task.md`。执行 Review 的 finding 在当前回复里组织成修复选项，用户选择后才改代码。PR Review 只留在对话或 GitHub review 中。不写本地 review report、ledger、findings JSON 或其它 Review 产物文件。
+`cc-review` 是可选的深度 Review，不替代 `cc-check`。它可以接在 `cc-plan` 后审冻结的计划，也可以接在 `cc-do` 后审实现。它内置 complexity optimizer facet，可输出完整复杂度报告，审查嵌套扫描、循环内 membership/search、render path 重算、N+1 database/API 等模式；也内置 structural quality / code-judo facet，用于 thermo-nuclear 级可维护性 Review。命中安全、可观测性、发布就绪或测试策略风险时，它还会加载 hardening specialist lens；每个被选中的 specialist 必须 checked、skipped with reason 或 blocked with missing evidence。复杂度报告必须包含 scope、检测到的 stack/test/build 命令、before/after complexity、patch status 和 files-modified yes/no；复杂度修复建议必须先证明排序、重复键、identity、cache invalidation、权限、分页和错误行为不变，再进入修复选项。结构质量 finding 会推动行为不变的简化：删除可避免分支、thin wrapper、cast-heavy contract、错误层级逻辑和文件膨胀，并要求说明更清晰的 ownership boundary。它还会检查可维护性护栏：薄入口、小的 feature-owned 文件、纯领域逻辑、集中契约、兼容的持久化状态迁移、CSS ownership、有价值的测试，以及重要 UI 变化的真实视口证据。产品化 finding 会审 demo 到产品控制面：shared action layer、programmatic API、agent docs、audit trail、admin/manageability UI、feature flag、idempotency 和 operator path；缺失服务默认路由到 `cc-plan`，除非已经有很小且明确的实现修复。Hardening finding 必须说明 reviewed surface map、被破坏的 control、证据、证明路径、risk gate 和 residual risk，不生成额外审计产物。测试策略 hardening 还会判断 confidence per minute：suite layer、command/runtime、proof value、应该 keep/rewrite/delete/quarantine 的低价值测试，以及聚焦 suite shape。非 trivial review finding 必须记录证据、诊断、现象层 / 本质层 / 哲学层，并在以错误节点为中心的 ASCII 链路中记录因果链：上游在有证据时向上追直接输入/调用方、合同/规格/provider、来源意图/roadmap 三层，下游在有证据时向下追首个受影响边界、行为/产物、发布/维护风险三层；思维路径固定为“现象接收 → 本质诊断 → 哲学沉思 → 本质整合 → 现象输出”。计划 Review 的 finding 直接写进 `task.md`。执行 Review 的 finding 在当前回复里组织成修复选项，用户选择后才改代码。PR Review 只留在对话或 GitHub review 中。不写本地 review report、ledger、findings JSON 或其它 Review 产物文件。
 
 ## 验证与交付门禁
 
@@ -160,7 +159,7 @@ npx skills add https://github.com/Dimon94/cc-devflow --skill cc-roadmap
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-next
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-dev
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-plan
-npx skills add https://github.com/Dimon94/cc-devflow --skill cc-investigate
+npx skills add https://github.com/Dimon94/cc-devflow --skill cc-diagnose
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-do
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-review
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-pr-review
@@ -230,7 +229,7 @@ npx cc-devflow config doctor --cwd /path/to/your/project
 - `.claude/skills/cc-next/`
 - `.claude/skills/cc-dev/`
 - `.claude/skills/cc-plan/`
-- `.claude/skills/cc-investigate/`
+- `.claude/skills/cc-diagnose/`
 - `.claude/skills/cc-do/`
 - `.claude/skills/cc-review/`
 - `.claude/skills/cc-pr-review/`
@@ -245,7 +244,7 @@ npx cc-devflow config doctor --cwd /path/to/your/project
 - `devflow/specs/` 保存 durable capability truth：`INDEX.md` 和 `capabilities/*.md`。
 - 新 change 目录使用 `REQ-<number>-<description>` 表示需求，使用 `FIX-<number>-<description>` 表示 Bug 修复。`REQ` 和 `FIX` 各自递增自己的编号，跨前缀同号允许共存。并行工作树也可能产生重复编号，必须用完整 change key 的描述区分业务内容。
 - `devflow/changes/<change>/` 的 durable change truth 只保留 `task.md`、可选 `handoff/pr-brief.md` 和 Git commits。真实失败先进入 `task.md#Failure Ledger`；被验证为长期教训的复发故障再压缩进 `devflow/postmortems/` 的 incident postmortem。
-- 新 change 默认只有一个人工编写的 Markdown artifact：`task.md`。功能计划把冻结设计写进 `## Contract Summary`；Bug 调查把根因真相写进 `## Root Cause Contract`。历史 planning / review artifacts 只作为可读 fallback 输入。
+- 新 planned change 默认只有一个人工编写的 Markdown artifact：`task.md`，功能计划把冻结设计写进 `## Contract Summary`。Hotfix 诊断不要求 `task.md` handoff，除非明确把它升级进 PDCA 尾巴。历史 planning / review artifacts 只作为可读 fallback 输入。
 - 流程状态归 Git：保持 `task.md` 当前，每个完成阶段 / 执行环境提交 commit，不创建额外过程文件。
 - 用 `npm run verify:examples` 和 `npm run benchmark:skills` 保持 workflow truth 与 skill 入口小而可测。
 - `devflow/workspaces/<change>/` 保存 ephemeral runtime scratch，例如 worker assignment、journal、prompt 和 session log。

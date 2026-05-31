@@ -30,4 +30,4 @@ Use current evidence:
 - Stale command output is ignored.
 - Review facts belong in the response, PR brief, or Git commits, not in process files.
 - Low-confidence concerns are warnings unless evidence makes them blocking.
-- Scope or design invalidation routes to `cc-plan`; disproven root cause routes to `cc-investigate`.
+- Scope or design invalidation routes to `cc-plan`; disproven root cause routes to `cc-diagnose`.

@@ -6,16 +6,13 @@ const REPO_ROOT = path.resolve(__dirname, '..');
 const LABEL_TABLE_FILES = [
   '.claude/skills/cc-plan/references/planning-contract.md',
   '.claude/skills/cc-plan/assets/TASKS_TEMPLATE.md',
-  '.claude/skills/cc-investigate/references/investigation-contract.md',
-  '.claude/skills/cc-investigate/assets/TASKS_TEMPLATE.md',
   '.claude/skills/cc-review/SKILL.md',
   '.claude/skills/cc-review/references/review-methods.md',
   '.claude/skills/cc-pr-review/SKILL.md'
 ];
 
 const ENTRYPOINT_REFERENCE_FILES = [
-  ['.claude/skills/cc-plan/SKILL.md', 'references/planning-contract.md'],
-  ['.claude/skills/cc-investigate/SKILL.md', 'references/investigation-contract.md']
+  ['.claude/skills/cc-plan/SKILL.md', 'references/planning-contract.md']
 ];
 
 const CONTRACT_FILES = [

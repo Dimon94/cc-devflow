@@ -78,4 +78,4 @@ bash "$DEVFLOW" config resolve --format policy
 
 ## Default Output
 
-Answer with: Change, Scope, Tasks, Verification, Roadmap sync, Route (`cc-do`, `cc-investigate`, `roadmap`, or `stop`).
+Answer with: Change, Scope, Tasks, Verification, Roadmap sync, Route (`cc-do`, `cc-diagnose`, `roadmap`, or `stop`).

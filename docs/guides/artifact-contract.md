@@ -11,7 +11,7 @@ cc-devflow keeps the workflow surface intentionally small.
 
 ## State Source
 
-Git records process history. Commit after each completed PDCA or IDCA environment/stage.
+Git records process history. Commit after each completed planned workflow environment/stage.
 
 ## Retired Surface
 

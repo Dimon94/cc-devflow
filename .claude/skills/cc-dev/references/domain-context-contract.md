@@ -104,7 +104,7 @@ duplicate the glossary or ADR body inside `task.md`.
 
 - `cc-plan`: read context before decision questions; propose growth after
   requirement release and before final task generation.
-- `cc-investigate`: read context before naming the violated contract; propose
+- `cc-diagnose`: read context before naming the violated contract; propose
   growth after root-cause freeze when a term, contract, or escape reason became
   durable.
 - `cc-do`: read context before editing; do not invent context updates from

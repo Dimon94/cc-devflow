@@ -24,7 +24,7 @@ Selected methods stay in scratch reasoning and final response/task updates. Do n
 
 ## ASCII Branch Chains
 
-For any plan, investigation, PR, broad implementation, or code-smell finding, include a compact ASCII tree in the durable task update or review output. Keep `|--`, `` `-- ``, `|`, spaces, and punctuation ASCII; write labels, explanations, findings, and evidence summaries in the configured output language. Resolve language from `task.md` `Output language`, PR/task/handoff language fields, then the current conversation language.
+For any plan, PR, broad implementation, or code-smell finding, include a compact ASCII tree in the durable task update or review output. Keep `|--`, `` `-- ``, `|`, spaces, and punctuation ASCII; write labels, explanations, findings, and evidence summaries in the configured output language. Resolve language from `task.md` `Output language`, PR/task/handoff language fields, then the current conversation language.
 
 Build the chain around the faulty node. Walk upward through three concrete layers when available: direct input/caller proof, governing contract/spec/provider, then source intent/roadmap. Walk downward through three concrete layers when available: first affected seam, behavior or artifact, then release or maintenance risk. If a layer cannot be proven from current evidence, keep the layer and mark it `missing evidence` or `blocked`; do not compress the gap into a generic source or impact line.
 
@@ -84,7 +84,7 @@ Label table:
 |   |-- <downstreamBehavior>: <runtime behavior / generated output / user-visible result>
 |   `-- <downstreamReleaseRisk>: <release / main parity / sibling work / maintenance / missing evidence or blocked>
 |-- <downstreamImpact>: <user / operator / release / maintenance>
-`-- <fixRoute>: <cc-plan / cc-investigate / cc-do / cc-check / cc-act / stop>
+`-- <fixRoute>: <cc-plan / cc-diagnose / cc-do / cc-check / cc-act / stop>
 ```
 
 If prompt text, agent instructions, model/provider parameters, or generated artifacts are part of the chain, name the exact prompt/provider contract or write `missing evidence / blocked`.
@@ -129,7 +129,7 @@ gaps, `cc-act` for closeout gaps, and `stop` only when no project action is
 needed.
 
 Do not create local review report files. Keep review output in the current
-response, GitHub review, or the allowed `task.md` update for plan/investigation
+response, GitHub review, or the allowed `task.md` update for plan
 findings and eligible review escape ledger candidates.
 
 ## Risk-Lane Review Swarm Profile

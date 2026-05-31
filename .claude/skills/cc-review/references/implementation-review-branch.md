@@ -41,7 +41,7 @@ For broad or PR-landing diffs, use the risk-lane profile from `review-methods.md
 
 ### Contract Fidelity
 
-Check whether implementation matches `task.md` or investigation:
+Check whether implementation matches `task.md` or the stated diagnosis:
 
 - required tasks done
 - rejected scope not implemented

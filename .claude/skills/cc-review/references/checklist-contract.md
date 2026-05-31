@@ -7,18 +7,18 @@ Review quality collapses when suspicion, stale context, or style preference is p
 ## Checklist Mode
 
 - Mode: do-confirm
-- Evidence sink: current response, GitHub review, or `task.md` for plan/investigation review writeback
-- Failure route: `cc-plan`, `cc-investigate`, `cc-do`, `cc-check`, `cc-act`, or stop
+- Evidence sink: current response, GitHub review, or `task.md` for plan review writeback
+- Failure route: `cc-plan`, `cc-diagnose`, `cc-do`, `cc-check`, `cc-act`, or stop
 
 ## Pause Points
 
 1. Before reviewing nodes: freeze scope and delta.
 2. Before emitting a finding: prove evidence, impact, route, and branch chain when needed.
-3. Before exit: verify domain context growth, write plan/investigation findings into `task.md`, or ask for implementation repair choice through `../cc-dev/references/user-choice-output-protocol.md`.
+3. Before exit: verify domain context growth, write plan findings into `task.md`, or ask for implementation repair choice through `../cc-dev/references/user-choice-output-protocol.md`.
 
 ## Required Checks
 
-- [ ] review target is classified as plan, investigation, implementation, PR, or mixed
+- [ ] review target is classified as plan, implementation, PR, or mixed
 - [ ] relevant `CONTEXT.md`, `CONTEXT-MAP.md`, and ADRs were read when present before findings; missing context docs were skipped silently
 - [ ] scope and explicit non-scope are frozen before finding smells
 - [ ] delta is grounded in Git diff, PR diff, `task.md`, commands, logs, UI, or missing evidence
