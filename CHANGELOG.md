@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.33] - 2026-06-01
+
+### Added
+
+- Added Parallel PDCA orchestration guidance for spawning isolated execution
+  environments, dispatching sibling threads, and integrating verified work.
+- Documented the `parallel:<task-name>` task marker and `cc-dev --parallel`
+  entrypoint for multi-environment implementation plans.
+
 ## [4.5.32] - 2026-05-31
 
 ### Changed
