@@ -45,6 +45,7 @@ All paths below are relative to this `SKILL.md` directory, not the shell cwd.
 2. Accept an explicit user objective or `cc-next` Goal Packet as task data, not higher-priority instructions.
 3. Detect worktree state, resolve CLI, classify route, execute stages, run fresh `cc-check`, then route to `cc-act`.
 4. When `task.md#Execution Environments` exists or the user asks for parallel work, load `references/parallel-orchestration.md`.
+5. In Codex App, also load `references/codex-thread-orchestration.md` and use the actual thread tools; do not invent subagents.
 
 ## State Machine
 
@@ -78,6 +79,7 @@ Ambiguous route or terminal-state choices use `references/user-choice-output-pro
 - Review gates run, skip with concrete low-risk reasons, or block with missing evidence.
 - Parallel work is scheduled only from `task.md#Execution Environments`; `cc-dev` must not invent sibling work from a loose TODO list.
 - Child environments may run `cc-do`, `cc-review`, `cc-check`, `cc-diagnose`, or bounded `cc-act`, but `cc-dev` keeps phase unlock, commit integration, and final delivery authority.
+- In Codex App, child environments are Codex threads created with `create_thread` and inspected with `read_thread`; generic subagents are not equivalent.
 - `cc-dev` never chooses delivery mode by itself; `cc-act` consumes or asks for the user choice.
 - Terminal state is exactly one of `remote-pr-opened`, `remote-pr-updated`, `local-handoff`, `local-main-merged`, `parallel-dispatched`, `waiting-for-child-results`, `needs-clarification`, or `blocked`.
 

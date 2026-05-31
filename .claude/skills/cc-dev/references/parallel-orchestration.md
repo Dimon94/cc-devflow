@@ -108,6 +108,11 @@ If platform thread and automation tools are available, use them to poll child
 threads and send correction prompts. If not, stop as
 `waiting-for-child-results` with a manual polling checklist.
 
+On Codex App, this means loading `codex-thread-orchestration.md` and using the
+actual `create_thread`, `read_thread`, `send_message_to_thread`, and
+`automation_update` tools. Do not substitute generic subagents or prose
+delegation for Codex threads.
+
 Do not write heartbeat polling logs into `task.md`. Record only durable facts:
 child id, worktree, branch, commit, status, blocker, integrated commit, and gate
 result.
