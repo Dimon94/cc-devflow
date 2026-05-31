@@ -1,5 +1,10 @@
 # CC-Act Skill Changelog
 
+## v1.15.1 - 2026-05-31
+
+- add a Delivery Mode And Release Gate Guard to refuse ambiguous push/PR/local-main defaults
+- require each closeout release gate to carry both a status and current evidence or a reason for skipped, blocked, or not-applicable states
+
 ## v1.15.0 - 2026-05-28
 
 - add `local-main-merge` as an explicit delivery mode for user-requested local `main` integration

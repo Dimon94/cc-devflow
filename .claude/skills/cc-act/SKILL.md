@@ -1,6 +1,6 @@
 ---
 name: cc-act
-version: 1.15.0
+version: 1.15.1
 description: Use when verified work must be committed, handed off, pushed, merged into local main, or turned into a PR with the smallest durable delivery surface.
 triggers:
   - 准备提 PR

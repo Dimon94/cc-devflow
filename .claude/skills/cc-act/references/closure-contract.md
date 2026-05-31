@@ -27,6 +27,16 @@
 honestly carries the release gates already proven by `cc-check` or explicitly
 marks the gate as skipped, blocked, or not applicable.
 
+## Delivery Mode And Release Gate Guard
+
+Do not infer or default a delivery mode. If the user did not explicitly request
+push, PR creation, PR update, local handoff, local-main merge, or post-merge
+closeout, stop and ask through the shared choice protocol before acting.
+
+Every release gate needs both a status and evidence or reason. Passed and failed
+gates need current proof; skipped, blocked, and not-applicable gates need reasons.
+Reasonless gates are not closeout evidence.
+
 Use these gates when relevant:
 
 - Local quality: typecheck, lint, unit, build, focused integration, e2e/visual,
