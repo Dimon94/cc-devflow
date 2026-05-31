@@ -1,5 +1,36 @@
 # CC-Plan Skill Changelog
 
+## v3.22.0 - 2026-05-31
+
+- remove external planning-lane integration language from `cc-plan`; Plan now starts
+  from domain context, specs, repo evidence, and task truth only
+- remove source integration helpers, route targets, handoff fields, template fields,
+  checklist gates, and default output fields from the Plan skill
+- keep unclear project direction as a stop condition instead of routing through
+  another planning lane
+
+## v3.21.0 - 2026-05-31
+
+- make the Plan work chain explicit in `SKILL.md`: context-first read, repo
+  evidence, requirement grilling, context crystallization, plan synthesis, task
+  generation, and closeout
+- update the playbook and planning contract so every plan begins by reading
+  relevant `CONTEXT.md`, `CONTEXT-MAP.md`, and ADRs before unresolved user
+  questions
+- clarify that domain grilling refines requirements before `task.md` task
+  blocks are generated
+
+## v3.20.0 - 2026-05-31
+
+- absorb `grill-with-docs` domain-grilling behavior into Plan so terminology,
+  glossary conflicts, concrete scenarios, and code contradictions are resolved
+  before task generation
+- add `references/domain-grilling-contract.md` plus copied
+  `CONTEXT-FORMAT.md` and `ADR-FORMAT.md` references for inline glossary and
+  ADR updates
+- require `task.md#Contract Summary` to record domain-grilling findings,
+  context updates, ADR decisions, or explicit skip reasons
+
 ## v3.19.1 - 2026-05-31
 
 - add the shared Domain Context Contract so plans read relevant `CONTEXT.md`,

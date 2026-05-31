@@ -8,13 +8,13 @@ Planning has many correct gates, but long prose makes it easy to miss a small st
 
 - Mode: do-confirm
 - Evidence sink: `devflow/changes/<change-key>/task.md` and the Plan-stage commit
-- Failure route: `cc-do` after approval, `cc-roadmap` when direction is unclear, or stop for one blocking decision
+- Failure route: `cc-do` after approval, or stop for one blocking decision
 
 ## Pause Points
 
 1. Before writing `task.md`: finish evidence read, value check, and worktree setup.
 2. Before generating task blocks: freeze interfaces, data, abstraction boundary, and execution architecture.
-3. Before handoff: verify domain context growth, roadmap sync/skip reason, and Plan-stage commit.
+3. Before handoff: verify domain context growth and Plan-stage commit.
 
 ## Required Checks
 

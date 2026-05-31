@@ -16,12 +16,12 @@
     behavior task names the bug or regression its test would catch, the suite
     layer, expected command/runtime, fixture/mock boundary, and low-value test
     shapes to avoid.
-12. Roadmap sync, when needed, happens through roadmap files and Git commit, not change metadata.
-13. Non-trivial plans complete Second-Move Review before approval; the first workable plan is not frozen until a simpler move and a better-architecture move have both been considered.
-14. Non-trivial plans complete product/creative discovery before engineering design; if worth, shape, wedge, or 10x/better version is unclear, ask product questions before implementation questions.
-15. Product/creative confirmation and engineering confirmation are separate rounds unless roadmap/spec evidence already answers one of them and `task.md` records the skip reason.
-16. Non-trivial plans run a Socratic Dialogue before final approval: one question at a time, recommended answer included, repo-answerable questions answered from evidence first, and task generation blocked until the user explicitly says the requirement and technical plan are detailed enough.
-17. Technical Socratic dialogue must challenge 3 hidden assumptions, overengineering risk, and the current code or proposal with an adversarial review before task blocks are generated.
+12. Non-trivial plans complete Second-Move Review before approval; the first workable plan is not frozen until a simpler move and a better-architecture move have both been considered.
+13. Non-trivial plans complete product/creative discovery before engineering design; if worth, shape, wedge, or 10x/better version is unclear, ask product questions before implementation questions.
+14. Product/creative confirmation and engineering confirmation are separate rounds unless spec/repo evidence already answers one of them and `task.md` records the skip reason.
+15. Non-trivial plans run a Socratic Dialogue before final approval: one question at a time, recommended answer included, repo-answerable questions answered from evidence first, and task generation blocked until the user explicitly says the requirement and technical plan are detailed enough.
+16. Technical Socratic dialogue must challenge 3 hidden assumptions, overengineering risk, and the current code or proposal with an adversarial review before task blocks are generated.
+17. Domain grilling follows `references/domain-grilling-contract.md`: challenge glossary conflicts, sharpen fuzzy terms, test concrete scenarios, cross-reference user claims with code, write confirmed glossary updates inline, and offer ADRs only when the three-part ADR test passes.
 18. Every 10 user-facing Socratic question rounds, write a Dialogue Checkpoint into `task.md#Contract Summary` before asking the next question.
 19. ASCII branch-chain connector tokens stay ASCII, but labels, evidence, and explanatory text follow `Output language`.
 20. User-facing decisions use `../cc-dev/references/user-choice-output-protocol.md`: host-native structured choice first, fixed A/B/C text fallback only when no structured-input tool exists.
@@ -30,15 +30,18 @@
 
 Every non-trivial plan confirms these rounds before task generation:
 
-1. Product/Creative Discovery: worth doing, desired product shape, narrowest wedge, 10x/better version, do-nothing consequence.
-2. Requirement Reality: real user/operator, workaround, painful failure, smallest success signal, non-goals.
-3. System Shape: existing code path, module owner, state/data flow, reuse point, boundary systems.
-4. Interface/Data Contract: public seam, caller, input/output, fields, error shape, permission/boundary.
-5. Abstraction Boundary: where complexity lives, rejected abstractions, public/private method split.
-6. Execution Architecture: foundation/core/integration/polish decisions, file responsibility, failure recovery.
-7. Task Contract: tracer bullets, Red test names, public seams, confidence-per-minute test value, suite layer, command/runtime, fixture/mock boundary, Green minimality, refactor candidates.
-8. Second-Move Review: first good move, simpler move, better architecture, selected move, and rejected tradeoff.
-9. Final Approval: approved option and task contract summary.
+1. Context-first read: `CONTEXT-MAP.md`, relevant `CONTEXT.md`, and ADRs.
+2. Evidence pass: specs, relevant code/tests/docs, recent commits, and existing task truth.
+3. Product/Creative Discovery: worth doing, desired product shape, narrowest wedge, 10x/better version, do-nothing consequence.
+4. Requirement Reality and Grilling: real user/operator, workaround, painful failure, smallest success signal, non-goals, glossary conflicts, fuzzy terms, concrete scenarios, and code contradictions.
+5. Context Crystallization: inline confirmed context updates and ADR-worthy decisions; defer unconfirmed deltas into `task.md`.
+6. System Shape: existing code path, module owner, state/data flow, reuse point, boundary systems.
+7. Interface/Data Contract: public seam, caller, input/output, fields, error shape, permission/boundary.
+8. Abstraction Boundary: where complexity lives, rejected abstractions, public/private method split.
+9. Execution Architecture: foundation/core/integration/polish decisions, file responsibility, failure recovery.
+10. Task Contract: tracer bullets, Red test names, public seams, confidence-per-minute test value, suite layer, command/runtime, fixture/mock boundary, Green minimality, refactor candidates.
+11. Second-Move Review: first good move, simpler move, better architecture, selected move, and rejected tradeoff.
+12. Final Approval: approved option and task contract summary.
 
 Tiny plans may compress a round to one evidence-backed line. Full designs must preserve enough detail that `cc-do` does not invent architecture, fields, interfaces, or tests.
 
@@ -47,6 +50,8 @@ Tiny plans may compress a round to one evidence-backed line. Full designs must p
 - Use the smallest reversible design that solves the real need; do not expand to imaginary future enemies.
 - Missing evidence is recorded as an assumption; it is not promoted to fact.
 - Product/creative confirmation comes before implementation questions: worth doing, target experience, narrowest wedge, 10x/better version, and do-nothing consequence.
+- Domain terms are not accepted casually. Challenge conflicts with `CONTEXT.md`, replace fuzzy or overloaded terms with canonical terms, and use concrete scenarios to force boundary precision.
+- User claims about current behavior are not accepted when code can answer them. Check the relevant code/tests/docs first and surface contradictions.
 - The first workable plan is not enough for non-trivial work. Record first good move, simpler move, better architecture, selected move, and rejected tradeoff.
 - Plans resolve architecture, interfaces, fields, and test seams before task generation; `cc-do` must not guess them.
 - Behavior tasks use tracer bullets: `[TEST] -> [IMPL] -> [REFACTOR]`, not horizontal layer slicing.
@@ -84,7 +89,7 @@ The dialogue is complete only when both releases are explicit:
 - Requirement release: the user confirms the demand, user/operator, status quo, success signal, non-goals, and scope are detailed enough to enter technical planning.
 - Technical release: after repo evidence or proposal review, the user confirms the interface, data contract, abstraction boundary, test seam, and task shape are detailed enough to generate tasks.
 
-Record repo-answered questions, user-answered rounds, ten-round Dialogue Checkpoints, hidden assumptions, overengineering challenge, adversarial review findings, and the release phrase in `task.md#Contract Summary`.
+Record repo-answered questions, user-answered rounds, ten-round Dialogue Checkpoints, hidden assumptions, overengineering challenge, adversarial review findings, domain-grilling findings, and the release phrase in `task.md#Contract Summary`.
 
 Each Dialogue Checkpoint covers the last 10 user-facing question rounds and records round range, next question number, decisions made, rejected options and reasons, remaining open questions, evidence read, hidden assumptions or review findings so far, and current release status. After context compression, resume from the latest checkpoint before asking another question.
 
@@ -96,8 +101,8 @@ Fixed fallback format:
 
 ```text
 D<N> - <decision title>
-Planning object: <REQ/FIX/RM/change key>
-Known evidence: <repo / roadmap / code / test facts>
+Planning object: <REQ/FIX/change key>
+Known evidence: <repo / spec / code / test facts>
 Decision needed: <what changes downstream>
 Recommendation: <A/B/C> because <reason>
 Options:
@@ -147,7 +152,7 @@ Language rule:
 ```text
 <requirementChain>
 <requirementMarker>: <user-visible change>
-|-- <upstreamSource>: <roadmap / issue / user request / existing task>
+|-- <upstreamSource>: <issue / user request / existing task / spec>
 |-- <currentCodePath>: <entry>
 |   |-- <caller>: <file / command / UI / API>
 |   |-- <dataOrState>: <field / config / artifact>
@@ -173,11 +178,12 @@ Before freezing task blocks, write a lightweight review into `task.md#Contract S
 2. Scope challenge: if the plan touches more than 8 files, adds more than 2 services/classes, or creates cross-module coupling, explain why this is not overengineering.
 3. Second-Move Review: compare first good move, simpler move, better architecture, selected move, and rejected tradeoff.
 4. Domain language check: align core nouns, filenames, test names, and task titles with repo truth; otherwise record an assumption.
-5. Interface depth check: keep the public surface small and deep; hide complexity inside the owning module.
-6. Test seam check: Red tasks prove behavior through public interface, caller flow, or user-visible path.
-7. Mock boundary check: mock only external API, time, randomness, filesystem, network, or required database seams.
-8. Feedback loop check: pick the shortest credible feedback loop for every behavior.
-9. Confidence-per-minute check: identify the suite layer, command/runtime,
+5. Domain grilling check: glossary conflicts, fuzzy terms, concrete scenarios, code contradictions, context updates, and ADR decisions are resolved or recorded as explicit assumptions.
+6. Interface depth check: keep the public surface small and deep; hide complexity inside the owning module.
+7. Test seam check: Red tasks prove behavior through public interface, caller flow, or user-visible path.
+8. Mock boundary check: mock only external API, time, randomness, filesystem, network, or required database seams.
+9. Feedback loop check: pick the shortest credible feedback loop for every behavior.
+10. Confidence-per-minute check: identify the suite layer, command/runtime,
    proof value, fixture/mock boundary, and low-value tests that `cc-do` must not
    treat as Red evidence.
 
@@ -200,4 +206,4 @@ Before freezing task blocks, write a lightweight review into `task.md#Contract S
 
 ## Review Gate
 
-Before exit, check product/creative discovery, scope, existing leverage, Second-Move Review, domain language, interface depth, test seam, mock boundary, feedback loop, and failure modes. If the plan is not executable from `task.md`, it is not done.
+Before exit, check product/creative discovery, scope, existing leverage, Second-Move Review, domain language, domain grilling, interface depth, test seam, mock boundary, feedback loop, and failure modes. If the plan is not executable from `task.md`, it is not done.

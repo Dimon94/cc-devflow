@@ -5,7 +5,6 @@
 - CC-Plan skill version:
 - Work branch:
 - Output language:
-- Source roadmap item:
 
 ## Contract Summary
 
@@ -21,7 +20,7 @@ Do Not Do:
 -
 
 Source Handoff:
-- Roadmap / issue / user source:
+- Issue / user / spec source:
 - Repo evidence read:
 - Existing leverage:
 - Canonical language:
@@ -139,7 +138,7 @@ Label table:
 ```text
 <requirementChain>
 <requirementMarker>: <user-visible change>
-|-- <upstreamSource>: <roadmap / issue / user request / existing task>
+|-- <upstreamSource>: <issue / user request / existing task / spec>
 |-- <currentCodePath>: <entry>
 |   |-- <caller>: <file / command / UI / API>
 |   |-- <dataOrState>: <field / config / artifact>

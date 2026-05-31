@@ -2,7 +2,7 @@
 
 ## State Machine
 
-`roadmap -> cc-plan -> cc-do`
+`cc-plan -> cc-do`
 
 - Enter with one requirement or bug-shaped planning request.
 - Stay until `task.md` has approved scope, task blocks, and verification commands.
@@ -19,6 +19,31 @@
 
 Submodule entry, wrong linked worktree, branch case collision, target mismatch, or missing CLI capability is a setup blocker. Keep the main checkout on `main`.
 
+## Mandatory Plan Chain
+
+Every plan starts from the domain model, not from a blank task list:
+
+1. Context-first read: read root `CONTEXT-MAP.md` when present; otherwise read
+   the relevant root or local `CONTEXT.md`; then read ADRs that touch the
+   affected domain, module, interface, data contract, provider, workflow, or
+   release boundary.
+2. Evidence pass: read specs, relevant code/tests/docs, recent
+   commits, and existing task truth. If a question can be answered by the repo,
+   answer it from evidence instead of asking the user.
+3. Requirement grilling: refine the requirement one question at a time through
+   `references/domain-grilling-contract.md`; challenge glossary conflicts,
+   sharpen fuzzy terms, test concrete scenarios, and recommend an answer for
+   each unresolved question.
+4. Context crystallization: update confirmed glossary, context-map, or ADR
+   decisions inline when they become durable; keep `CONTEXT.md` glossary-only
+   and defer unconfirmed deltas into `task.md#Contract Summary`.
+5. Plan synthesis: convert the approved answers into scope, non-goals,
+   user/edge stories, interface/data contract, state ownership, test strategy,
+   Design Pressure, Second-Move Review, and verification seams.
+6. Task generation: write `task.md` task blocks from `assets/TASKS_TEMPLATE.md`
+   only after requirement release and technical release.
+7. Closeout: validate the plan artifact, commit the Plan stage, and route onward.
+
 ## Rules
 
 1. Only `task.md` is written during Plan.
@@ -27,22 +52,25 @@ Submodule entry, wrong linked worktree, branch case collision, target mismatch, 
 4. The task list must let `cc-do` continue without chat memory.
 5. Ask only decisions that change product value, product shape, scope, design, task split, interface, or verification; otherwise choose from repo evidence.
 6. Product/creative questions come before engineering questions when worth or shape is unclear.
-7. Preserve planning thought inside `task.md#Contract Summary`: product/creative discovery, requirement reality, system shape, interface/data contract, abstraction boundary, execution architecture, task contract, Second-Move Review, and final approval.
+7. Preserve planning thought inside `task.md#Contract Summary`: product/creative discovery, requirement reality, domain grilling, system shape, interface/data contract, abstraction boundary, execution architecture, task contract, Second-Move Review, and final approval.
 8. Non-trivial plans complete Second-Move Review: first good move, simpler move, better architecture, selected move, and rejected tradeoff. Tiny plans still record why the short path is enough.
 9. Non-trivial plans use at least two confirmation rounds unless source evidence already answers one: product/creative confirmation, then engineering/task confirmation.
-10. User-facing decisions use `D<N>` questions with recommendation, options, impact, and STOP.
+10. Domain grilling is part of planning: challenge terms against `CONTEXT.md`, sharpen fuzzy language, test concrete scenarios, check code-answerable claims from repo evidence, and update confirmed glossary/ADR decisions inline through `references/domain-grilling-contract.md`.
+11. User-facing decisions use `D<N>` questions with recommendation, options, impact, and STOP.
 
 ## Progressive Flow
 
-1. Gather repo evidence first: roadmap handoff, specs, relevant code/tests/docs, recent commits, and existing task truth.
-2. Product/Creative Discovery: worth doing, desired product shape, narrowest wedge, 10x/better version, do-nothing consequence.
-3. Requirement Reality: real user/operator, workaround, painful failure, smallest success signal, non-goals.
-4. System Shape: existing code path, module owner, state/data flow, reuse point, boundary systems.
-5. Interface/Data Contract: public seam, caller, fields, errors, permissions, and external boundaries.
-6. Abstraction Boundary and Design Pressure: deep module shape, hidden complexity, caller knowledge, public seam, vertical task slices, and special-case elimination.
-7. Execution Architecture: file responsibility, failure recovery, task order, verification commands, and escalation triggers.
-8. Second-Move Review: first good move, simpler move, better architecture, selected move, rejected tradeoff.
-9. Final Approval: task generation waits until the user releases both requirement and technical plan, unless repo evidence gives an explicit skip reason.
+1. Context-first read: `CONTEXT-MAP.md`, relevant `CONTEXT.md`, and ADRs.
+2. Gather repo evidence: specs, relevant code/tests/docs, recent commits, and existing task truth.
+3. Product/Creative Discovery: worth doing, desired product shape, narrowest wedge, 10x/better version, do-nothing consequence.
+4. Requirement Reality and Grilling: real user/operator, workaround, painful failure, smallest success signal, non-goals, glossary conflicts, fuzzy terms, concrete scenarios, and code contradictions.
+5. Context Crystallization: inline confirmed context updates and ADR-worthy decisions; defer unconfirmed deltas into `task.md`.
+6. System Shape: existing code path, module owner, state/data flow, reuse point, boundary systems.
+7. Interface/Data Contract: public seam, caller, fields, errors, permissions, and external boundaries.
+8. Abstraction Boundary and Design Pressure: deep module shape, hidden complexity, caller knowledge, public seam, vertical task slices, and special-case elimination.
+9. Execution Architecture: file responsibility, failure recovery, task order, verification commands, and escalation triggers.
+10. Second-Move Review: first good move, simpler move, better architecture, selected move, rejected tradeoff.
+11. Final Approval: task generation waits until the user releases both requirement and technical plan, unless repo evidence gives an explicit skip reason.
 
 Tiny plans may compress rounds to evidence-backed lines. Full designs preserve enough detail that `cc-do` does not invent architecture, fields, interfaces, or tests.
 
@@ -63,7 +91,7 @@ Tiny plans may compress rounds to evidence-backed lines. Full designs preserve e
 
 - 任务只是“backend / frontend / tests”这种分层桶。
 - task 写“实现逻辑”，但没有公开行为和证明命令。
-- 关键术语和 roadmap / spec 不一致，却没有记录假设。
+- 关键术语和 spec / repo truth 不一致，却没有记录假设。
 - 计划直接选第一个能跑的方案，没有做 Second-Move Review。
 - 行为工作把 Red 测试推迟到实现之后。
 
@@ -97,6 +125,7 @@ Tasks must be tracer bullets: `[TEST] -> [IMPL] -> [REFACTOR]`. Each task names 
 - Source handoff and repo evidence
 - Product/creative discovery: worth doing, desired product shape, narrowest wedge, 10x/better version, do-nothing consequence
 - Requirement reality
+- Domain grilling: glossary conflicts, fuzzy terms, concrete scenarios, code contradictions, context updates, ADR decisions
 - Decision questions and answers
 - Planning flow table
 - Second-Move Review when non-trivial
@@ -105,7 +134,7 @@ Tasks must be tracer bullets: `[TEST] -> [IMPL] -> [REFACTOR]`. Each task names 
 - Engineering review gate
 - Verification and escalation triggers
 
-Also record ASCII Branch Chain Analysis, Design Pressure, test strategy shape, user-facing D<N> decisions, roadmap sync status, and explicit skip reasons for any compressed planning round.
+Also record ASCII Branch Chain Analysis, Design Pressure, test strategy shape, user-facing D<N> decisions, and explicit skip reasons for any compressed planning round.
 
 ## Handoff
 
@@ -115,9 +144,8 @@ Exit with:
 - `task.md` path
 - task count and first ready task
 - planned verification commands
-- roadmap sync status
 - Plan commit hash
-- next route: `cc-do`, `cc-diagnose`, `roadmap`, or `stop`
+- next route: `cc-do`, `cc-diagnose`, or `stop`
 
 ## Exit
 
