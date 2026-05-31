@@ -1,5 +1,11 @@
 # CC-Do Skill Changelog
 
+## v1.11.0 - 2026-05-31
+
+- slim the entrypoint to the Do purpose, TDD iron law, load table, core flow, and default output
+- move the execution loop, detailed TDD discipline, Failure Ledger rules, parallel rule, and handoff details into `PLAYBOOK.md`
+- keep interrupted-work recovery in `references/execution-recovery.md` so the entrypoint stays fast without weakening resume safety
+
 ## v1.10.2 - 2026-05-31
 
 - add a Vertical Red/Green Guard so execution finishes one observable behavior's Red -> Green -> Refactor cycle before starting the next behavior
