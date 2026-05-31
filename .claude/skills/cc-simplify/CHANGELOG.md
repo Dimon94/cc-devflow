@@ -1,5 +1,10 @@
 # CC-Simplify Skill Changelog
 
+## v1.7.1 - 2026-05-31
+
+- add a Confirmed Smell Gate so speculative cleanup candidates are reported without edits
+- require confirmed smells to have code, usage, requirement, and verification facts before simplifying and rechecking
+
 ## v1.7.0 - 2026-05-21
 
 - route `ask` simplification decisions through the shared user-choice output protocol before changing public API, user-visible behavior, security boundaries, or broad design

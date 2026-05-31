@@ -1,6 +1,6 @@
 ---
 name: cc-simplify
-version: 1.7.0
+version: 1.7.1
 description: "Use when changed code needs an automatic subagent-backed simplification pass for scope drift, reuse, code quality, efficiency, test quality, and confidence-gated smell fixes before cc-check or cc-act."
 reads:
   - devflow/changes/<change-key>/task.md
@@ -33,6 +33,15 @@ ONLY FIX CONFIRMED SMELLS. DO NOT BEAUTIFY BY GUESS.
 ```
 
 没有证据的 reviewer finding 只是线索，不是命令。先验证，再修改。
+
+## Confirmed Smell Gate
+
+Speculative cleanup candidates are reported, not edited.
+A confirmed smell needs code fact, usage fact, requirement fact, and verification fact before any file changes.
+
+When the diff contains a confirmed duplicated branch, repeated helper, false
+test seam, or shallow wrapper, simplify the smallest behavior-preserving shape
+and make sure it is rechecked with fresh verification.
 
 ## Phase 1: 识别变更
 
