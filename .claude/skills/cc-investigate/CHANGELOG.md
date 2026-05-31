@@ -1,5 +1,11 @@
 # CC-Investigate Skill Changelog
 
+## v1.15.0 - 2026-05-31
+
+- slim the entrypoint to the IDCA investigation law, load table, core flow, and default handoff shape
+- move detailed setup, investigation loop, Socratic dialogue, proof ladder, and handoff rules into `PLAYBOOK.md`
+- keep the full evidence contract in `references/investigation-contract.md` so entry loading gets faster without weakening root-cause proof
+
 ## v1.14.1 - 2026-05-24
 
 - add a Regression Proof Contract to root-cause handoffs so repair tasks inherit failure ownership, suite layer, runtime budget, proof value, fixture/mock boundary, focused suite shape, and low-value tests to avoid
