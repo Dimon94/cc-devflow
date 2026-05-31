@@ -11,7 +11,7 @@ describe('cc-pr-review hardening contract', () => {
   test('remote PR review carries hardening and productization facets', () => {
     const skill = read('.claude/skills/cc-pr-review/SKILL.md');
 
-    expect(skill).toContain('version: 1.7.1');
+    expect(skill).toContain('version: 1.8.0');
     expect(skill).toContain('../cc-review/references/hardening-specialists.md');
     expect(skill).toContain('../cc-review/references/productization-surfaces.md');
     expect(skill).toContain('security-hardening');

@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.8.0 - 2026-05-31
+
+- slim the main `SKILL.md` entrypoint under 100 lines so remote PR review startup only reads PR truth, facet loading, and output rules
+- move PR Review Chain cognitive-layer template and localized label table into `references/pr-review-chain.md`
+- move PR truth packet, facet selection, and complexity scanner details into `PLAYBOOK.md` so hardening, productization, and complexity capability is preserved behind progressive disclosure
+
 ## v1.7.1 - 2026-05-31
 
 - add an API Contract Landing Blocker so changed public API contracts without proof tests cannot route to `cc-pr-land`

@@ -35,6 +35,68 @@
 - Verdict
 - Next gate
 
+## PR Truth Packet
+
+Build review from current remote truth, not stale local memory:
+
+- live PR metadata
+- true PR commits
+- latest checks
+- PR diff
+- linked `task.md` and `handoff/pr-brief.md` when available
+
+If PR head or checks change during review, refresh before verdict.
+
+## Facet Selection
+
+Select facets only from PR diff, PR body, linked task, checks, or missing proof:
+
+- Complexity hotspot: nested scans, repeated membership/search, sort-in-loop,
+  pairwise comparison, render recomputation, N+1 database/API loops, large input
+  paths, or performance-sensitive shared utilities.
+- Hardening specialists from `../cc-review/references/hardening-specialists.md`:
+  `security-hardening`, `observability-hardening`,
+  `release-readiness-hardening`, and `test-strategy-hardening`.
+- Productization surface from
+  `../cc-review/references/productization-surfaces.md`: shared action layer,
+  programmatic API, agent docs, audit trail, admin/manageability UI, feature
+  flags, idempotency, or operator paths.
+
+For every selected facet, close it as `checked`, `skipped:<reason>`, or
+`blocked:<missing evidence>`. Do not say the PR is secure, observable, ready to
+ship, or productized; say which PR surfaces were reviewed and what remains
+uncertain.
+
+## Complexity Review
+
+Complexity hotspot review is built in. It must not call or depend on an
+external `complexity-optimizer` skill. Use only the local scanner and local
+complexity references.
+
+Scanner output is only a lead; accepted findings must cite the PR diff or
+checked-out file lines and explain behavior-equivalence risk.
+
+```bash
+python3 <active-skill-dir>/scripts/analyze_complexity.py <repo> --format markdown
+python3 <active-skill-dir>/scripts/analyze_complexity.py <repo> --format json
+```
+
+Each accepted complexity finding includes:
+
+- current pattern
+- estimated current complexity
+- recommended change
+- estimated complexity after
+- behavior-equivalence argument
+- risk level
+- tests, benchmarks, or manual checks needed
+
+## PR Review Chain
+
+Use `references/pr-review-chain.md` for non-trivial findings, cognitive layers,
+localized label table, and the upstream/downstream chain template. Do not
+fabricate missing layers; mark them as missing evidence and route accordingly.
+
 ## API Contract Landing Blocker
 
 Changed public API contracts without proof tests are landing blockers. This
