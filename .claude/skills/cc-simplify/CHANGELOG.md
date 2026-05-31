@@ -1,5 +1,11 @@
 # CC-Simplify Skill Changelog
 
+## v1.8.0 - 2026-05-31
+
+- slim the main `SKILL.md` entrypoint under 100 lines so Agent startup only reads the simplify gate, routing table, and output contract
+- move the six-phase simplify flow into `PLAYBOOK.md` while preserving scope freeze, reviewer dispatch, triage, smell proof, fix order, and fresh verification rules
+- split reviewer swarm, finding triage, and confirmed smell details into dedicated references for progressive disclosure without losing cleanup capability
+
 ## v1.7.1 - 2026-05-31
 
 - add a Confirmed Smell Gate so speculative cleanup candidates are reported without edits

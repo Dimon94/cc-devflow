@@ -13,7 +13,7 @@
     "cc-check": "1.16.2",
     "cc-act": "1.15.1",
     "cc-spec-init": "1.4.1",
-    "cc-simplify": "1.7.1"
+    "cc-simplify": "1.8.0"
   },
   "examples": [
     {
