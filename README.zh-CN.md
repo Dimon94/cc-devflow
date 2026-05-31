@@ -57,6 +57,7 @@ npx cc-devflow@latest adapt --cwd /path/to/your/project --all
 PR Harness: cc-next -> cc-dev -> cc-pr-review -> cc-pr-land
 
 PDCA: cc-plan        -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
+Parallel PDCA: cc-plan -> cc-dev dispatch loop -> child cc-* environments -> integrate -> cc-check -> cc-act
 Hotfix: cc-diagnose -> focused fix -> regression proof
 ```
 
@@ -106,6 +107,8 @@ flowchart TD
 ## 计划质量门禁
 
 `cc-plan` 会在 `cc-do` 开始前冻结实现决策。非 trivial 计划需要比较 minimal viable 和 ideal architecture，full-design 需要包含 implementation decision horizon 和 error/rescue map；测试计划要记录测试框架证据、public test seam、behavior assertion、mock boundary、覆盖质量、强制 regression test、refactor candidates、vertical tracer-bullet slices 和 confidence-per-minute 测试策略。`cc-diagnose` 刻意更轻：先用最锋利的反馈环复现，列出可证伪假设，窄口打点，修复后证明原始复现消失，并清掉 debug probe。
+
+大需求需要并行时，`cc-plan` 先在 `task.md#Execution Environments` 冻结 execution environment 依赖图、触点、路由 skill、验证命令和 merge gate；`cc-dev` 再按这张图创建同级 worktree / 子线程，派发 `cc-do`、`cc-review`、`cc-check`、`cc-diagnose` 或有边界的 `cc-act`，并在主控线程串行验收、cherry-pick、跑 phase gate 和最终 `cc-check`。子线程只拥有自己的 environment，不拥有阶段解锁、主分支合并或最终交付裁决。
 
 Canonical language 和 durable decisions 只收敛到 cc-devflow 原生真相源：`devflow/specs/`、`task.md`、Git history 和 PR truth。历史 planning artifacts 只作为可读 fallback 输入。
 

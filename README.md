@@ -57,6 +57,7 @@ After installation, ask your agent to use the workflow skills directly. Start wi
 PR Harness: cc-next -> cc-dev -> cc-pr-review -> cc-pr-land
 
 PDCA: cc-plan        -> [cc-review] -> cc-do -> [cc-review] -> cc-check -> cc-act
+Parallel PDCA: cc-plan -> cc-dev dispatch loop -> child cc-* environments -> integrate -> cc-check -> cc-act
 Hotfix: cc-diagnose -> focused fix -> regression proof
 ```
 
@@ -106,6 +107,16 @@ Maintenance skills are shipped with the pack:
 ## Planning Quality Gates
 
 `cc-plan` freezes implementation decisions before `cc-do` starts. Non-trivial plans compare minimal viable and ideal architecture options, full designs include decision horizon plus error/rescue mapping, and test-first plans record test framework evidence, public test seams, behavior assertions, mock boundaries, coverage quality, mandatory regression tests, refactor candidates, vertical tracer-bullet slices, and confidence-per-minute test strategy when existing behavior changes. `cc-diagnose` is deliberately lighter: reproduce with the sharpest loop available, rank falsifiable hypotheses, instrument narrowly, fix, prove the original repro is gone, and keep debug probes out of the final tree.
+
+When large work needs parallel execution, `cc-plan` first freezes an execution
+environment graph in `task.md#Execution Environments`: dependencies, touched
+surfaces, routed skill, verification commands, and merge gates. `cc-dev` then
+uses that graph to create sibling worktrees / child sessions, dispatch
+`cc-do`, `cc-review`, `cc-check`, `cc-diagnose`, or bounded `cc-act`, and keep
+integration authority in the orchestrator thread through serial cherry-picks,
+phase gates, and final `cc-check`. Child sessions own only their assigned
+environment; they do not unlock phases, merge main, or make final delivery
+decisions.
 
 Canonical language and durable decisions stay inside cc-devflow-native sources: `devflow/specs/`, `task.md`, Git history, and PR truth. Legacy planning artifacts are readable fallback inputs only.
 
