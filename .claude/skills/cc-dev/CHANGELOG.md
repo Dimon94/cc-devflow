@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.7.0 - 2026-05-31
+
+- slim the main `SKILL.md` entrypoint under 100 lines so autonomous workflow startup only reads route classification, state machine, hard rules, and output shape
+- keep strict review convergence, worktree discipline, delivery choice, and completion audit details in `PLAYBOOK.md` for progressive disclosure
+- preserve PDCA/IDCA route selection, exact terminal states, and no-default-delivery behavior in the entrypoint
+
 ## v1.6.3 - 2026-05-28
 
 - make PDCA strict review convergence explicit: `cc-plan` contracts must be reviewed and repaired until no P1/P2-equivalent findings remain before `cc-do`
