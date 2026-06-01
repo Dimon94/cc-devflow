@@ -63,6 +63,28 @@ Requirement Reality:
 - Smallest success signal:
 - Non-goals:
 
+Solution Shaping:
+- Trigger: skipped | multiple shapes | unknown mechanism | broad requirement
+- Requirements:
+| Req | Requirement | Status |
+|-----|-------------|--------|
+| R0 |  | core-goal |
+- Candidate Shapes:
+| Shape | Title | Mechanism | Unknowns |
+|-------|-------|-----------|----------|
+| A |  |  | none |
+- Fit Check:
+| Req | Requirement | Status | A |
+|-----|-------------|--------|---|
+| R0 |  | core-goal | PASS |
+- Fit Notes:
+  - PASS means the mechanism is known from repo evidence or explicit design.
+  - FAIL means the shape does not satisfy the requirement.
+  - UNKNOWN mechanisms must be resolved before a shape can pass.
+- Selected Shape:
+- Rejected Shapes:
+- Unknowns / Spikes:
+
 Decision Questions:
 | ID | Decision | Evidence | Choice | Impact |
 |----|----------|----------|--------|--------|

@@ -25,6 +25,10 @@
 18. Every 10 user-facing Socratic question rounds, write a Dialogue Checkpoint into `task.md#Contract Summary` before asking the next question.
 19. ASCII branch-chain connector tokens stay ASCII, but labels, evidence, and explanatory text follow `Output language`.
 20. User-facing decisions use `../cc-dev/references/user-choice-output-protocol.md`: host-native structured choice first, fixed A/B/C text fallback only when no structured-input tool exists.
+21. Use Solution Shaping only when it changes the plan: multiple viable shapes,
+    an unknown mechanism, a broad requirement that needs compression, or an
+    implicit requirement discovered during fit checking. Tiny single-path fixes
+    may record `Trigger: skipped` with the evidence-backed reason.
 
 ## Planning Flow
 
@@ -35,13 +39,17 @@ Every non-trivial plan confirms these rounds before task generation:
 3. Product/Creative Discovery: worth doing, desired product shape, narrowest wedge, 10x/better version, do-nothing consequence.
 4. Requirement Reality and Grilling: real user/operator, workaround, painful failure, smallest success signal, non-goals, glossary conflicts, fuzzy terms, concrete scenarios, and code contradictions.
 5. Context Crystallization: inline confirmed context updates and ADR-worthy decisions; defer unconfirmed deltas into `task.md`.
-6. System Shape: existing code path, module owner, state/data flow, reuse point, boundary systems.
-7. Interface/Data Contract: public seam, caller, input/output, fields, error shape, permission/boundary.
-8. Abstraction Boundary: where complexity lives, rejected abstractions, public/private method split.
-9. Execution Architecture: foundation/core/integration/polish decisions, file responsibility, failure recovery.
-10. Task Contract: tracer bullets, Red test names, public seams, confidence-per-minute test value, suite layer, command/runtime, fixture/mock boundary, Green minimality, refactor candidates.
-11. Second-Move Review: first good move, simpler move, better architecture, selected move, and rejected tradeoff.
-12. Final Approval: approved option and task contract summary.
+6. Solution Shaping when triggered: separate R requirements from S candidate
+   shapes, compare them with an ASCII PASS/FAIL fit check, resolve unknown
+   mechanisms from repo evidence or explicit spikes, and record the selected
+   shape before task slicing.
+7. System Shape: existing code path, module owner, state/data flow, reuse point, boundary systems.
+8. Interface/Data Contract: public seam, caller, input/output, fields, error shape, permission/boundary.
+9. Abstraction Boundary: where complexity lives, rejected abstractions, public/private method split.
+10. Execution Architecture: foundation/core/integration/polish decisions, file responsibility, failure recovery.
+11. Task Contract: tracer bullets, Red test names, public seams, confidence-per-minute test value, suite layer, command/runtime, fixture/mock boundary, Green minimality, refactor candidates.
+12. Second-Move Review: first good move, simpler move, better architecture, selected move, and rejected tradeoff.
+13. Final Approval: approved option and task contract summary.
 
 Tiny plans may compress a round to one evidence-backed line. Full designs must preserve enough detail that `cc-do` does not invent architecture, fields, interfaces, or tests.
 
@@ -52,6 +60,12 @@ Tiny plans may compress a round to one evidence-backed line. Full designs must p
 - Product/creative confirmation comes before implementation questions: worth doing, target experience, narrowest wedge, 10x/better version, and do-nothing consequence.
 - Domain terms are not accepted casually. Challenge conflicts with `CONTEXT.md`, replace fuzzy or overloaded terms with canonical terms, and use concrete scenarios to force boundary precision.
 - User claims about current behavior are not accepted when code can answer them. Check the relevant code/tests/docs first and surface contradictions.
+- Requirements state needed outcomes and constraints; shapes state buildable
+  mechanisms. Do not let a shape part repeat the requirement in different
+  words. If the shape does not add mechanism detail, keep shaping open.
+- Fit checks are binary and ASCII: `PASS` or `FAIL`. A shape with an unknown
+  mechanism cannot pass the affected requirement. Resolve the mechanism from
+  repo evidence, add an explicit spike/diagnosis task, or reject the shape.
 - The first workable plan is not enough for non-trivial work. Record first good move, simpler move, better architecture, selected move, and rejected tradeoff.
 - Plans resolve architecture, interfaces, fields, and test seams before task generation; `cc-do` must not guess them.
 - Behavior tasks use tracer bullets: `[TEST] -> [IMPL] -> [REFACTOR]`, not horizontal layer slicing.
@@ -81,6 +95,40 @@ Before freezing non-trivial tasks, make the design pressure explicit in
 - If a special case appears, first ask whether the owning module can eliminate
   the invalid state or isolate the unusual behavior behind the same public
   contract.
+
+## Solution Shaping
+
+Use this section only when it changes scope, design, or verification. The goal
+is to prevent `cc-do` from inheriting unresolved product shape or mechanism
+questions.
+
+Write Solution Shaping inside `task.md#Contract Summary`; do not create a
+separate shaping document, frame, slice document, or spike file during
+`cc-plan`.
+
+Rules:
+
+- Start from either requirements or a proposed shape, but separate them before
+  approval. Requirements use `R0..R8`; if there are more than 9 top-level
+  requirements, group them into sub-requirements.
+- Shape letters `A`, `B`, `C` are mutually exclusive top-level solution
+  approaches. Shape parts describe mechanisms to build or change, not wishes,
+  constraints, or restated requirements.
+- Record `CURRENT` only when comparing against existing behavior helps expose
+  the required delta.
+- Use ASCII status values: requirement status such as `core-goal`,
+  `must-have`, `nice-to-have`, `out`, `undecided`; fit-check values only
+  `PASS` or `FAIL`; unknown mechanism status as `UNKNOWN`.
+- A `PASS` is a claim of knowledge. It requires a concrete mechanism backed by
+  repo evidence or an approved design. `UNKNOWN` mechanisms force `FAIL` for
+  the affected requirement until resolved.
+- If the selected shape has unresolved `UNKNOWN` mechanisms, do not generate
+  normal implementation tasks. Plan an evidence-gathering spike through
+  `cc-diagnose`, or keep the requirement in planning.
+- Convert selected shape parts into vertical slices first. Then map those
+  slices to task blocks and `Execution Environments` by dependency and touched
+  paths. Do not default to one environment per shape part or one task per
+  requirement.
 
 ## Socratic Dialogue
 

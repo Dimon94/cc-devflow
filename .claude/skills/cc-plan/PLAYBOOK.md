@@ -37,17 +37,21 @@ Every plan starts from the domain model, not from a blank task list:
 4. Context crystallization: update confirmed glossary, context-map, or ADR
    decisions inline when they become durable; keep `CONTEXT.md` glossary-only
    and defer unconfirmed deltas into `task.md#Contract Summary`.
-5. Plan synthesis: convert the approved answers into scope, non-goals,
+5. Solution shaping: when multiple solution shapes are viable, mechanism truth
+   is unknown, or the requirement is still too broad, separate requirements
+   from candidate shapes, run an ASCII PASS/FAIL fit check, and resolve unknown
+   mechanisms before a shape is allowed to pass.
+6. Plan synthesis: convert the approved answers into scope, non-goals,
    user/edge stories, interface/data contract, state ownership, test strategy,
    Design Pressure, Second-Move Review, and verification seams.
-6. Execution environments: for non-trivial or parallel-ready work, define the
+7. Execution environments: for non-trivial or parallel-ready work, define the
    independently committable environments before task blocks. Each environment
    names route, tasks, dependencies, touched paths, verification, merge gate,
    unlocks, and initial status. Do not create automatic review-only environments
    for the normal PDCA path; `cc-check` owns final review convergence.
-7. Task generation: write `task.md` task blocks from `assets/TASKS_TEMPLATE.md`
+8. Task generation: write `task.md` task blocks from `assets/TASKS_TEMPLATE.md`
    only after requirement release and technical release.
-8. Closeout: validate the plan artifact, commit the Plan stage, and route onward.
+9. Closeout: validate the plan artifact, commit the Plan stage, and route onward.
 
 ## Rules
 
@@ -61,11 +65,14 @@ Every plan starts from the domain model, not from a blank task list:
 8. Non-trivial plans complete Second-Move Review: first good move, simpler move, better architecture, selected move, and rejected tradeoff. Tiny plans still record why the short path is enough.
 9. Non-trivial plans use at least two confirmation rounds unless source evidence already answers one: product/creative confirmation, then engineering/task confirmation.
 10. Domain grilling is part of planning: challenge terms against `CONTEXT.md`, sharpen fuzzy language, test concrete scenarios, check code-answerable claims from repo evidence, and update confirmed glossary/ADR decisions inline through `references/domain-grilling-contract.md`.
-11. User-facing decisions use `D<N>` questions with recommendation, options, impact, and STOP.
-12. Parallel work is a plan contract, not an execution guess. If a task can run
+11. Solution shaping is conditional, not ceremonial. Use it for competing
+    shapes, broad requirements, or unknown mechanisms; record `Trigger:
+    skipped` for tiny single-path fixes.
+12. User-facing decisions use `D<N>` questions with recommendation, options, impact, and STOP.
+13. Parallel work is a plan contract, not an execution guess. If a task can run
     in parallel, record the execution environment graph and its gates in
     `task.md`; otherwise say why the change stays serial.
-13. `cc-plan` does not split review subthreads by default. Record the expected
+14. `cc-plan` does not split review subthreads by default. Record the expected
     final `cc-check` review convergence gate instead of adding `R###`
     environments, unless the user explicitly asks for standalone review work.
 
@@ -76,12 +83,15 @@ Every plan starts from the domain model, not from a blank task list:
 3. Product/Creative Discovery: worth doing, desired product shape, narrowest wedge, 10x/better version, do-nothing consequence.
 4. Requirement Reality and Grilling: real user/operator, workaround, painful failure, smallest success signal, non-goals, glossary conflicts, fuzzy terms, concrete scenarios, and code contradictions.
 5. Context Crystallization: inline confirmed context updates and ADR-worthy decisions; defer unconfirmed deltas into `task.md`.
-6. System Shape: existing code path, module owner, state/data flow, reuse point, boundary systems.
-7. Interface/Data Contract: public seam, caller, fields, errors, permissions, and external boundaries.
-8. Abstraction Boundary and Design Pressure: deep module shape, hidden complexity, caller knowledge, public seam, vertical task slices, and special-case elimination.
-9. Execution Architecture: file responsibility, failure recovery, task order, verification commands, and escalation triggers.
-10. Second-Move Review: first good move, simpler move, better architecture, selected move, rejected tradeoff.
-11. Final Approval: task generation waits until the user releases both requirement and technical plan, unless repo evidence gives an explicit skip reason.
+6. Solution Shaping when triggered: R requirements, candidate shapes,
+   PASS/FAIL fit check, selected shape, rejected shapes, and resolved
+   mechanism unknowns.
+7. System Shape: existing code path, module owner, state/data flow, reuse point, boundary systems.
+8. Interface/Data Contract: public seam, caller, fields, errors, permissions, and external boundaries.
+9. Abstraction Boundary and Design Pressure: deep module shape, hidden complexity, caller knowledge, public seam, vertical task slices, and special-case elimination.
+10. Execution Architecture: file responsibility, failure recovery, task order, verification commands, and escalation triggers.
+11. Second-Move Review: first good move, simpler move, better architecture, selected move, rejected tradeoff.
+12. Final Approval: task generation waits until the user releases both requirement and technical plan, unless repo evidence gives an explicit skip reason.
 
 Tiny plans may compress rounds to evidence-backed lines. Full designs preserve enough detail that `cc-do` does not invent architecture, fields, interfaces, or tests.
 
@@ -103,6 +113,8 @@ Tiny plans may compress rounds to evidence-backed lines. Full designs preserve e
 - 任务只是“backend / frontend / tests”这种分层桶。
 - task 写“实现逻辑”，但没有公开行为和证明命令。
 - 关键术语和 spec / repo truth 不一致，却没有记录假设。
+- 方案部件只是复述需求，没有说明可构建机制。
+- Fit Check 把未知机制当成 PASS，让 `cc-do` 去猜实现。
 - 计划直接选第一个能跑的方案，没有做 Second-Move Review。
 - 行为工作把 Red 测试推迟到实现之后。
 
@@ -161,6 +173,9 @@ Tasks must be tracer bullets: `[TEST] -> [IMPL] -> [REFACTOR]`. Each task names 
 - Product/creative discovery: worth doing, desired product shape, narrowest wedge, 10x/better version, do-nothing consequence
 - Requirement reality
 - Domain grilling: glossary conflicts, fuzzy terms, concrete scenarios, code contradictions, context updates, ADR decisions
+- Solution shaping when triggered: R requirements, S candidate shapes,
+  PASS/FAIL fit check, selected shape, rejected shapes, and unknown mechanism
+  resolution
 - Decision questions and answers
 - Planning flow table
 - Second-Move Review when non-trivial
