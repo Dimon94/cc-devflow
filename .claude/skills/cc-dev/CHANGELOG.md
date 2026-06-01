@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.9.1 - 2026-06-01
+
+- require parallel `cc-dev` closeout to audit child worktrees after delivery
+  and remove only known clean, integrated, disposable worktrees
+- preserve and report dirty, unknown, or unintegrated child worktrees instead
+  of force-cleaning them
+
 ## v1.7.0 - 2026-05-31
 
 - slim the main `SKILL.md` entrypoint under 100 lines so autonomous workflow startup only reads route classification, state machine, hard rules, and output shape

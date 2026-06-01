@@ -168,6 +168,12 @@ If cherry-pick conflicts, resolve in the orchestrator branch, run focused
 verification, and record the conflict in `Failure Ledger` if it changes the
 execution conclusion.
 
+After final delivery, the orchestrator owns child worktree closeout. Use the
+worktree paths recorded from child reports and `task.md`, inspect each with Git,
+and remove only known clean worktrees through `git worktree remove`. Codex
+thread completion is not proof that its worktree is disposable; dirty or
+ambiguous child worktrees must be preserved and reported.
+
 ## Bad Substitutions
 
 These are invalid in Codex App parallel orchestration:

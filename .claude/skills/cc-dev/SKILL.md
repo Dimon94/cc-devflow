@@ -1,6 +1,6 @@
 ---
 name: cc-dev
-version: 1.9.0
+version: 1.9.1
 description: Drive one selected planned objective through PDCA until cc-act delivery choice, clarification, or blocker.
 triggers:
   - 自动驾驶开发这个需求
@@ -81,6 +81,9 @@ Ambiguous route or terminal-state choices use `references/user-choice-output-pro
 - Parallel work is scheduled only from `task.md#Execution Environments`; `cc-dev` must not invent sibling work from a loose TODO list.
 - Child environments may run `cc-do`, `cc-review`, `cc-check`, `cc-diagnose`, or bounded `cc-act`, but `cc-dev` keeps phase unlock, commit integration, and final delivery authority.
 - In Codex App, child environments are Codex threads created with `create_thread` and inspected with `read_thread`; generic subagents are not equivalent.
+- Parallel closeout must audit child worktrees and remove only proven useless,
+  clean worktrees that `cc-dev` created and integrated; dirty, unknown, or
+  human-authored worktrees are preserved and reported, never force-cleaned.
 - `cc-dev` never chooses delivery mode by itself; `cc-act` consumes or asks for the user choice.
 - Terminal state is exactly one of `remote-pr-opened`, `remote-pr-updated`, `local-handoff`, `local-main-merged`, `parallel-dispatched`, `waiting-for-child-results`, `needs-clarification`, or `blocked`.
 
@@ -92,7 +95,7 @@ Ambiguous route or terminal-state choices use `references/user-choice-output-pro
 4. Review gates: final `cc-check` convergence ran, blocked, or was not reached.
 5. Route taken: PDCA or resume path.
 6. Remaining risk: none, named residual risk, or blocker.
-7. For parallel mode: environment statuses, child thread IDs when available, commits integrated, phase gates run, and next unlock.
+7. For parallel mode: environment statuses, child thread IDs when available, commits integrated, phase gates run, worktree closeout, and next unlock.
 
 ## Exit Criteria
 
@@ -100,6 +103,9 @@ Ambiguous route or terminal-state choices use `references/user-choice-output-pro
 - Code work has fresh `cc-check` evidence before shipping or handoff.
 - Completed stages/environments have Git commits.
 - Parallel child commits were cherry-picked only after child verification, clean worktree proof, touched-path review, and focused verification in the integration branch.
+- Parallel runs audited child worktrees after integration and final delivery:
+  removed proven useless clean worktrees, preserved anything dirty or
+  ambiguous, and reported remaining worktree paths.
 - Final audit maps requirements to files, commands, tests, commits, `cc-check`
-  review convergence, and delivery evidence.
+  review convergence, delivery evidence, and parallel worktree closeout.
 - No process file was created outside allowed durable outputs.

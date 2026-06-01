@@ -33,6 +33,7 @@ exists, `cc-dev` may run a dispatch loop before final `cc-check`.
 12. `cc-act` 只能 create/update PR、local-handoff、local-main-merge 或 post-merge-closeout，并且必须由用户显式选择或确认 delivery mode。
 13. `cc-dev` 不预选本地合并或远程 PR；不合并 PR；不推 main。
 13a. `cc-dev` 可以派发子线程执行 `cc-do`、`cc-review`、`cc-check`、`cc-diagnose` 或有边界的 `cc-act`，但阶段解锁、commit 集成、最终 `cc-check` 和最终 `cc-act` 裁决留在主控线程。
+13b. 多线程收尾必须审计子 worktree 生命周期：只移除 `cc-dev` 创建、已集成、Git 干净、没有未保存人工改动的临时 worktree；脏的、来源不明的、仍有未集成提交的 worktree 一律保留并报告。
 14. 每轮停下前都做 completion audit。
 15. 不确定就是没完成。
 16. 时间耗尽、token 紧张、已经努力，都不等于完成。
@@ -99,6 +100,10 @@ Loop:
    bugs, and unlock the next batch only after the gate passes.
 10. When all required environments are integrated or completed, run final
     `cc-check`; child checks do not replace it.
+11. After final delivery closeout, audit child worktrees created for the
+    parallel run. Remove only worktrees that are clean, fully integrated, and
+    listed in `task.md`; preserve and report anything dirty, unknown, or still
+    containing unintegrated commits.
 
 Stop as `waiting-for-child-results` when child work is still running and no
 heartbeat or platform monitor is available. Stop as `blocked` when a child is
@@ -142,8 +147,34 @@ The audit must map objective text to evidence:
 - final `cc-check` review convergence result
 - selected `cc-act` delivery evidence: PR, handoff, local-main merge, or post-merge closeout
 - GitHub PR state
+- parallel worktree closeout evidence: removed temporary worktrees, preserved
+  dirty or ambiguous worktrees, and the command or status proof used
 
 If a checklist item has no evidence, continue work or stop as blocked.
+
+## Parallel Worktree Closeout
+
+The goal is lifecycle hygiene, not making directories disappear. A child
+worktree is disposable only when all of these are true:
+
+1. it was created for the current `task.md#Execution Environments` run
+2. its environment is `integrated`, `completed` for no-commit routes, or
+   explicitly skipped with a durable reason
+3. its reported commit is already present in the orchestration branch, or the
+   route produced no commit by contract
+4. `git -C <child-worktree> status --short --branch` is clean
+5. `git worktree list --porcelain` still shows the path as a linked worktree
+
+Use `git worktree remove <child-worktree>` only after those checks pass. Use
+`git worktree prune` only after removals, and only to clean stale Git metadata.
+Do not use `git reset --hard`, broad `git clean`, broad `rm -rf`, or branch
+deletion as part of this closeout unless the user explicitly approved that
+destructive action in the current turn.
+
+If any child worktree is dirty, missing, ambiguous, or contains unintegrated
+commits, preserve it. Record the path, branch, status summary, and reason it was
+not removed in the final audit. This is a valid closeout; silent deletion is
+not.
 
 ## Worktree Boundary
 

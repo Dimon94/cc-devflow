@@ -94,6 +94,8 @@ Before cherry-picking a child commit:
 5. cherry-pick into the orchestration branch
 6. run the environment focused verification
 7. update only durable orchestration state in `task.md`
+8. keep the child worktree until final delivery closeout audits whether it is
+   disposable
 
 Cherry-pick is the default integration strategy. Fast-forward merge is allowed
 only when there are no sibling environments and the environment owns the full
@@ -139,3 +141,30 @@ result.
 When all required environments are integrated, run `cc-check` for the whole
 change. Child focused checks do not replace final verification. Route to
 `cc-act` only after final `cc-check` returns `pass`.
+
+## Worktree Closeout
+
+Run this after final delivery succeeds or when stopping with a handoff that must
+leave clean local state. It covers only child worktrees created for the current
+parallel run; unrelated user worktrees are out of scope.
+
+Closeout steps:
+
+1. read the child environment records from `task.md`
+2. inspect `git worktree list --porcelain`
+3. for each child path, run `git -C <path> status --short --branch`
+4. verify commit-producing environments were integrated into the orchestration
+   branch before considering removal
+5. remove only clean, integrated, known child worktrees with
+   `git worktree remove <path>`
+6. run `git worktree prune` only after successful removals
+7. report removed paths and preserved paths in the final audit
+
+Never use broad destructive cleanup here. No `git reset --hard`, no broad
+`git clean`, no broad `rm -rf`, and no branch deletion unless the user
+explicitly approved that action in the current turn.
+
+Preserve a child worktree when it is dirty, missing from `task.md`, missing from
+`git worktree list`, has unintegrated commits, or has unknown ownership. Report
+that preserved state as remaining risk or handoff evidence instead of silently
+cleaning it.

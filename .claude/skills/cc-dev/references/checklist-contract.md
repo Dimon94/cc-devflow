@@ -27,7 +27,8 @@ Autonomous driving fails when stage transitions inherit memory instead of re-rea
 - [ ] P0/P1/P2 findings from final review convergence reroute to `cc-plan`, `cc-do`, or `cc-diagnose` instead of being bypassed
 - [ ] final delivery mode was selected by the user or through the shared choice protocol before `cc-act` executed
 - [ ] local-main merge mode, when selected, has rebase, `--ff-only` merge, containing-commit proof, and no-push evidence
-- [ ] terminal state is one of remote-pr-opened, remote-pr-updated, local-handoff, local-main-merged, needs-clarification, or blocked
+- [ ] parallel mode, when used, audited child worktrees and removed only known clean, integrated, disposable worktrees
+- [ ] terminal state is one of remote-pr-opened, remote-pr-updated, local-handoff, local-main-merged, parallel-dispatched, waiting-for-child-results, needs-clarification, or blocked
 
 ## Exit Rule
 
