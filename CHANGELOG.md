@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.37] - 2026-06-01
+
+### Changed
+
+- Required `cc-dev` parallel closeout to audit child worktrees after final
+  delivery and remove only known clean, integrated, disposable worktrees.
+- Required dirty, ambiguous, or unintegrated child worktrees to be preserved
+  and reported instead of force-cleaned.
+
 ## [4.5.36] - 2026-06-01
 
 ### Changed
