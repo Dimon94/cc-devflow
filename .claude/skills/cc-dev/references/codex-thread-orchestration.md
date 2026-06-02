@@ -8,14 +8,18 @@ Required Codex tools:
 
 - `create_thread`: create one background Codex thread for one execution
   environment.
+- `list_threads`: discover a real child thread id when `create_thread`
+  returns a provisioning token such as `pendingWorktreeId`.
 - `read_thread`: poll that exact thread by id before judging status.
 - `send_message_to_thread`: send correction or retry instructions to that exact
   thread.
 - `automation_update`: create/update/delete heartbeat monitoring for the parent
   thread when autonomous polling is requested.
 
-If these tools are unavailable, stop as `waiting-for-child-results` or use the
-platform-specific adapter. Do not guess another mechanism.
+Before entering Codex App parallel mode, discover all five tools. If any are
+unavailable, stop as `waiting-for-child-results` or use the platform-specific
+adapter. Do not guess another mechanism, do not hand-write heartbeat XML, and
+do not claim `parallel-dispatched`.
 
 ## Thread Model
 
@@ -34,9 +38,9 @@ platform-specific adapter. Do not guess another mechanism.
 
 ## Dispatch
 
-Call `create_thread` for each dispatched environment. The prompt is the
-dispatch packet from `parallel-orchestration.md` plus Codex-specific tool
-requirements. It must say:
+Call `create_thread` for each dispatched environment. The prompt is
+`assets/CHILD_DISPATCH_PACKET.md` filled with the environment-specific data from
+`task.md`, plus Codex-specific tool requirements. It must say:
 
 - execute only the assigned environment
 - do not touch unrelated environments
@@ -56,8 +60,9 @@ Target: project worktree | project local
 Status: dispatched
 ```
 
-Do not claim `parallel-dispatched` until `create_thread` returned thread ids
-for every environment in the batch.
+Do not claim `parallel-dispatched` until `create_thread` returned or the
+bounded `list_threads` discovery loop found real thread ids for every
+environment in the batch.
 
 If `create_thread` returns `pendingWorktreeId` instead of a thread id, use this
 bounded discovery loop:
@@ -161,8 +166,9 @@ evidence before integrating.
 
 Never blindly cherry-pick because a child says it is done. The orchestrator must
 call `read_thread`, inspect commit hash, verification evidence, dirty state,
-blockers, and touched files first. After cherry-pick, rerun the focused command
-in the orchestration branch.
+blockers, and touched files, then run `scripts/audit-child-integration.sh` or an
+equivalent explicit audit before integration. After cherry-pick, rerun the
+focused command in the orchestration branch.
 
 If cherry-pick conflicts, resolve in the orchestrator branch, run focused
 verification, and record the conflict in `Failure Ledger` if it changes the

@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.10.0 - 2026-06-02
+
+- require Codex parallel dispatch to preflight `create_thread`, `list_threads`,
+  `read_thread`, `send_message_to_thread`, and `automation_update`
+- add a bundled child dispatch packet template so parallel children receive the
+  full environment contract instead of ad-hoc prompts
+- add a read-only child integration audit script before cherry-picking child
+  commits into the orchestration branch
+
 ## v1.9.1 - 2026-06-01
 
 - require parallel `cc-dev` closeout to audit child worktrees after delivery

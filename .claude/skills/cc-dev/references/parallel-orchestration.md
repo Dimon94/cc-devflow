@@ -42,7 +42,7 @@ If any condition is unclear, run serially or route back to `cc-plan`.
 
 ## Dispatch Packet
 
-Every child receives:
+Every child receives a completed `assets/CHILD_DISPATCH_PACKET.md`. It includes:
 
 - change key, current branch, base commit, and parent thread summary
 - parent thread id when the host supports `send_message_to_thread`
@@ -90,11 +90,12 @@ Before cherry-picking a child commit:
 1. verify the child thread is completed
 2. verify the child worktree is clean
 3. inspect commit hash and touched files
-4. reject scope drift or unrelated dirty files
-5. cherry-pick into the orchestration branch
-6. run the environment focused verification
-7. update only durable orchestration state in `task.md`
-8. keep the child worktree until final delivery closeout audits whether it is
+4. run `scripts/audit-child-integration.sh` or an equivalent explicit audit
+5. reject scope drift or unrelated dirty files
+6. cherry-pick into the orchestration branch
+7. run the environment focused verification
+8. update only durable orchestration state in `task.md`
+9. keep the child worktree until final delivery closeout audits whether it is
    disposable
 
 Cherry-pick is the default integration strategy. Fast-forward merge is allowed

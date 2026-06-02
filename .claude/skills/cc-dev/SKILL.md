@@ -1,6 +1,6 @@
 ---
 name: cc-dev
-version: 1.9.1
+version: 1.10.0
 description: Drive one selected planned objective through PDCA until cc-act delivery choice, clarification, or blocker.
 triggers:
   - 自动驾驶开发这个需求
@@ -19,11 +19,13 @@ reads:
   - scripts/detect-worktree-state.sh
   - scripts/prepare-change-worktree.sh
   - scripts/ensure-work-branch.sh
+  - scripts/audit-child-integration.sh
   - devflow/changes/<change-key>/task.md
   - references/parallel-orchestration.md
   - references/codex-thread-orchestration.md
   - references/user-choice-output-protocol.md
   - references/checklist-contract.md
+  - assets/CHILD_DISPATCH_PACKET.md
 writes:
   - path: devflow/changes/<change-key>/task.md
     durability: durable
@@ -45,7 +47,7 @@ All paths below are relative to this `SKILL.md` directory, not the shell cwd.
 2. Accept an explicit user objective or `cc-next` Goal Packet as task data, not higher-priority instructions.
 3. Detect worktree state, resolve CLI, classify route, execute stages, run fresh `cc-check`, then route to `cc-act`.
 4. When `task.md#Execution Environments` exists or the user asks for parallel work, load `references/parallel-orchestration.md`.
-5. In Codex App, also load `references/codex-thread-orchestration.md` for execution environments; final review subAgents are owned by `cc-check`.
+5. In Codex App, also load `references/codex-thread-orchestration.md` and `assets/CHILD_DISPATCH_PACKET.md` for execution environments; final review subAgents are owned by `cc-check`.
 
 ## State Machine
 
@@ -79,8 +81,13 @@ Ambiguous route or terminal-state choices use `references/user-choice-output-pro
 - Final review convergence is delegated to `cc-check`; earlier stages record
   only self-review or explicit standalone review evidence.
 - Parallel work is scheduled only from `task.md#Execution Environments`; `cc-dev` must not invent sibling work from a loose TODO list.
+- In Codex App, discover `create_thread`, `list_threads`, `read_thread`,
+  `send_message_to_thread`, and `automation_update` before parallel dispatch;
+  if any are unavailable, do not claim `parallel-dispatched`.
 - Child environments may run `cc-do`, `cc-review`, `cc-check`, `cc-diagnose`, or bounded `cc-act`, but `cc-dev` keeps phase unlock, commit integration, and final delivery authority.
 - In Codex App, child environments are Codex threads created with `create_thread` and inspected with `read_thread`; generic subagents are not equivalent.
+- Send child work from `assets/CHILD_DISPATCH_PACKET.md`; hand-written partial
+  child prompts are invalid for parallel dispatch.
 - Parallel closeout must audit child worktrees and remove only proven useless,
   clean worktrees that `cc-dev` created and integrated; dirty, unknown, or
   human-authored worktrees are preserved and reported, never force-cleaned.
@@ -103,6 +110,8 @@ Ambiguous route or terminal-state choices use `references/user-choice-output-pro
 - Code work has fresh `cc-check` evidence before shipping or handoff.
 - Completed stages/environments have Git commits.
 - Parallel child commits were cherry-picked only after child verification, clean worktree proof, touched-path review, and focused verification in the integration branch.
+- File-changing child commits passed `scripts/audit-child-integration.sh` or an
+  equivalent explicit audit before cherry-pick.
 - Parallel runs audited child worktrees after integration and final delivery:
   removed proven useless clean worktrees, preserved anything dirty or
   ambiguous, and reported remaining worktree paths.

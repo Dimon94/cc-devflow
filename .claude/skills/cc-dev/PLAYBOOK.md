@@ -88,12 +88,13 @@ Loop:
 3. Create sibling worktrees and child sessions for the selected batch when the
    platform supports it. Never create nested worktrees from inside a child
    worktree.
-4. Send each child a complete dispatch packet. The child route may be `cc-do`,
-   `cc-review`, `cc-check`, `cc-diagnose`, or bounded `cc-act`.
+4. Send each child a complete `assets/CHILD_DISPATCH_PACKET.md`. The child route
+   may be `cc-do`, `cc-review`, `cc-check`, `cc-diagnose`, or bounded `cc-act`.
 5. Monitor child status. Correct off-boundary children instead of integrating
    their output.
-6. For file-changing routes, integrate only verified commits, one at a time, by
-   cherry-pick into the orchestration branch.
+6. For file-changing routes, integrate only verified commits that pass
+   `scripts/audit-child-integration.sh`, one at a time, by cherry-pick into the
+   orchestration branch.
 7. Rerun focused verification after each cherry-pick.
 8. Update only durable environment state in `task.md`.
 9. Run phase gates, create `EF###` diagnosis environments for newly discovered
