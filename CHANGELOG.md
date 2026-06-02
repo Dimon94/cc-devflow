@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.39] - 2026-06-02
+
 ### Added
 
 - Mechanized `cc-dev` parallel orchestration with Codex thread tool preflight,
