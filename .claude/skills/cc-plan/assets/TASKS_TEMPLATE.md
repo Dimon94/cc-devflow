@@ -191,6 +191,23 @@ Risk / Escalate If:
 Durable orchestration state only. Do not write heartbeat polling logs, child
 thread scratch notes, or large command output here.
 
+Status enum:
+
+| Status | Writer | Entry condition | Exit condition | Durable evidence required |
+|--------|--------|-----------------|----------------|---------------------------|
+| planned | cc-plan | environment is frozen in this task contract | parent chooses the environment for dispatch | environment block with route, tasks, dependencies, touches, and gate |
+| pending-thread | cc-dev | `create_thread` returned a provisioning token such as `pendingWorktreeId` | `list_threads` finds and `read_thread` verifies the real thread id | provisioning token, requested title, project target, branch/worktree filters |
+| dispatched | cc-dev | real child thread id is confirmed | child starts running or returns a terminal report | thread id, target, worktree or project-local target |
+| running | heartbeat or cc-dev | `read_thread` proves the child has started and is not terminal | child final report is ready | thread id and concise status only |
+| completed | child report, verified by cc-dev | no-commit route finished, or file-changing route reports a verified commit | no-commit route closes, or commit route enters integration | final report, verification evidence, dirty state, touched files, commit when required |
+| integrated | cc-dev | child audit passed, commit was cherry-picked, and focused verification passed | phase gate unlocks the next environment or final `cc-check` starts | audit result, cherry-picked commit, focused verification command |
+| skipped | cc-dev or user-approved | environment is no longer needed and the reason is durable | final `cc-check` confirms no required work is missing | skip reason and approval/evidence |
+| blocked | child or cc-dev | child cannot continue, repeated blocker appears, or graph no longer matches repo truth | retry, reroute, or `cc-plan` repair | blocker evidence and route recommendation |
+
+`pendingWorktreeId` is not a thread id. `dispatched` requires a real child
+thread id. `integrated` requires audit evidence, cherry-pick evidence, and
+focused verification evidence.
+
 | Env | Route | Status | DependsOn | Parallel | Child | Commit | Gate |
 |-----|-------|--------|-----------|----------|-------|--------|------|
 | E001 | cc-do | planned | none | no | pending | pending | pending |

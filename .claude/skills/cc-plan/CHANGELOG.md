@@ -1,5 +1,13 @@
 # CC-Plan Skill Changelog
 
+## v3.24.0 - 2026-06-02
+
+- add an execution environment status enum to `task.md` so parent threads,
+  child threads, and heartbeat monitors share durable state semantics
+- clarify that `pendingWorktreeId` is not a child thread id, `dispatched`
+  requires a real thread id, and `integrated` requires audit, cherry-pick, and
+  focused verification evidence
+
 ## v3.22.0 - 2026-05-31
 
 - remove external planning-lane integration language from `cc-plan`; Plan now starts
