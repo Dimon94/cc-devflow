@@ -4,19 +4,24 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-Usage: render-pr-brief.sh --dir path/to/change [--out path/to/pr-brief.md] [--repo-root path/to/repo]
+Usage: render-pr-brief.sh --dir path/to/change [--out path/to/pr-brief.md] [--repo-root path/to/repo] [--trigger label]
 EOF
 }
 
 REQ_DIR=""
 OUT_FILE=""
 REPO_ROOT=""
+SESSION_TRIGGER_ARGS=()
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --dir) REQ_DIR="$2"; shift 2 ;;
     --out) OUT_FILE="$2"; shift 2 ;;
     --repo-root) REPO_ROOT="$2"; shift 2 ;;
+    --trigger)
+      SESSION_TRIGGER_ARGS+=(--trigger "$2")
+      shift 2
+      ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown arg: $1" >&2; usage; exit 1 ;;
   esac
@@ -49,7 +54,7 @@ head_sha="$(git -C "$REPO_ROOT" rev-parse --short HEAD 2>/dev/null || true)"
 status="$(git -C "$REPO_ROOT" status --short 2>/dev/null || true)"
 commits="$(git -C "$REPO_ROOT" log --oneline -10 2>/dev/null || true)"
 changed="$(git -C "$REPO_ROOT" diff --stat HEAD 2>/dev/null || true)"
-postmortem_context="$("$script_dir/evaluate-postmortem-trigger.sh" --dir "$change_dir" --repo-root "$REPO_ROOT")"
+postmortem_context="$("$script_dir/evaluate-postmortem-trigger.sh" --dir "$change_dir" --repo-root "$REPO_ROOT" "${SESSION_TRIGGER_ARGS[@]}")"
 
 postmortem_field() {
   local key="$1"

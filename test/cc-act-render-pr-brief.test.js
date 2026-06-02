@@ -66,7 +66,19 @@ describe('cc-act PR brief renderer', () => {
       run('git', ['add', '.'], repoRoot);
       run('git', ['commit', '-m', 'test: seed task'], repoRoot);
 
-      run('bash', [RENDER_PR_BRIEF, '--dir', changeDir, '--repo-root', repoRoot], repoRoot);
+      run(
+        'bash',
+        [
+          RENDER_PR_BRIEF,
+          '--dir',
+          changeDir,
+          '--repo-root',
+          repoRoot,
+          '--trigger',
+          'tool-timeout'
+        ],
+        repoRoot
+      );
 
       const rendered = fs.readFileSync(handoffPath, 'utf8');
       expect(rendered).toContain('# PR 交接简报');
@@ -75,7 +87,8 @@ describe('cc-act PR brief renderer', () => {
       expect(rendered).toContain('- 已完成: T001 Finish demo task');
       expect(rendered).toContain('## PR 正文草稿');
       expect(rendered).toContain('## 尸检触发');
-      expect(rendered).toContain('- 是否需要尸检: no');
+      expect(rendered).toContain('- 是否需要尸检: yes');
+      expect(rendered).toContain('- 触发原因: session:tool-timeout');
       expect(rendered).toContain('- <根据 task.md 和提交记录总结用户可见变化>');
     } finally {
       fs.rmSync(repoRoot, { recursive: true, force: true });
@@ -177,6 +190,42 @@ describe('cc-act postmortem trigger evaluator', () => {
 
       expect(result.stdout).toContain('POSTMORTEM_REQUIRED=yes');
       expect(result.stdout).toContain('task:failure-ledger');
+    } finally {
+      fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+  });
+
+  test('recognizes Chinese postmortem markers in task evidence', () => {
+    const { repoRoot, changeDir } = createRepo('REQ-003-chinese-marker', [
+      '',
+      '- 尸检触发: 是'
+    ]);
+
+    try {
+      const result = run('bash', [EVALUATE_POSTMORTEM_TRIGGER, '--dir', changeDir], repoRoot);
+
+      expect(result.stdout).toContain('POSTMORTEM_REQUIRED=yes');
+      expect(result.stdout).toContain('task:postmortem-required');
+    } finally {
+      fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+  });
+
+  test('ignores unconfirmed Failure Ledger candidates', () => {
+    const { repoRoot, changeDir } = createRepo('REQ-004-unconfirmed-ledger', [
+      '',
+      '## Failure Ledger',
+      '',
+      '| ID | Source | Trigger | Escape class | Symptom | Evidence | Attempted fix | Result | Lesson candidate | Status | Keep for postmortem |',
+      '|----|--------|---------|--------------|---------|----------|---------------|--------|------------------|--------|---------------------|',
+      '| FL-001 | cc-review | review | process-escape | stale validation reused | cc-check output | rerun gate | fixed | require fresh proof | unreviewed | yes |'
+    ]);
+
+    try {
+      const result = run('bash', [EVALUATE_POSTMORTEM_TRIGGER, '--dir', changeDir], repoRoot);
+
+      expect(result.stdout).toContain('POSTMORTEM_REQUIRED=no');
+      expect(result.stdout).toContain('TRIGGERS=none');
     } finally {
       fs.rmSync(repoRoot, { recursive: true, force: true });
     }
