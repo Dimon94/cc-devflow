@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Mechanized `cc-dev` parallel orchestration with Codex thread tool preflight,
+  a fixed child dispatch packet, and read-only child integration audit evidence.
+- Added durable execution-environment status semantics to the `cc-plan`
+  template and exposed existing `cc-do` helper scripts through skill metadata.
+
 ## [4.5.38] - 2026-06-02
 
 ### Removed

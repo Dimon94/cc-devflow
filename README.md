@@ -111,7 +111,8 @@ uses that graph to create sibling worktrees / child sessions, dispatch
 integration authority in the orchestrator thread through serial cherry-picks,
 phase gates, and final `cc-check`. Child sessions own only their assigned
 environment; they do not unlock phases, merge main, or make final delivery
-decisions.
+decisions. Codex child dispatch uses a fixed dispatch packet, real thread-tool
+preflight, and read-only integration audit evidence before cherry-pick.
 
 Canonical language and durable decisions stay inside cc-devflow-native sources: `task.md`, Git history, PR truth, and handoff artifacts. Legacy planning artifacts are readable fallback inputs only.
 

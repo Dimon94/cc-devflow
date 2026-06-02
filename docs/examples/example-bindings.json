@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-05-28",
+  "updatedAt": "2026-06-02",
   "skills": {
     "cc-next": "1.5.0",
-    "cc-dev": "1.9.1",
-    "cc-plan": "3.23.0",
+    "cc-dev": "1.10.0",
+    "cc-plan": "3.24.0",
     "cc-diagnose": "1.0.0",
-    "cc-do": "1.11.0",
+    "cc-do": "1.11.2",
     "cc-review": "2.14.0",
     "cc-pr-review": "1.8.0",
     "cc-pr-land": "1.5.0",
