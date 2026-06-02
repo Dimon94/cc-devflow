@@ -18,7 +18,6 @@ Hotfix: cc-diagnose -> focused fix -> regression proof
 
 Use maintenance skills separately when needed:
 
-- `cc-spec-init`: bootstrap or repair `devflow/specs/` and ``
 - `cc-simplify`: cleanup pass before ship
 
 Use [skills.sh CLI](https://skills.sh/docs/cli) when you only want one skill:

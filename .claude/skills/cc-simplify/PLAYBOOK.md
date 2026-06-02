@@ -20,7 +20,7 @@
    - stack signals: `package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`
    - test signals: `jest`, `vitest`, `pytest`, `go test` 等
    - scope flags: API、auth、backend、frontend、migration、docs、release
-   - 相关 `task.md`、capability specs、已经跑过的验证
+   - 相关 `task.md` 和已经跑过的验证
 3. 如果 diff 跨了互不相关模块，先按模块分组；不要把 cleanup 变成全仓大扫除。
 4. 历史债只有在阻塞当前交付，或被当前 diff 放大时，才进入范围。
 

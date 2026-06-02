@@ -81,16 +81,13 @@ Use the skills in this order:
 
 Typical outputs:
 
-- `cc-spec-init` writes `devflow/specs/INDEX.md` and capability specs
 - `cc-plan` writes `task.md#Contract Summary`
 - `cc-diagnose` records reproduction, hypotheses, probes, fix evidence, and regression proof in the response or final commit/PR text
 - `cc-check` reports verification facts in the response, PR brief, or Git commit
 - `cc-act` writes exactly one final PR file, `handoff/pr-brief.md`, or incident postmortem files when a real incident needs a corpse report
 
-Capability truth lives in `devflow/specs/`.
 Change truth lives in `devflow/changes/<change>/`.
 
-- Keep `INDEX.md` plus capability markdown under `devflow/specs/`.
 - Name new change directories as `REQ-<number>-<description>` for requirements or `FIX-<number>-<description>` for bug fixes. `REQ` and `FIX` advance as separate local sequences, so cross-prefix duplicates are valid. Parallel worktrees may still repeat numbers; the full change key, especially the description, distinguishes the work. Old lowercase directories are compatibility reads only.
 - Keep `task.md`, optional `handoff/pr-brief.md`, and Git commits as change truth. Real recurring failures and classified review escapes may also write incident postmortems under `devflow/postmortems/`. Do not generate extra process files.
 - Workflow state is Git-owned: keep `task.md`, commit each completed stage, and do not create extra process files.
@@ -152,7 +149,7 @@ npx cc-devflow adapt --cwd /path/to/your/project --platform codex
 
 If your project has no optional `.claude/commands/` input, this is expected: the compiler will still generate the skills registry and mirror the distributed skill set for Codex.
 
-Codex mirrors the distributed skills from `.claude/skills/<skill>/` into `.codex/skills/<skill>/`. That set includes the public workflow skills plus maintenance skills `cc-spec-init` and `cc-simplify`, and the mirror is additive-only: existing project-owned Codex skills are preserved instead of being deleted.
+Codex mirrors the distributed skills from `.claude/skills/<skill>/` into `.codex/skills/<skill>/`. That set includes the public workflow skills plus the maintenance skill `cc-simplify`, and the mirror is additive-only: existing project-owned Codex skills are preserved instead of being deleted.
 
 ### Keep skills and examples in sync
 

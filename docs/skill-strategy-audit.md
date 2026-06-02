@@ -12,7 +12,7 @@
 | `deprecated/qa` | 用户视角 issue、轻量澄清、按可独立验证行为拆分 | `cc-act` / `cc-plan` | 迁移为 follow-up / issue handoff 的行为化规则 |
 | `deprecated/request-refactor-plan` | 重构计划拆成 tiny commits，每步保持可运行 | `cc-plan` / `cc-act` | 迁移为 refactor slicing 和 bisectable commit 规则 |
 | `deprecated/triage-issue` | 先查根因，再写 TDD fix plan，issue 不绑定易腐烂文件行号 | `cc-diagnose` / `cc-plan` | 迁移为 repair contract 和 durable issue brief 规则 |
-| `deprecated/ubiquitous-language` | canonical terms、aliases to avoid、ambiguity flag | `cc-spec-init` / `cc-plan` | 迁移为 capability/domain language glossary gate |
+| `deprecated/ubiquitous-language` | canonical terms、aliases to avoid、ambiguity flag | `cc-plan` | 迁移为 task contract 内的 domain language glossary gate |
 | `engineering/diagnose` | 反馈回路优先级、提高 flaky 复现率、假设必须可证伪、debug tag cleanup | `cc-diagnose` | 已有大部分；补强 loop sharpening 和 postmortem handoff |
 | `engineering/github-triage` | label state machine、needs-info 保留已确认事实、resume triage notes | `cc-act` | 迁移为远端 issue/PR closeout 的状态一致性规则 |
 | `engineering/grill-with-docs` | 术语冲突立即叫停、具体场景压测、ADR 只记难逆/意外/真实取舍 | `cc-plan` | 已有大部分；补强 glossary update 和 ADR sparsity |

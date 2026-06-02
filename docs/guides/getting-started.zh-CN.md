@@ -81,15 +81,13 @@ find .codex/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort
 
 常见产物：
 
-- `cc-spec-init` 产出 `devflow/specs/INDEX.md` 和 capability spec
 - `cc-plan` 产出 `task.md#Contract Summary`
 - `cc-diagnose` 在回复或最终 commit/PR 文本里记录复现、假设、探针、修复证据和回归证明
 - `cc-check` 在当前回复、PR 文件或 Git commit 里记录验证事实
 - `cc-act` 只产出最终 PR 文件 `handoff/pr-brief.md`；真实事故需要尸检时才产出 incident postmortem 文件
 
-durable truth 分两层：
+durable truth 分层：
 
-- `devflow/specs/`：capability 真相，保留 `INDEX.md` 与 `capabilities/*.md`
 - 新 change 目录必须命名为 `REQ-<number>-<description>`（需求）或 `FIX-<number>-<description>`（修复）；`REQ` 和 `FIX` 分别维护自己的递增编号，跨前缀同号不是冲突；并行工作树造成重复编号时，完整 change key 的描述负责区分业务内容，旧小写目录只作为历史兼容读取。
 - `devflow/changes/<change>/`：变更真相，只保留 `task.md`、可选 `handoff/pr-brief.md` 和 Git commit；真实复发事故和已分类的 review escape 可在 `devflow/postmortems/` 写尸检文件。不要生成额外过程文件。
 - 流程状态归 Git：保留 `task.md`，每个完成阶段提交 commit，不创建额外过程文件。
@@ -151,7 +149,7 @@ npx cc-devflow adapt --cwd /path/to/your/project --platform codex
 
 如果你的项目没有可选的 `.claude/commands/` 输入目录，这也是正常的；编译器仍然会生成 skills registry，并为 Codex 镜像正式分发 skill 集合。
 
-Codex 现在会把正式分发的 skill 从 `.claude/skills/<skill>/` 镜像到 `.codex/skills/<skill>/`。这套集合包含公开 workflow skill 和维护类 skill `cc-spec-init`、`cc-simplify`，并且镜像是纯增量的：项目里已有的自定义 Codex skill 不会被删除。
+Codex 现在会把正式分发的 skill 从 `.claude/skills/<skill>/` 镜像到 `.codex/skills/<skill>/`。这套集合包含公开 workflow skill 和维护类 skill `cc-simplify`，并且镜像是纯增量的：项目里已有的自定义 Codex skill 不会被删除。
 
 ### 保持 skill 和样例同步
 

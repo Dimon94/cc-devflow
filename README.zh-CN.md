@@ -95,9 +95,8 @@ flowchart TD
 | `cc-check` | 工作需要新鲜验证证据 | pass/fail/blocked 回复和 Git commit |
 | `cc-act` | 已验证工作需要 PR、本地 handoff 或 closeout | 可选 `handoff/pr-brief.md`、Git/PR 真相或 incident postmortem |
 
-整包还包含两个维护类 Skill：
+整包还包含维护类 Skill：
 
-- `cc-spec-init`：初始化和维护 `devflow/specs/` 下的 durable capability spec
 - `cc-simplify`：审查已改代码的复用、质量、效率和需求漂移
 
 ## 计划质量门禁
@@ -106,7 +105,7 @@ flowchart TD
 
 大需求需要并行时，`cc-plan` 先在 `task.md#Execution Environments` 冻结 execution environment 依赖图、触点、路由 skill、验证命令和 merge gate；`cc-dev` 再按这张图创建同级 worktree / 子线程，派发 `cc-do`、显式 standalone `cc-review`、`cc-check`、`cc-diagnose` 或有边界的 `cc-act`，并在主控线程串行验收、cherry-pick、跑 phase gate 和最终 `cc-check`。子线程只拥有自己的 environment，不拥有阶段解锁、主分支合并或最终交付裁决。
 
-Canonical language 和 durable decisions 只收敛到 cc-devflow 原生真相源：`devflow/specs/`、`task.md`、Git history 和 PR truth。历史 planning artifacts 只作为可读 fallback 输入。
+Canonical language 和 durable decisions 只收敛到 cc-devflow 原生真相源：`task.md`、Git history、PR truth 和 handoff artifacts。历史 planning artifacts 只作为可读 fallback 输入。
 
 
 planning 之后的每个阶段都从 `task.md`、当前 Git history/status，以及存在时的 PR 或 handoff truth 开始。系统不再提供 runtime context query 层；有争议的事实必须回到源 artifact 重新读取。用 `npm run benchmark:skills` 保持 public skill 入口足够薄；深层规划规则应该放在条件 reference 后面，而不是默认上下文里。
@@ -226,12 +225,10 @@ npx cc-devflow config doctor --cwd /path/to/your/project
 - `.claude/skills/cc-pr-land/`
 - `.claude/skills/cc-check/`
 - `.claude/skills/cc-act/`
-- `.claude/skills/cc-spec-init/`
 - `.claude/skills/cc-simplify/`
 
 ## Durable 与 Ephemeral
 
-- `devflow/specs/` 保存 durable capability truth：`INDEX.md` 和 `capabilities/*.md`。
 - 新 change 目录使用 `REQ-<number>-<description>` 表示需求，使用 `FIX-<number>-<description>` 表示 Bug 修复。`REQ` 和 `FIX` 各自递增自己的编号，跨前缀同号允许共存。并行工作树也可能产生重复编号，必须用完整 change key 的描述区分业务内容。
 - `devflow/changes/<change>/` 的 durable change truth 只保留 `task.md`、可选 `handoff/pr-brief.md` 和 Git commits。真实失败先进入 `task.md#Failure Ledger`；被验证为长期教训的复发故障再压缩进 `devflow/postmortems/` 的 incident postmortem。
 - 新 planned change 默认只有一个人工编写的 Markdown artifact：`task.md`，功能计划把冻结设计写进 `## Contract Summary`。Hotfix 诊断不要求 `task.md` handoff，除非明确把它升级进 PDCA 尾巴。历史 planning / review artifacts 只作为可读 fallback 输入。

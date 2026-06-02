@@ -18,7 +18,6 @@ Hotfix: cc-diagnose -> focused fix -> regression proof
 
 维护类动作按需单独调用：
 
-- `cc-spec-init`：初始化或修复 `devflow/specs/` 与 ``
 - `cc-simplify`：ship 前做清理和坏味道检查
 
 如果你只想安装单个 Skill，再使用 [skills.sh CLI](https://skills.sh/docs/cli)：

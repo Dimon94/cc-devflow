@@ -97,7 +97,6 @@ flowchart TD
 
 Maintenance skills are shipped with the pack:
 
-- `cc-spec-init`: initialize and maintain durable capability specs under `devflow/specs/`
 - `cc-simplify`: review changed code for reuse, quality, efficiency, and spec drift
 
 ## Planning Quality Gates
@@ -114,7 +113,7 @@ phase gates, and final `cc-check`. Child sessions own only their assigned
 environment; they do not unlock phases, merge main, or make final delivery
 decisions.
 
-Canonical language and durable decisions stay inside cc-devflow-native sources: `devflow/specs/`, `task.md`, Git history, and PR truth. Legacy planning artifacts are readable fallback inputs only.
+Canonical language and durable decisions stay inside cc-devflow-native sources: `task.md`, Git history, PR truth, and handoff artifacts. Legacy planning artifacts are readable fallback inputs only.
 
 
 Every shipped skill carries its own `references/checklist-contract.md`; there is no shared checklist reference. The checklist is a pause-point contract for that skill only, and its proof must land in the skill's normal evidence sink such as `task.md`, the response, PR truth, Git history, or release verification.
@@ -236,12 +235,10 @@ The currently distributed skill folders are:
 - `.claude/skills/cc-pr-land/`
 - `.claude/skills/cc-check/`
 - `.claude/skills/cc-act/`
-- `.claude/skills/cc-spec-init/`
 - `.claude/skills/cc-simplify/`
 
 ## Durable vs Ephemeral
 
-- `devflow/specs/` stores durable capability truth: `INDEX.md` plus `capabilities/*.md`.
 - New change directories use `REQ-<number>-<description>` for requirements or `FIX-<number>-<description>` for bug fixes. `REQ` and `FIX` numbers advance independently, so the same number may exist in both prefixes. Parallel worktrees may also create repeated numbers; the full change key must use a specific description to distinguish the work.
 - `devflow/changes/<change>/` stores durable change truth in `task.md`, optional `handoff/pr-brief.md`, and Git commits. Real failures start in `task.md#Failure Ledger`; confirmed recurring lessons may also be compressed into incident postmortems under `devflow/postmortems/`.
 - New planned changes default to one human-authored Markdown artifact: `task.md`, with frozen design in `## Contract Summary`. Hotfix diagnosis does not require a `task.md` handoff unless the work is deliberately promoted into the PDCA tail. Legacy planning and review artifacts are readable fallback inputs only.

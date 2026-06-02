@@ -30,7 +30,7 @@ Public surface:
 
 Shared runtime helpers may still live under `lib/skill-runtime/`, but they are not the user-facing workflow anymore.
 
-Maintenance helpers may also exist under `.claude/skills/`, such as `cc-spec-init`, `cc-simplify`, and `docs-sync`. `cc-spec-init` and `cc-simplify` ship with the pack as maintenance skills; `docs-sync` stays internal.
+Maintenance helpers may also exist under `.claude/skills/`, such as `cc-simplify` and `docs-sync`. `cc-simplify` ships with the pack as a maintenance skill; `docs-sync` stays internal.
 
 ---
 
@@ -108,7 +108,7 @@ The user-facing story should stay:
 
 - whole pack: `cc-devflow init`
 - platform outputs: `cc-devflow adapt`
-- capability truth maintenance: `cc-spec-init`
+- change quality cleanup: `cc-simplify`
 
 ### 2. Preserve Skills-First Layout
 

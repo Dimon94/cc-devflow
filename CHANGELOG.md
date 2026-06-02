@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- Removed the distributed `cc-spec-init` capability and current
+  `devflow/specs/` workflow surface.
+
 ## [4.5.37] - 2026-06-01
 
 ### Changed

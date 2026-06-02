@@ -10,7 +10,6 @@ project truth.
 They do not replace cc-devflow workflow truth:
 
 - `devflow/roadmap.json` owns roadmap state.
-- `devflow/specs/` owns capability specs when present.
 - `devflow/changes/<change-key>/task.md` owns the current change contract.
 - Git, PRs, and handoff files own delivery truth.
 
@@ -28,7 +27,7 @@ the relevant context docs:
    Do not mention the missing context system to the user, do not record absence
    as evidence, and do not create files preemptively.
 
-Repo evidence still wins. If context docs contradict code, tests, specs, or
+Repo evidence still wins. If context docs contradict code, tests, or
 current workflow artifacts, surface the conflict and route it to the current
 skill's decision or review path before freezing work.
 
