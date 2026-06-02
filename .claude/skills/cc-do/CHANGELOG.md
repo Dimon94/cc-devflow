@@ -1,5 +1,11 @@
 # CC-Do Skill Changelog
 
+## v1.11.2 - 2026-06-02
+
+- list the task selection, completion, status, conflict detection, and shared
+  helper scripts in skill metadata so execution agents can discover the scripts
+  already required by the `cc-do` contract
+
 ## v1.11.1 - 2026-05-31
 
 - add the shared Domain Context Contract so execution reads relevant

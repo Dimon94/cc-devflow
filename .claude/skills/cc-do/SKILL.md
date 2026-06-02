@@ -1,6 +1,6 @@
 ---
 name: cc-do
-version: 1.11.0
+version: 1.11.2
 description: Use when executing frozen task.md work inside approved scope.
 triggers:
   - 开始做 T003
@@ -17,6 +17,11 @@ reads:
   - ../cc-dev/scripts/resolve-cc-devflow.sh
   - ../cc-dev/references/domain-context-contract.md
   - references/checklist-contract.md
+  - scripts/select-ready-tasks.sh
+  - scripts/mark-task-complete.sh
+  - scripts/check-task-status.sh
+  - scripts/detect-file-conflicts.sh
+  - scripts/cc-do-common.sh
 writes:
   - path: devflow/changes/<change-key>/task.md
     durability: durable
