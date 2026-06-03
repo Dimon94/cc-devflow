@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.41] - 2026-06-03
+
+### Added
+
+- Required `cc-dev` child dispatch packets to include parent task file, child
+  worktree task file, and assigned task IDs so child threads can execute the
+  exact `task.md` contract from their own worktree.
+- Added `cc-plan` execution-environment task allocation fields so parallel
+  plans freeze full Red/Green/Refactor task blocks before dispatch.
+
+### Changed
+
+- Updated parallel dispatch gates to reject branch labels, workstream names, or
+  prose-only TODOs when a full task block is required.
+
 ## [4.5.40] - 2026-06-03
 
 ### Fixed
