@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.40] - 2026-06-03
+
+### Fixed
+
+- Required `cc-dev` Codex child threads to select `gpt-5.5` at thread creation
+  time with `medium` or `xhigh` reasoning, while keeping model names out of the
+  child dispatch packet.
+- Required `cc-review` child threads to use `xhigh` reasoning and block
+  dispatch instead of silently downgrading unsupported model resources.
+
 ## [4.5.39] - 2026-06-02
 
 ### Added
