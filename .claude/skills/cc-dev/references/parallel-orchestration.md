@@ -57,6 +57,11 @@ Every child receives a completed `assets/CHILD_DISPATCH_PACKET.md`. It includes:
 - rule: after final report is ready, send a short handoff notice back to the
   parent thread when `send_message_to_thread` is available
 
+Thread creation, not the child prompt, owns model and reasoning selection.
+In Codex App, set those resources through
+`references/codex-thread-orchestration.md`; do not write model names into
+`assets/CHILD_DISPATCH_PACKET.md`.
+
 ## Child Final Report
 
 Each child must return:

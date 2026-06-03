@@ -21,6 +21,18 @@ unavailable, stop as `waiting-for-child-results` or use the platform-specific
 adapter. Do not guess another mechanism, do not hand-write heartbeat XML, and
 do not claim `parallel-dispatched`.
 
+## Model And Reasoning Contract
+
+Set child thread resources on the `create_thread` call, not inside the child
+prompt. Dispatch every child with model `gpt-5.5`. Reasoning effort is either
+`medium` or `xhigh`: use `medium` for straightforward implementation,
+diagnosis, verification, and bounded closeout; use `xhigh` for complex
+architecture, risky integration, and every `cc-review` route. If the thread
+tool cannot set or honor the requested model or reasoning effort, leave the
+environment undispatched and report the unsupported resource. Do not silently
+downgrade to another model or reasoning level. Do not write model names into
+`assets/CHILD_DISPATCH_PACKET.md` or any child prompt text.
+
 ## Thread Model
 
 - One environment gets one child Codex thread created with `create_thread`.
