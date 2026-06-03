@@ -2,23 +2,30 @@
 
 ## Diagnosis
 
-Ship failures usually come from stale verification, implicit postmortem decisions, inherited PR prose, or unclear push/handoff/local-merge state.
+Ship failures usually come from stale verification, skipped simplification, implicit postmortem decisions, inherited PR prose, or unclear push/handoff/local-merge state.
 
 ## Checklist Mode
 
 - Mode: do-confirm
 - Evidence sink: `pr-brief.md`, postmortem files when required, Git commits, push/PR/local-main state, and final response
-- Failure route: `cc-check` for stale evidence, `cc-do` for unfinished work, or finish create-pr/update-pr/local-handoff/local-main-merge/post-merge-closeout
+- Failure route: `cc-check` for stale evidence or simplify edits, `cc-do` for unfinished work, or finish create-pr/update-pr/local-handoff/local-main-merge/post-merge-closeout
 
 ## Pause Points
 
 1. Before delivery mode: resolve CLI and read current task/Git/PR evidence.
-2. Before PR/handoff: rerun postmortem trigger and stale-verification check.
-3. Before exit: confirm commits, push/PR/local/local-main state, and postmortem verdict.
+2. Before any delivery action: load local Codex thread orchestration, discover required thread and heartbeat tools, then run the pre-act `cc-simplify` gate in a child thread by default.
+3. Before waiting on a child: confirm child-to-parent handoff instructions are in the dispatch packet and `automation_update` created heartbeat monitoring.
+4. Before PR/handoff: rerun postmortem trigger and stale-verification check.
+5. Before exit: confirm commits, simplify verdict, push/PR/local/local-main state, and postmortem verdict.
 
 ## Required Checks
 
 - [ ] `task.md`, Git status, latest commits, validation evidence, and PR state are current
+- [ ] local Codex orchestration was loaded before child dispatch: `codex-thread-orchestration.md` and `SIMPLIFY_CHILD_DISPATCH_PACKET.md`
+- [ ] `create_thread`, `list_threads`, `read_thread`, `send_message_to_thread`, and `automation_update` were discovered before child dispatch, or main-thread fallback is explicit
+- [ ] pre-act `cc-simplify` gate completed in a child thread, completed by main-thread fallback, returned `NO FINDINGS`, or is explicitly not applicable because there is no changed implementation surface
+- [ ] child mode includes child-to-parent handoff proof and heartbeat id/status; the parent verified the child result with `read_thread`
+- [ ] any `cc-simplify` code, test, or verification-posture edit routed back to `cc-check`
 - [ ] one ship mode is selected: create-pr, update-pr, local-handoff, local-main-merge, or post-merge-closeout
 - [ ] verification did not change during Act; otherwise route to `cc-check`
 - [ ] release-readiness gates are stated as passed, failed, skipped with reason, blocked with missing evidence, or not applicable; rollback/watch path is named when relevant

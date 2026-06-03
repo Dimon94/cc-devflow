@@ -84,7 +84,7 @@ resolve_output_language() {
     return
   fi
 
-  local devflow="$script_dir/../../cc-dev/scripts/resolve-cc-devflow.sh"
+  local devflow="$script_dir/resolve-cc-devflow.sh"
   if [[ -f "$devflow" ]]; then
     language="$(
       bash "$devflow" config resolve --cwd "$REPO_ROOT" --format policy 2>/dev/null \

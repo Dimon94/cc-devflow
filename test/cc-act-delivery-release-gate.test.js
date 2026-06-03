@@ -22,4 +22,40 @@ describe('cc-act delivery release gate', () => {
     expect(closureContract).toContain('Every release gate needs both a status and evidence or reason');
     expect(closureContract).toContain('skipped, blocked, and not-applicable gates need reasons');
   });
+
+  test('act must run simplify before delivery and reroute after simplify edits', () => {
+    const skill = read('.claude/skills/cc-act/SKILL.md');
+    const playbook = read('.claude/skills/cc-act/PLAYBOOK.md');
+    const checklist = read('.claude/skills/cc-act/references/checklist-contract.md');
+    const closureContract = read('.claude/skills/cc-act/references/closure-contract.md');
+
+    expect(skill).toContain('run the `cc-simplify` gate in a real Codex child thread by default');
+    expect(skill).toContain('If `cc-simplify` changed code, tests, or verification posture, route to `cc-check`');
+    expect(skill).toContain('load `references/codex-thread-orchestration.md`');
+    expect(skill).toContain('Simplify: child thread ID/report, child-to-parent handoff summary, heartbeat id/status');
+    expect(skill).not.toMatch(/cc-dev(?!flow)/);
+
+    expect(playbook).toContain('cc-act -> cc-simplify gate -> cc-check when edited');
+    expect(playbook).toContain('Discover `create_thread`, `list_threads`, `read_thread`');
+    expect(playbook).toContain('assets/SIMPLIFY_CHILD_DISPATCH_PACKET.md');
+    expect(playbook).toContain('create or update a 10 minute');
+    expect(playbook).toContain('Agents used: no (child thread orchestration unavailable)');
+    expect(playbook).toContain('do not ship with pre-simplification evidence');
+    expect(playbook).not.toMatch(/cc-dev(?!flow)/);
+
+    expect(checklist).toContain('skipped simplification');
+    expect(checklist).toContain('local Codex orchestration was loaded before child dispatch');
+    expect(checklist).toContain('`create_thread`, `list_threads`, `read_thread`, `send_message_to_thread`, and `automation_update`');
+    expect(checklist).toContain('pre-act `cc-simplify` gate completed in a child thread');
+    expect(checklist).toContain('child-to-parent handoff proof and heartbeat id/status');
+    expect(checklist).toContain('any `cc-simplify` code, test, or verification-posture edit routed back to `cc-check`');
+    expect(checklist).not.toMatch(/cc-dev(?!flow)/);
+
+    expect(closureContract).toContain('`cc-act` loads local Codex orchestration');
+    expect(closureContract).toContain('## Simplify Child Thread Guard');
+    expect(closureContract).toContain('The simplify child is a Codex child thread, not a generic subagent');
+    expect(closureContract).toContain('10 minute heartbeat with `automation_update`');
+    expect(closureContract).toContain('`cc-simplify` changes code, tests, or verification posture, return to `cc-check`');
+    expect(closureContract).not.toMatch(/cc-dev(?!flow)/);
+  });
 });

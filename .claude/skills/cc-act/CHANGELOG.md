@@ -1,5 +1,12 @@
 # CC-Act Skill Changelog
 
+## v1.17.0 - 2026-06-03
+
+- require `cc-act` to run the pre-delivery `cc-simplify` gate before shipping
+- add local Codex child-thread orchestration and a simplify-specific dispatch packet so `cc-act` no longer depends on another skill's thread contract
+- require child-to-parent handoff, `read_thread` verification, and 10 minute heartbeat monitoring before waiting for simplify child results
+- route back to `cc-check` whenever simplify changes code, tests, or verification posture
+
 ## v1.16.0 - 2026-05-31
 
 - slim the main `SKILL.md` entrypoint under 100 lines so closeout startup only reads durable outputs, ship modes, hard rules, and output shape

@@ -1,6 +1,6 @@
 ---
 name: cc-act
-version: 1.16.0
+version: 1.17.0
 description: Use when verified work must be committed, handed off, pushed, merged into local main, or turned into a PR with the smallest durable delivery surface.
 triggers:
   - 准备提 PR
@@ -16,10 +16,14 @@ reads:
   - assets/PR_BRIEF_TEMPLATE.md
   - assets/PROJECT_POSTMORTEM_TEMPLATE.md
   - assets/PROJECT_POSTMORTEM_INDEX_TEMPLATE.md
-  - ../cc-dev/scripts/resolve-cc-devflow.sh
+  - scripts/resolve-cc-devflow.sh
   - scripts/ensure-ship-branch.sh
   - scripts/evaluate-postmortem-trigger.sh
-  - ../cc-dev/references/user-choice-output-protocol.md
+  - references/codex-thread-orchestration.md
+  - assets/SIMPLIFY_CHILD_DISPATCH_PACKET.md
+  - ../cc-simplify/SKILL.md
+  - ../cc-simplify/PLAYBOOK.md
+  - references/user-choice-output-protocol.md
   - references/checklist-contract.md
 writes:
   - path: devflow/changes/<change-key>/handoff/pr-brief.md
@@ -39,10 +43,11 @@ writes:
 All paths below are relative to this `SKILL.md` directory, not the shell cwd.
 
 1. Read `references/checklist-contract.md`, `PLAYBOOK.md`, and `references/closure-contract.md`.
-2. Resolve CLI with `../cc-dev/scripts/resolve-cc-devflow.sh require config`.
+2. Resolve CLI with `scripts/resolve-cc-devflow.sh require config`.
 3. Read `task.md`, Git status, latest commits, validation evidence, and PR state.
-4. If verification changed, route to `cc-check`; if implementation is unfinished, route to `cc-do`.
-5. Choose exactly one delivery mode before pushing, creating a PR, or merging locally.
+4. Before Act delivery, load `references/codex-thread-orchestration.md`, then run the `cc-simplify` gate in a real Codex child thread by default to reduce complexity under the same behavior; if required thread or heartbeat tools are unavailable, run the same gate in the main thread and report the fallback.
+5. If `cc-simplify` changed code, tests, or verification posture, route to `cc-check`; if verification changed, route to `cc-check`; if implementation is unfinished, route to `cc-do`.
+6. Choose exactly one delivery mode before pushing, creating a PR, or merging locally.
 
 ## Durable Outputs
 
@@ -63,11 +68,13 @@ Everything else is Git history, PR history, or final response.
 | `local-main-merge` | user explicitly requests local `main` integration |
 | `post-merge-closeout` | work is already merged and needs archive/postmortem closeout |
 
-If delivery mode is not explicit, ask through `../cc-dev/references/user-choice-output-protocol.md`. Do not default to remote push, PR, or local-main merge.
+If delivery mode is not explicit, ask through `references/user-choice-output-protocol.md`. Do not default to remote push, PR, or local-main merge.
 
 ## Hard Rules
 
 - All completed work is committed with coherent Conventional Commit messages; use `references/git-commit-guidelines.md`.
+- Act cannot ship until the pre-act `cc-simplify` verdict is explicit: child-thread pass, main-thread fallback pass, `NO FINDINGS`, or not-applicable because there is no changed implementation surface.
+- `cc-act` simplify child threads follow the local Codex contract: discover `create_thread`, `list_threads`, `read_thread`, `send_message_to_thread`, and `automation_update`; dispatch with `assets/SIMPLIFY_CHILD_DISPATCH_PACKET.md`; require child-to-parent handoff; and create heartbeat monitoring before stopping as `waiting-for-child-results`.
 - PR/handoff mode writes or refreshes only `handoff/pr-brief.md`.
 - Release-readiness gates are explicit: passed, failed, skipped with reason, blocked with missing evidence, or not applicable.
 - `POSTMORTEM_REQUIRED=no` is reported, or an incident postmortem path is written with `Workflow Patch Candidate` completed.
@@ -79,14 +86,16 @@ If delivery mode is not explicit, ask through `../cc-dev/references/user-choice-
 
 1. Commit: latest commit hash or explicit uncommitted state.
 2. Verification: fresh evidence reused from `cc-check` or reroute reason.
-3. Delivery: PR URL, updated PR, local handoff path, local-main merge proof, or post-merge closeout state.
-4. Postmortem: `POSTMORTEM_REQUIRED=no` or incident path written with workflow patch candidate.
-5. Release: gate status, rollback/watch path, or explicit not-applicable reason.
-6. Route: terminal state or next skill.
+3. Simplify: child thread ID/report, child-to-parent handoff summary, heartbeat id/status, main-thread fallback report, `NO FINDINGS`, or not-applicable reason.
+4. Delivery: PR URL, updated PR, local handoff path, local-main merge proof, or post-merge closeout state.
+5. Postmortem: `POSTMORTEM_REQUIRED=no` or incident path written with workflow patch candidate.
+6. Release: gate status, rollback/watch path, or explicit not-applicable reason.
+7. Route: terminal state or next skill.
 
 ## Exit Criteria
 
 - Delivery mode and push/PR/handoff/local-main state are explicit.
+- Pre-act `cc-simplify` gate completed or was explicitly not applicable; child thread handoff and heartbeat status were verified when child mode was used; any simplify edit rerouted to `cc-check`.
 - Postmortem trigger gate ran via `scripts/evaluate-postmortem-trigger.sh`.
 - Release-readiness gate status is explicit in PR/handoff output or final response.
 - Verification did not change during Act.

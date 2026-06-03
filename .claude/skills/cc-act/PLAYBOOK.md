@@ -2,7 +2,7 @@
 
 ## State Machine
 
-`cc-check -> cc-act -> PR | local handoff | local main merge | post-merge closeout | next roadmap/REQ/FIX`
+`cc-check -> cc-act -> cc-simplify gate -> cc-check when edited | PR | local handoff | local main merge | post-merge closeout | next roadmap/REQ/FIX`
 
 Act ships verified work. It does not create process state.
 
@@ -16,22 +16,41 @@ Everything else is Git history, PR history, or final response.
 ## Closeout
 
 1. Verify Git status and latest commits.
-2. Run or cite the current validation commands.
-3. Commit any remaining owned changes.
-4. State release-readiness gates: local checks, config/env, migrations/data,
+2. Load `references/codex-thread-orchestration.md` and
+   `assets/SIMPLIFY_CHILD_DISPATCH_PACKET.md`.
+3. Discover `create_thread`, `list_threads`, `read_thread`,
+   `send_message_to_thread`, and `automation_update` before child dispatch.
+4. Run the pre-act `cc-simplify` gate in a real Codex child thread by default.
+   The child reviews the current diff for behavior-preserving complexity
+   reduction, reports confirmed smells, and may edit only within
+   `cc-simplify` rules.
+5. Require the child packet to tell the child to send a completion handoff to
+   the parent with `send_message_to_thread`; the parent must still verify the
+   result with `read_thread`.
+6. After the child thread is confirmed running, create or update a 10 minute
+   heartbeat with `automation_update` and stop as `waiting-for-child-results`.
+   Do not busy-poll running children in the main conversation.
+7. If any required thread or heartbeat tool is unavailable, run the same
+   `cc-simplify` gate in the main thread and report
+   `Agents used: no (child thread orchestration unavailable)`.
+8. If `cc-simplify` changes code, tests, or verification posture, stop Act and
+   route to `cc-check`; do not ship with pre-simplification evidence.
+9. Run or cite the current validation commands.
+10. Commit any remaining owned changes.
+11. State release-readiness gates: local checks, config/env, migrations/data,
    deploy/health, smoke/cleanup, rollback, and watch items. Mark skipped,
    blocked, or not applicable gates honestly.
-5. Build `pr-brief.md` only when PR/handoff needs it.
-6. Run `evaluate-postmortem-trigger.sh`; write incident postmortem when it returns `POSTMORTEM_REQUIRED=yes`.
-7. Push/create/update PR when requested and available.
-8. For `local-main-merge`, rebase the work branch onto local `main`, fast-forward merge from the owning main checkout, prove `main` contains the delivered commit, and do not push unless explicitly requested.
-9. Archive completed change only after merge or explicit closeout.
+12. Build `pr-brief.md` only when PR/handoff needs it.
+13. Run `evaluate-postmortem-trigger.sh`; write incident postmortem when it returns `POSTMORTEM_REQUIRED=yes`.
+14. Push/create/update PR when requested and available.
+15. For `local-main-merge`, rebase the work branch onto local `main`, fast-forward merge from the owning main checkout, prove `main` contains the delivered commit, and do not push unless explicitly requested.
+16. Archive completed change only after merge or explicit closeout.
 
 ## Delivery Choice
 
 If the user did not explicitly request remote PR, PR update, local handoff,
 local-main merge, or post-merge closeout, ask through
-`../cc-dev/references/user-choice-output-protocol.md` before acting.
+`references/user-choice-output-protocol.md` before acting.
 
 Recommendation defaults:
 
@@ -48,12 +67,14 @@ Do not bias toward local `main` merge or remote PR.
 `cc-act` 不是“把工作区弄干净”，而是最后一道责任边界。选择交付方式前，先证明三件事：
 
 1. 工作真的完成：`task.md`、提交记录、最新 `cc-check` 证据三者一致。
-2. 发布叙事诚实：跳过的 gate 有具体范围或环境原因，不是为了省事。
-3. 下一个人或 PR reviewer 不读聊天记录，也能看懂风险。
+2. 简化闸门真的跑过：`cc-simplify` 子线程报告、子线程回传主线程的 handoff、heartbeat id、主线程 fallback 报告，或无实现 diff 的不适用理由清楚存在。
+3. 发布叙事诚实：跳过的 gate 有具体范围或环境原因，不是为了省事。
+4. 下一个人或 PR reviewer 不读聊天记录，也能看懂风险。
 
 坏收尾信号：
 
 - `cc-check` 证据过期，或者早于最新提交。
+- 缺少 pre-act `cc-simplify` verdict、子线程 handoff、heartbeat proof，或者 simplify 改动后没有回到 `cc-check`。
 - release-readiness gate 写成 `not applicable`，但没有绑定到本次改动面。
 - PR / handoff 只说“测试通过”，没有列命令、退出码和证明的 claim。
 - `Failure Ledger` 里还有可能影响发布安全的 `unreviewed` 项。
@@ -121,4 +142,4 @@ memory, or unclassified review escape candidates into postmortem facts.
 
 ## Blockers
 
-Return to `cc-check` when evidence changed. Return to `cc-do` when implementation is unfinished. If the postmortem gate depends on session-only rework evidence, pass it as `--trigger <short-label>` instead of silently dropping it. Do not patch around missing proof in Act.
+Return to `cc-check` when evidence changed or `cc-simplify` edited code, tests, or verification posture. Return to `cc-do` when implementation is unfinished. If the postmortem gate depends on session-only rework evidence, pass it as `--trigger <short-label>` instead of silently dropping it. Do not patch around missing proof in Act.
