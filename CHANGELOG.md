@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.42] - 2026-06-03
+
+### Changed
+
+- Updated `cc-act` so delivery closeout runs a pre-act `cc-simplify` gate before
+  shipping.
+- Internalized the Codex simplify child-thread workflow in `cc-act`, including a
+  local dispatch packet, child-to-parent handoff, `read_thread` verification,
+  and 10 minute heartbeat monitoring.
+- Required `cc-act` to route back to `cc-check` whenever simplify changes code,
+  tests, or verification posture.
+
 ## [4.5.41] - 2026-06-03
 
 ### Added
