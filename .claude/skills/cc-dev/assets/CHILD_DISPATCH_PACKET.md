@@ -10,12 +10,24 @@ Route skill:
 Parent thread id:
 Parent branch:
 Base commit:
+Parent task file:
+Child worktree task file:
+Assigned task IDs:
+-
 
 Current environment block:
 <paste the exact environment block from task.md>
 
 Included task blocks:
 <paste each task block assigned to this environment>
+
+Task block completeness check:
+- Every task listed in the environment appears above as a full task block.
+- Each task block includes ID/title, Environment, TDD phase, dependencies,
+  Files, Read first, Verification, Evidence, Completion, Public verification
+  path, and Ready when.
+- If any assigned task is only a branch label, workstream name, or prose TODO,
+  stop and report `Route recommendation: cc-plan`.
 
 Allowed touched paths:
 -
@@ -42,6 +54,10 @@ Commit requirement:
 
 Execution rules:
 - Execute only this environment.
+- Read the task contract from `Child worktree task file` after entering the
+  child worktree root; do not use the parent checkout path for task selection.
+- Execute only `Assigned task IDs`; use the same IDs when running
+  `mark-task-complete.sh`.
 - Do not inspect, update, unlock, or complete sibling environments except for
   dependency status explicitly needed by this environment.
 - Do not create child threads, sibling worktrees, integration commits, phase
@@ -63,6 +79,8 @@ Final report format:
 Environment:
 Route:
 Status: completed | blocked
+Task file:
+Assigned task IDs:
 Thread:
 Worktree:
 Branch:

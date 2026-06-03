@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.11.0 - 2026-06-03
+
+- require parallel dispatch to reject execution environments that only contain
+  branch labels, workstream names, or prose TODOs instead of full assigned task
+  blocks
+- extend the child dispatch packet with a task-block completeness check so each
+  child receives executable TDD task contracts
+
 ## v1.10.0 - 2026-06-02
 
 - require Codex parallel dispatch to preflight `create_thread`, `list_threads`,

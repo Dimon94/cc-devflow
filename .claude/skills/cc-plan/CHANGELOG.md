@@ -1,5 +1,12 @@
 # CC-Plan Skill Changelog
 
+## v3.25.0 - 2026-06-03
+
+- require parallel plans to freeze the complete task list before assigning task
+  IDs to execution environments
+- update the task template with an environment task allocation table, per-task
+  environment fields, and an explicit Red/Green/Refactor slice
+
 ## v3.24.0 - 2026-06-02
 
 - add an execution environment status enum to `task.md` so parent threads,

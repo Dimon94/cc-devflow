@@ -131,6 +131,8 @@ Before task blocks, challenge 3 hidden assumptions, overengineering risk, and th
 Each task block includes:
 
 - ID and title
+- assigned execution environment when `## Execution Environments` exists
+- task file path when dispatched through a child worktree
 - TDD phase
 - dependencies
 - touched files
@@ -154,6 +156,14 @@ Each environment includes:
 - Status: initial `planned`; later `dispatched`, `completed`, `integrated`,
   `blocked`, or `skipped`.
 - Tasks: task IDs included in the environment.
+- Task file: project-relative `devflow/changes/<change-key>/task.md` path that
+  resolves inside every child worktree for this change.
+- Assigned task IDs: explicit list repeated for dispatch, selection, and child
+  final report matching.
+- Task coverage: every listed task ID must have a full task block below with
+  TDD phase, dependencies, files, read-first context, verification command,
+  evidence, and ready condition. A list of branch names or work areas is not an
+  execution plan.
 - DependsOn / Unlocks: environment IDs, not only task IDs.
 - Parallel: `yes` only when the environment has no causal dependency or touched
   path conflict with its sibling batch.
@@ -162,6 +172,12 @@ Each environment includes:
 - Verification: focused commands or review/check evidence required.
 - Merge gate: commit/evidence/clean worktree/cherry-pick requirements.
 - Child: thread/session/worktree/branch/commit fields start as `pending`.
+
+For parallel work, first freeze the complete task list, then allocate task IDs
+to environments. Each environment must be independently executable from its
+assigned task blocks. If you can only say "backend branch" or "five tasks go to
+thread A" without the exact task contracts, the plan is not ready for
+parallel dispatch.
 
 Tasks must be tracer bullets: `[TEST] -> [IMPL] -> [REFACTOR]`. Each task names the public verification path, command, completion evidence, suite layer/runtime, proof value, fixture/mock boundary, and low-value tests to avoid. Regression tests cannot be deferred; if no honest seam exists, plan a spike or design correction.
 

@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.24.0
+version: 3.25.0
 description: Use when scope, design, and executable tasks must be frozen before coding.
 triggers:
   - 帮我规划这个需求

@@ -4,7 +4,7 @@
 
 - Requirement version: `REQ-003.v1`
 - Design version: `design.v1`
-- CC-Plan skill version: `3.24.0`
+- CC-Plan skill version: `3.25.0`
 - Work branch: `REQ/003-audit-log-export`
 - Output language: en
 

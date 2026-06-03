@@ -1,6 +1,6 @@
 ---
 name: cc-dev
-version: 1.10.0
+version: 1.11.0
 description: Drive one selected planned objective through PDCA until cc-act delivery choice, clarification, or blocker.
 triggers:
   - 自动驾驶开发这个需求
@@ -83,6 +83,8 @@ Ambiguous route or terminal-state choices use `references/user-choice-output-pro
 - Final review convergence is delegated to `cc-check`; earlier stages record
   only self-review or explicit standalone review evidence.
 - Parallel work is scheduled only from `task.md#Execution Environments`; `cc-dev` must not invent sibling work from a loose TODO list.
+- Parallel dispatch requires full task blocks for every assigned task ID; branch
+  labels, workstream names, or prose-only TODOs must route back to `cc-plan`.
 - In Codex App, discover `create_thread`, `list_threads`, `read_thread`,
   `send_message_to_thread`, and `automation_update` before parallel dispatch;
   if any are unavailable, do not claim `parallel-dispatched`.

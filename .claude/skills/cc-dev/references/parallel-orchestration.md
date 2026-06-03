@@ -36,7 +36,11 @@ Dispatch only environments that satisfy all conditions:
 4. touched paths and mutable resources do not overlap with other running
    siblings
 5. each environment has its own verification or review evidence gate
-6. the dispatch packet is complete enough for a child thread without chat memory
+6. every `Tasks:` ID has a full task block in `task.md`, not only a branch name,
+   workstream label, or prose TODO
+7. the environment records the project-relative task file path and explicit
+   assigned task IDs for the child worktree
+8. the dispatch packet is complete enough for a child thread without chat memory
 
 If any condition is unclear, run serially or route back to `cc-plan`.
 
@@ -46,8 +50,13 @@ Every child receives a completed `assets/CHILD_DISPATCH_PACKET.md`. It includes:
 
 - change key, current branch, base commit, and parent thread summary
 - parent thread id when the host supports `send_message_to_thread`
+- parent task file path and child-worktree task file path
+- assigned task IDs for this environment
 - current environment block from `task.md`
 - included task blocks in full
+- task-block completeness check: ID/title, environment, TDD phase,
+  dependencies, files, read-first context, verification command, evidence,
+  ready condition, and completion command
 - allowed route skill and explicit non-goals
 - allowed touched paths and mutable resources
 - read-first files and domain context instructions

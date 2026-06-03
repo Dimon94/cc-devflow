@@ -99,11 +99,22 @@ describe('cc-dev parallel mechanical gates', () => {
     expect(codex).toContain('`assets/CHILD_DISPATCH_PACKET.md`');
     expect(codex).toContain('`scripts/audit-child-integration.sh`');
     expect(parallel).toContain('Every child receives a completed `assets/CHILD_DISPATCH_PACKET.md`');
+    expect(parallel).toContain('every `Tasks:` ID has a full task block');
+    expect(parallel).toContain('branch name');
+    expect(parallel).toContain('project-relative task file path');
+    expect(parallel).toContain('assigned task IDs');
+    expect(parallel).toContain('task-block completeness check');
     expect(parallel).toContain('Thread creation, not the child prompt, owns model and reasoning selection');
     expect(parallel).toContain('run `scripts/audit-child-integration.sh`');
     expect(packet).not.toContain('gpt-5.5');
     expect(packet).not.toContain('Model:');
     expect(packet).toContain('Parent thread id:');
+    expect(packet).toContain('Parent task file:');
+    expect(packet).toContain('Child worktree task file:');
+    expect(packet).toContain('Assigned task IDs:');
+    expect(packet).toContain('Read the task contract from `Child worktree task file`');
+    expect(packet).toContain('Task block completeness check:');
+    expect(packet).toContain('Route recommendation: cc-plan');
     expect(packet).toContain('Allowed touched paths:');
     expect(packet).toContain('Mutable resources:');
     expect(packet).toContain('Final report format:');
@@ -119,6 +130,14 @@ describe('cc-dev parallel mechanical gates', () => {
     expect(template).toContain('`pendingWorktreeId` is not a thread id');
     expect(template).toContain('`dispatched` requires a real child');
     expect(template).toContain('`integrated` requires audit evidence');
+    expect(template).toContain('### Environment Task Allocation');
+    expect(template).toContain('| E001 | T001, T002, T003 | T001 red -> T002 green -> T003 refactor/check |');
+    expect(template).toContain('Task file: `devflow/changes/<change-key>/task.md`');
+    expect(template).toContain('Assigned task IDs:');
+    expect(template).toContain('Task file in child worktree: `devflow/changes/<change-key>/task.md`');
+    expect(template).toContain('Task contract coverage:');
+    expect(template).toContain('Environment: E001');
+    expect(template).toContain('T003 [REFACTOR]');
 
     expect(doSkill).toContain('scripts/select-ready-tasks.sh');
     expect(doSkill).toContain('scripts/mark-task-complete.sh');

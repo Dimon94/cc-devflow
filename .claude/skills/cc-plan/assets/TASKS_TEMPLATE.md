@@ -212,12 +212,26 @@ focused verification evidence.
 |-----|-------|--------|-----------|----------|-------|--------|------|
 | E001 | cc-do | planned | none | no | pending | pending | pending |
 
+### Environment Task Allocation
+
+Every task ID listed here must have a full task block under the phase sections
+below. A branch label, workstream name, or prose-only TODO is invalid.
+
+| Env | Assigned tasks | TDD sequence | Independent proof | Cannot overlap with |
+|-----|----------------|--------------|-------------------|---------------------|
+| E001 | T001, T002, T003 | T001 red -> T002 green -> T003 refactor/check | `npm test -- path/to/test` | E002 touched paths or mutable resources |
+
 ### E001 first-closed-slice
 
 Goal:
 Route: cc-do
 Status: planned
-Tasks: T001, T002
+Task file: `devflow/changes/<change-key>/task.md`
+Tasks: T001, T002, T003
+Assigned task IDs:
+- T001
+- T002
+- T003
 DependsOn: none
 Parallel: no
 Touches:
@@ -230,11 +244,16 @@ Merge gate:
 - child worktree is clean
 - focused verification passed
 - touched paths stayed inside this environment
+Task contract coverage:
+- T001 full task block exists below
+- T002 full task block exists below
+- T003 full task block exists below
 Unlocks:
 - E002
 Child:
 - Thread: pending
 - Worktree: pending
+- Task file in child worktree: `devflow/changes/<change-key>/task.md`
 - Branch: pending
 - Commit: pending
 Integration:
@@ -262,6 +281,10 @@ ClaudeCode / Codex 执行本计划时，必须把 `task.md` 当成唯一任务�
 - CLI resolver: all workflow commands must run through `.claude/skills/cc-dev/scripts/resolve-cc-devflow.sh` or `.codex/skills/cc-dev/scripts/resolve-cc-devflow.sh`; if it cannot prove `next-change-key`, stop blocked.
 - Task selection: use `scripts/select-ready-tasks.sh --tasks devflow/changes/<change-key>/task.md`.
 - Completion: after Red/Green/Refactor evidence and review pass, run `scripts/mark-task-complete.sh --tasks devflow/changes/<change-key>/task.md --task <task-id>`.
+- Parallel child execution: parent dispatch must include the assigned task IDs and
+  the task file path as a project-relative path inside the child worktree, for
+  example `devflow/changes/<change-key>/task.md`; the child must run task
+  selection and completion commands from its own worktree root.
 - Stage commit rule: when the current workflow stage finishes in this environment, commit the completed stage to Git.
 - Runtime file ban: do not generate process files beyond this `task.md`.
 
@@ -284,10 +307,13 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --tasks devflow/changes/<change-key>/t
 | Task | User / edge story | Interface / method | File owner / responsibility | Do not re-decide | Verification evidence |
 |------|-------------------|--------------------|-----------------------------|------------------|-----------------------|
 | T001 | US-001 / US-EDGE-001 |  | tests own behavior proof | public seam | failing output |
+| T002 | US-001 / US-EDGE-001 |  | implementation owns minimal behavior | Green minimality | passing output + diff |
+| T003 | US-001 / US-EDGE-001 |  | environment owns cleanup and proof | no scope widening | focused command still passes |
 
 ## Phase 1: Foundation
 
 - [ ] T001 [TEST] Write the first failing test (dependsOn:none) `path/to/test`
+  Environment: E001
   Goal: 证明当前行为还没实现，必须先看到失败。
   Contract: user story `US-001`; method/interface `<public seam>`; input/output `<contract>`.
   Do not re-decide: target behavior, public seam, allowed mock boundary.
@@ -305,6 +331,7 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --tasks devflow/changes/<change-key>/t
   Ready when: 没有上游依赖，且测试路径已经确定。
 
 - [ ] T002 [IMPL] Make the first test pass (dependsOn:T001) `path/to/file`
+  Environment: E001
   Goal: 用最小实现让 T001 转绿。
   Contract: user story `US-001`; method/interface `<method or operation>`; input/output `<contract>`.
   Do not re-decide: file ownership, method shape, error shape, Green minimality boundary.
@@ -320,3 +347,21 @@ bash "$SCRIPT_ROOT/mark-task-complete.sh" --tasks devflow/changes/<change-key>/t
   Completion: after green evidence exists, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --tasks devflow/changes/<change-key>/task.md --task T002`.
   Public verification path: same as T001.
   Ready when: T001 has failing evidence.
+
+- [ ] T003 [REFACTOR] Remove incidental complexity and prove the slice still holds (dependsOn:T002) `path/to/file`
+  Environment: E001
+  Goal: 简化 T002 中为转绿临时产生的重复、分支或命名噪音，不扩大功能。
+  Contract: user story `US-001`; method/interface unchanged from T002; input/output unchanged.
+  Do not re-decide: feature scope, public seam, error shape, or sibling environment ownership.
+  TDD phase: refactor
+  Suite layer / runtime: same command as T002 plus any focused lint/typecheck if touched files require it.
+  Confidence value: proves cleanup did not change the user-visible contract.
+  Fixture/mock boundary: unchanged from T001/T002.
+  Low-value tests to avoid: new assertions without a new Red, broad snapshots, unrelated coverage padding.
+  Files: `path/to/file`
+  Read first: `task.md`, `path/to/test`, `path/to/file`
+  Verification: `npm test -- path/to/test`
+  Evidence: passing output + simplified Git diff
+  Completion: after refactor evidence exists, run `bash "$SCRIPT_ROOT/mark-task-complete.sh" --tasks devflow/changes/<change-key>/task.md --task T003`.
+  Public verification path: same as T001.
+  Ready when: T002 is green and the cleanup stays inside E001 touched paths.
