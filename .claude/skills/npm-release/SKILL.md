@@ -5,6 +5,7 @@ description: Use when ready to publish a new version of cc-devflow npm package t
 reads:
   - PLAYBOOK.md
   - CHANGELOG.md
+  - references/git-commit-guidelines.md
   - references/checklist-contract.md
 ---
 
@@ -14,9 +15,13 @@ reads:
 
 1. `PLAYBOOK.md`
 2. `CHANGELOG.md`
-3. `references/checklist-contract.md`
+3. `references/git-commit-guidelines.md`
+4. `references/checklist-contract.md`
 
 > [PROTOCOL]: 发布前先确认 git 干净、版本结论正确、CHANGELOG 已落地、npm 身份可用，然后再 commit/tag/push/publish
+
+Release commits follow `references/git-commit-guidelines.md`; tags keep the
+release note format in this skill.
 
 ## Checklist Contract
 
@@ -133,13 +138,22 @@ git add CHANGELOG.md package.json
 git commit -m "$(cat <<'EOF'
 chore(release): bump version to X.Y.Z
 
-Release X.Y.Z - [Brief title]
+问题:
+- 公开包版本、CHANGELOG 和发布标签需要落到同一个可追溯节点。
 
-主要变更：
-- 变更点 1
-- 变更点 2
+变更:
+- 更新 package version 和 CHANGELOG 到 X.Y.Z。
+- 为 npm publish 准备 release commit。
 
-Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>
+原因:
+- release commit 把版本标记和说明绑定，避免 tag 指向不可解释的历史。
+
+验证:
+- npm run verify:publish
+- npm pack --dry-run
+
+风险:
+- 中：版本、tag、registry 三者必须保持一致；失败时按本 skill 的恢复流程处理。
 EOF
 )"
 ```

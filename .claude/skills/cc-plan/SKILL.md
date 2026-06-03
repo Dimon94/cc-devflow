@@ -15,6 +15,7 @@ reads:
   - assets/TASKS_TEMPLATE.md
   - references/pre-plan-grill.md
   - references/planning-contract.md
+  - references/git-commit-guidelines.md
   - references/domain-grilling-contract.md
   - references/CONTEXT-FORMAT.md
   - references/ADR-FORMAT.md
@@ -47,6 +48,7 @@ exit_criteria:
   - "Domain context growth was checked after clarification and plan approval; confirmed updates were written to `CONTEXT.md`, `CONTEXT-MAP.md`, or `docs/adr/*.md`, while deferred updates were recorded in `task.md`."
   - "No process file beyond `task.md`."
   - "Plan-stage changes are committed to Git before handoff."
+  - "Plan-stage commits follow `references/git-commit-guidelines.md`."
 reroutes:
   - when: The discussion is still project direction or stage order instead of one requirement.
     target: stop
@@ -66,6 +68,7 @@ reroutes:
 | --- | --- |
 | Planning workflow and setup | `PLAYBOOK.md` |
 | Checklist before pause or exit | `references/checklist-contract.md` |
+| Plan-stage commit contract | `references/git-commit-guidelines.md` |
 | Planning flow, Decision Questions, Design Pressure, Branch Chain | `references/planning-contract.md` |
 | User asks for pre-plan grilling or the requirement is too broad to freeze | `references/pre-plan-grill.md` |
 | Domain grilling, glossary challenge, inline context updates, ADR offer rules | `references/domain-grilling-contract.md` |

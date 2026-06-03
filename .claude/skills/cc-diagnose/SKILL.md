@@ -10,7 +10,8 @@ triggers:
   - 这里坏了
   - 有东西失败了
   - performance regression
-reads: []
+reads:
+  - references/git-commit-guidelines.md
 writes: []
 ---
 
@@ -30,6 +31,7 @@ writes: []
 - 先建立反馈环并复现原始失败；没有反馈环就返回 blocked。
 - 修复必须产出独立 commit，除非诊断结论是不需要改文件。
 - commit 只包含该 failure 的最小修复、回归测试、必要 task evidence 和 debug cleanup。
+- commit 必须遵守 `references/git-commit-guidelines.md`；fix 类提交要写清根因、验证、风险，不能只写症状摘要。
 - 如果发现真实问题超出当前 change scope，返回 route `cc-plan` 或独立 `FIX`，不要偷偷扩大当前需求。
 - 最终报告必须包含 environment、commit、复现 loop、回归命令、dirty state、debug probe 清理和 route recommendation。
 

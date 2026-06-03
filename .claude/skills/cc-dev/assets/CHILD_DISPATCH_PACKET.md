@@ -25,6 +25,7 @@ Mutable resources:
 
 Read first:
 -
+- Commit guideline: references/git-commit-guidelines.md
 
 Non-goals:
 -
@@ -35,7 +36,9 @@ Verification commands:
 Commit requirement:
 - Commit required: yes | no
 - Commit scope: this environment only
-- Commit message shape:
+- Commit message contract: follow references/git-commit-guidelines.md
+- Commit message shape: Conventional Commit title plus required structured body
+  when the guideline says a body is required
 
 Execution rules:
 - Execute only this environment.
@@ -45,6 +48,9 @@ Execution rules:
   gates, final `cc-check`, or delivery-mode choices.
 - Keep durable workflow truth in `task.md`, Git history/status, and PR/handoff
   reality only.
+- Do not create vague, one-line, or mixed-scope commits when
+  `references/git-commit-guidelines.md` requires semantic splitting,
+  root-cause text, validation, risk, or refs.
 
 Child-to-parent handoff:
 - If `send_message_to_thread` is available, send the parent a short completion

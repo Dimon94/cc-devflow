@@ -16,6 +16,7 @@ reads:
   - docs/guides/project-postmortem.md
   - ../cc-dev/scripts/resolve-cc-devflow.sh
   - ../cc-dev/references/domain-context-contract.md
+  - references/git-commit-guidelines.md
   - references/checklist-contract.md
   - scripts/select-ready-tasks.sh
   - scripts/mark-task-complete.sh
@@ -48,6 +49,7 @@ exit_criteria:
   - Verification commands ran or are explicitly blocked.
   - Task status is updated through `scripts/mark-task-complete.sh`.
   - Completed task/environment is committed to Git.
+  - Completed task/environment commits follow `references/git-commit-guidelines.md`.
   - Parallel child final report includes environment ID, commit, verification, dirty state, touched files, blockers, and route recommendation.
   - No process file beyond `task.md` updates and Git commits.
 reroutes:

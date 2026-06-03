@@ -14,6 +14,7 @@ reads:
   - PLAYBOOK.md
   - references/gate-contract.md
   - references/review-contract.md
+  - references/git-commit-guidelines.md
   - ../cc-review/SKILL.md
   - ../cc-dev/scripts/resolve-cc-devflow.sh
   - references/checklist-contract.md
@@ -57,6 +58,7 @@ NO PASS WITHOUT FRESH EVIDENCE
 | --- | --- |
 | `references/gate-contract.md` | verdict rules, phases, false-green guard, failure ledger review, claim evidence |
 | `references/review-contract.md` | diff/scope review, test quality, stale review, reroute rules |
+| `references/git-commit-guidelines.md` | Check-stage commit contract |
 | `../cc-review/SKILL.md` | review subAgent contract and finding severity rules before pass |
 | `PLAYBOOK.md` | visible state machine, reset signals, default output, verification loop |
 | `../cc-dev/scripts/resolve-cc-devflow.sh` | repository policy or change metadata must be resolved |

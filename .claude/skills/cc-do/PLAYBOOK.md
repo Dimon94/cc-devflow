@@ -132,7 +132,9 @@ cherry-pick another child result.
 
 ## Commit Rule
 
-Every completed task or execution environment gets its own commit. Split by behavior or layer when needed, but do not leave completed work uncommitted between stages.
+Every completed task or execution environment gets its own commit. Use `references/git-commit-guidelines.md` as the commit contract, including semantic split rules, required body sections, validation, risk, and refs. Split by behavior or layer when needed, but do not leave completed work uncommitted between stages.
+
+When `cc-dev` invokes this skill in a child thread, the dispatch packet must include the same guideline path. If the packet omits it, load `references/git-commit-guidelines.md` before staging anyway and report the packet omission to the parent.
 
 ## Handoff
 

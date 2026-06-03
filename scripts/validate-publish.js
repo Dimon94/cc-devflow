@@ -12,6 +12,8 @@ const DISTRIBUTION_CONFIG = require(path.join(ROOT, 'config', 'distributable-ski
 const PUBLIC_SKILLS = DISTRIBUTION_CONFIG.publicSkills || [];
 const DISTRIBUTED_SKILLS = DISTRIBUTION_CONFIG.distributedSkills || PUBLIC_SKILLS;
 const INTERNAL_SKILLS = DISTRIBUTION_CONFIG.internalSkills || [];
+const COMMIT_GUIDELINE_SKILLS = ['cc-plan', 'cc-dev', 'cc-do', 'cc-check', 'cc-diagnose', 'cc-act', 'npm-release'];
+const COMMIT_GUIDELINE_REF = 'references/git-commit-guidelines.md';
 
 const RETIRED_PATTERNS = [
   'task-contract',
@@ -216,6 +218,39 @@ function validateSkillFrontmatter(errors) {
   }
 }
 
+function validateCommitGuidelineRefs(errors) {
+  const canonical = readText('.claude/skills/cc-act/references/git-commit-guidelines.md');
+
+  for (const skillName of COMMIT_GUIDELINE_SKILLS) {
+    const skillRel = `.claude/skills/${skillName}/SKILL.md`;
+    const guidelineRel = `.claude/skills/${skillName}/${COMMIT_GUIDELINE_REF}`;
+    const skillText = readText(skillRel);
+
+    ensurePath(guidelineRel, 'file', errors);
+    if (fs.existsSync(path.join(ROOT, guidelineRel)) && readText(guidelineRel) !== canonical) {
+      errors.push(`${guidelineRel} must match the canonical commit guideline copy`);
+    }
+    if (!skillText.includes(COMMIT_GUIDELINE_REF)) {
+      errors.push(`${skillRel} must reference its local ${COMMIT_GUIDELINE_REF}`);
+    }
+  }
+
+  const ccDevPacket = readText('.claude/skills/cc-dev/assets/CHILD_DISPATCH_PACKET.md');
+  if (!ccDevPacket.includes(COMMIT_GUIDELINE_REF)) {
+    errors.push('.claude/skills/cc-dev/assets/CHILD_DISPATCH_PACKET.md must include the commit guideline reference');
+  }
+
+  const ccDoPlaybook = readText('.claude/skills/cc-do/PLAYBOOK.md');
+  if (!ccDoPlaybook.includes(COMMIT_GUIDELINE_REF)) {
+    errors.push('.claude/skills/cc-do/PLAYBOOK.md must include the commit guideline reference');
+  }
+
+  const ccCheckPlaybook = readText('.claude/skills/cc-check/PLAYBOOK.md');
+  if (!ccCheckPlaybook.includes(COMMIT_GUIDELINE_REF)) {
+    errors.push('.claude/skills/cc-check/PLAYBOOK.md must include the commit guideline reference');
+  }
+}
+
 function validateCliSurface(errors) {
   const help = spawnSync(process.execPath, ['bin/cc-devflow-cli.js', '--help'], {
     cwd: ROOT,
@@ -293,6 +328,7 @@ function main() {
   validateTemplate(errors);
   validateInventoryParity(errors);
   validateSkillFrontmatter(errors);
+  validateCommitGuidelineRefs(errors);
   validateNoRetiredFiles(errors);
   validateNoRetiredText(errors);
   validateNoMainBranchAutoSwitch(errors);
@@ -319,6 +355,7 @@ module.exports = {
   validateTemplate,
   validateInventoryParity,
   validateSkillFrontmatter,
+  validateCommitGuidelineRefs,
   validateNoRetiredFiles,
   validateNoRetiredText,
   validateNoMainBranchAutoSwitch,
