@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.43] - 2026-06-04
+
+### Added
+
+- Added `PARALLEL_TASKS_TEMPLATE.md` as the official parent `task.md` template
+  for parallel execution contracts.
+
+### Changed
+
+- Updated `cc-plan` to choose the serial or parallel parent task template by
+  parallel intent.
+- Updated `cc-dev` child dispatch to extract explicit environment boundaries
+  with Env metadata, Integration fields, merge gates, mutable resources, and
+  complete Red/Green/Refactor task blocks.
+
 ## [4.5.42] - 2026-06-03
 
 ### Changed
