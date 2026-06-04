@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.44] - 2026-06-04
+
+### Fixed
+
+- Required final `cc-check` review child threads in Codex App to load the shared
+  child-thread orchestration contract and launch `cc-review` with `gpt-5.5` plus
+  `xhigh` reasoning.
+- Required `cc-act` pre-act `cc-simplify` child threads to set and verify
+  `gpt-5.5` plus the selected reasoning effort before trusting the child
+  verdict, with main-thread fallback for downgraded or unverified resources.
+
 ## [4.5.43] - 2026-06-04
 
 ### Added
