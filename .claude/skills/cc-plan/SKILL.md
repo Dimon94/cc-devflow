@@ -1,6 +1,6 @@
 ---
 name: cc-plan
-version: 3.25.0
+version: 3.27.0
 description: Use when scope, design, and executable tasks must be frozen before coding.
 triggers:
   - 帮我规划这个需求
@@ -13,6 +13,7 @@ triggers:
 reads:
   - PLAYBOOK.md
   - assets/TASKS_TEMPLATE.md
+  - assets/PARALLEL_TASKS_TEMPLATE.md
   - references/pre-plan-grill.md
   - references/planning-contract.md
   - references/git-commit-guidelines.md
@@ -39,9 +40,10 @@ entry_gate:
   - Ask D<N> decision questions only when the answer changes scope, design, boundary, task split, or verification.
   - Use host-native structured choice via `../cc-dev/references/user-choice-output-protocol.md` when decisions need user input.
 exit_criteria:
-  - "`task.md#Contract Summary` records approved solution, non-goals, decisions, branch, stories, planning flow, check-stage review convergence, verification, assumptions, test strategy, ASCII Branch Chain, and dialogue checkpoints when used."
+  - "Serial `task.md` starts from `assets/TASKS_TEMPLATE.md`; parallel `task.md` starts from `assets/PARALLEL_TASKS_TEMPLATE.md`."
   - "`task.md#Execution Environments` records execution units, dependency graph, parallel eligibility, child route, merge gate, and durable orchestration status when the change is non-trivial or user requested parallel work."
-  - "`task.md` contains executable task blocks from `assets/TASKS_TEMPLATE.md`."
+  - "Parallel `task.md` contains `Contract Snapshot`, `Parallelization Rationale`, child dispatch boundaries, Env-level contract matrix, full status enum, full Failure Ledger, and complete task blocks per environment."
+  - "`task.md` contains executable task blocks from the selected template."
   - "Non-trivial plans complete product/creative discovery, Second-Move Review, Design Pressure, and explicit user release before task generation."
   - "D<N> decisions that changed the plan are recorded in `task.md`."
   - "Domain terms were challenged against the glossary, fuzzy language was sharpened, concrete scenarios were tested, and repo-answerable claims were checked against code before asking."
@@ -76,7 +78,8 @@ reroutes:
 | ADR format | `references/ADR-FORMAT.md` |
 | Domain language, context map, or ADR discipline | `../cc-dev/references/domain-context-contract.md` |
 | User-facing decision choice | `../cc-dev/references/user-choice-output-protocol.md` |
-| Approved plan needs task blocks | `assets/TASKS_TEMPLATE.md` |
+| Approved serial plan needs parent `task.md` | complete `assets/TASKS_TEMPLATE.md` skeleton |
+| Approved parallel plan needs parent `task.md` | `assets/PARALLEL_TASKS_TEMPLATE.md` |
 
 ## Mandatory Work Chain
 
@@ -105,9 +108,12 @@ Every `cc-plan` run follows this chain before `task.md` is frozen:
    independently verifiable slice and names its child skill route. Do not create
    automatic review-only environments for the normal PDCA path; final review
    convergence belongs to `cc-check`.
-7. Task generation: write executable task blocks from
-   `assets/TASKS_TEMPLATE.md` only after requirement release and technical
-   release. The task blocks are the downstream execution contract for `cc-do`.
+7. Task generation: choose the parent template only after requirement release
+   and technical release. Use `assets/PARALLEL_TASKS_TEMPLATE.md` when the user
+   asks for parallel work or the plan contains multiple independently
+   committable environments; otherwise use `assets/TASKS_TEMPLATE.md`. Fill or
+   explicitly mark the selected template sections. Parallel task blocks stay
+   complete and live under their assigned environment dispatch boundary.
 8. Closeout: validate the plan artifact, commit the Plan stage, and route to
    `cc-do`, `cc-diagnose`, or `stop`.
 

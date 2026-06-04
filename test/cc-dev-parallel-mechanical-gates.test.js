@@ -101,9 +101,16 @@ describe('cc-dev parallel mechanical gates', () => {
     expect(parallel).toContain('Every child receives a completed `assets/CHILD_DISPATCH_PACKET.md`');
     expect(parallel).toContain('every `Tasks:` ID has a full task block');
     expect(parallel).toContain('branch name');
+    expect(parallel).toContain('`cc-plan/assets/PARALLEL_TASKS_TEMPLATE.md`');
+    expect(parallel).toContain('Contract Snapshot');
+    expect(parallel).toContain('Parallelization Rationale');
+    expect(parallel).toContain('Execution Protocol');
+    expect(parallel).toContain('Env Contract Matrix');
+    expect(parallel).toContain('--- CHILD DISPATCH START <Env> ---');
     expect(parallel).toContain('project-relative task file path');
     expect(parallel).toContain('assigned task IDs');
     expect(parallel).toContain('task-block completeness check');
+    expect(parallel).toContain('environment completeness check');
     expect(parallel).toContain('Thread creation, not the child prompt, owns model and reasoning selection');
     expect(parallel).toContain('run `scripts/audit-child-integration.sh`');
     expect(packet).not.toContain('gpt-5.5');
@@ -112,6 +119,10 @@ describe('cc-dev parallel mechanical gates', () => {
     expect(packet).toContain('Parent task file:');
     expect(packet).toContain('Child worktree task file:');
     expect(packet).toContain('Assigned task IDs:');
+    expect(packet).toContain('Child dispatch boundary:');
+    expect(packet).toContain('--- CHILD DISPATCH START <Env> ---');
+    expect(packet).toContain('Environment completeness check:');
+    expect(packet).toContain('Integration is parent-owned');
     expect(packet).toContain('Read the task contract from `Child worktree task file`');
     expect(packet).toContain('Task block completeness check:');
     expect(packet).toContain('Route recommendation: cc-plan');
@@ -122,6 +133,7 @@ describe('cc-dev parallel mechanical gates', () => {
 
   test('task template defines durable execution environment statuses', () => {
     const template = read('.claude/skills/cc-plan/assets/TASKS_TEMPLATE.md');
+    const parallelTemplate = read('.claude/skills/cc-plan/assets/PARALLEL_TASKS_TEMPLATE.md');
     const doSkill = read('.claude/skills/cc-do/SKILL.md');
 
     expect(template).toContain('Status enum:');
@@ -138,6 +150,33 @@ describe('cc-dev parallel mechanical gates', () => {
     expect(template).toContain('Task contract coverage:');
     expect(template).toContain('Environment: E001');
     expect(template).toContain('T003 [REFACTOR]');
+
+    expect(parallelTemplate).toContain('## Contract Snapshot');
+    expect(parallelTemplate).toContain('Parallelization Rationale:');
+    expect(parallelTemplate).toContain('Status enum:');
+    expect(parallelTemplate).toContain('| pending-thread | cc-dev |');
+    expect(parallelTemplate).toContain('completed` is not `integrated');
+    expect(parallelTemplate).toContain('## Env Contract Matrix');
+    expect(parallelTemplate).toContain('--- CHILD DISPATCH START E001 ---');
+    expect(parallelTemplate).toContain('--- CHILD DISPATCH END E001 ---');
+    expect(parallelTemplate).toContain('Integration:');
+    expect(parallelTemplate).toContain('Owner: parent `cc-dev` only');
+    expect(parallelTemplate).toContain('TDD loop: Red -> Green -> Refactor');
+    expect(parallelTemplate).toContain('TDD exception: none');
+    expect(parallelTemplate).toContain('T003 [REFACTOR]');
+    expect(parallelTemplate).toContain('## Failure Ledger');
+    expect(parallelTemplate).toContain('Parallel child execution: parent dispatch must extract');
+
+    const planSkill = read('.claude/skills/cc-plan/SKILL.md');
+    const planPlaybook = read('.claude/skills/cc-plan/PLAYBOOK.md');
+    const devSkill = read('.claude/skills/cc-dev/SKILL.md');
+
+    expect(planSkill).toContain('assets/PARALLEL_TASKS_TEMPLATE.md');
+    expect(planSkill).toContain('asks for parallel work');
+    expect(planPlaybook).toContain('Parallel parent contracts must use `Contract Snapshot`');
+    expect(planPlaybook).toContain('group complete task blocks under each environment');
+    expect(devSkill).toContain('cc-plan/assets/PARALLEL_TASKS_TEMPLATE.md');
+    expect(devSkill).toContain('child dispatch');
 
     expect(doSkill).toContain('scripts/select-ready-tasks.sh');
     expect(doSkill).toContain('scripts/mark-task-complete.sh');

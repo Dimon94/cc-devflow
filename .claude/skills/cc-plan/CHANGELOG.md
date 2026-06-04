@@ -1,5 +1,20 @@
 # CC-Plan Skill Changelog
 
+## v3.27.0 - 2026-06-04
+
+- add `assets/PARALLEL_TASKS_TEMPLATE.md` as the official parent `task.md`
+  template for parallel execution contracts
+- make `cc-plan` choose the serial or parallel parent template by parallel
+  intent while keeping full task blocks inside each environment
+
+## v3.26.0 - 2026-06-04
+
+- require parent `task.md` generation to keep the complete
+  `assets/TASKS_TEMPLATE.md` skeleton instead of compressing it into a
+  child-dispatch contract
+- clarify that compact parallel child packets belong only to `cc-dev`
+  dispatch, while `cc-plan` owns the durable plan artifact
+
 ## v3.25.0 - 2026-06-03
 
 - require parallel plans to freeze the complete task list before assigning task

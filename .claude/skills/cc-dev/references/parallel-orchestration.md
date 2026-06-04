@@ -12,6 +12,13 @@ route to `cc-act`.
 
 Parallel work is valid only when `cc-plan` wrote an execution graph in
 `task.md`. Do not invent parallel slices from unchecked task titles.
+The parent `task.md` should use
+`cc-plan/assets/PARALLEL_TASKS_TEMPLATE.md` when parallelism is intended. A
+valid parallel parent contract includes `Contract Snapshot`,
+`Parallelization Rationale`, an Env-level contract matrix, full status enum,
+Failure Ledger, Execution Protocol, explicit child dispatch boundaries, and
+complete task blocks inside each assigned environment. `assets/CHILD_DISPATCH_PACKET.md`
+is only the child prompt envelope, not the durable parent task file.
 
 ## Environment Types
 
@@ -38,9 +45,19 @@ Dispatch only environments that satisfy all conditions:
 5. each environment has its own verification or review evidence gate
 6. every `Tasks:` ID has a full task block in `task.md`, not only a branch name,
    workstream label, or prose TODO
-7. the environment records the project-relative task file path and explicit
+7. the parent task file includes the full parallel skeleton: `Plan Meta`,
+   `Contract Snapshot`, `Parallelization Rationale`, `Execution Environments`,
+   `Env Contract Matrix`, `Failure Ledger`, and `Execution Protocol`
+8. the environment has explicit `--- CHILD DISPATCH START <Env> ---` and
+   `--- CHILD DISPATCH END <Env> ---` boundaries
+9. the bounded environment block includes Env metadata, Child fields,
+   Integration fields owned by parent `cc-dev`, and complete assigned task
+   blocks
+10. each implementation environment is a Red/Green/Refactor closed loop, or it
+   records a `TDD exception` before dispatch
+11. the environment records the project-relative task file path and explicit
    assigned task IDs for the child worktree
-8. the dispatch packet is complete enough for a child thread without chat memory
+12. the dispatch packet is complete enough for a child thread without chat memory
 
 If any condition is unclear, run serially or route back to `cc-plan`.
 
@@ -52,11 +69,15 @@ Every child receives a completed `assets/CHILD_DISPATCH_PACKET.md`. It includes:
 - parent thread id when the host supports `send_message_to_thread`
 - parent task file path and child-worktree task file path
 - assigned task IDs for this environment
-- current environment block from `task.md`
-- included task blocks in full
+- the full child dispatch boundary from `task.md`, from
+  `--- CHILD DISPATCH START <Env> ---` through
+  `--- CHILD DISPATCH END <Env> ---`
+- included task blocks in full from that boundary
 - task-block completeness check: ID/title, environment, TDD phase,
   dependencies, files, read-first context, verification command, evidence,
   ready condition, and completion command
+- environment completeness check: Env metadata, Child fields, Integration
+  fields, Merge gate, Touches, Mutable resources, and Verification are present
 - allowed route skill and explicit non-goals
 - allowed touched paths and mutable resources
 - read-first files and domain context instructions

@@ -15,19 +15,25 @@ Child worktree task file:
 Assigned task IDs:
 -
 
-Current environment block:
-<paste the exact environment block from task.md>
-
-Included task blocks:
-<paste each task block assigned to this environment>
+Child dispatch boundary:
+<paste the exact range from `--- CHILD DISPATCH START <Env> ---` through `--- CHILD DISPATCH END <Env> ---` in task.md>
 
 Task block completeness check:
-- Every task listed in the environment appears above as a full task block.
+- Every task listed in the environment appears inside the dispatch boundary as
+  a full task block.
 - Each task block includes ID/title, Environment, TDD phase, dependencies,
   Files, Read first, Verification, Evidence, Completion, Public verification
   path, and Ready when.
 - If any assigned task is only a branch label, workstream name, or prose TODO,
   stop and report `Route recommendation: cc-plan`.
+- Implementation environments are Red/Green/Refactor closed loops unless the
+  boundary records an explicit `TDD exception`.
+
+Environment completeness check:
+- Boundary includes Env metadata, Child fields, Integration fields, Merge gate,
+  Touches, Mutable resources, and Verification.
+- Integration is parent-owned; the child must not cherry-pick, unlock sibling
+  environments, or mark itself integrated.
 
 Allowed touched paths:
 -

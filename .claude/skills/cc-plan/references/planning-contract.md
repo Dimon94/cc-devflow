@@ -78,6 +78,14 @@ Tiny plans may compress a round to one evidence-backed line. Full designs must p
 ## Design Pressure
 
 Before freezing non-trivial tasks, make the design pressure explicit in
+Parent `task.md` generation starts from a selected template. Serial plans use
+the complete `assets/TASKS_TEMPLATE.md` document skeleton. Parallel plans use
+`assets/PARALLEL_TASKS_TEMPLATE.md`: compact parent planning context, full
+environment state, explicit child dispatch boundaries, and complete task blocks
+inside each environment. Do not collapse either parent artifact into
+`cc-dev/assets/CHILD_DISPATCH_PACKET.md`; that packet is only the child prompt
+envelope.
+
 `task.md#Contract Summary`:
 
 - Prefer a deep module: a small public interface that hides real complexity

@@ -49,8 +49,10 @@ Every plan starts from the domain model, not from a blank task list:
    names route, tasks, dependencies, touched paths, verification, merge gate,
    unlocks, and initial status. Do not create automatic review-only environments
    for the normal PDCA path; `cc-check` owns final review convergence.
-8. Task generation: write `task.md` task blocks from `assets/TASKS_TEMPLATE.md`
-   only after requirement release and technical release.
+8. Task generation: choose the parent template only after requirement release
+   and technical release. Use `assets/PARALLEL_TASKS_TEMPLATE.md` when the user
+   asks for parallel work or the plan contains multiple independently
+   committable environments; otherwise use `assets/TASKS_TEMPLATE.md`.
 9. Closeout: validate the plan artifact, commit the Plan stage, and route onward.
 
 ## Rules
@@ -72,7 +74,14 @@ Every plan starts from the domain model, not from a blank task list:
 13. Parallel work is a plan contract, not an execution guess. If a task can run
     in parallel, record the execution environment graph and its gates in
     `task.md`; otherwise say why the change stays serial.
-14. `cc-plan` does not split review subthreads by default. Record the expected
+14. Parent `task.md` must keep the complete selected template skeleton. Serial
+    plans use `assets/TASKS_TEMPLATE.md`; parallel plans use
+    `assets/PARALLEL_TASKS_TEMPLATE.md`.
+15. Parallel parent contracts must use `Contract Snapshot`, include
+    `Parallelization Rationale`, preserve the full status enum and Failure
+    Ledger, group complete task blocks under each environment, and wrap each
+    environment in explicit child dispatch boundaries.
+16. `cc-plan` does not split review subthreads by default. Record the expected
     final `cc-check` review convergence gate instead of adding `R###`
     environments, unless the user explicitly asks for standalone review work.
 
@@ -173,11 +182,17 @@ Each environment includes:
 - Merge gate: commit/evidence/clean worktree/cherry-pick requirements.
 - Child: thread/session/worktree/branch/commit fields start as `pending`.
 
-For parallel work, first freeze the complete task list, then allocate task IDs
-to environments. Each environment must be independently executable from its
-assigned task blocks. If you can only say "backend branch" or "five tasks go to
-thread A" without the exact task contracts, the plan is not ready for
-parallel dispatch.
+For parallel work, first freeze the complete
+`assets/PARALLEL_TASKS_TEMPLATE.md` skeleton and task list, then allocate global
+task IDs to environments. Each environment must be independently executable
+from the complete Red/Green/Refactor task blocks inside its child dispatch
+boundary. If an environment cannot form a Red/Green/Refactor closed loop, record
+`TDD exception` and the reason in that environment before dispatch. If the
+artifact omits `Contract Snapshot`, `Parallelization Rationale`, `Env Contract
+Matrix`, full status enum, `Failure Ledger`, `Execution Protocol`, or child
+dispatch boundaries, the plan is not ready for parallel dispatch. If you can
+only say "backend branch" or "five tasks go to thread A" without the exact task
+contracts, the plan is not ready for parallel dispatch.
 
 Tasks must be tracer bullets: `[TEST] -> [IMPL] -> [REFACTOR]`. Each task names the public verification path, command, completion evidence, suite layer/runtime, proof value, fixture/mock boundary, and low-value tests to avoid. Regression tests cannot be deferred; if no honest seam exists, plan a spike or design correction.
 
@@ -201,6 +216,10 @@ Tasks must be tracer bullets: `[TEST] -> [IMPL] -> [REFACTOR]`. Each task names 
 - Verification and escalation triggers
 
 Also record ASCII Branch Chain Analysis, Design Pressure, test strategy shape, user-facing D<N> decisions, and explicit skip reasons for any compressed planning round.
+
+Parallel plans use `task.md#Contract Snapshot` instead. It records Goal,
+Do-not-do, Approved Direction, Open Decisions, Verification, Risk, and
+Parallelization Rationale; it does not expand the full planning transcript.
 
 ## Handoff
 

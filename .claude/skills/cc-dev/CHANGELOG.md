@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.13.0 - 2026-06-04
+
+- dispatch parallel child threads from explicit environment boundaries in
+  `PARALLEL_TASKS_TEMPLATE.md` instead of hand-assembled partial sections
+- require bounded environment packets to include Env metadata, Integration
+  fields, merge gates, mutable resources, and complete Red/Green/Refactor task
+  blocks
+
+## v1.12.0 - 2026-06-04
+
+- reject compact parent `task.md` files during parallel dispatch and route them
+  back to `cc-plan` for template repair before child threads start
+
 ## v1.11.0 - 2026-06-03
 
 - require parallel dispatch to reject execution environments that only contain
