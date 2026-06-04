@@ -90,8 +90,11 @@ Loop:
 1. Build a review packet from durable truth only: `task.md`, Git status/diff,
    changed files, relevant source/tests/docs, PR text when present, and fresh
    command output.
-2. Start review subAgents to run `cc-review` on that packet. In Codex App, use
-   real thread/subAgent tooling when available; do not treat an internal note as
+2. Start review subAgents to run `cc-review` on that packet. In Codex App, load
+   `../cc-dev/references/codex-thread-orchestration.md` before launch and use
+   real `create_thread` tooling with model `gpt-5.5` and reasoning `xhigh` for
+   each `cc-review` child. If the tool cannot set or honor those resources,
+   verdict is `blocked`; do not treat an internal note or a downgraded child as
    a subAgent result.
 3. Merge findings in the check thread. Severity can only be lowered with direct
    evidence from the task contract, source, diff, or command output.

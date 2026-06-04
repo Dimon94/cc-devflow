@@ -21,30 +21,36 @@ Everything else is Git history, PR history, or final response.
 3. Discover `create_thread`, `list_threads`, `read_thread`,
    `send_message_to_thread`, and `automation_update` before child dispatch.
 4. Run the pre-act `cc-simplify` gate in a real Codex child thread by default.
-   The child reviews the current diff for behavior-preserving complexity
+   The `create_thread` call must request model `gpt-5.5` and the reasoning
+   effort required by `references/codex-thread-orchestration.md`; after launch,
+   verify the actual child thread reports those resources. If resource setting
+   or resource verification fails, do not continue with the downgraded child.
+   Run main-thread simplify fallback and report the unsupported resource.
+5. The child reviews the current diff for behavior-preserving complexity
    reduction, reports confirmed smells, and may edit only within
    `cc-simplify` rules.
-5. Require the child packet to tell the child to send a completion handoff to
+6. Require the child packet to tell the child to send a completion handoff to
    the parent with `send_message_to_thread`; the parent must still verify the
    result with `read_thread`.
-6. After the child thread is confirmed running, create or update a 10 minute
+7. After the child thread is confirmed running on the requested resources,
+   create or update a 10 minute
    heartbeat with `automation_update` and stop as `waiting-for-child-results`.
    Do not busy-poll running children in the main conversation.
-7. If any required thread or heartbeat tool is unavailable, run the same
+8. If any required thread, resource, or heartbeat tool is unavailable, run the same
    `cc-simplify` gate in the main thread and report
    `Agents used: no (child thread orchestration unavailable)`.
-8. If `cc-simplify` changes code, tests, or verification posture, stop Act and
+9. If `cc-simplify` changes code, tests, or verification posture, stop Act and
    route to `cc-check`; do not ship with pre-simplification evidence.
-9. Run or cite the current validation commands.
-10. Commit any remaining owned changes.
-11. State release-readiness gates: local checks, config/env, migrations/data,
+10. Run or cite the current validation commands.
+11. Commit any remaining owned changes.
+12. State release-readiness gates: local checks, config/env, migrations/data,
    deploy/health, smoke/cleanup, rollback, and watch items. Mark skipped,
    blocked, or not applicable gates honestly.
-12. Build `pr-brief.md` only when PR/handoff needs it.
-13. Run `evaluate-postmortem-trigger.sh`; write incident postmortem when it returns `POSTMORTEM_REQUIRED=yes`.
-14. Push/create/update PR when requested and available.
-15. For `local-main-merge`, rebase the work branch onto local `main`, fast-forward merge from the owning main checkout, prove `main` contains the delivered commit, and do not push unless explicitly requested.
-16. Archive completed change only after merge or explicit closeout.
+13. Build `pr-brief.md` only when PR/handoff needs it.
+14. Run `evaluate-postmortem-trigger.sh`; write incident postmortem when it returns `POSTMORTEM_REQUIRED=yes`.
+15. Push/create/update PR when requested and available.
+16. For `local-main-merge`, rebase the work branch onto local `main`, fast-forward merge from the owning main checkout, prove `main` contains the delivered commit, and do not push unless explicitly requested.
+17. Archive completed change only after merge or explicit closeout.
 
 ## Delivery Choice
 

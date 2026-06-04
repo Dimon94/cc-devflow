@@ -31,6 +31,10 @@ Use current evidence:
 - Any P0/P1/P2 finding blocks `pass`; repair or reroute, then review again.
 - If review subAgents cannot be launched or their required evidence is missing,
   verdict is `blocked`.
+- In Codex App, review subAgents inherit the shared child-thread resource
+  contract from `cc-dev/references/codex-thread-orchestration.md`: launch
+  `cc-review` threads with model `gpt-5.5` and reasoning `xhigh`, and block
+  instead of silently downgrading when the platform cannot honor that request.
 - Missing behavior evidence is `blocked`, not `pass`.
 - Green tests with no meaningful proof value route to `cc-do`; wrong planned seams route to `cc-plan`.
 - Stale command output is ignored.

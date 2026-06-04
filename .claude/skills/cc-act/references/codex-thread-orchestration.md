@@ -26,13 +26,18 @@ mode or heartbeat monitoring without the actual tools.
 Set child thread resources on the `create_thread` call, not inside the child
 prompt. Use model `gpt-5.5` and reasoning `medium` for normal simplify review.
 Use reasoning `xhigh` only when the changed implementation surface is
-architecture-heavy, risky, or security-sensitive. If the thread tool cannot set
-or honor the requested model or reasoning effort, do not silently downgrade;
-fall back to main-thread simplify and report the unsupported resource.
+architecture-heavy, risky, or security-sensitive. After `create_thread` returns
+or after `list_threads` resolves a pending thread, verify the actual child
+thread is running with the requested model and reasoning effort before treating
+it as dispatched. If the tool cannot set, expose, or honor the requested model
+or reasoning effort, or the UI/thread metadata shows a different resource such
+as `5.3-Codex` or plain `high`, do not silently downgrade; fall back to
+main-thread simplify and report the unsupported resource.
 
 ## Dispatch
 
-Call `create_thread` once for the pre-act simplify gate. The prompt is
+Call `create_thread` once for the pre-act simplify gate, with model `gpt-5.5`
+and the selected reasoning effort set as thread resources. The prompt is
 `assets/SIMPLIFY_CHILD_DISPATCH_PACKET.md` filled from current Git evidence,
 latest `cc-check` evidence, the changed implementation surface, and the parent
 thread id when available.

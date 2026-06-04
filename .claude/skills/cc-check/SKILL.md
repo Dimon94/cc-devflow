@@ -1,6 +1,6 @@
 ---
 name: cc-check
-version: 1.18.0
+version: 1.18.1
 description: Use when a planned change or frozen task needs fresh verification evidence and an honest pass/fail/blocked verdict before cc-act.
 triggers:
   - 验收这个需求
@@ -16,6 +16,7 @@ reads:
   - references/review-contract.md
   - references/git-commit-guidelines.md
   - ../cc-review/SKILL.md
+  - ../cc-dev/references/codex-thread-orchestration.md
   - ../cc-dev/scripts/resolve-cc-devflow.sh
   - references/checklist-contract.md
 writes:
@@ -60,6 +61,7 @@ NO PASS WITHOUT FRESH EVIDENCE
 | `references/review-contract.md` | diff/scope review, test quality, stale review, reroute rules |
 | `references/git-commit-guidelines.md` | Check-stage commit contract |
 | `../cc-review/SKILL.md` | review subAgent contract and finding severity rules before pass |
+| `../cc-dev/references/codex-thread-orchestration.md` | Codex App thread tooling, model, and reasoning contract for review subAgents |
 | `PLAYBOOK.md` | visible state machine, reset signals, default output, verification loop |
 | `../cc-dev/scripts/resolve-cc-devflow.sh` | repository policy or change metadata must be resolved |
 
@@ -73,7 +75,10 @@ Loop:
 
 1. Start one or more review subAgents with a complete packet: `task.md`, current
    branch/diff, changed files, relevant commands already run, and the exact
-   request to run `cc-review`.
+   request to run `cc-review`. In Codex App, load
+   `../cc-dev/references/codex-thread-orchestration.md` first and create each
+   `cc-review` child thread with its required resources; missing or unsupported
+   thread resources block the check instead of silently downgrading.
 2. Aggregate all findings in the check thread. Do not downgrade a finding unless
    current source, diff, command output, or task contract evidence proves the
    downgrade.

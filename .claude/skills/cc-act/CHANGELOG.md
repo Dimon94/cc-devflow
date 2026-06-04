@@ -1,5 +1,10 @@
 # CC-Act Skill Changelog
 
+## v1.17.1 - 2026-06-04
+
+- require pre-act `cc-simplify` child threads to set model `gpt-5.5` and the selected reasoning effort on `create_thread`
+- require parent-side resource proof after child launch, and fall back to main-thread simplify when the actual child runs on a downgraded or unverified model/reasoning level
+
 ## v1.17.0 - 2026-06-03
 
 - require `cc-act` to run the pre-delivery `cc-simplify` gate before shipping

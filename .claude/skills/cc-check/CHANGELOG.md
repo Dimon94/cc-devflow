@@ -1,5 +1,10 @@
 # CC-Check Skill Changelog
 
+## v1.18.1 - 2026-06-04
+
+- require final `cc-review` subAgents in Codex App to load the shared child-thread orchestration contract and launch with model `gpt-5.5` plus reasoning `xhigh`
+- block `cc-check` instead of allowing silent model or reasoning downgrades when review child-thread resources cannot be set or honored
+
 ## v1.17.0 - 2026-05-31
 
 - slim the main `SKILL.md` entrypoint under 100 lines so verification startup only reads fresh-evidence gates, references, Failure Ledger routing, and output shape
