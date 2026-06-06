@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.45] - 2026-06-06
+
+### Added
+
+- Added a `cc-plan` Doc-To-Contract planning gate so resolved `CONTEXT.md`,
+  ADR, spec, and grill prose is frozen into typed structure, seams, adapters,
+  errors, dependency rules, call stacks, validation edges, and test surfaces
+  before implementation tasks.
+
+### Changed
+
+- Updated serial and parallel `cc-plan` task templates to carry the
+  Doc-To-Contract contract forward for downstream execution agents.
+
 ## [4.5.44] - 2026-06-04
 
 ### Fixed
