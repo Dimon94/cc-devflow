@@ -41,19 +41,25 @@ Every plan starts from the domain model, not from a blank task list:
    is unknown, or the requirement is still too broad, separate requirements
    from candidate shapes, run an ASCII PASS/FAIL fit check, and resolve unknown
    mechanisms before a shape is allowed to pass.
-6. Plan synthesis: convert the approved answers into scope, non-goals,
+6. Doc-to-contract gate: use `references/doc-to-contract.md` to turn resolved
+   prose from context docs, ADRs, specs, and grill answers into typed
+   structure, seams, adapters, errors, dependency rules, call stacks,
+   validation edges, and explicit business-logic exclusions. If a clear fact
+   cannot be represented cleanly, keep planning open with a `D<N>` decision,
+   repo evidence request, or spike.
+7. Plan synthesis: convert the approved answers into scope, non-goals,
    user/edge stories, interface/data contract, state ownership, test strategy,
    Design Pressure, Second-Move Review, and verification seams.
-7. Execution environments: for non-trivial or parallel-ready work, define the
+8. Execution environments: for non-trivial or parallel-ready work, define the
    independently committable environments before task blocks. Each environment
    names route, tasks, dependencies, touched paths, verification, merge gate,
    unlocks, and initial status. Do not create automatic review-only environments
    for the normal PDCA path; `cc-check` owns final review convergence.
-8. Task generation: choose the parent template only after requirement release
+9. Task generation: choose the parent template only after requirement release
    and technical release. Use `assets/PARALLEL_TASKS_TEMPLATE.md` when the user
    asks for parallel work or the plan contains multiple independently
    committable environments; otherwise use `assets/TASKS_TEMPLATE.md`.
-9. Closeout: validate the plan artifact, commit the Plan stage, and route onward.
+10. Closeout: validate the plan artifact, commit the Plan stage, and route onward.
 
 ## Rules
 
@@ -95,12 +101,15 @@ Every plan starts from the domain model, not from a blank task list:
 6. Solution Shaping when triggered: R requirements, candidate shapes,
    PASS/FAIL fit check, selected shape, rejected shapes, and resolved
    mechanism unknowns.
-7. System Shape: existing code path, module owner, state/data flow, reuse point, boundary systems.
-8. Interface/Data Contract: public seam, caller, fields, errors, permissions, and external boundaries.
-9. Abstraction Boundary and Design Pressure: deep module shape, hidden complexity, caller knowledge, public seam, vertical task slices, and special-case elimination.
-10. Execution Architecture: file responsibility, failure recovery, task order, verification commands, and escalation triggers.
-11. Second-Move Review: first good move, simpler move, better architecture, selected move, rejected tradeoff.
-12. Final Approval: task generation waits until the user releases both requirement and technical plan, unless repo evidence gives an explicit skip reason.
+7. Doc-To-Contract: source facts, typed structure, interface seams, adapter
+   topology, error contract, dependency rules, production/test call stacks,
+   validation edges, test surfaces, and business logic explicitly excluded.
+8. System Shape: existing code path, module owner, state/data flow, reuse point, boundary systems.
+9. Interface/Data Contract: public seam, caller, fields, errors, permissions, and external boundaries.
+10. Abstraction Boundary and Design Pressure: deep module shape, hidden complexity, caller knowledge, public seam, vertical task slices, and special-case elimination.
+11. Execution Architecture: file responsibility, failure recovery, task order, verification commands, and escalation triggers.
+12. Second-Move Review: first good move, simpler move, better architecture, selected move, rejected tradeoff.
+13. Final Approval: task generation waits until the user releases both requirement and technical plan, unless repo evidence gives an explicit skip reason.
 
 Tiny plans may compress rounds to evidence-backed lines. Full designs preserve enough detail that `cc-do` does not invent architecture, fields, interfaces, or tests.
 
@@ -114,8 +123,9 @@ Tiny plans may compress rounds to evidence-backed lines. Full designs preserve e
 2. non-goals 能挡住明显的范围膨胀。
 3. 公开接缝、数据 contract、错误、权限、状态归属都被命名。
 4. task slice 是纵向的，并且可以独立验证。
-5. 选定设计已经和“更简单的一步”以及“更好架构的一步”比较过。
-6. 验证命令证明行为，不是证明实现琐事。
+5. 文档和 grill 里的清晰事实已经落到类型结构、接口、适配器、错误、调用链、依赖规则或验证边界。
+6. 选定设计已经和“更简单的一步”以及“更好架构的一步”比较过。
+7. 验证命令证明行为，不是证明实现琐事。
 
 坏计划信号：
 
@@ -124,6 +134,7 @@ Tiny plans may compress rounds to evidence-backed lines. Full designs preserve e
 - 关键术语和 spec / repo truth 不一致，却没有记录假设。
 - 方案部件只是复述需求，没有说明可构建机制。
 - Fit Check 把未知机制当成 PASS，让 `cc-do` 去猜实现。
+- `CONTEXT.md` / ADR / grill 答案还停留在散文，没有转成类型、接口、错误、适配器、调用链或依赖规则。
 - 计划直接选第一个能跑的方案，没有做 Second-Move Review。
 - 行为工作把 Red 测试推迟到实现之后。
 
@@ -204,6 +215,9 @@ Tasks must be tracer bullets: `[TEST] -> [IMPL] -> [REFACTOR]`. Each task names 
 - Product/creative discovery: worth doing, desired product shape, narrowest wedge, 10x/better version, do-nothing consequence
 - Requirement reality
 - Domain grilling: glossary conflicts, fuzzy terms, concrete scenarios, code contradictions, context updates, ADR decisions
+- Doc-To-Contract: source facts, typed structure, interface seams, adapter
+  topology, error contract, dependency rules, call stacks, validation edges,
+  test surfaces, business logic excluded
 - Solution shaping when triggered: R requirements, S candidate shapes,
   PASS/FAIL fit check, selected shape, rejected shapes, and unknown mechanism
   resolution

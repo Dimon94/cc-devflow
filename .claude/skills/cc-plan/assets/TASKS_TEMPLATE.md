@@ -95,6 +95,7 @@ Planning Flow:
 |-------|--------|---------------------|-------------|
 | Product / Creative Discovery | confirmed |  |  |
 | Requirement Reality | confirmed |  |  |
+| Doc-To-Contract | confirmed |  |  |
 | System Shape | confirmed |  |  |
 | Interface / Data Contract | confirmed |  |  |
 | Abstraction Boundary | confirmed |  |  |
@@ -113,6 +114,53 @@ Second-Move Review:
 Approved Direction:
 -
 
+Doc-To-Contract:
+- Source facts:
+| Fact | Source | Contract artifact | Confidence |
+|------|--------|-------------------|------------|
+|  |  |  | high / medium / low |
+- Typed structure:
+  - Domain types / schemas / brands:
+  - Invariants / impossible states:
+  - State models / discriminated unions:
+- Interface seams:
+  - Public seam:
+  - Caller:
+  - Input / output:
+  - Permissions / boundary:
+- Adapter topology:
+  - Production adapter:
+  - Test adapter:
+  - External infrastructure hidden:
+- Error contract:
+  - Expected failures:
+  - Typed error / result family:
+  - Translation boundary:
+- Call stacks:
+```text
+Production:
+<entry>
+  -> <service seam>
+    -> <adapter / owner>
+
+Tests:
+<test seam>
+  -> <service seam>
+    -> <test adapter>
+```
+- Dependency rules:
+  - Allowed:
+  - Forbidden:
+  - Mechanical check:
+- Validation edges:
+  - Raw input boundary:
+  - Parser / constructor owner:
+- Test surfaces:
+  - Highest useful seam:
+  - Lower-value seams to avoid:
+- Business logic excluded:
+  -
+
 User Stories:
 | ID | Actor | Story | Acceptance | Edge / recovery |
 |----|-------|-------|------------|-----------------|
@@ -121,6 +169,7 @@ User Stories:
 Check-Stage Review Convergence:
 - Existing leverage map:
 - Scope challenge:
+- Doc-to-contract:
 - Interface depth:
 - Test seam:
 - Mock boundary:

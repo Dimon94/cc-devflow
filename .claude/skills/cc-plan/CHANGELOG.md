@@ -1,5 +1,16 @@
 # CC-Plan Skill Changelog
 
+## v3.28.0 - 2026-06-06
+
+- add `references/doc-to-contract.md` so `cc-plan` converts resolved
+  `CONTEXT.md`, ADR, spec, and grill prose into typed structure, seams,
+  adapters, errors, dependency rules, call stacks, validation edges, and test
+  surfaces before implementation tasks
+- update serial and parallel `task.md` templates with a `Doc-To-Contract`
+  section so downstream agents do not infer architecture from prose-only intent
+- make prose facts that cannot be encoded cleanly into contracts an ambiguity
+  gate instead of leaving them for `cc-do`
+
 ## v3.27.0 - 2026-06-04
 
 - add `assets/PARALLEL_TASKS_TEMPLATE.md` as the official parent `task.md`

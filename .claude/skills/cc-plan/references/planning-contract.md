@@ -22,10 +22,16 @@
 15. Non-trivial plans run a Socratic Dialogue before final approval: one question at a time, recommended answer included, repo-answerable questions answered from evidence first, and task generation blocked until the user explicitly says the requirement and technical plan are detailed enough.
 16. Technical Socratic dialogue must challenge 3 hidden assumptions, overengineering risk, and the current code or proposal with an adversarial review before task blocks are generated.
 17. Domain grilling follows `references/domain-grilling-contract.md`: challenge glossary conflicts, sharpen fuzzy terms, test concrete scenarios, cross-reference user claims with code, write confirmed glossary updates inline, and offer ADRs only when the three-part ADR test passes.
-18. Every 10 user-facing Socratic question rounds, write a Dialogue Checkpoint into `task.md#Contract Summary` before asking the next question.
-19. ASCII branch-chain connector tokens stay ASCII, but labels, evidence, and explanatory text follow `Output language`.
-20. User-facing decisions use `../cc-dev/references/user-choice-output-protocol.md`: host-native structured choice first, fixed A/B/C text fallback only when no structured-input tool exists.
-21. Use Solution Shaping only when it changes the plan: multiple viable shapes,
+18. After domain grilling, run `references/doc-to-contract.md`: clear prose
+    facts from context docs, ADRs, specs, and grill answers must be encoded as
+    typed structure, interface seams, adapter topology, error contract,
+    dependency rules, call stacks, validation edges, or test surfaces before
+    task blocks. A fact that cannot be encoded cleanly is an unresolved
+    ambiguity, not an implementation detail.
+19. Every 10 user-facing Socratic question rounds, write a Dialogue Checkpoint into `task.md#Contract Summary` before asking the next question.
+20. ASCII branch-chain connector tokens stay ASCII, but labels, evidence, and explanatory text follow `Output language`.
+21. User-facing decisions use `../cc-dev/references/user-choice-output-protocol.md`: host-native structured choice first, fixed A/B/C text fallback only when no structured-input tool exists.
+22. Use Solution Shaping only when it changes the plan: multiple viable shapes,
     an unknown mechanism, a broad requirement that needs compression, or an
     implicit requirement discovered during fit checking. Tiny single-path fixes
     may record `Trigger: skipped` with the evidence-backed reason.
@@ -43,13 +49,16 @@ Every non-trivial plan confirms these rounds before task generation:
    shapes, compare them with an ASCII PASS/FAIL fit check, resolve unknown
    mechanisms from repo evidence or explicit spikes, and record the selected
    shape before task slicing.
-7. System Shape: existing code path, module owner, state/data flow, reuse point, boundary systems.
-8. Interface/Data Contract: public seam, caller, input/output, fields, error shape, permission/boundary.
-9. Abstraction Boundary: where complexity lives, rejected abstractions, public/private method split.
-10. Execution Architecture: foundation/core/integration/polish decisions, file responsibility, failure recovery.
-11. Task Contract: tracer bullets, Red test names, public seams, confidence-per-minute test value, suite layer, command/runtime, fixture/mock boundary, Green minimality, refactor candidates.
-12. Second-Move Review: first good move, simpler move, better architecture, selected move, and rejected tradeoff.
-13. Final Approval: approved option and task contract summary.
+7. Doc-To-Contract: source facts, typed structure, interface seams, adapter
+   topology, error contract, dependency rules, production/test call stacks,
+   validation edges, test surfaces, and business logic explicitly excluded.
+8. System Shape: existing code path, module owner, state/data flow, reuse point, boundary systems.
+9. Interface/Data Contract: public seam, caller, input/output, fields, error shape, permission/boundary.
+10. Abstraction Boundary: where complexity lives, rejected abstractions, public/private method split.
+11. Execution Architecture: foundation/core/integration/polish decisions, file responsibility, failure recovery.
+12. Task Contract: tracer bullets, Red test names, public seams, confidence-per-minute test value, suite layer, command/runtime, fixture/mock boundary, Green minimality, refactor candidates.
+13. Second-Move Review: first good move, simpler move, better architecture, selected move, and rejected tradeoff.
+14. Final Approval: approved option and task contract summary.
 
 Tiny plans may compress a round to one evidence-backed line. Full designs must preserve enough detail that `cc-do` does not invent architecture, fields, interfaces, or tests.
 
@@ -63,6 +72,13 @@ Tiny plans may compress a round to one evidence-backed line. Full designs must p
 - Requirements state needed outcomes and constraints; shapes state buildable
   mechanisms. Do not let a shape part repeat the requirement in different
   words. If the shape does not add mechanism detail, keep shaping open.
+- Clear context facts must not remain prose-only when they affect
+  implementation. Map them into types, schemas, state models, service seams,
+  adapter slots, typed errors, call stacks, dependency rules, validation edges,
+  or test surfaces through `references/doc-to-contract.md`.
+- If a prose fact needs awkward optional fields, permits impossible states,
+  conflicts with code terms, or forces callers to know setup order, return to
+  the ambiguity gate before task generation.
 - Fit checks are binary and ASCII: `PASS` or `FAIL`. A shape with an unknown
   mechanism cannot pass the affected requirement. Resolve the mechanism from
   repo evidence, add an explicit spike/diagnosis task, or reject the shape.
@@ -237,11 +253,14 @@ multi-round review convergence belongs to `cc-check`.
 3. Second-Move Review: compare first good move, simpler move, better architecture, selected move, and rejected tradeoff.
 4. Domain language check: align core nouns, filenames, test names, and task titles with repo truth; otherwise record an assumption.
 5. Domain grilling check: glossary conflicts, fuzzy terms, concrete scenarios, code contradictions, context updates, and ADR decisions are resolved or recorded as explicit assumptions.
-6. Interface depth check: keep the public surface small and deep; hide complexity inside the owning module.
-7. Test seam check: Red tasks prove behavior through public interface, caller flow, or user-visible path.
-8. Mock boundary check: mock only external API, time, randomness, filesystem, network, or required database seams.
-9. Feedback loop check: pick the shortest credible feedback loop for every behavior.
-10. Confidence-per-minute check: identify the suite layer, command/runtime,
+6. Doc-to-contract check: typed structure, interface seams, adapter topology,
+   error contract, dependency rules, production/test call stacks, validation
+   edges, and business logic exclusions are explicit.
+7. Interface depth check: keep the public surface small and deep; hide complexity inside the owning module.
+8. Test seam check: Red tasks prove behavior through public interface, caller flow, or user-visible path.
+9. Mock boundary check: mock only external API, time, randomness, filesystem, network, or required database seams.
+10. Feedback loop check: pick the shortest credible feedback loop for every behavior.
+11. Confidence-per-minute check: identify the suite layer, command/runtime,
    proof value, fixture/mock boundary, and low-value tests that `cc-do` must not
    treat as Red evidence.
 
