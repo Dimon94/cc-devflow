@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.46] - 2026-06-11
+
 ### Changed
 
 - Required `cc-act` to run the repository full verification suite after the
