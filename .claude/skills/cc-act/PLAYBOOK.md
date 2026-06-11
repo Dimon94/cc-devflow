@@ -43,14 +43,20 @@ Everything else is Git history, PR history, or final response.
    route to `cc-check`; do not ship with pre-simplification evidence.
 10. Run or cite the current validation commands.
 11. Commit any remaining owned changes.
-12. State release-readiness gates: local checks, config/env, migrations/data,
+12. For `create-pr`, `update-pr`, and `local-main-merge`, run the
+   repository-defined full test/verification suite after the final owned commit
+   and before any push, PR create/update, or local-main merge. Full-suite
+   failures route to repair through `cc-do` or `cc-diagnose`; after any fix,
+   rerun the full suite and route back to `cc-check` if code, tests, or
+   verification posture changed.
+13. State release-readiness gates: local checks, config/env, migrations/data,
    deploy/health, smoke/cleanup, rollback, and watch items. Mark skipped,
    blocked, or not applicable gates honestly.
-13. Build `pr-brief.md` only when PR/handoff needs it.
-14. Run `evaluate-postmortem-trigger.sh`; write incident postmortem when it returns `POSTMORTEM_REQUIRED=yes`.
-15. Push/create/update PR when requested and available.
-16. For `local-main-merge`, rebase the work branch onto local `main`, fast-forward merge from the owning main checkout, prove `main` contains the delivered commit, and do not push unless explicitly requested.
-17. Archive completed change only after merge or explicit closeout.
+14. Build `pr-brief.md` only when PR/handoff needs it.
+15. Run `evaluate-postmortem-trigger.sh`; write incident postmortem when it returns `POSTMORTEM_REQUIRED=yes`.
+16. Push/create/update PR when requested and available.
+17. For `local-main-merge`, rebase the work branch onto local `main`, fast-forward merge from the owning main checkout, prove `main` contains the delivered commit, and do not push unless explicitly requested.
+18. Archive completed change only after merge or explicit closeout.
 
 ## Delivery Choice
 
@@ -98,9 +104,10 @@ Required sequence:
 2. Confirm all intended changes are committed.
 3. Confirm the owning primary checkout is on `main`.
 4. Rebase the work branch on current local `main`.
-5. From the owning primary checkout, run `git merge --ff-only <work-branch>`.
-6. Verify local `main` contains the delivered commit.
-7. Report that no remote push happened unless the user separately requested it.
+5. Run the repository-defined full test/verification suite on the rebased work branch.
+6. From the owning primary checkout, run `git merge --ff-only <work-branch>`.
+7. Verify local `main` contains the delivered commit.
+8. Report that no remote push happened unless the user separately requested it.
 
 If the owning main checkout is dirty, not on `main`, missing, or cannot fast-forward,
 stop blocked with the exact Git evidence.

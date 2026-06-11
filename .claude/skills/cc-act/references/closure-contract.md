@@ -18,7 +18,8 @@
 8. Before delivery, `cc-act` loads local Codex orchestration, discovers `create_thread`, `list_threads`, `read_thread`, `send_message_to_thread`, and `automation_update`, then runs `cc-simplify` in a child thread by default with model `gpt-5.5` and the requested reasoning effort set and verified on the thread; if that tool/resource chain is unavailable or the actual child resource differs, it runs the same gate in the main thread and reports the fallback.
 9. If verification changes during Act, or `cc-simplify` changes code, tests, or verification posture, return to `cc-check`.
 10. If delivery mode is not explicit, ask the user through `references/user-choice-output-protocol.md` before pushing, creating a PR, or merging locally.
-11. Release-readiness gates are explicit in PR/handoff output or final response:
+11. PR creation/update, branch push, or local-main merge requires a fresh full verification suite pass after the final owned commit; failures must be fixed and rerun before delivery.
+12. Release-readiness gates are explicit in PR/handoff output or final response:
     `passed`, `failed`, `skipped:<reason>`, `blocked:<missing evidence>`, or
     `not-applicable:<reason>`.
 
@@ -28,6 +29,24 @@
 `cc-simplify` gate under the local child-thread and heartbeat contract, then
 checks that ship output honestly carries the release gates already proven by
 `cc-check` or explicitly marks the gate as skipped, blocked, or not applicable.
+For PR creation/update, branch push, or local-main merge, the local quality gate
+also requires the repository-defined full test/verification suite to pass after
+the final owned commit.
+
+## Full Verification Gate
+
+Before any PR creation/update, branch push, or local-main merge, identify the
+repository full-suite command from project scripts, documentation, or CI. Run it
+on the final tree after all owned edits and commits are done. Focused tests or
+stale `cc-check` evidence alone do not satisfy this gate.
+
+If the full suite fails, the release gate is `failed`, not "known issue" or
+"probably okay." Fix the failure through the appropriate implementation or
+diagnosis route, rerun the full suite, and return to `cc-check` whenever the fix
+changed code, tests, fixtures, generated artifacts, or verification posture. If
+no repository full-suite command can be identified, mark the gate as
+`blocked:<missing full-suite command>` and do not mutate remote PR state or
+local `main`.
 
 ## Simplify Child Thread Guard
 
@@ -82,6 +101,8 @@ Rules:
 
 - A passed gate needs current evidence: command output, CI/deploy truth, smoke
   proof, config proof, log/metric proof, or explicit product scope evidence.
+- A PR push, PR creation/update, or local-main merge needs full-suite evidence;
+  focused or partial commands may support the story but cannot replace it.
 - A skipped gate needs a reason and accepted risk.
 - A blocked gate needs the missing environment, credential, service, artifact,
   or owner, then route to `cc-check` when the gate is required for shipping.
@@ -103,6 +124,7 @@ Required evidence:
 - owning primary checkout path on `main`
 - current local `main` commit before merge
 - successful work-branch rebase on local `main`
+- fresh full verification suite pass before the merge
 - successful `git merge --ff-only <work-branch>` from the owning checkout
 - final local `main` commit and proof it contains the delivered commit
 - explicit no-push statement unless a separate push request was made

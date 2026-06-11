@@ -2,7 +2,7 @@
 
 ## Diagnosis
 
-Ship failures usually come from stale verification, skipped simplification, implicit postmortem decisions, inherited PR prose, or unclear push/handoff/local-merge state.
+Ship failures usually come from stale verification, skipped simplification, missing full-suite evidence, implicit postmortem decisions, inherited PR prose, or unclear push/handoff/local-merge state.
 
 ## Checklist Mode
 
@@ -15,8 +15,9 @@ Ship failures usually come from stale verification, skipped simplification, impl
 1. Before delivery mode: resolve CLI and read current task/Git/PR evidence.
 2. Before any delivery action: load local Codex thread orchestration, discover required thread/resource/heartbeat tools, then run the pre-act `cc-simplify` gate in a child thread by default.
 3. Before waiting on a child: confirm the actual child thread is on model `gpt-5.5` with the requested reasoning effort, child-to-parent handoff instructions are in the dispatch packet, and `automation_update` created heartbeat monitoring.
-4. Before PR/handoff: rerun postmortem trigger and stale-verification check.
-5. Before exit: confirm commits, simplify verdict, push/PR/local/local-main state, and postmortem verdict.
+4. Before PR push/update or local-main merge: identify and run the full repository test/verification suite on the final tree; fix failures and rerun before delivery.
+5. Before PR/handoff: rerun postmortem trigger and stale-verification check.
+6. Before exit: confirm commits, simplify verdict, push/PR/local/local-main state, full-suite gate when required, and postmortem verdict.
 
 ## Required Checks
 
@@ -28,6 +29,8 @@ Ship failures usually come from stale verification, skipped simplification, impl
 - [ ] child mode includes child-to-parent handoff proof and heartbeat id/status; the parent verified the child result with `read_thread`
 - [ ] any `cc-simplify` code, test, or verification-posture edit routed back to `cc-check`
 - [ ] one ship mode is selected: create-pr, update-pr, local-handoff, local-main-merge, or post-merge-closeout
+- [ ] repository full-suite command was identified from project scripts, docs, or CI when delivery may push, update/create PR, or merge local main
+- [ ] full-suite verification passed after the final owned commit and before push, PR create/update, or local-main merge; failures were repaired and rerun, or delivery is blocked with missing evidence
 - [ ] verification did not change during Act; otherwise route to `cc-check`
 - [ ] release-readiness gates are stated as passed, failed, skipped with reason, blocked with missing evidence, or not applicable; rollback/watch path is named when relevant
 - [ ] local-main-merge, when selected, has rebase proof, owning-main `--ff-only` merge proof, containing-commit proof, and no-push evidence

@@ -1,5 +1,10 @@
 # CC-Act Skill Changelog
 
+## v1.17.2 - 2026-06-11
+
+- require the repository full verification suite to pass after the final owned commit and before PR creation/update, branch push, or local-main merge
+- classify full-suite failures as release-gate failures that must be fixed and rerun before delivery
+
 ## v1.17.1 - 2026-06-04
 
 - require pre-act `cc-simplify` child threads to set model `gpt-5.5` and the selected reasoning effort on `create_thread`
