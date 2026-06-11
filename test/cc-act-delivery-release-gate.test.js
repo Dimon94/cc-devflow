@@ -7,6 +7,10 @@ function read(relativePath) {
   return fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
 }
 
+function compactWhitespace(text) {
+  return text.replace(/\s+/g, ' ');
+}
+
 describe('cc-act delivery release gate', () => {
   test('closeout contract refuses ambiguous delivery and reasonless release gates', () => {
     const capabilityMap = read('docs/agent-rules-books-skill-capability-map.md');
@@ -64,5 +68,30 @@ describe('cc-act delivery release gate', () => {
     expect(closureContract).toContain('10 minute heartbeat with `automation_update`');
     expect(closureContract).toContain('`cc-simplify` changes code, tests, or verification posture, return to `cc-check`');
     expect(closureContract).not.toMatch(/cc-dev(?!flow)/);
+  });
+
+  test('act requires a full verification gate before PR or local main delivery', () => {
+    const skill = read('.claude/skills/cc-act/SKILL.md');
+    const playbook = read('.claude/skills/cc-act/PLAYBOOK.md');
+    const checklist = read('.claude/skills/cc-act/references/checklist-contract.md');
+    const closureContract = read('.claude/skills/cc-act/references/closure-contract.md');
+
+    expect(skill).toContain('repository full verification gate');
+    expect(skill).toContain('Push, PR create/update, and local-main-merge are blocked');
+    expect(skill).toContain('fix failures and rerun the full suite');
+
+    const compactPlaybook = compactWhitespace(playbook);
+    const compactClosureContract = compactWhitespace(closureContract);
+
+    expect(compactPlaybook).toContain('run the repository-defined full test/verification suite');
+    expect(compactPlaybook).toContain('before any push, PR create/update, or local-main merge');
+    expect(compactPlaybook).toContain('Full-suite failures route to repair');
+
+    expect(checklist).toContain('repository full-suite command was identified from project scripts, docs, or CI');
+    expect(checklist).toContain('full-suite verification passed after the final owned commit');
+
+    expect(closureContract).toContain('## Full Verification Gate');
+    expect(compactClosureContract).toContain('Focused tests or stale `cc-check` evidence alone do not satisfy this gate');
+    expect(closureContract).toContain('PR creation/update, branch push, or local-main merge');
   });
 });

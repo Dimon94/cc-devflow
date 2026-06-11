@@ -1,6 +1,6 @@
 ---
 name: cc-act
-version: 1.17.1
+version: 1.17.2
 description: Use when verified work must be committed, handed off, pushed, merged into local main, or turned into a PR with the smallest durable delivery surface.
 triggers:
   - 准备提 PR
@@ -48,6 +48,7 @@ All paths below are relative to this `SKILL.md` directory, not the shell cwd.
 4. Before Act delivery, load `references/codex-thread-orchestration.md`, then run the `cc-simplify` gate in a real Codex child thread by default with `create_thread` resources set to model `gpt-5.5` and the required reasoning effort; if required thread, resource, or heartbeat tools are unavailable or the created thread cannot be verified on those resources, run the same gate in the main thread and report the fallback.
 5. If `cc-simplify` changed code, tests, or verification posture, route to `cc-check`; if verification changed, route to `cc-check`; if implementation is unfinished, route to `cc-do`.
 6. Choose exactly one delivery mode before pushing, creating a PR, or merging locally.
+7. For push, PR create/update, or local-main merge delivery, satisfy the repository full verification gate after final owned changes are committed.
 
 ## Durable Outputs
 
@@ -75,6 +76,7 @@ If delivery mode is not explicit, ask through `references/user-choice-output-pro
 - All completed work is committed with coherent Conventional Commit messages; use `references/git-commit-guidelines.md`.
 - Act cannot ship until the pre-act `cc-simplify` verdict is explicit: child-thread pass, main-thread fallback pass, `NO FINDINGS`, or not-applicable because there is no changed implementation surface.
 - `cc-act` simplify child threads follow the local Codex contract: discover `create_thread`, `list_threads`, `read_thread`, `send_message_to_thread`, and `automation_update`; dispatch with `assets/SIMPLIFY_CHILD_DISPATCH_PACKET.md`; set and verify model `gpt-5.5` plus the required reasoning effort on the child thread; require child-to-parent handoff; and create heartbeat monitoring before stopping as `waiting-for-child-results`.
+- Push, PR create/update, and local-main-merge are blocked until the repository full verification gate passes on the final tree. If it fails, fix failures and rerun the full suite before delivery.
 - PR/handoff mode writes or refreshes only `handoff/pr-brief.md`.
 - Release-readiness gates are explicit: passed, failed, skipped with reason, blocked with missing evidence, or not applicable.
 - `POSTMORTEM_REQUIRED=no` is reported, or an incident postmortem path is written with `Workflow Patch Candidate` completed.
@@ -98,5 +100,6 @@ If delivery mode is not explicit, ask through `references/user-choice-output-pro
 - Pre-act `cc-simplify` gate completed or was explicitly not applicable; child thread handoff and heartbeat status were verified when child mode was used; any simplify edit rerouted to `cc-check`.
 - Postmortem trigger gate ran via `scripts/evaluate-postmortem-trigger.sh`.
 - Release-readiness gate status is explicit in PR/handoff output or final response.
+- Push, PR create/update, or local-main-merge delivery includes full-suite command, exit status, and claim proven after the final owned commit.
 - Verification did not change during Act.
 - No process file was created beyond allowed durable outputs.

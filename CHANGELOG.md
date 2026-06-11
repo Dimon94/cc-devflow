@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Required `cc-act` to run the repository full verification suite after the
+  final owned commit and before PR creation/update, branch push, or local-main
+  merge; failures must be fixed and rerun before delivery.
+
 ## [4.5.45] - 2026-06-06
 
 ### Added
