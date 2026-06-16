@@ -97,6 +97,7 @@ flowchart TD
 
 Maintenance skills are shipped with the pack:
 
+- `cc-archive`: archive, restore, or list `devflow/changes/<change-key>/`
 - `cc-simplify`: review changed code for reuse, quality, efficiency, and spec drift
 
 ## Planning Quality Gates
@@ -236,6 +237,7 @@ The currently distributed skill folders are:
 - `.claude/skills/cc-pr-land/`
 - `.claude/skills/cc-check/`
 - `.claude/skills/cc-act/`
+- `.claude/skills/cc-archive/`
 - `.claude/skills/cc-simplify/`
 
 ## Durable vs Ephemeral

@@ -22,6 +22,7 @@
     "cc-pr-land",
     "cc-check",
     "cc-act",
+    "cc-archive",
     "cc-simplify"
   ],
   "internalSkills": [

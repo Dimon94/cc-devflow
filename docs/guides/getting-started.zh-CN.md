@@ -149,7 +149,7 @@ npx cc-devflow adapt --cwd /path/to/your/project --platform codex
 
 如果你的项目没有可选的 `.claude/commands/` 输入目录，这也是正常的；编译器仍然会生成 skills registry，并为 Codex 镜像正式分发 skill 集合。
 
-Codex 现在会把正式分发的 skill 从 `.claude/skills/<skill>/` 镜像到 `.codex/skills/<skill>/`。这套集合包含公开 workflow skill 和维护类 skill `cc-simplify`，并且镜像是纯增量的：项目里已有的自定义 Codex skill 不会被删除。
+Codex 现在会把正式分发的 skill 从 `.claude/skills/<skill>/` 镜像到 `.codex/skills/<skill>/`。这套集合包含公开 workflow skill，以及 `cc-archive`、`cc-simplify` 等维护类 skill，并且镜像是纯增量的：项目里已有的自定义 Codex skill 不会被删除。
 
 ### 保持 skill 和样例同步
 

@@ -149,7 +149,7 @@ npx cc-devflow adapt --cwd /path/to/your/project --platform codex
 
 If your project has no optional `.claude/commands/` input, this is expected: the compiler will still generate the skills registry and mirror the distributed skill set for Codex.
 
-Codex mirrors the distributed skills from `.claude/skills/<skill>/` into `.codex/skills/<skill>/`. That set includes the public workflow skills plus the maintenance skill `cc-simplify`, and the mirror is additive-only: existing project-owned Codex skills are preserved instead of being deleted.
+Codex mirrors the distributed skills from `.claude/skills/<skill>/` into `.codex/skills/<skill>/`. That set includes the public workflow skills plus maintenance skills such as `cc-archive` and `cc-simplify`, and the mirror is additive-only: existing project-owned Codex skills are preserved instead of being deleted.
 
 ### Keep skills and examples in sync
 

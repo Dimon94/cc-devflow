@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-04",
+  "updatedAt": "2026-06-17",
   "skills": {
     "cc-next": "1.5.0",
     "cc-dev": "1.13.0",
@@ -11,6 +11,7 @@
     "cc-pr-land": "1.5.0",
     "cc-check": "1.18.1",
     "cc-act": "1.17.1",
+    "cc-archive": "1.0.0",
     "cc-simplify": "1.8.0"
   },
   "examples": [

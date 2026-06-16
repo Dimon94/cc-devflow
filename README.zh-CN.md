@@ -97,6 +97,7 @@ flowchart TD
 
 整包还包含维护类 Skill：
 
+- `cc-archive`：归档、恢复或列出 `devflow/changes/<change-key>/`
 - `cc-simplify`：审查已改代码的复用、质量、效率和需求漂移
 
 ## 计划质量门禁
@@ -225,6 +226,7 @@ npx cc-devflow config doctor --cwd /path/to/your/project
 - `.claude/skills/cc-pr-land/`
 - `.claude/skills/cc-check/`
 - `.claude/skills/cc-act/`
+- `.claude/skills/cc-archive/`
 - `.claude/skills/cc-simplify/`
 
 ## Durable 与 Ephemeral

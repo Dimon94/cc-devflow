@@ -21,6 +21,7 @@
         ".claude/skills/cc-pr-land/",
         ".claude/skills/cc-check/",
         ".claude/skills/cc-act/",
+        ".claude/skills/cc-archive/",
         ".claude/skills/cc-simplify/",
         "docs/",
         "README.md",
