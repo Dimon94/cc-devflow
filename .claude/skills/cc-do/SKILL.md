@@ -16,6 +16,7 @@ reads:
   - docs/guides/project-postmortem.md
   - ../cc-dev/scripts/resolve-cc-devflow.sh
   - ../cc-dev/references/domain-context-contract.md
+  - ../workflow-chain-contract/SKILL.md
   - references/git-commit-guidelines.md
   - references/checklist-contract.md
   - ../task-contract/SKILL.md

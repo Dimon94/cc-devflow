@@ -18,6 +18,7 @@ reads:
   - ../cc-review/SKILL.md
   - ../cc-dev/references/codex-thread-orchestration.md
   - ../cc-dev/scripts/resolve-cc-devflow.sh
+  - ../workflow-chain-contract/SKILL.md
   - references/checklist-contract.md
   - ../task-contract/SKILL.md
 writes:

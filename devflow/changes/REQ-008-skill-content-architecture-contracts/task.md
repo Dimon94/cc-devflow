@@ -357,7 +357,7 @@ Integration:
 - Cherry-picked: pending
 - Focused verification: pending
 
-- [ ] T003 [CONTRACT] Add workflow-chain-contract Chain Skill (dependsOn:T001)
+- [x] T003 [CONTRACT] Add workflow-chain-contract Chain Skill (dependsOn:T001)
   Environment: E003
   Goal: Build #43 as the stage state machine contract for main route, bug route, PR route, reroutes, terminal states, and entry/exit evidence.
   Contract: no task.md structure, quality gate semantics, child dispatch, or skill-writing rules.

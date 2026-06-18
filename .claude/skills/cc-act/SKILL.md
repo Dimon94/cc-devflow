@@ -21,6 +21,7 @@ reads:
   - scripts/evaluate-postmortem-trigger.sh
   - references/codex-thread-orchestration.md
   - assets/SIMPLIFY_CHILD_DISPATCH_PACKET.md
+  - ../workflow-chain-contract/SKILL.md
   - ../cc-simplify/SKILL.md
   - ../cc-simplify/PLAYBOOK.md
   - references/user-choice-output-protocol.md
