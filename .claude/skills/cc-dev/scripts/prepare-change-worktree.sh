@@ -121,6 +121,7 @@ state_field() {
 
 worktree_kind="$(state_field WORKTREE_KIND)"
 current_branch="$(state_field CURRENT_BRANCH)"
+current_lower="$(printf '%s' "$current_branch" | tr '[:upper:]' '[:lower:]')"
 primary_path="$(state_field PRIMARY_WORKTREE_PATH)"
 primary_branch="$(state_field PRIMARY_BRANCH)"
 
@@ -147,19 +148,33 @@ if [[ ! -x "$ensure_script" ]]; then
   exit 1
 fi
 
-while IFS= read -r ref_name; do
-  ref_lower="$(printf '%s' "$ref_name" | tr '[:upper:]' '[:lower:]')"
-  if [[ "$ref_name" != "$target_branch" && "$ref_lower" == "$target_lower" ]]; then
-    echo "WorktreePrepareError: case-variant branch already exists: $ref_name" >&2
-    echo "Expected exact branch: $target_branch" >&2
-    echo "Run cc-devflow next-change-key again after this branch is visible, or choose a fresh REQ/FIX key." >&2
-    echo "If this branch is the intended work, rename it only after proving no worktree owns it:" >&2
-    echo "  git branch -m '$ref_name' '$target_branch'" >&2
-    exit 1
-  fi
-done < <(git for-each-ref --format='%(refname:short)' refs/heads 2>/dev/null || true)
+case_collision=""
+resolved_sha=""
 
-if [[ "$worktree_kind" == "linked" && "$current_branch" != "$target_branch" ]]; then
+while IFS=$'\t' read -r ref_name ref_sha; do
+  ref_lower="$(printf '%s' "$ref_name" | tr '[:upper:]' '[:lower:]')"
+  if [[ "$ref_lower" != "$target_lower" ]]; then
+    continue
+  fi
+
+  if [[ -z "$resolved_sha" ]]; then
+    resolved_sha="$ref_sha"
+  elif [[ "$ref_sha" != "$resolved_sha" ]]; then
+    case_collision="$ref_name"
+    break
+  fi
+done < <(git for-each-ref --format='%(refname:short)%09%(objectname)' refs/heads 2>/dev/null || true)
+
+if [[ -n "$case_collision" ]]; then
+  echo "WorktreePrepareError: case-variant branch already exists: $case_collision" >&2
+  echo "Expected exact branch: $target_branch" >&2
+  echo "Run cc-devflow next-change-key again after this branch is visible, or choose a fresh REQ/FIX key." >&2
+  echo "If this branch is the intended work, rename it only after proving no worktree owns it:" >&2
+  echo "  git branch -m '$case_collision' '$target_branch'" >&2
+  exit 1
+fi
+
+if [[ "$worktree_kind" == "linked" && "$current_lower" != "$target_lower" ]]; then
   echo "WorktreePrepareError: already inside linked worktree on $current_branch" >&2
   echo "Run from the primary checkout on $BASE_BRANCH or from the target worktree $target_branch." >&2
   exit 1
@@ -170,9 +185,13 @@ current_worktree_path=""
 while IFS= read -r line; do
   case "$line" in
     worktree\ *) current_worktree_path="${line#worktree }" ;;
-    branch\ refs/heads/"$target_branch")
-      branch_worktree_path="$current_worktree_path"
-      break
+    branch\ refs/heads/*)
+      branch_name="${line#branch refs/heads/}"
+      branch_lower="$(printf '%s' "$branch_name" | tr '[:upper:]' '[:lower:]')"
+      if [[ "$branch_lower" == "$target_lower" ]]; then
+        branch_worktree_path="$current_worktree_path"
+        break
+      fi
       ;;
   esac
 done < <(git worktree list --porcelain 2>/dev/null || true)

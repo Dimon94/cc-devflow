@@ -78,6 +78,20 @@ function createRepo() {
   return repoRoot;
 }
 
+function commitFile(repoRoot, name, content, message) {
+  fs.writeFileSync(path.join(repoRoot, name), content);
+  run('git', ['add', name], repoRoot);
+  run('git', ['commit', '-m', message], repoRoot);
+  return run('git', ['rev-parse', 'HEAD'], repoRoot).stdout.trim();
+}
+
+function writePackedRefs(repoRoot, entries) {
+  fs.writeFileSync(
+    path.join(repoRoot, '.git', 'packed-refs'),
+    entries.map(({ sha, ref }) => `${sha} ${ref}`).join('\n') + '\n'
+  );
+}
+
 describe('cc-dev work branch anchor', () => {
   test('reports primary checkout state without mutating git', () => {
     const repoRoot = createRepo();
@@ -231,13 +245,13 @@ describe('cc-dev work branch anchor', () => {
     expect(result.stderr).toContain('refusing to anchor work on default branch main');
   });
 
-  test('does not register a change worktree when branch preflight fails', () => {
+  test('reuses existing lowercase branch layout for canonical REQ change keys', () => {
     const repoRoot = createRepo();
     const worktreesRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-dev-worktrees-'));
     run('git', ['switch', '-c', 'req/003-isolate-main-checkout-with-worktrees'], repoRoot);
     run('git', ['switch', 'main'], repoRoot);
 
-    const result = exec('bash', [
+    const result = run('bash', [
       PREPARE_CHANGE_WORKTREE,
       '--change-key',
       'REQ-003-isolate-main-checkout-with-worktrees',
@@ -251,10 +265,17 @@ describe('cc-dev work branch anchor', () => {
       path.basename(repoRoot)
     );
 
-    expect(result.status).toBe(1);
-    expect(result.stderr).toContain('case-variant branch already exists');
-    expect(fs.existsSync(targetPath)).toBe(false);
-    expect(worktreePaths(repoRoot)).not.toContain(targetPath);
+    expect(field(result.stdout, 'WORKTREE_ACTION')).toBe('created');
+    expect(field(result.stdout, 'WORK_BRANCH')).toBe(
+      'REQ/003-isolate-main-checkout-with-worktrees'
+    );
+    expect(fs.existsSync(targetPath)).toBe(true);
+    expect(worktreePaths(repoRoot).map((entry) => fs.realpathSync(entry))).toContain(
+      fs.realpathSync(targetPath)
+    );
+    expect(run('git', ['branch', '--show-current'], targetPath).stdout.trim()).toBe(
+      'req/003-isolate-main-checkout-with-worktrees'
+    );
   });
 
   test('refuses to prepare a nested change worktree from an unrelated linked worktree', () => {
@@ -305,10 +326,38 @@ describe('cc-dev work branch anchor', () => {
     expect(result.stderr).toContain('Current primary branch: feature/unwanted-primary-branch');
   });
 
-  test('fails closed when HEAD uses REQ case but only req branch exists', () => {
+  test('accepts same-HEAD case drift for the current work branch', () => {
     const repoRoot = createRepo();
-    run('git', ['switch', '-c', 'req/067-unified-provider-control-plane'], repoRoot);
-    run('git', ['pack-refs', '--all', '--prune'], repoRoot);
+    const head = run('git', ['rev-parse', 'HEAD'], repoRoot).stdout.trim();
+    writePackedRefs(repoRoot, [
+      { sha: head, ref: 'refs/heads/REQ/067-unified-provider-control-plane' },
+      { sha: head, ref: 'refs/heads/req/067-unified-provider-control-plane' }
+    ]);
+    run('git', ['symbolic-ref', 'HEAD', 'refs/heads/REQ/067-unified-provider-control-plane'], repoRoot);
+
+    const result = run('bash', [
+      ENSURE_WORK_BRANCH,
+      '--change-key',
+      'REQ-067-unified-provider-control-plane'
+    ], repoRoot);
+
+    expect(field(result.stdout, 'BRANCH_ACTION')).toBe('already-on-branch');
+    expect(field(result.stdout, 'WORK_BRANCH')).toBe('REQ/067-unified-provider-control-plane');
+  });
+
+  test('fails closed when case-variant refs point at different commits', () => {
+    const repoRoot = createRepo();
+    const lowerHead = run('git', ['rev-parse', 'HEAD'], repoRoot).stdout.trim();
+    const upperHead = commitFile(
+      repoRoot,
+      'feature.txt',
+      'feature\n',
+      'test: add feature commit'
+    );
+    writePackedRefs(repoRoot, [
+      { sha: upperHead, ref: 'refs/heads/REQ/067-unified-provider-control-plane' },
+      { sha: lowerHead, ref: 'refs/heads/req/067-unified-provider-control-plane' }
+    ]);
     run('git', ['symbolic-ref', 'HEAD', 'refs/heads/REQ/067-unified-provider-control-plane'], repoRoot);
 
     const result = exec('bash', [
