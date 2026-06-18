@@ -209,6 +209,7 @@ Child:
 - Task file in child worktree: `devflow/changes/REQ-008-skill-content-architecture-contracts/task.md`
 - Branch: detached HEAD at `1ac6298`
 - Commit: pending
+- Heartbeat: `req-008-e001`
 Integration:
 - Owner: parent `cc-dev` only; child must not cherry-pick, unlock siblings, or mark itself integrated.
 - Cherry-picked: pending
