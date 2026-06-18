@@ -511,7 +511,7 @@ Integration:
 
 Goal: Implement #46, minimal workflow fixture tests for the contract set.
 Route: cc-do
-Status: active
+Status: integrated
 Task file: `devflow/changes/REQ-008-skill-content-architecture-contracts/task.md`
 Tasks: T006
 Assigned task IDs:
@@ -542,13 +542,13 @@ Child:
 - Thread: `019edbdd-e64c-72c2-83dd-86908b14c87c`
 - Worktree: `/Users/dimon/.codex/worktrees/688e/cc-devflow`
 - Task file in child worktree: `devflow/changes/REQ-008-skill-content-architecture-contracts/task.md`
-- Branch: detached HEAD at `d9fb39d`
-- Commit: pending
+- Branch: `codex/REQ-008-E006-workflow-fixture-tests`
+- Commit: `efdaf5e` (`test(workflow-fixture): add skill contract process fixtures`)
 - Heartbeat: `req-008-e001`
 Integration:
 - Owner: parent `cc-dev` only; child must not cherry-pick, unlock siblings, or mark itself integrated.
-- Cherry-picked: pending
-- Focused verification: pending
+- Cherry-picked: `578f9cf`
+- Focused verification: passed (`npm test -- workflow-fixture`)
 
 - [x] T006 [TEST] Add workflow fixture tests for skill contracts (dependsOn:T002,T003,T004,T005)
   Environment: E006
