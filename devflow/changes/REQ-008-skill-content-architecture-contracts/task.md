@@ -175,7 +175,7 @@ invalid.
 
 Goal: Implement #41, the `skill-authoring-gate` Chain Skill.
 Route: cc-do
-Status: active
+Status: integrated
 Task file: `devflow/changes/REQ-008-skill-content-architecture-contracts/task.md`
 Tasks: T001
 Assigned task IDs:
@@ -207,13 +207,13 @@ Child:
 - Thread: `019edbab-aea2-7093-8012-a6b63dce9e06`
 - Worktree: `/Users/dimon/.codex/worktrees/21f7/cc-devflow`
 - Task file in child worktree: `devflow/changes/REQ-008-skill-content-architecture-contracts/task.md`
-- Branch: detached HEAD at `1ac6298`
-- Commit: pending
+- Branch: `codex/REQ-008-E001-skill-authoring-gate`
+- Commit: `cbc81fc` (`feat(skill-authoring-gate): add authoring contract`)
 - Heartbeat: `req-008-e001`
 Integration:
 - Owner: parent `cc-dev` only; child must not cherry-pick, unlock siblings, or mark itself integrated.
-- Cherry-picked: pending
-- Focused verification: pending
+- Cherry-picked: `96c014b`
+- Focused verification: passed (`npm test -- skill-authoring`)
 
 - [x] T001 [CONTRACT] Add skill-authoring-gate Chain Skill (dependsOn:none)
   Environment: E001
