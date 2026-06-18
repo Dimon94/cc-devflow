@@ -511,7 +511,7 @@ Integration:
 
 Goal: Implement #46, minimal workflow fixture tests for the contract set.
 Route: cc-do
-Status: planned
+Status: active
 Task file: `devflow/changes/REQ-008-skill-content-architecture-contracts/task.md`
 Tasks: T006
 Assigned task IDs:
@@ -539,11 +539,12 @@ Unlocks:
 - final `npm run verify:publish`
 - final `cc-check`
 Child:
-- Thread: pending
-- Worktree: pending
+- Thread: `019edbdd-e64c-72c2-83dd-86908b14c87c`
+- Worktree: `/Users/dimon/.codex/worktrees/688e/cc-devflow`
 - Task file in child worktree: `devflow/changes/REQ-008-skill-content-architecture-contracts/task.md`
-- Branch: pending
+- Branch: detached HEAD at `d9fb39d`
 - Commit: pending
+- Heartbeat: `req-008-e001`
 Integration:
 - Owner: parent `cc-dev` only; child must not cherry-pick, unlock siblings, or mark itself integrated.
 - Cherry-picked: pending
