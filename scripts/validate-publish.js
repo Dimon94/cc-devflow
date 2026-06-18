@@ -142,6 +142,7 @@ function validateNoRetiredFiles(errors) {
   ]);
   const allowedTaskContractFiles = new Set([
     '.claude/skills/task-contract/SKILL.md',
+    '.codex/skills/task-contract/SKILL.md',
     'test/task-contract.test.js'
   ]);
 

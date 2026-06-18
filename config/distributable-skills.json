@@ -24,7 +24,10 @@
     "cc-act",
     "cc-archive",
     "cc-simplify",
-    "task-contract"
+    "task-contract",
+    "workflow-chain-contract",
+    "quality-gate-contract",
+    "execution-environment-contract"
   ],
   "internalSkills": [
     "docs-sync",
