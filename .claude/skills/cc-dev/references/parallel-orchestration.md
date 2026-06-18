@@ -1,5 +1,10 @@
 # Parallel Orchestration
 
+Read `../execution-environment-contract/SKILL.md` as the source contract for
+environment types, dependency semantics, child boundaries, final reports,
+integration gates, and safe worktree closeout. This file is the cc-dev
+operational reference for applying that contract.
+
 Use this reference when `task.md` contains `## Execution Environments`, the
 user asks for multi-threaded development, or a large change can be decomposed
 into independently committable environments.

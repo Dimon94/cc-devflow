@@ -22,6 +22,7 @@ reads:
   - references/CONTEXT-FORMAT.md
   - references/ADR-FORMAT.md
   - ../workflow-chain-contract/SKILL.md
+  - ../execution-environment-contract/SKILL.md
   - ../cc-dev/scripts/resolve-cc-devflow.sh
   - ../cc-dev/scripts/detect-worktree-state.sh
   - ../cc-dev/scripts/prepare-change-worktree.sh

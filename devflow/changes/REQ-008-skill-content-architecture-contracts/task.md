@@ -485,7 +485,7 @@ Integration:
 - Cherry-picked: pending
 - Focused verification: pending
 
-- [ ] T005 [CONTRACT] Add execution-environment-contract Chain Skill (dependsOn:T002,T003)
+- [x] T005 [CONTRACT] Add execution-environment-contract Chain Skill (dependsOn:T002,T003)
   Environment: E005
   Goal: Build #45 as the parallel graph and integration contract for environment types, dependency fields, child dispatch boundary, final report, integration gate, and safe worktree closeout.
   Contract: no Codex thread tool wrappers, heartbeat implementation, model selection, or platform UI behavior.

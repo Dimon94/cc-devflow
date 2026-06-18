@@ -15,6 +15,7 @@ reads:
   - ../cc-check/SKILL.md
   - ../cc-act/SKILL.md
   - ../workflow-chain-contract/SKILL.md
+  - ../execution-environment-contract/SKILL.md
   - references/git-commit-guidelines.md
   - ../cc-diagnose/SKILL.md
   - scripts/resolve-cc-devflow.sh
