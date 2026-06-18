@@ -24,6 +24,18 @@ _Avoid_: Runtime state store, generated mirror
 The rule that workflow authority belongs to durable truth, not to runtime caches or generated summaries.
 _Avoid_: Shadow state, mirrored workflow state
 
+**User Entry Skill**:
+A skill that a person invokes to start or resume a workflow phase.
+_Avoid_: Public skill, command skill
+
+**Chain Skill**:
+A skill that exists for other skills and agents to reuse inside the workflow chain, rather than as a primary human entry point.
+_Avoid_: Shared reference, helper doc
+
+**Task Contract**:
+The durable agreement that defines the shape and meaning of `task.md` for planning, execution, verification, and delivery.
+_Avoid_: Task template, issue spec, task document
+
 **Project Hook**:
 A host hook registered for the project as a whole, outside any single skill's lifecycle.
 _Avoid_: Skill-scoped hook, frontmatter hook
