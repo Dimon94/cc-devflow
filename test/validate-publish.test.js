@@ -24,6 +24,22 @@ describe('validate-publish', () => {
     expect(pkg.scripts).not.toHaveProperty(['benchmark', 'workflow-context'].join(':'));
   });
 
+  test('task contract is distributable without becoming public', () => {
+    const config = JSON.parse(fs.readFileSync(path.join(ROOT, 'config/distributable-skills.json'), 'utf8'));
+    const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
+
+    expect(config.distributedSkills).toContain('task-contract');
+    expect(config.publicSkills).not.toContain('task-contract');
+    expect(pkg.files).toContain('.claude/skills/task-contract/');
+  });
+
+  test('retired task-contract artifacts remain banned', () => {
+    const script = fs.readFileSync(path.join(ROOT, 'scripts/validate-publish.js'), 'utf8');
+
+    expect(script).toContain('/task-contract|review-records|benchmark-artifacts|verify-artifacts/');
+    expect(script).toContain("['task-contract', ' review ', 'compile ', 'validate ']");
+  });
+
   test('CLI no longer exposes runtime queries', () => {
     const result = spawnSync(process.execPath, ['bin/cc-devflow-cli.js', '--help'], {
       cwd: ROOT,

@@ -19,6 +19,7 @@ reads:
   - references/checklist-contract.md
   - ../cc-dev/references/domain-context-contract.md
   - ../cc-dev/references/user-choice-output-protocol.md
+  - ../task-contract/SKILL.md
 writes:
   - path: current response
     durability: ephemeral

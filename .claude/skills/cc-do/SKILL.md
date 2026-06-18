@@ -18,6 +18,7 @@ reads:
   - ../cc-dev/references/domain-context-contract.md
   - references/git-commit-guidelines.md
   - references/checklist-contract.md
+  - ../task-contract/SKILL.md
   - scripts/select-ready-tasks.sh
   - scripts/mark-task-complete.sh
   - scripts/check-task-status.sh

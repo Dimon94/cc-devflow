@@ -19,6 +19,7 @@ reads:
   - ../cc-dev/references/codex-thread-orchestration.md
   - ../cc-dev/scripts/resolve-cc-devflow.sh
   - references/checklist-contract.md
+  - ../task-contract/SKILL.md
 writes:
   - path: current response
     durability: ephemeral

@@ -16,7 +16,6 @@ const COMMIT_GUIDELINE_SKILLS = ['cc-plan', 'cc-dev', 'cc-do', 'cc-check', 'cc-d
 const COMMIT_GUIDELINE_REF = 'references/git-commit-guidelines.md';
 
 const RETIRED_PATTERNS = [
-  'task-contract',
   'task-manifest.json',
   'change-meta.json',
   'report-card.json',
@@ -141,13 +140,17 @@ function validateNoRetiredFiles(errors) {
     'status.md',
     'principles.md'
   ]);
+  const allowedTaskContractFiles = new Set([
+    '.claude/skills/task-contract/SKILL.md',
+    'test/task-contract.test.js'
+  ]);
 
   for (const file of walkFiles(ROOT)) {
     const rel = path.relative(ROOT, file);
     if (retiredNames.has(path.basename(file))) {
       errors.push(`Retired process file must not exist: ${rel}`);
     }
-    if (/task-contract|review-records|benchmark-artifacts|verify-artifacts/.test(rel)) {
+    if (/task-contract|review-records|benchmark-artifacts|verify-artifacts/.test(rel) && !allowedTaskContractFiles.has(rel)) {
       errors.push(`Retired process module/script must not exist: ${rel}`);
     }
   }

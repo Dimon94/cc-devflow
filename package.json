@@ -23,6 +23,7 @@
         ".claude/skills/cc-act/",
         ".claude/skills/cc-archive/",
         ".claude/skills/cc-simplify/",
+        ".claude/skills/task-contract/",
         "docs/",
         "README.md",
         "README.zh-CN.md",

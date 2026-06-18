@@ -292,7 +292,7 @@ Integration:
 - Cherry-picked: pending
 - Focused verification: pending
 
-- [ ] T002 [CONTRACT] Add task-contract Chain Skill (dependsOn:T001)
+- [x] T002 [CONTRACT] Add task-contract Chain Skill (dependsOn:T001)
   Environment: E002
   Goal: Build #42 as a pure reference Chain Skill defining task.md shape, status, task blocks, Failure Ledger, Execution Environments, and reader/writer responsibilities.
   Contract: distributed but not public; no parser, DSL, validator, CLI command, workflow router, or delivery policy.

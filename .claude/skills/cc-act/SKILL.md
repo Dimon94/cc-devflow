@@ -25,6 +25,7 @@ reads:
   - ../cc-simplify/PLAYBOOK.md
   - references/user-choice-output-protocol.md
   - references/checklist-contract.md
+  - ../task-contract/SKILL.md
 writes:
   - path: devflow/changes/<change-key>/handoff/pr-brief.md
     durability: durable

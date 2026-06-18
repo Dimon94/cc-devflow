@@ -28,6 +28,7 @@ reads:
   - ../cc-dev/references/domain-context-contract.md
   - ../cc-dev/references/user-choice-output-protocol.md
   - references/checklist-contract.md
+  - ../task-contract/SKILL.md
 writes:
   - path: devflow/changes/<change-key>/task.md
     durability: durable

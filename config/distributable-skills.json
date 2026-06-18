@@ -23,11 +23,13 @@
     "cc-check",
     "cc-act",
     "cc-archive",
-    "cc-simplify"
+    "cc-simplify",
+    "task-contract"
   ],
   "internalSkills": [
     "docs-sync",
     "managed-skill-sync",
-    "npm-release"
+    "npm-release",
+    "skill-authoring-gate"
   ]
 }

@@ -26,6 +26,7 @@ reads:
   - references/codex-thread-orchestration.md
   - references/user-choice-output-protocol.md
   - references/checklist-contract.md
+  - ../task-contract/SKILL.md
   - assets/CHILD_DISPATCH_PACKET.md
 writes:
   - path: devflow/changes/<change-key>/task.md
