@@ -550,7 +550,7 @@ Integration:
 - Cherry-picked: pending
 - Focused verification: pending
 
-- [ ] T006 [TEST] Add workflow fixture tests for skill contracts (dependsOn:T002,T003,T004,T005)
+- [x] T006 [TEST] Add workflow fixture tests for skill contracts (dependsOn:T002,T003,T004,T005)
   Environment: E006
   Goal: Build #46 by adding minimal Jest fixtures for serial workflow, parallel environment, quality gate, and authoring gate process behavior.
   Contract: no new test framework, real child threads, real PR automation, external services, or broad golden snapshots.
