@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.47] - 2026-06-18
+
+### Added
+
+- Added the `cc-archive` skill and public docs/registry entries for change
+  archive maintenance.
+- Added the runtime harness glossary and initial ADR records for host hook,
+  durable truth, actionable slice, recovery, and PostToolUse policy decisions.
+
+## [4.5.46] - 2026-06-11
+
 ### Changed
 
 - Required `cc-act` to run the repository full verification suite after the
