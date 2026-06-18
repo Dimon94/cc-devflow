@@ -175,7 +175,7 @@ invalid.
 
 Goal: Implement #41, the `skill-authoring-gate` Chain Skill.
 Route: cc-do
-Status: planned
+Status: pending-worktree
 Task file: `devflow/changes/REQ-008-skill-content-architecture-contracts/task.md`
 Tasks: T001
 Assigned task IDs:
@@ -204,8 +204,8 @@ Unlocks:
 - E003
 - E004
 Child:
-- Thread: pending
-- Worktree: pending
+- Thread: pending (`pendingWorktreeId=local:873e9d7e-325d-4c71-913b-26a8fa625666`)
+- Worktree: pending (`local:873e9d7e-325d-4c71-913b-26a8fa625666`)
 - Task file in child worktree: `devflow/changes/REQ-008-skill-content-architecture-contracts/task.md`
 - Branch: pending
 - Commit: pending
