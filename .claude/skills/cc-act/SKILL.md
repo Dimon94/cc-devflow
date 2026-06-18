@@ -22,6 +22,7 @@ reads:
   - references/codex-thread-orchestration.md
   - assets/SIMPLIFY_CHILD_DISPATCH_PACKET.md
   - ../workflow-chain-contract/SKILL.md
+  - ../quality-gate-contract/SKILL.md
   - ../cc-simplify/SKILL.md
   - ../cc-simplify/PLAYBOOK.md
   - references/user-choice-output-protocol.md
@@ -83,6 +84,7 @@ If delivery mode is not explicit, ask through `references/user-choice-output-pro
 - Release-readiness gates are explicit: passed, failed, skipped with reason, blocked with missing evidence, or not applicable.
 - `POSTMORTEM_REQUIRED=no` is reported, or an incident postmortem path is written with `Workflow Patch Candidate` completed.
 - Incident postmortems use confirmed `Failure Ledger` lessons, not raw `cc-review` findings, chat memory, or unclassified review escape candidates.
+- `quality-gate-contract` owns which Failure Ledger lessons become postmortem input and cc-act closeout input.
 - `local-main-merge` requires fresh check evidence, rebase, owning-main `--ff-only` merge, containing-commit proof, and no-push evidence.
 - No process file is created beyond allowed durable outputs.
 

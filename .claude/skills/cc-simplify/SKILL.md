@@ -13,6 +13,7 @@ reads:
   - references/confirmed-smell-gate.md
   - references/reviewer-swarm.md
   - references/finding-triage.md
+  - ../quality-gate-contract/SKILL.md
   - ../cc-dev/references/user-choice-output-protocol.md
 writes:
   - path: code changes
@@ -57,6 +58,7 @@ Detailed rules live in `references/confirmed-smell-gate.md`.
 | `references/reviewer-swarm.md` | subagent dispatch, reviewer prompts, specialists, Red Team |
 | `references/finding-triage.md` | finding line shape, dedupe, confidence gates, fix/ask/reroute decisions |
 | `references/confirmed-smell-gate.md` | proving a smell before edit, deletion test, false-positive suppressions |
+| `../quality-gate-contract/SKILL.md` | confirmed smell boundary and quality-gate role for cc-simplify |
 | `../cc-dev/references/user-choice-output-protocol.md` | public API, behavior, security, or broad design choice requires user decision |
 
 ## Default Output

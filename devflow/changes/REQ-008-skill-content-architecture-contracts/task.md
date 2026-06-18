@@ -421,7 +421,7 @@ Integration:
 - Cherry-picked: pending
 - Focused verification: pending
 
-- [ ] T004 [CONTRACT] Add quality-gate-contract Chain Skill (dependsOn:T001)
+- [x] T004 [CONTRACT] Add quality-gate-contract Chain Skill (dependsOn:T001)
   Environment: E004
   Goal: Build #44 as the quality semantics contract for review severity, verification verdicts, confirmed smell, review escape, Failure Ledger, and postmortem input.
   Contract: include cc-simplify only at quality-gate level; no full reviewer swarm, productization surface, or detailed test-layer taxonomy.

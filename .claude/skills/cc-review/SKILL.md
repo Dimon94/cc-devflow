@@ -20,6 +20,7 @@ reads:
   - ../cc-dev/references/domain-context-contract.md
   - ../cc-dev/references/user-choice-output-protocol.md
   - ../task-contract/SKILL.md
+  - ../quality-gate-contract/SKILL.md
 writes:
   - path: current response
     durability: ephemeral
@@ -65,6 +66,7 @@ All paths below are relative to this `SKILL.md` directory, not the shell cwd.
 
 | Load | When |
 | --- | --- |
+| `../quality-gate-contract/SKILL.md` | shared review severity, advisory handling, and review escape semantics |
 | `../cc-dev/references/domain-context-contract.md` | before findings, ADR conflict checks, or context growth proposals |
 | `references/plan-review-branch.md` | plan, task.md, docs, issue, architecture, or scope |
 | `references/implementation-review-branch.md` | code, tests, docs, or PR diff |

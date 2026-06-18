@@ -21,6 +21,7 @@ reads:
   - ../workflow-chain-contract/SKILL.md
   - references/checklist-contract.md
   - ../task-contract/SKILL.md
+  - ../quality-gate-contract/SKILL.md
 writes:
   - path: current response
     durability: ephemeral
@@ -66,6 +67,7 @@ NO PASS WITHOUT FRESH EVIDENCE
 | `../cc-dev/references/codex-thread-orchestration.md` | Codex App thread tooling, model, and reasoning contract for review subAgents |
 | `PLAYBOOK.md` | visible state machine, reset signals, default output, verification loop |
 | `../cc-dev/scripts/resolve-cc-devflow.sh` | repository policy or change metadata must be resolved |
+| `../quality-gate-contract/SKILL.md` | pass/fail/blocked verdicts, blocking severity, and ledger classification semantics |
 
 ## Review Convergence Gate
 
