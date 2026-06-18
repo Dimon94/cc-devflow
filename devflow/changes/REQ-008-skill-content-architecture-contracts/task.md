@@ -318,7 +318,7 @@ Integration:
 
 Goal: Implement #43, the `workflow-chain-contract` Chain Skill.
 Route: cc-do
-Status: planned
+Status: active
 Task file: `devflow/changes/REQ-008-skill-content-architecture-contracts/task.md`
 Tasks: T003
 Assigned task IDs:
@@ -346,11 +346,12 @@ Unlocks:
 - E005
 - E006
 Child:
-- Thread: pending
-- Worktree: pending
+- Thread: `019edbc1-be82-79b0-9c59-f6946943fa8f`
+- Worktree: `/Users/dimon/.codex/worktrees/e587/cc-devflow`
 - Task file in child worktree: `devflow/changes/REQ-008-skill-content-architecture-contracts/task.md`
-- Branch: pending
+- Branch: detached HEAD at `a380708`
 - Commit: pending
+- Heartbeat: `req-008-e001`
 Integration:
 - Owner: parent `cc-dev` only; child must not cherry-pick, unlock siblings, or mark itself integrated.
 - Cherry-picked: pending
