@@ -383,7 +383,7 @@ Integration:
 
 Goal: Implement #44, the `quality-gate-contract` Chain Skill.
 Route: cc-do
-Status: planned
+Status: active
 Task file: `devflow/changes/REQ-008-skill-content-architecture-contracts/task.md`
 Tasks: T004
 Assigned task IDs:
@@ -410,11 +410,12 @@ Task contract coverage:
 Unlocks:
 - E006
 Child:
-- Thread: pending
-- Worktree: pending
+- Thread: `019edbcb-223a-71d1-8a64-55b54fb96f13`
+- Worktree: `/Users/dimon/.codex/worktrees/67ce/cc-devflow`
 - Task file in child worktree: `devflow/changes/REQ-008-skill-content-architecture-contracts/task.md`
-- Branch: pending
+- Branch: detached HEAD at `aff479d`
 - Commit: pending
+- Heartbeat: `req-008-e001`
 Integration:
 - Owner: parent `cc-dev` only; child must not cherry-pick, unlock siblings, or mark itself integrated.
 - Cherry-picked: pending
