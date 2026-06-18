@@ -447,7 +447,7 @@ Integration:
 
 Goal: Implement #45, the `execution-environment-contract` Chain Skill.
 Route: cc-do
-Status: planned
+Status: active
 Task file: `devflow/changes/REQ-008-skill-content-architecture-contracts/task.md`
 Tasks: T005
 Assigned task IDs:
@@ -474,11 +474,12 @@ Task contract coverage:
 Unlocks:
 - E006
 Child:
-- Thread: pending
-- Worktree: pending
+- Thread: `019edbd7-3f47-7902-9634-fc49e9576601`
+- Worktree: `/Users/dimon/.codex/worktrees/1caf/cc-devflow`
 - Task file in child worktree: `devflow/changes/REQ-008-skill-content-architecture-contracts/task.md`
-- Branch: pending
+- Branch: detached HEAD at `91bc33c`
 - Commit: pending
+- Heartbeat: `req-008-e001`
 Integration:
 - Owner: parent `cc-dev` only; child must not cherry-pick, unlock siblings, or mark itself integrated.
 - Cherry-picked: pending
