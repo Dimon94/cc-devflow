@@ -447,7 +447,7 @@ Integration:
 
 Goal: Implement #45, the `execution-environment-contract` Chain Skill.
 Route: cc-do
-Status: active
+Status: integrated
 Task file: `devflow/changes/REQ-008-skill-content-architecture-contracts/task.md`
 Tasks: T005
 Assigned task IDs:
@@ -477,13 +477,13 @@ Child:
 - Thread: `019edbd7-3f47-7902-9634-fc49e9576601`
 - Worktree: `/Users/dimon/.codex/worktrees/1caf/cc-devflow`
 - Task file in child worktree: `devflow/changes/REQ-008-skill-content-architecture-contracts/task.md`
-- Branch: detached HEAD at `91bc33c`
-- Commit: pending
+- Branch: `codex/REQ-008-E005-execution-environment-contract`
+- Commit: `58dbc14` (`feat(execution-environment-contract): add parallel environment contract`)
 - Heartbeat: `req-008-e001`
 Integration:
 - Owner: parent `cc-dev` only; child must not cherry-pick, unlock siblings, or mark itself integrated.
-- Cherry-picked: pending
-- Focused verification: pending
+- Cherry-picked: `e26aae8`
+- Focused verification: passed (`npm test -- execution-environment`)
 
 - [x] T005 [CONTRACT] Add execution-environment-contract Chain Skill (dependsOn:T002,T003)
   Environment: E005
