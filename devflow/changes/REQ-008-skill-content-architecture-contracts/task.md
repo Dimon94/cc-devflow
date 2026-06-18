@@ -215,7 +215,7 @@ Integration:
 - Cherry-picked: pending
 - Focused verification: pending
 
-- [ ] T001 [CONTRACT] Add skill-authoring-gate Chain Skill (dependsOn:none)
+- [x] T001 [CONTRACT] Add skill-authoring-gate Chain Skill (dependsOn:none)
   Environment: E001
   Goal: Build #41 as a narrow Chain Skill for invocation, information hierarchy, completion criteria, progressive disclosure, leading words, and pruning.
   Contract: User Entry Skill / Chain Skill / Agent-facing internal contract language must be distinguished.
