@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.48] - 2026-06-19
+
+### Added
+
+- Added skill content architecture contract skills for authoring gates, task
+  contracts, workflow chain semantics, quality gates, and parallel execution
+  environment boundaries.
+- Added workflow fixture coverage for the skill contract process.
+
+### Changed
+
+- Registered the new chain contract skills in publish validation and
+  distributable package metadata.
+
 ## [4.5.47] - 2026-06-18
 
 ### Added
