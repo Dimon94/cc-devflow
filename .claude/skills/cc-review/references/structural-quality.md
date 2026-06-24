@@ -14,8 +14,6 @@ workflow and not a nit quota.
   behavior change unless the bug fix is explicit and tested.
 - Protect persisted state, stored schemas, localStorage, database rows, and
   deployed API contracts. Prefer normalizers and migrations over resets.
-- Re-think structure, abstraction, ownership boundaries, branch growth, and
-  readability while preserving behavior.
 - Look for code-judo moves: delete whole classes of helpers, modes, state, or
   branches instead of relocating complexity.
 - Keep recommendations behavior-preserving and name the tests or measurements
@@ -180,7 +178,6 @@ Structural quality findings include:
 4. Boundary, abstraction, or type contract that makes the system harder to
    reason about.
 5. File-size and split problems.
-6. Modularity, abstraction payoff, readability, or maintainability issues.
 
 Do not drown real structure issues in naming, comment, formatting, or style
 nits.
