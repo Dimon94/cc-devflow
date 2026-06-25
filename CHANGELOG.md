@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Updated `cc-act` to require explicit issue closeout intent in PR/MR and
+  handoff text, reserving closing keywords for directly completed issues.
+- Added issue closeout fields to the `cc-act` PR brief template and refreshed
+  example bindings for `cc-act@1.18.0`.
+
 ## [4.5.48] - 2026-06-19
 
 ### Added

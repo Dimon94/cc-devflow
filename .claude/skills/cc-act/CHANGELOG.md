@@ -1,5 +1,11 @@
 # CC-Act Skill Changelog
 
+## v1.18.0 - 2026-06-25
+
+- require PR/MR and handoff text to state issue closeout intent when tracker issues are in scope
+- reserve closing keywords for directly completed issues, keeping parent PRDs, umbrella issues, partial slices, siblings, and blocked-by chains as related-only references
+- add issue closeout fields to the PR brief template and closeout checklist
+
 ## v1.17.2 - 2026-06-11
 
 - require the repository full verification suite to pass after the final owned commit and before PR creation/update, branch push, or local-main merge

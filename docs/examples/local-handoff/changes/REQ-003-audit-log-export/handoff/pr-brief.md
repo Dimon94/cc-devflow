@@ -25,6 +25,12 @@
 | Smoke / cleanup | not-applicable | no smoke data is created | no cleanup needed |
 | Rollback / watch | passed | revert this example doc change | watch example binding drift |
 
+## Issue Closeout
+
+- Close on merge: none
+- Related only: none
+- Reason: local handoff example has no tracker issue in scope
+
 ## PR Body Draft
 
 ```markdown
@@ -35,6 +41,10 @@
 ## Validation
 
 - Example files are checked by `docs/examples/scripts/check-example-bindings.sh`.
+
+## Issue Closeout
+
+- No tracker issue is in scope for this example; do not add closing keywords.
 
 ## Risk / Rollback
 

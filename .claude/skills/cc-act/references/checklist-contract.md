@@ -31,6 +31,7 @@ Ship failures usually come from stale verification, skipped simplification, miss
 - [ ] one ship mode is selected: create-pr, update-pr, local-handoff, local-main-merge, or post-merge-closeout
 - [ ] repository full-suite command was identified from project scripts, docs, or CI when delivery may push, update/create PR, or merge local main
 - [ ] full-suite verification passed after the final owned commit and before push, PR create/update, or local-main merge; failures were repaired and rerun, or delivery is blocked with missing evidence
+- [ ] issue closeout intent is explicit when a tracker issue is in scope: direct completed issue closes, parent/partial references stay related-only
 - [ ] verification did not change during Act; otherwise route to `cc-check`
 - [ ] release-readiness gates are stated as passed, failed, skipped with reason, blocked with missing evidence, or not applicable; rollback/watch path is named when relevant
 - [ ] local-main-merge, when selected, has rebase proof, owning-main `--ff-only` merge proof, containing-commit proof, and no-push evidence

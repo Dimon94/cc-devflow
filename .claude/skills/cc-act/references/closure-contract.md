@@ -15,11 +15,12 @@
 5. `cc-act` must make the postmortem trigger decision explicit with `POSTMORTEM_REQUIRED=yes/no`.
 6. When a postmortem is written, `Workflow Patch Candidate` is completed before exit.
 7. No process file beyond the allowed durable outputs.
-8. Before delivery, `cc-act` loads local Codex orchestration, discovers `create_thread`, `list_threads`, `read_thread`, `send_message_to_thread`, and `automation_update`, then runs `cc-simplify` in a child thread by default with model `gpt-5.5` and the requested reasoning effort set and verified on the thread; if that tool/resource chain is unavailable or the actual child resource differs, it runs the same gate in the main thread and reports the fallback.
-9. If verification changes during Act, or `cc-simplify` changes code, tests, or verification posture, return to `cc-check`.
-10. If delivery mode is not explicit, ask the user through `references/user-choice-output-protocol.md` before pushing, creating a PR, or merging locally.
-11. PR creation/update, branch push, or local-main merge requires a fresh full verification suite pass after the final owned commit; failures must be fixed and rerun before delivery.
-12. Release-readiness gates are explicit in PR/handoff output or final response:
+8. PR/MR text states issue closeout intent. Use closing keywords only for directly completed issues; keep parent PRDs, umbrella issues, partial slices, sibling issues, and blocked-by chains as related-only unless explicitly proven complete.
+9. Before delivery, `cc-act` loads local Codex orchestration, discovers `create_thread`, `list_threads`, `read_thread`, `send_message_to_thread`, and `automation_update`, then runs `cc-simplify` in a child thread by default with model `gpt-5.5` and the requested reasoning effort set and verified on the thread; if that tool/resource chain is unavailable or the actual child resource differs, it runs the same gate in the main thread and reports the fallback.
+10. If verification changes during Act, or `cc-simplify` changes code, tests, or verification posture, return to `cc-check`.
+11. If delivery mode is not explicit, ask the user through `references/user-choice-output-protocol.md` before pushing, creating a PR, or merging locally.
+12. PR creation/update, branch push, or local-main merge requires a fresh full verification suite pass after the final owned commit; failures must be fixed and rerun before delivery.
+13. Release-readiness gates are explicit in PR/handoff output or final response:
     `passed`, `failed`, `skipped:<reason>`, `blocked:<missing evidence>`, or
     `not-applicable:<reason>`.
 
@@ -131,5 +132,5 @@ Required evidence:
 
 ## Exit
 
-Close with commit hashes, validation commands, release gate status, PR/handoff
+Close with commit hashes, validation commands, issue closeout intent, release gate status, PR/handoff
 or local-main merge state, rollback/watch path, and any incident postmortem path.
