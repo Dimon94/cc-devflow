@@ -27,6 +27,12 @@
 - Triggers:
 - Incident path:
 
+## Issue Closeout
+
+- Close on merge:
+- Related only:
+- Reason:
+
 ## Validation
 
 - Command:
@@ -54,6 +60,10 @@
 ## Validation
 
 - <validation evidence>
+
+## Issue Closeout
+
+- <Closes #iid only for direct completed issues; Related/Refs #iid for parent PRDs, umbrella issues, partial slices, siblings, and blocked-by chains>
 
 ## Risk / Rollback
 

@@ -53,6 +53,12 @@
 | Smoke / cleanup | not-applicable | no temporary records are created | no cleanup needed |
 | Rollback / watch | passed | revert dialog and test changes together | watch copied-state feedback after merge |
 
+## Issue Closeout
+
+- Close on merge: none
+- Related only: none
+- Reason: example fixture has no tracker issue in scope
+
 ## Pull Request Body Contract
 
 - Language source: `Output language: en`
@@ -85,6 +91,10 @@
 - Verification verdict: `pass`
 - `npm test -- src/features/share/ShareDialog.test.tsx`
 - `npm run lint -- src/features/share/ShareDialog.tsx`
+
+## Issue Closeout
+
+- No tracker issue is in scope for this example; do not add closing keywords.
 
 ## Review / Gate Evidence
 

@@ -52,11 +52,12 @@ Everything else is Git history, PR history, or final response.
 13. State release-readiness gates: local checks, config/env, migrations/data,
    deploy/health, smoke/cleanup, rollback, and watch items. Mark skipped,
    blocked, or not applicable gates honestly.
-14. Build `pr-brief.md` only when PR/handoff needs it.
-15. Run `evaluate-postmortem-trigger.sh`; write incident postmortem when it returns `POSTMORTEM_REQUIRED=yes`.
-16. Push/create/update PR when requested and available.
-17. For `local-main-merge`, rebase the work branch onto local `main`, fast-forward merge from the owning main checkout, prove `main` contains the delivered commit, and do not push unless explicitly requested.
-18. Archive completed change only after merge or explicit closeout.
+14. Resolve issue closeout intent when a tracker issue is in scope: `Closes` only direct completed issues; `Related`/`Refs` parent PRDs, umbrella issues, partial slices, siblings, and blocked-by chains.
+15. Build `pr-brief.md` only when PR/handoff needs it.
+16. Run `evaluate-postmortem-trigger.sh`; write incident postmortem when it returns `POSTMORTEM_REQUIRED=yes`.
+17. Push/create/update PR when requested and available.
+18. For `local-main-merge`, rebase the work branch onto local `main`, fast-forward merge from the owning main checkout, prove `main` contains the delivered commit, and do not push unless explicitly requested.
+19. Archive completed change only after merge or explicit closeout.
 
 ## Delivery Choice
 
@@ -115,8 +116,8 @@ stop blocked with the exact Git evidence.
 ## PR Brief
 
 `pr-brief.md` only serves PR or handoff. Rebuild it from current Git diff,
-commits, `task.md`, validation commands, and release-readiness gates. Do not
-inherit stale PR prose.
+commits, `task.md`, validation commands, issue closeout intent, and
+release-readiness gates. Do not inherit stale PR prose.
 
 ## Postmortem
 

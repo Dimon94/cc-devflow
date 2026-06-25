@@ -20,7 +20,7 @@
 - Git 官方 `SubmittingPatches` 强调提交说明和代码同样重要，要解释 future maintainer 需要知道的 `why`，并使用祈使句。
 - Conventional Commits 1.0.0 给出机器可读标题、body、footer 结构，`feat` / `fix` / `BREAKING CHANGE` 可驱动 changelog 和 semver。
 - Git trailer 规范支持结构化 footer，例如 `Reviewed-by`、`Signed-off-by`、`Refs`。
-- GitHub 支持在 commit message 或 PR 描述里用 closing keywords 关联和关闭 issue。
+- GitHub/GitLab 支持在 commit message 或 PR/MR 描述里用 closing keywords 关联和关闭 issue。
 - 近期提交信息研究提示：只有 Conventional Commit 标题还不够，很多提交仍然信息量不足；所以本规范要求正文模板，而不是只要求 `type(scope): subject`。
 
 ## Commit Record Contract
@@ -323,7 +323,7 @@ Footer 用于机器和长期审计，不用于塞正文。
 - `Signed-off-by: <name> <email>`，仅在项目要求 DCO / signoff 时使用
 - `Change-Id: <id>`，仅在 Gerrit 或项目要求时使用
 
-GitHub 自动关闭 issue 时，每个 issue 都要带 closing keyword，例如：
+GitHub/GitLab 自动关闭 issue 时，每个 issue 都要带 closing keyword，例如：
 
 ```text
 Closes: #10
