@@ -29,8 +29,10 @@
 
 ## Issue Closeout
 
+- Closed now:
 - Close on merge:
 - Related only:
+- Blocked / manual:
 - Reason:
 
 ## Validation
@@ -63,7 +65,7 @@
 
 ## Issue Closeout
 
-- <Closes #iid only for direct completed issues; Related/Refs #iid for parent PRDs, umbrella issues, partial slices, siblings, and blocked-by chains>
+- <Closed remote issues with verification; Closes #iid for auto-close-on-merge direct issues; Related/Refs #iid for parent PRDs, umbrella issues, partial slices, siblings, and blocked-by chains; blocked/manual closeouts with reason>
 
 ## Risk / Rollback
 

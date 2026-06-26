@@ -15,10 +15,10 @@
 5. `cc-act` must make the postmortem trigger decision explicit with `POSTMORTEM_REQUIRED=yes/no`.
 6. When a postmortem is written, `Workflow Patch Candidate` is completed before exit.
 7. No process file beyond the allowed durable outputs.
-8. PR/MR text states issue closeout intent. Use closing keywords only for directly completed issues; keep parent PRDs, umbrella issues, partial slices, sibling issues, and blocked-by chains as related-only unless explicitly proven complete.
+8. Tracker issue closeout follows the Remote Issue Closeout Gate below. Do not replace remote state proof with PR/MR prose.
 9. Before delivery, `cc-act` loads local Codex orchestration, discovers `create_thread`, `list_threads`, `read_thread`, `send_message_to_thread`, and `automation_update`, then runs `cc-simplify` in a child thread by default with model `gpt-5.5` and the requested reasoning effort set and verified on the thread; if that tool/resource chain is unavailable or the actual child resource differs, it runs the same gate in the main thread and reports the fallback.
 10. If verification changes during Act, or `cc-simplify` changes code, tests, or verification posture, return to `cc-check`.
-11. If delivery mode is not explicit, ask the user through `references/user-choice-output-protocol.md` before pushing, creating a PR, or merging locally.
+11. If delivery mode is not explicit, ask the user through `references/user-choice-output-protocol.md` before pushing, creating a PR, merging locally, or closing remote issues.
 12. PR creation/update, branch push, or local-main merge requires a fresh full verification suite pass after the final owned commit; failures must be fixed and rerun before delivery.
 13. Release-readiness gates are explicit in PR/handoff output or final response:
     `passed`, `failed`, `skipped:<reason>`, `blocked:<missing evidence>`, or
@@ -48,6 +48,31 @@ changed code, tests, fixtures, generated artifacts, or verification posture. If
 no repository full-suite command can be identified, mark the gate as
 `blocked:<missing full-suite command>` and do not mutate remote PR state or
 local `main`.
+
+## Remote Issue Closeout Gate
+
+Run this gate after the selected delivery action succeeds.
+
+Classify every tracker issue reference from `task.md`, commit trailers, current
+PR/MR text, branch context, and tracker state:
+
+- `close-now`: directly completed issue and the selected delivery mode is
+  terminal for that issue.
+- `auto-close-on-merge`: open PR/MR delivery should close the issue on merge via
+  platform closing keywords.
+- `related-only`: parent PRDs, umbrella issues, partial slices, siblings,
+  blocked-by chains, and anything not explicitly proven complete.
+- `blocked`: missing tracker auth/tooling, ambiguous issue identity, stale remote
+  state, or a delivery mode that is not terminal for the issue.
+
+Close `close-now` issues through the tracker API/CLI, then fetch the remote issue
+and record its closed state, id, and URL. If close or verification fails, report
+`blocked` or a manual closeout action; do not claim success.
+
+For `create-pr` and `update-pr` with an unmerged PR/MR, do not manually close the
+issue unless the user explicitly requested immediate remote closure. Put closing
+keywords in the PR/MR body for `auto-close-on-merge` issues and keep related-only
+refs open.
 
 ## Simplify Child Thread Guard
 
@@ -132,5 +157,5 @@ Required evidence:
 
 ## Exit
 
-Close with commit hashes, validation commands, issue closeout intent, release gate status, PR/handoff
-or local-main merge state, rollback/watch path, and any incident postmortem path.
+Close with commit hashes, validation commands, remote issue closeout state, release gate status, PR/handoff
+or local-main merge state, full-suite status, rollback/watch path, and any incident postmortem path.

@@ -27,8 +27,10 @@
 
 ## Issue Closeout
 
+- Closed now: none
 - Close on merge: none
 - Related only: none
+- Blocked / manual: none
 - Reason: local handoff example has no tracker issue in scope
 
 ## PR Body Draft

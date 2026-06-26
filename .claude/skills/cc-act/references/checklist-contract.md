@@ -17,7 +17,7 @@ Ship failures usually come from stale verification, skipped simplification, miss
 3. Before waiting on a child: confirm the actual child thread is on model `gpt-5.5` with the requested reasoning effort, child-to-parent handoff instructions are in the dispatch packet, and `automation_update` created heartbeat monitoring.
 4. Before PR push/update or local-main merge: identify and run the full repository test/verification suite on the final tree; fix failures and rerun before delivery.
 5. Before PR/handoff: rerun postmortem trigger and stale-verification check.
-6. Before exit: confirm commits, simplify verdict, push/PR/local/local-main state, full-suite gate when required, and postmortem verdict.
+6. Before exit: confirm commits, simplify verdict, push/PR/local/local-main state, full-suite gate when required, remote issue closeout state, and postmortem verdict.
 
 ## Required Checks
 
@@ -31,7 +31,7 @@ Ship failures usually come from stale verification, skipped simplification, miss
 - [ ] one ship mode is selected: create-pr, update-pr, local-handoff, local-main-merge, or post-merge-closeout
 - [ ] repository full-suite command was identified from project scripts, docs, or CI when delivery may push, update/create PR, or merge local main
 - [ ] full-suite verification passed after the final owned commit and before push, PR create/update, or local-main merge; failures were repaired and rerun, or delivery is blocked with missing evidence
-- [ ] issue closeout intent is explicit when a tracker issue is in scope: direct completed issue closes, parent/partial references stay related-only
+- [ ] remote issue closeout gate is satisfied when a tracker issue is in scope: direct completed issues are closed and verified, open PR/MR issues are auto-close-on-merge, parent/partial refs stay related-only, or blocked/manual action is explicit
 - [ ] verification did not change during Act; otherwise route to `cc-check`
 - [ ] release-readiness gates are stated as passed, failed, skipped with reason, blocked with missing evidence, or not applicable; rollback/watch path is named when relevant
 - [ ] local-main-merge, when selected, has rebase proof, owning-main `--ff-only` merge proof, containing-commit proof, and no-push evidence

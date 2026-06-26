@@ -1,10 +1,10 @@
 # CC-Act Skill Changelog
 
-## v1.18.0 - 2026-06-25
+## v1.18.0 - 2026-06-26
 
-- require PR/MR and handoff text to state issue closeout intent when tracker issues are in scope
-- reserve closing keywords for directly completed issues, keeping parent PRDs, umbrella issues, partial slices, siblings, and blocked-by chains as related-only references
-- add issue closeout fields to the PR brief template and closeout checklist
+- promote tracker issue closeout from PR/MR prose to a remote-state gate
+- require directly completed issues to be closed through the tracker and verified after terminal delivery
+- keep open PR/MR deliveries on auto-close-on-merge and preserve parent, partial, sibling, and blocked references as related-only
 
 ## v1.17.2 - 2026-06-11
 

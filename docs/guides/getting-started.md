@@ -99,7 +99,7 @@ Planning handoffs should be evidence-rich before implementation starts:
 - `cc-plan` records option roles, implementation surface, decision horizon, error/rescue map, test framework source, coverage quality, confidence-per-minute proof value, focused suite shape, and regression-test requirements when they apply.
 - `cc-do` does not treat decorative Red tests as valid TDD evidence; broad snapshots, duplicate happy paths, no-op smoke tests, brittle internal assertions, and overmocked implementation details must be rewritten or routed back to planning.
 - `cc-check` re-applies that standard before pass: a green suite must name the behavior it proves, the suite layer, command/runtime, fixture/mock boundary, and low-value tests avoided.
-- `cc-act` carries release-readiness gates and issue closeout intent into PR or handoff output: local checks, config/env, migrations/data, deploy/health, smoke/cleanup, rollback, watch items, direct `Closes` targets, and related-only issue references.
+- `cc-act` carries release-readiness gates and remote issue closeout state into PR or handoff output: local checks, config/env, migrations/data, deploy/health, smoke/cleanup, rollback, watch items, verified closures, auto-close-on-merge refs, and related-only issue references.
 
 Typical public contract fields:
 
