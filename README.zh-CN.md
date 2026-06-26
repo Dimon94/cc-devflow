@@ -116,7 +116,7 @@ planning 之后的每个阶段都从 `task.md`、当前 Git history/status，以
 
 `cc-check` 现在把 QA 当成反馈环问题，而不是只看测试是否绿。Bugfix 和行为变更需要记录证明现实的 loop、expected / actual、复现步骤、confidence-per-minute proof value、测试边界质量；如果没有干净的 public test seam，要留下架构 follow-up。它还会开启 review subAgent，按照 `task.md`、当前 diff 和新鲜验证证据多轮执行 `cc-review`，直到没有 P0/P1/P2 finding；任何未解决的 P0/P1/P2 都会退回 `cc-plan`、`cc-do` 或 `cc-diagnose`，不能 pass。绿灯但没有证明价值的测试、宽泛 snapshot、重复 happy path、no-op smoke、脆弱内部断言、过度 mock 自家模块，会退回 `cc-do` 或 `cc-plan`，不能支撑 pass。它还会把 `task.md#Failure Ledger` 里的失败记录分类成 confirmed lesson、noise 或 unresolved risk。
 
-`cc-act` 会把这些证据带进 PR brief、handoff 和 release note。PR / handoff 输出还会携带 release-readiness gate ledger，覆盖 local checks、config/env、migrations/data、deploy/health、smoke/cleanup、rollback 和 watch items；也会声明 issue closeout intent，只对直接完成的 issue 使用 closing keyword，父级或部分完成的工作只保留 related-only 引用。skipped、blocked、not-applicable 都必须说明原因。
+`cc-act` 会把这些证据带进 PR brief、handoff 和 release note。PR / handoff 输出还会携带 release-readiness gate ledger，覆盖 local checks、config/env、migrations/data、deploy/health、smoke/cleanup、rollback 和 watch items；也会记录 remote issue closeout state：终态且直接完成的 issue 需要关闭并验证，未合并 PR 走 auto-close-on-merge，父级或部分完成的工作只保留 related-only 引用。skipped、blocked、not-applicable 都必须说明原因。
 
 
 ## 安装方式

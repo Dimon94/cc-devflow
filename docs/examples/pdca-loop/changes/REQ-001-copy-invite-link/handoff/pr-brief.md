@@ -55,8 +55,10 @@
 
 ## Issue Closeout
 
+- Closed now: none
 - Close on merge: none
 - Related only: none
+- Blocked / manual: none
 - Reason: example fixture has no tracker issue in scope
 
 ## Pull Request Body Contract

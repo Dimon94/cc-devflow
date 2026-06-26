@@ -99,7 +99,7 @@ durable truth 分层：
 - `cc-plan` 记录 option roles、implementation surface、decision horizon、error/rescue map、测试框架来源、覆盖质量、confidence-per-minute proof value、focused suite shape，以及适用时的 regression-test requirement。
 - `cc-do` 不把装饰性 Red 当作有效 TDD 证据；宽泛 snapshot、重复 happy path、no-op smoke、脆弱内部断言、过度 mock 自家模块，必须重写或退回 planning。
 - `cc-check` 在 pass 前重新套用这个标准：绿色 suite 必须说明证明了什么行为、suite layer、command/runtime、fixture/mock boundary，以及避开了哪些低价值测试。
-- `cc-act` 会把 release-readiness gates 和 issue closeout intent 带进 PR 或 handoff 输出：local checks、config/env、migrations/data、deploy/health、smoke/cleanup、rollback、watch items、直接 `Closes` 目标和 related-only issue 引用。
+- `cc-act` 会把 release-readiness gates 和 remote issue closeout state 带进 PR 或 handoff 输出：local checks、config/env、migrations/data、deploy/health、smoke/cleanup、rollback、watch items、已验证关闭、auto-close-on-merge 引用和 related-only issue 引用。
 
 公开契约字段的典型形状：
 

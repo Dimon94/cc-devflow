@@ -1,7 +1,10 @@
 ---
 name: cc-act
 version: 1.18.0
-description: Use when verified work must be committed, handed off, pushed, merged into local main, or turned into a PR with the smallest durable delivery surface.
+description: >-
+  Use when verified work must be committed, handed off, pushed, merged into
+  local main, turned into a PR, or used for terminal tracker issue closeout
+  with the smallest durable delivery surface.
 triggers:
   - 准备提 PR
   - 帮我发版
@@ -9,6 +12,7 @@ triggers:
   - ship this
   - handoff
   - close this requirement
+  - 关闭 issue
 reads:
   - PLAYBOOK.md
   - references/closure-contract.md
@@ -50,8 +54,9 @@ All paths below are relative to this `SKILL.md` directory, not the shell cwd.
 3. Read `task.md`, Git status, latest commits, validation evidence, and PR state.
 4. Before Act delivery, load `references/codex-thread-orchestration.md`, then run the `cc-simplify` gate in a real Codex child thread by default with `create_thread` resources set to model `gpt-5.5` and the required reasoning effort; if required thread, resource, or heartbeat tools are unavailable or the created thread cannot be verified on those resources, run the same gate in the main thread and report the fallback.
 5. If `cc-simplify` changed code, tests, or verification posture, route to `cc-check`; if implementation is unfinished, route to `cc-do`.
-6. Choose exactly one delivery mode before pushing, creating a PR, or merging locally.
+6. Choose exactly one delivery mode before pushing, creating a PR, merging locally, or closing remote issues.
 7. For push, PR create/update, or local-main merge delivery, satisfy the repository full verification gate after final owned changes are committed.
+8. After the selected delivery action succeeds, satisfy the remote issue closeout gate in `references/closure-contract.md`.
 
 ## Durable Outputs
 
@@ -81,7 +86,7 @@ If delivery mode is not explicit, ask through `references/user-choice-output-pro
 - `cc-act` simplify child threads follow the local Codex contract: discover `create_thread`, `list_threads`, `read_thread`, `send_message_to_thread`, and `automation_update`; dispatch with `assets/SIMPLIFY_CHILD_DISPATCH_PACKET.md`; set and verify model `gpt-5.5` plus the required reasoning effort on the child thread; require child-to-parent handoff; and create heartbeat monitoring before stopping as `waiting-for-child-results`.
 - Push, PR create/update, and local-main-merge are blocked until the repository full verification gate passes on the final tree. If it fails, fix failures and rerun the full suite before delivery.
 - PR/handoff mode writes or refreshes only `handoff/pr-brief.md`.
-- PR/MR text must state issue closeout intent. Use closing keywords only for directly completed issues; use `Related`/`Refs` for parent PRDs, umbrella issues, partial slices, sibling issues, and blocked-by chains.
+- Issue closeout is a remote-state gate when a tracker issue is in scope: close and verify only directly completed issues, use auto-close-on-merge for open PR/MR delivery, keep parent PRDs, umbrella issues, partial slices, siblings, and blocked-by chains related-only, and report blocked/manual actions with evidence.
 - Release-readiness gates are explicit: passed, failed, skipped with reason, blocked with missing evidence, or not applicable.
 - `POSTMORTEM_REQUIRED=no` is reported, or an incident postmortem path is written with `Workflow Patch Candidate` completed.
 - Incident postmortems use confirmed `Failure Ledger` lessons, not raw `cc-review` findings, chat memory, or unclassified review escape candidates.
@@ -95,7 +100,7 @@ If delivery mode is not explicit, ask through `references/user-choice-output-pro
 2. Verification: fresh evidence reused from `cc-check` or reroute reason.
 3. Simplify: child thread ID/report, child-to-parent handoff summary, heartbeat id/status, main-thread fallback report, `NO FINDINGS`, or not-applicable reason.
 4. Delivery: PR URL, updated PR, local handoff path, local-main merge proof, or post-merge closeout state.
-5. Issue closeout: `Closes` candidates, related-only references, manual closeout actions, or not-applicable reason.
+5. Issue closeout: closed issue ids with remote verification, auto-close-on-merge refs, related-only refs, blocked/manual actions, or not-applicable reason.
 6. Postmortem: `POSTMORTEM_REQUIRED=no` or incident path written with workflow patch candidate.
 7. Release: gate status, rollback/watch path, or explicit not-applicable reason.
 8. Route: terminal state or next skill.
@@ -105,7 +110,7 @@ If delivery mode is not explicit, ask through `references/user-choice-output-pro
 - Delivery mode and push/PR/handoff/local-main state are explicit.
 - Pre-act `cc-simplify` gate completed or was explicitly not applicable; child thread handoff and heartbeat status were verified when child mode was used; any simplify edit rerouted to `cc-check`.
 - Postmortem trigger gate ran via `scripts/evaluate-postmortem-trigger.sh`.
-- PR/MR or handoff text includes issue closeout intent when a tracker issue is in scope.
+- Remote issue closeout gate is satisfied when a tracker issue is in scope.
 - Release-readiness gate status is explicit in PR/handoff output or final response.
 - Push, PR create/update, or local-main-merge delivery includes full-suite command, exit status, and claim proven after the final owned commit.
 - Verification did not change during Act.
