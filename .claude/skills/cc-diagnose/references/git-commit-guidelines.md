@@ -262,7 +262,9 @@
 
 ## Commit Boundary Rules
 
-`cc-act` 生成 commit 前必须先写 commit plan。不要先 `git add .` 再想 message。
+生成 commit 前必须先写 commit plan，并运行
+`../../do-not-repeat-yourself/SKILL.md`。不要先 `git add .` 再想
+message。
 
 Commit plan 模板：
 
@@ -272,6 +274,7 @@ Commit 1:
 - 文件:
 - 分组原因:
 - 验证:
+- DRY record:
 - Commit 文本草稿:
 
 Commit 2:
@@ -291,6 +294,17 @@ Commit 2:
 5. 生成物和源文件一起提交，必须在 body 里说明生成关系和验证命令。
 6. 一个 commit 如果预期触碰超过 8 个文件，先问自己是否混了多个语义；不能拆时在 body 的 `Risk` 里说明原因。
 7. 每个 commit 尽量独立可验证。不能独立跑全量测试时，至少给出最贴近该 commit 的验证。
+
+DRY gate:
+
+1. 先按 `../../do-not-repeat-yourself/SKILL.md` 检查 staged 或待 stage 的
+   commit bucket。
+2. 如果当前 diff 新增 helper、adapter、validator、parser、script、skill、
+   prompt rule、schema 或跨模块 doc rule，必须记录已有 wheel、复用结果
+   或无法复用的原因。
+3. 发现当前 diff 里有可由已有 wheel 覆盖的新机制时，默认删除新机制并
+   改用已有 wheel。
+4. 历史重复只报告，不扩大本 commit 重构，除非它阻断当前正确性。
 
 推荐拆分顺序：
 
@@ -377,12 +391,13 @@ fix(auth): 拒绝过期 refresh token
 `cc-act` 在 `create-pr` / `update-pr` 模式下至少要检查：
 
 1. 是否先列出 commit plan，再 staging。
-2. staged files 是否只属于当前 commit bucket。
-3. commit title 是否符合 Conventional Commits 或仓库更严格规范。
-4. 非平凡 commit 是否有 `问题`、`变更`、`原因`、`验证`、`风险`。
-5. `fix` commit 是否写了 `根因`，且不是只描述 symptom。
-6. `验证` 是否是实际命令 / artifact / explicit skip reason，而不是 “tested locally”。
-7. footer 是否使用 trailer 风格，issue closing keyword 是否符合目标平台语义。
-8. push、PR body、handoff 是否与最终 commit history 表达同一套事实。
+2. DRY record 是否来自 `../../do-not-repeat-yourself/SKILL.md`，并覆盖新增机制和 staged diff。
+3. staged files 是否只属于当前 commit bucket。
+4. commit title 是否符合 Conventional Commits 或仓库更严格规范。
+5. 非平凡 commit 是否有 `问题`、`变更`、`原因`、`验证`、`风险`。
+6. `fix` commit 是否写了 `根因`，且不是只描述 symptom。
+7. `验证` 是否是实际命令 / artifact / explicit skip reason，而不是 “tested locally”。
+8. footer 是否使用 trailer 风格，issue closing keyword 是否符合目标平台语义。
+9. push、PR body、handoff 是否与最终 commit history 表达同一套事实。
 
 如果无法满足这些条件，停在 `local-handoff` 或 reroute，不要制造粗糙历史。

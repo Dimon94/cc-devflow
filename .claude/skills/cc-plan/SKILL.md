@@ -21,6 +21,7 @@ reads:
   - references/doc-to-contract.md
   - references/CONTEXT-FORMAT.md
   - references/ADR-FORMAT.md
+  - ../do-not-repeat-yourself/SKILL.md
   - ../workflow-chain-contract/SKILL.md
   - ../execution-environment-contract/SKILL.md
   - ../postmortem/SKILL.md
@@ -56,6 +57,10 @@ entry_gate:
     `references/doc-to-contract.md`: extract clear context facts into typed
     structure, seams, adapters, errors, dependency rules, call stacks, and
     validation edges before implementation tasks are generated.
+  - >-
+    Use `../do-not-repeat-yourself/SKILL.md` when the plan introduces or
+    depends on a new reusable mechanism; task contracts must name the existing
+    wheel to reuse or why a new mechanism is justified.
   - >-
     Ask D<N> decision questions only when the answer changes scope, design,
     boundary, task split, or verification.
@@ -93,6 +98,11 @@ exit_criteria:
     encoded in `task.md#Doc-To-Contract` as typed structure, interface seams,
     adapter topology, error contract, dependency rules, call stacks, validation
     edges, and explicit exclusions before task blocks.
+  - >-
+    Planned helpers, adapters, validators, parsers, scripts, skills, prompt
+    rules, schemas, or cross-module doc rules have a DRY record from
+    `../do-not-repeat-yourself/SKILL.md` or an explicit reuse point in
+    `task.md`.
   - No process file beyond `task.md`.
   - Plan-stage changes are committed to Git before handoff.
   - Plan-stage commits follow `references/git-commit-guidelines.md`.
@@ -122,6 +132,7 @@ reroutes:
 | User asks for pre-plan grilling or the requirement is too broad to freeze | `references/pre-plan-grill.md` |
 | Domain grilling, glossary challenge, inline context updates, ADR offer rules | `references/domain-grilling-contract.md` |
 | Turn resolved docs/grill prose into typed execution contract | `references/doc-to-contract.md` |
+| Planned new mechanism or reuse point | `../do-not-repeat-yourself/SKILL.md` |
 | CONTEXT glossary format | `references/CONTEXT-FORMAT.md` |
 | ADR format | `references/ADR-FORMAT.md` |
 | Domain language, context map, or ADR discipline | `../cc-dev/references/domain-context-contract.md` |
@@ -140,34 +151,38 @@ Every `cc-plan` run follows this chain before `task.md` is frozen:
 2. Evidence pass: read specs, relevant code/tests/docs, recent commits, and
    existing task truth so repo-answerable questions are answered from evidence
    instead of asked back to the user.
-3. Requirement grilling: use `references/domain-grilling-contract.md` to refine
+3. Reuse shaping: use `../do-not-repeat-yourself/SKILL.md` for any planned new
+   helper, adapter, validator, parser, script, skill, prompt rule, schema, or
+   cross-module doc rule. Prefer existing repo wheels; when no wheel fits,
+   record the reason in `task.md#Contract Summary`.
+4. Requirement grilling: use `references/domain-grilling-contract.md` to refine
    the requirement one question at a time. Challenge glossary conflicts,
    sharpen fuzzy terms, test concrete scenarios, and provide a recommended
    answer for each unresolved question.
-4. Context crystallization: when the grilling resolves durable language or
+5. Context crystallization: when the grilling resolves durable language or
    decisions, update confirmed `CONTEXT.md`, `CONTEXT-MAP.md`, or ADR files
    inline using the reference formats. Defer unconfirmed deltas into
    `task.md#Contract Summary`.
-5. Doc-to-contract gate: extract clear facts from context docs, ADRs, specs,
+6. Doc-to-contract gate: extract clear facts from context docs, ADRs, specs,
    and grill answers into typed structure, interface seams, adapter topology,
    error contract, dependency rules, production/test call stacks, validation
    edges, and business logic exclusions. If a prose fact cannot be encoded
    cleanly, ask a `D<N>` question or plan a spike before task generation.
-6. Plan synthesis: turn the approved answers into scope, non-goals, user/edge
+7. Plan synthesis: turn the approved answers into scope, non-goals, user/edge
    stories, interface/data contract, state ownership, test strategy, Design
    Pressure, Second-Move Review, and verification seams.
-7. Execution architecture: when work can be split, define execution environments
+8. Execution architecture: when work can be split, define execution environments
    before task blocks. Each environment owns one independently committable,
    independently verifiable slice and names its child skill route. Do not create
    automatic review-only environments for the normal PDCA path; final review
    convergence belongs to `cc-check`.
-8. Task generation: choose the parent template only after requirement release
+9. Task generation: choose the parent template only after requirement release
    and technical release. Use `assets/PARALLEL_TASKS_TEMPLATE.md` when the user
    asks for parallel work or the plan contains multiple independently
    committable environments; otherwise use `assets/TASKS_TEMPLATE.md`. Fill or
    explicitly mark the selected template sections. Parallel task blocks stay
    complete and live under their assigned environment dispatch boundary.
-9. Closeout: validate the plan artifact, commit the Plan stage, and route to
+10. Closeout: validate the plan artifact, commit the Plan stage, and route to
    `cc-do`, `cc-diagnose`, or `stop`.
 
 ## Flow

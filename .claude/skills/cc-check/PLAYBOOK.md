@@ -16,7 +16,7 @@
 8. Classify failure ownership before routing.
 9. Run review subAgent convergence until no P0/P1/P2 finding remains.
 10. Commit the completed Check stage with `references/git-commit-guidelines.md`
-    when the environment finishes.
+    and `../do-not-repeat-yourself/SKILL.md` when the environment finishes.
 
 ## Role
 
@@ -41,8 +41,9 @@ PR files, and Git commits.
 6. Classify relevant Failure Ledger entries, including review escape
    candidates, as `confirmed-lesson`, `noise`, or `unresolved-risk`.
 7. Return `pass`, `fail`, or `blocked`.
-8. Commit the stage with `references/git-commit-guidelines.md` when this
-   verification environment completes and repo policy allows it.
+8. Commit the stage with `references/git-commit-guidelines.md` and
+   `../do-not-repeat-yourself/SKILL.md` when this verification environment
+   completes and repo policy allows it.
 
 ## Verification Phases
 

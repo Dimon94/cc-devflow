@@ -12,6 +12,7 @@ triggers:
   - performance regression
 reads:
   - references/git-commit-guidelines.md
+  - ../do-not-repeat-yourself/SKILL.md
   - ../postmortem/SKILL.md
 writes: []
 ---
@@ -32,7 +33,7 @@ writes: []
 - 先建立反馈环并复现原始失败；没有反馈环就返回 blocked。
 - 修复必须产出独立 commit，除非诊断结论是不需要改文件。
 - commit 只包含该 failure 的最小修复、回归测试、必要 task evidence 和 debug cleanup。
-- commit 必须遵守 `references/git-commit-guidelines.md`；fix 类提交要写清根因、验证、风险，不能只写症状摘要。
+- commit 必须遵守 `references/git-commit-guidelines.md` 和 `../do-not-repeat-yourself/SKILL.md`；fix 类提交要写清根因、验证、风险，不能只写症状摘要。
 - 如果发现真实问题超出当前 change scope，返回 route `cc-plan` 或独立 `FIX`，不要偷偷扩大当前需求。
 - 最终报告必须包含 environment、commit、复现 loop、回归命令、dirty state、debug probe 清理和 route recommendation。
 
@@ -124,6 +125,8 @@ writes: []
 ## Phase 5 - 修复 + 回归测试
 
 先写回归测试，再修复；但前提是存在**正确测试边界**。
+
+修复需要新增 helper、adapter、validator、parser、script、schema 或其它 reusable mechanism 时，先运行 `../do-not-repeat-yourself/SKILL.md`。已有 wheel 能覆盖就复用；不能复用才记录原因并写最小新机制。
 
 正确边界指：测试覆盖 bug 在真实调用点发生时的实际模式。如果只有太浅的边界，例如 bug 需要多个 caller 才出现却只测单个 caller，或 unit test 复现不了触发链，那么这个回归测试会制造虚假信心。
 

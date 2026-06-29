@@ -42,23 +42,25 @@ Everything else is Git history, PR history, or final response.
 9. If `cc-simplify` changes code, tests, or verification posture, stop Act and
    route to `cc-check`; do not ship with pre-simplification evidence.
 10. Run or cite the current validation commands.
-11. Commit any remaining owned changes.
-12. For `create-pr`, `update-pr`, and `local-main-merge`, run the
+11. Run `../do-not-repeat-yourself/SKILL.md` on remaining owned changes before
+   staging.
+12. Commit any remaining owned changes.
+13. For `create-pr`, `update-pr`, and `local-main-merge`, run the
    repository-defined full test/verification suite after the final owned commit
    and before any push, PR create/update, or local-main merge. Full-suite
    failures route to repair through `cc-do` or `cc-diagnose`; after any fix,
    rerun the full suite and route back to `cc-check` if code, tests, or
    verification posture changed.
-13. State release-readiness gates: local checks, config/env, migrations/data,
+14. State release-readiness gates: local checks, config/env, migrations/data,
    deploy/health, smoke/cleanup, rollback, and watch items. Mark skipped,
    blocked, or not applicable gates honestly.
-14. Classify tracker issue refs before PR/handoff text: direct completed issues, auto-close-on-merge issues, related-only refs, and blocked/manual closeouts.
-15. Build `pr-brief.md` only when PR/handoff needs it.
-16. Run `evaluate-postmortem-trigger.sh`; write incident postmortem when it returns `POSTMORTEM_REQUIRED=yes`.
-17. Push/create/update PR when requested and available.
-18. For `local-main-merge`, rebase the work branch onto local `main`, fast-forward merge from the owning main checkout, prove `main` contains the delivered commit, and do not push unless explicitly requested.
-19. After the selected delivery action succeeds, run the remote issue closeout gate from `references/closure-contract.md`.
-20. Archive completed change only after merge or explicit closeout.
+15. Classify tracker issue refs before PR/handoff text: direct completed issues, auto-close-on-merge issues, related-only refs, and blocked/manual closeouts.
+16. Build `pr-brief.md` only when PR/handoff needs it.
+17. Run `evaluate-postmortem-trigger.sh`; write incident postmortem when it returns `POSTMORTEM_REQUIRED=yes`.
+18. Push/create/update PR when requested and available.
+19. For `local-main-merge`, rebase the work branch onto local `main`, fast-forward merge from the owning main checkout, prove `main` contains the delivered commit, and do not push unless explicitly requested.
+20. After the selected delivery action succeeds, run the remote issue closeout gate from `references/closure-contract.md`.
+21. Archive completed change only after merge or explicit closeout.
 
 ## Delivery Choice
 

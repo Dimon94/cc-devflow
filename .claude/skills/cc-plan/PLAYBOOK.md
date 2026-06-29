@@ -30,36 +30,40 @@ Every plan starts from the domain model, not from a blank task list:
 2. Evidence pass: read specs, relevant code/tests/docs, recent
    commits, and existing task truth. If a question can be answered by the repo,
    answer it from evidence instead of asking the user.
-3. Requirement grilling: refine the requirement one question at a time through
+3. Reuse shaping: before approving a solution that adds a helper, adapter,
+   validator, parser, script, skill, prompt rule, schema, or cross-module doc
+   rule, run `../do-not-repeat-yourself/SKILL.md` and record the reuse point or
+   new-mechanism reason in `task.md#Contract Summary`.
+4. Requirement grilling: refine the requirement one question at a time through
    `references/domain-grilling-contract.md`; challenge glossary conflicts,
    sharpen fuzzy terms, test concrete scenarios, and recommend an answer for
    each unresolved question.
-4. Context crystallization: update confirmed glossary, context-map, or ADR
+5. Context crystallization: update confirmed glossary, context-map, or ADR
    decisions inline when they become durable; keep `CONTEXT.md` glossary-only
    and defer unconfirmed deltas into `task.md#Contract Summary`.
-5. Solution shaping: when multiple solution shapes are viable, mechanism truth
+6. Solution shaping: when multiple solution shapes are viable, mechanism truth
    is unknown, or the requirement is still too broad, separate requirements
    from candidate shapes, run an ASCII PASS/FAIL fit check, and resolve unknown
    mechanisms before a shape is allowed to pass.
-6. Doc-to-contract gate: use `references/doc-to-contract.md` to turn resolved
+7. Doc-to-contract gate: use `references/doc-to-contract.md` to turn resolved
    prose from context docs, ADRs, specs, and grill answers into typed
    structure, seams, adapters, errors, dependency rules, call stacks,
    validation edges, and explicit business-logic exclusions. If a clear fact
    cannot be represented cleanly, keep planning open with a `D<N>` decision,
    repo evidence request, or spike.
-7. Plan synthesis: convert the approved answers into scope, non-goals,
+8. Plan synthesis: convert the approved answers into scope, non-goals,
    user/edge stories, interface/data contract, state ownership, test strategy,
    Design Pressure, Second-Move Review, and verification seams.
-8. Execution environments: for non-trivial or parallel-ready work, define the
+9. Execution environments: for non-trivial or parallel-ready work, define the
    independently committable environments before task blocks. Each environment
    names route, tasks, dependencies, touched paths, verification, merge gate,
    unlocks, and initial status. Do not create automatic review-only environments
    for the normal PDCA path; `cc-check` owns final review convergence.
-9. Task generation: choose the parent template only after requirement release
+10. Task generation: choose the parent template only after requirement release
    and technical release. Use `assets/PARALLEL_TASKS_TEMPLATE.md` when the user
    asks for parallel work or the plan contains multiple independently
    committable environments; otherwise use `assets/TASKS_TEMPLATE.md`.
-10. Closeout: validate the plan artifact, commit the Plan stage, and route onward.
+11. Closeout: validate the plan artifact, commit the Plan stage, and route onward.
 
 ## Rules
 
@@ -95,21 +99,22 @@ Every plan starts from the domain model, not from a blank task list:
 
 1. Context-first read: `CONTEXT-MAP.md`, relevant `CONTEXT.md`, and ADRs.
 2. Gather repo evidence: specs, relevant code/tests/docs, recent commits, and existing task truth.
-3. Product/Creative Discovery: worth doing, desired product shape, narrowest wedge, 10x/better version, do-nothing consequence.
-4. Requirement Reality and Grilling: real user/operator, workaround, painful failure, smallest success signal, non-goals, glossary conflicts, fuzzy terms, concrete scenarios, and code contradictions.
-5. Context Crystallization: inline confirmed context updates and ADR-worthy decisions; defer unconfirmed deltas into `task.md`.
-6. Solution Shaping when triggered: R requirements, candidate shapes,
+3. Reuse Shaping: existing wheels, rejected wheels, planned new mechanisms, and retained duplication ceiling.
+4. Product/Creative Discovery: worth doing, desired product shape, narrowest wedge, 10x/better version, do-nothing consequence.
+5. Requirement Reality and Grilling: real user/operator, workaround, painful failure, smallest success signal, non-goals, glossary conflicts, fuzzy terms, concrete scenarios, and code contradictions.
+6. Context Crystallization: inline confirmed context updates and ADR-worthy decisions; defer unconfirmed deltas into `task.md`.
+7. Solution Shaping when triggered: R requirements, candidate shapes,
    PASS/FAIL fit check, selected shape, rejected shapes, and resolved
    mechanism unknowns.
-7. Doc-To-Contract: source facts, typed structure, interface seams, adapter
+8. Doc-To-Contract: source facts, typed structure, interface seams, adapter
    topology, error contract, dependency rules, production/test call stacks,
    validation edges, test surfaces, and business logic explicitly excluded.
-8. System Shape: existing code path, module owner, state/data flow, reuse point, boundary systems.
-9. Interface/Data Contract: public seam, caller, fields, errors, permissions, and external boundaries.
-10. Abstraction Boundary and Design Pressure: deep module shape, hidden complexity, caller knowledge, public seam, vertical task slices, and special-case elimination.
-11. Execution Architecture: file responsibility, failure recovery, task order, verification commands, and escalation triggers.
-12. Second-Move Review: first good move, simpler move, better architecture, selected move, rejected tradeoff.
-13. Final Approval: task generation waits until the user releases both requirement and technical plan, unless repo evidence gives an explicit skip reason.
+9. System Shape: existing code path, module owner, state/data flow, reuse point, boundary systems.
+10. Interface/Data Contract: public seam, caller, fields, errors, permissions, and external boundaries.
+11. Abstraction Boundary and Design Pressure: deep module shape, hidden complexity, caller knowledge, public seam, vertical task slices, and special-case elimination.
+12. Execution Architecture: file responsibility, failure recovery, task order, verification commands, and escalation triggers.
+13. Second-Move Review: first good move, simpler move, better architecture, selected move, rejected tradeoff.
+14. Final Approval: task generation waits until the user releases both requirement and technical plan, unless repo evidence gives an explicit skip reason.
 
 Tiny plans may compress rounds to evidence-backed lines. Full designs preserve enough detail that `cc-do` does not invent architecture, fields, interfaces, or tests.
 
@@ -218,6 +223,8 @@ Tasks must be tracer bullets: `[TEST] -> [IMPL] -> [REFACTOR]`. Each task names 
 - Doc-To-Contract: source facts, typed structure, interface seams, adapter
   topology, error contract, dependency rules, call stacks, validation edges,
   test surfaces, business logic excluded
+- Reuse: existing wheels, new mechanisms, DRY record, retained duplication
+  ceiling
 - Solution shaping when triggered: R requirements, S candidate shapes,
   PASS/FAIL fit check, selected shape, rejected shapes, and unknown mechanism
   resolution

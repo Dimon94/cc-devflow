@@ -16,6 +16,7 @@ reads:
   - ../cc-act/SKILL.md
   - ../workflow-chain-contract/SKILL.md
   - ../execution-environment-contract/SKILL.md
+  - ../do-not-repeat-yourself/SKILL.md
   - references/git-commit-guidelines.md
   - ../cc-diagnose/SKILL.md
   - scripts/resolve-cc-devflow.sh
@@ -52,7 +53,7 @@ All paths below are relative to this `SKILL.md` directory, not the shell cwd.
 3. Detect worktree state, resolve CLI, classify route, execute stages, run fresh `cc-check`, then route to `cc-act`.
 4. When `task.md#Execution Environments` exists or the user asks for parallel work, load `references/parallel-orchestration.md`.
 5. In Codex App, also load `references/codex-thread-orchestration.md` and `assets/CHILD_DISPATCH_PACKET.md` for execution environments; final review subAgents are owned by `cc-check`.
-6. Before dispatching any child environment that can commit, load `references/git-commit-guidelines.md` and include it in the child packet.
+6. Before dispatching any child environment that can commit, load `references/git-commit-guidelines.md` and `../do-not-repeat-yourself/SKILL.md`, then include both in the child packet.
 
 ## State Machine
 
@@ -97,7 +98,7 @@ Ambiguous route or terminal-state choices use `references/user-choice-output-pro
   `send_message_to_thread`, and `automation_update` before parallel dispatch;
   if any are unavailable, do not claim `parallel-dispatched`.
 - Child environments may run `cc-do`, `cc-review`, `cc-check`, `cc-diagnose`, or bounded `cc-act`, but `cc-dev` keeps phase unlock, commit integration, and final delivery authority.
-- Every child environment that creates Git commits must follow `references/git-commit-guidelines.md`; `cc-dev` rejects child commits that only satisfy a loose one-line summary when the guideline requires a body or semantic split.
+- Every child environment that creates Git commits must follow `references/git-commit-guidelines.md` and `../do-not-repeat-yourself/SKILL.md`; `cc-dev` rejects child commits that only satisfy a loose one-line summary or omit the DRY record required before staging.
 - In Codex App, child environments are Codex threads created with `create_thread` and inspected with `read_thread`; generic subagents are not equivalent.
 - Send child work from `assets/CHILD_DISPATCH_PACKET.md`; hand-written partial
   child prompts are invalid for parallel dispatch.

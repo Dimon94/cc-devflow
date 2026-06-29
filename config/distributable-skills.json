@@ -25,6 +25,7 @@
     "cc-act",
     "cc-archive",
     "cc-simplify",
+    "do-not-repeat-yourself",
     "postmortem",
     "task-contract",
     "workflow-chain-contract",

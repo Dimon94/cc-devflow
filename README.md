@@ -242,6 +242,7 @@ The currently distributed skill folders are:
 - `.claude/skills/postmortem/`
 - `.claude/skills/cc-archive/`
 - `.claude/skills/cc-simplify/`
+- `.claude/skills/do-not-repeat-yourself/`
 
 ## Durable vs Ephemeral
 

@@ -17,6 +17,7 @@ reads:
   - PLAYBOOK.md
   - references/closure-contract.md
   - references/git-commit-guidelines.md
+  - ../do-not-repeat-yourself/SKILL.md
   - assets/PR_BRIEF_TEMPLATE.md
   - ../postmortem/SKILL.md
   - ../postmortem/assets/POSTMORTEM_TEMPLATE.md
@@ -52,12 +53,13 @@ All paths below are relative to this `SKILL.md` directory, not the shell cwd.
 
 1. Read `references/checklist-contract.md`, `PLAYBOOK.md`, and `references/closure-contract.md`.
 2. Resolve CLI with `scripts/resolve-cc-devflow.sh require config`.
-3. Read `task.md`, Git status, latest commits, validation evidence, and PR state.
+3. Read `task.md`, Git status, latest commits, validation evidence, PR state, and `../do-not-repeat-yourself/SKILL.md`.
 4. Before Act delivery, load `references/codex-thread-orchestration.md`, then run the `cc-simplify` gate in a real Codex child thread by default with `create_thread` resources set to model `gpt-5.5` and the required reasoning effort; if required thread, resource, or heartbeat tools are unavailable or the created thread cannot be verified on those resources, run the same gate in the main thread and report the fallback.
 5. If `cc-simplify` changed code, tests, or verification posture, route to `cc-check`; if implementation is unfinished, route to `cc-do`.
 6. Choose exactly one delivery mode before pushing, creating a PR, merging locally, or closing remote issues.
-7. For push, PR create/update, or local-main merge delivery, satisfy the repository full verification gate after final owned changes are committed.
-8. After the selected delivery action succeeds, satisfy the remote issue closeout gate in `references/closure-contract.md`.
+7. Before committing remaining owned changes, run the DRY gate from `../do-not-repeat-yourself/SKILL.md` on the staged delivery diff.
+8. For push, PR create/update, or local-main merge delivery, satisfy the repository full verification gate after final owned changes are committed.
+9. After the selected delivery action succeeds, satisfy the remote issue closeout gate in `references/closure-contract.md`.
 
 ## Durable Outputs
 
@@ -82,7 +84,7 @@ If delivery mode is not explicit, ask through `references/user-choice-output-pro
 
 ## Hard Rules
 
-- All completed work is committed with coherent Conventional Commit messages; use `references/git-commit-guidelines.md`.
+- All completed work is committed with coherent Conventional Commit messages; use `references/git-commit-guidelines.md` and run `../do-not-repeat-yourself/SKILL.md` before staging.
 - Act cannot ship until the pre-act `cc-simplify` verdict is explicit: child-thread pass, main-thread fallback pass, `NO FINDINGS`, or not-applicable because there is no changed implementation surface.
 - `cc-act` simplify child threads follow the local Codex contract: discover `create_thread`, `list_threads`, `read_thread`, `send_message_to_thread`, and `automation_update`; dispatch with `assets/SIMPLIFY_CHILD_DISPATCH_PACKET.md`; set and verify model `gpt-5.5` plus the required reasoning effort on the child thread; require child-to-parent handoff; and create heartbeat monitoring before stopping as `waiting-for-child-results`.
 - Push, PR create/update, and local-main-merge are blocked until the repository full verification gate passes on the final tree. If it fails, fix failures and rerun the full suite before delivery.

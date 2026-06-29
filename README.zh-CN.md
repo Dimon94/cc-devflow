@@ -231,6 +231,7 @@ npx cc-devflow config doctor --cwd /path/to/your/project
 - `.claude/skills/postmortem/`
 - `.claude/skills/cc-archive/`
 - `.claude/skills/cc-simplify/`
+- `.claude/skills/do-not-repeat-yourself/`
 
 ## Durable 与 Ephemeral
 

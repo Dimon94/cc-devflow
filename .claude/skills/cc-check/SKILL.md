@@ -15,6 +15,7 @@ reads:
   - references/gate-contract.md
   - references/review-contract.md
   - references/git-commit-guidelines.md
+  - ../do-not-repeat-yourself/SKILL.md
   - ../cc-review/SKILL.md
   - ../cc-dev/references/codex-thread-orchestration.md
   - ../cc-dev/scripts/resolve-cc-devflow.sh
@@ -64,6 +65,7 @@ NO PASS WITHOUT FRESH EVIDENCE
 | `references/gate-contract.md` | verdict rules, phases, false-green guard, failure ledger review, claim evidence |
 | `references/review-contract.md` | diff/scope review, test quality, stale review, reroute rules |
 | `references/git-commit-guidelines.md` | Check-stage commit contract |
+| `../do-not-repeat-yourself/SKILL.md` | Check-stage commit DRY gate |
 | `../cc-review/SKILL.md` | review subAgent contract and finding severity rules before pass |
 | `../cc-dev/references/codex-thread-orchestration.md` | Codex App thread tooling, model, and reasoning contract for review subAgents |
 | `PLAYBOOK.md` | visible state machine, reset signals, default output, verification loop |

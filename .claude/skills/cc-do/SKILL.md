@@ -16,6 +16,7 @@ reads:
   - docs/guides/project-postmortem.md
   - ../cc-dev/scripts/resolve-cc-devflow.sh
   - ../cc-dev/references/domain-context-contract.md
+  - ../do-not-repeat-yourself/SKILL.md
   - ../workflow-chain-contract/SKILL.md
   - references/git-commit-guidelines.md
   - references/checklist-contract.md
@@ -39,6 +40,7 @@ entry_gate:
   - Read `task.md`, Git status, and only code/tests needed by the current task.
   - Read relevant `CONTEXT.md`, `CONTEXT-MAP.md`, and ADRs through `../cc-dev/references/domain-context-contract.md` before editing.
   - Reject execution if the task cannot be restated from `task.md` and repo evidence.
+  - Run `../do-not-repeat-yourself/SKILL.md` before adding any reusable mechanism or staging a completed task/environment.
   - Validate execution shape: Red name, one behavior, public seam, suite/runtime, proof value, mock boundary, Green minimality, refactor candidate.
   - When invoked from parallel orchestration, accept exactly one execution environment or dispatch packet; do not inspect or update sibling environments except dependency status.
 exit_criteria:
@@ -49,6 +51,7 @@ exit_criteria:
   - Real failures and reroutes are recorded in `task.md#Failure Ledger`.
   - Domain context growth was checked after execution; confirmed updates were written to `CONTEXT.md`, `CONTEXT-MAP.md`, or `docs/adr/*.md`, and deferred current-slice updates were recorded in `task.md`.
   - Verification commands ran or are explicitly blocked.
+  - DRY record from `../do-not-repeat-yourself/SKILL.md` exists for any new mechanism and for the staged task/environment diff.
   - Task status is updated through `scripts/mark-task-complete.sh`.
   - Completed task/environment is committed to Git.
   - Completed task/environment commits follow `references/git-commit-guidelines.md`.
@@ -85,12 +88,13 @@ NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
 | Resume or interrupted work | `references/execution-recovery.md` |
 | Checklist before pause or exit | `references/checklist-contract.md` |
 | Domain language, context map, or ADR discipline | `../cc-dev/references/domain-context-contract.md` |
+| New mechanism or staged task/environment diff | `../do-not-repeat-yourself/SKILL.md` |
 | Task explicitly allows parallel execution | `references/parallel-dispatch.md` |
 | Recurring execution failure | `docs/guides/project-postmortem.md` |
 
 ## Flow
 
-select ready task -> Red -> Green -> Refactor -> verify -> `mark-task-complete.sh` -> commit -> next task or `cc-check`.
+select ready task -> Red -> Green -> DRY gate -> Refactor -> verify -> `mark-task-complete.sh` -> commit -> next task or `cc-check`.
 
 ## Default Output
 

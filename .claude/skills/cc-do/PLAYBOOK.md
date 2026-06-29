@@ -12,10 +12,11 @@
 2. Task shape checked: one behavior, public seam, suite layer/runtime, proof value, mock boundary, Green minimality
 3. Red observed for the expected behavior or TDD exception recorded
 4. Green observed with minimal production change
-5. Refactor complete or explicitly unnecessary
-6. Verification run
-7. `mark-task-complete.sh` updates `task.md`
-8. Git commit created
+5. DRY gate records reused wheels and justified retained duplication
+6. Refactor complete or explicitly unnecessary
+7. Verification run
+8. `mark-task-complete.sh` updates `task.md`
+9. Git commit created
 
 ## Execution Loop
 
@@ -23,10 +24,12 @@
 2. Read only the current task's necessary code, tests, callers, exports, helpers, and prior evidence.
 3. Red: write the smallest failing test and verify the failure is the missing behavior.
 4. Green: implement the minimum production change; do not pre-build future branches.
-5. Refactor: clean only the smell exposed by the current slice while tests stay green.
-6. Review: check scope, public seam, mock boundary, fixture honesty, error path, and docs impact.
-7. Complete: run `scripts/mark-task-complete.sh --tasks devflow/changes/<change-key>/task.md --task <task-id>`.
-8. Commit the completed task or execution environment.
+5. DRY gate: run `../do-not-repeat-yourself/SKILL.md` before adding a new
+   reusable mechanism and again on the staged task/environment diff.
+6. Refactor: clean only the smell exposed by the current slice while tests stay green.
+7. Review: check scope, public seam, mock boundary, fixture honesty, error path, and docs impact.
+8. Complete: run `scripts/mark-task-complete.sh --tasks devflow/changes/<change-key>/task.md --task <task-id>`.
+9. Commit the completed task or execution environment.
 
 ## TDD Gates
 
@@ -46,6 +49,7 @@
 - Mocks belong only at system boundaries: external API, time, randomness, filesystem, network, or required database seams. Mocking owned modules is a seam warning.
 - Fixtures must be honest. Partial fixtures, casts, generated stubs, and missing-field payloads must name the real contract fields and the filled test-only fields.
 - New interfaces should be small and deep. Pass dependencies from callers; prefer concrete boundary operations over generic catch-all adapters.
+- New mechanisms must pass `../do-not-repeat-yourself/SKILL.md`: reuse existing wheels when they fit, delete current-diff duplicate wheels, and keep only justified narrow duplication.
 - Three failed patch attempts against the same task mean question the current diagnosis or `Contract Summary`, then reroute to `cc-diagnose` or `cc-plan`.
 - If the completion script fails, fix missing evidence, dependency metadata, or task block shape; do not hand-edit checkboxes.
 
@@ -132,9 +136,9 @@ cherry-pick another child result.
 
 ## Commit Rule
 
-Every completed task or execution environment gets its own commit. Use `references/git-commit-guidelines.md` as the commit contract, including semantic split rules, required body sections, validation, risk, and refs. Split by behavior or layer when needed, but do not leave completed work uncommitted between stages.
+Every completed task or execution environment gets its own commit. Use `references/git-commit-guidelines.md` as the commit contract and run `../do-not-repeat-yourself/SKILL.md` before staging. The commit contract owns semantic split rules, required body sections, validation, risk, and refs. Split by behavior or layer when needed, but do not leave completed work uncommitted between stages.
 
-When `cc-dev` invokes this skill in a child thread, the dispatch packet must include the same guideline path. If the packet omits it, load `references/git-commit-guidelines.md` before staging anyway and report the packet omission to the parent.
+When `cc-dev` invokes this skill in a child thread, the dispatch packet must include the same guideline path and `../do-not-repeat-yourself/SKILL.md`. If the packet omits either, load it before staging anyway and report the packet omission to the parent.
 
 ## Handoff
 

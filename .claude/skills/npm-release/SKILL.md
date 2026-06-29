@@ -6,6 +6,7 @@ reads:
   - PLAYBOOK.md
   - CHANGELOG.md
   - references/git-commit-guidelines.md
+  - ../do-not-repeat-yourself/SKILL.md
   - references/checklist-contract.md
 ---
 
@@ -13,7 +14,7 @@ reads:
 
 ## Quick Start
 
-1. Read `PLAYBOOK.md`, `CHANGELOG.md`, `references/git-commit-guidelines.md`, and `references/checklist-contract.md`.
+1. Read `PLAYBOOK.md`, `CHANGELOG.md`, `references/git-commit-guidelines.md`, `../do-not-repeat-yourself/SKILL.md`, and `references/checklist-contract.md`.
 2. Confirm the current worktree and branch are the user-approved release target.
 3. Run `git status --short`, capture `release_target_branch="$(git branch --show-current)"`, inspect current version and recent commits, then run `npm whoami`.
 4. Stop before real publish when git state, branch target, version conclusion, changelog, or npm auth is not proven.
@@ -31,7 +32,7 @@ already the user-confirmed release target, stop and ask for the correct release
 worktree/branch or create a separate release worktree without changing the main
 checkout.
 
-Release commits follow `references/git-commit-guidelines.md`.
+Release commits follow `references/git-commit-guidelines.md` and run `../do-not-repeat-yourself/SKILL.md` before staging.
 
 ## Stop Conditions
 
