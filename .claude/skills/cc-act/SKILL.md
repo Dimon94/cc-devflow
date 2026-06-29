@@ -49,7 +49,7 @@ All paths below are relative to this `SKILL.md` directory, not the shell cwd.
 2. Resolve CLI with `scripts/resolve-cc-devflow.sh require config`.
 3. Read `task.md`, Git status, latest commits, validation evidence, and PR state.
 4. Before Act delivery, load `references/codex-thread-orchestration.md`, then run the `cc-simplify` gate in a real Codex child thread by default with `create_thread` resources set to model `gpt-5.5` and the required reasoning effort; if required thread, resource, or heartbeat tools are unavailable or the created thread cannot be verified on those resources, run the same gate in the main thread and report the fallback.
-5. If `cc-simplify` changed code, tests, or verification posture, route to `cc-check`; if verification changed, route to `cc-check`; if implementation is unfinished, route to `cc-do`.
+5. If `cc-simplify` changed code, tests, or verification posture, route to `cc-check`; if implementation is unfinished, route to `cc-do`.
 6. Choose exactly one delivery mode before pushing, creating a PR, or merging locally.
 7. For push, PR create/update, or local-main merge delivery, satisfy the repository full verification gate after final owned changes are committed.
 

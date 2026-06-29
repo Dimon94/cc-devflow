@@ -56,7 +56,6 @@ reroutes:
 
 active changes -> archive/handoff -> issues -> rank candidates -> choose or ask -> Goal Packet.
 
-
 ## Default Output
 
 Answer with: Queue truth, Candidates, Recommendation, Goal Packet when selected, Route (`cc-dev` or `stop`).

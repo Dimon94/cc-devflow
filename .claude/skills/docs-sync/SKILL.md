@@ -13,22 +13,17 @@ reads:
 
 > [PROTOCOL]: 变更时同步更新 `version`、`CHANGELOG.md`、公开 docs、必要的 migration note，然后检查 `CLAUDE.md`
 
-## Checklist Contract
-
-Follow `references/checklist-contract.md` before each pause point. The checklist is the local do-confirm/read-do contract for this skill; skip only with an explicit blocker or route.
-
 ## Role
 
-`docs-sync` 是仓库的文档收口器。
+`docs-sync` 不发明功能。它把已经发生的真实变更同步回 skill 版本、skill changelog、仓库 docs 和 release-facing 文案。
 
-它不发明功能，只负责把已经发生的真实变更，压回 skill 版本、skill changelog、仓库 docs 和 release-facing 文案里，避免代码已经变了，说明书还活在昨天。
-
-## Read First
+## Quick Start
 
 1. `PLAYBOOK.md`
 2. `CHANGELOG.md`
 3. `references/sync-contract.md`
 4. `references/checklist-contract.md`
+5. `git status --short` and `git diff --name-only`
 
 ## Use This Skill When
 
@@ -41,23 +36,18 @@ Follow `references/checklist-contract.md` before each pause point. The checklist
 
 ## Entry Gate
 
-1. 先看 `git diff` / `git status`，不要凭感觉说“应该不用改 docs”。
-2. 先定位这次变更碰了哪些 skill，哪些只是内部代码。
-3. 先判断这次是 `patch`、`minor` 还是 `major` 级别的 skill 变化。
-4. 先写清本次必须同步哪些 docs，再开始编辑。
+1. Diff-first: classify touched skills, internal code, CLI behavior, and public docs impact from Git truth.
+2. Classify each skill change as `patch`, `minor`, or `major`.
+3. Name the docs, changelogs, and migration notes that must sync before editing.
 
-## Session Protocol
+## Sync Protocol
 
-1. 先做 `Change Inventory`
-   - 这次改了哪些 skill
-   - 哪些 skill 需要 bump version
-   - 哪些 changelog 需要补
-   - 哪些仓库 docs 需要同步
-2. 对每个被修改的 skill：
+1. Build `Change Inventory`: touched skills, version bumps, changelogs, public docs, migration notes.
+2. For each changed skill:
    - 更新 `SKILL.md` frontmatter 里的 `version`
    - 更新 skill 本地 `CHANGELOG.md`
    - 检查 `PLAYBOOK.md`、模板、脚本、references 是否还与 `SKILL.md` 一致
-3. 对仓库 docs：
+3. For public docs:
    - 同步 `README.md` / `README.zh-CN.md`
    - 同步 `CONTRIBUTING.md` / `CONTRIBUTING.zh-CN.md`
    - 同步受影响的 `docs/**/*.md`
@@ -67,7 +57,7 @@ Follow `references/checklist-contract.md` before each pause point. The checklist
 
 ## Skill Contract Quality Gate
 
-改动 skill 时，先检查它作为“模型可见触发合同”是否仍然好用：
+改动 skill 时，先检查它作为模型可见触发合同是否仍然好用：
 
 1. Description 是触发真相源：
    - 第一层说明 skill 做什么。

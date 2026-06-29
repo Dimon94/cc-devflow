@@ -47,7 +47,7 @@ exit_criteria:
   - Low-value Red evidence is rewritten, rejected, or routed back to `cc-plan`.
   - Refactor evidence names the smell removed or says why no refactor was needed.
   - Real failures and reroutes are recorded in `task.md#Failure Ledger`.
-  - "Domain context growth was checked after execution evidence; confirmed updates were written to `CONTEXT.md`, `CONTEXT-MAP.md`, or `docs/adr/*.md`, while deferred updates were recorded in `task.md` when they affect the current slice."
+  - Domain context growth was checked after execution; confirmed updates were written to `CONTEXT.md`, `CONTEXT-MAP.md`, or `docs/adr/*.md`, and deferred current-slice updates were recorded in `task.md`.
   - Verification commands ran or are explicitly blocked.
   - Task status is updated through `scripts/mark-task-complete.sh`.
   - Completed task/environment is committed to Git.

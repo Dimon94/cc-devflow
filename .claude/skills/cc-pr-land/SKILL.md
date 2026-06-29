@@ -71,7 +71,6 @@ Evidence lives in GitHub, Git history, command output, and final response. Do no
 
 authenticated GitHub truth -> review evidence -> gate carry-forward -> rebase -> validate -> land -> main parity proof.
 
-
 ## Default Output
 
 Answer with: PR, Review, Gate carry-forward, Landing, Parity, Route (landed, `cc-pr-review`, `cc-dev`, or `stop`).

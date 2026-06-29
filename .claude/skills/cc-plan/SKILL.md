@@ -39,12 +39,11 @@ entry_gate:
   - >-
     Resolve CLI, assign REQ/FIX key, prepare isolated exact-case worktree before
     writing `task.md`.
-  - Start every Plan by reading relevant domain context: >-
-      root `CONTEXT-MAP.md` when present, otherwise root or local `CONTEXT.md`,
-      plus relevant ADRs.
   - >-
-    Read relevant `CONTEXT.md`, `CONTEXT-MAP.md`, and ADRs through
-    `../cc-dev/references/domain-context-contract.md` before decision questions.
+    Read relevant domain context through
+    `../cc-dev/references/domain-context-contract.md` before decision questions:
+    root `CONTEXT-MAP.md` when present, otherwise root or local `CONTEXT.md`,
+    plus relevant ADRs.
   - >-
     Read specs, relevant code/tests/docs, recent commits, and existing task
     truth before asking any unresolved question.
