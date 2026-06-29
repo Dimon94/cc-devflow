@@ -18,8 +18,9 @@ reads:
   - references/closure-contract.md
   - references/git-commit-guidelines.md
   - assets/PR_BRIEF_TEMPLATE.md
-  - assets/PROJECT_POSTMORTEM_TEMPLATE.md
-  - assets/PROJECT_POSTMORTEM_INDEX_TEMPLATE.md
+  - ../postmortem/SKILL.md
+  - ../postmortem/assets/POSTMORTEM_TEMPLATE.md
+  - ../postmortem/assets/POSTMORTEM_INDEX_TEMPLATE.md
   - scripts/resolve-cc-devflow.sh
   - scripts/ensure-ship-branch.sh
   - scripts/evaluate-postmortem-trigger.sh

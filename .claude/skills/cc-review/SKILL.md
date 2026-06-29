@@ -21,6 +21,7 @@ reads:
   - ../cc-dev/references/user-choice-output-protocol.md
   - ../task-contract/SKILL.md
   - ../quality-gate-contract/SKILL.md
+  - ../postmortem/SKILL.md
 writes:
   - path: current response
     durability: ephemeral

@@ -12,6 +12,7 @@ triggers:
   - performance regression
 reads:
   - references/git-commit-guidelines.md
+  - ../postmortem/SKILL.md
 writes: []
 ---
 

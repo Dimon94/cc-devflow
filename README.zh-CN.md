@@ -94,6 +94,7 @@ flowchart TD
 | `cc-pr-land` | 已 Review PR 需要 rebase-first 合并到 main 并证明 parity | 已集成 main 和本地 / 远程一致性证据 |
 | `cc-check` | 工作需要新鲜验证证据 | pass/fail/blocked 回复和 Git commit |
 | `cc-act` | 已验证工作需要 PR、本地 handoff 或 closeout | 可选 `handoff/pr-brief.md`、Git/PR 真相或 incident postmortem |
+| `postmortem` | 失败教训需要召回、追问、单独记录或 closeout 压缩 | `devflow/postmortems/INDEX.md` 和 incident postmortem |
 
 整包还包含维护类 Skill：
 
@@ -157,6 +158,7 @@ npx skills add https://github.com/Dimon94/cc-devflow --skill cc-pr-review
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-pr-land
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-check
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-act
+npx skills add https://github.com/Dimon94/cc-devflow --skill postmortem
 ```
 
 需要整包用 `cc-devflow init`，需要平台产物用 `cc-devflow adapt`，只想拿单个 Skill 才用 `skills add`。
@@ -226,6 +228,7 @@ npx cc-devflow config doctor --cwd /path/to/your/project
 - `.claude/skills/cc-pr-land/`
 - `.claude/skills/cc-check/`
 - `.claude/skills/cc-act/`
+- `.claude/skills/postmortem/`
 - `.claude/skills/cc-archive/`
 - `.claude/skills/cc-simplify/`
 

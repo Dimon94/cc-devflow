@@ -94,6 +94,7 @@ flowchart TD
 | `cc-pr-land` | Reviewed PRs need production-gate-aware, rebase-first landing into main with parity proof | gate carry-forward plus integrated main and local/remote parity evidence |
 | `cc-check` | Work needs fresh verification evidence | pass/fail/blocked response and Git commit |
 | `cc-act` | Verified work needs a PR, local handoff, or closeout | optional `handoff/pr-brief.md`, Git/PR truth, or incident postmortem |
+| `postmortem` | Failure lessons need recall, interrogation, standalone recording, or closeout compression | `devflow/postmortems/INDEX.md` and incident postmortems |
 
 Maintenance skills are shipped with the pack:
 
@@ -168,6 +169,7 @@ npx skills add https://github.com/Dimon94/cc-devflow --skill cc-pr-review
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-pr-land
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-check
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-act
+npx skills add https://github.com/Dimon94/cc-devflow --skill postmortem
 ```
 
 Use `cc-devflow init` for the full pack, `cc-devflow adapt` for generated platform outputs, and `skills add` only when you want one skill at a time.
@@ -237,6 +239,7 @@ The currently distributed skill folders are:
 - `.claude/skills/cc-pr-land/`
 - `.claude/skills/cc-check/`
 - `.claude/skills/cc-act/`
+- `.claude/skills/postmortem/`
 - `.claude/skills/cc-archive/`
 - `.claude/skills/cc-simplify/`
 

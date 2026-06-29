@@ -9,7 +9,8 @@
     "cc-pr-review",
     "cc-pr-land",
     "cc-check",
-    "cc-act"
+    "cc-act",
+    "postmortem"
   ],
   "distributedSkills": [
     "cc-next",
@@ -24,6 +25,7 @@
     "cc-act",
     "cc-archive",
     "cc-simplify",
+    "postmortem",
     "task-contract",
     "workflow-chain-contract",
     "quality-gate-contract",
