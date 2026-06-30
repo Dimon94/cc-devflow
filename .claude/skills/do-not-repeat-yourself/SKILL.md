@@ -6,6 +6,8 @@ description: >-
   skill, prompt rule, schema, or other reusable mechanism, and before creating a
   git commit, to find existing wheels, avoid duplicate meaning, and record
   justified narrow duplication.
+skill_class: capability
+route_family: quality
 reads:
   - current task, spec, or user request
   - current Git diff or planned mechanism

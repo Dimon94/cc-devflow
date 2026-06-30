@@ -5,7 +5,7 @@ const os = require('os');
 const path = require('path');
 const { spawnSync } = require('child_process');
 const matter = require('gray-matter');
-const { validateSkillInventory } = require('../lib/compiler/inventory');
+const { validateSkillInventory, validateSkillSuiteGraph } = require('../lib/compiler/inventory');
 
 const ROOT = path.resolve(__dirname, '..');
 const DISTRIBUTION_CONFIG = require(path.join(ROOT, 'config', 'distributable-skills.json'));
@@ -360,6 +360,10 @@ function validateInventoryParity(errors) {
     distributedSkills: DISTRIBUTED_SKILLS,
     internalSkills: INTERNAL_SKILLS,
     codexSkills: DISTRIBUTED_SKILLS
+  }));
+  errors.push(...validateSkillSuiteGraph({
+    root: ROOT,
+    publicSkills: PUBLIC_SKILLS
   }));
 }
 

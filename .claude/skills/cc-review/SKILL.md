@@ -4,6 +4,8 @@ version: 2.14.0
 description: >-
   Evidence-backed review for plans, diffs, PRs, complexity hotspots, and
   structural maintainability risk.
+skill_class: user-entry
+route_family: quality
 triggers:
   - 深度 review 这个方案
   - review 这个 bug 修复

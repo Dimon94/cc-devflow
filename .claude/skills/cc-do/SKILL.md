@@ -2,6 +2,8 @@
 name: cc-do
 version: 1.11.2
 description: Use when executing frozen task.md work inside approved scope.
+skill_class: user-entry
+route_family: main
 triggers:
   - 开始做 T003
   - 继续上次做到一半的任务

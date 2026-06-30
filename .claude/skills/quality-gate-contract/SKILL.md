@@ -2,6 +2,8 @@
 name: quality-gate-contract
 version: 1.0.0
 description: Chain Skill defining shared review, verification, simplification, Failure Ledger, postmortem, and cc-act closeout quality semantics.
+skill_class: chain
+route_family: contract
 reads: []
 writes: []
 ---

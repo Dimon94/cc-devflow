@@ -2,6 +2,8 @@
 name: task-contract
 version: 1.0.0
 description: Chain Skill defining the durable task.md contract for cc-devflow planning, execution, verification, review, and closeout.
+skill_class: chain
+route_family: contract
 reads: []
 writes: []
 ---

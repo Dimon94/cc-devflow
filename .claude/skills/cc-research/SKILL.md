@@ -6,6 +6,8 @@ description: >-
   the user asks for /research, project research, evidence gathering, or when a
   workflow skill has a real Evidence Gap that current project code, docs, tests,
   prior research, or authoritative sources must resolve before a decision.
+skill_class: capability
+route_family: research
 triggers:
   - /research
   - 项目调研

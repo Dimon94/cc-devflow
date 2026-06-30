@@ -2,6 +2,8 @@
 name: skill-authoring-gate
 version: 1.0.0
 description: Chain Skill for writing and editing cc-devflow skills with predictable invocation, hierarchy, completion, disclosure, wording, and pruning contracts.
+skill_class: chain
+route_family: contract
 ---
 
 # Skill Authoring Gate

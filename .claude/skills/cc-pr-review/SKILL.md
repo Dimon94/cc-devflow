@@ -5,6 +5,8 @@ description: >-
   Use in a separate session to review one remote GitHub PR before landing,
   including PR-scoped complexity, hardening, and productization risk, without
   writing local process files.
+skill_class: user-entry
+route_family: pr
 triggers:
   - review 这个 PR
   - 单独会话 review PR

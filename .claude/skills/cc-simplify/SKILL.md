@@ -5,6 +5,8 @@ description: >-
   Use when changed code needs a confidence-gated simplification pass for scope
   drift, reuse, code quality, efficiency, test quality, and confirmed smell
   fixes before cc-check or cc-act.
+skill_class: capability
+route_family: quality
 reads:
   - devflow/changes/<change-key>/task.md
   - current Git diff

@@ -2,6 +2,8 @@
 name: cc-next
 version: 1.5.0
 description: Use when ranking next ready work into one cc-dev Goal Packet.
+skill_class: user-entry
+route_family: main
 triggers:
   - 选下一个需求
   - 自动挑下一个任务

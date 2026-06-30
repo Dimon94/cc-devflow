@@ -2,6 +2,8 @@
 name: cc-diagnose
 version: 1.0.0
 description: Disciplined diagnosis loop for hard bugs and performance regressions. Reproduce -> minimise -> hypothesise -> instrument -> fix -> regression-test.
+skill_class: user-entry
+route_family: bug
 triggers:
   - diagnose this
   - debug this

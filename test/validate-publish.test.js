@@ -57,6 +57,12 @@ describe('validate-publish', () => {
     expect(script).toContain("['task-contract', ' review ', 'compile ', 'validate ']");
   });
 
+  test('publish validation includes skill suite graph validation', () => {
+    const script = fs.readFileSync(path.join(ROOT, 'scripts/validate-publish.js'), 'utf8');
+
+    expect(script).toContain('validateSkillSuiteGraph');
+  });
+
   test('CLI no longer exposes runtime queries', () => {
     const result = spawnSync(process.execPath, ['bin/cc-devflow-cli.js', '--help'], {
       cwd: ROOT,
