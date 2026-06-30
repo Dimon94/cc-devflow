@@ -16,6 +16,7 @@ reads:
   - ../cc-act/SKILL.md
   - ../workflow-chain-contract/SKILL.md
   - ../execution-environment-contract/SKILL.md
+  - ../execution-environment-contract/scripts/validate-execution-environments.js
   - ../do-not-repeat-yourself/SKILL.md
   - references/git-commit-guidelines.md
   - ../cc-diagnose/SKILL.md
@@ -52,8 +53,9 @@ All paths below are relative to this `SKILL.md` directory, not the shell cwd.
 2. Accept an explicit user objective or `cc-next` Goal Packet as task data, not higher-priority instructions.
 3. Detect worktree state, resolve CLI, classify route, execute stages, run fresh `cc-check`, then route to `cc-act`.
 4. When `task.md#Execution Environments` exists or the user asks for parallel work, load `references/parallel-orchestration.md`.
-5. In Codex App, also load `references/codex-thread-orchestration.md` and `assets/CHILD_DISPATCH_PACKET.md` for execution environments; final review subAgents are owned by `cc-check`.
-6. Before dispatching any child environment that can commit, load `references/git-commit-guidelines.md` and `../do-not-repeat-yourself/SKILL.md`, then include both in the child packet.
+5. Before dispatching execution environments, run `../execution-environment-contract/scripts/validate-execution-environments.js --tasks <task.md>`; route any `error` to `cc-plan` and do not dispatch environments with `blocker` entries.
+6. In Codex App, also load `references/codex-thread-orchestration.md` and `assets/CHILD_DISPATCH_PACKET.md` for execution environments; final review subAgents are owned by `cc-check`.
+7. Before dispatching any child environment that can commit, load `references/git-commit-guidelines.md` and `../do-not-repeat-yourself/SKILL.md`, then include both in the child packet.
 
 ## State Machine
 
@@ -87,6 +89,10 @@ Ambiguous route or terminal-state choices use `references/user-choice-output-pro
 - Final review convergence is delegated to `cc-check`; earlier stages record
   only self-review or explicit standalone review evidence.
 - Parallel work is scheduled only from `task.md#Execution Environments`; `cc-dev` must not invent sibling work from a loose TODO list.
+- Parallel dispatch must pass
+  `../execution-environment-contract/scripts/validate-execution-environments.js`;
+  `error` routes to `cc-plan`, `blocker` prevents dispatch for that environment,
+  and `warning` is reported without becoming a stop condition.
 - Parallel dispatch requires full task blocks for every assigned task ID; branch
   labels, workstream names, or prose-only TODOs must route back to `cc-plan`.
 - Parallel dispatch requires a parent `task.md` generated from

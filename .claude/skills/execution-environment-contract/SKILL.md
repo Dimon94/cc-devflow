@@ -25,6 +25,25 @@ quality gate verdicts, or skill-writing rules. Those stay in platform adapter
 references, `task-contract`, `workflow-chain-contract`,
 `quality-gate-contract`, and `skill-authoring-gate`.
 
+## Machine Check
+
+Use `scripts/validate-execution-environments.js --tasks <task.md>` as the
+read-only machine check for this contract. The script validates only the
+Execution Environments portion of `task.md`; it does not parse the whole task
+contract, choose dispatch strategy, read Git state, create threads, route
+workflow stages, or make quality verdicts.
+
+The JSON report uses three levels:
+
+- `error`: contract structure is invalid; `cc-plan` cannot freeze parallel
+  work and `cc-dev` routes back to `cc-plan`.
+- `blocker`: the contract exists but a specific environment is not ready.
+- `warning`: the environment can still proceed, but the risk should be
+  reported.
+
+Only `error` makes the CLI exit non-zero. `blocker` and `warning` stay in JSON
+so the orchestrator can decide what to skip, retry, or report.
+
 ## Environment Types
 
 - `E###`: implementation environment, normally routed to `cc-do`.

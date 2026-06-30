@@ -24,6 +24,7 @@ reads:
   - ../do-not-repeat-yourself/SKILL.md
   - ../workflow-chain-contract/SKILL.md
   - ../execution-environment-contract/SKILL.md
+  - ../execution-environment-contract/scripts/validate-execution-environments.js
   - ../postmortem/SKILL.md
   - ../cc-research/SKILL.md
   - ../cc-dev/scripts/resolve-cc-devflow.sh
@@ -85,6 +86,10 @@ exit_criteria:
     Parallel `task.md` contains `Contract Snapshot`, `Parallelization
     Rationale`, child dispatch boundaries, Env-level contract matrix, full
     status enum, full Failure Ledger, and complete task blocks per environment.
+  - >-
+    When `task.md#Execution Environments` is present, run
+    `../execution-environment-contract/scripts/validate-execution-environments.js`;
+    any `error` blocks freezing and routes to plan repair.
   - '`task.md` contains executable task blocks from the selected template.'
   - >-
     Non-trivial plans complete product/creative discovery, Second-Move Review,
@@ -142,6 +147,7 @@ reroutes:
 | ADR format | `references/ADR-FORMAT.md` |
 | Domain language, context map, or ADR discipline | `../cc-dev/references/domain-context-contract.md` |
 | Real Evidence Gap before scope, design, or task freeze | `../cc-research/SKILL.md` |
+| Execution Environments machine check | `../execution-environment-contract/scripts/validate-execution-environments.js` |
 | User-facing decision choice | `../cc-dev/references/user-choice-output-protocol.md` |
 | Approved serial plan needs parent `task.md` | complete `assets/TASKS_TEMPLATE.md` skeleton |
 | Approved parallel plan needs parent `task.md` | `assets/PARALLEL_TASKS_TEMPLATE.md` |

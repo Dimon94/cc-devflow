@@ -52,6 +52,10 @@ _Avoid_: Task template, issue spec, task document
 A transient evidence bundle assembled by `cc-check` and passed between quality participants to classify the current gate verdict and route without becoming Durable Truth. It carries normalized summaries and evidence references, not raw command or review output. `cc-act` may check freshness and final-commit coverage, but it does not reinterpret the verdict. It does not enter the Failure Ledger; only classified review escapes or confirmed lessons become durable failure evidence.
 _Avoid_: Quality state file, verification database, gate artifact
 
+**Execution Environment Validator**:
+A read-only checker for the Execution Environments portion of `task.md` that reports readiness, blockers, touch conflicts, and child dispatch completeness without turning the whole task contract into a parser input language.
+_Avoid_: Task parser, task.md DSL, workflow router
+
 **Project Hook**:
 A host hook registered for the project as a whole, outside any single skill's lifecycle.
 _Avoid_: Skill-scoped hook, frontmatter hook
