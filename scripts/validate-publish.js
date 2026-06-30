@@ -276,20 +276,25 @@ function validateManagedResourceCopies(errors, options = {}) {
   }
 }
 
-function validateCommitGuidelineRefs(errors) {
-  const commitGuidelines = MANAGED_RESOURCE_CONFIG.managedResourceCopies.find((group) => group.name === 'git-commit-guidelines');
+function validateCommitGuidelineRefs(errors, options = {}) {
+  const root = options.root || ROOT;
+  const manifest = options.manifest || MANAGED_RESOURCE_CONFIG;
+  const groups = Array.isArray(manifest?.managedResourceCopies) ? manifest.managedResourceCopies : [];
+  const commitGuidelines = groups.find((group) => group.name === 'git-commit-guidelines');
   if (!commitGuidelines) {
     errors.push('config/managed-resource-copies.json missing git-commit-guidelines group');
     return;
   }
 
-  const guidelinePaths = [commitGuidelines.owner, ...(commitGuidelines.copies || [])];
+  if (!commitGuidelines.owner || !Array.isArray(commitGuidelines.copies)) return;
+
+  const guidelinePaths = [commitGuidelines.owner, ...commitGuidelines.copies];
   for (const guidelineRel of guidelinePaths) {
     const match = guidelineRel.match(/^\.claude\/skills\/([^/]+)\//);
     if (!match) continue;
     const skillName = match[1];
     const skillRel = `.claude/skills/${skillName}/SKILL.md`;
-    const skillText = readText(skillRel);
+    const skillText = readTextFrom(root, skillRel);
 
     if (!skillText.includes(COMMIT_GUIDELINE_REF)) {
       errors.push(`${skillRel} must reference its local ${COMMIT_GUIDELINE_REF}`);
