@@ -4,7 +4,10 @@ const path = require('path');
 const { spawnSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
-const { validateManagedResourceCopies } = require('../scripts/validate-publish');
+const {
+  validateManagedResourceCopies,
+  validateCommitGuidelineRefs
+} = require('../scripts/validate-publish');
 
 function writeFile(filePath, content = '') {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
@@ -158,5 +161,22 @@ describe('validate-publish', () => {
     });
 
     expect(errors).toContain('config/managed-resource-copies.json managedResourceCopies must be an array');
+  });
+
+  test('publish validation reports missing managed resource owner without crashing', () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'managed-resource-missing-owner-'));
+    const errors = [];
+    const manifest = {
+      managedResourceCopies: [{
+        name: 'git-commit-guidelines',
+        copies: ['copy.md'],
+        policy: 'must-match'
+      }]
+    };
+
+    validateManagedResourceCopies(errors, { root, manifest });
+    expect(() => validateCommitGuidelineRefs(errors, { root, manifest })).not.toThrow();
+
+    expect(errors).toContain('Managed Resource Copy git-commit-guidelines missing owner');
   });
 });
