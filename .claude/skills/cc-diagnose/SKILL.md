@@ -14,6 +14,7 @@ reads:
   - references/git-commit-guidelines.md
   - ../do-not-repeat-yourself/SKILL.md
   - ../postmortem/SKILL.md
+  - ../cc-research/SKILL.md
 writes: []
 ---
 
@@ -22,6 +23,9 @@ writes: []
 这是给困难 bug 和性能回退用的诊断纪律。除非反馈环不可建立且已记录 blocker，否则不要跳阶段。
 
 探索代码库时，先用项目领域词汇表建立相关模块的心智模型；如果触碰区域有 ADR，也要读取。
+
+仅当第三方库、API、平台行为或旧研究 freshness 阻塞根因判断时，才使用
+`../cc-research/SKILL.md`；不要用研究替代复现和反馈环。
 
 ## Parallel Orchestration Boundary
 

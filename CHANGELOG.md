@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added the public `cc-research` capability skill for project-grounded research
+  evidence under `devflow/research/`.
+
 ### Changed
 
 - Updated `cc-act` to require remote issue closeout state, including verified

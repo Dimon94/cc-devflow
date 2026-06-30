@@ -32,6 +32,12 @@ _Avoid_: Public skill, command skill
 A skill that exists for other skills and agents to reuse inside the workflow chain, rather than as a primary human entry point.
 _Avoid_: Shared reference, helper doc
 
+**Capability Skill**:
+A reusable skill that can be invoked directly and consulted by workflow skills
+without becoming a PDCA stage. `cc-research` is a Capability Skill and owns
+`devflow/research/`.
+_Avoid_: PDCA stage, process file writer
+
 **Task Contract**:
 The durable agreement that defines the shape and meaning of `task.md` for planning, execution, verification, and delivery.
 _Avoid_: Task template, issue spec, task document

@@ -2,10 +2,11 @@
 
 ## Hard Rules
 
-1. `cc-plan` writes only `task.md`.
+1. `cc-plan` writes only `task.md`; reusable research files are written only by
+   `cc-research` under `devflow/research/`.
 2. Git commit records Plan completion.
 3. Clarification, approval, review notes, and execution protocol live inside `task.md`.
-4. No process file beyond `task.md`.
+4. No process file beyond `task.md` or cc-research-owned `devflow/research/*`.
 5. New change keys come from `cc-devflow next-change-key`.
 6. Branch binds to the full change key before durable output.
 7. User decisions that affect scope, design, or verification are written into `task.md#Contract Summary`.

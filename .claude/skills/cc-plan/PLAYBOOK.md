@@ -67,8 +67,10 @@ Every plan starts from the domain model, not from a blank task list:
 
 ## Rules
 
-1. Only `task.md` is written during Plan.
-2. Git commits record Plan completion; do not create process files beyond `task.md`.
+1. Only `task.md` is written during Plan; reusable research files are written
+   only by `cc-research` under `devflow/research/`.
+2. Git commits record Plan completion; do not create process files beyond
+   `task.md` or cc-research-owned `devflow/research/*`.
 3. Current branch must bind to the full change key before writing durable output.
 4. The task list must let `cc-do` continue without chat memory.
 5. Ask only decisions that change product value, product shape, scope, design, task split, interface, or verification; otherwise choose from repo evidence.

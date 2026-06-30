@@ -85,11 +85,13 @@ find .codex/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort
 - `cc-diagnose` 在回复或最终 commit/PR 文本里记录复现、假设、探针、修复证据和回归证明
 - `cc-check` 在当前回复、PR 文件或 Git commit 里记录验证事实
 - `cc-act` 只产出最终 PR 文件 `handoff/pr-brief.md`；真实事故需要尸检时才产出 incident postmortem 文件
+- `cc-research` 只在可复用调研需要持久化时，把中文项目证据写到 `devflow/research/`
 
 durable truth 分层：
 
 - 新 change 目录必须命名为 `REQ-<number>-<description>`（需求）或 `FIX-<number>-<description>`（修复）；`REQ` 和 `FIX` 分别维护自己的递增编号，跨前缀同号不是冲突；并行工作树造成重复编号时，完整 change key 的描述负责区分业务内容，旧小写目录只作为历史兼容读取。
 - `devflow/changes/<change>/`：变更真相，只保留 `task.md`、可选 `handoff/pr-brief.md` 和 Git commit；真实复发事故和已分类的 review escape 可在 `devflow/postmortems/` 写尸检文件。不要生成额外过程文件。
+- 可复用调研只通过 `cc-research` 保存在 `devflow/research/`。
 - 流程状态归 Git：保留 `task.md`，每个完成阶段提交 commit，不创建额外过程文件。
 - 历史 `planning/design.md`、`planning/analysis.md` 和 `cc-review-*.md` 是旧 change 的可读 fallback，不再是新默认写入。
 - worker prompt、journal、assignment、session log 统一放到 `devflow/workspaces/<change>/`，作为 ephemeral scratch。

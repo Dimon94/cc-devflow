@@ -25,6 +25,7 @@ reads:
   - ../workflow-chain-contract/SKILL.md
   - ../execution-environment-contract/SKILL.md
   - ../postmortem/SKILL.md
+  - ../cc-research/SKILL.md
   - ../cc-dev/scripts/resolve-cc-devflow.sh
   - ../cc-dev/scripts/detect-worktree-state.sh
   - ../cc-dev/scripts/prepare-change-worktree.sh
@@ -49,6 +50,10 @@ entry_gate:
   - >-
     Read specs, relevant code/tests/docs, recent commits, and existing task
     truth before asking any unresolved question.
+  - >-
+    Use `../cc-research/SKILL.md` only for a real Evidence Gap that current
+    project evidence, task truth, and prior research cannot answer before scope,
+    design, or task freeze.
   - >-
     Run planning flow, Socratic dialogue, and domain grilling through
     `references/domain-grilling-contract.md` before task generation.
@@ -103,7 +108,7 @@ exit_criteria:
     rules, schemas, or cross-module doc rules have a DRY record from
     `../do-not-repeat-yourself/SKILL.md` or an explicit reuse point in
     `task.md`.
-  - No process file beyond `task.md`.
+  - No process file beyond `task.md` or cc-research-owned `devflow/research/*`.
   - Plan-stage changes are committed to Git before handoff.
   - Plan-stage commits follow `references/git-commit-guidelines.md`.
 reroutes:
@@ -136,6 +141,7 @@ reroutes:
 | CONTEXT glossary format | `references/CONTEXT-FORMAT.md` |
 | ADR format | `references/ADR-FORMAT.md` |
 | Domain language, context map, or ADR discipline | `../cc-dev/references/domain-context-contract.md` |
+| Real Evidence Gap before scope, design, or task freeze | `../cc-research/SKILL.md` |
 | User-facing decision choice | `../cc-dev/references/user-choice-output-protocol.md` |
 | Approved serial plan needs parent `task.md` | complete `assets/TASKS_TEMPLATE.md` skeleton |
 | Approved parallel plan needs parent `task.md` | `assets/PARALLEL_TASKS_TEMPLATE.md` |

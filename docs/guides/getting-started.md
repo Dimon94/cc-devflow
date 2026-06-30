@@ -85,11 +85,13 @@ Typical outputs:
 - `cc-diagnose` records reproduction, hypotheses, probes, fix evidence, and regression proof in the response or final commit/PR text
 - `cc-check` reports verification facts in the response, PR brief, or Git commit
 - `cc-act` writes exactly one final PR file, `handoff/pr-brief.md`, or incident postmortem files when a real incident needs a corpse report
+- `cc-research` writes Chinese project evidence under `devflow/research/` only when reusable research must persist
 
 Change truth lives in `devflow/changes/<change>/`.
 
 - Name new change directories as `REQ-<number>-<description>` for requirements or `FIX-<number>-<description>` for bug fixes. `REQ` and `FIX` advance as separate local sequences, so cross-prefix duplicates are valid. Parallel worktrees may still repeat numbers; the full change key, especially the description, distinguishes the work. Old lowercase directories are compatibility reads only.
 - Keep `task.md`, optional `handoff/pr-brief.md`, and Git commits as change truth. Real recurring failures and classified review escapes may also write incident postmortems under `devflow/postmortems/`. Do not generate extra process files.
+- Keep reusable research only through `cc-research` under `devflow/research/`.
 - Workflow state is Git-owned: keep `task.md`, commit each completed stage, and do not create extra process files.
 - Legacy `planning/design.md`, `planning/analysis.md`, and `cc-review-*.md` are readable fallback inputs for older changes, not new default writes.
 - Worker prompts, journals, assignments, and session logs belong under `devflow/workspaces/<change>/` as ephemeral scratch.

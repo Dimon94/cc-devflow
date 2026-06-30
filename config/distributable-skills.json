@@ -10,6 +10,7 @@
     "cc-pr-land",
     "cc-check",
     "cc-act",
+    "cc-research",
     "postmortem"
   ],
   "distributedSkills": [
@@ -25,6 +26,7 @@
     "cc-act",
     "cc-archive",
     "cc-simplify",
+    "cc-research",
     "do-not-repeat-yourself",
     "postmortem",
     "task-contract",

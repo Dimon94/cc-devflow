@@ -22,6 +22,7 @@ reads:
   - ../task-contract/SKILL.md
   - ../quality-gate-contract/SKILL.md
   - ../postmortem/SKILL.md
+  - ../cc-research/SKILL.md
 writes:
   - path: current response
     durability: ephemeral
@@ -69,6 +70,7 @@ All paths below are relative to this `SKILL.md` directory, not the shell cwd.
 | --- | --- |
 | `../quality-gate-contract/SKILL.md` | shared review severity, advisory handling, and review escape semantics |
 | `../cc-dev/references/domain-context-contract.md` | before findings, ADR conflict checks, or context growth proposals |
+| `../cc-research/SKILL.md` | standards, ecosystem, API, product, security, performance, or prior-research background; findings still need current code, diff, test, or behavior evidence |
 | `references/plan-review-branch.md` | plan, task.md, docs, issue, architecture, or scope |
 | `references/implementation-review-branch.md` | code, tests, docs, or PR diff |
 | `references/structural-quality.md` | maintainability, smell, thin wrapper, busy branch, wrong-layer logic |

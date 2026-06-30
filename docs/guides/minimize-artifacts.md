@@ -7,10 +7,13 @@ The workflow is intentionally Git-first.
 - `task.md`
 - `handoff/pr-brief.md` when a PR or local handoff needs it
 - incident postmortem when a FIX or recurring failure needs it
+- `cc-research` entries under `devflow/research/` when reusable project
+  evidence must persist
 
 ## Do Not Keep
 
-Do not generate process files beyond the durable files above.
+Do not generate process files beyond the durable files above. Only
+`cc-research` writes `devflow/research/`.
 
 ## Commit Rule
 

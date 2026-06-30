@@ -94,6 +94,7 @@ flowchart TD
 | `cc-pr-land` | Reviewed PRs need production-gate-aware, rebase-first landing into main with parity proof | gate carry-forward plus integrated main and local/remote parity evidence |
 | `cc-check` | Work needs fresh verification evidence | pass/fail/blocked response and Git commit |
 | `cc-act` | Verified work needs a PR, local handoff, or closeout | optional `handoff/pr-brief.md`, Git/PR truth, or incident postmortem |
+| `cc-research` | Project-grounded research is needed before a decision | `devflow/research/index.jsonl` and Chinese evidence entries |
 | `postmortem` | Failure lessons need recall, interrogation, standalone recording, or closeout compression | `devflow/postmortems/INDEX.md` and incident postmortems |
 
 Maintenance skills are shipped with the pack:
@@ -169,6 +170,7 @@ npx skills add https://github.com/Dimon94/cc-devflow --skill cc-pr-review
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-pr-land
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-check
 npx skills add https://github.com/Dimon94/cc-devflow --skill cc-act
+npx skills add https://github.com/Dimon94/cc-devflow --skill cc-research
 npx skills add https://github.com/Dimon94/cc-devflow --skill postmortem
 ```
 
@@ -239,6 +241,7 @@ The currently distributed skill folders are:
 - `.claude/skills/cc-pr-land/`
 - `.claude/skills/cc-check/`
 - `.claude/skills/cc-act/`
+- `.claude/skills/cc-research/`
 - `.claude/skills/postmortem/`
 - `.claude/skills/cc-archive/`
 - `.claude/skills/cc-simplify/`
@@ -248,6 +251,7 @@ The currently distributed skill folders are:
 
 - New change directories use `REQ-<number>-<description>` for requirements or `FIX-<number>-<description>` for bug fixes. `REQ` and `FIX` numbers advance independently, so the same number may exist in both prefixes. Parallel worktrees may also create repeated numbers; the full change key must use a specific description to distinguish the work.
 - `devflow/changes/<change>/` stores durable change truth in `task.md`, optional `handoff/pr-brief.md`, and Git commits. Real failures start in `task.md#Failure Ledger`; confirmed recurring lessons may also be compressed into incident postmortems under `devflow/postmortems/`.
+- `devflow/research/` stores reusable project-grounded evidence only through `cc-research`.
 - New planned changes default to one human-authored Markdown artifact: `task.md`, with frozen design in `## Contract Summary`. Hotfix diagnosis does not require a `task.md` handoff unless the work is deliberately promoted into the PDCA tail. Legacy planning and review artifacts are readable fallback inputs only.
 - Workflow state is Git-owned: keep `task.md` current, commit each completed stage/environment, and do not create extra process files.
 - Use `npm run verify:examples` and `npm run benchmark:skills` to keep workflow truth and skill entrypoints small and measurable.
