@@ -2,6 +2,8 @@
 name: cc-check
 version: 1.18.1
 description: Use when a planned change or frozen task needs fresh verification evidence and an honest pass/fail/blocked verdict before cc-act.
+skill_class: user-entry
+route_family: main
 triggers:
   - 验收这个需求
   - 帮我确认是否完成

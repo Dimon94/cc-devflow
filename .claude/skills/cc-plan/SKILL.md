@@ -2,6 +2,8 @@
 name: cc-plan
 version: 3.28.0
 description: 'Use when scope, design, and executable tasks must be frozen before coding.'
+skill_class: user-entry
+route_family: main
 triggers:
   - 帮我规划这个需求
   - 先别写代码先定方案

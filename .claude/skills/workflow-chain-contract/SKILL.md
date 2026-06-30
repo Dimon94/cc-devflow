@@ -2,6 +2,8 @@
 name: workflow-chain-contract
 version: 1.0.0
 description: Chain Skill defining the cc-devflow stage state machine, route families, reroutes, terminal states, and stage evidence.
+skill_class: chain
+route_family: contract
 reads: []
 writes: []
 ---

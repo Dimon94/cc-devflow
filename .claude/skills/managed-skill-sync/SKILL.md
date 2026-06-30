@@ -1,6 +1,8 @@
 ---
 name: managed-skill-sync
 description: cc-devflow 维护者专用。用于修改、发布或同步 cc-devflow 技能包，处理 .claude 源技能、.codex 镜像、公开 allowlist、npm publish、verify:publish、下游 refresh/explainer-comic 托管技能同步，以及只提交托管输出的 commit hygiene。
+skill_class: maintenance
+route_family: maintenance
 ---
 
 # cc-devflow 托管技能同步

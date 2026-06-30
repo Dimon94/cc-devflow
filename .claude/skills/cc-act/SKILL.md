@@ -5,6 +5,8 @@ description: >-
   Use when verified work must be committed, handed off, pushed, merged into
   local main, turned into a PR, or used for terminal tracker issue closeout
   with the smallest durable delivery surface.
+skill_class: user-entry
+route_family: main
 triggers:
   - 准备提 PR
   - 帮我发版

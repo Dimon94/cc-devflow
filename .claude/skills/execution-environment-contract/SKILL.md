@@ -2,6 +2,8 @@
 name: execution-environment-contract
 version: 1.0.0
 description: Chain Skill defining parallel execution environment graph, child boundaries, integration gates, and safe worktree closeout semantics.
+skill_class: chain
+route_family: contract
 reads: []
 writes: []
 ---

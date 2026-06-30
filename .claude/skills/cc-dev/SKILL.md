@@ -2,6 +2,8 @@
 name: cc-dev
 version: 1.13.0
 description: Drive one selected planned objective through PDCA until cc-act delivery choice, clarification, or blocker.
+skill_class: user-entry
+route_family: main
 triggers:
   - 自动驾驶开发这个需求
   - 按这个 Goal Packet 执行

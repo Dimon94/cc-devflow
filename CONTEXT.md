@@ -44,6 +44,17 @@ without becoming a PDCA stage. `cc-research` is a Capability Skill and owns
 `devflow/research/`.
 _Avoid_: PDCA stage, process file writer
 
+**Maintenance Skill**:
+A maintainer-facing skill used to update, sync, release, or audit the cc-devflow
+skill suite itself. It is not part of the user-facing workflow route.
+_Avoid_: Workflow stage, user entry skill, public route
+
+**Route Family**:
+The coarse workflow family a skill belongs to, such as main planned work, bug
+diagnosis, PR review/landing, quality gates, research, or maintenance. It is
+not a per-skill taxonomy and not a runtime transition table.
+_Avoid_: Skill category, package group, implementation tag, runtime route table
+
 **Task Contract**:
 The durable agreement that defines the shape and meaning of `task.md` for planning, execution, verification, and delivery.
 _Avoid_: Task template, issue spec, task document
@@ -75,3 +86,15 @@ _Avoid_: Standalone status, decorative metadata
 **Recovery Slice**:
 An actionable context slice emitted after compaction or session resume to restore the next workflow move from durable truth.
 _Avoid_: Conversation summary, memory replay
+
+**Skill Registry**:
+A generated read model of the skill suite used for chain indexing, validation,
+documentation, and publish gates. It is not runtime authority and must not own
+workflow state or routing truth.
+_Avoid_: Workflow state store, runtime router, durable truth
+
+**Skill Suite Graph**:
+The relationship graph of User Entry Skills, Chain Skills, Capability Skills,
+maintenance skills, reads, writes, reroutes, and distribution classes as exposed
+through the Skill Registry.
+_Avoid_: Hand-written skill map, runtime route graph

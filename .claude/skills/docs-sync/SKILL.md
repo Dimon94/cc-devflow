@@ -2,6 +2,8 @@
 name: docs-sync
 version: 1.3.1
 description: Use when a shipped skill, CLI contract, or public-facing workflow loop changed and you need to sync skill versions, CHANGELOGs, README/CONTRIBUTING/docs content, and migration notes before commit or ship.
+skill_class: maintenance
+route_family: maintenance
 reads:
   - PLAYBOOK.md
   - CHANGELOG.md

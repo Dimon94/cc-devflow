@@ -2,6 +2,8 @@
 name: npm-release
 version: 1.1.0
 description: Use when ready to publish a new version of cc-devflow npm package to npm registry, including version sync, changelog finalization, git tag creation, and publish verification.
+skill_class: maintenance
+route_family: maintenance
 reads:
   - PLAYBOOK.md
   - CHANGELOG.md

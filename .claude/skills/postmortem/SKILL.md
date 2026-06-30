@@ -6,6 +6,8 @@ description: >-
   failed verification, review escape, or another workflow skill needs to
   recall, interrogate, record, or update project postmortems as reusable
   failure lessons.
+skill_class: capability
+route_family: none
 triggers:
   - 写尸检
   - 记录这个教训

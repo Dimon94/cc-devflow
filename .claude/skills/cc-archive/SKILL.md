@@ -6,6 +6,8 @@ description: >-
   completed or intentionally shelved devflow/changes/<change-key>/ directory
   under devflow/changes/archive/YYYY-MM/, restore an archived change, or list
   archived changes.
+skill_class: capability
+route_family: none
 triggers:
   - 归档 change
   - 归档 devflow/changes
@@ -36,7 +38,9 @@ exit_criteria:
   - If the CLI command failed, report the blocker and do not move files manually.
 reroutes:
   - when: Change is still active and the user did not request shelving.
-    target: cc-dev or cc-check
+    target: cc-dev
+  - when: Change is complete but fresh verification is missing.
+    target: cc-check
 ---
 
 # CC-Archive

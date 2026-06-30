@@ -2,6 +2,8 @@
 name: cc-pr-land
 version: 1.5.0
 description: Use to land reviewed GitHub PRs into main with production-gate-aware parity proof.
+skill_class: user-entry
+route_family: pr
 triggers:
   - 合并这个 PR
   - 单独会话合并 PR
