@@ -49,8 +49,10 @@ All paths below are relative to this `SKILL.md` directory, not the shell cwd.
 3. Re-run commands; do not inherit green claims from chat or `cc-do`.
 4. Run `cc-review` in review subAgents against `task.md` and current diff until
    no P0/P1/P2 finding remains, or route the unresolved finding.
-5. Classify reality as `pass`, `fail`, or `blocked`.
-6. Map every passing claim to command, exit status, key observation, and claim proven.
+5. Assemble the transient Quality Gate Packet from task truth, diff, commands,
+   review findings, and simplify result; `cc-check` owns the verdict.
+6. Classify reality as `pass`, `fail`, or `blocked`.
+7. Map every passing claim to command, exit status, key observation, and claim proven.
 
 ## Iron Law
 
@@ -125,4 +127,6 @@ When touched, classify `task.md#Failure Ledger` entries, including eligible
 - Failures are owned as branch, baseline, environment, external, or unknown.
 - Behavior changes and bugfixes include feedback-loop and test-quality review.
 - Review subAgent convergence proves no P0/P1/P2 finding remains.
+- The Quality Gate Packet was assembled from normalized evidence references,
+  not raw output, and routes the next skill without becoming Durable Truth.
 - No process file was created.
