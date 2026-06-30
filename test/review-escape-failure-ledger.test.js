@@ -44,6 +44,10 @@ describe('review escape Failure Ledger contract', () => {
     expect(checkSkill).toContain('review escape candidates');
     expect(checkSkill).toContain('process-escape');
     expect(checkSkill).toContain('model-pattern-escape');
+    expect(checkSkill).toContain('Assemble the transient Quality Gate Packet');
+    expect(checkSkill).toContain('`cc-check` owns the verdict');
+    expect(checkSkill).toContain('not raw output');
+    expect(checkSkill).toContain('without becoming Durable Truth');
     expect(actSkill).toContain('raw `cc-review` findings');
     expect(actSkill).toContain('review escape candidates');
   });

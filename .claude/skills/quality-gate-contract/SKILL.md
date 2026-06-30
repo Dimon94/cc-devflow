@@ -49,6 +49,28 @@ Quality gates end in exactly one verdict: pass, fail, and blocked.
 
 A green claim without current command, review, or source evidence is not a pass.
 
+## Quality Gate Packet
+
+A Quality Gate Packet is transient evidence assembled by `cc-check` for the
+current quality gate. It contains only:
+
+- `head`: commit or tree identity used to reject stale packets.
+- `commands`: normalized command results, claim proven, and evidence reference.
+- `findings`: blocking or advisory review findings with severity, impact, route,
+  and evidence reference.
+- `simplify`: `cc-simplify` verdict, changes, and verification reference.
+- `verdict`: exactly `pass`, `fail`, or `blocked`.
+- `route`: next skill or terminal route.
+
+It must not contain raw command output, raw review output, history, notes, or a
+catch-all metadata field. It is not written to a quality-gate file, is not
+Durable Truth, and does not enter the Failure Ledger.
+
+`cc-act` may check packet freshness and final-commit coverage before delivery,
+and treats missing, stale, failed, or blocked packets as non-deliverable. It must
+not reinterpret the verdict, downgrade P0/P1/P2 findings, or turn a blocked
+packet into a skipped gate.
+
 ## Confirmed Smell
 
 A confirmed smell is cleanup work with code fact, usage fact, requirement fact,
