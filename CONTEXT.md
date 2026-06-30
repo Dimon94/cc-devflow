@@ -32,6 +32,12 @@ _Avoid_: Public skill, command skill
 A skill that exists for other skills and agents to reuse inside the workflow chain, rather than as a primary human entry point.
 _Avoid_: Shared reference, helper doc
 
+**Managed Resource Copy**:
+A bundled resource file copied into one or more skill-local paths from an owner
+resource so host adapters, package consumers, and generated mirrors can resolve
+relative paths without treating each copy as a separate source of truth.
+_Avoid_: Chain Skill, shared reference, generated mirror
+
 **Capability Skill**:
 A reusable skill that can be invoked directly and consulted by workflow skills
 without becoming a PDCA stage. `cc-research` is a Capability Skill and owns

@@ -1,8 +1,15 @@
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const { spawnSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
+const { validateManagedResourceCopies } = require('../scripts/validate-publish');
+
+function writeFile(filePath, content = '') {
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  fs.writeFileSync(filePath, content);
+}
 
 describe('validate-publish', () => {
   test('publish validation passes', () => {
@@ -104,5 +111,52 @@ describe('validate-publish', () => {
     });
 
     expect(offenders).toEqual([]);
+  });
+
+  test('managed resource copies fail when strict copies drift', () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'managed-resource-drift-'));
+    writeFile(path.join(root, 'owner.md'), 'same');
+    writeFile(path.join(root, 'copy.md'), 'different');
+
+    const errors = [];
+    validateManagedResourceCopies(errors, {
+      root,
+      manifest: {
+        managedResourceCopies: [{
+          name: 'sample',
+          owner: 'owner.md',
+          copies: ['copy.md'],
+          policy: 'must-match'
+        }]
+      }
+    });
+
+    expect(errors).toContain('Managed Resource Copy sample drift: copy.md must match owner.md');
+  });
+
+  test('managed resource copy variants need a reason', () => {
+    const errors = [];
+    validateManagedResourceCopies(errors, {
+      root: fs.mkdtempSync(path.join(os.tmpdir(), 'managed-resource-variant-')),
+      manifest: {
+        managedResourceCopies: [{
+          name: 'variant',
+          owner: 'owner.md',
+          copies: ['copy.md'],
+          policy: 'variant'
+        }]
+      }
+    });
+
+    expect(errors).toContain('Managed Resource Copy variant uses policy variant but is missing variantReason');
+  });
+
+  test('managed resource copy manifest shape fails closed', () => {
+    const errors = [];
+    validateManagedResourceCopies(errors, {
+      manifest: {}
+    });
+
+    expect(errors).toContain('config/managed-resource-copies.json managedResourceCopies must be an array');
   });
 });

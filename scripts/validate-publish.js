@@ -9,10 +9,10 @@ const { validateSkillInventory } = require('../lib/compiler/inventory');
 
 const ROOT = path.resolve(__dirname, '..');
 const DISTRIBUTION_CONFIG = require(path.join(ROOT, 'config', 'distributable-skills.json'));
+const MANAGED_RESOURCE_CONFIG = require(path.join(ROOT, 'config', 'managed-resource-copies.json'));
 const PUBLIC_SKILLS = DISTRIBUTION_CONFIG.publicSkills || [];
 const DISTRIBUTED_SKILLS = DISTRIBUTION_CONFIG.distributedSkills || PUBLIC_SKILLS;
 const INTERNAL_SKILLS = DISTRIBUTION_CONFIG.internalSkills || [];
-const COMMIT_GUIDELINE_SKILLS = ['cc-plan', 'cc-dev', 'cc-do', 'cc-check', 'cc-diagnose', 'cc-act', 'npm-release'];
 const COMMIT_GUIDELINE_REF = 'references/git-commit-guidelines.md';
 
 const RETIRED_PATTERNS = [
@@ -34,7 +34,11 @@ const RETIRED_PATTERNS = [
 ];
 
 function ensurePath(relPath, expectedType, errors) {
-  const target = path.join(ROOT, relPath);
+  ensurePathFrom(ROOT, relPath, expectedType, errors);
+}
+
+function ensurePathFrom(root, relPath, expectedType, errors) {
+  const target = path.join(root, relPath);
   if (!fs.existsSync(target)) {
     errors.push(`Missing ${expectedType}: ${relPath}`);
     return;
@@ -48,7 +52,11 @@ function ensurePath(relPath, expectedType, errors) {
 }
 
 function readText(relPath) {
-  return fs.readFileSync(path.join(ROOT, relPath), 'utf8');
+  return readTextFrom(ROOT, relPath);
+}
+
+function readTextFrom(root, relPath) {
+  return fs.readFileSync(path.join(root, relPath), 'utf8');
 }
 
 function validatePackageJson(errors) {
@@ -222,18 +230,67 @@ function validateSkillFrontmatter(errors) {
   }
 }
 
-function validateCommitGuidelineRefs(errors) {
-  const canonical = readText('.claude/skills/cc-act/references/git-commit-guidelines.md');
+function validateManagedResourceCopies(errors, options = {}) {
+  const root = options.root || ROOT;
+  const manifest = options.manifest || MANAGED_RESOURCE_CONFIG;
+  if (!Array.isArray(manifest?.managedResourceCopies)) {
+    errors.push('config/managed-resource-copies.json managedResourceCopies must be an array');
+    return;
+  }
 
-  for (const skillName of COMMIT_GUIDELINE_SKILLS) {
+  for (const group of manifest.managedResourceCopies) {
+    const name = group?.name || '<unnamed>';
+    const owner = group?.owner;
+    const copies = Array.isArray(group?.copies) ? group.copies : [];
+    const policy = group?.policy || 'must-match';
+
+    if (!owner) {
+      errors.push(`Managed Resource Copy ${name} missing owner`);
+      continue;
+    }
+
+    ensurePathFrom(root, owner, 'file', errors);
+    for (const copy of copies) {
+      ensurePathFrom(root, copy, 'file', errors);
+    }
+
+    if (policy === 'variant') {
+      if (!String(group.variantReason || '').trim()) {
+        errors.push(`Managed Resource Copy ${name} uses policy variant but is missing variantReason`);
+      }
+      continue;
+    }
+
+    if (policy !== 'must-match') {
+      errors.push(`Managed Resource Copy ${name} has unknown policy: ${policy}`);
+      continue;
+    }
+
+    if (!fs.existsSync(path.join(root, owner))) continue;
+    const ownerText = readTextFrom(root, owner);
+    for (const copy of copies) {
+      if (fs.existsSync(path.join(root, copy)) && readTextFrom(root, copy) !== ownerText) {
+        errors.push(`Managed Resource Copy ${name} drift: ${copy} must match ${owner}`);
+      }
+    }
+  }
+}
+
+function validateCommitGuidelineRefs(errors) {
+  const commitGuidelines = MANAGED_RESOURCE_CONFIG.managedResourceCopies.find((group) => group.name === 'git-commit-guidelines');
+  if (!commitGuidelines) {
+    errors.push('config/managed-resource-copies.json missing git-commit-guidelines group');
+    return;
+  }
+
+  const guidelinePaths = [commitGuidelines.owner, ...(commitGuidelines.copies || [])];
+  for (const guidelineRel of guidelinePaths) {
+    const match = guidelineRel.match(/^\.claude\/skills\/([^/]+)\//);
+    if (!match) continue;
+    const skillName = match[1];
     const skillRel = `.claude/skills/${skillName}/SKILL.md`;
-    const guidelineRel = `.claude/skills/${skillName}/${COMMIT_GUIDELINE_REF}`;
     const skillText = readText(skillRel);
 
-    ensurePath(guidelineRel, 'file', errors);
-    if (fs.existsSync(path.join(ROOT, guidelineRel)) && readText(guidelineRel) !== canonical) {
-      errors.push(`${guidelineRel} must match the canonical commit guideline copy`);
-    }
     if (!skillText.includes(COMMIT_GUIDELINE_REF)) {
       errors.push(`${skillRel} must reference its local ${COMMIT_GUIDELINE_REF}`);
     }
@@ -332,6 +389,7 @@ function main() {
   validateTemplate(errors);
   validateInventoryParity(errors);
   validateSkillFrontmatter(errors);
+  validateManagedResourceCopies(errors);
   validateCommitGuidelineRefs(errors);
   validateNoRetiredFiles(errors);
   validateNoRetiredText(errors);
@@ -359,6 +417,7 @@ module.exports = {
   validateTemplate,
   validateInventoryParity,
   validateSkillFrontmatter,
+  validateManagedResourceCopies,
   validateCommitGuidelineRefs,
   validateNoRetiredFiles,
   validateNoRetiredText,
