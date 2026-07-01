@@ -2,8 +2,8 @@
 
 ## v1.18.1 - 2026-06-04
 
-- require final `cc-review` subAgents in Codex App to load the shared child-thread orchestration contract and launch with model `gpt-5.5` plus reasoning `xhigh`
-- block `cc-check` instead of allowing silent model or reasoning downgrades when review child-thread resources cannot be set or honored
+- require final `cc-review` subAgents in Codex App to load the shared child-thread orchestration contract and use host-default resources unless the user explicitly requested a supported resource
+- block `cc-check` instead of allowing silent resource downgrades when explicit review child-thread resources cannot be set or honored
 
 ## v1.17.0 - 2026-05-31
 

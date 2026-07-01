@@ -71,7 +71,7 @@ NO PASS WITHOUT FRESH EVIDENCE
 | `references/git-commit-guidelines.md` | Check-stage commit contract |
 | `../do-not-repeat-yourself/SKILL.md` | Check-stage commit DRY gate |
 | `../cc-review/SKILL.md` | review subAgent contract and finding severity rules before pass |
-| `../cc-dev/references/codex-thread-orchestration.md` | Codex App thread tooling, model, and reasoning contract for review subAgents |
+| `../cc-dev/references/codex-thread-orchestration.md` | Codex App thread tooling and optional resource contract for review subAgents |
 | `PLAYBOOK.md` | visible state machine, reset signals, default output, verification loop |
 | `../cc-dev/scripts/resolve-cc-devflow.sh` | repository policy or change metadata must be resolved |
 | `../quality-gate-contract/SKILL.md` | pass/fail/blocked verdicts, blocking severity, and ledger classification semantics |
@@ -88,8 +88,9 @@ Loop:
    branch/diff, changed files, relevant commands already run, and the exact
    request to run `cc-review`. In Codex App, load
    `../cc-dev/references/codex-thread-orchestration.md` first and create each
-   `cc-review` child thread with its required resources; missing or unsupported
-   thread resources block the check instead of silently downgrading.
+   `cc-review` child thread with host-default resources unless the user
+   explicitly requested a supported resource. Unsupported explicit resources
+   block the check instead of silently downgrading.
 2. Aggregate all findings in the check thread. Do not downgrade a finding unless
    current source, diff, command output, or task contract evidence proves the
    downgrade.

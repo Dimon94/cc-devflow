@@ -14,7 +14,7 @@ Ship failures usually come from stale verification, skipped simplification, miss
 
 1. Before delivery mode: resolve CLI and read current task/Git/PR evidence.
 2. Before any delivery action: load local Codex thread orchestration, discover required thread/resource/heartbeat tools, then run the pre-act `cc-simplify` gate in a child thread by default.
-3. Before waiting on a child: confirm the actual child thread is on model `gpt-5.5` with the requested reasoning effort, child-to-parent handoff instructions are in the dispatch packet, and `automation_update` created heartbeat monitoring.
+3. Before waiting on a child: confirm any explicit child thread resource request was honored, child-to-parent handoff instructions are in the dispatch packet, and `automation_update` created heartbeat monitoring.
 4. Before PR push/update or local-main merge: identify and run the full repository test/verification suite on the final tree; fix failures and rerun before delivery.
 5. Before PR/handoff: rerun postmortem trigger and stale-verification check.
 6. Before exit: confirm commits, simplify verdict, push/PR/local/local-main state, full-suite gate when required, remote issue closeout state, and postmortem verdict.
@@ -24,7 +24,7 @@ Ship failures usually come from stale verification, skipped simplification, miss
 - [ ] `task.md`, Git status, latest commits, validation evidence, and PR state are current
 - [ ] local Codex orchestration was loaded before child dispatch: `codex-thread-orchestration.md` and `SIMPLIFY_CHILD_DISPATCH_PACKET.md`
 - [ ] `create_thread`, `list_threads`, `read_thread`, `send_message_to_thread`, and `automation_update` were discovered before child dispatch, or main-thread fallback is explicit
-- [ ] child thread resources were set on `create_thread` and verified after launch: model `gpt-5.5` plus requested reasoning effort, or main-thread fallback reports the unsupported resource
+- [ ] child thread resources use host defaults unless the user explicitly requested a supported resource; explicit requests are verified after launch or main-thread fallback reports the unsupported resource
 - [ ] pre-act `cc-simplify` gate completed in a child thread, completed by main-thread fallback, returned `NO FINDINGS`, or is explicitly not applicable because there is no changed implementation surface
 - [ ] child mode includes child-to-parent handoff proof and heartbeat id/status; the parent verified the child result with `read_thread`
 - [ ] any `cc-simplify` code, test, or verification-posture edit routed back to `cc-check`

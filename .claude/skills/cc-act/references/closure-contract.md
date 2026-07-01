@@ -16,7 +16,7 @@
 6. When a postmortem is written, `Workflow Patch Candidate` is completed before exit.
 7. No process file beyond the allowed durable outputs.
 8. Tracker issue closeout follows the Remote Issue Closeout Gate below. Do not replace remote state proof with PR/MR prose.
-9. Before delivery, `cc-act` loads local Codex orchestration, discovers `create_thread`, `list_threads`, `read_thread`, `send_message_to_thread`, and `automation_update`, then runs `cc-simplify` in a child thread by default with model `gpt-5.5` and the requested reasoning effort set and verified on the thread; if that tool/resource chain is unavailable or the actual child resource differs, it runs the same gate in the main thread and reports the fallback.
+9. Before delivery, `cc-act` loads local Codex orchestration, discovers `create_thread`, `list_threads`, `read_thread`, `send_message_to_thread`, and `automation_update`, then runs `cc-simplify` in a child thread by default with host-default resources unless the user explicitly requested a supported resource; if that tool chain is unavailable or an explicit resource request cannot be set and verified on the thread, it runs the same gate in the main thread and reports the fallback.
 10. If verification changes during Act, or `cc-simplify` changes code, tests, or verification posture, return to `cc-check`.
 11. If delivery mode is not explicit, ask the user through `references/user-choice-output-protocol.md` before pushing, creating a PR, merging locally, or closing remote issues.
 12. PR creation/update, branch push, or local-main merge requires a fresh full verification suite pass after the final owned commit; failures must be fixed and rerun before delivery.
@@ -81,16 +81,17 @@ local Codex adapter and completed simplify dispatch packet. The packet must requ
 the child to send a compact handoff back to the parent with
 `send_message_to_thread` after its final report is ready.
 
-The parent must set model `gpt-5.5` and the selected reasoning effort on the
-`create_thread` call, then verify the actual child thread reports those
-resources before treating child mode as valid. A child running on a different
-model or reasoning effort is unsupported resource evidence, not a usable
-simplify verdict; run main-thread fallback instead.
+The parent must omit `model` and `thinking` on the `create_thread` call unless
+the user explicitly requested a supported resource, then verify any explicit
+request against the actual child thread before treating child mode as valid. A
+child running without the explicitly requested resource is unsupported resource
+evidence, not a usable simplify verdict; run main-thread fallback instead.
 
 The parent owns trust. A child handoff is only a wake-up hint; before shipping,
 the parent must call `read_thread`, inspect the final report, and record the
-thread id, resource proof, handoff summary, heartbeat id/status, simplify
-verdict, dirty state, touched files, blockers, and verification evidence.
+thread id, explicit resource proof when applicable, handoff summary, heartbeat
+id/status, simplify verdict, dirty state, touched files, blockers, and
+verification evidence.
 
 If the child is still running after dispatch, the parent must create or update a
 10 minute heartbeat with `automation_update` and stop as

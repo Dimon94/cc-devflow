@@ -93,10 +93,10 @@ Loop:
    command output.
 2. Start review subAgents to run `cc-review` on that packet. In Codex App, load
    `../cc-dev/references/codex-thread-orchestration.md` before launch and use
-   real `create_thread` tooling with model `gpt-5.5` and reasoning `xhigh` for
-   each `cc-review` child. If the tool cannot set or honor those resources,
-   verdict is `blocked`; do not treat an internal note or a downgraded child as
-   a subAgent result.
+   real `create_thread` tooling with host-default resources unless the user
+   explicitly requested a supported resource. If the tool cannot set or honor an
+   explicit resource, verdict is `blocked`; do not treat an internal note or a
+   downgraded child as a subAgent result.
 3. Merge findings in the check thread. Severity can only be lowered with direct
    evidence from the task contract, source, diff, or command output.
 4. If any P0/P1/P2 finding remains, verdict cannot be `pass`.

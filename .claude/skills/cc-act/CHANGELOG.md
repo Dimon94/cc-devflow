@@ -13,8 +13,8 @@
 
 ## v1.17.1 - 2026-06-04
 
-- require pre-act `cc-simplify` child threads to set model `gpt-5.5` and the selected reasoning effort on `create_thread`
-- require parent-side resource proof after child launch, and fall back to main-thread simplify when the actual child runs on a downgraded or unverified model/reasoning level
+- require pre-act `cc-simplify` child threads to use host-default resources unless the user explicitly requested a supported resource on `create_thread`
+- require parent-side proof for explicit resource requests after child launch, and fall back to main-thread simplify when the actual child runs without that requested resource
 
 ## v1.17.0 - 2026-06-03
 

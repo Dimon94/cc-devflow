@@ -21,11 +21,11 @@ Everything else is Git history, PR history, or final response.
 3. Discover `create_thread`, `list_threads`, `read_thread`,
    `send_message_to_thread`, and `automation_update` before child dispatch.
 4. Run the pre-act `cc-simplify` gate in a real Codex child thread by default.
-   The `create_thread` call must request model `gpt-5.5` and the reasoning
-   effort required by `references/codex-thread-orchestration.md`; after launch,
-   verify the actual child thread reports those resources. If resource setting
-   or resource verification fails, do not continue with the downgraded child.
-   Run main-thread simplify fallback and report the unsupported resource.
+   The `create_thread` call uses host-default resources unless the user
+   explicitly requested a supported resource; after launch, verify any explicit
+   resource request against the actual child thread. If explicit resource
+   setting or resource verification fails, do not continue with the downgraded
+   child. Run main-thread simplify fallback and report the unsupported resource.
 5. The child reviews the current diff for behavior-preserving complexity
    reduction, reports confirmed smells, and may edit only within
    `cc-simplify` rules.

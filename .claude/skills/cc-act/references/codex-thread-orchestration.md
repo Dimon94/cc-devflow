@@ -21,24 +21,26 @@ same `cc-simplify` gate in the main thread and report
 `Agents used: no (child thread orchestration unavailable)`. Do not claim child
 mode or heartbeat monitoring without the actual tools.
 
-## Model And Reasoning
+## Thread Resource Contract
 
-Set child thread resources on the `create_thread` call, not inside the child
-prompt. Use model `gpt-5.5` and reasoning `medium` for normal simplify review.
-Use reasoning `xhigh` only when the changed implementation surface is
-architecture-heavy, risky, or security-sensitive. After `create_thread` returns
-or after `list_threads` resolves a pending thread, verify the actual child
-thread is running with the requested model and reasoning effort before treating
-it as dispatched. If the tool cannot set, expose, or honor the requested model
-or reasoning effort, or the UI/thread metadata shows a different resource such
-as `5.3-Codex` or plain `high`, do not silently downgrade; fall back to
-main-thread simplify and report the unsupported resource.
+The live `create_thread` schema is the resource truth source. Host-default
+resources are the default: omit `model` and `thinking` unless the user
+explicitly requested a model or reasoning effort for the simplify child thread.
+
+When the user explicitly requested a resource, pass it through `create_thread`
+only if the live schema supports that field. After `create_thread` returns, or
+after `list_threads` resolves a pending thread, verify the actual child thread
+matches any explicit requested resource before treating it as dispatched. If the
+tool rejects the field, the field is absent from the live schema, or readback
+does not match the explicit request, do not silently downgrade; fall back to
+main-thread simplify and report the unsupported resource. Do not write model
+names, reasoning labels, or `thinking` values into the child packet or prompt.
 
 ## Dispatch
 
-Call `create_thread` once for the pre-act simplify gate, with model `gpt-5.5`
-and the selected reasoning effort set as thread resources. The prompt is
-`assets/SIMPLIFY_CHILD_DISPATCH_PACKET.md` filled from current Git evidence,
+Call `create_thread` once for the pre-act simplify gate. Omit `model` and
+`thinking` unless the user explicitly requested a supported resource. The prompt
+is `assets/SIMPLIFY_CHILD_DISPATCH_PACKET.md` filled from current Git evidence,
 latest `cc-check` evidence, the changed implementation surface, and the parent
 thread id when available.
 

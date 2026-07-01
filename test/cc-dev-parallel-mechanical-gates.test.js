@@ -91,10 +91,10 @@ describe('cc-dev parallel mechanical gates', () => {
     expect(skill).toContain('create_thread`, `list_threads`, `read_thread`');
     expect(codex).toContain('`list_threads`: discover a real child thread id');
     expect(codex).toContain('Before entering Codex App parallel mode, discover all five tools');
-    expect(codex).toContain('Set child thread resources on the `create_thread` call');
-    expect(codex).toContain('model `gpt-5.5`');
-    expect(codex).toContain('Do not write model names into');
-    expect(codex).toContain('every `cc-review` route');
+    expect(codex).toContain('The live `create_thread` schema is the resource truth source');
+    expect(codex).toContain('omit `model` and `thinking` unless the user');
+    expect(codex).toContain('leave the environment undispatched and');
+    expect(codex).toContain('reasoning labels, or `thinking` values');
     expect(codex).toContain('do not claim `parallel-dispatched`');
     expect(codex).toContain('`assets/CHILD_DISPATCH_PACKET.md`');
     expect(codex).toContain('`scripts/audit-child-integration.sh`');
@@ -111,9 +111,9 @@ describe('cc-dev parallel mechanical gates', () => {
     expect(parallel).toContain('assigned task IDs');
     expect(parallel).toContain('task-block completeness check');
     expect(parallel).toContain('environment completeness check');
-    expect(parallel).toContain('Thread creation, not the child prompt, owns model and reasoning selection');
+    expect(parallel).toContain('Thread creation, not the child prompt, owns optional resource selection');
     expect(parallel).toContain('run `scripts/audit-child-integration.sh`');
-    expect(packet).not.toContain('gpt-5.5');
+    expect(packet).not.toContain(['gpt', '5.5'].join('-'));
     expect(packet).not.toContain('Model:');
     expect(packet).toContain('Parent thread id:');
     expect(packet).toContain('Parent task file:');

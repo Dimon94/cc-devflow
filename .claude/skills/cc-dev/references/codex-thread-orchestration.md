@@ -21,16 +21,25 @@ unavailable, stop as `waiting-for-child-results` or use the platform-specific
 adapter. Do not guess another mechanism, do not hand-write heartbeat XML, and
 do not claim `parallel-dispatched`.
 
-## Model And Reasoning Contract
+This contract is for `cc-dev` execution environments, not lightweight explorer
+subagents. Explorers may receive compact read-only prompts, but any child that
+can write, commit, or unlock a phase must receive the full environment dispatch
+packet and pass the integration gates below.
 
-Set child thread resources on the `create_thread` call, not inside the child
-prompt. Dispatch every child with model `gpt-5.5`. Reasoning effort is either
-`medium` or `xhigh`: use `medium` for straightforward implementation,
-diagnosis, verification, and bounded closeout; use `xhigh` for complex
-architecture, risky integration, and every `cc-review` route. If the thread
-tool cannot set or honor the requested model or reasoning effort, leave the
-environment undispatched and report the unsupported resource. Do not silently
-downgrade to another model or reasoning level. Do not write model names into
+## Thread Resource Contract
+
+The live `create_thread` schema is the resource truth source. Host-default
+resources are the default: omit `model` and `thinking` unless the user
+explicitly requested a model or reasoning effort for the child thread.
+
+When the user explicitly requested a resource, pass it through `create_thread`
+only if the live schema supports that field. After `create_thread` returns, or
+after `list_threads` resolves a pending thread, verify the actual child thread
+matches any explicit requested resource before treating it as dispatched. If the
+tool rejects the field, the field is absent from the live schema, or readback
+does not match the explicit request, leave the environment undispatched and
+report the unsupported resource. Do not silently downgrade and do not compensate
+by writing model names, reasoning labels, or `thinking` values into
 `assets/CHILD_DISPATCH_PACKET.md` or any child prompt text.
 
 ## Thread Model
